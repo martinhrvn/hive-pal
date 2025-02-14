@@ -107,12 +107,6 @@ export class HiveService {
           case 'SUPER_REMOVED':
             state.superCount -= action.value as number;
             break;
-          case 'FEEDING':
-            state.lastFeeding = inspection.date;
-            break;
-          case 'TREATMENT':
-            state.lastTreatment = inspection.date;
-            break;
         }
       }
 

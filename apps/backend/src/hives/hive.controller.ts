@@ -12,6 +12,9 @@ import { HiveService } from './hive.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { HiveResponseDto } from './dto/hive-response.dto';
+import { Type } from 'class-transformer';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('hives')
 @UseGuards(AuthGuard)
@@ -24,11 +27,13 @@ export class HiveController {
   }
 
   @Get()
+  @ApiOkResponse({ type: HiveResponseDto, isArray: true })
   findAll() {
     return this.hiveService.findAll();
   }
 
   @Get(':id')
+  @Type(() => HiveResponseDto)
   findOne(@Param('id') id: string) {
     return this.hiveService.findOne(id);
   }
