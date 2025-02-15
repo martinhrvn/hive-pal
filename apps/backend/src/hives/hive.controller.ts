@@ -38,11 +38,6 @@ export class HiveController {
     return this.hiveService.findOne(id);
   }
 
-  @Get(':id/state')
-  getState(@Param('id') id: string) {
-    return this.hiveService.calculateCurrentState(id);
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateHiveDto: UpdateHiveDto) {
     return this.hiveService.update(id, updateHiveDto);

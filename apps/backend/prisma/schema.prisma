@@ -14,87 +14,75 @@ datasource db {
 }
 
 model Apiary {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   name      String
   location  String?
   latitude  Float?
   longitude Float?
   notes     String?
   hives     Hive[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("apiaries")
 }
 
 model Hive {
   id               String       @id @default(uuid())
   name             String
-  apiaryId         String       @map("apiary_id")
+  apiaryId         String
   apiary           Apiary       @relation(fields: [apiaryId], references: [id])
   status           HiveStatus   @default(ACTIVE)
-  installationDate DateTime?    @map("installation_date")
-  notes            String?
+  installationDate DateTime?
   queens           Queen[]
+  boxes            Box[]
   inspections      Inspection[]
-  createdAt        DateTime     @default(now()) @map("created_at")
-  updatedAt        DateTime     @updatedAt @map("updated_at")
+}
 
-  @@map("hives")
+model Box {
+  id          String  @id @default(uuid())
+  hiveId      String
+  hive        Hive    @relation(fields: [hiveId], references: [id])
+  position    Int // Position from bottom up
+  frameCount  Int // Number of frames in this box
+  hasExcluder Boolean @default(false) // Whether there's a queen excluder above this box
+  type        BoxType // BROOD, HONEY, etc.
 }
 
 model Queen {
   id           String      @id @default(uuid())
-  hiveId       String      @map("hive_id")
+  hiveId       String
   hive         Hive        @relation(fields: [hiveId], references: [id])
-  markingColor String?     @map("marking_color")
+  markingColor String?
   year         Int?
   source       String?
-  status       QueenStatus @default(ACTIVE)
-  installedAt  DateTime    @map("installed_at")
-  replacedAt   DateTime?   @map("replaced_at")
-  notes        String?
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
-
-  @@map("queens")
+  status       QueenStatus // ACTIVE, REPLACED, DEAD, UNKNOWN
+  installedAt  DateTime
+  replacedAt   DateTime?
 }
 
 model Inspection {
   id                String        @id @default(uuid())
-  hiveId            String        @map("hive_id")
+  hiveId            String
   hive              Hive          @relation(fields: [hiveId], references: [id])
   date              DateTime
-  weatherConditions String?       @map("weather_conditions")
-  notes             String?
+  weatherConditions String?
   observations      Observation[]
   actions           Action[]
-  createdAt         DateTime      @default(now()) @map("created_at")
-  updatedAt         DateTime      @updatedAt @map("updated_at")
-
-  @@map("inspections")
 }
 
 model Observation {
   id           String     @id @default(uuid())
-  inspectionId String     @map("inspection_id")
+  inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
-  type         String
-  value        Json
-  createdAt    DateTime   @default(now()) @map("created_at")
-
-  @@map("observations")
+  type         String // BROOD_PATTERN, QUEEN_SEEN, DISEASE_SIGNS etc.
+  numericValue Float? // For numerical observations
+  textValue    String? // For text-based observations
+  notes        String? // Additional notes about the observation
 }
 
 model Action {
   id           String     @id @default(uuid())
-  inspectionId String     @map("inspection_id")
+  inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
-  type         String
-  value        Json
-  createdAt    DateTime   @default(now()) @map("created_at")
-
-  @@map("actions")
+  type         String // FEEDING, TREATMENT etc.
+  notes        String? // Description of the action taken
 }
 
 enum HiveStatus {
@@ -102,6 +90,7 @@ enum HiveStatus {
   INACTIVE
   DEAD
   SOLD
+  UNKNOWN
 }
 
 enum QueenStatus {
@@ -109,4 +98,10 @@ enum QueenStatus {
   REPLACED
   DEAD
   UNKNOWN
+}
+
+enum BoxType {
+  BROOD // Brood box
+  HONEY // Honey super
+  FEEDER // Feeder box
 }

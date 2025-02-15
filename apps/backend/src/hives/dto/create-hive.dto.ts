@@ -1,4 +1,5 @@
-import { IsString, IsOptional, IsDate } from 'class-validator';
+import { HiveStatus } from '@prisma/client';
+import { IsString, IsOptional, IsDate, IsEnum } from 'class-validator';
 
 export class CreateHiveDto {
   @IsString()
@@ -14,4 +15,8 @@ export class CreateHiveDto {
   @IsOptional()
   @IsDate()
   installationDate?: Date;
+
+  @IsOptional()
+  @IsEnum(HiveStatus)
+  status: HiveStatus;
 }

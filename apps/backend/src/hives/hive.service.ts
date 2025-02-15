@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
+import { CreateBoxDto } from './dto/box.dto';
 
 @Injectable()
 export class HiveService {
@@ -47,6 +48,11 @@ export class HiveService {
             installedAt: 'desc',
           },
         },
+        boxes: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
         inspections: {
           orderBy: {
             date: 'desc',
@@ -73,52 +79,16 @@ export class HiveService {
     });
   }
 
-  // Calculate current state based on actions
-  async calculateCurrentState(id: string) {
-    const hive = await this.prisma.hive.findUnique({
-      where: { id },
-      include: {
-        inspections: {
-          orderBy: {
-            date: 'asc',
-          },
-          include: {
-            observations: true,
-            actions: true,
-          },
+  updateBoxes(id: string, boxes: CreateBoxDto[]) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.box.deleteMany({
+        where: {
+          hiveId: id,
         },
-      },
+      });
+      await tx.box.createMany({
+        data: boxes.map((box) => ({ ...box, hiveId: id })),
+      });
     });
-
-    if (!hive) return null;
-
-    const state = {
-      superCount: 0,
-      lastFeeding: null,
-      lastTreatment: null,
-    };
-
-    for (const inspection of hive.inspections) {
-      for (const action of inspection.actions) {
-        switch (action.type) {
-          case 'SUPER_ADDED':
-            state.superCount += action.value as number;
-            break;
-          case 'SUPER_REMOVED':
-            state.superCount -= action.value as number;
-            break;
-        }
-      }
-
-      // State verification from observations
-      const superCountObs = inspection.observations.find(
-        (obs) => obs.type === 'SUPER_COUNT',
-      );
-      if (superCountObs) {
-        state.superCount = superCountObs.value as number;
-      }
-    }
-
-    return state;
   }
 }
