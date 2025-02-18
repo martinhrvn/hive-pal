@@ -17,7 +17,6 @@ import { Type } from 'class-transformer';
 import { ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('hives')
-@UseGuards(AuthGuard)
 export class HiveController {
   constructor(private readonly hiveService: HiveService) {}
 
