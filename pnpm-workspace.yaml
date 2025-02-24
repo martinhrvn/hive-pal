@@ -2,6 +2,8 @@ packages:
   - 'apps/*'
   - 'packages/*'
 catalogs:
+  zod:
+    zod: latest
   prisma:
     prisma: latest
     "@prisma/client": latest
