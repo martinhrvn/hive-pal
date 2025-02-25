@@ -7,10 +7,18 @@ import { UpdateHiveDto } from './dto/update-hive.dto';
 export class HiveService {
   constructor(private prisma: PrismaService) {}
 
-  create(createHiveDto: CreateHiveDto) {
-    return this.prisma.hive.create({
+  async create(createHiveDto: CreateHiveDto) {
+    const hive = await this.prisma.hive.create({
       data: createHiveDto,
     });
+    return {
+      id: hive.id,
+      name: hive.name,
+      apiaryId: hive.apiaryId,
+      notes: hive.notes,
+      installationDate: hive.installationDate?.toISOString() ?? '',
+      lastInspectionDate: null,
+    };
   }
 
   findAll() {

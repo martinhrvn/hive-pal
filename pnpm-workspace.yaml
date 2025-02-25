@@ -7,3 +7,5 @@ catalogs:
   prisma:
     prisma: latest
     "@prisma/client": latest
+  typescript:
+    typescript: 5.6.x

@@ -24,7 +24,8 @@ export class HiveController {
   @Post()
   @ApiConsumes('application/json')
   @UsePipes(ZodValidationPipe)
-  create(@Body() createHiveDto: CreateHiveDto) {
+  @ApiOkResponse({ type: HiveResponseDto })
+  create(@Body() createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
     return this.hiveService.create(createHiveDto);
   }
 
