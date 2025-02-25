@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "db:generate": "prisma generate --no-engine",
+    "build": "tsc",
+    "dev": "tsc -w",
+    "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio"
@@ -13,7 +15,8 @@
     "@types/node": "^22.13.5",
     "prisma": "catalog:prisma",
     "tsx": "^4.19.3",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "ts-node": "^10.9.2"
   },
   "keywords": [],
   "author": "",

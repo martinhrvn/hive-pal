@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
-import { CreateBoxDto } from './dto/box.dto';
 
 @Injectable()
 export class HiveService {
@@ -76,19 +75,6 @@ export class HiveService {
   remove(id: string) {
     return this.prisma.hive.delete({
       where: { id },
-    });
-  }
-
-  updateBoxes(id: string, boxes: CreateBoxDto[]) {
-    return this.prisma.$transaction(async (tx) => {
-      await tx.box.deleteMany({
-        where: {
-          hiveId: id,
-        },
-      });
-      await tx.box.createMany({
-        data: boxes.map((box) => ({ ...box, hiveId: id })),
-      });
     });
   }
 }

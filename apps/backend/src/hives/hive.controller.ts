@@ -6,21 +6,24 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { HiveService } from './hive.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
-import { AuthGuard } from '../auth/auth.guard';
 import { HiveResponseDto } from './dto/hive-response.dto';
 import { Type } from 'class-transformer';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
+import { updateHiveSchema } from 'validations';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 @Controller('hives')
 export class HiveController {
   constructor(private readonly hiveService: HiveService) {}
 
   @Post()
+  @ApiConsumes('application/json')
+  @UsePipes(ZodValidationPipe)
   create(@Body() createHiveDto: CreateHiveDto) {
     return this.hiveService.create(createHiveDto);
   }
@@ -38,6 +41,7 @@ export class HiveController {
   }
 
   @Patch(':id')
+  @UsePipes(new ZodValidationPipe(updateHiveSchema))
   update(@Param('id') id: string, @Body() updateHiveDto: UpdateHiveDto) {
     return this.hiveService.update(id, updateHiveDto);
   }

@@ -2835,7 +2835,7 @@ export namespace Prisma {
   export type HiveGroupByOutputType = {
     id: string
     name: string
-    apiaryId: string
+    apiaryId: string | null
     status: $Enums.HiveStatus
     installationDate: Date | null
     _count: HiveCountAggregateOutputType | null
@@ -2863,7 +2863,7 @@ export namespace Prisma {
     apiaryId?: boolean
     status?: boolean
     installationDate?: boolean
-    apiary?: boolean | ApiaryDefaultArgs<ExtArgs>
+    apiary?: boolean | Hive$apiaryArgs<ExtArgs>
     queens?: boolean | Hive$queensArgs<ExtArgs>
     boxes?: boolean | Hive$boxesArgs<ExtArgs>
     inspections?: boolean | Hive$inspectionsArgs<ExtArgs>
@@ -2876,7 +2876,7 @@ export namespace Prisma {
     apiaryId?: boolean
     status?: boolean
     installationDate?: boolean
-    apiary?: boolean | ApiaryDefaultArgs<ExtArgs>
+    apiary?: boolean | Hive$apiaryArgs<ExtArgs>
   }, ExtArgs["result"]["hive"]>
 
   export type HiveSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2885,7 +2885,7 @@ export namespace Prisma {
     apiaryId?: boolean
     status?: boolean
     installationDate?: boolean
-    apiary?: boolean | ApiaryDefaultArgs<ExtArgs>
+    apiary?: boolean | Hive$apiaryArgs<ExtArgs>
   }, ExtArgs["result"]["hive"]>
 
   export type HiveSelectScalar = {
@@ -2898,23 +2898,23 @@ export namespace Prisma {
 
   export type HiveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "apiaryId" | "status" | "installationDate", ExtArgs["result"]["hive"]>
   export type HiveInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    apiary?: boolean | ApiaryDefaultArgs<ExtArgs>
+    apiary?: boolean | Hive$apiaryArgs<ExtArgs>
     queens?: boolean | Hive$queensArgs<ExtArgs>
     boxes?: boolean | Hive$boxesArgs<ExtArgs>
     inspections?: boolean | Hive$inspectionsArgs<ExtArgs>
     _count?: boolean | HiveCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type HiveIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    apiary?: boolean | ApiaryDefaultArgs<ExtArgs>
+    apiary?: boolean | Hive$apiaryArgs<ExtArgs>
   }
   export type HiveIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    apiary?: boolean | ApiaryDefaultArgs<ExtArgs>
+    apiary?: boolean | Hive$apiaryArgs<ExtArgs>
   }
 
   export type $HivePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Hive"
     objects: {
-      apiary: Prisma.$ApiaryPayload<ExtArgs>
+      apiary: Prisma.$ApiaryPayload<ExtArgs> | null
       queens: Prisma.$QueenPayload<ExtArgs>[]
       boxes: Prisma.$BoxPayload<ExtArgs>[]
       inspections: Prisma.$InspectionPayload<ExtArgs>[]
@@ -2922,7 +2922,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
-      apiaryId: string
+      apiaryId: string | null
       status: $Enums.HiveStatus
       installationDate: Date | null
     }, ExtArgs["result"]["hive"]>
@@ -3319,7 +3319,7 @@ export namespace Prisma {
    */
   export interface Prisma__HiveClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    apiary<T extends ApiaryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApiaryDefaultArgs<ExtArgs>>): Prisma__ApiaryClient<$Result.GetResult<Prisma.$ApiaryPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    apiary<T extends Hive$apiaryArgs<ExtArgs> = {}>(args?: Subset<T, Hive$apiaryArgs<ExtArgs>>): Prisma__ApiaryClient<$Result.GetResult<Prisma.$ApiaryPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     queens<T extends Hive$queensArgs<ExtArgs> = {}>(args?: Subset<T, Hive$queensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QueenPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     boxes<T extends Hive$boxesArgs<ExtArgs> = {}>(args?: Subset<T, Hive$boxesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoxPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     inspections<T extends Hive$inspectionsArgs<ExtArgs> = {}>(args?: Subset<T, Hive$inspectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InspectionPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
@@ -3750,6 +3750,25 @@ export namespace Prisma {
      * Limit how many Hives to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Hive.apiary
+   */
+  export type Hive$apiaryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Apiary
+     */
+    select?: ApiarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Apiary
+     */
+    omit?: ApiaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApiaryInclude<ExtArgs> | null
+    where?: ApiaryWhereInput
   }
 
   /**
@@ -9636,10 +9655,10 @@ export namespace Prisma {
     NOT?: HiveWhereInput | HiveWhereInput[]
     id?: StringFilter<"Hive"> | string
     name?: StringFilter<"Hive"> | string
-    apiaryId?: StringFilter<"Hive"> | string
+    apiaryId?: StringNullableFilter<"Hive"> | string | null
     status?: EnumHiveStatusFilter<"Hive"> | $Enums.HiveStatus
     installationDate?: DateTimeNullableFilter<"Hive"> | Date | string | null
-    apiary?: XOR<ApiaryScalarRelationFilter, ApiaryWhereInput>
+    apiary?: XOR<ApiaryNullableScalarRelationFilter, ApiaryWhereInput> | null
     queens?: QueenListRelationFilter
     boxes?: BoxListRelationFilter
     inspections?: InspectionListRelationFilter
@@ -9648,7 +9667,7 @@ export namespace Prisma {
   export type HiveOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    apiaryId?: SortOrder
+    apiaryId?: SortOrderInput | SortOrder
     status?: SortOrder
     installationDate?: SortOrderInput | SortOrder
     apiary?: ApiaryOrderByWithRelationInput
@@ -9663,10 +9682,10 @@ export namespace Prisma {
     OR?: HiveWhereInput[]
     NOT?: HiveWhereInput | HiveWhereInput[]
     name?: StringFilter<"Hive"> | string
-    apiaryId?: StringFilter<"Hive"> | string
+    apiaryId?: StringNullableFilter<"Hive"> | string | null
     status?: EnumHiveStatusFilter<"Hive"> | $Enums.HiveStatus
     installationDate?: DateTimeNullableFilter<"Hive"> | Date | string | null
-    apiary?: XOR<ApiaryScalarRelationFilter, ApiaryWhereInput>
+    apiary?: XOR<ApiaryNullableScalarRelationFilter, ApiaryWhereInput> | null
     queens?: QueenListRelationFilter
     boxes?: BoxListRelationFilter
     inspections?: InspectionListRelationFilter
@@ -9675,7 +9694,7 @@ export namespace Prisma {
   export type HiveOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    apiaryId?: SortOrder
+    apiaryId?: SortOrderInput | SortOrder
     status?: SortOrder
     installationDate?: SortOrderInput | SortOrder
     _count?: HiveCountOrderByAggregateInput
@@ -9689,7 +9708,7 @@ export namespace Prisma {
     NOT?: HiveScalarWhereWithAggregatesInput | HiveScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Hive"> | string
     name?: StringWithAggregatesFilter<"Hive"> | string
-    apiaryId?: StringWithAggregatesFilter<"Hive"> | string
+    apiaryId?: StringNullableWithAggregatesFilter<"Hive"> | string | null
     status?: EnumHiveStatusWithAggregatesFilter<"Hive"> | $Enums.HiveStatus
     installationDate?: DateTimeNullableWithAggregatesFilter<"Hive"> | Date | string | null
   }
@@ -10068,7 +10087,7 @@ export namespace Prisma {
     name: string
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
-    apiary: ApiaryCreateNestedOneWithoutHivesInput
+    apiary?: ApiaryCreateNestedOneWithoutHivesInput
     queens?: QueenCreateNestedManyWithoutHiveInput
     boxes?: BoxCreateNestedManyWithoutHiveInput
     inspections?: InspectionCreateNestedManyWithoutHiveInput
@@ -10077,7 +10096,7 @@ export namespace Prisma {
   export type HiveUncheckedCreateInput = {
     id?: string
     name: string
-    apiaryId: string
+    apiaryId?: string | null
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
     queens?: QueenUncheckedCreateNestedManyWithoutHiveInput
@@ -10090,7 +10109,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    apiary?: ApiaryUpdateOneRequiredWithoutHivesNestedInput
+    apiary?: ApiaryUpdateOneWithoutHivesNestedInput
     queens?: QueenUpdateManyWithoutHiveNestedInput
     boxes?: BoxUpdateManyWithoutHiveNestedInput
     inspections?: InspectionUpdateManyWithoutHiveNestedInput
@@ -10099,7 +10118,7 @@ export namespace Prisma {
   export type HiveUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    apiaryId?: StringFieldUpdateOperationsInput | string
+    apiaryId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     queens?: QueenUncheckedUpdateManyWithoutHiveNestedInput
@@ -10110,7 +10129,7 @@ export namespace Prisma {
   export type HiveCreateManyInput = {
     id?: string
     name: string
-    apiaryId: string
+    apiaryId?: string | null
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
   }
@@ -10125,7 +10144,7 @@ export namespace Prisma {
   export type HiveUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    apiaryId?: StringFieldUpdateOperationsInput | string
+    apiaryId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -10597,9 +10616,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type ApiaryScalarRelationFilter = {
-    is?: ApiaryWhereInput
-    isNot?: ApiaryWhereInput
+  export type ApiaryNullableScalarRelationFilter = {
+    is?: ApiaryWhereInput | null
+    isNot?: ApiaryWhereInput | null
   }
 
   export type QueenListRelationFilter = {
@@ -11105,10 +11124,12 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type ApiaryUpdateOneRequiredWithoutHivesNestedInput = {
+  export type ApiaryUpdateOneWithoutHivesNestedInput = {
     create?: XOR<ApiaryCreateWithoutHivesInput, ApiaryUncheckedCreateWithoutHivesInput>
     connectOrCreate?: ApiaryCreateOrConnectWithoutHivesInput
     upsert?: ApiaryUpsertWithoutHivesInput
+    disconnect?: ApiaryWhereInput | boolean
+    delete?: ApiaryWhereInput | boolean
     connect?: ApiaryWhereUniqueInput
     update?: XOR<XOR<ApiaryUpdateToOneWithWhereWithoutHivesInput, ApiaryUpdateWithoutHivesInput>, ApiaryUncheckedUpdateWithoutHivesInput>
   }
@@ -11703,7 +11724,7 @@ export namespace Prisma {
     NOT?: HiveScalarWhereInput | HiveScalarWhereInput[]
     id?: StringFilter<"Hive"> | string
     name?: StringFilter<"Hive"> | string
-    apiaryId?: StringFilter<"Hive"> | string
+    apiaryId?: StringNullableFilter<"Hive"> | string | null
     status?: EnumHiveStatusFilter<"Hive"> | $Enums.HiveStatus
     installationDate?: DateTimeNullableFilter<"Hive"> | Date | string | null
   }
@@ -11931,7 +11952,7 @@ export namespace Prisma {
     name: string
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
-    apiary: ApiaryCreateNestedOneWithoutHivesInput
+    apiary?: ApiaryCreateNestedOneWithoutHivesInput
     queens?: QueenCreateNestedManyWithoutHiveInput
     inspections?: InspectionCreateNestedManyWithoutHiveInput
   }
@@ -11939,7 +11960,7 @@ export namespace Prisma {
   export type HiveUncheckedCreateWithoutBoxesInput = {
     id?: string
     name: string
-    apiaryId: string
+    apiaryId?: string | null
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
     queens?: QueenUncheckedCreateNestedManyWithoutHiveInput
@@ -11967,7 +11988,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    apiary?: ApiaryUpdateOneRequiredWithoutHivesNestedInput
+    apiary?: ApiaryUpdateOneWithoutHivesNestedInput
     queens?: QueenUpdateManyWithoutHiveNestedInput
     inspections?: InspectionUpdateManyWithoutHiveNestedInput
   }
@@ -11975,7 +11996,7 @@ export namespace Prisma {
   export type HiveUncheckedUpdateWithoutBoxesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    apiaryId?: StringFieldUpdateOperationsInput | string
+    apiaryId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     queens?: QueenUncheckedUpdateManyWithoutHiveNestedInput
@@ -11987,7 +12008,7 @@ export namespace Prisma {
     name: string
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
-    apiary: ApiaryCreateNestedOneWithoutHivesInput
+    apiary?: ApiaryCreateNestedOneWithoutHivesInput
     boxes?: BoxCreateNestedManyWithoutHiveInput
     inspections?: InspectionCreateNestedManyWithoutHiveInput
   }
@@ -11995,7 +12016,7 @@ export namespace Prisma {
   export type HiveUncheckedCreateWithoutQueensInput = {
     id?: string
     name: string
-    apiaryId: string
+    apiaryId?: string | null
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
     boxes?: BoxUncheckedCreateNestedManyWithoutHiveInput
@@ -12023,7 +12044,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    apiary?: ApiaryUpdateOneRequiredWithoutHivesNestedInput
+    apiary?: ApiaryUpdateOneWithoutHivesNestedInput
     boxes?: BoxUpdateManyWithoutHiveNestedInput
     inspections?: InspectionUpdateManyWithoutHiveNestedInput
   }
@@ -12031,7 +12052,7 @@ export namespace Prisma {
   export type HiveUncheckedUpdateWithoutQueensInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    apiaryId?: StringFieldUpdateOperationsInput | string
+    apiaryId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     boxes?: BoxUncheckedUpdateManyWithoutHiveNestedInput
@@ -12043,7 +12064,7 @@ export namespace Prisma {
     name: string
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
-    apiary: ApiaryCreateNestedOneWithoutHivesInput
+    apiary?: ApiaryCreateNestedOneWithoutHivesInput
     queens?: QueenCreateNestedManyWithoutHiveInput
     boxes?: BoxCreateNestedManyWithoutHiveInput
   }
@@ -12051,7 +12072,7 @@ export namespace Prisma {
   export type HiveUncheckedCreateWithoutInspectionsInput = {
     id?: string
     name: string
-    apiaryId: string
+    apiaryId?: string | null
     status?: $Enums.HiveStatus
     installationDate?: Date | string | null
     queens?: QueenUncheckedCreateNestedManyWithoutHiveInput
@@ -12127,7 +12148,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    apiary?: ApiaryUpdateOneRequiredWithoutHivesNestedInput
+    apiary?: ApiaryUpdateOneWithoutHivesNestedInput
     queens?: QueenUpdateManyWithoutHiveNestedInput
     boxes?: BoxUpdateManyWithoutHiveNestedInput
   }
@@ -12135,7 +12156,7 @@ export namespace Prisma {
   export type HiveUncheckedUpdateWithoutInspectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    apiaryId?: StringFieldUpdateOperationsInput | string
+    apiaryId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumHiveStatusFieldUpdateOperationsInput | $Enums.HiveStatus
     installationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     queens?: QueenUncheckedUpdateManyWithoutHiveNestedInput

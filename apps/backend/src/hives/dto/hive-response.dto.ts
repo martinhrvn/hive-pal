@@ -1,5 +1,3 @@
-import { BoxDto } from './box.dto';
-
 export class HiveResponseDto {
   id: string;
   name: string;
@@ -7,5 +5,4 @@ export class HiveResponseDto {
   notes: string;
   installationDate: string;
   lastInspectionDate: Date;
-  boxes: BoxDto[];
 }

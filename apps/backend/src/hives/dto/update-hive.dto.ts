@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateHiveDto } from './create-hive.dto';
+import { z } from 'zod';
+import { updateHiveSchema } from 'validations';
 
-export class UpdateHiveDto extends PartialType(CreateHiveDto) {}
+export type UpdateHiveDto = z.infer<typeof updateHiveSchema>;

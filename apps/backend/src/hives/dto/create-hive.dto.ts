@@ -1,22 +1,4 @@
-import { HiveStatus } from '@prisma/client';
-import { IsString, IsOptional, IsDate, IsEnum } from 'class-validator';
+import { createHiveSchema } from 'validations';
+import { createZodDto } from 'nestjs-zod';
 
-export class CreateHiveDto {
-  @IsString()
-  name: string;
-
-  @IsString()
-  apiaryId: string;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
-
-  @IsOptional()
-  @IsDate()
-  installationDate?: Date;
-
-  @IsOptional()
-  @IsEnum(HiveStatus)
-  status: HiveStatus;
-}
+export class CreateHiveDto extends createZodDto(createHiveSchema) {}

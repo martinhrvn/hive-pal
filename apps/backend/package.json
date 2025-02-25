@@ -8,9 +8,8 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "seed": "ts-node prisma/seed.ts",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -22,17 +21,20 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@anatine/zod-openapi": "^2.2.7",
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.0.3",
-    "@prisma/client": "^6.3.1",
+    "nestjs-zod": "^4.3.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "prisma": "^6.3.1",
+    "database": "workspace:*",
+    "validations": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "zod": "catalog:zod"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -77,8 +79,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
   }
 }
