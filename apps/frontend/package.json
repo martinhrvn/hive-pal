@@ -30,6 +30,7 @@
     "react-router-dom": "^7.1.5",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
+    "validations": "workspace:*",
     "zod": "^3.24.2"
   },
   "devDependencies": {
