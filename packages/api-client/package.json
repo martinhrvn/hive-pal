@@ -1,0 +1,22 @@
+{
+  "name": "api-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/hive-pal.js",
+  "scripts": {
+    "generate": "orval --config orval.config.js && pnpm build",
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "orval": "^7.5.0",
+    "typescript": "5.6.3"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "axios": "^1.7.9"
+  }
+}
