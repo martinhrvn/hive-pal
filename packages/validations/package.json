@@ -1,24 +1,23 @@
 {
   "name": "validations",
-  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "generate": "orval --config orval.config.js && pnpm build",
     "build": "tsc",
     "dev": "tsc -w"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "database": "workspace:*",
-    "zod": "catalog:zod"
-  },
   "devDependencies": {
-    "@types/node": "^22.13.5",
-    "tsup": "^8.3.6",
-    "tsx": "^4.19.3",
-    "typescript": "catalog:typescript"
+    "orval": "^7.5.0",
+    "typescript": "5.6.3"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "axios": "^1.7.9",
+    "zod": "^3.24.2"
   }
 }
