@@ -129,6 +129,7 @@ exports.Prisma.ApiaryScalarFieldEnum = {
 exports.Prisma.HiveScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  notes: 'notes',
   apiaryId: 'apiaryId',
   status: 'status',
   installationDate: 'installationDate'

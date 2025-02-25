@@ -15,7 +15,7 @@
     "@types/node": "^22.13.5",
     "prisma": "catalog:prisma",
     "tsx": "^4.19.3",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:typescript",
     "ts-node": "^10.9.2"
   },
   "keywords": [],

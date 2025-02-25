@@ -6,5 +6,5 @@ export const createHiveSchema = z.object({
   name: z.string(),
   apiaryId: z.string().uuid().nullish(),
   status: z.nativeEnum(HiveStatus),
-  description: z.string().nullish(),
+  notes: z.string().nullish(),
 });

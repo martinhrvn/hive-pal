@@ -21,6 +21,7 @@ model Apiary {
 model Hive {
   id               String       @id @default(uuid())
   name             String
+  notes            String?
   apiaryId         String?
   apiary           Apiary?      @relation(fields: [apiaryId], references: [id])
   status           HiveStatus   @default(ACTIVE)
