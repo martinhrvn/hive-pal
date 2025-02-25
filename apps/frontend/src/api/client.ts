@@ -1,5 +1,5 @@
 export const getApiUrl = (url: string) => {
-  return `${import.meta.env.VITE_API_URL ?? "http://localhost:3000/api"}${url}`;
+  return `${import.meta.env.VITE_API_URL ?? "http://localhost:3000"}${url}`;
 };
 export const createApiClient = (getToken: () => string | null) => {
   const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {

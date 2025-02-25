@@ -1,6 +1,4 @@
 import { FormEvent, useState } from "react";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/auth-context.tsx";
 import { useNavigate } from "react-router-dom";
 
@@ -41,15 +39,11 @@ const LoginPage = () => {
         </h2>
       </div>
 
+      {error && (<p className={'color-red-400'}>{error}</p>)}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+
 
             <div>
               <label

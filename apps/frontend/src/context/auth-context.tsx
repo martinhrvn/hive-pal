@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = useCallback(
     async (username: string, password: string, from: string = "/") => {
       try {
-        const token = await axios.post(getApiUrl("/auth/login"), {
+        const token = await axios.post(getApiUrl("/api/auth/login"), {
           username,
           password,
         });
