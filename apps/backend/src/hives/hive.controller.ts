@@ -14,8 +14,6 @@ import { UpdateHiveDto } from './dto/update-hive.dto';
 import { HiveResponseDto } from './dto/hive-response.dto';
 import { Type } from 'class-transformer';
 import { ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
-import { updateHiveSchema } from 'validations';
-import { ZodValidationPipe } from 'nestjs-zod';
 
 @Controller('hives')
 export class HiveController {
@@ -23,7 +21,6 @@ export class HiveController {
 
   @Post()
   @ApiConsumes('application/json')
-  @UsePipes(ZodValidationPipe)
   @ApiOkResponse({ type: HiveResponseDto })
   create(@Body() createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
     return this.hiveService.create(createHiveDto);
@@ -42,7 +39,6 @@ export class HiveController {
   }
 
   @Patch(':id')
-  @UsePipes(new ZodValidationPipe(updateHiveSchema))
   update(@Param('id') id: string, @Body() updateHiveDto: UpdateHiveDto) {
     return this.hiveService.update(id, updateHiveDto);
   }
