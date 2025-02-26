@@ -6,7 +6,9 @@ import {
   Patch,
   Param,
   Delete,
-  UsePipes,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  SerializeOptions,
 } from '@nestjs/common';
 import { HiveService } from './hive.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
@@ -15,6 +17,7 @@ import { HiveResponseDto } from './dto/hive-response.dto';
 import { Type } from 'class-transformer';
 import { ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('hives')
 export class HiveController {
   constructor(private readonly hiveService: HiveService) {}
@@ -28,7 +31,8 @@ export class HiveController {
 
   @Get()
   @ApiOkResponse({ type: HiveResponseDto, isArray: true })
-  findAll() {
+  @SerializeOptions({ type: HiveResponseDto })
+  findAll(): Promise<HiveResponseDto[]> {
     return this.hiveService.findAll();
   }
 

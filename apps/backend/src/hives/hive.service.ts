@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
+import { HiveResponseDto } from './dto/hive-response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class HiveService {
@@ -15,34 +17,27 @@ export class HiveService {
       id: hive.id,
       name: hive.name,
       apiaryId: hive.apiaryId,
+      status: hive.status,
       notes: hive.notes,
       installationDate: hive.installationDate?.toISOString() ?? '',
       lastInspectionDate: null,
     };
   }
 
-  findAll() {
-    return this.prisma.hive.findMany({
-      include: {
-        apiary: true,
-        queens: {
-          where: {
-            status: 'ACTIVE',
-          },
-          take: 1,
-        },
-        inspections: {
-          take: 1,
-          orderBy: {
-            date: 'desc',
-          },
-          include: {
-            observations: true,
-            actions: true,
-          },
-        },
-      },
-    });
+  async findAll(): Promise<HiveResponseDto[]> {
+    const hives = await this.prisma.hive.findMany({});
+
+    return hives.map((hive) =>
+      plainToInstance(HiveResponseDto, {
+        id: hive.id,
+        name: hive.name,
+        apiaryId: hive.apiaryId,
+        status: hive.status,
+        notes: hive.notes,
+        installationDate: hive.installationDate?.toISOString() ?? '',
+        lastInspectionDate: null,
+      }),
+    );
   }
 
   findOne(id: string) {
