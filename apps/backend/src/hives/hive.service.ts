@@ -4,12 +4,13 @@ import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
 import { HiveResponseDto } from './dto/hive-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { mapPrismaHiveStatusToDto } from './dto/hive-status.enum';
 
 @Injectable()
 export class HiveService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createHiveDto: CreateHiveDto) {
+  async create(createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
     const hive = await this.prisma.hive.create({
       data: createHiveDto,
     });
@@ -17,7 +18,7 @@ export class HiveService {
       id: hive.id,
       name: hive.name,
       apiaryId: hive.apiaryId,
-      status: hive.status,
+      status: mapPrismaHiveStatusToDto(hive.status),
       notes: hive.notes,
       installationDate: hive.installationDate?.toISOString() ?? '',
       lastInspectionDate: null,
@@ -32,7 +33,7 @@ export class HiveService {
         id: hive.id,
         name: hive.name,
         apiaryId: hive.apiaryId,
-        status: hive.status,
+        status: mapPrismaHiveStatusToDto(hive.status),
         notes: hive.notes,
         installationDate: hive.installationDate?.toISOString() ?? '',
         lastInspectionDate: null,

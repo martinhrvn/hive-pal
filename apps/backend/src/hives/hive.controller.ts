@@ -24,6 +24,7 @@ export class HiveController {
 
   @Post()
   @ApiConsumes('application/json')
+  @SerializeOptions({ type: HiveResponseDto })
   @ApiOkResponse({ type: HiveResponseDto })
   create(@Body() createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
     return this.hiveService.create(createHiveDto);
