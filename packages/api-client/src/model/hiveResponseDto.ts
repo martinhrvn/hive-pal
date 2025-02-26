@@ -5,12 +5,15 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { HiveResponseDtoStatus } from './hiveResponseDtoStatus';
 
 export interface HiveResponseDto {
   /** Unique identifier of the hive */
   id: string;
   /** Name of the hive */
   name: string;
+  /** Status of the hive */
+  status: HiveResponseDtoStatus;
   /**
    * ID of the apiary this hive belongs to
    * @nullable
@@ -21,8 +24,11 @@ export interface HiveResponseDto {
    * @nullable
    */
   notes?: string | null;
-  /** Date when the hive was installed */
-  installationDate: string;
+  /**
+   * Date when the hive was installed
+   * @nullable
+   */
+  installationDate: string | null;
   /**
    * Date of the most recent inspection
    * @nullable

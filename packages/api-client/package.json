@@ -2,7 +2,7 @@
   "name": "api-client",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/hive-pal.js",
+  "main": "dist/index.js",
   "scripts": {
     "generate": "orval --config orval.config.js && pnpm build",
     "build": "tsc",
