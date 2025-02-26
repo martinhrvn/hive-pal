@@ -4,6 +4,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { NotFoundPage } from "@/pages/NotFoundPage.tsx";
 import DasboardLayout from "@/components/layout/DashboardLayout.tsx";
 import {HomePage} from "@/pages/HomePage.tsx";
+import {CreateHivePage} from "@/pages/hive/create-hive-page.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <HomePage />,
       },
+      {
+        path: '/hive/create',
+        element: <CreateHivePage />
+      }
     ],
   },
   {
