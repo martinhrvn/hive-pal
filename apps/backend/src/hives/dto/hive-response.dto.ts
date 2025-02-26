@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
-import { HiveStatus } from '@prisma/client';
+import { Expose } from 'class-transformer';
+import { IsEnum } from 'class-validator';
+import { HiveStatusEnum } from './hive-status.enum';
 
 export class HiveResponseDto {
   @ApiProperty({
@@ -21,8 +22,9 @@ export class HiveResponseDto {
     description: 'Status of the hive',
     example: 'ACTIVE',
   })
+  @IsEnum(HiveStatusEnum)
   @Expose()
-  status: HiveStatus;
+  status: HiveStatusEnum;
 
   @ApiProperty({
     description: 'ID of the apiary this hive belongs to',

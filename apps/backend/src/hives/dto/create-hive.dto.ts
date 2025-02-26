@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { HiveStatus } from '@prisma/client';
 import { IsDate, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
+import { HiveStatusEnum } from './hive-status.enum';
 
 export class CreateHiveDto {
   @ApiProperty({ description: 'The name of the hive', example: 'Hive #1' })
@@ -37,10 +37,10 @@ export class CreateHiveDto {
   @ApiProperty({
     description: 'Current status of the hive',
     required: false,
-    enum: HiveStatus,
-    example: HiveStatus.ACTIVE,
+    enum: HiveStatusEnum,
+    example: HiveStatusEnum.ACTIVE,
   })
   @IsOptional()
-  @IsEnum(HiveStatus)
-  status?: HiveStatus;
+  @IsEnum(HiveStatusEnum)
+  status?: HiveStatusEnum;
 }
