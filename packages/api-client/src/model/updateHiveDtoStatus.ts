@@ -9,11 +9,11 @@
 /**
  * Current status of the hive
  */
-export type CreateHiveDtoStatus = typeof CreateHiveDtoStatus[keyof typeof CreateHiveDtoStatus];
+export type UpdateHiveDtoStatus = typeof UpdateHiveDtoStatus[keyof typeof UpdateHiveDtoStatus];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateHiveDtoStatus = {
+export const UpdateHiveDtoStatus = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
   DEAD: 'DEAD',

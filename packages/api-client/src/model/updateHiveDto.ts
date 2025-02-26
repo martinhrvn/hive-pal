@@ -5,11 +5,11 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import type { CreateHiveDtoStatus } from './createHiveDtoStatus';
+import type { UpdateHiveDtoStatus } from './updateHiveDtoStatus';
 
-export interface CreateHiveDto {
+export interface UpdateHiveDto {
   /** The name of the hive */
-  name: string;
+  name?: string;
   /** The ID of the apiary this hive belongs to */
   apiaryId?: string;
   /** Additional notes about the hive */
@@ -17,5 +17,5 @@ export interface CreateHiveDto {
   /** Date when the hive was installed */
   installationDate?: string;
   /** Current status of the hive */
-  status?: CreateHiveDtoStatus;
+  status?: UpdateHiveDtoStatus;
 }

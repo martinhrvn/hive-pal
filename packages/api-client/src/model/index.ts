@@ -9,3 +9,5 @@
 export * from './createHiveDto';
 export * from './createHiveDtoStatus';
 export * from './hiveResponseDto';
+export * from './updateHiveDto';
+export * from './updateHiveDtoStatus';
