@@ -51,14 +51,12 @@
   --sidebar-ring: oklch(0.87 0 0);
 }
 
-
 body {
   margin: 0;
   display: flex;
   min-width: 320px;
   min-height: 100vh;
 }
-
 
 .dark {
   --background: hsl(0 0% 3.9%);
