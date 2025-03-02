@@ -4,9 +4,15 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { HiveModule } from './hives/hive.module';
+import { InspectionsModule } from './inspections/inspections.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, HiveModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
+    HiveModule,
+    InspectionsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
