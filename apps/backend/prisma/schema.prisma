@@ -53,13 +53,21 @@ model Queen {
 }
 
 model Inspection {
-  id                String        @id @default(uuid())
+  id                String           @id @default(uuid())
   hiveId            String
-  hive              Hive          @relation(fields: [hiveId], references: [id])
+  hive              Hive             @relation(fields: [hiveId], references: [id])
   date              DateTime
+  notes             InspectionNote[]
   weatherConditions String?
   observations      Observation[]
   actions           Action[]
+}
+
+model InspectionNote {
+  id           String     @id @default(uuid())
+  inspectionId String
+  inspection   Inspection @relation(fields: [inspectionId], references: [id])
+  text         String
 }
 
 model Observation {
