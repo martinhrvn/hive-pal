@@ -39,6 +39,8 @@ export class HiveController {
 
   @Get(':id')
   @Type(() => HiveResponseDto)
+  @ApiOkResponse({ type: HiveResponseDto })
+  @SerializeOptions({ type: HiveResponseDto })
   findOne(@Param('id') id: string) {
     return this.hiveService.findOne(id);
   }

@@ -30,7 +30,8 @@ import type {
 } from 'axios'
 import type {
   CreateHiveDto,
-  HiveResponseDto
+  HiveResponseDto,
+  UpdateHiveDto
 } from './model'
 
 
@@ -309,7 +310,7 @@ export function useHiveControllerFindAll<TData = Awaited<ReturnType<typeof hiveC
 
 export const hiveControllerFindOne = (
     id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<HiveResponseDto>> => {
     
     
     return axios.get(
@@ -388,20 +389,22 @@ export function useHiveControllerFindOne<TData = Awaited<ReturnType<typeof hiveC
 
 
 export const hiveControllerUpdate = (
-    id: string, options?: AxiosRequestConfig
+    id: string,
+    updateHiveDto: UpdateHiveDto, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {
     
     
     return axios.patch(
-      `/api/hives/${id}`,undefined,options
+      `/api/hives/${id}`,
+      updateHiveDto,options
     );
   }
 
 
 
 export const getHiveControllerUpdateMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext> => {
     
 const mutationKey = ['hiveControllerUpdate'];
 const {mutation: mutationOptions, axios: axiosOptions} = options ?
@@ -413,10 +416,10 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerUpdate>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerUpdate>>, {id: string;data: UpdateHiveDto}> = (props) => {
+          const {id,data} = props ?? {};
 
-          return  hiveControllerUpdate(id,axiosOptions)
+          return  hiveControllerUpdate(id,data,axiosOptions)
         }
 
         
@@ -425,15 +428,15 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type HiveControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof hiveControllerUpdate>>>
-    
+    export type HiveControllerUpdateMutationBody = UpdateHiveDto
     export type HiveControllerUpdateMutationError = AxiosError<unknown>
 
     export const useHiveControllerUpdate = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationResult<
         Awaited<ReturnType<typeof hiveControllerUpdate>>,
         TError,
-        {id: string},
+        {id: string;data: UpdateHiveDto},
         TContext
       > => {
 

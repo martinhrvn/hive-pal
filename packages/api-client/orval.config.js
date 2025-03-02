@@ -1,7 +1,7 @@
 module.exports = {
     "hive-pal":{
         output: {
-            mode: 'tags-split',
+            mode: 'single',
             target: 'src/hive-pal.ts',
             schemas: 'src/model',
             client: 'react-query'

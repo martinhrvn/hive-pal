@@ -172,7 +172,7 @@ export function useHiveControllerFindAll<TData = Awaited<ReturnType<typeof hiveC
 
 export const hiveControllerFindOne = (
     id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<HiveResponseDto>> => {
     
     
     return axios.get(
