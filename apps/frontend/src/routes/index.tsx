@@ -6,6 +6,7 @@ import DasboardLayout from "@/components/layout/DashboardLayout.tsx";
 import { HomePage } from "@/pages/home-page.tsx";
 import { CreateHivePage } from "@/pages/hive/create-hive-page.tsx";
 import { HiveDetailPage } from "@/pages/hive/hive-detail-page.tsx";
+import { CreateInspectionPage } from "@/pages/inspection/create-inspection.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -26,6 +27,14 @@ const router = createBrowserRouter([
       {
         path: "/hive/:id",
         element: <HiveDetailPage />,
+      },
+      {
+        path: "/hive/:hiveId/inspection/create",
+        element: <CreateInspectionPage />,
+      },
+      {
+        path: "/inspections/create",
+        element: <CreateInspectionPage />,
       },
     ],
   },

@@ -30,8 +30,11 @@ import type {
 } from 'axios'
 import type {
   CreateHiveDto,
+  CreateInspectionDto,
   HiveResponseDto,
-  UpdateHiveDto
+  InspectionsControllerFindAllParams,
+  UpdateHiveDto,
+  UpdateInspectionDto
 } from './model'
 
 
@@ -496,6 +499,336 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       > => {
 
       const mutationOptions = getHiveControllerRemoveMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+export const inspectionsControllerCreate = (
+    createInspectionDto: CreateInspectionDto, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.post(
+      `/api/inspections`,
+      createInspectionDto,options
+    );
+  }
+
+
+
+export const getInspectionsControllerCreateMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,{data: CreateInspectionDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,{data: CreateInspectionDto}, TContext> => {
+    
+const mutationKey = ['inspectionsControllerCreate'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inspectionsControllerCreate>>, {data: CreateInspectionDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  inspectionsControllerCreate(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InspectionsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof inspectionsControllerCreate>>>
+    export type InspectionsControllerCreateMutationBody = CreateInspectionDto
+    export type InspectionsControllerCreateMutationError = AxiosError<unknown>
+
+    export const useInspectionsControllerCreate = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,{data: CreateInspectionDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationResult<
+        Awaited<ReturnType<typeof inspectionsControllerCreate>>,
+        TError,
+        {data: CreateInspectionDto},
+        TContext
+      > => {
+
+      const mutationOptions = getInspectionsControllerCreateMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+export const inspectionsControllerFindAll = (
+    params?: InspectionsControllerFindAllParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.get(
+      `/api/inspections`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+export const getInspectionsControllerFindAllQueryKey = (params?: InspectionsControllerFindAllParams,) => {
+    return [`/api/inspections`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getInspectionsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = AxiosError<unknown>>(params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInspectionsControllerFindAllQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof inspectionsControllerFindAll>>> = ({ signal }) => inspectionsControllerFindAll(params, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
+}
+
+export type InspectionsControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof inspectionsControllerFindAll>>>
+export type InspectionsControllerFindAllQueryError = AxiosError<unknown>
+
+
+export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = AxiosError<unknown>>(
+ params: undefined |  InspectionsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof inspectionsControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof inspectionsControllerFindAll>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = AxiosError<unknown>>(
+ params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof inspectionsControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof inspectionsControllerFindAll>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = AxiosError<unknown>>(
+ params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+
+export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = AxiosError<unknown>>(
+ params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+
+  const queryOptions = getInspectionsControllerFindAllQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const inspectionsControllerFindOne = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
+    
+    
+    return axios.get(
+      `/api/inspections/${id}`,options
+    );
+  }
+
+
+export const getInspectionsControllerFindOneQueryKey = (id: string,) => {
+    return [`/api/inspections/${id}`] as const;
+    }
+
+    
+export const getInspectionsControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError = AxiosError<unknown>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInspectionsControllerFindOneQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof inspectionsControllerFindOne>>> = ({ signal }) => inspectionsControllerFindOne(id, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
+}
+
+export type InspectionsControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof inspectionsControllerFindOne>>>
+export type InspectionsControllerFindOneQueryError = AxiosError<unknown>
+
+
+export function useInspectionsControllerFindOne<TData = Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof inspectionsControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof inspectionsControllerFindOne>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useInspectionsControllerFindOne<TData = Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof inspectionsControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof inspectionsControllerFindOne>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useInspectionsControllerFindOne<TData = Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+
+export function useInspectionsControllerFindOne<TData = Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+
+  const queryOptions = getInspectionsControllerFindOneQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const inspectionsControllerUpdate = (
+    id: string,
+    updateInspectionDto: UpdateInspectionDto, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
+    
+    
+    return axios.patch(
+      `/api/inspections/${id}`,
+      updateInspectionDto,options
+    );
+  }
+
+
+
+export const getInspectionsControllerUpdateMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string;data: UpdateInspectionDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string;data: UpdateInspectionDto}, TContext> => {
+    
+const mutationKey = ['inspectionsControllerUpdate'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, {id: string;data: UpdateInspectionDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  inspectionsControllerUpdate(id,data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InspectionsControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof inspectionsControllerUpdate>>>
+    export type InspectionsControllerUpdateMutationBody = UpdateInspectionDto
+    export type InspectionsControllerUpdateMutationError = AxiosError<unknown>
+
+    export const useInspectionsControllerUpdate = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string;data: UpdateInspectionDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationResult<
+        Awaited<ReturnType<typeof inspectionsControllerUpdate>>,
+        TError,
+        {id: string;data: UpdateInspectionDto},
+        TContext
+      > => {
+
+      const mutationOptions = getInspectionsControllerUpdateMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+export const inspectionsControllerRemove = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
+    
+    
+    return axios.delete(
+      `/api/inspections/${id}`,options
+    );
+  }
+
+
+
+export const getInspectionsControllerRemoveMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerRemove>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerRemove>>, TError,{id: string}, TContext> => {
+    
+const mutationKey = ['inspectionsControllerRemove'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inspectionsControllerRemove>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  inspectionsControllerRemove(id,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InspectionsControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof inspectionsControllerRemove>>>
+    
+    export type InspectionsControllerRemoveMutationError = AxiosError<unknown>
+
+    export const useInspectionsControllerRemove = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerRemove>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationResult<
+        Awaited<ReturnType<typeof inspectionsControllerRemove>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getInspectionsControllerRemoveMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
