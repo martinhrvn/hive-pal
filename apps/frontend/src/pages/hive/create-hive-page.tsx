@@ -1,5 +1,5 @@
-import { HiveForm } from "@/components/hive/hive-form"
+import { HiveForm } from "@/pages/hive/components";
 
 export const CreateHivePage = () => {
-    return <HiveForm />
-}
+  return <HiveForm />;
+};

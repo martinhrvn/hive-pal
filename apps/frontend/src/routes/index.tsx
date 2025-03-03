@@ -1,9 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LoginPage from "@/pages/LoginPage.tsx";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { NotFoundPage } from "@/pages/NotFoundPage.tsx";
+import LoginPage from "@/pages/login-page.tsx";
+import { ProtectedRoute } from "./protected-route.tsx";
+import { NotFoundPage } from "@/pages/not-found-page.tsx";
 import DasboardLayout from "@/components/layout/DashboardLayout.tsx";
-import { HomePage } from "@/pages/HomePage.tsx";
+import { HomePage } from "@/pages/home-page.tsx";
 import { CreateHivePage } from "@/pages/hive/create-hive-page.tsx";
 import { HiveDetailPage } from "@/pages/hive/hive-detail-page.tsx";
 const router = createBrowserRouter([

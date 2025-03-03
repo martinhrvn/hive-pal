@@ -1,6 +1,6 @@
 import { useHiveControllerFindOne } from "api-client";
 import { useParams } from "react-router-dom";
-import { HiveStatus } from "@/components/hive/hive-status.tsx";
+import { HiveStatus } from "@/pages/hive/components";
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
