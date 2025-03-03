@@ -60,6 +60,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
 
   const form = useForm<InspectionFormData>({
     resolver: zodResolver(inspectionSchema),
+    defaultValues: {
+      hiveId,
+      date: new Date(),
+    },
   });
 
   const onSubmit = (data: InspectionFormData) => {

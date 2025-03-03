@@ -29,7 +29,7 @@ const router = createBrowserRouter([
         element: <HiveDetailPage />,
       },
       {
-        path: "/hive/:hiveId/inspection/create",
+        path: "/hive/:hiveId/inspections/create",
         element: <CreateInspectionPage />,
       },
       {
