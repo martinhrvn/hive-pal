@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   Query,
+  SerializeOptions,
 } from '@nestjs/common';
 import { InspectionsService } from './inspections.service';
 import { CreateInspectionDto } from './dto/create-inspection.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionFilterDto } from './dto/inspection-filter.dto';
+import { InspectionResponseDto } from './dto/inspection-response.dto';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('inspections')
 export class InspectionsController {
@@ -23,6 +26,8 @@ export class InspectionsController {
   }
 
   @Get()
+  @SerializeOptions({ type: InspectionResponseDto })
+  @ApiOkResponse({ type: InspectionResponseDto, isArray: true })
   findAll(@Query() query: InspectionFilterDto) {
     return this.inspectionsService.findAll(query);
   }

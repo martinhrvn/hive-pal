@@ -32,6 +32,7 @@ import type {
   CreateHiveDto,
   CreateInspectionDto,
   HiveResponseDto,
+  InspectionResponseDto,
   InspectionsControllerFindAllParams,
   UpdateHiveDto,
   UpdateInspectionDto
@@ -561,7 +562,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     
 export const inspectionsControllerFindAll = (
     params?: InspectionsControllerFindAllParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<InspectionResponseDto[]>> => {
     
     
     return axios.get(

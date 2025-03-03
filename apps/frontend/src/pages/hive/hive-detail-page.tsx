@@ -1,9 +1,12 @@
-import { useHiveControllerFindOne } from "api-client";
-import { useParams } from "react-router-dom";
+import {
+  useHiveControllerFindOne,
+  useInspectionsControllerFindAll,
+} from "api-client";
+import { useParams, Link } from "react-router-dom";
 import { HiveStatus } from "@/pages/hive/components";
 import { Section } from "@/components/common/section";
 import { buttonVariants } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { InspectionTimeline } from "@/pages/inspection/components/inspection-timeline.tsx";
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
@@ -12,6 +15,12 @@ export const HiveDetailPage = () => {
       select: (data) => data.data,
     },
   });
+  const { data: inspections } = useInspectionsControllerFindAll(
+    {
+      hiveId: hiveId,
+    },
+    { query: { select: (data) => data.data } },
+  );
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -48,7 +57,7 @@ export const HiveDetailPage = () => {
             </Link>
           }
         >
-          <p>Inspections will be displayed here</p>
+          <InspectionTimeline inspections={inspections ?? []} />
         </Section>
       </div>
     </div>

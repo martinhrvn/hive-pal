@@ -11,6 +11,7 @@ export * from './createHiveDtoStatus';
 export * from './createInspectionDto';
 export * from './hiveResponseDto';
 export * from './hiveResponseDtoStatus';
+export * from './inspectionResponseDto';
 export * from './inspectionsControllerFindAllParams';
 export * from './updateHiveDto';
 export * from './updateHiveDtoStatus';
