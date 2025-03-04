@@ -11,7 +11,7 @@ export const HiveList: React.FC<HiveListProps> = ({ hives }) => {
   const navigate = useNavigate();
   return (
     <div>
-      <button onClick={() => navigate("/hive/create/")}>Create hive</button>
+      <button onClick={() => navigate("/hives/create/")}>Create hive</button>
       <div className={"grid grid-cols-1 lg:grid-cols-2 gap-4"}>
         {hives.map((hive) => (
           <div
@@ -36,7 +36,7 @@ export const HiveList: React.FC<HiveListProps> = ({ hives }) => {
               </div>
             </div>
             <p className={"col-start-1 flex"}>
-              <a href={`/hive/${hive.id}`} className={"flex gap-4"}>
+              <a href={`/hives/${hive.id}`} className={"flex gap-4"}>
                 Show details <ChevronRight />
               </a>
             </p>

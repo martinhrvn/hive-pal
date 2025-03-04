@@ -48,7 +48,7 @@ export const HiveDetailPage = () => {
             <Link
               to={
                 hive?.id
-                  ? `/hive/${hive.id}/inspections/create`
+                  ? `/hives/${hive.id}/inspections/create`
                   : "/inspections/create"
               }
               className={buttonVariants({ variant: "outline" })}

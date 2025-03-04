@@ -13,4 +13,12 @@ export class InspectionResponseDto {
   @ApiProperty()
   @Expose()
   date: Date;
+
+  @ApiProperty()
+  @Expose()
+  temperature: number | null;
+
+  @ApiProperty()
+  @Expose()
+  weatherConditions: string | null;
 }

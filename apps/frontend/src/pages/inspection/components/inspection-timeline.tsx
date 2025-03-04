@@ -46,7 +46,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
             <div className="text-primary text-sm font-semibold">
               {formatDate(inspection.date)}
             </div>
-            <div className="text-card text-xs px-4 py-2">
+            <div className="text-primary text-xs px-4 py-2">
               {formatTime(inspection.date)}
             </div>
             <div className="flex justify-self-end self-end p-2">

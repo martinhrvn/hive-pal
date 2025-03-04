@@ -1,4 +1,10 @@
-import { IsDateString, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateInspectionDto {
   @IsOptional()
@@ -10,4 +16,12 @@ export class CreateInspectionDto {
 
   @IsDateString()
   date: Date;
+
+  @IsOptional()
+  @IsNumber()
+  temperature?: number;
+
+  @IsOptional()
+  @IsString()
+  weatherConditions?: string;
 }

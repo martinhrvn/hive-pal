@@ -58,6 +58,7 @@ model Inspection {
   hive              Hive             @relation(fields: [hiveId], references: [id])
   date              DateTime
   notes             InspectionNote[]
+  temperature       Float?
   weatherConditions String?
   observations      Observation[]
   actions           Action[]
