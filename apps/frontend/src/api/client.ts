@@ -1,5 +1,12 @@
+export const getEnvVariable = (key: string): string => {
+  if (window.ENV && window.ENV[key] !== undefined) {
+    return window.ENV[key];
+  }
+  return import.meta.env[key] || "";
+};
+
 export const getApiUrl = (url: string) => {
-  return `${import.meta.env.VITE_API_URL ?? "http://localhost:3000"}${url}`;
+  return `${getEnvVariable("VITE_API_URL") ?? "http://localhost:3000"}${url}`;
 };
 export const createApiClient = (getToken: () => string | null) => {
   const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {

@@ -5,13 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  prisma:
-    '@prisma/client':
-      specifier: latest
-      version: 6.4.1
-    prisma:
-      specifier: latest
-      version: 6.4.1
   typescript:
     typescript:
       specifier: 5.6.x
@@ -219,9 +212,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.0.8)
-      validations:
-        specifier: workspace:*
-        version: link:../../packages/validations
       zod:
         specifier: ^3.24.2
         version: 3.24.2
