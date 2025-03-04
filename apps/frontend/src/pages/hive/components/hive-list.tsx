@@ -30,9 +30,13 @@ export const HiveList: React.FC<HiveListProps> = ({ hives }) => {
                   {hive.notes ?? "No notes"}
                 </p>
                 <DotIcon />
-                <p className={"col-start-1 text-xs/6"}>
-                  Last inspected on {hive.installationDate}
-                </p>
+                {hive.lastInspectionDate ? (
+                  <p className={"col-start-1 text-xs/6"}>
+                    Last inspected on {hive.lastInspectionDate}
+                  </p>
+                ) : (
+                  <p className={"col-start-1 text-xs/6"}>No inspection yet</p>
+                )}
               </div>
             </div>
             <p className={"col-start-1 flex"}>

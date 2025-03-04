@@ -26,7 +26,19 @@ export class HiveService {
   }
 
   async findAll(): Promise<HiveResponseDto[]> {
-    const hives = await this.prisma.hive.findMany({});
+    const hives = await this.prisma.hive.findMany({
+      include: {
+        inspections: {
+          select: {
+            date: true,
+          },
+          orderBy: {
+            date: 'desc',
+          },
+          take: 1,
+        },
+      },
+    });
 
     return hives.map((hive) =>
       plainToInstance(HiveResponseDto, {
@@ -36,7 +48,7 @@ export class HiveService {
         status: mapPrismaHiveStatusToDto(hive.status),
         notes: hive.notes,
         installationDate: hive.installationDate?.toISOString() ?? '',
-        lastInspectionDate: null,
+        lastInspectionDate: hive.inspections[0]?.date?.toISOString() ?? '',
       }),
     );
   }
