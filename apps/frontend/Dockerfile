@@ -36,6 +36,6 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 # NGINX configuration (optional)
 COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 9000
 
 CMD ["nginx", "-g", "daemon off;"]
