@@ -10,7 +10,6 @@ async function bootstrap() {
     origin: allowedOrigins,
     credentials: true,
   });
-  app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Strip properties not in the DTO
