@@ -1,8 +1,12 @@
 export const getEnvVariable = (key: string): string => {
   if (window.ENV && window.ENV[key] !== undefined) {
+    console.log("Getting env variable from window", key, window.ENV[key]);
     return window.ENV[key];
   }
-  return import.meta.env[key] || "";
+
+  const variable = import.meta.env[key] || "";
+  console.log("Getting env variable from meta", key, variable);
+  return variable;
 };
 
 export const getApiUrl = (url: string) => {
