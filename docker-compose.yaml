@@ -17,8 +17,6 @@ services:
       dockerfile: apps/backend/Dockerfile
       tags:
         - hive-pal-backend
-    ports:
-      - '3000:3000'
     environment:
       NODE_ENV: production
       ADMIN_USERNAME: admin
@@ -33,8 +31,6 @@ services:
       dockerfile: apps/frontend/Dockerfile
       tags:
           - hive-pal-frontend
-    ports:
-      - '80:80'
     depends_on:
       - backend
     environment:
