@@ -1,6 +1,9 @@
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/context/auth-context.tsx";
 import { useNavigate } from "react-router-dom";
+import { FormLabel } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -29,7 +32,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center">
+    <div className="min-h-screen  flex flex-col justify-center">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h1 className="text-center text-2xl font-semibold text-gray-900 mb-2">
           Beekeeping Manager
@@ -39,21 +42,19 @@ const LoginPage = () => {
         </h2>
       </div>
 
-      {error && (<p className={'color-red-400'}>{error}</p>)}
+      {error && <p className={"color-red-400"}>{error}</p>}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
-
-
             <div>
-              <label
+              <FormLabel
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
                 Username
-              </label>
+              </FormLabel>
               <div className="mt-1">
-                <input
+                <Input
                   id="username"
                   name="username"
                   type="text"
@@ -73,7 +74,7 @@ const LoginPage = () => {
                 Password
               </label>
               <div className="mt-1">
-                <input
+                <Input
                   id="password"
                   name="password"
                   type="password"
@@ -86,12 +87,12 @@ const LoginPage = () => {
             </div>
 
             <div>
-              <button
+              <Button
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Sign in
-              </button>
+              </Button>
             </div>
           </form>
         </div>

@@ -1,16 +1,5 @@
 
 services:
-
-  migrations:
-    build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
-    command: /bin/sh -c "cd /app/ && npx prisma migrate deploy"
-    environment:
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/beekeeper?schema=public"
-    depends_on:
-      postgres:
-        condition: service_healthy
   backend:
     build:
       context: .
@@ -19,10 +8,10 @@ services:
         - hive-pal-backend
     environment:
       NODE_ENV: production
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: admin
-      JWT_SECRET: very_secret_jwt_secret
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/beekeeper?schema=public"
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
     depends_on:
       - postgres
   frontend:
@@ -34,7 +23,7 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_URL: http://localhost
+      VITE_API_URL: ${API_URL}
 
   postgres:
     image: postgres:14
