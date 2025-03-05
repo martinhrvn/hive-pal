@@ -6,7 +6,7 @@
   "packageManager": "pnpm@9.6.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm --filter api-client build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
