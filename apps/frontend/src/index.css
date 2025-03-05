@@ -1,7 +1,16 @@
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
-
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: white; /* Optional: for better readability */
+  }
+  :root {
+    background-color: black;
+    color: white;
+  }
+}
 @custom-variant dark (&:is(.dark *));
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
