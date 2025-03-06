@@ -1,4 +1,4 @@
-import { InspectionForm } from "@/pages/inspection/components/inspection-form.tsx";
+import { InspectionForm } from "@/pages/inspection/components/inspection-form";
 import { useParams } from "react-router-dom";
 
 export const CreateInspectionPage = () => {

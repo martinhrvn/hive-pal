@@ -16,7 +16,12 @@ const DashboardLayout = () => {
       <header className="bg-accent gap-3 f">
         <div className="flex items-center h-16 justify-between p-10">
           {/* Logo/Title */}
-            <h1 className="text-xl font-semibold"><a className={'text-foreground'} href={"/"}> Beekeeping Manager</a></h1>
+          <h1 className="text-xl font-semibold">
+            <a className={"text-foreground"} href={"/"}>
+              {" "}
+              Beekeeping Manager
+            </a>
+          </h1>
           <button onClick={handleLogout}>Logout</button>
         </div>
       </header>

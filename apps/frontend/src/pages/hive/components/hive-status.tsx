@@ -27,7 +27,7 @@ export const HiveStatus: React.FC<HiveStatusProps> = ({ status }) => {
     return null;
   }
   return (
-    <p
+    <span
       className={`
         whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset
         capitalize
@@ -35,6 +35,6 @@ export const HiveStatus: React.FC<HiveStatusProps> = ({ status }) => {
       `}
     >
       {status}
-    </p>
+    </span>
   );
 };

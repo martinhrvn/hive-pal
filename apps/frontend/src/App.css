@@ -2,16 +2,7 @@
   padding: 2rem;
   width: 100%
 }
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: black;
-    color: white; /* Optional: for better readability */
-  }
-  :root {
-    background-color: black;
-    color: white;
-  }
-}
+
 .logo {
   height: 6em;
   padding: 1.5em;

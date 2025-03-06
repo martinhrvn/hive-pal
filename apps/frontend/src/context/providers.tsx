@@ -11,7 +11,7 @@ export const Providers: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="system">{children}</ThemeProvider>
+        <ThemeProvider defaultTheme="light">{children}</ThemeProvider>
       </QueryClientProvider>
     </AuthProvider>
   );
