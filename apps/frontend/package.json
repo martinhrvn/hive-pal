@@ -9,7 +9,9 @@
     "build": "pnpm --filter api-client build && tsc -b && vite build",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:ct": "playwright test -c playwright-ct.config.ts",
+    "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.0.0",
@@ -42,6 +44,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@playwright/experimental-ct-react": "^1.51.0",
+    "@playwright/test": "^1.51.0",
     "@tanstack/eslint-plugin-query": "^5.66.1",
     "@types/node": "^22.13.2",
     "@types/react": "^19.0.8",

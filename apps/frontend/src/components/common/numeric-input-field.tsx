@@ -2,13 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
-import { ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
 
-export interface NumericFieldProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
-> {
-  field: ControllerRenderProps<TFieldValues, TName>;
+export interface NumericFieldProps {
+  value: number | null;
+  onChange: (value: number | null) => void;
+  onBlur?: () => void;
+  name?: string;
   min?: number;
   max?: number;
   defaultValue?: number;
@@ -19,11 +18,11 @@ export interface NumericFieldProps<
   decimalPlaces?: number;
 }
 
-const NumericField = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
->({
-  field,
+const NumericField = ({
+  value,
+  onChange,
+  onBlur,
+  name,
   min,
   max,
   defaultValue = 0,
@@ -32,12 +31,17 @@ const NumericField = <
   unit,
   placeholder,
   decimalPlaces = 0,
-}: NumericFieldProps<TFieldValues, TName>) => {
+}: NumericFieldProps) => {
   const [showSlider, setShowSlider] = useState<boolean>(false);
   const [numericValue, setNumericValue] = useState<number | null>(
-    field.value ?? defaultValue,
+    value ?? defaultValue,
   );
   const componentRef = useRef<HTMLDivElement>(null);
+
+  // Update internal state when value prop changes
+  useEffect(() => {
+    setNumericValue(value);
+  }, [value]);
 
   // Handle clicks outside the component
   useEffect(() => {
@@ -58,7 +62,7 @@ const NumericField = <
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
-      field.onChange(null);
+      onChange(null);
       setNumericValue(null);
       return;
     }
@@ -69,14 +73,14 @@ const NumericField = <
       (min === undefined || value >= min) &&
       (max === undefined || value <= max)
     ) {
-      field.onChange(value);
+      onChange(value);
       setNumericValue(value);
     }
   };
 
   const handleSliderChange = (value: number[]) => {
     const roundedValue = parseFloat(value[0].toFixed(decimalPlaces));
-    field.onChange(roundedValue);
+    onChange(roundedValue);
     setNumericValue(roundedValue);
   };
 
@@ -86,14 +90,14 @@ const NumericField = <
       numericValue !== null &&
       numericValue + step > max
     ) {
-      field.onChange(max);
+      onChange(max);
       setNumericValue(max);
       return;
     }
     const newValue = parseFloat(
       ((numericValue ?? 0) + step).toFixed(decimalPlaces),
     );
-    field.onChange(newValue);
+    onChange(newValue);
     setNumericValue(newValue);
   };
 
@@ -103,18 +107,16 @@ const NumericField = <
       numericValue !== null &&
       numericValue - step < min
     ) {
-      field.onChange(min);
+      onChange(min);
       setNumericValue(min);
       return;
     }
     const newValue = parseFloat(
       ((numericValue ?? 0) - step).toFixed(decimalPlaces),
     );
-    field.onChange(newValue);
+    onChange(newValue);
     setNumericValue(newValue);
   };
-
-  // No need for a separate getColor function anymore
 
   const showSliderSection =
     showSlider && min !== undefined && max !== undefined;
@@ -123,7 +125,10 @@ const NumericField = <
     <div className="w-full" ref={componentRef}>
       <div className="relative w-full rounded-md shadow-sm">
         {renderIcon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            data-test={'input-icon'}
+            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+          >
             {renderIcon(numericValue)}
           </div>
         )}
@@ -132,15 +137,14 @@ const NumericField = <
           placeholder={placeholder || defaultValue.toString()}
           className={`${renderIcon ? 'pl-10' : ''} ${unit ? 'pr-16' : 'pr-10'} rounded-md text-right`}
           value={numericValue === null ? '' : numericValue}
-          name={field.name}
+          name={name}
           onFocus={() =>
             min !== undefined && max !== undefined && setShowSlider(true)
           }
           onBlur={() => {
-            field.onBlur();
+            if (onBlur) onBlur();
           }}
           onChange={handleInputChange}
-          ref={field.ref}
           step={step}
           min={min}
           max={max}

@@ -1,26 +1,25 @@
 import { Thermometer } from 'lucide-react';
-import { ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
 import NumericField from './numeric-input-field';
 
-interface TemperatureFieldProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
-> {
-  field: ControllerRenderProps<TFieldValues, TName>;
+interface TemperatureFieldProps {
+  value: number | null;
+  onChange: (value: number | null) => void;
+  onBlur?: () => void;
+  name?: string;
   min?: number;
   max?: number;
   defaultValue?: number;
 }
 
-const TemperatureField = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
->({
-  field,
+const TemperatureField = ({
+  value,
+  onChange,
+  onBlur,
+  name,
   min = -50,
   max = 50,
   defaultValue = 10,
-}: TemperatureFieldProps<TFieldValues, TName>) => {
+}: TemperatureFieldProps) => {
   // Render function for the temperature icon
   const renderTemperatureIcon = (value: number | null) => {
     let colorClass = 'text-gray-400';
@@ -38,7 +37,10 @@ const TemperatureField = <
 
   return (
     <NumericField
-      field={field}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      name={name}
       min={min}
       max={max}
       defaultValue={defaultValue}
