@@ -54,7 +54,7 @@ export const WeatherSection = () => {
   const form = useFormContext<InspectionFormData>();
   return (
     <div>
-      <h3 className="text-lg font-medium">Wheather information</h3>
+      <h3 className="text-lg font-medium">Weather information</h3>
       <p className="text-sm text-gray-400">Add weather conditions</p>
       <div className={'space-y-4 py-4 grid grid-cols-1'}>
         <FormField
@@ -63,7 +63,14 @@ export const WeatherSection = () => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Temperature</FormLabel>
-              <TemperatureField field={field} />
+              <TemperatureField
+                onChange={field.onChange}
+                min={0}
+                value={field.value ?? null}
+                name={field.name}
+                max={55}
+                onBlur={field.onBlur}
+              />
               <FormMessage />
             </FormItem>
           )}
