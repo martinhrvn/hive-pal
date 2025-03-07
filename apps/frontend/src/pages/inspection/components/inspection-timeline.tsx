@@ -59,7 +59,20 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
             </div>
           </div>
           <div className="flex-grow ml-4">
-            <div className="text-gray-500 text-sm">No description just yet</div>
+            <div className="text-gray-500 text-sm">
+              {inspection.observations && inspection.observations.length > 0 ? (
+                <div>
+                  <span className="font-medium">{inspection.observations.length} observations</span>
+                  {inspection.temperature && (
+                    <span className="ml-3">
+                      Temperature: {inspection.temperature}°C
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <span>No observations recorded</span>
+              )}
+            </div>
           </div>
         </div>
       ))}

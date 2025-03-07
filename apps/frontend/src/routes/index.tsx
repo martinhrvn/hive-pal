@@ -7,6 +7,7 @@ import { HomePage } from '@/pages/home-page.tsx';
 import { CreateHivePage } from '@/pages/hive/create-hive-page.tsx';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page.tsx';
 import { CreateInspectionPage } from '@/pages/inspection/create-inspection.tsx';
+import { InspectionDetailPage } from '@/pages/inspection/inspection-detail-page.tsx';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: '/inspections/create',
         element: <CreateInspectionPage />,
+      },
+      {
+        path: '/inspections/:id',
+        element: <InspectionDetailPage />,
       },
     ],
   },

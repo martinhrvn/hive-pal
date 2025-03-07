@@ -5,9 +5,15 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { ObservationResponseDto } from './observationResponseDto';
 
 export interface InspectionResponseDto {
-  id: number;
+  id: string;
   hiveId: string;
   date: string;
+  /** @nullable */
+  temperature?: number | null;
+  /** @nullable */
+  weatherConditions?: string | null;
+  observations: ObservationResponseDto[];
 }

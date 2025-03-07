@@ -33,6 +33,8 @@ export class InspectionsController {
   }
 
   @Get(':id')
+  @SerializeOptions({ type: InspectionResponseDto })
+  @ApiOkResponse({ type: InspectionResponseDto })
   findOne(@Param('id') id: string) {
     return this.inspectionsService.findOne(id);
   }
