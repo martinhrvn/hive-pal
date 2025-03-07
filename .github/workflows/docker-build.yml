@@ -13,11 +13,6 @@ jobs:
     strategy:
       matrix:
         app: [frontend, backend]
-        include:
-          - app: frontend
-            platforms: linux/amd64
-          - app: backend
-            platforms: linux/amd64
 
     permissions:
       contents: read
@@ -37,16 +32,7 @@ jobs:
             echo "is_release=false" >> $GITHUB_OUTPUT
           fi
 
-      # Override platforms for releases to include arm64
-      - name: Set platforms for release
-        if: steps.check-release.outputs.is_release == 'true'
-        run: echo "PLATFORMS=linux/amd64,linux/arm64" >> $GITHUB_ENV
-
-      # Use default platforms for non-releases
-      - name: Set platforms for non-release
-        if: steps.check-release.outputs.is_release != 'true'
-        run: echo "PLATFORMS=${{ matrix.platforms }}" >> $GITHUB_ENV
-
+      # Set up QEMU for multi-architecture builds, only for releases
       - name: Set up QEMU
         if: steps.check-release.outputs.is_release == 'true'
         uses: docker/setup-qemu-action@v3
@@ -66,7 +52,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/hive-pal-${{ matrix.app }}
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.app }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -74,12 +60,28 @@ jobs:
             type=semver,pattern={{major}}.{{minor}},event=tag
             type=sha,format=short
 
-      - name: Build and push Docker image
+      # Build for amd64 only for non-releases
+      - name: Build and push Docker image (non-release)
+        if: steps.check-release.outputs.is_release != 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./apps/${{ matrix.app }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Build for both architectures for releases
+      - name: Build and push Docker image (release)
+        if: steps.check-release.outputs.is_release == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/${{ matrix.app }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
