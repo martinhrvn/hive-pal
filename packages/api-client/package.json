@@ -6,7 +6,8 @@
   "scripts": {
     "generate": "orval --config orval.config.js && pnpm build",
     "build": "tsc",
-    "dev": "tsc -w"
+    "dev": "tsc -w",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
   "author": "",
