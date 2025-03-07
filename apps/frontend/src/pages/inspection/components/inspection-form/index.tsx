@@ -148,14 +148,16 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
                   </FormItem>
                 )}
               />
-              
+
               <hr className={'border-t border-border'} />
               <WeatherSection />
-              
+
               <hr className={'border-t border-border'} />
               <ObservationsSection />
-              
-              <Button type="submit" className="w-full">Submit</Button>
+
+              <Button type="submit" className="w-full">
+                Submit
+              </Button>
             </form>
           </Form>
         </CardContent>

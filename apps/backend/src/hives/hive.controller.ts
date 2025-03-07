@@ -15,6 +15,7 @@ import { HiveService } from './hive.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
 import { HiveResponseDto } from './dto/hive-response.dto';
+import { HiveDetailResponseDto } from './dto/hive-detail-response.dto';
 import { Type } from 'class-transformer';
 import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
@@ -41,9 +42,9 @@ export class HiveController {
   }
 
   @Get(':id')
-  @Type(() => HiveResponseDto)
-  @ApiOkResponse({ type: HiveResponseDto })
-  @SerializeOptions({ type: HiveResponseDto })
+  @Type(() => HiveDetailResponseDto)
+  @ApiOkResponse({ type: HiveDetailResponseDto })
+  @SerializeOptions({ type: HiveDetailResponseDto })
   findOne(@Param('id') id: string) {
     return this.hiveService.findOne(id);
   }
@@ -60,7 +61,11 @@ export class HiveController {
 
   @Put(':id/boxes')
   @ApiConsumes('application/json')
-  @ApiOkResponse({ description: 'Boxes updated successfully' })
+  @ApiOkResponse({
+    description: 'Boxes updated successfully',
+    type: HiveDetailResponseDto,
+  })
+  @SerializeOptions({ type: HiveDetailResponseDto })
   updateBoxes(
     @Param('id') id: string,
     @Body() updateHiveBoxesDto: UpdateHiveBoxesDto,

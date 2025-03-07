@@ -143,7 +143,7 @@ const ObservationItem: React.FC<{
                       min={1}
                       max={10}
                       step={1}
-                      onValueChange={(value) => field.onChange(value[0])}
+                      onValueChange={value => field.onChange(value[0])}
                     />
                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
                       <span>Low</span>

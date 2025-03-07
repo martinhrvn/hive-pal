@@ -66,7 +66,7 @@ export class BoxDto {
   @IsInt()
   @Min(1)
   @IsOptional()
-  capacity?: number;
+  maxFrameCount?: number;
 }
 
 export class UpdateHiveBoxesDto {

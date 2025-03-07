@@ -31,14 +31,14 @@ model Hive {
 }
 
 model Box {
-  id          String  @id @default(uuid())
-  hiveId      String
-  hive        Hive    @relation(fields: [hiveId], references: [id])
-  position    Int // Position from bottom up
-  frameCount  Int // Number of frames in this box
-  capacity    Int?    // Maximum number of frames the box can hold
-  hasExcluder Boolean @default(false) // Whether there's a queen excluder above this box
-  type        BoxType // BROOD, HONEY, etc.
+  id            String  @id @default(uuid())
+  hiveId        String
+  hive          Hive    @relation(fields: [hiveId], references: [id])
+  position      Int // Position from bottom up
+  frameCount    Int // Number of frames in this box
+  maxFrameCount Int     @default(10) // Maximum number of frames the box can hold
+  hasExcluder   Boolean @default(false) // Whether there's a queen excluder above this box
+  type          BoxType // BROOD, HONEY, etc.
 }
 
 model Queen {

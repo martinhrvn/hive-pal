@@ -62,7 +62,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
             <div className="text-gray-500 text-sm">
               {inspection.observations && inspection.observations.length > 0 ? (
                 <div>
-                  <span className="font-medium">{inspection.observations.length} observations</span>
+                  <span className="font-medium">
+                    {inspection.observations.length} observations
+                  </span>
                   {inspection.temperature && (
                     <span className="ml-3">
                       Temperature: {inspection.temperature}°C
