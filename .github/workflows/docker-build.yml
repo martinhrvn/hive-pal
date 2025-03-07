@@ -60,23 +60,9 @@ jobs:
             type=semver,pattern={{major}}.{{minor}},event=tag
             type=sha,format=short
 
-      # Build for amd64 only for non-releases
-      - name: Build and push Docker image (non-release)
-        if: steps.check-release.outputs.is_release != 'true'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./apps/${{ matrix.app }}/Dockerfile
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       # Build for both architectures for releases
       - name: Build and push Docker image (release)
-        if: steps.check-release.outputs.is_release == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
