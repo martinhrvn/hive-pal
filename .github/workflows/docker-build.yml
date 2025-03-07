@@ -52,7 +52,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.app }}
+          images: ghcr.io/${{ github.repository_owner }}/hive-pal-${{ matrix.app }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
