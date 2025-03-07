@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
 import { HiveResponseDto } from './dto/hive-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { mapPrismaHiveStatusToDto } from './dto/hive-status.enum';
+import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
 
 @Injectable()
 export class HiveService {
@@ -91,6 +92,54 @@ export class HiveService {
   remove(id: string) {
     return this.prisma.hive.delete({
       where: { id },
+    });
+  }
+
+  async updateBoxes(id: string, updateHiveBoxesDto: UpdateHiveBoxesDto) {
+    // First check if the hive exists
+    const hive = await this.prisma.hive.findUnique({
+      where: { id },
+    });
+
+    if (!hive) {
+      throw new NotFoundException(`Hive with id ${id} not found`);
+    }
+
+    // Use a transaction to ensure atomicity
+    return this.prisma.$transaction(async (tx) => {
+      // First, delete all existing boxes for this hive
+      await tx.box.deleteMany({
+        where: { hiveId: id },
+      });
+
+      // Then create all the new boxes
+      const boxPromises = updateHiveBoxesDto.boxes.map((box) => {
+        return tx.box.create({
+          data: {
+            id: box.id, // If provided, will use this ID, otherwise Prisma will generate one
+            hiveId: id,
+            position: box.position,
+            frameCount: box.frameCount,
+            hasExcluder: box.hasExcluder,
+            type: box.type, // BoxType enum matches our DTO enum
+            capacity: box.capacity,
+          },
+        });
+      });
+
+      await Promise.all(boxPromises);
+
+      // Return the hive with the updated boxes
+      return tx.hive.findUnique({
+        where: { id },
+        include: {
+          boxes: {
+            orderBy: {
+              position: 'asc',
+            },
+          },
+        },
+      });
     });
   }
 }

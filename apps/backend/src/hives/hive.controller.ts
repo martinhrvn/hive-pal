@@ -9,15 +9,18 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   SerializeOptions,
+  Put,
 } from '@nestjs/common';
 import { HiveService } from './hive.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
 import { HiveResponseDto } from './dto/hive-response.dto';
 import { Type } from 'class-transformer';
-import { ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
+import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiTags('hives')
 @Controller('hives')
 export class HiveController {
   constructor(private readonly hiveService: HiveService) {}
@@ -53,5 +56,15 @@ export class HiveController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.hiveService.remove(id);
+  }
+
+  @Put(':id/boxes')
+  @ApiConsumes('application/json')
+  @ApiOkResponse({ description: 'Boxes updated successfully' })
+  updateBoxes(
+    @Param('id') id: string,
+    @Body() updateHiveBoxesDto: UpdateHiveBoxesDto,
+  ) {
+    return this.hiveService.updateBoxes(id, updateHiveBoxesDto);
   }
 }

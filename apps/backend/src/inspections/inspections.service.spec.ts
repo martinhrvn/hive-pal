@@ -172,7 +172,9 @@ describe('InspectionsService', () => {
         ],
       };
 
-      mockPrismaService.inspection.findUnique.mockResolvedValue(expectedInspection);
+      mockPrismaService.inspection.findUnique.mockResolvedValue(
+        expectedInspection,
+      );
 
       // Act
       const result = await service.findOne(inspectionId);
@@ -207,7 +209,9 @@ describe('InspectionsService', () => {
         observations: [],
       };
 
-      mockPrismaService.inspection.findUnique.mockResolvedValue(expectedInspection);
+      mockPrismaService.inspection.findUnique.mockResolvedValue(
+        expectedInspection,
+      );
 
       // Act
       const result = await service.findOne(inspectionId);

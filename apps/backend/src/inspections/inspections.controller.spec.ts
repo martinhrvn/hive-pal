@@ -75,7 +75,7 @@ describe('InspectionsController', () => {
       // Assert
       expect(result).toEqual(expectedInspection);
       expect(mockInspectionsService.findOne).toHaveBeenCalledWith(inspectionId);
-      
+
       // Verify observations are included
       expect(result).not.toBeNull();
       if (result) {
@@ -106,7 +106,7 @@ describe('InspectionsController', () => {
       // Assert
       expect(result).toEqual(expectedInspection);
       expect(mockInspectionsService.findOne).toHaveBeenCalledWith(inspectionId);
-      
+
       // Verify observations is an empty array
       expect(result).not.toBeNull();
       if (result) {

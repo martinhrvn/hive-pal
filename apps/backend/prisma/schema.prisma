@@ -36,6 +36,7 @@ model Box {
   hive        Hive    @relation(fields: [hiveId], references: [id])
   position    Int // Position from bottom up
   frameCount  Int // Number of frames in this box
+  capacity    Int?    // Maximum number of frames the box can hold
   hasExcluder Boolean @default(false) // Whether there's a queen excluder above this box
   type        BoxType // BROOD, HONEY, etc.
 }
