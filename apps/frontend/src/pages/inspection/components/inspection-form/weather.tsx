@@ -8,7 +8,7 @@ import {
 import { Cloud, CloudRain, CloudSun, Sun } from 'lucide-react';
 import { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useFormContext } from 'react-hook-form';
-import TemperatureInput from '@/components/common/temperature-input-field.tsx';
+import { TemperatureField } from '@/components/common';
 
 const weatherConditions = [
   {
@@ -63,7 +63,7 @@ export const WeatherSection = () => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Temperature</FormLabel>
-              <TemperatureInput field={field} />
+              <TemperatureField field={field} />
               <FormMessage />
             </FormItem>
           )}
