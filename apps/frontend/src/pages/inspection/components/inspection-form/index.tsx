@@ -33,6 +33,7 @@ import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { InspectionFormData, inspectionSchema } from './schema';
 import { WeatherSection } from '@/pages/inspection/components/inspection-form/weather.tsx';
+import { ObservationsSection } from '@/pages/inspection/components/inspection-form/observations.tsx';
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -58,6 +59,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
     defaultValues: {
       hiveId,
       date: new Date(),
+      observations: [],
     },
   });
 
@@ -78,7 +80,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="hiveId"
@@ -113,7 +115,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Installation date</FormLabel>
+                    <FormLabel>Inspection date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -146,9 +148,14 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
                   </FormItem>
                 )}
               />
+              
               <hr className={'border-t border-border'} />
               <WeatherSection />
-              <Button type="submit">Submit</Button>
+              
+              <hr className={'border-t border-border'} />
+              <ObservationsSection />
+              
+              <Button type="submit" className="w-full">Submit</Button>
             </form>
           </Form>
         </CardContent>
