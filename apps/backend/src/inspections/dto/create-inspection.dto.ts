@@ -1,10 +1,14 @@
 import {
+  IsArray,
   IsDateString,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CreateObservationDto } from './create-observation.dto';
 
 export class CreateInspectionDto {
   @IsOptional()
@@ -24,4 +28,10 @@ export class CreateInspectionDto {
   @IsOptional()
   @IsString()
   weatherConditions?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateObservationDto)
+  observations?: CreateObservationDto[];
 }

@@ -9,8 +9,25 @@ export class InspectionsService {
   constructor(private prisma: PrismaService) {}
 
   create(createInspectionDto: CreateInspectionDto) {
+    const { observations, ...inspectionData } = createInspectionDto;
+
     return this.prisma.inspection.create({
-      data: createInspectionDto,
+      data: {
+        ...inspectionData,
+        observations: observations
+          ? {
+              create: observations.map((observation) => ({
+                type: observation.type,
+                numericValue: observation.numericValue,
+                textValue: observation.textValue,
+                notes: observation.notes,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        observations: true,
+      },
     });
   }
 
@@ -19,18 +36,26 @@ export class InspectionsService {
       where: {
         ...(filter.hiveId && { hiveId: filter.hiveId }),
       },
+      include: {
+        observations: true,
+      },
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} inspection`;
+  findOne(id: string) {
+    return this.prisma.inspection.findUnique({
+      where: { id },
+      include: {
+        observations: true,
+      },
+    });
   }
 
-  update(id: number, updateInspectionDto: UpdateInspectionDto) {
+  update(id: string, updateInspectionDto: UpdateInspectionDto) {
     return `This action updates a #${id} inspection`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} inspection`;
   }
 }
