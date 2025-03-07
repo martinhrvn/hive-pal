@@ -6,6 +6,8 @@ on:
     tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
+  release:
+    types: [ created ]
 
 jobs:
   build:
@@ -45,7 +47,6 @@ jobs:
             type=semver,pattern={{version}},event=tag
             type=semver,pattern={{major}}.{{minor}},event=tag
             type=sha,format=short
-
 
       # Build for both architectures for releases
       - name: Build and push Docker image (release)

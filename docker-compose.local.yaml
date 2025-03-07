@@ -1,0 +1,40 @@
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      tags:
+        - hive-pal-backend
+    env_file:
+      - app/backend/.env
+    depends_on:
+      - postgres
+  frontend:
+    env_file:
+      - apps/frontend/.env
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      tags:
+          - hive-pal-frontend
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:14
+    ports:
+      - "6543:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: beekeeper
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d beekeeper" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+    postgres_data_prod:
