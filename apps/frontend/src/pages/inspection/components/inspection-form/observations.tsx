@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import React, { useMemo, useState } from 'react';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@/components/ui/button';
 import {
@@ -45,12 +45,15 @@ const ObservationItem: React.FC<{
   const [isExpanded, setIsExpanded] = useState(true);
   const { control } = useFormContext<InspectionFormData>();
 
-  // Get the label for the observation type
-  const getTypeLabel = (value: string) => {
-    const type = OBSERVATION_TYPES.find(t => t.value === value);
-    return type ? type.label : value;
-  };
+  const field = useWatch({ name: `observations.${index}` });
+  const typeLabel = useMemo(() => {
+    const observationType = OBSERVATION_TYPES.find(
+      observation => observation.value === field.type,
+    );
+    return observationType?.label;
+  }, [field.type]);
 
+  console.log('Observation', field);
   return (
     <Card className="mb-4">
       <CardHeader
@@ -58,9 +61,9 @@ const ObservationItem: React.FC<{
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <CardTitle className="text-sm font-medium flex-1">
-          {observation.type ? (
+          {typeLabel ? (
             <>
-              {getTypeLabel(observation.type)}
+              {typeLabel}
               {observation.numericValue
                 ? ` - ${observation.numericValue}/10`
                 : ''}
@@ -84,6 +87,7 @@ const ObservationItem: React.FC<{
             variant="ghost"
             size="sm"
             onClick={e => {
+              e.preventDefault();
               e.stopPropagation();
               setIsExpanded(!isExpanded);
             }}
@@ -198,30 +202,11 @@ export const ObservationsSection: React.FC = () => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Observations</h3>
-        <Button
-          type="button"
-          onClick={addObservation}
-          variant="outline"
-          size="sm"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Observation
-        </Button>
       </div>
 
       {fields.length === 0 && (
         <div className="text-center p-4 border border-dashed rounded-md">
           <p className="text-muted-foreground">No observations added yet.</p>
-          <Button
-            type="button"
-            onClick={addObservation}
-            variant="ghost"
-            size="sm"
-            className="mt-2"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add your first observation
-          </Button>
         </div>
       )}
 
@@ -233,6 +218,16 @@ export const ObservationsSection: React.FC = () => {
           onRemove={() => remove(index)}
         />
       ))}
+      <Button
+        type="button"
+        onClick={addObservation}
+        variant="outline"
+        size="sm"
+        className={'w-full'}
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Add Observation
+      </Button>
     </div>
   );
 };

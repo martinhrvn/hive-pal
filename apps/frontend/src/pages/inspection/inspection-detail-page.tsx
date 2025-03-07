@@ -201,12 +201,8 @@ export const InspectionDetailPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Date Card */}
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">
-                Date
-              </CardTitle>
-            </CardHeader>
             <CardContent>
+              <h3>Date</h3>
               <div className="flex items-center">
                 <Calendar className="h-8 w-8 mr-3 text-blue-500" />
                 <div>
@@ -224,12 +220,8 @@ export const InspectionDetailPage = () => {
           {/* Temperature Card */}
           {inspection.temperature && (
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">
-                  Temperature
-                </CardTitle>
-              </CardHeader>
               <CardContent>
+                <h3>Temperature</h3>
                 <div className="flex items-center">
                   <Thermometer
                     className={`h-8 w-8 mr-3 ${getTemperatureColor(inspection.temperature)}`}
@@ -256,12 +248,8 @@ export const InspectionDetailPage = () => {
           {/* Weather Conditions Card */}
           {inspection.weatherConditions && (
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">
-                  Weather
-                </CardTitle>
-              </CardHeader>
               <CardContent>
+                <h3>Weather</h3>
                 <div className="flex items-center">
                   {getWeatherIcon(inspection.weatherConditions)}
                   <div className="ml-3">
