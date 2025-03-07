@@ -3,7 +3,6 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@/components/ui/button';
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -21,7 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import { InspectionFormData, ObservationFormData } from './schema';
-import { NumericField } from '@/components/common';
+import { Slider } from '@/components/ui/slider';
 
 // Observation types available for selection
 const OBSERVATION_TYPES = [
@@ -45,7 +44,7 @@ const ObservationItem: React.FC<{
 }> = ({ index, observation, onRemove }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const { control } = useFormContext<InspectionFormData>();
-  
+
   // Get the label for the observation type
   const getTypeLabel = (value: string) => {
     const type = OBSERVATION_TYPES.find(t => t.value === value);
@@ -54,13 +53,17 @@ const ObservationItem: React.FC<{
 
   return (
     <Card className="mb-4">
-      <CardHeader className="py-2 px-4 flex flex-row items-center justify-between cursor-pointer" 
-        onClick={() => setIsExpanded(!isExpanded)}>
+      <CardHeader
+        className="py-2 px-4 flex flex-row items-center justify-between cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <CardTitle className="text-sm font-medium flex-1">
           {observation.type ? (
             <>
               {getTypeLabel(observation.type)}
-              {observation.numericValue ? ` - ${observation.numericValue}/10` : ''}
+              {observation.numericValue
+                ? ` - ${observation.numericValue}/10`
+                : ''}
             </>
           ) : (
             'New Observation'
@@ -70,22 +73,30 @@ const ObservationItem: React.FC<{
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onRemove();
             }}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={(e) => {
-            e.stopPropagation();
-            setIsExpanded(!isExpanded);
-          }}>
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={e => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+          >
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </CardHeader>
-      
+
       {isExpanded && (
         <CardContent className="py-3 space-y-3">
           <FormField
@@ -103,7 +114,7 @@ const ObservationItem: React.FC<{
                       <SelectValue placeholder="Select observation type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {OBSERVATION_TYPES.map((type) => (
+                      {OBSERVATION_TYPES.map(type => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
                         </SelectItem>
@@ -115,28 +126,36 @@ const ObservationItem: React.FC<{
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={control}
             name={`observations.${index}.numericValue`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Value (1-10)</FormLabel>
+                <div className="flex justify-between items-center">
+                  <FormLabel>Value</FormLabel>
+                  <span className="text-sm font-medium">{field.value}/10</span>
+                </div>
                 <FormControl>
-                  <NumericField
-                    value={field.value}
-                    onChange={field.onChange}
-                    min={1}
-                    max={10}
-                    defaultValue={5}
-                    unit="/10"
-                  />
+                  <div className="pt-2">
+                    <Slider
+                      value={[field.value]}
+                      min={1}
+                      max={10}
+                      step={1}
+                      onValueChange={(value) => field.onChange(value[0])}
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>Low</span>
+                      <span>High</span>
+                    </div>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={control}
             name={`observations.${index}.notes`}
@@ -179,25 +198,25 @@ export const ObservationsSection: React.FC = () => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Observations</h3>
-        <Button 
-          type="button" 
-          onClick={addObservation} 
-          variant="outline" 
+        <Button
+          type="button"
+          onClick={addObservation}
+          variant="outline"
           size="sm"
         >
           <Plus className="mr-2 h-4 w-4" />
           Add Observation
         </Button>
       </div>
-      
+
       {fields.length === 0 && (
         <div className="text-center p-4 border border-dashed rounded-md">
           <p className="text-muted-foreground">No observations added yet.</p>
-          <Button 
-            type="button" 
-            onClick={addObservation} 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            type="button"
+            onClick={addObservation}
+            variant="ghost"
+            size="sm"
             className="mt-2"
           >
             <Plus className="mr-2 h-4 w-4" />
@@ -205,7 +224,7 @@ export const ObservationsSection: React.FC = () => {
           </Button>
         </div>
       )}
-      
+
       {fields.map((field, index) => (
         <ObservationItem
           key={field.id}
