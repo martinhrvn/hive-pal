@@ -13,8 +13,8 @@ const DashboardLayout = () => {
 
   return (
     <div className="">
-      <header className="bg-accent gap-3 f">
-        <div className="flex items-center h-16 justify-between p-10">
+      <header className="bg-accent gap-3 p-4">
+        <div className="flex items-center h-16 justify-between">
           {/* Logo/Title */}
           <h1 className="text-xl font-semibold">
             <a className={'text-foreground'} href={'/'}>
