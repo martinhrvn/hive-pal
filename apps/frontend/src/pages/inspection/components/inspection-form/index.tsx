@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import {
   useHiveControllerFindAll,
   useInspectionsControllerCreate,
-} from "api-client";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from 'api-client';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -13,26 +13,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils.ts";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { InspectionFormData, inspectionSchema } from "./schema";
-import { WeatherSection } from "@/pages/inspection/components/inspection-form/weather.tsx";
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils.ts';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { InspectionFormData, inspectionSchema } from './schema';
+import { WeatherSection } from '@/pages/inspection/components/inspection-form/weather.tsx';
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -41,8 +41,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
   const navigate = useNavigate();
   const { data: hives } = useHiveControllerFindAll({
     query: {
-      select: (data) =>
-        data.data.map((hive) => ({
+      select: data =>
+        data.data.map(hive => ({
           value: hive.id,
           label: hive.name,
         })),
@@ -71,7 +71,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
   };
 
   return (
-    <div className={"container mx-auto max-w-xl"}>
+    <div className={'container mx-auto max-w-xl'}>
       <Card>
         <CardHeader>
           <CardTitle>New inspection</CardTitle>
@@ -90,11 +90,11 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
                         onValueChange={field.onChange}
                         defaultValue={field.value ?? hiveId}
                       >
-                        <SelectTrigger className={"w-full"}>
-                          <SelectValue placeholder={"Select a hive"} />
+                        <SelectTrigger className={'w-full'}>
+                          <SelectValue placeholder={'Select a hive'} />
                         </SelectTrigger>
                         <SelectContent>
-                          {hives?.map((option) => (
+                          {hives?.map(option => (
                             <SelectItem key={option.value} value={option.value}>
                               {option.label}
                             </SelectItem>
@@ -118,14 +118,14 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant={'outline'}
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground',
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, 'PPP')
                             ) : (
                               <span>Pick a date</span>
                             )}
@@ -146,7 +146,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
                   </FormItem>
                 )}
               />
-              <hr className={"border-t border-border"} />
+              <hr className={'border-t border-border'} />
               <WeatherSection />
               <Button type="submit">Submit</Button>
             </form>

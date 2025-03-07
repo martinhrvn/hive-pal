@@ -1,6 +1,6 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   Form,
   FormControl,
@@ -8,26 +8,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { useHiveControllerCreate } from "api-client";
-import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { useHiveControllerCreate } from 'api-client';
+import { useNavigate } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils.ts";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils.ts';
+import { Textarea } from '@/components/ui/textarea';
 
 const hiveSchema = z.object({
   name: z.string(),
   notes: z.string().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   installationDate: z.date(),
 });
 
@@ -36,7 +36,7 @@ type HiveFormData = z.infer<typeof hiveSchema>;
 export const HiveForm = () => {
   const navigate = useNavigate();
   const { mutate } = useHiveControllerCreate({
-    mutation: { onSuccess: () => navigate("/") },
+    mutation: { onSuccess: () => navigate('/') },
   });
 
   const form = useForm<HiveFormData>({
@@ -94,14 +94,14 @@ export const HiveForm = () => {
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant={"outline"}
+                      variant={'outline'}
                       className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
+                        'w-[240px] pl-3 text-left font-normal',
+                        !field.value && 'text-muted-foreground',
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP")
+                        format(field.value, 'PPP')
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -114,8 +114,8 @@ export const HiveForm = () => {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                    disabled={date =>
+                      date > new Date() || date < new Date('1900-01-01')
                     }
                     initialFocus
                   />

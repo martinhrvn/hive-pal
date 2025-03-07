@@ -1,15 +1,15 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LoginPage from "@/pages/login-page.tsx";
-import { ProtectedRoute } from "./protected-route.tsx";
-import { NotFoundPage } from "@/pages/not-found-page.tsx";
-import DasboardLayout from "@/components/layout/DashboardLayout.tsx";
-import { HomePage } from "@/pages/home-page.tsx";
-import { CreateHivePage } from "@/pages/hive/create-hive-page.tsx";
-import { HiveDetailPage } from "@/pages/hive/hive-detail-page.tsx";
-import { CreateInspectionPage } from "@/pages/inspection/create-inspection.tsx";
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import LoginPage from '@/pages/login-page.tsx';
+import { ProtectedRoute } from './protected-route.tsx';
+import { NotFoundPage } from '@/pages/not-found-page.tsx';
+import DasboardLayout from '@/components/layout/DashboardLayout.tsx';
+import { HomePage } from '@/pages/home-page.tsx';
+import { CreateHivePage } from '@/pages/hive/create-hive-page.tsx';
+import { HiveDetailPage } from '@/pages/hive/hive-detail-page.tsx';
+import { CreateInspectionPage } from '@/pages/inspection/create-inspection.tsx';
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: (
       <ProtectedRoute>
         <DasboardLayout />
@@ -17,33 +17,33 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/",
+        path: '/',
         element: <HomePage />,
       },
       {
-        path: "/hives/create",
+        path: '/hives/create',
         element: <CreateHivePage />,
       },
       {
-        path: "/hives/:id",
+        path: '/hives/:id',
         element: <HiveDetailPage />,
       },
       {
-        path: "/hives/:hiveId/inspections/create",
+        path: '/hives/:hiveId/inspections/create',
         element: <CreateInspectionPage />,
       },
       {
-        path: "/inspections/create",
+        path: '/inspections/create',
         element: <CreateInspectionPage />,
       },
     ],
   },
   {
-    path: "/login",
+    path: '/login',
     element: <LoginPage />,
   },
   {
-    path: "*",
+    path: '*',
     element: <NotFoundPage />,
   },
 ]);

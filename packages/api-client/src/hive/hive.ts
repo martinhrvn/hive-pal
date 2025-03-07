@@ -5,10 +5,7 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,343 +17,498 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query'
-import axios from 'axios'
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios'
-import type {
-  CreateHiveDto,
-  HiveResponseDto,
-  UpdateHiveDto
-} from '.././model'
-
-
+  UseQueryResult,
+} from '@tanstack/react-query';
+import axios from 'axios';
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { CreateHiveDto, HiveResponseDto, UpdateHiveDto } from '.././model';
 
 export const hiveControllerCreate = (
-    createHiveDto: CreateHiveDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<HiveResponseDto>> => {
-    
-    
-    return axios.post(
-      `/api/hives`,
-      createHiveDto,options
-    );
-  }
+  createHiveDto: CreateHiveDto,
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<HiveResponseDto>> => {
+  return axios.post(`/api/hives`, createHiveDto, options);
+};
 
+export const getHiveControllerCreateMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof hiveControllerCreate>>,
+    TError,
+    { data: CreateHiveDto },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof hiveControllerCreate>>,
+  TError,
+  { data: CreateHiveDto },
+  TContext
+> => {
+  const mutationKey = ['hiveControllerCreate'];
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof hiveControllerCreate>>,
+    { data: CreateHiveDto }
+  > = props => {
+    const { data } = props ?? {};
 
-export const getHiveControllerCreateMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,{data: CreateHiveDto}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,{data: CreateHiveDto}, TContext> => {
-    
-const mutationKey = ['hiveControllerCreate'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+    return hiveControllerCreate(data, axiosOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type HiveControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof hiveControllerCreate>>
+>;
+export type HiveControllerCreateMutationBody = CreateHiveDto;
+export type HiveControllerCreateMutationError = AxiosError<unknown>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerCreate>>, {data: CreateHiveDto}> = (props) => {
-          const {data} = props ?? {};
+export const useHiveControllerCreate = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof hiveControllerCreate>>,
+    TError,
+    { data: CreateHiveDto },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof hiveControllerCreate>>,
+  TError,
+  { data: CreateHiveDto },
+  TContext
+> => {
+  const mutationOptions = getHiveControllerCreateMutationOptions(options);
 
-          return  hiveControllerCreate(data,axiosOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type HiveControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof hiveControllerCreate>>>
-    export type HiveControllerCreateMutationBody = CreateHiveDto
-    export type HiveControllerCreateMutationError = AxiosError<unknown>
-
-    export const useHiveControllerCreate = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,{data: CreateHiveDto}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationResult<
-        Awaited<ReturnType<typeof hiveControllerCreate>>,
-        TError,
-        {data: CreateHiveDto},
-        TContext
-      > => {
-
-      const mutationOptions = getHiveControllerCreateMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    export const hiveControllerFindAll = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<HiveResponseDto[]>> => {
-    
-    
-    return axios.get(
-      `/api/hives`,options
-    );
-  }
-
+  return useMutation(mutationOptions);
+};
+export const hiveControllerFindAll = (
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<HiveResponseDto[]>> => {
+  return axios.get(`/api/hives`, options);
+};
 
 export const getHiveControllerFindAllQueryKey = () => {
-    return [`/api/hives`] as const;
-    }
+  return [`/api/hives`] as const;
+};
 
-    
-export const getHiveControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof hiveControllerFindAll>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
-) => {
+export const getHiveControllerFindAllQueryOptions = <
+  TData = Awaited<ReturnType<typeof hiveControllerFindAll>>,
+  TError = AxiosError<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof hiveControllerFindAll>>,
+      TError,
+      TData
+    >
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getHiveControllerFindAllQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getHiveControllerFindAllQueryKey();
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof hiveControllerFindAll>>
+  > = ({ signal }) => hiveControllerFindAll({ signal, ...axiosOptions });
 
-  
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof hiveControllerFindAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hiveControllerFindAll>>> = ({ signal }) => hiveControllerFindAll({ signal, ...axiosOptions });
+export type HiveControllerFindAllQueryResult = NonNullable<
+  Awaited<ReturnType<typeof hiveControllerFindAll>>
+>;
+export type HiveControllerFindAllQueryError = AxiosError<unknown>;
 
-      
+export function useHiveControllerFindAll<
+  TData = Awaited<ReturnType<typeof hiveControllerFindAll>>,
+  TError = AxiosError<unknown>,
+>(options: {
+  query: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof hiveControllerFindAll>>,
+      TError,
+      TData
+    >
+  > &
+    Pick<
+      DefinedInitialDataOptions<
+        Awaited<ReturnType<typeof hiveControllerFindAll>>,
+        TError,
+        Awaited<ReturnType<typeof hiveControllerFindAll>>
+      >,
+      'initialData'
+    >;
+  axios?: AxiosRequestConfig;
+}): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useHiveControllerFindAll<
+  TData = Awaited<ReturnType<typeof hiveControllerFindAll>>,
+  TError = AxiosError<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof hiveControllerFindAll>>,
+      TError,
+      TData
+    >
+  > &
+    Pick<
+      UndefinedInitialDataOptions<
+        Awaited<ReturnType<typeof hiveControllerFindAll>>,
+        TError,
+        Awaited<ReturnType<typeof hiveControllerFindAll>>
+      >,
+      'initialData'
+    >;
+  axios?: AxiosRequestConfig;
+}): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useHiveControllerFindAll<
+  TData = Awaited<ReturnType<typeof hiveControllerFindAll>>,
+  TError = AxiosError<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof hiveControllerFindAll>>,
+      TError,
+      TData
+    >
+  >;
+  axios?: AxiosRequestConfig;
+}): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 
-      
+export function useHiveControllerFindAll<
+  TData = Awaited<ReturnType<typeof hiveControllerFindAll>>,
+  TError = AxiosError<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof hiveControllerFindAll>>,
+      TError,
+      TData
+    >
+  >;
+  axios?: AxiosRequestConfig;
+}): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getHiveControllerFindAllQueryOptions(options);
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData>;
+  };
 
-export type HiveControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof hiveControllerFindAll>>>
-export type HiveControllerFindAllQueryError = AxiosError<unknown>
-
-
-export function useHiveControllerFindAll<TData = Awaited<ReturnType<typeof hiveControllerFindAll>>, TError = AxiosError<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindAll>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof hiveControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof hiveControllerFindAll>>
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
-
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useHiveControllerFindAll<TData = Awaited<ReturnType<typeof hiveControllerFindAll>>, TError = AxiosError<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindAll>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof hiveControllerFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof hiveControllerFindAll>>
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
-
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useHiveControllerFindAll<TData = Awaited<ReturnType<typeof hiveControllerFindAll>>, TError = AxiosError<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
-
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-
-export function useHiveControllerFindAll<TData = Awaited<ReturnType<typeof hiveControllerFindAll>>, TError = AxiosError<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
-
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
-
-  const queryOptions = getHiveControllerFindAllQueryOptions(options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
 
 export const hiveControllerFindOne = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<HiveResponseDto>> => {
-    
-    
-    return axios.get(
-      `/api/hives/${id}`,options
-    );
-  }
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<HiveResponseDto>> => {
+  return axios.get(`/api/hives/${id}`, options);
+};
 
+export const getHiveControllerFindOneQueryKey = (id: string) => {
+  return [`/api/hives/${id}`] as const;
+};
 
-export const getHiveControllerFindOneQueryKey = (id: string,) => {
-    return [`/api/hives/${id}`] as const;
-    }
-
-    
-export const getHiveControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof hiveControllerFindOne>>, TError = AxiosError<unknown>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getHiveControllerFindOneQueryOptions = <
+  TData = Awaited<ReturnType<typeof hiveControllerFindOne>>,
+  TError = AxiosError<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof hiveControllerFindOne>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  },
 ) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+  const queryKey =
+    queryOptions?.queryKey ?? getHiveControllerFindOneQueryKey(id);
 
-  const queryKey =  queryOptions?.queryKey ?? getHiveControllerFindOneQueryKey(id);
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof hiveControllerFindOne>>
+  > = ({ signal }) => hiveControllerFindOne(id, { signal, ...axiosOptions });
 
-  
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof hiveControllerFindOne>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hiveControllerFindOne>>> = ({ signal }) => hiveControllerFindOne(id, { signal, ...axiosOptions });
+export type HiveControllerFindOneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof hiveControllerFindOne>>
+>;
+export type HiveControllerFindOneQueryError = AxiosError<unknown>;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type HiveControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof hiveControllerFindOne>>>
-export type HiveControllerFindOneQueryError = AxiosError<unknown>
-
-
-export function useHiveControllerFindOne<TData = Awaited<ReturnType<typeof hiveControllerFindOne>>, TError = AxiosError<unknown>>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindOne>>, TError, TData>> & Pick<
+export function useHiveControllerFindOne<
+  TData = Awaited<ReturnType<typeof hiveControllerFindOne>>,
+  TError = AxiosError<unknown>,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof hiveControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof hiveControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof hiveControllerFindOne>>
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
-
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useHiveControllerFindOne<TData = Awaited<ReturnType<typeof hiveControllerFindOne>>, TError = AxiosError<unknown>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindOne>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    axios?: AxiosRequestConfig;
+  },
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useHiveControllerFindOne<
+  TData = Awaited<ReturnType<typeof hiveControllerFindOne>>,
+  TError = AxiosError<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof hiveControllerFindOne>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof hiveControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof hiveControllerFindOne>>
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+        >,
+        'initialData'
+      >;
+    axios?: AxiosRequestConfig;
+  },
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useHiveControllerFindOne<
+  TData = Awaited<ReturnType<typeof hiveControllerFindOne>>,
+  TError = AxiosError<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof hiveControllerFindOne>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  },
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useHiveControllerFindOne<TData = Awaited<ReturnType<typeof hiveControllerFindOne>>, TError = AxiosError<unknown>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useHiveControllerFindOne<
+  TData = Awaited<ReturnType<typeof hiveControllerFindOne>>,
+  TError = AxiosError<unknown>,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof hiveControllerFindOne>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  },
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getHiveControllerFindOneQueryOptions(id, options);
 
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData>;
+  };
 
-export function useHiveControllerFindOne<TData = Awaited<ReturnType<typeof hiveControllerFindOne>>, TError = AxiosError<unknown>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hiveControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
-
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
-
-  const queryOptions = getHiveControllerFindOneQueryOptions(id,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
 
-
-
 export const hiveControllerUpdate = (
-    id: string,
-    updateHiveDto: UpdateHiveDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.patch(
-      `/api/hives/${id}`,
-      updateHiveDto,options
-    );
-  }
+  id: string,
+  updateHiveDto: UpdateHiveDto,
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<void>> => {
+  return axios.patch(`/api/hives/${id}`, updateHiveDto, options);
+};
 
+export const getHiveControllerUpdateMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof hiveControllerUpdate>>,
+    TError,
+    { id: string; data: UpdateHiveDto },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof hiveControllerUpdate>>,
+  TError,
+  { id: string; data: UpdateHiveDto },
+  TContext
+> => {
+  const mutationKey = ['hiveControllerUpdate'];
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof hiveControllerUpdate>>,
+    { id: string; data: UpdateHiveDto }
+  > = props => {
+    const { id, data } = props ?? {};
 
-export const getHiveControllerUpdateMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext> => {
-    
-const mutationKey = ['hiveControllerUpdate'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+    return hiveControllerUpdate(id, data, axiosOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type HiveControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof hiveControllerUpdate>>
+>;
+export type HiveControllerUpdateMutationBody = UpdateHiveDto;
+export type HiveControllerUpdateMutationError = AxiosError<unknown>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerUpdate>>, {id: string;data: UpdateHiveDto}> = (props) => {
-          const {id,data} = props ?? {};
+export const useHiveControllerUpdate = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof hiveControllerUpdate>>,
+    TError,
+    { id: string; data: UpdateHiveDto },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof hiveControllerUpdate>>,
+  TError,
+  { id: string; data: UpdateHiveDto },
+  TContext
+> => {
+  const mutationOptions = getHiveControllerUpdateMutationOptions(options);
 
-          return  hiveControllerUpdate(id,data,axiosOptions)
-        }
+  return useMutation(mutationOptions);
+};
+export const hiveControllerRemove = (
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/hives/${id}`, options);
+};
 
-        
+export const getHiveControllerRemoveMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof hiveControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof hiveControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ['hiveControllerRemove'];
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof hiveControllerRemove>>,
+    { id: string }
+  > = props => {
+    const { id } = props ?? {};
 
-  return  { mutationFn, ...mutationOptions }}
+    return hiveControllerRemove(id, axiosOptions);
+  };
 
-    export type HiveControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof hiveControllerUpdate>>>
-    export type HiveControllerUpdateMutationBody = UpdateHiveDto
-    export type HiveControllerUpdateMutationError = AxiosError<unknown>
+  return { mutationFn, ...mutationOptions };
+};
 
-    export const useHiveControllerUpdate = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationResult<
-        Awaited<ReturnType<typeof hiveControllerUpdate>>,
-        TError,
-        {id: string;data: UpdateHiveDto},
-        TContext
-      > => {
+export type HiveControllerRemoveMutationResult = NonNullable<
+  Awaited<ReturnType<typeof hiveControllerRemove>>
+>;
 
-      const mutationOptions = getHiveControllerUpdateMutationOptions(options);
+export type HiveControllerRemoveMutationError = AxiosError<unknown>;
 
-      return useMutation(mutationOptions);
-    }
-    export const hiveControllerRemove = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.delete(
-      `/api/hives/${id}`,options
-    );
-  }
+export const useHiveControllerRemove = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof hiveControllerRemove>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof hiveControllerRemove>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions = getHiveControllerRemoveMutationOptions(options);
 
-
-
-export const getHiveControllerRemoveMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerRemove>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerRemove>>, TError,{id: string}, TContext> => {
-    
-const mutationKey = ['hiveControllerRemove'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  hiveControllerRemove(id,axiosOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type HiveControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof hiveControllerRemove>>>
-    
-    export type HiveControllerRemoveMutationError = AxiosError<unknown>
-
-    export const useHiveControllerRemove = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerRemove>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationResult<
-        Awaited<ReturnType<typeof hiveControllerRemove>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
-
-      const mutationOptions = getHiveControllerRemoveMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
+  return useMutation(mutationOptions);
+};

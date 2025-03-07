@@ -1,5 +1,5 @@
-import { useHiveControllerFindAll } from "api-client";
-import { HiveList } from "@/pages/hive/components";
+import { useHiveControllerFindAll } from 'api-client';
+import { HiveList } from '@/pages/hive/components';
 
 export const HomePage = () => {
   const { data, isLoading } = useHiveControllerFindAll();

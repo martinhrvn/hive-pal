@@ -1,6 +1,6 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from 'react-router-dom';
 
-import { useAuth } from "@/context/auth-context.tsx";
+import { useAuth } from '@/context/auth-context.tsx';
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
@@ -17,8 +17,8 @@ const DashboardLayout = () => {
         <div className="flex items-center h-16 justify-between p-10">
           {/* Logo/Title */}
           <h1 className="text-xl font-semibold">
-            <a className={"text-foreground"} href={"/"}>
-              {" "}
+            <a className={'text-foreground'} href={'/'}>
+              {' '}
               Beekeeping Manager
             </a>
           </h1>

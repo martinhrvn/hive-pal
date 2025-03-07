@@ -1,14 +1,14 @@
-import { FormEvent, useState } from "react";
-import { useAuth } from "@/context/auth-context.tsx";
-import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { FormEvent, useState } from 'react';
+import { useAuth } from '@/context/auth-context.tsx';
+import { useNavigate } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
@@ -19,16 +19,16 @@ const LoginPage = () => {
     try {
       const success = await login(username, password);
       if (!success) {
-        setError("Invalid username or password");
+        setError('Invalid username or password');
       }
     } catch (err) {
-      console.error("Login error:", err);
-      setError("An error occurred during login");
+      console.error('Login error:', err);
+      setError('An error occurred during login');
     }
   };
 
   if (isAuthenticated) {
-    navigate("/");
+    navigate('/');
   }
 
   return (
@@ -40,7 +40,7 @@ const LoginPage = () => {
         <h2 className="text-center text-lg mb-8">Sign in to your account</h2>
       </div>
 
-      {error && <p className={"color-red-400"}>{error}</p>}
+      {error && <p className={'color-red-400'}>{error}</p>}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -53,7 +53,7 @@ const LoginPage = () => {
                   type="text"
                   required
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={e => setUsername(e.target.value)}
                 />
               </div>
             </div>
@@ -67,7 +67,7 @@ const LoginPage = () => {
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                 />
               </div>
             </div>

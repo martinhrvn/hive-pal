@@ -1,25 +1,25 @@
 import {
   useHiveControllerFindOne,
   useInspectionsControllerFindAll,
-} from "api-client";
-import { useParams, Link } from "react-router-dom";
-import { HiveStatus } from "@/pages/hive/components";
-import { Section } from "@/components/common/section";
-import { buttonVariants } from "@/components/ui/button";
-import { InspectionTimeline } from "@/pages/inspection/components/inspection-timeline.tsx";
+} from 'api-client';
+import { useParams, Link } from 'react-router-dom';
+import { HiveStatus } from '@/pages/hive/components';
+import { Section } from '@/components/common/section';
+import { buttonVariants } from '@/components/ui/button';
+import { InspectionTimeline } from '@/pages/inspection/components/inspection-timeline.tsx';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
-  const { data: hive, error } = useHiveControllerFindOne(hiveId ?? "", {
+  const { data: hive, error } = useHiveControllerFindOne(hiveId ?? '', {
     query: {
-      select: (data) => data.data,
+      select: data => data.data,
     },
   });
   const { data: inspections } = useInspectionsControllerFindAll(
     {
       hiveId: hiveId,
     },
-    { query: { select: (data) => data.data } },
+    { query: { select: data => data.data } },
   );
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -37,21 +37,21 @@ export const HiveDetailPage = () => {
           </div>
           {hive?.installationDate && (
             <p className="text-sm text-gray-500">
-              Installed on{" "}
+              Installed on{' '}
               {new Date(hive?.installationDate).toLocaleDateString()}
             </p>
           )}
         </div>
         <Section
-          title={"Inspections"}
+          title={'Inspections'}
           action={
             <Link
               to={
                 hive?.id
                   ? `/hives/${hive.id}/inspections/create`
-                  : "/inspections/create"
+                  : '/inspections/create'
               }
-              className={buttonVariants({ variant: "outline" })}
+              className={buttonVariants({ variant: 'outline' })}
             >
               + Add inspection
             </Link>

@@ -2,26 +2,26 @@ export const getEnvVariable = (key: string): string => {
   if (
     window.ENV &&
     window.ENV[key] !== undefined &&
-    !window.ENV[key].startsWith("$")
+    !window.ENV[key].startsWith('$')
   ) {
-    console.log("Getting env variable from window", key, window.ENV[key]);
+    console.log('Getting env variable from window', key, window.ENV[key]);
     return window.ENV[key];
   }
 
-  const variable = import.meta.env[key] || "";
-  console.log("Getting env variable from meta", key, variable);
+  const variable = import.meta.env[key] || '';
+  console.log('Getting env variable from meta', key, variable);
   return variable;
 };
 
 export const getApiUrl = (url: string) => {
-  return `${getEnvVariable("VITE_API_URL") ?? "http://localhost:3000"}${url}`;
+  return `${getEnvVariable('VITE_API_URL') ?? 'http://localhost:3000'}${url}`;
 };
 export const createApiClient = (getToken: () => string | null) => {
   const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
     const token = getToken();
 
     const headers: HeadersInit = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     };
@@ -34,7 +34,7 @@ export const createApiClient = (getToken: () => string | null) => {
     if (!response.ok) {
       if (response.status === 401) {
         // You might want to trigger a logout here
-        throw new Error("Authentication expired");
+        throw new Error('Authentication expired');
       }
       throw new Error(`API error: ${response.statusText}`);
     }
@@ -47,19 +47,19 @@ export const createApiClient = (getToken: () => string | null) => {
 
     post: <T>(endpoint: string, data: unknown) =>
       fetchWithAuth(endpoint, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify(data),
       }) as Promise<T>,
 
     put: <T>(endpoint: string, data: unknown) =>
       fetchWithAuth(endpoint, {
-        method: "PUT",
+        method: 'PUT',
         body: JSON.stringify(data),
       }) as Promise<T>,
 
     delete: <T>(endpoint: string) =>
       fetchWithAuth(endpoint, {
-        method: "DELETE",
+        method: 'DELETE',
       }) as Promise<T>,
   };
 };

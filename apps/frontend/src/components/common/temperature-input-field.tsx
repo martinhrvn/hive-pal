@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Thermometer, ChevronUp, ChevronDown } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
-import { ControllerRenderProps, FieldValues, Path } from "react-hook-form";
+import React, { useState, useRef, useEffect } from 'react';
+import { Thermometer, ChevronUp, ChevronDown } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
 
 interface TemperatureFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -40,14 +40,14 @@ const TemperatureField = <
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "") {
+    if (e.target.value === '') {
       field.onChange(null);
       setTempValue(null);
       return;
@@ -79,12 +79,12 @@ const TemperatureField = <
 
   // Get color based on temperature value
   const getTemperatureColor = (): string => {
-    if (tempValue === null) return "text-gray-400";
-    if (tempValue <= -20) return "text-blue-600";
-    if (tempValue <= 0) return "text-blue-400";
-    if (tempValue <= 15) return "text-green-500";
-    if (tempValue <= 30) return "text-yellow-500";
-    return "text-red-500";
+    if (tempValue === null) return 'text-gray-400';
+    if (tempValue <= -20) return 'text-blue-600';
+    if (tempValue <= 0) return 'text-blue-400';
+    if (tempValue <= 15) return 'text-green-500';
+    if (tempValue <= 30) return 'text-yellow-500';
+    return 'text-red-500';
   };
 
   return (
@@ -97,7 +97,7 @@ const TemperatureField = <
           type="number"
           placeholder={defaultValue.toString()}
           className="pl-10 pr-16 rounded-md text-right"
-          value={tempValue ?? ""}
+          value={tempValue ?? ''}
           name={field.name}
           onFocus={() => setShowSlider(true)}
           onBlur={() => {
@@ -106,8 +106,8 @@ const TemperatureField = <
           onChange={handleInputChange}
           ref={field.ref}
           style={{
-            WebkitAppearance: "none",
-            MozAppearance: "textfield",
+            WebkitAppearance: 'none',
+            MozAppearance: 'textfield',
           }}
         />
         <div className="absolute inset-y-0 right-10 flex items-center">

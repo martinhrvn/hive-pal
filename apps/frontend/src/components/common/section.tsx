@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren } from 'react';
 
 type SectionProps = {
   title: string;
@@ -12,7 +12,7 @@ export const Section: React.FC<PropsWithChildren<SectionProps>> = ({
   return (
     <div>
       <section className="border-b border-b-gray-800 pb-5">
-        <div className={"flex items-center justify-between"}>
+        <div className={'flex items-center justify-between'}>
           <h3 className="text-base font-semibold text-primary">{title}</h3>
           {action}
         </div>

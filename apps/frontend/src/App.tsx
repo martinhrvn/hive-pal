@@ -1,6 +1,6 @@
-import "./App.css";
-import { AppRouter } from "@/routes";
-import { Providers } from "@/context/providers.tsx";
+import './App.css';
+import { AppRouter } from '@/routes';
+import { Providers } from '@/context/providers.tsx';
 
 function App() {
   return (

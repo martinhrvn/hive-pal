@@ -1,14 +1,14 @@
-import { InspectionResponseDto } from "api-client";
+import { InspectionResponseDto } from 'api-client';
 import {
   addWeeks,
   isWithinInterval,
   subWeeks,
   format,
   formatDistanceToNow,
-} from "date-fns";
-import { useCallback } from "react";
-import { CalendarIcon, ChevronRightIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+} from 'date-fns';
+import { useCallback } from 'react';
+import { CalendarIcon, ChevronRightIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 type InspectionTimelineProps = {
   inspections: InspectionResponseDto[];
@@ -23,15 +23,15 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
     if (isWithinInterval(date, { start: twoWeehsAgo, end: twoWeeksFromNow })) {
       return formatDistanceToNow(date, { addSuffix: true });
     }
-    return format(date, "MMM d");
+    return format(date, 'MMM d');
   }, []);
 
   const formatTime = useCallback((date: Date | string) => {
-    return format(date, "hh:mm a");
+    return format(date, 'hh:mm a');
   }, []);
   return (
-    <div className={"flex flex-col space-y-4"}>
-      {inspections.map((inspection) => (
+    <div className={'flex flex-col space-y-4'}>
+      {inspections.map(inspection => (
         <div
           key={inspection.id}
           className="flex flex-col rounded-lg ml-8 relative pb-8"

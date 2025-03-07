@@ -1,24 +1,24 @@
-import React from "react";
-import { HiveResponseDto } from "api-client";
+import React from 'react';
+import { HiveResponseDto } from 'api-client';
 
-type HiveStatusEnum = HiveResponseDto["status"];
+type HiveStatusEnum = HiveResponseDto['status'];
 
 type HiveStatusProps = {
-  status?: HiveResponseDto["status"];
+  status?: HiveResponseDto['status'];
 };
 
 const getStatusClasses = (status: HiveStatusEnum) => {
   switch (status) {
-    case "ACTIVE":
-      return "text-green-600 bg-green-400/10 ring-green-400/30";
-    case "INACTIVE":
-      return "text-gray-600 bg-gray-400/10 ring-gray-400/30";
-    case "DEAD":
-      return "bg-gray-700 text-white";
-    case "UNKNOWN":
-      return "bg-gray-300 text-gray-900";
+    case 'ACTIVE':
+      return 'text-green-600 bg-green-400/10 ring-green-400/30';
+    case 'INACTIVE':
+      return 'text-gray-600 bg-gray-400/10 ring-gray-400/30';
+    case 'DEAD':
+      return 'bg-gray-700 text-white';
+    case 'UNKNOWN':
+      return 'bg-gray-300 text-gray-900';
     default:
-      return "bg-blue-500 text-white";
+      return 'bg-blue-500 text-white';
   }
 };
 

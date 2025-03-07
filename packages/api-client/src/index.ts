@@ -1,3 +1,2 @@
-
-export * from './model'
-export * from './hive-pal'
+export * from './model';
+export * from './hive-pal';
