@@ -1,7 +1,7 @@
 
 services:
   backend:
-
+    image: ghcr.io/martinhrvn/hive-pal-backend:latest
     environment:
       NODE_ENV: production
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
@@ -11,22 +11,13 @@ services:
     depends_on:
       - postgres
   frontend:
-    env_file:
-      - apps/frontend/.env
-    build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
-      tags:
-          - hive-pal-frontend
+    image: ghcr.io/martinhrvn/hive-pal-frontend:latest
     depends_on:
       - backend
     environment:
       VITE_API_URL: ${API_URL}
-
   postgres:
     image: postgres:14
-    ports:
-      - "6543:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
