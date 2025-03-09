@@ -11,7 +11,9 @@ export interface UpdateInspectionDto {
   id: string;
   hiveId?: string;
   date?: string;
-  temperature?: number;
-  weatherConditions?: string;
+  /** @nullable */
+  temperature?: number | null;
+  /** @nullable */
+  weatherConditions?: string | null;
   observations?: CreateInspectionObservationsDto;
 }

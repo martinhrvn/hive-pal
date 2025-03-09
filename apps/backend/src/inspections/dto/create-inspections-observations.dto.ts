@@ -3,37 +3,37 @@ import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 export class CreateInspectionObservationsDto {
   @IsNumber()
   @IsOptional()
-  strength?: number;
+  strength?: number | null;
 
   @IsNumber()
   @IsOptional()
-  uncappedBrood?: number;
+  uncappedBrood?: number | null;
 
   @IsNumber()
   @IsOptional()
-  cappedBrood?: number;
+  cappedBrood?: number | null;
 
   @IsNumber()
   @IsOptional()
-  honeyStores?: number;
+  honeyStores?: number | null;
 
   @IsNumber()
   @IsOptional()
-  pollenStores?: number;
+  pollenStores?: number | null;
 
   @IsNumber()
   @IsOptional()
-  queenCells?: number;
+  queenCells?: number | null;
 
   @IsNumber()
   @IsOptional()
-  swarmCells?: number;
+  swarmCells?: number | null;
 
   @IsNumber()
   @IsOptional()
-  supersedureCells?: number;
+  supersedureCells?: number | null;
 
   @IsOptional()
   @IsBoolean()
-  queenSeen?: boolean;
+  queenSeen?: boolean | null;
 }

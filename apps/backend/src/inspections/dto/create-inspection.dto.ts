@@ -23,11 +23,11 @@ export class CreateInspectionDto {
 
   @IsOptional()
   @IsNumber()
-  temperature?: number;
+  temperature?: number | null;
 
   @IsOptional()
   @IsString()
-  weatherConditions?: string;
+  weatherConditions?: string | null;
 
   @IsOptional()
   @Type(() => CreateInspectionObservationsDto)

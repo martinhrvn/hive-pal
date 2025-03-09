@@ -7,13 +7,22 @@
  */
 
 export interface CreateInspectionObservationsDto {
-  strength?: number;
-  uncappedBrood?: number;
-  cappedBrood?: number;
-  honeyStores?: number;
-  pollenStores?: number;
-  queenCells?: number;
-  swarmCells?: number;
-  supersedureCells?: number;
-  queenSeen?: boolean;
+  /** @nullable */
+  strength?: number | null;
+  /** @nullable */
+  uncappedBrood?: number | null;
+  /** @nullable */
+  cappedBrood?: number | null;
+  /** @nullable */
+  honeyStores?: number | null;
+  /** @nullable */
+  pollenStores?: number | null;
+  /** @nullable */
+  queenCells?: number | null;
+  /** @nullable */
+  swarmCells?: number | null;
+  /** @nullable */
+  supersedureCells?: number | null;
+  /** @nullable */
+  queenSeen?: boolean | null;
 }

@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   useHiveControllerFindAll,
   useInspectionsControllerCreate,
+  useInspectionsControllerFindOne,
+  useInspectionsControllerUpdate,
 } from 'api-client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,8 +39,12 @@ import { ObservationsSection } from '@/pages/inspection/components/inspection-fo
 
 type InspectionFormProps = {
   hiveId?: string;
+  inspectionId?: string;
 };
-export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
+export const InspectionForm: React.FC<InspectionFormProps> = ({
+  hiveId,
+  inspectionId,
+}) => {
   const navigate = useNavigate();
   const { data: hives } = useHiveControllerFindAll({
     query: {
@@ -49,26 +55,49 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
         })),
     },
   });
+  const { data: inspection } = useInspectionsControllerFindOne(
+    inspectionId as string,
+    {
+      query: { enabled: !!inspectionId, select: data => data.data },
+    },
+  );
+  const hive = inspection?.hiveId ?? hiveId;
+  const url = inspectionId ? `/inspections/${inspectionId}` : `/hives/${hive}`;
 
-  const { mutate } = useInspectionsControllerCreate({
-    mutation: { onSuccess: () => navigate(`/hives/${hiveId}`) },
+  const { mutate: createInspection } = useInspectionsControllerCreate({
+    mutation: { onSuccess: () => navigate(url) },
+  });
+  const { mutate: updateInspection } = useInspectionsControllerUpdate({
+    mutation: { onSuccess: () => navigate(url) },
   });
 
   const form = useForm<InspectionFormData>({
     resolver: zodResolver(inspectionSchema),
     defaultValues: {
       hiveId,
-      date: new Date(),
+      ...inspection,
+      date: inspection?.date ? new Date(inspection.date) : new Date(),
     },
   });
 
   const onSubmit = (data: InspectionFormData) => {
-    mutate({
-      data: {
-        ...data,
-        date: data.date.toISOString(),
-      },
-    });
+    if (!inspectionId) {
+      createInspection({
+        data: {
+          ...data,
+          date: data.date.toISOString(),
+        },
+      });
+    } else {
+      updateInspection({
+        id: inspectionId,
+        data: {
+          ...data,
+          id: inspectionId,
+          date: data.date.toISOString(),
+        },
+      });
+    }
   };
 
   return (

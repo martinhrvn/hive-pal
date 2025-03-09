@@ -84,7 +84,45 @@ export class InspectionsService {
   }
 
   update(id: string, updateInspectionDto: UpdateInspectionDto) {
-    return `This action updates a #${id} inspection`;
+    const { observations, ...inspectionData } = updateInspectionDto;
+    return this.prisma.$transaction(async (tx) => {
+      await tx.observation.deleteMany({
+        where: {
+          inspectionId: id,
+        },
+      });
+      return tx.inspection.update({
+        where: { id },
+        data: {
+          ...inspectionData,
+          observations: {
+            create: [
+              { type: 'strength', numericValue: observations?.strength },
+              {
+                type: 'capped_brood',
+                numericValue: observations?.cappedBrood,
+              },
+              {
+                type: 'uncapped_brood',
+                numericValue: observations?.uncappedBrood,
+              },
+              { type: 'honey_stores', numericValue: observations?.honeyStores },
+              {
+                type: 'pollen_stores',
+                numericValue: observations?.pollenStores,
+              },
+              { type: 'queen_cells', numericValue: observations?.queenCells },
+              { type: 'swarm_cells', numericValue: observations?.swarmCells },
+              {
+                type: 'supersedure_cells',
+                numericValue: observations?.supersedureCells,
+              },
+              { type: 'queen_seen', booleanValue: observations?.queenSeen },
+            ],
+          },
+        },
+      });
+    });
   }
 
   remove(id: string) {
