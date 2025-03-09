@@ -6,6 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-export type InspectionsControllerFindAllParams = {
-hiveId?: string;
-};
+export type HiveControllerRemove200 = { [key: string]: unknown };

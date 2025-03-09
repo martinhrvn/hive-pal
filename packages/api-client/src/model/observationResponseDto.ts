@@ -7,13 +7,21 @@
  */
 
 export interface ObservationResponseDto {
-  id: string;
-  inspectionId: string;
-  type: string;
   /** @nullable */
-  numericValue?: number | null;
+  strength: number | null;
   /** @nullable */
-  textValue?: string | null;
+  uncappedBrood: number | null;
   /** @nullable */
-  notes?: string | null;
+  cappedBrood: number | null;
+  /** @nullable */
+  honeyStores: number | null;
+  /** @nullable */
+  pollenStores: number | null;
+  /** @nullable */
+  queenCells: number | null;
+  /** @nullable */
+  swarmCells: number | null;
+  /** @nullable */
+  supersedureCells: number | null;
+  queenSeen?: boolean;
 }

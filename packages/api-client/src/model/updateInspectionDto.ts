@@ -5,7 +5,7 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import type { CreateObservationDto } from './createObservationDto';
+import type { CreateInspectionObservationsDto } from './createInspectionObservationsDto';
 
 export interface UpdateInspectionDto {
   id: string;
@@ -13,5 +13,5 @@ export interface UpdateInspectionDto {
   date?: string;
   temperature?: number;
   weatherConditions?: string;
-  observations?: CreateObservationDto[];
+  observations?: CreateInspectionObservationsDto;
 }

@@ -28,7 +28,9 @@ export class InspectionsController {
   @Get()
   @SerializeOptions({ type: InspectionResponseDto })
   @ApiOkResponse({ type: InspectionResponseDto, isArray: true })
-  findAll(@Query() query: InspectionFilterDto): Promise<InspectionResponseDto> {
+  findAll(
+    @Query() query: InspectionFilterDto,
+  ): Promise<InspectionResponseDto[]> {
     return this.inspectionsService.findAll(query);
   }
 
