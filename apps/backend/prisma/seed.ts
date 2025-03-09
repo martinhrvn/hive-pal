@@ -49,7 +49,7 @@ async function main() {
   await prisma.queen.create({
     data: {
       hiveId: hive1.id,
-      markingColor: 'RED',
+      color: 'RED',
       source: 'Local breeder',
       status: 'ACTIVE',
       installedAt: new Date('2025-01-15'),
@@ -60,7 +60,7 @@ async function main() {
     data: {
       hiveId: hive2.id,
       year: 2024,
-      markingColor: 'WHITE',
+      color: 'WHITE',
       source: 'Package',
       status: 'ACTIVE',
       installedAt: new Date('2025-01-15'),
