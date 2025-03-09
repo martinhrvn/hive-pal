@@ -78,6 +78,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                               e.preventDefault();
                               e.stopPropagation();
                               field.onChange(fullValue);
+                              setHoveredValue(null);
                             }}
                             aria-label={`Rate as ${fullValue}`}
                           ></button>
