@@ -1,11 +1,12 @@
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card.tsx';
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
-import { CalendarIcon, MoreHorizontal } from 'lucide-react';
+import { CalendarDays, Circle, MoreHorizontal } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { buttonVariants } from '@/components/ui/button.tsx';
 import { HiveDetailResponseDtoActiveQueen } from 'api-client';
@@ -28,6 +29,22 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  const getColor = (color?: string | null) => {
+    switch (color?.toLowerCase()) {
+      case 'green':
+        return 'bg-green-500';
+      case 'yellow':
+        return 'bg-amber-500';
+      case 'red':
+        return 'text-red-500';
+      case 'blue':
+        return 'text-blue-500';
+      case 'white':
+        return 'bg-white';
+      default:
+        return 'bg-white';
+    }
+  };
   const handleMarkQueenState = (newState: 'DEAD' | 'REPLACED') => {
     console.log(`Mark queen as ${newState.toLowerCase()}`, activeQueen?.id);
     // In a real implementation, we would call the API here
@@ -43,7 +60,11 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-medium">Queen Information</CardTitle>
+        <CardTitle className="text-lg font-medium flex items-center gap-3">
+          {<Circle className={`h-5 w-5 ${getColor(activeQueen?.color)}`} />}
+          Queen {activeQueen?.marking}
+        </CardTitle>
+
         <div className="flex items-center space-x-2">
           <BeeIcon className="h-4 w-4 text-muted-foreground" />
           {activeQueen && (
@@ -71,37 +92,14 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
       <CardContent>
         {activeQueen ? (
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Status:</span>
-              <span className="text-emerald-600 font-semibold">
-                {activeQueen.status}
-              </span>
-            </div>
-            {activeQueen.year && (
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Year:</span>
-                <span>{activeQueen.year}</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                <span>Installed on January 15, 2025</span>
+                <span className="text-muted-foreground">(via Package)</span>
               </div>
-            )}
-            {activeQueen.color && (
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Color:</span>
-                <span>{activeQueen.color}</span>
-              </div>
-            )}
-            {activeQueen.source && (
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Source:</span>
-                <span>{activeQueen.source}</span>
-              </div>
-            )}
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Installed:</span>
-              <span className="flex items-center">
-                <CalendarIcon className="h-3 w-3 mr-1" />
-                {activeQueen?.installedAt &&
-                  new Date(activeQueen.installedAt).toLocaleDateString()}
-              </span>
+
+              <div className="flex items-center gap-3"></div>
             </div>
           </div>
         ) : (
@@ -118,6 +116,10 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
           </div>
         )}
       </CardContent>
+      <CardFooter className="flex justify-between text-sm text-muted-foreground">
+        <span>{activeQueen?.year}</span>
+        <div className="flex gap-1 items-center">-</div>
+      </CardFooter>
     </Card>
   );
 };
