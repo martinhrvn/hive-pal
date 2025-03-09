@@ -9,7 +9,9 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { InspectionTimeline } from '@/pages/inspection/components/inspection-timeline.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatisticCards } from './statistic-cards';
+import { BoxConfigurator } from './box-configurator';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
@@ -51,15 +53,29 @@ export const HiveDetailPage = () => {
             )}
           </div>
 
-          {/* Statistics from latest inspection */}
-          {inspections && inspections.length > 0 && (
-            <StatisticCards inspections={inspections} />
-          )}
-          
-          {/* Inspections timeline */}
-          <Section title="Inspections">
-            <InspectionTimeline inspections={inspections ?? []} />
-          </Section>
+          {/* Tabs for different sections */}
+          <Tabs defaultValue="overview" className="mb-6">
+            <TabsList className="mb-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="boxes">Box Configurator</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview">
+              {/* Statistics from latest inspection */}
+              {inspections && inspections.length > 0 && (
+                <StatisticCards inspections={inspections} />
+              )}
+              
+              {/* Inspections timeline */}
+              <Section title="Inspections">
+                <InspectionTimeline inspections={inspections ?? []} />
+              </Section>
+            </TabsContent>
+            
+            <TabsContent value="boxes">
+              <BoxConfigurator hive={hive} />
+            </TabsContent>
+          </Tabs>
         </div>
         
         {/* Action Sidebar */}
