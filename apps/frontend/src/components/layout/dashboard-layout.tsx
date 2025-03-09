@@ -16,10 +16,10 @@ const DashboardLayout = () => {
       <header className="bg-accent gap-3 p-4">
         <div className="flex items-center h-16 justify-between">
           {/* Logo/Title */}
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-xl font-semibold flex items-center gap-5">
+            <img className={'w-10'} src={'/hive-pal-logo.png'} />
             <a className={'text-foreground'} href={'/'}>
-              {' '}
-              Beekeeping Manager
+              Hive Pal
             </a>
           </h1>
           <button onClick={handleLogout}>Logout</button>
