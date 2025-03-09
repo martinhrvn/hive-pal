@@ -24,42 +24,12 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-
-// Observation types mapping (same as in form component)
-const OBSERVATION_TYPES = [
-  { value: 'queen_sighting', label: 'Queen Sighting' },
-  { value: 'brood_pattern', label: 'Brood Pattern' },
-  { value: 'honey_stores', label: 'Honey Stores' },
-  { value: 'pollen_stores', label: 'Pollen Stores' },
-  { value: 'population_strength', label: 'Population Strength' },
-  { value: 'temperament', label: 'Temperament' },
-  { value: 'disease_presence', label: 'Disease Presence' },
-  { value: 'pest_presence', label: 'Pest Presence' },
-  { value: 'queen_cells', label: 'Queen Cells' },
-  { value: 'swarm_tendency', label: 'Swarm Tendency' },
-];
-
-// Get the label for the observation type
-const getTypeLabel = (value: string) => {
-  const type = OBSERVATION_TYPES.find(t => t.value === value);
-  return type ? type.label : value;
-};
-
-// Helper to get severity color based on numeric value (1-10)
-const getValueColor = (value: number | null) => {
-  if (value === null) return 'bg-gray-200';
-
-  if (value <= 3) return 'bg-red-500';
-  if (value <= 5) return 'bg-yellow-500';
-  if (value <= 7) return 'bg-blue-500';
-  return 'bg-green-500';
-};
+import { ObservationNumberRatingView } from './components/observation-number-rating-view';
 
 // Get weather icon based on condition
 const getWeatherIcon = (condition: string) => {
@@ -94,39 +64,6 @@ const formatWeatherCondition = (condition: string) => {
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-};
-
-const ObservationItem = ({ observation }: { observation: any }) => {
-  return (
-    <Card className="mb-4">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-md">
-            {getTypeLabel(observation.type)}
-          </CardTitle>
-          {observation.numericValue && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">
-                {observation.numericValue}/10
-              </span>
-              <div
-                className={`h-4 w-4 rounded-full ${getValueColor(observation.numericValue)}`}
-                title={`Rating: ${observation.numericValue}/10`}
-              />
-            </div>
-          )}
-        </div>
-      </CardHeader>
-
-      {observation.notes && (
-        <CardContent>
-          <p className="text-muted-foreground whitespace-pre-line">
-            {observation.notes}
-          </p>
-        </CardContent>
-      )}
-    </Card>
-  );
 };
 
 export const InspectionDetailPage = () => {
@@ -282,26 +219,43 @@ export const InspectionDetailPage = () => {
                   Observations
                 </div>
               </CardTitle>
-              <CardDescription>
-                {inspection.observations?.length || 0} recorded
-              </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
-            {inspection.observations && inspection.observations.length > 0 ? (
-              <div className="space-y-3">
-                {inspection.observations.map((observation: any) => (
-                  <ObservationItem
-                    key={observation.id}
-                    observation={observation}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-sm">
-                No observations recorded
-              </p>
-            )}
+            <div className={'grid grid-cols-1 gap-4'}>
+              <ObservationNumberRatingView
+                rating={inspection.observations.strength}
+                label={'Strength'}
+              />
+              <ObservationNumberRatingView
+                rating={inspection.observations.uncappedBrood}
+                label={'Uncapped Brood'}
+              />
+              <ObservationNumberRatingView
+                rating={inspection.observations.cappedBrood}
+                label={'Capped Brood'}
+              />
+              <ObservationNumberRatingView
+                rating={inspection.observations.honeyStores}
+                label={'Honey Stores'}
+              />
+              <ObservationNumberRatingView
+                rating={inspection.observations.pollenStores}
+                label={'Pollen Stores'}
+              />
+              <ObservationNumberRatingView
+                rating={inspection.observations.queenCells}
+                label={'Queen cells'}
+              />
+              <ObservationNumberRatingView
+                rating={inspection.observations.swarmCells}
+                label={'Swarm Cells'}
+              />
+              <ObservationNumberRatingView
+                rating={inspection.observations.supersedureCells}
+                label={'Supersedure Cells'}
+              />
+            </div>
           </CardContent>
         </Card>
 

@@ -15,5 +15,5 @@ export interface InspectionResponseDto {
   temperature?: number | null;
   /** @nullable */
   weatherConditions?: string | null;
-  observations: ObservationResponseDto[];
+  observations: ObservationResponseDto;
 }

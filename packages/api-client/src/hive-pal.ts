@@ -32,8 +32,6 @@ import type {
   CreateHiveDto,
   CreateInspectionDto,
   CreateQueenDto,
-  HiveControllerRemove200,
-  HiveControllerUpdate200,
   HiveDetailResponseDto,
   HiveResponseDto,
   InspectionResponseDto,
@@ -401,7 +399,7 @@ export function useHiveControllerFindOne<TData = Awaited<ReturnType<typeof hiveC
 export const hiveControllerUpdate = (
     id: string,
     updateHiveDto: UpdateHiveDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<HiveControllerUpdate200>> => {
+ ): Promise<AxiosResponse<void>> => {
     
     
     return axios.patch(
@@ -457,7 +455,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     
 export const hiveControllerRemove = (
     id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<HiveControllerRemove200>> => {
+ ): Promise<AxiosResponse<void>> => {
     
     
     return axios.delete(

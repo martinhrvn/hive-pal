@@ -55,44 +55,32 @@ export class InspectionsService {
       },
     });
     return inspections.map((inspection): InspectionResponseDto => {
-      const observationsByType: Record<string, Observation> =
-        inspection.observations.reduce(
-          (acc, observation) => ({
-            ...acc,
-            [observation.type]: observation,
-          }),
-          {},
-        );
-      const observations: ObservationResponseDto = {
-        strength: observationsByType.strength?.numericValue ?? null,
-        uncappedBrood: observationsByType.uncapped_brood?.numericValue ?? null,
-        cappedBrood: observationsByType.capped_brood?.numericValue ?? null,
-        honeyStores: observationsByType.honey_stores?.numericValue ?? null,
-        pollenStores: observationsByType.pollen_stores?.numericValue ?? null,
-        queenCells: observationsByType.queen_cells?.numericValue ?? null,
-        swarmCells: observationsByType.swarm_cells?.numericValue ?? null,
-        supersedureCells:
-          observationsByType.supersedure_cells?.numericValue ?? null,
-        queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
-      };
       return {
         id: inspection.id,
         hiveId: inspection.hiveId,
         date: inspection.date.toISOString(),
         temperature: inspection.temperature ?? null,
         weatherConditions: inspection.weatherConditions ?? null,
-        observations: observations,
+        observations: this.mapObservationsToDto(inspection.observations),
       };
     });
   }
 
-  findOne(id: string) {
-    return this.prisma.inspection.findUnique({
+  async findOne(id: string): Promise<InspectionResponseDto | null> {
+    const inspection = await this.prisma.inspection.findUnique({
       where: { id },
       include: {
         observations: true,
       },
     });
+    if (!inspection) {
+      return null;
+    }
+    return {
+      ...inspection,
+      date: inspection.date.toISOString(),
+      observations: this.mapObservationsToDto(inspection.observations),
+    };
   }
 
   update(id: string, updateInspectionDto: UpdateInspectionDto) {
@@ -101,5 +89,29 @@ export class InspectionsService {
 
   remove(id: string) {
     return `This action removes a #${id} inspection`;
+  }
+
+  private mapObservationsToDto(
+    observations: Observation[],
+  ): ObservationResponseDto {
+    const observationsByType: Record<string, Observation> = observations.reduce(
+      (acc, observation) => ({
+        ...acc,
+        [observation.type]: observation,
+      }),
+      {},
+    );
+    return {
+      strength: observationsByType.strength?.numericValue ?? null,
+      uncappedBrood: observationsByType.uncapped_brood?.numericValue ?? null,
+      cappedBrood: observationsByType.capped_brood?.numericValue ?? null,
+      honeyStores: observationsByType.honey_stores?.numericValue ?? null,
+      pollenStores: observationsByType.pollen_stores?.numericValue ?? null,
+      queenCells: observationsByType.queen_cells?.numericValue ?? null,
+      swarmCells: observationsByType.swarm_cells?.numericValue ?? null,
+      supersedureCells:
+        observationsByType.supersedure_cells?.numericValue ?? null,
+      queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
+    };
   }
 }
