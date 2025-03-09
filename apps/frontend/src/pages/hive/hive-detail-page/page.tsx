@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatisticCards } from './statistic-cards';
 import { BoxConfigurator } from './box-configurator';
 import { ActionSideBar } from '@/pages/hive/hive-detail-page/action-sidebar.tsx';
+import { QueenInformation } from '@/pages/hive/hive-detail-page/queen-information.tsx';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
@@ -57,11 +58,15 @@ export const HiveDetailPage = () => {
             </TabsList>
 
             <TabsContent value="overview">
+              {/* Queen Information */}
               {/* Statistics from latest inspection */}
               {inspections && inspections.length > 0 && (
                 <StatisticCards inspections={inspections} />
               )}
-
+              <QueenInformation
+                hiveId={hive?.id}
+                activeQueen={hive?.activeQueen}
+              />
               {/* Inspections timeline */}
               <Section title="Inspections">
                 <InspectionTimeline inspections={inspections ?? []} />

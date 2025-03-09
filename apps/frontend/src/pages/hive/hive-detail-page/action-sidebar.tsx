@@ -7,8 +7,8 @@ import {
 import { Link } from 'react-router-dom';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
-import { EditIcon, PlusCircle, TrashIcon } from 'lucide-react';
-
+import { EditIcon, Icon, PlusCircle, TrashIcon } from 'lucide-react';
+import { bee } from '@lucide/lab';
 type ActionSideBarProps = {
   hiveId?: string;
 };
@@ -27,7 +27,17 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({ hiveId }) => (
           className: 'w-full justify-start',
         })}
       >
-        <PlusCircle /> Add Inspection
+        <PlusCircle className="mr-2 h-4 w-4" /> Add Inspection
+      </Link>
+
+      <Link
+        to={hiveId ? `/hives/${hiveId}/queens/create` : '/queens/create'}
+        className={buttonVariants({
+          variant: 'outline',
+          className: 'w-full justify-start',
+        })}
+      >
+        <Icon iconNode={bee} className="mr-2 h-4 w-4" /> Add Queen
       </Link>
 
       <Separator className="my-2" />
@@ -39,7 +49,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({ hiveId }) => (
           className: 'w-full justify-start',
         })}
       >
-        <EditIcon />
+        <EditIcon className="mr-2 h-4 w-4" />
         Edit Hive
       </Link>
 
@@ -48,7 +58,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({ hiveId }) => (
         className="w-full justify-start mt-4"
         disabled={!hiveId}
       >
-        <TrashIcon />
+        <TrashIcon className="mr-2 h-4 w-4" />
         Remove Hive
       </Button>
     </CardContent>
