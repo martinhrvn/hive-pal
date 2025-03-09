@@ -9,6 +9,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { InspectionTimeline } from '@/pages/inspection/components/inspection-timeline.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { StatisticCards } from './statistic-cards';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
@@ -31,7 +32,7 @@ export const HiveDetailPage = () => {
     <div className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <div className="md:col-span-9">
-          {/* Simple status card */}
+          {/* Hive header card */}
           <div className="rounded-lg shadow p-4 mb-4">
             <div className="flex justify-between items-center mb-2">
               <h1 className="text-2xl font-semibold">{hive?.name}</h1>
@@ -49,6 +50,13 @@ export const HiveDetailPage = () => {
               <p className="mt-2 text-gray-700">{hive.notes}</p>
             )}
           </div>
+
+          {/* Statistics from latest inspection */}
+          {inspections && inspections.length > 0 && (
+            <StatisticCards inspections={inspections} />
+          )}
+          
+          {/* Inspections timeline */}
           <Section title="Inspections">
             <InspectionTimeline inspections={inspections ?? []} />
           </Section>
