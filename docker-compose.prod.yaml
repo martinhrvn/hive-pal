@@ -10,6 +10,8 @@ services:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
       - postgres
+    command:
+      - npx prisma migrate deploy && node src/main.js
   frontend:
     image: ghcr.io/martinhrvn/hive-pal-frontend:latest
     depends_on:
