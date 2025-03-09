@@ -50,6 +50,9 @@ export class InspectionsService {
       where: {
         hiveId: filter.hiveId ?? undefined,
       },
+      orderBy: {
+        date: 'desc',
+      },
       include: {
         observations: true,
       },

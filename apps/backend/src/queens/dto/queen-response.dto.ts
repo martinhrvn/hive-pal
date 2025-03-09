@@ -21,6 +21,16 @@ export class QueenResponseDto {
 
   @ApiProperty()
   @Expose()
+  @IsOptional()
+  marking: string;
+
+  @ApiProperty()
+  @Expose()
+  @IsOptional()
+  color: string;
+
+  @ApiProperty()
+  @Expose()
   year: number;
 
   @ApiProperty({ required: false })

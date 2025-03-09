@@ -42,15 +42,16 @@ model Box {
 }
 
 model Queen {
-  id           String      @id @default(uuid())
-  hiveId       String
-  hive         Hive        @relation(fields: [hiveId], references: [id])
-  markingColor String?
-  year         Int?
-  source       String?
-  status       QueenStatus // ACTIVE, REPLACED, DEAD, UNKNOWN
-  installedAt  DateTime
-  replacedAt   DateTime?
+  id          String      @id @default(uuid())
+  hiveId      String
+  hive        Hive        @relation(fields: [hiveId], references: [id])
+  marking     String?
+  color       String?
+  year        Int?
+  source      String?
+  status      QueenStatus // ACTIVE, REPLACED, DEAD, UNKNOWN
+  installedAt DateTime
+  replacedAt  DateTime?
 }
 
 model Inspection {
