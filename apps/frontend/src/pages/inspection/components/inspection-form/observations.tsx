@@ -151,7 +151,7 @@ export const ObservationsSection: React.FC = () => {
           <ObservationItem name={'observations.strength'} label={'Strength'} />
           <ObservationItem
             name={'observations.cappedBrood'}
-            label={'Cappped Brood'}
+            label={'Capped Brood'}
           />
           <ObservationItem
             name={'observations.uncappedBrood'}
