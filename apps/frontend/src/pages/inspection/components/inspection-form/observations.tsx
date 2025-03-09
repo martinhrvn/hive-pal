@@ -21,12 +21,13 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
   label,
 }: ObservationItemProps<TName>) => {
   const { control } = useFormContext<InspectionFormData>();
+  const [hoveredValue, setHoveredValue] = React.useState<number | null>(null);
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => {
-        const currentValue = field.value as number | null;
+        const currentValue = field.value as number | undefined;
         return (
           <FormItem>
             <FormControl>
@@ -53,17 +54,31 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 
                     {/* Half point rating buttons */}
                     <div className="grow grid grid-cols-10 gap-1 h-8">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => (
-                        <button
-                          className={`rounded w-full ${
-                            currentValue != null && currentValue >= fullValue
-                              ? 'bg-amber-400'
-                              : 'bg-gray-200'
-                          }`}
-                          onClick={() => field.onChange(fullValue)}
-                          aria-label={`Rate as ${fullValue}`}
-                        ></button>
-                      ))}
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => {
+                        let color = 'bg-gray-200';
+                        if (hoveredValue != null && hoveredValue >= fullValue) {
+                          color = 'bg-amber-200';
+                        } else if (
+                          currentValue != null &&
+                          currentValue >= fullValue
+                        ) {
+                          color = 'bg-amber-300';
+                        }
+
+                        return (
+                          <button
+                            className={`rounded w-full ${color}`}
+                            onMouseEnter={() => setHoveredValue(fullValue)}
+                            onMouseLeave={() => setHoveredValue(null)}
+                            onClick={e => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              field.onChange(fullValue);
+                            }}
+                            aria-label={`Rate as ${fullValue}`}
+                          ></button>
+                        );
+                      })}
                     </div>
 
                     {/* Value display */}
@@ -77,7 +92,11 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                       variant={'ghost'}
                       disabled={currentValue === null}
                       className="ml-2 text-gray-400 hover:text-red-500"
-                      onClick={() => field.onChange(null)}
+                      onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        field.onChange(undefined);
+                      }}
                       aria-label="Clear rating"
                     >
                       <X size={16} />

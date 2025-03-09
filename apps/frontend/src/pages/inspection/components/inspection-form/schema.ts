@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
 export const observationSchema = z.object({
-  strength: z.number().nullish(),
-  uncappedBrood: z.number().nullish(),
-  cappedBrood: z.number().nullish(),
-  honeyStores: z.number().nullish(),
-  pollenStores: z.number().nullish(),
-  queenCells: z.number().nullish(),
-  swarmCells: z.number().nullish(),
-  supersedureCells: z.number().nullish(),
-  queenSeen: z.boolean().nullish(),
+  strength: z.number().optional(),
+  uncappedBrood: z.number().optional(),
+  cappedBrood: z.number().optional(),
+  honeyStores: z.number().optional(),
+  pollenStores: z.number().optional(),
+  queenCells: z.number().optional(),
+  swarmCells: z.number().optional(),
+  supersedureCells: z.number().optional(),
+  queenSeen: z.boolean().optional(),
 });
 
 export const inspectionSchema = z.object({
