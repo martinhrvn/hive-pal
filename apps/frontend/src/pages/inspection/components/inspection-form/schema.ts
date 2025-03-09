@@ -1,10 +1,15 @@
 import { z } from 'zod';
 
 export const observationSchema = z.object({
-  id: z.string().optional(),
-  type: z.string(),
-  numericValue: z.number().min(1).max(10),
-  notes: z.string().optional(),
+  strength: z.number().nullish(),
+  uncappedBrood: z.number().nullish(),
+  cappedBrood: z.number().nullish(),
+  honeyStores: z.number().nullish(),
+  pollenStores: z.number().nullish(),
+  queenCells: z.number().nullish(),
+  swarmCells: z.number().nullish(),
+  supersedureCells: z.number().nullish(),
+  queenSeen: z.boolean().nullish(),
 });
 
 export const inspectionSchema = z.object({
@@ -12,7 +17,7 @@ export const inspectionSchema = z.object({
   date: z.date(),
   temperature: z.number().optional(),
   weatherConditions: z.string().optional(),
-  observations: z.array(observationSchema).optional(),
+  observations: observationSchema,
 });
 
 export type ObservationFormData = z.infer<typeof observationSchema>;

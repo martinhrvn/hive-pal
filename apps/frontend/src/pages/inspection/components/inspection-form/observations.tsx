@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
+import React from 'react';
+import { FieldPath, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
   FormControl,
@@ -9,194 +8,94 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
-import { InspectionFormData, ObservationFormData } from './schema';
-import { Slider } from '@/components/ui/slider';
+import { X } from 'lucide-react';
+import { InspectionFormData } from './schema';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 
-// Observation types available for selection
-const OBSERVATION_TYPES = [
-  { value: 'queen_sighting', label: 'Queen Sighting' },
-  { value: 'brood_pattern', label: 'Brood Pattern' },
-  { value: 'honey_stores', label: 'Honey Stores' },
-  { value: 'pollen_stores', label: 'Pollen Stores' },
-  { value: 'population_strength', label: 'Population Strength' },
-  { value: 'temperament', label: 'Temperament' },
-  { value: 'disease_presence', label: 'Disease Presence' },
-  { value: 'pest_presence', label: 'Pest Presence' },
-  { value: 'queen_cells', label: 'Queen Cells' },
-  { value: 'swarm_tendency', label: 'Swarm Tendency' },
-];
-
-// Component for a single observation
-const ObservationItem: React.FC<{
-  index: number;
-  observation: ObservationFormData;
-  onRemove: () => void;
-}> = ({ index, observation, onRemove }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+type ObservationItemProps<T> = {
+  name: T;
+  label: string;
+};
+const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
+  name,
+  label,
+}: ObservationItemProps<TName>) => {
   const { control } = useFormContext<InspectionFormData>();
-
-  const field = useWatch({ name: `observations.${index}` });
-  const typeLabel = useMemo(() => {
-    const observationType = OBSERVATION_TYPES.find(
-      observation => observation.value === field.type,
-    );
-    return observationType?.label;
-  }, [field.type]);
-
-  console.log('Observation', field);
   return (
-    <Card className="mb-4">
-      <CardHeader
-        className="py-2 px-4 flex flex-row items-center justify-between cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <CardTitle className="text-sm font-medium flex-1">
-          {typeLabel ? (
-            <>
-              {typeLabel}
-              {observation.numericValue
-                ? ` - ${observation.numericValue}/10`
-                : ''}
-            </>
-          ) : (
-            'New Observation'
-          )}
-        </CardTitle>
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={e => {
-              e.stopPropagation();
-              onRemove();
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsExpanded(!isExpanded);
-            }}
-          >
-            {isExpanded ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </CardHeader>
-
-      {isExpanded && (
-        <CardContent className="py-3 space-y-3">
-          <FormField
-            control={control}
-            name={`observations.${index}.type`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select observation type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {OBSERVATION_TYPES.map(type => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name={`observations.${index}.numericValue`}
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex justify-between items-center">
-                  <FormLabel>Value</FormLabel>
-                  <span className="text-sm font-medium">{field.value}/10</span>
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => {
+        const currentValue = field.value as number | null;
+        return (
+          <FormItem>
+            <FormControl>
+              <div className="flex items-center mb-4">
+                <div className="w-32 min-w-32 mr-4">
+                  <label className="text-sm font-medium">{label}</label>
                 </div>
-                <FormControl>
-                  <div className="pt-2">
-                    <Slider
-                      value={[field.value]}
-                      min={1}
-                      max={10}
-                      step={1}
-                      onValueChange={value => field.onChange(value[0])}
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>Low</span>
-                      <span>High</span>
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            control={control}
-            name={`observations.${index}.notes`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Additional notes about this observation..."
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      )}
-    </Card>
+                <div className="flex-1">
+                  {/* Rating bar with half points */}
+                  <div className="flex items-center mb-2">
+                    {/* Zero value button */}
+                    <button
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center mr-2 ${
+                        currentValue === 0
+                          ? 'bg-gray-600 text-white'
+                          : 'bg-gray-100'
+                      }`}
+                      onClick={() => field.onChange(0)}
+                      aria-label="Rate as 0"
+                    >
+                      0
+                    </button>
+
+                    {/* Half point rating buttons */}
+                    <div className="grow grid grid-cols-10 gap-1 h-8">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => (
+                        <button
+                          className={`rounded w-full ${
+                            currentValue != null && currentValue >= fullValue
+                              ? 'bg-amber-400'
+                              : 'bg-gray-200'
+                          }`}
+                          onClick={() => field.onChange(fullValue)}
+                          aria-label={`Rate as ${fullValue}`}
+                        ></button>
+                      ))}
+                    </div>
+
+                    {/* Value display */}
+                    <div className="ml-4 w-8 h-8 text-center">
+                      <span className="text-sm px-2 py-1 h-8 block bg-gray-100 rounded">
+                        {currentValue === null ? '-' : currentValue}
+                      </span>
+                    </div>
+
+                    <Button
+                      variant={'ghost'}
+                      disabled={currentValue === null}
+                      className="ml-2 text-gray-400 hover:text-red-500"
+                      onClick={() => field.onChange(null)}
+                      aria-label="Clear rating"
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
   );
 };
 
 export const ObservationsSection: React.FC = () => {
   const { control } = useFormContext<InspectionFormData>();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'observations',
-  });
-
-  const addObservation = () => {
-    append({
-      id: uuidv4(),
-      type: '',
-      numericValue: 5,
-      notes: '',
-    });
-  };
 
   return (
     <div className="space-y-4">
@@ -204,30 +103,57 @@ export const ObservationsSection: React.FC = () => {
         <h3 className="text-lg font-medium">Observations</h3>
       </div>
 
-      {fields.length === 0 && (
-        <div className="text-center p-4 border border-dashed rounded-md">
-          <p className="text-muted-foreground">No observations added yet.</p>
-        </div>
-      )}
-
-      {fields.map((field, index) => (
-        <ObservationItem
-          key={field.id}
-          index={index}
-          observation={field as ObservationFormData}
-          onRemove={() => remove(index)}
+      <div className={'grid grid-cols-3 space-2'}>
+        <FormField
+          control={control}
+          name={`observations.queenSeen`}
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormControl>
+                <Checkbox
+                  checked={field.value ?? undefined}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel>Queen seen</FormLabel>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      ))}
-      <Button
-        type="button"
-        onClick={addObservation}
-        variant="outline"
-        size="sm"
-        className={'w-full'}
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        Add Observation
-      </Button>
+
+        <div className="flex flex-col col-span-3 space-y-2 mt-5">
+          <ObservationItem name={'observations.strength'} label={'Strength'} />
+          <ObservationItem
+            name={'observations.cappedBrood'}
+            label={'Cappped Brood'}
+          />
+          <ObservationItem
+            name={'observations.uncappedBrood'}
+            label={'Uncapped Brood'}
+          />
+          <ObservationItem
+            name={'observations.honeyStores'}
+            label={'Honey Stores'}
+          />
+          <ObservationItem
+            name={'observations.pollenStores'}
+            label={'Pollen Stores'}
+          />
+
+          <ObservationItem
+            name={'observations.queenCells'}
+            label={'Queen Cells'}
+          />
+          <ObservationItem
+            name={'observations.swarmCells'}
+            label={'Uncapped Brood'}
+          />
+          <ObservationItem
+            name={'observations.supersedureCells'}
+            label={'Supersedure Cells'}
+          />
+        </div>
+      </div>
     </div>
   );
 };

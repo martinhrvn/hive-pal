@@ -30,8 +30,6 @@ export class CreateInspectionDto {
   weatherConditions?: string;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
   @Type(() => CreateInspectionObservationsDto)
   observations?: CreateInspectionObservationsDto;
 }

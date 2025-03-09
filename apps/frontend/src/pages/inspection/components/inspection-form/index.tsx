@@ -59,7 +59,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({ hiveId }) => {
     defaultValues: {
       hiveId,
       date: new Date(),
-      observations: [],
     },
   });
 
