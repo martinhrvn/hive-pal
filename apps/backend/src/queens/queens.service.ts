@@ -1,26 +1,136 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQueenDto } from './dto/create-queen.dto';
 import { UpdateQueenDto } from './dto/update-queen.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { QueenResponseDto } from './dto/queen-response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class QueensService {
-  create(createQueenDto: CreateQueenDto) {
-    return 'This action adds a new queen';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createQueenDto: CreateQueenDto): Promise<QueenResponseDto> {
+    const queen = await this.prisma.queen.create({
+      data: {
+        hiveId: createQueenDto.hiveId,
+        marking: createQueenDto.marking,
+        color: createQueenDto.color,
+        year: createQueenDto.year,
+        source: createQueenDto.source,
+        status: createQueenDto.status ?? 'ACTIVE',
+        installedAt: createQueenDto.installedAt
+          ? new Date(createQueenDto.installedAt)
+          : null,
+        replacedAt: createQueenDto.replacedAt
+          ? new Date(createQueenDto.replacedAt)
+          : null,
+      },
+    });
+
+    return plainToInstance(QueenResponseDto, {
+      id: queen.id,
+      hiveId: queen.hiveId,
+      marking: createQueenDto.marking,
+      color: queen.color,
+      year: queen.year,
+      source: queen.source,
+      status: queen.status,
+      installedAt: queen.installedAt?.toISOString(),
+      replacedAt: queen.replacedAt?.toISOString() || null,
+    });
   }
 
-  findAll() {
-    return `This action returns all queens`;
+  async findAll() {
+    const queens = await this.prisma.queen.findMany();
+    return queens.map((queen) =>
+      plainToInstance(QueenResponseDto, {
+        id: queen.id,
+        hiveId: queen.hiveId,
+        color: queen.color,
+        year: queen.year,
+        source: queen.source,
+        status: queen.status,
+        installedAt: queen.installedAt?.toISOString(),
+        replacedAt: queen.replacedAt?.toISOString() || null,
+      }),
+    );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} queen`;
+  async findOne(id: string) {
+    const queen = await this.prisma.queen.findUnique({
+      where: { id },
+    });
+
+    if (!queen) {
+      throw new NotFoundException(`Queen with ID ${id} not found`);
+    }
+
+    return plainToInstance(QueenResponseDto, {
+      id: queen.id,
+      hiveId: queen.hiveId,
+      color: queen.color,
+      year: queen.year,
+      source: queen.source,
+      status: queen.status,
+      installedAt: queen.installedAt?.toISOString(),
+      replacedAt: queen.replacedAt?.toISOString() || null,
+    });
   }
 
-  update(id: number, updateQueenDto: UpdateQueenDto) {
-    return `This action updates a #${id} queen`;
+  async update(id: string, updateQueenDto: UpdateQueenDto) {
+    // Check if queen exists
+    const existingQueen = await this.prisma.queen.findUnique({
+      where: { id },
+    });
+
+    if (!existingQueen) {
+      throw new NotFoundException(`Queen with ID ${id} not found`);
+    }
+
+    // Update queen
+    const updatedQueen = await this.prisma.queen.update({
+      where: { id },
+      data: {
+        hiveId: updateQueenDto.hiveId,
+        color: updateQueenDto.color,
+        year: updateQueenDto.year,
+        source: updateQueenDto.source,
+        status: updateQueenDto.status ?? 'ACTIVE',
+        installedAt: updateQueenDto.installedAt
+          ? new Date(updateQueenDto.installedAt)
+          : undefined,
+        replacedAt: updateQueenDto.replacedAt
+          ? new Date(updateQueenDto.replacedAt)
+          : null,
+      },
+    });
+
+    return plainToInstance(QueenResponseDto, {
+      id: updatedQueen.id,
+      hiveId: updatedQueen.hiveId,
+      marking: updateQueenDto.marking,
+      color: updatedQueen.color,
+      year: updatedQueen.year,
+      source: updatedQueen.source,
+      status: updatedQueen.status,
+      installedAt: updatedQueen.installedAt?.toISOString(),
+      replacedAt: updatedQueen.replacedAt?.toISOString() || null,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} queen`;
+  async remove(id: string) {
+    // Check if queen exists
+    const existingQueen = await this.prisma.queen.findUnique({
+      where: { id },
+    });
+
+    if (!existingQueen) {
+      throw new NotFoundException(`Queen with ID ${id} not found`);
+    }
+
+    // Delete queen
+    return this.prisma.queen.delete({
+      where: { id },
+    });
   }
 }

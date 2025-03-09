@@ -62,9 +62,13 @@ export class HiveService {
       include: {
         apiary: true,
         queens: {
+          where: {
+            status: 'ACTIVE',
+          },
           orderBy: {
             installedAt: 'desc',
           },
+          take: 1,
         },
         boxes: {
           orderBy: {
@@ -86,6 +90,8 @@ export class HiveService {
     if (!hive) {
       return null;
     }
+
+    const activeQueen = hive.queens.length > 0 ? hive.queens[0] : null;
 
     return plainToInstance(HiveDetailResponseDto, {
       id: hive.id,
@@ -111,6 +117,19 @@ export class HiveService {
           type: box.type as BoxTypeDto,
         }),
       ),
+      activeQueen: activeQueen
+        ? {
+            id: activeQueen.id,
+            hiveId: activeQueen.hiveId,
+            marking: '', // Since the database field is markingColor
+            color: activeQueen.color,
+            year: activeQueen.year,
+            source: activeQueen.source,
+            status: activeQueen.status,
+            installedAt: activeQueen.installedAt?.toISOString(),
+            replacedAt: activeQueen.replacedAt?.toISOString() || null,
+          }
+        : null,
     });
   }
 

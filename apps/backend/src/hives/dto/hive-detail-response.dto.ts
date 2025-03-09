@@ -3,6 +3,7 @@ import { Expose, Type } from 'class-transformer';
 import { IsEnum } from 'class-validator';
 import { HiveStatusEnum } from './hive-status.enum';
 import { BoxResponseDto } from './box-response.dto';
+import { QueenResponseDto } from '../../queens/dto/queen-response.dto';
 
 export class HiveDetailResponseDto {
   @ApiProperty({
@@ -69,4 +70,14 @@ export class HiveDetailResponseDto {
   @Expose()
   @Type(() => BoxResponseDto)
   boxes: BoxResponseDto[];
+
+  @ApiProperty({
+    description: 'The current active queen in the hive',
+    type: QueenResponseDto,
+    required: false,
+    nullable: true,
+  })
+  @Expose()
+  @Type(() => QueenResponseDto)
+  activeQueen: QueenResponseDto | null;
 }
