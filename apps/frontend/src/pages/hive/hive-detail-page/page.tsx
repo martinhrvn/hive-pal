@@ -14,7 +14,7 @@ import { QueenInformation } from '@/pages/hive/hive-detail-page/queen-informatio
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
-  const { data: hive, error } = useHiveControllerFindOne(hiveId ?? '', {
+  const { data: hive, error, refetch } = useHiveControllerFindOne(hiveId ?? '', {
     query: {
       select: data => data.data,
     },
@@ -66,6 +66,7 @@ export const HiveDetailPage = () => {
               <QueenInformation
                 hiveId={hive?.id}
                 activeQueen={hive?.activeQueen}
+                onQueenUpdated={() => refetch()}
               />
               {/* Inspections timeline */}
               <Section title="Inspections">
