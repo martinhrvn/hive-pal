@@ -4,25 +4,37 @@ import { Expose } from 'class-transformer';
 export class ObservationResponseDto {
   @ApiProperty()
   @Expose()
-  id: string;
+  strength: number | null;
 
   @ApiProperty()
   @Expose()
-  inspectionId: string;
+  uncappedBrood: number | null;
 
   @ApiProperty()
   @Expose()
-  type: string;
+  cappedBrood: number | null;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  numericValue: number | null;
+  honeyStores: number | null;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  textValue: string | null;
+  pollenStores: number | null;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  notes: string | null;
+  queenCells: number | null;
+
+  @ApiProperty()
+  @Expose()
+  swarmCells: number | null;
+
+  @ApiProperty()
+  @Expose()
+  supersedureCells: number | null;
+
+  @ApiProperty()
+  @Expose()
+  queenSeen?: boolean;
 }

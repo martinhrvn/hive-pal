@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -22,6 +23,10 @@ export class CreateObservationDto {
   @IsOptional()
   @IsString()
   textValue?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  booleanValue?: boolean;
 
   @IsOptional()
   @IsString()

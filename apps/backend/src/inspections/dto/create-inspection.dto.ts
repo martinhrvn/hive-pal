@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateObservationDto } from './create-observation.dto';
+import { CreateInspectionObservationsDto } from './create-inspections-observations.dto';
 
 export class CreateInspectionDto {
   @IsOptional()
@@ -32,6 +32,6 @@ export class CreateInspectionDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateObservationDto)
-  observations?: CreateObservationDto[];
+  @Type(() => CreateInspectionObservationsDto)
+  observations?: CreateInspectionObservationsDto;
 }

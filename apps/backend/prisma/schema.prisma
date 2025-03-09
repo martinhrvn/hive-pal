@@ -79,6 +79,7 @@ model Observation {
   type         String // BROOD_PATTERN, QUEEN_SEEN, DISEASE_SIGNS etc.
   numericValue Float? // For numerical observations
   textValue    String? // For text-based observations
+  booleanValue Boolean? // For boolean observations
   notes        String? // Additional notes about the observation
 }
 
