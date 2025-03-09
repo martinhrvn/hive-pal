@@ -46,7 +46,11 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                           ? 'bg-gray-600 text-white'
                           : 'bg-gray-100'
                       }`}
-                      onClick={() => field.onChange(0)}
+                      onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        field.onChange(0);
+                      }}
                       aria-label="Rate as 0"
                     >
                       0
@@ -84,7 +88,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                     {/* Value display */}
                     <div className="ml-4 w-8 h-8 text-center">
                       <span className="text-sm px-2 py-1 h-8 block bg-gray-100 rounded">
-                        {currentValue === null ? '-' : currentValue}
+                        {currentValue ?? '-'}
                       </span>
                     </div>
 
@@ -122,7 +126,7 @@ export const ObservationsSection: React.FC = () => {
         <h3 className="text-lg font-medium">Observations</h3>
       </div>
 
-      <div className={'grid grid-cols-3 space-2'}>
+      <div className={'grid md:grid-cols-3 grid-cols-2 space-2'}>
         <FormField
           control={control}
           name={`observations.queenSeen`}
