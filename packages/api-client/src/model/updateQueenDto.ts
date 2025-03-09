@@ -5,5 +5,20 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { UpdateQueenDtoStatus } from './updateQueenDtoStatus';
 
-export interface UpdateQueenDto { [key: string]: unknown }
+export interface UpdateQueenDto {
+  hiveId?: string;
+  /** Optional marking, usually number or similar */
+  marking?: string;
+  color?: string;
+  year?: number;
+  /** @nullable */
+  source?: string | null;
+  /** @nullable */
+  status?: UpdateQueenDtoStatus;
+  /** @nullable */
+  installedAt?: string | null;
+  /** @nullable */
+  replacedAt?: string | null;
+}

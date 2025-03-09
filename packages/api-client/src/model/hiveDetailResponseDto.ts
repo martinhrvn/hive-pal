@@ -7,6 +7,7 @@
  */
 import type { HiveDetailResponseDtoStatus } from './hiveDetailResponseDtoStatus';
 import type { BoxResponseDto } from './boxResponseDto';
+import type { HiveDetailResponseDtoActiveQueen } from './hiveDetailResponseDtoActiveQueen';
 
 export interface HiveDetailResponseDto {
   /** Unique identifier of the hive */
@@ -37,4 +38,9 @@ export interface HiveDetailResponseDto {
   lastInspectionDate?: string | null;
   /** Boxes in the hive, ordered by position from bottom to top */
   boxes: BoxResponseDto[];
+  /**
+   * The current active queen in the hive
+   * @nullable
+   */
+  activeQueen?: HiveDetailResponseDtoActiveQueen;
 }

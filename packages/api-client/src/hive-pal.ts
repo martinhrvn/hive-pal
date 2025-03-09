@@ -36,6 +36,7 @@ import type {
   HiveResponseDto,
   InspectionResponseDto,
   InspectionsControllerFindAllParams,
+  QueenResponseDto,
   UpdateHiveBoxesDto,
   UpdateHiveDto,
   UpdateInspectionDto,
@@ -786,7 +787,7 @@ export function useInspectionsControllerFindOne<TData = Awaited<ReturnType<typeo
 export const inspectionsControllerUpdate = (
     id: string,
     updateInspectionDto: UpdateInspectionDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<string>> => {
+ ): Promise<AxiosResponse<void>> => {
     
     
     return axios.patch(
@@ -897,7 +898,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     
 export const queensControllerCreate = (
     createQueenDto: CreateQueenDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<string>> => {
+ ): Promise<AxiosResponse<QueenResponseDto>> => {
     
     
     return axios.post(
@@ -953,7 +954,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     
 export const queensControllerFindAll = (
      options?: AxiosRequestConfig
- ): Promise<AxiosResponse<string>> => {
+ ): Promise<AxiosResponse<QueenResponseDto[]>> => {
     
     
     return axios.get(
@@ -1033,7 +1034,7 @@ export function useQueensControllerFindAll<TData = Awaited<ReturnType<typeof que
 
 export const queensControllerFindOne = (
     id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<string>> => {
+ ): Promise<AxiosResponse<QueenResponseDto>> => {
     
     
     return axios.get(
@@ -1114,7 +1115,7 @@ export function useQueensControllerFindOne<TData = Awaited<ReturnType<typeof que
 export const queensControllerUpdate = (
     id: string,
     updateQueenDto: UpdateQueenDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<string>> => {
+ ): Promise<AxiosResponse<QueenResponseDto>> => {
     
     
     return axios.patch(
@@ -1170,7 +1171,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     
 export const queensControllerRemove = (
     id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<string>> => {
+ ): Promise<AxiosResponse<QueenResponseDto>> => {
     
     
     return axios.delete(
