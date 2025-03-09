@@ -31,7 +31,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
         return (
           <FormItem>
             <FormControl>
-              <div className="flex items-center mb-4">
+              <div className="flex md:items-center mb-4 flex-col md:flex-row gap-2 md:gap-2">
                 <div className="w-32 min-w-32 mr-4">
                   <label className="text-sm font-medium">{label}</label>
                 </div>
