@@ -247,14 +247,6 @@ export const InspectionDetailPage = () => {
                 rating={inspection.observations.queenCells}
                 label={'Queen cells'}
               />
-              <ObservationNumberRatingView
-                rating={inspection.observations.swarmCells}
-                label={'Swarm Cells'}
-              />
-              <ObservationNumberRatingView
-                rating={inspection.observations.supersedureCells}
-                label={'Supersedure Cells'}
-              />
             </div>
           </CardContent>
         </Card>
