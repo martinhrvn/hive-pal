@@ -64,7 +64,7 @@ export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
 
   return (
     <div className="grid md:grid-cols-3 grid-cols-1 gap-4 my-5">
-      <div className={'col-span-3'}>
+      <div className={'md:col-span-3'}>
         <StatisticCard
           title="Overall score"
           emphasized
