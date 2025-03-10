@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card.tsx';
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
-import { CalendarDays, Circle, MoreHorizontal } from 'lucide-react';
+import { CalendarDays, MoreHorizontal } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { buttonVariants } from '@/components/ui/button.tsx';
 import { HiveDetailResponseDtoActiveQueen } from 'api-client';
@@ -40,7 +40,7 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
       case 'blue':
         return 'text-blue-500';
       case 'white':
-        return 'bg-white';
+        return 'bg-white border border-gray-200';
       default:
         return 'bg-white';
     }
@@ -61,7 +61,9 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-medium flex items-center gap-3">
-          {<Circle className={`h-5 w-5 ${getColor(activeQueen?.color)}`} />}
+          <div
+            className={`h-5 w-5 rounded-full border border-gray-600 ${getColor(activeQueen?.color)}`}
+          />
           Queen {activeQueen?.marking}
         </CardTitle>
 
