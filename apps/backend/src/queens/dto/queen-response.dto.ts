@@ -17,7 +17,17 @@ export class QueenResponseDto {
   @ApiProperty({ required: false })
   @Expose()
   @IsOptional()
-  hiveId?: string;
+  hiveId?: string | null;
+
+  @ApiProperty()
+  @Expose()
+  @IsOptional()
+  marking: string | null;
+
+  @ApiProperty()
+  @Expose()
+  @IsOptional()
+  color: string | null;
 
   @ApiProperty()
   @Expose()

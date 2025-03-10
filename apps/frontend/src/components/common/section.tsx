@@ -13,7 +13,7 @@ export const Section: React.FC<PropsWithChildren<SectionProps>> = ({
 }) => {
   return (
     <div>
-      <section className="border-b border-b-gray-200 pb-4">
+      <section className="gray-200 mt-5">
         <div className={'flex items-center justify-between'}>
           <div className="flex flex-col">
             <h3 className="text-base font-semibold text-primary">{title}</h3>

@@ -5,18 +5,21 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import type { CreateQueenDtoStatus } from './createQueenDtoStatus';
+import type { QueenResponseDtoStatus } from './queenResponseDtoStatus';
 
-export interface CreateQueenDto {
-  hiveId?: string;
-  /** Optional marking, usually number or similar */
-  marking?: string;
-  color: string;
+export interface QueenResponseDto {
+  id: string;
+  /** @nullable */
+  hiveId?: string | null;
+  /** @nullable */
+  marking: string | null;
+  /** @nullable */
+  color: string | null;
   year: number;
   /** @nullable */
   source?: string | null;
   /** @nullable */
-  status?: CreateQueenDtoStatus;
+  status?: QueenResponseDtoStatus;
   /** @nullable */
   installedAt?: string | null;
   /** @nullable */

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Queen" ALTER COLUMN "status" SET DEFAULT 'ACTIVE',
+ALTER COLUMN "installedAt" DROP NOT NULL;

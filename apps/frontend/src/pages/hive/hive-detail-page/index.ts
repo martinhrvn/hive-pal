@@ -1,0 +1,1 @@
+export { HiveDetailPage } from './page';

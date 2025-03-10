@@ -71,7 +71,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 
                         return (
                           <button
-                            className={`rounded w-full ${color}`}
+                            className={`rounded w-full transition duration-300 transition-colors text-xs ${color} ${hoveredValue === fullValue ? 'text-gray-700' : 'text-transparent'}`}
                             onMouseEnter={() => setHoveredValue(fullValue)}
                             onMouseLeave={() => setHoveredValue(null)}
                             onClick={e => {
@@ -81,7 +81,9 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                               setHoveredValue(null);
                             }}
                             aria-label={`Rate as ${fullValue}`}
-                          ></button>
+                          >
+                            {hoveredValue === fullValue && hoveredValue}
+                          </button>
                         );
                       })}
                     </div>

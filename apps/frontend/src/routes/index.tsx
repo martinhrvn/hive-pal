@@ -5,10 +5,12 @@ import { NotFoundPage } from '@/pages/not-found-page.tsx';
 import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
 import { CreateHivePage } from '@/pages/hive/create-hive-page.tsx';
-import { HiveDetailPage } from '@/pages/hive/hive-detail-page.tsx';
+import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
 import { CreateInspectionPage } from '@/pages/inspection/create-inspection.tsx';
 import { InspectionDetailPage } from '@/pages/inspection/inspection-detail-page.tsx';
 import { EditInspectionPage } from '@/pages/inspection/edit-inspection.tsx';
+import { CreateQueenPage } from '@/pages/queen';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -45,6 +47,14 @@ const router = createBrowserRouter([
       {
         path: '/inspections/:id',
         element: <InspectionDetailPage />,
+      },
+      {
+        path: '/queens/create',
+        element: <CreateQueenPage />,
+      },
+      {
+        path: '/hives/:hiveId/queens/create',
+        element: <CreateQueenPage />,
       },
     ],
   },
