@@ -159,9 +159,9 @@ export class InspectionsService {
       honeyStores: observationsByType.honey_stores?.numericValue ?? null,
       pollenStores: observationsByType.pollen_stores?.numericValue ?? null,
       queenCells: observationsByType.queen_cells?.numericValue ?? null,
-      swarmCells: observationsByType.swarm_cells?.numericValue ?? null,
+      swarmCells: observationsByType.swarm_cells?.booleanValue ?? null,
       supersedureCells:
-        observationsByType.supersedure_cells?.numericValue ?? null,
+        observationsByType.supersedure_cells?.booleanValue ?? null,
       queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
     };
   }

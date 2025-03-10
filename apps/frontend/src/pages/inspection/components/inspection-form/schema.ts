@@ -1,26 +1,22 @@
 import { z } from 'zod';
 
-function nullableOptional<T extends z.ZodType>(schema: T) {
-  return schema.nullish();
-}
-
 export const observationSchema = z.object({
-  strength: nullableOptional(z.number()),
-  uncappedBrood: nullableOptional(z.number()),
-  cappedBrood: nullableOptional(z.number()),
-  honeyStores: nullableOptional(z.number()),
-  pollenStores: nullableOptional(z.number()),
-  queenCells: nullableOptional(z.number()),
-  swarmCells: nullableOptional(z.number()),
-  supersedureCells: nullableOptional(z.number()),
-  queenSeen: nullableOptional(z.boolean()),
+  strength: z.number().nullish(),
+  uncappedBrood: z.number().nullish(),
+  cappedBrood: z.number().nullish(),
+  honeyStores: z.number().nullish(),
+  pollenStores: z.number().nullish(),
+  queenCells: z.number().nullish(),
+  swarmCells: z.boolean().nullish(),
+  supersedureCells: z.boolean().nullish(),
+  queenSeen: z.boolean().nullish(),
 });
 
 export const inspectionSchema = z.object({
   hiveId: z.string(),
   date: z.date(),
-  temperature: nullableOptional(z.number()),
-  weatherConditions: nullableOptional(z.string()),
+  temperature: z.number().nullish(),
+  weatherConditions: z.string().nullish(),
   observations: observationSchema,
 });
 

@@ -24,6 +24,7 @@ export * from './hiveDetailResponseDtoActiveQueen';
 export * from './hiveDetailResponseDtoStatus';
 export * from './hiveResponseDto';
 export * from './hiveResponseDtoStatus';
+export * from './inspectionMetricsDto';
 export * from './inspectionResponseDto';
 export * from './inspectionsControllerFindAllParams';
 export * from './observationResponseDto';

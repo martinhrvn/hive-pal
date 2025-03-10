@@ -28,11 +28,11 @@ export class InspectionMetricsDto {
 
   @ApiProperty()
   @Expose()
-  swarmCells: number | null;
+  swarmCells: boolean | null;
 
   @ApiProperty()
   @Expose()
-  supersedureCells: number | null;
+  supersedureCells: boolean | null;
 
   @ApiProperty()
   @Expose()

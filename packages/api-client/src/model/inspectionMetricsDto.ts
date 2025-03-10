@@ -6,23 +6,23 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface CreateInspectionObservationsDto {
+export interface InspectionMetricsDto {
   /** @nullable */
-  strength?: number | null;
+  strength: number | null;
   /** @nullable */
-  uncappedBrood?: number | null;
+  uncappedBrood: number | null;
   /** @nullable */
-  cappedBrood?: number | null;
+  cappedBrood: number | null;
   /** @nullable */
-  honeyStores?: number | null;
+  honeyStores: number | null;
   /** @nullable */
-  pollenStores?: number | null;
+  pollenStores: number | null;
   /** @nullable */
-  queenCells?: number | null;
+  queenCells: number | null;
   /** @nullable */
-  swarmCells?: boolean | null;
+  swarmCells: boolean | null;
   /** @nullable */
-  supersedureCells?: boolean | null;
+  supersedureCells: boolean | null;
   /** @nullable */
   queenSeen?: boolean | null;
 }

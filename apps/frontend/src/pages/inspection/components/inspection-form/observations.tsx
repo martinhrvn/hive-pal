@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldPath, useFormContext } from 'react-hook-form';
+import { FieldPath, useFormContext, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
   FormControl,
@@ -122,7 +122,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 
 export const ObservationsSection: React.FC = () => {
   const { control } = useFormContext<InspectionFormData>();
-
+  const queenCells = useWatch({ name: 'observations.queenCells', control });
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -170,14 +170,42 @@ export const ObservationsSection: React.FC = () => {
             name={'observations.queenCells'}
             label={'Queen Cells'}
           />
-          <ObservationItem
-            name={'observations.swarmCells'}
-            label={'Swarm cells'}
-          />
-          <ObservationItem
-            name={'observations.supersedureCells'}
-            label={'Supersedure Cells'}
-          />
+          {queenCells && queenCells > 0 && (
+            <div className={'grid grid-cols-2 space-x-2'}>
+              <FormField
+                control={control}
+                name={`observations.swarmCells`}
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 shadow">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value ?? undefined}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Swarm cells</FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name={`observations.supersedureCells`}
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 shadow">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value ?? undefined}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Supersedure cells</FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
