@@ -53,5 +53,6 @@ export class CreateQueenDto {
   @ApiProperty({ required: false })
   @Expose()
   @IsDateString()
+  @IsOptional()
   replacedAt?: string | null;
 }

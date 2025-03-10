@@ -95,7 +95,6 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
   const navigate = useNavigate();
   const { hiveId: urlHiveId } = useParams();
 
-  // Use either the prop hiveId or the URL hiveId
   const effectiveHiveId = propHiveId || urlHiveId;
 
   const { data: hives } = useHiveControllerFindAll({
@@ -130,7 +129,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
         data: {
           ...data,
           installedAt: data.installedAt.toISOString(),
-          replacedAt: data.replacedAt?.toISOString(),
+          replacedAt: data.replacedAt?.toISOString() ?? null,
         },
       });
       // Navigate to the hive detail page after successful creation
