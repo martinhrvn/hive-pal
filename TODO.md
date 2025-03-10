@@ -1,83 +1,52 @@
-# Basic features
+~~# Hive Pal Checklist
 
-## Header
+## Hive Management
+- [x] Create new hives with name and installation date
+- [x] View list of all hives with status indicators
+- [x] View detailed information for individual hives
+- [ ] Update hive status (Active, Inactive, Dead)
+- [ ] Delete hives (with confirmation)
 
-- [ ] See current apiary in a dropdown
-
-## Apiary
-
-- create apiary
-- edit apiary
-- delete apiary (with confirmation)
-
-## Hive
-
-- [ ] create hive
-- edit hive
-- delete hive (with confirmation)
-
-## UI
-
-1. [ ] Add a `+` button to the bottom right corner of the screen
-
-## Dashboard
-
-- show hives
-- show upcoming inspections
-
-# Hive Management MVP Checklist
-
-## Core Authentication
-
-- [ ] Basic user login
-- [ ] User profile (timezone)
-
-## Hive Management Essentials
-
-- [ ] Basic hive CRUD operations
-- [ ] Core hive properties:
-  - [ ] Hive name/ID
-  - [ ] Location (GPS coordinates + text description)
-  - [ ] Installation date
-  - [ ] Active/inactive status
-  - [ ] Basic notes field
-
-## Inspection System
-
-- [ ] Basic inspection recording:
-  - [ ] Inspection date
-  - [ ] Queen presence (yes/no)
-  - [ ] Colony strength assessment (weak/medium/strong)
-  - [ ] Food stores status (low/adequate/high)
-  - [ ] Basic health check (healthy/needs attention)
-- [ ] Simple inspection notes field
-- [ ] Last inspection date tracking
+## Inspection Management
+- [x] Create new inspections for any hive
+- [ ] Schedule future inspections with reminders
+- [ ] View calendar of upcoming scheduled inspections
+- [ ] Set recurring inspection patterns (weekly, bi-weekly, monthly)
+- [x] Quick add observations with toggle buttons and rating scales:
+  - [x] Queen seen (yes/no with notes)
+  - [x] Brood rating (capped, uncapped)
+  - [x] Honey stores
+  - [x] Population strength
+  - [ ] Disease/pest signs (yes/no with notes)
+  - [x] Queen cells present (amount)
+- [ ] Record actions taken:
+  - [ ] Feeding (with notes)
+  - [ ] Treatments applied
+  - [ ] Equipment changes
+  - [ ] Harvesting
+- [x] View inspection timeline/feed for each hive
+- [ ] Filter inspections by date range
+- [ ] View scheduled inspections for all hives
+- [x] View detailed inspection records
 
 ## Queen Management
+- [x] Track current queen for each hive
+- [x] Record queen details (marking color, year, source)
+- [ ] Log queen replacements with dates
+- [ ] View queen history for a hive
 
-- [ ] Basic queen tracking:
-  - [ ] Installation/birth year
-  - [ ] Marking color
-  - [ ] Current status (present/absent/uncertain)
-  - [ ] Replacement records
-
-## Basic Dashboard
-
-- [ ] Overview of all hives
-- [ ] Individual hive status display
-- [ ] Basic filtering by:
-  - [ ] Active/inactive status
-  - [ ] Location
-- [ ] Simple alert system for:
-  - [ ] Overdue inspections
-  - [ ] Critical issues flagged during inspections
-
-## Essential Reports
-
-- [ ] Basic inspection history
-- [ ] Simple colony health status report
+## Equipment Tracking
+- [ ] Add boxes to hives with position and type (brood, honey, feeder)
+- [ ] Record frame count per box
+- [ ] Track queen excluders between boxes
+- [ ] View current hive configuration
 
 ## Weather Integration
+- [x] Record weather conditions during inspections
+- [x] Track temperature during inspections
 
-- [ ] Basic weather conditions recording during inspections
-- [ ] Simple weather forecast display for inspection planning
+## Mobile-Optimized Features
+- [x] Streamlined data entry forms
+- [ ] Timeline view of inspection history
+- [ ] Quick-add buttons for common actions
+- [ ] Compact, single-column layouts for mobile

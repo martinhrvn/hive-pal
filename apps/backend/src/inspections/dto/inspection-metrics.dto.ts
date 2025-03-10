@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class ObservationResponseDto {
+export class InspectionMetricsDto {
   @ApiProperty()
   @Expose()
   strength: number | null;
@@ -36,5 +36,21 @@ export class ObservationResponseDto {
 
   @ApiProperty()
   @Expose()
-  queenSeen?: boolean;
+  queenSeen?: boolean | null;
+}
+
+export function isInspectionMetricsResponseDtoFilled(
+  observation: InspectionMetricsDto,
+): boolean {
+  return (
+    observation.strength !== null &&
+    observation.uncappedBrood !== null &&
+    observation.cappedBrood !== null &&
+    observation.honeyStores !== null &&
+    observation.pollenStores !== null &&
+    observation.queenCells !== null &&
+    observation.swarmCells !== null &&
+    observation.supersedureCells !== null &&
+    observation.queenSeen !== null
+  );
 }

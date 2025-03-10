@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { HiveModule } from './hives/hive.module';
 import { InspectionsModule } from './inspections/inspections.module';
 import { QueensModule } from './queens/queens.module';
+import { MetricsService } from './metrics/metrics.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { QueensModule } from './queens/queens.module';
     QueensModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MetricsService],
 })
 export class AppModule {}

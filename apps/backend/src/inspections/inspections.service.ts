@@ -4,44 +4,54 @@ import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionFilterDto } from './dto/inspection-filter.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
-import { ObservationResponseDto } from './dto/observation-response.dto';
-import { Observation } from '@prisma/client';
+import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
+import { Observation, Prisma } from '@prisma/client';
+import { MetricsService } from '../metrics/metrics.service';
 
 @Injectable()
 export class InspectionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private metricService: MetricsService,
+  ) {}
 
   create(createInspectionDto: CreateInspectionDto) {
     const { observations, ...inspectionData } = createInspectionDto;
-    return this.prisma.inspection.create({
-      data: {
-        ...inspectionData,
-        observations: {
-          create: [
-            { type: 'strength', numericValue: observations?.strength },
-            {
-              type: 'capped_brood',
-              numericValue: observations?.cappedBrood,
-            },
-            {
-              type: 'uncapped_brood',
-              numericValue: observations?.uncappedBrood,
-            },
-            { type: 'honey_stores', numericValue: observations?.honeyStores },
-            { type: 'pollen_stores', numericValue: observations?.pollenStores },
-            { type: 'queen_cells', numericValue: observations?.queenCells },
-            { type: 'swarm_cells', numericValue: observations?.swarmCells },
-            {
-              type: 'supersedure_cells',
-              numericValue: observations?.supersedureCells,
-            },
-            { type: 'queen_seen', booleanValue: observations?.queenSeen },
-          ],
+    return this.prisma.$transaction(async (tx) => {
+      const inspection = await tx.inspection.create({
+        data: {
+          ...inspectionData,
+          observations: {
+            create: [
+              { type: 'strength', numericValue: observations?.strength },
+              {
+                type: 'capped_brood',
+                numericValue: observations?.cappedBrood,
+              },
+              {
+                type: 'uncapped_brood',
+                numericValue: observations?.uncappedBrood,
+              },
+              { type: 'honey_stores', numericValue: observations?.honeyStores },
+              {
+                type: 'pollen_stores',
+                numericValue: observations?.pollenStores,
+              },
+              { type: 'queen_cells', numericValue: observations?.queenCells },
+              { type: 'swarm_cells', booleanValue: observations?.swarmCells },
+              {
+                type: 'supersedure_cells',
+                booleanValue: observations?.supersedureCells,
+              },
+              { type: 'queen_seen', booleanValue: observations?.queenSeen },
+            ],
+          },
         },
-      },
-      include: {
-        observations: true,
-      },
+        include: {
+          observations: true,
+        },
+      });
+      await this.storeHiveMetrics(inspection.id, createInspectionDto, tx);
     });
   }
 
@@ -115,10 +125,10 @@ export class InspectionsService {
                 numericValue: observations?.pollenStores,
               },
               { type: 'queen_cells', numericValue: observations?.queenCells },
-              { type: 'swarm_cells', numericValue: observations?.swarmCells },
+              { type: 'swarm_cells', booleanValue: observations?.swarmCells },
               {
                 type: 'supersedure_cells',
-                numericValue: observations?.supersedureCells,
+                booleanValue: observations?.supersedureCells,
               },
               { type: 'queen_seen', booleanValue: observations?.queenSeen },
             ],
@@ -134,7 +144,7 @@ export class InspectionsService {
 
   private mapObservationsToDto(
     observations: Observation[],
-  ): ObservationResponseDto {
+  ): InspectionMetricsDto {
     const observationsByType: Record<string, Observation> = observations.reduce(
       (acc, observation) => ({
         ...acc,
@@ -155,4 +165,37 @@ export class InspectionsService {
       queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
     };
   }
+
+  async storeHiveMetrics(
+    inspectionId: string,
+    inspection: CreateInspectionDto,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const prisma = tx ?? this.prisma;
+    const overallRating = this.metricService.calculateOveralScore(
+      inspection.observations ?? {},
+    );
+    await prisma.hiveMetric.create({
+      data: {
+        hiveId: inspection.hiveId,
+        inspectionId: inspectionId,
+        date: inspection.date,
+        overallRating: overallRating.overallScore,
+        populationRating: overallRating.populationScore,
+        storesRating: overallRating.storesScore,
+        queenRating: overallRating.queenScore,
+        cappedBrood: inspection.observations?.cappedBrood,
+        uncappedBrood: inspection.observations?.uncappedBrood,
+        honeyStores: inspection.observations?.honeyStores,
+        pollenStores: inspection.observations?.pollenStores,
+        queenSeen: inspection.observations?.queenSeen,
+        queenCells: inspection.observations?.queenCells,
+        swarmCells: inspection.observations?.swarmCells ?? false,
+        supersedureCells: inspection.observations?.supersedureCells ?? false,
+        warnings: overallRating.warnings,
+      },
+    });
+  }
+
+  calculate;
 }

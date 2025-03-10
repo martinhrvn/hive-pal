@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { ObservationResponseDto } from './observation-response.dto';
+import { InspectionMetricsDto } from './inspection-metrics.dto';
 import { IsDateString } from 'class-validator';
 
 export class InspectionResponseDto {
@@ -25,8 +25,8 @@ export class InspectionResponseDto {
   @Expose()
   weatherConditions: string | null;
 
-  @ApiProperty({ type: ObservationResponseDto })
+  @ApiProperty({ type: InspectionMetricsDto })
   @Expose()
-  @Type(() => ObservationResponseDto)
-  observations: ObservationResponseDto;
+  @Type(() => InspectionMetricsDto)
+  observations: InspectionMetricsDto;
 }

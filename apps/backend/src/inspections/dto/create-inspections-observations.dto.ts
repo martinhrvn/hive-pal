@@ -25,13 +25,13 @@ export class CreateInspectionObservationsDto {
   @IsOptional()
   queenCells?: number | null;
 
-  @IsNumber()
+  @IsBoolean()
   @IsOptional()
-  swarmCells?: number | null;
+  swarmCells?: boolean | null;
 
-  @IsNumber()
+  @IsBoolean()
   @IsOptional()
-  supersedureCells?: number | null;
+  supersedureCells?: boolean | null;
 
   @IsOptional()
   @IsBoolean()
