@@ -14,7 +14,11 @@ import { QueenInformation } from '@/pages/hive/hive-detail-page/queen-informatio
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
-  const { data: hive, error, refetch } = useHiveControllerFindOne(hiveId ?? '', {
+  const {
+    data: hive,
+    error,
+    refetch,
+  } = useHiveControllerFindOne(hiveId ?? '', {
     query: {
       select: data => data.data,
     },
@@ -60,8 +64,8 @@ export const HiveDetailPage = () => {
             <TabsContent value="overview">
               {/* Queen Information */}
               {/* Statistics from latest inspection */}
-              {inspections && inspections.length > 0 && (
-                <StatisticCards inspections={inspections} />
+              {hive && hive.hiveScore && (
+                <StatisticCards score={hive.hiveScore} />
               )}
               <QueenInformation
                 hiveId={hive?.id}

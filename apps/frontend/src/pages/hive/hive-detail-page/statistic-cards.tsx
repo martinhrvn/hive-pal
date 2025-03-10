@@ -1,142 +1,109 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { InspectionResponseDto } from "api-client";
-import { Activity, Droplets, Egg } from "lucide-react";
+import { InspectionScoreDto } from 'api-client';
+import { BarChart, CrownIcon } from 'lucide-react';
+import { BeeIcon } from '@/components/common/bee-icon.tsx';
+import { IconJarLogoIcon } from '@radix-ui/react-icons';
 
 type StatisticCardProps = {
   title: string;
   value: React.ReactNode;
   subtitle?: string;
   icon?: React.ReactNode;
+  emphasized?: boolean;
 };
 
-const StatisticCard = ({ title, value, subtitle, icon }: StatisticCardProps) => {
+const StatisticCard = ({
+  title,
+  value,
+  icon,
+  emphasized,
+}: StatisticCardProps) => {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon && <div className="text-muted-foreground">{icon}</div>}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">
-          {value}
+    <div
+      className={`w-64 flex border shadow-sm px-8 py-4 rounded-md items-center  gap-8 ${emphasized ? 'border-amber-300 bg-amber-50' : ''}`}
+    >
+      <div>{icon}</div>
+      <div className={'flex flex-col justify-end'}>
+        <span className={'text-sm text text-muted-foreground'}> {title}</span>
+        <div className={'wrap-none'}>
+          {' '}
+          <span className={'text-4xl font-bold'}>{value}</span>
+          <span className={'text-sm text-muted-foreground/80'}> / 10</span>
         </div>
-        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
-export const StatisticCards = ({ inspections }: { inspections: InspectionResponseDto[] }) => {
-  // Sort inspections by date (newest first)
-  const sortedInspections = [...inspections].sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-  
+export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
   // Find most recent values for each metric
-  let strength: number | null = null;
-  let honeyStores: number | null = null;
-  let cappedBrood: number | null = null;
-  let uncappedBrood: number | null = null;
-  
-  // Track dates for each metric to show when they were last recorded
-  let strengthDate: string | null = null;
-  let honeyStoresDate: string | null = null;
-  let broodDate: string | null = null;
-  
-  // Go through sorted inspections to find most recent values
-  for (const inspection of sortedInspections) {
-    const date = new Date(inspection.date).toLocaleDateString();
-    
-    // Colony strength
-    if (strength === null && inspection.observations?.strength !== null) {
-      strength = inspection.observations.strength;
-      strengthDate = date;
-    }
-    
-    // Honey stores
-    if (honeyStores === null && inspection.observations?.honeyStores !== null) {
-      honeyStores = inspection.observations.honeyStores;
-      honeyStoresDate = date;
-    }
-    
-    // Brood metrics
-    if ((cappedBrood === null || uncappedBrood === null) && 
-        (inspection.observations?.cappedBrood !== null || 
-         inspection.observations?.uncappedBrood !== null)) {
-      
-      if (cappedBrood === null && inspection.observations?.cappedBrood !== null) {
-        cappedBrood = inspection.observations.cappedBrood;
-      }
-      
-      if (uncappedBrood === null && inspection.observations?.uncappedBrood !== null) {
-        uncappedBrood = inspection.observations.uncappedBrood;
-      }
-      
-      if (broodDate === null) {
-        broodDate = date;
-      }
-    }
-    
-    // If we've found all metrics, we can stop searching
-    if (strength !== null && honeyStores !== null && 
-        cappedBrood !== null && uncappedBrood !== null) {
-      break;
-    }
-  }
-  
-  // Calculate total brood score (average of capped and uncapped if both exist)
-  const broodScore = cappedBrood !== null && uncappedBrood !== null
-    ? ((cappedBrood + uncappedBrood) / 2).toFixed(1)
-    : cappedBrood !== null 
-      ? cappedBrood
-      : uncappedBrood;
-  
-  // Create subtitles with dates for each metric
-  const strengthSubtitle = strengthDate ? `Last recorded: ${strengthDate}` : "No data available";
-  const honeySubtitle = honeyStoresDate ? `Last recorded: ${honeyStoresDate}` : "No data available";
-  const broodSubtitle = broodDate ? `Last recorded: ${broodDate}` : "No data available";
+  let strength: number | null = score.populationScore;
+  let honeyStores: number | null = score.storesScore;
+  let queenScore: number | null = score.queenScore;
 
   // Create color classes based on values
   const getStrengthColor = (value: number | null) => {
-    if (value === null) return "";
-    if (value >= 7) return "text-green-600";
-    if (value >= 4) return "text-amber-500";
-    return "text-red-500";
-  };
-  
-  const getHoneyColor = (value: number | null) => {
-    if (value === null) return "";
-    if (value >= 7) return "text-green-600";
-    if (value >= 3) return "text-amber-500";
-    return "text-red-500";
+    if (value === null) return '';
+    if (value >= 7) return 'text-green-600';
+    if (value >= 4) return 'text-amber-500';
+    return 'text-red-500';
   };
 
-  const getBroodColor = (value: number | null) => {
-    if (value === null) return "";
-    if (value >= 6) return "text-green-600";
-    if (value >= 3) return "text-amber-500";
-    return "text-red-500";
+  const getHoneyColor = (value: number | null) => {
+    if (value === null) return '';
+    if (value >= 7) return 'text-green-600';
+    if (value >= 3) return 'text-amber-500';
+    return 'text-red-500';
+  };
+
+  const getQueenColor = (value: number | null) => {
+    if (value === null) return '';
+    if (value >= 6) return 'text-green-600';
+    if (value >= 3) return 'text-amber-500';
+    return 'text-red-500';
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <StatisticCard 
-        title="Colony Strength"
-        value={<span className={getStrengthColor(strength)}>{strength !== null ? strength : "—"}</span>}
-        subtitle={strengthSubtitle}
-        icon={<Activity className="h-4 w-4" />}
-      />
-      <StatisticCard 
-        title="Honey Stores" 
-        value={<span className={getHoneyColor(honeyStores)}>{honeyStores !== null ? honeyStores : "—"}</span>}
-        subtitle={honeySubtitle}
-        icon={<Droplets className="h-4 w-4" />}
+    <div className="flex gap-4 mb-10 flex-wrap">
+      <StatisticCard
+        title="Overall score"
+        emphasized
+        value={
+          <span className={getStrengthColor(strength)}>
+            {score.overallScore !== null ? score.overallScore.toFixed(1) : '—'}
+          </span>
+        }
+        subtitle={''}
+        icon={<BarChart className="h-8 w-8 " />}
       />
       <StatisticCard
-        title="Brood Development"
-        value={<span className={getBroodColor(broodScore as number | null)}>{broodScore !== null ? broodScore : "—"}</span>}
-        subtitle={broodSubtitle}
-        icon={<Egg className="h-4 w-4" />}
+        title="Population score"
+        value={
+          <span className={getStrengthColor(strength)}>
+            {strength !== null ? strength.toFixed(1) : '—'}
+          </span>
+        }
+        subtitle={''}
+        icon={<BeeIcon className="h-8 w-8  text-muted-foreground/60" />}
+      />
+      <StatisticCard
+        title="Stores score"
+        value={
+          <span className={getHoneyColor(honeyStores)}>
+            {honeyStores !== null ? honeyStores.toFixed(1) : '—'}
+          </span>
+        }
+        subtitle={''}
+        icon={<IconJarLogoIcon className="h-8 w-8  text-muted-foreground/60" />}
+      />
+      <StatisticCard
+        title="Queen score"
+        value={
+          <span className={getQueenColor(honeyStores)}>
+            {queenScore !== null ? queenScore.toFixed(1) : '—'}
+          </span>
+        }
+        subtitle={''}
+        icon={<CrownIcon className="h-8 w-8 text-muted-foreground/80" />}
       />
     </div>
   );
