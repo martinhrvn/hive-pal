@@ -1,11 +1,9 @@
 import {
-  IsArray,
   IsDateString,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
-  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateInspectionObservationsDto } from './create-inspections-observations.dto';

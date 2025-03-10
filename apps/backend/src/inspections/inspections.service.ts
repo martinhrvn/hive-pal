@@ -115,7 +115,13 @@ export class InspectionsService {
           inspectionId: id,
         },
       });
-      return tx.inspection.update({
+      await tx.hiveMetric.deleteMany({
+        where: {
+          inspectionId: id,
+        },
+      });
+
+      const inspection = await tx.inspection.update({
         where: { id },
         data: {
           ...inspectionData,
@@ -146,6 +152,16 @@ export class InspectionsService {
           },
         },
       });
+      await this.storeHiveMetrics(
+        id,
+        {
+          ...updateInspectionDto,
+          hiveId: inspection.hiveId,
+          date: inspection.date,
+        },
+        tx,
+      );
+      return inspection;
     });
   }
 
