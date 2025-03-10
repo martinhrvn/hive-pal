@@ -19,7 +19,7 @@ const StatisticCard = ({
 }: StatisticCardProps) => {
   return (
     <div
-      className={`w-64 flex border shadow-sm px-8 py-4 rounded-md items-center hover:bg-amber-100 gap-8 ${emphasized ? 'border-amber-400 bg-amber-50 shadow-lg' : ''}`}
+      className={`flex border shadow-sm px-8 py-4 rounded-md items-center justify-center hover:bg-amber-100 gap-8 ${emphasized ? 'border-amber-400 bg-amber-50 shadow-lg' : ''}`}
     >
       <div>{icon}</div>
       <div className={'flex flex-col justify-end'}>
@@ -63,18 +63,23 @@ export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
   };
 
   return (
-    <div className="flex gap-4 mb-10 flex-wrap">
-      <StatisticCard
-        title="Overall score"
-        emphasized
-        value={
-          <span className={getStrengthColor(strength)}>
-            {score.overallScore !== null ? score.overallScore.toFixed(1) : '—'}
-          </span>
-        }
-        subtitle={''}
-        icon={<BarChart className="h-8 w-8 " />}
-      />
+    <div className="grid md:grid-cols-3 grid-cols-1 gap-4 my-5">
+      <div className={'col-span-3'}>
+        <StatisticCard
+          title="Overall score"
+          emphasized
+          value={
+            <span className={getStrengthColor(strength)}>
+              {score.overallScore !== null
+                ? score.overallScore.toFixed(1)
+                : '—'}
+            </span>
+          }
+          subtitle={''}
+          icon={<BarChart className="h-8 w-8 " />}
+        />
+      </div>
+
       <StatisticCard
         title="Population score"
         value={
