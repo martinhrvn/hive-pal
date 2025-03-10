@@ -19,7 +19,7 @@ const StatisticCard = ({
 }: StatisticCardProps) => {
   return (
     <div
-      className={`w-64 flex border shadow-sm px-8 py-4 rounded-md items-center  gap-8 ${emphasized ? 'border-amber-300 bg-amber-50' : ''}`}
+      className={`w-64 flex border shadow-sm px-8 py-4 rounded-md items-center hover:bg-amber-100 gap-8 ${emphasized ? 'border-amber-400 bg-amber-50 shadow-lg' : ''}`}
     >
       <div>{icon}</div>
       <div className={'flex flex-col justify-end'}>

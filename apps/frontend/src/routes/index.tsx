@@ -10,10 +10,12 @@ import { CreateInspectionPage } from '@/pages/inspection/create-inspection.tsx';
 import { InspectionDetailPage } from '@/pages/inspection/inspection-detail-page.tsx';
 import { EditInspectionPage } from '@/pages/inspection/edit-inspection.tsx';
 import { CreateQueenPage } from '@/pages/queen';
+import GenericErrorPage from '@/pages/error-page.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
+    errorElement: <GenericErrorPage />,
     element: (
       <ProtectedRoute>
         <DasboardLayout />

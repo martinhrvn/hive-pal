@@ -1,5 +1,4 @@
 import { HiveResponseDto } from 'api-client/dist/model';
-import { useNavigate } from 'react-router-dom';
 import { HiveStatus } from './hive-status';
 import { ChevronRight, DotIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,10 +8,8 @@ type HiveListProps = {
 };
 
 export const HiveList: React.FC<HiveListProps> = ({ hives }) => {
-  const navigate = useNavigate();
   return (
     <div>
-      <button onClick={() => navigate('/hives/create/')}>Create hive</button>
       <div className={'grid grid-cols-1 lg:grid-cols-2 gap-4'}>
         {hives.map(hive => (
           <Card key={hive.id}>
