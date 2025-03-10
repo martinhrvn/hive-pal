@@ -32,10 +32,11 @@ model Hive {
 }
 
 model HiveMetric {
-  id               String   @id @default(uuid())
+  id               String     @id @default(uuid())
   hiveId           String
-  inspectionId     String
-  hive             Hive     @relation(fields: [hiveId], references: [id])
+  inspectionId     String     @unique
+  inspection       Inspection @relation(fields: [inspectionId], references: [id])
+  hive             Hive       @relation(fields: [hiveId], references: [id])
   date             DateTime
   overallRating    Float?
   populationRating Float?
@@ -86,6 +87,7 @@ model Inspection {
   weatherConditions String?
   observations      Observation[]
   actions           Action[]
+  hiveMetric        HiveMetric?
 }
 
 model InspectionNote {

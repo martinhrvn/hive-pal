@@ -8,6 +8,7 @@
 import type { HiveDetailResponseDtoStatus } from './hiveDetailResponseDtoStatus';
 import type { BoxResponseDto } from './boxResponseDto';
 import type { HiveDetailResponseDtoActiveQueen } from './hiveDetailResponseDtoActiveQueen';
+import type { InspectionScoreDto } from './inspectionScoreDto';
 
 export interface HiveDetailResponseDto {
   /** Unique identifier of the hive */
@@ -43,4 +44,6 @@ export interface HiveDetailResponseDto {
    * @nullable
    */
   activeQueen?: HiveDetailResponseDtoActiveQueen;
+  /** Hive score */
+  hiveScore: InspectionScoreDto;
 }

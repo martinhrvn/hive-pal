@@ -5,8 +5,9 @@ import { InspectionFilterDto } from './dto/inspection-filter.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
-import { Observation, Prisma } from '@prisma/client';
+import { HiveMetric, Observation, Prisma } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
+import { InspectionScoreDto } from './dto/inspection-score.dto';
 
 @Injectable()
 export class InspectionsService {
@@ -65,6 +66,7 @@ export class InspectionsService {
       },
       include: {
         observations: true,
+        hiveMetric: true,
       },
     });
     return inspections.map((inspection): InspectionResponseDto => {
@@ -75,6 +77,13 @@ export class InspectionsService {
         temperature: inspection.temperature ?? null,
         weatherConditions: inspection.weatherConditions ?? null,
         observations: this.mapObservationsToDto(inspection.observations),
+        score: {
+          queenScore: inspection.hiveMetric?.queenRating ?? null,
+          storesScore: inspection.hiveMetric?.storesRating ?? null,
+          populationScore: inspection.hiveMetric?.populationRating ?? null,
+          overallScore: inspection.hiveMetric?.overallRating ?? null,
+          warnings: inspection.hiveMetric?.warnings ?? [],
+        },
       };
     });
   }
@@ -84,6 +93,7 @@ export class InspectionsService {
       where: { id },
       include: {
         observations: true,
+        hiveMetric: true,
       },
     });
     if (!inspection) {
@@ -93,6 +103,7 @@ export class InspectionsService {
       ...inspection,
       date: inspection.date.toISOString(),
       observations: this.mapObservationsToDto(inspection.observations),
+      score: this.mapHiveMetricsToDto(inspection.hiveMetric),
     };
   }
 
@@ -197,5 +208,13 @@ export class InspectionsService {
     });
   }
 
-  calculate;
+  mapHiveMetricsToDto(hiveMetrics: HiveMetric | null): InspectionScoreDto {
+    return {
+      overallScore: hiveMetrics?.overallRating ?? null,
+      populationScore: hiveMetrics?.populationRating ?? null,
+      storesScore: hiveMetrics?.storesRating ?? null,
+      queenScore: hiveMetrics?.queenRating ?? null,
+      warnings: hiveMetrics?.warnings ?? [],
+    };
+  }
 }

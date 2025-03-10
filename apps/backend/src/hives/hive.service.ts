@@ -9,9 +9,14 @@ import { mapPrismaHiveStatusToDto } from './dto/hive-status.enum';
 import { BoxTypeDto, UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
 import { Box } from '@prisma/client';
 import { BoxResponseDto } from './dto/box-response.dto';
+import { InspectionsService } from '../inspections/inspections.service';
+import { InspectionScoreDto } from '../inspections/dto/inspection-score.dto';
 @Injectable()
 export class HiveService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private inspeectionService: InspectionsService,
+  ) {}
 
   async create(createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
     const hive = await this.prisma.hive.create({
@@ -81,6 +86,7 @@ export class HiveService {
           },
           include: {
             observations: true,
+            hiveMetric: true,
             actions: true,
           },
         },
@@ -92,6 +98,10 @@ export class HiveService {
     }
 
     const activeQueen = hive.queens.length > 0 ? hive.queens[0] : null;
+    const latestInspection =
+      hive.inspections && hive.inspections.length > 0
+        ? (hive.inspections[0] ?? null)
+        : null;
 
     return plainToInstance(HiveDetailResponseDto, {
       id: hive.id,
@@ -103,10 +113,7 @@ export class HiveService {
         typeof hive.installationDate === 'string'
           ? hive.installationDate
           : (hive.installationDate?.toISOString() ?? null),
-      lastInspectionDate:
-        hive.inspections && hive.inspections.length > 0
-          ? (hive.inspections[0].date?.toISOString() ?? null)
-          : null,
+      lastInspectionDate: latestInspection?.date?.toISOString(),
       boxes: hive.boxes.map(
         (box): BoxResponseDto => ({
           id: box.id,
@@ -116,6 +123,12 @@ export class HiveService {
           hasExcluder: box.hasExcluder,
           type: box.type as BoxTypeDto,
         }),
+      ),
+      hiveScore: plainToInstance(
+        InspectionScoreDto,
+        this.inspeectionService.mapHiveMetricsToDto(
+          latestInspection?.hiveMetric ?? null,
+        ),
       ),
       activeQueen: activeQueen
         ? {

@@ -4,6 +4,7 @@ import { IsEnum } from 'class-validator';
 import { HiveStatusEnum } from './hive-status.enum';
 import { BoxResponseDto } from './box-response.dto';
 import { QueenResponseDto } from '../../queens/dto/queen-response.dto';
+import { InspectionScoreDto } from '../../inspections/dto/inspection-score.dto';
 
 export class HiveDetailResponseDto {
   @ApiProperty({
@@ -80,4 +81,11 @@ export class HiveDetailResponseDto {
   @Expose()
   @Type(() => QueenResponseDto)
   activeQueen: QueenResponseDto | null;
+
+  @ApiProperty({
+    description: 'Hive score',
+  })
+  @Expose()
+  @Type(() => InspectionScoreDto)
+  hiveScore: InspectionScoreDto;
 }

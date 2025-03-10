@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { InspectionMetricsDto } from './inspectionMetricsDto';
+import type { InspectionScoreDto } from './inspectionScoreDto';
 
 export interface InspectionResponseDto {
   id: string;
@@ -16,4 +17,5 @@ export interface InspectionResponseDto {
   /** @nullable */
   weatherConditions?: string | null;
   observations: InspectionMetricsDto;
+  score: InspectionScoreDto;
 }
