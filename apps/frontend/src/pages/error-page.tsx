@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertOctagon, ArrowLeft, RefreshCw, Home } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Home } from 'lucide-react';
 
 interface ErrorPageProps {
   title?: string;
@@ -14,7 +14,6 @@ const GenericErrorPage: React.FC<ErrorPageProps> = ({
   title = 'Something went wrong',
   message = "We're having trouble loading this page. Please try again or return home.",
   code = '500',
-  onRetry,
   onBack,
   onHome,
 }) => {

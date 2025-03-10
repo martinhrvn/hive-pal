@@ -9,9 +9,16 @@ import type { UpdateQueenDtoStatus } from './updateQueenDtoStatus';
 
 export interface UpdateQueenDto {
   hiveId?: string;
-  /** Optional marking, usually number or similar */
-  marking?: string;
-  color?: string;
+  /**
+   * Optional marking, usually number or similar
+   * @nullable
+   */
+  marking?: string | null;
+  /**
+   * Optional color of the queen
+   * @nullable
+   */
+  color?: string | null;
   year?: number;
   /** @nullable */
   source?: string | null;

@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -29,11 +29,67 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { QueenFormData, queenSchema } from './schema';
-import { useHiveControllerFindAll } from 'api-client';
+import {
+  useHiveControllerFindAll,
+  useQueensControllerCreate,
+} from 'api-client';
 
 type QueenFormProps = {
   hiveId?: string;
 };
+
+const COLOR_OPTIONS = [
+  {
+    label: 'Blue',
+    value: 'blue',
+    style: 'bg-blue-500',
+  },
+  {
+    label: 'Green',
+    value: 'green',
+    style: 'bg-green-500',
+  },
+  {
+    label: 'Red',
+    value: 'red',
+    style: 'bg-red-500',
+  },
+  {
+    label: 'Yellow',
+    value: 'yellow',
+    style: 'bg-yellow-500',
+  },
+  {
+    label: 'Purple',
+    value: 'purple',
+    style: 'bg-purple-500',
+  },
+  {
+    label: 'Indigo',
+    value: 'indigo',
+    style: 'bg-indigo-500',
+  },
+  {
+    label: 'Pink',
+    value: 'pink',
+    style: 'bg-pink-500',
+  },
+  {
+    label: 'Gray',
+    value: 'gray',
+    style: 'bg-gray-500',
+  },
+  {
+    label: 'Black',
+    value: 'black',
+    style: 'bg-black',
+  },
+  {
+    label: 'White',
+    value: 'white',
+    style: 'bg-white border border-gray-300',
+  },
+];
 
 export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
   const navigate = useNavigate();
@@ -52,6 +108,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
     },
   });
 
+  const { mutateAsync: createQueen } = useQueensControllerCreate();
   const form = useForm<QueenFormData>({
     resolver: zodResolver(queenSchema),
     defaultValues: {
@@ -66,10 +123,16 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
     },
   });
 
+  const colorValue = useWatch({ control: form.control, name: 'color' });
   const onSubmit = async (data: QueenFormData) => {
     try {
-      console.log('Creating queen:', data);
-
+      await createQueen({
+        data: {
+          ...data,
+          installedAt: data.installedAt.toISOString(),
+          replacedAt: data.replacedAt?.toISOString(),
+        },
+      });
       // Navigate to the hive detail page after successful creation
       if (data.hiveId) {
         navigate(`/hives/${data.hiveId}`);
@@ -125,42 +188,6 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
 
               <FormField
                 control={form.control}
-                name="marking"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Marking</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter queen marking"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="color"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Color</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter queen color"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="year"
                 render={({ field }) => (
                   <FormItem>
@@ -176,12 +203,96 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                             e.target.value ? Number(e.target.value) : null,
                           )
                         }
+                        onBlur={() => {
+                          let color: string | null = null;
+                          const lastYearDigit = field.value % 10;
+                          switch (lastYearDigit) {
+                            case 0:
+                            case 5:
+                              color = 'blue';
+                              break;
+                            case 1:
+                            case 6:
+                              color = 'white';
+                              break;
+                            case 2:
+                            case 7:
+                              color = 'yellow';
+                              break;
+                            case 3:
+                            case 8:
+                              color = 'red';
+                              break;
+                            case 4:
+                            case 9:
+                              color = 'green';
+                              break;
+                          }
+
+                          if (!colorValue && color) {
+                            console.log('setting value');
+                            form.setValue('color', color);
+                          }
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <div className={'grid grid-cols-1 md:grid-cols-2 gap-4'}>
+                <FormField
+                  control={form.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Color</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value ?? undefined}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select color" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {COLOR_OPTIONS.map(option => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                <div
+                                  className={`w-4 h-4 rounded-full ${option.style}`}
+                                ></div>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="marking"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Marking</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter queen marking"
+                          {...field}
+                          value={field.value || ''}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -227,84 +338,85 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   </FormItem>
                 )}
               />
+              <div className={'grid grid-cols-1 md:grid-cols-2 gap-4'}>
+                <FormField
+                  control={form.control}
+                  name="installedAt"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Installation Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-full pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, 'PPP')
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value || undefined}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="installedAt"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Installation Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              'w-full pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground',
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value || undefined}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="replacedAt"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Replaced Date (Optional)</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              'w-full pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground',
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value || undefined}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="replacedAt"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Replaced Date (Optional)</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-full pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, 'PPP')
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value || undefined}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="flex space-x-4 justify-end">
                 <Button

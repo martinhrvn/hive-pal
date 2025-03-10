@@ -21,12 +21,15 @@ export class CreateQueenDto {
   })
   @IsOptional()
   @IsString()
-  marking: string;
+  marking: string | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+    description: 'Optional color of the queen',
+  })
   @IsOptional()
   @IsString()
-  color: string;
+  color: string | null;
 
   @ApiProperty()
   @Expose()
