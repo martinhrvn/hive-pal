@@ -13,23 +13,16 @@ import {
   CloudRain,
   CloudSun,
   Sun,
-  Pencil,
-  Trash,
   X,
   ClipboardList,
-  ChevronRight,
 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { ObservationNumberRatingView } from './components/observation-number-rating-view';
+import {
+  ObservationNumberRatingView,
+  InspectionDetailSidebar,
+} from './components';
 
 // Get weather icon based on condition
 const getWeatherIcon = (condition: string) => {
@@ -280,43 +273,11 @@ export const InspectionDetailPage = () => {
 
       {/* Sidebar */}
       <div className="col-span-12 lg:col-span-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-md">Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="space-y-1">
-              <Button
-                variant="ghost"
-                className="w-full justify-start pl-6 py-6 rounded-none hover:bg-accent"
-                onClick={() => navigate(`/inspections/${id}/edit`)}
-              >
-                <Pencil className="mr-3 h-4 w-4" /> Edit Inspection
-              </Button>
-              <Separator />
-              <Button
-                variant="ghost"
-                className="w-full justify-start pl-6 py-6 rounded-none hover:bg-accent text-red-600 hover:text-red-600"
-                onClick={() => setShowDeleteConfirm(true)}
-              >
-                <Trash className="mr-3 h-4 w-4" /> Delete Inspection
-              </Button>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between items-center py-4 px-6 bg-muted/50">
-            <div className="text-sm text-muted-foreground">
-              Hive #{inspection.hiveId}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-0 h-auto"
-              onClick={() => navigate(`/hives/${inspection.hiveId}`)}
-            >
-              View <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
-          </CardFooter>
-        </Card>
+        <InspectionDetailSidebar
+          inspectionId={id || ''}
+          hiveId={inspection.hiveId}
+          onDeleteClick={() => setShowDeleteConfirm(true)}
+        />
       </div>
     </div>
   );
