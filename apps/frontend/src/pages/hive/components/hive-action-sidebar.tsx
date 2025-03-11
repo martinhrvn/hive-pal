@@ -1,12 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  PlusCircle, 
-  RefreshCw, 
-  FileDown, 
-  Printer, 
-  Share2
-} from 'lucide-react';
+import { PlusCircle, RefreshCw, FileDown, Printer, Share2 } from 'lucide-react';
 
 import {
   SidebarGroup,
@@ -14,17 +8,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 
 interface HiveActionSidebarProps {
   onRefreshData?: () => void;
 }
 
-export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({ 
-  onRefreshData 
+export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
+  onRefreshData,
 }) => {
   const navigate = useNavigate();
 
@@ -35,7 +26,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
           <SidebarGroupLabel>Actions</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/hives/create/')}
                 tooltip="Create New Hive"
               >
@@ -45,7 +36,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => onRefreshData && onRefreshData()}
                 tooltip="Refresh Data"
               >
@@ -60,7 +51,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
           <SidebarGroupLabel>Data Options</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => alert('Export functionality coming soon')}
                 tooltip="Export to CSV"
               >
@@ -70,7 +61,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => window.print()}
                 tooltip="Print Hive List"
               >
@@ -80,7 +71,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => alert('Share functionality coming soon')}
                 tooltip="Share Hive List"
               >
