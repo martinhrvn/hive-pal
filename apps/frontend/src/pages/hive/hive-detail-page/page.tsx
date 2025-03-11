@@ -86,7 +86,7 @@ export const HiveDetailPage = () => {
 
         {/* Action Sidebar */}
         <div className="md:col-span-3">
-          <ActionSideBar hiveId={hive?.id} />
+          <ActionSideBar hiveId={hive?.id} onRefreshData={refetch} />
         </div>
       </div>
     </div>

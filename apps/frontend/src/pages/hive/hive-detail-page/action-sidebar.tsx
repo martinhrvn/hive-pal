@@ -1,66 +1,94 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card.tsx';
-import { Link } from 'react-router-dom';
-import { Button, buttonVariants } from '@/components/ui/button.tsx';
-import { Separator } from '@/components/ui/separator.tsx';
-import { EditIcon, Icon, PlusCircle, TrashIcon } from 'lucide-react';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { EditIcon, Icon, PlusCircle, TrashIcon, RefreshCw } from 'lucide-react';
 import { bee } from '@lucide/lab';
+
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
+
 type ActionSideBarProps = {
   hiveId?: string;
+  onRefreshData?: () => void;
 };
-export const ActionSideBar: React.FC<ActionSideBarProps> = ({ hiveId }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Actions</CardTitle>
-    </CardHeader>
-    <CardContent className="flex flex-col space-y-2">
-      <Link
-        to={
-          hiveId ? `/hives/${hiveId}/inspections/create` : '/inspections/create'
-        }
-        className={buttonVariants({
-          variant: 'outline',
-          className: 'w-full justify-start',
-        })}
-      >
-        <PlusCircle className="mr-2 h-4 w-4" /> Add Inspection
-      </Link>
 
-      <Link
-        to={hiveId ? `/hives/${hiveId}/queens/create` : '/queens/create'}
-        className={buttonVariants({
-          variant: 'outline',
-          className: 'w-full justify-start',
-        })}
-      >
-        <Icon iconNode={bee} className="mr-2 h-4 w-4" /> Add Queen
-      </Link>
+export const ActionSideBar: React.FC<ActionSideBarProps> = ({ 
+  hiveId,
+  onRefreshData
+}) => {
+  const navigate = useNavigate();
 
-      <Separator className="my-2" />
+  return (
+    <div className="border rounded-md">
+      <div className="p-2">
+        <SidebarGroup>
+          <SidebarGroupLabel>Hive Actions</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => hiveId && navigate(`/hives/${hiveId}/inspections/create`)}
+                tooltip="Add Inspection"
+                disabled={!hiveId}
+              >
+                <PlusCircle className="h-4 w-4" />
+                <span>Add Inspection</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
 
-      <Link
-        to={hiveId ? `/hives/${hiveId}/edit` : '#'}
-        className={buttonVariants({
-          variant: 'outline',
-          className: 'w-full justify-start',
-        })}
-      >
-        <EditIcon className="mr-2 h-4 w-4" />
-        Edit Hive
-      </Link>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => hiveId && navigate(`/hives/${hiveId}/queens/create`)}
+                tooltip="Add Queen"
+                disabled={!hiveId}
+              >
+                <Icon iconNode={bee} className="h-4 w-4" />
+                <span>Add Queen</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
 
-      <Button
-        variant="outline"
-        className="w-full justify-start mt-4"
-        disabled={!hiveId}
-      >
-        <TrashIcon className="mr-2 h-4 w-4" />
-        Remove Hive
-      </Button>
-    </CardContent>
-  </Card>
-);
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => onRefreshData && onRefreshData()}
+                tooltip="Refresh Data"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span>Refresh Data</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup className="mt-4">
+          <SidebarGroupLabel>Manage Hive</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => hiveId && navigate(`/hives/${hiveId}/edit`)}
+                tooltip="Edit Hive"
+                disabled={!hiveId}
+              >
+                <EditIcon className="h-4 w-4" />
+                <span>Edit Hive</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => alert('Remove functionality coming soon')}
+                tooltip="Remove Hive"
+                disabled={!hiveId}
+              >
+                <TrashIcon className="h-4 w-4" />
+                <span>Remove Hive</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </div>
+    </div>
+  );
+};
