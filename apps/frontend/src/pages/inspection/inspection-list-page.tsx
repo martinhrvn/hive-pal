@@ -7,13 +7,23 @@ import {
 } from 'api-client';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
+  ActivityIcon,
+  BarChartIcon,
   CalendarClockIcon,
   CalendarIcon,
   ChevronRight,
   ClipboardCheckIcon,
+  CloudIcon,
+  CloudRainIcon,
+  CrownIcon,
+  DropletsIcon,
   HistoryIcon,
+  InfoIcon,
   Plus,
   SearchIcon,
+  SunIcon,
+  ThermometerIcon,
+  UsersIcon,
 } from 'lucide-react';
 
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
@@ -37,6 +47,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 // Define tab enum for cleaner code
 enum InspectionTab {
@@ -292,30 +307,103 @@ const renderInspectionsTable = (
             </TableCell>
             <TableCell>{getHiveName(inspection.hiveId)}</TableCell>
             <TableCell>
-              {inspection.temperature && `${inspection.temperature}° `}
-              {inspection.weatherConditions || 'Not recorded'}
+              <div className="flex items-center gap-2">
+                {inspection.temperature && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <ThermometerIcon className="h-4 w-4" />
+                    <span>{inspection.temperature}°</span>
+                  </div>
+                )}
+                {inspection.weatherConditions ? (
+                  <div className="flex items-center gap-1">
+                    {getWeatherIcon(inspection.weatherConditions)}
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground italic">
+                    Not recorded
+                  </span>
+                )}
+              </div>
             </TableCell>
             <TableCell>
-              <span
-                className={getMetricColorClass(
-                  inspection.observations?.strength,
-                )}
-              >
-                {inspection.observations?.strength ?? 'N/A'}
-              </span>
-            </TableCell>
-            <TableCell>
-              <span
-                className={getMetricColorClass(
-                  inspection.observations?.honeyStores,
-                )}
-              >
-                {inspection.observations?.honeyStores ?? 'N/A'}
-              </span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`flex items-center gap-2 p-0 h-auto ${getMetricColorClass(inspection.score?.overallScore)}`}
+                  >
+                    <BarChartIcon className="h-4 w-4" />
+                    <span className="font-medium">
+                      {inspection.score?.overallScore !== null
+                        ? inspection.score?.overallScore
+                        : 'N/A'}
+                    </span>
+                    <InfoIcon className="h-3 w-3 text-muted-foreground" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-60">
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm">Inspection Scores</h4>
+                    <div className="grid grid-cols-[20px_1fr_auto] gap-2 items-center">
+                      <UsersIcon className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm">Population</span>
+                      <span
+                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.populationScore)}`}
+                      >
+                        {inspection.score?.populationScore?.toFixed(2) ?? 'N/A'}
+                      </span>
+
+                      <DropletsIcon className="h-4 w-4 text-amber-500" />
+                      <span className="text-sm">Stores</span>
+                      <span
+                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.storesScore)}`}
+                      >
+                        {inspection.score?.storesScore?.toFixed(2) ?? 'N/A'}
+                      </span>
+
+                      <CrownIcon className="h-4 w-4 text-purple-500" />
+                      <span className="text-sm">Queen</span>
+                      <span
+                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.queenScore)}`}
+                      >
+                        {inspection.score?.queenScore?.toFixed(2) ?? 'N/A'}
+                      </span>
+
+                      <BarChartIcon className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-medium">Overall</span>
+                      <span
+                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.overallScore)}`}
+                      >
+                        {inspection.score?.overallScore?.toFixed(2) ?? 'N/A'}
+                      </span>
+                    </div>
+
+                    {inspection.score?.warnings &&
+                      inspection.score.warnings.length > 0 && (
+                        <div className="mt-2 pt-2 border-t">
+                          <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1">
+                            <ActivityIcon className="h-3 w-3" />
+                            Warnings
+                          </h5>
+                          <ul className="mt-1 text-xs space-y-1">
+                            {inspection.score.warnings.map((warning, i) => (
+                              <li key={i} className="text-muted-foreground">
+                                {warning}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </TableCell>
             <TableCell>
               {inspection.observations?.queenSeen === null ? (
-                'Not recorded'
+                <span className="text-muted-foreground italic">
+                  Not recorded
+                </span>
               ) : (
                 <span
                   className={
@@ -355,4 +443,25 @@ const getMetricColorClass = (value: number | null | undefined) => {
   if (value >= 7) return 'text-green-600';
   if (value >= 4) return 'text-amber-500';
   return 'text-red-500';
+};
+
+// Helper function to determine the appropriate weather icon
+const getWeatherIcon = (weatherCondition: string | null | undefined) => {
+  if (!weatherCondition) return null;
+
+  const condition = weatherCondition.toLowerCase();
+
+  // Return the appropriate icon based on weather condition keywords
+  if (condition.includes('sunny') || condition.includes('clear')) {
+    return <SunIcon className="h-4 w-4 text-yellow-500" />;
+  } else if (condition.includes('partly cloudy')) {
+    return <CloudIcon className="h-4 w-4 text-blue-300" />;
+  } else if (condition.includes('cloudy') || condition.includes('overcast')) {
+    return <CloudIcon className="h-4 w-4 text-gray-400" />;
+  } else if (condition.includes('rain')) {
+    return <CloudRainIcon className="h-4 w-4 text-blue-500" />;
+  }
+
+  // Default to thermometer if no specific condition matches
+  return <ThermometerIcon className="h-4 w-4 text-gray-500" />;
 };
