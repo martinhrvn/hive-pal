@@ -1,10 +1,9 @@
 import { useHiveControllerFindAll } from 'api-client';
 import { HiveResponseDtoStatus } from 'api-client/dist/model';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -22,14 +21,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { HiveStatus } from './components/hive-status';
+import { HiveStatus, HiveActionSidebar } from './components';
 import { ChevronRight, Search } from 'lucide-react';
 
 export const HiveListPage = () => {
-  const { data, isLoading } = useHiveControllerFindAll();
+  const { data, isLoading, refetch } = useHiveControllerFindAll();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  
+  const handleRefreshData = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -162,16 +165,7 @@ export const HiveListPage = () => {
         )}
       </MainContent>
       <Sidebar>
-        <Card>
-          <CardContent className="pt-6">
-            <Button
-              onClick={() => navigate('/hives/create/')}
-              className="w-full"
-            >
-              Create New Hive
-            </Button>
-          </CardContent>
-        </Card>
+        <HiveActionSidebar onRefreshData={handleRefreshData} />
       </Sidebar>
     </Page>
   );
