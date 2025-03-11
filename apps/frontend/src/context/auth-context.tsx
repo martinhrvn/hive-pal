@@ -49,7 +49,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           password,
         });
 
-        // In production, this would be an API call
         if (token.data) {
           setToken(token.data);
           window.location.href = from;

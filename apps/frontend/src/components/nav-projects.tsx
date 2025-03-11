@@ -3,7 +3,7 @@ import {
   Forward,
   MoreHorizontal,
   Trash2,
-  type LucideIcon,
+  HomeIcon,
 } from 'lucide-react';
 
 import {
@@ -22,27 +22,25 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useHiveControllerFindAll } from 'api-client';
+import { useNavigate } from 'react-router-dom';
 
-export function NavProjects({
-  projects,
-}: {
-  projects: {
-    name: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
-}) {
+export function NavProjects() {
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
+  const { data: hives } = useHiveControllerFindAll({
+    query: { select: data => data.data },
+  });
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+      <SidebarGroupLabel>Hives</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map(item => (
+        {hives?.slice(0, 5)?.map(item => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
+              <a href={`/hive/${item.id}`} className="flex items-center">
+                <HomeIcon />
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
@@ -75,12 +73,19 @@ export function NavProjects({
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        {hives && hives.length > 5 && (
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className="text-sidebar-foreground/70"
+              onClick={() => {
+                navigate('/hives');
+              }}
+            >
+              <MoreHorizontal className="text-sidebar-foreground/70" />
+              <span>More</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )}
       </SidebarMenu>
     </SidebarGroup>
   );
