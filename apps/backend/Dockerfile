@@ -27,7 +27,7 @@ RUN pnpm --filter backend --prod deploy pruned
 RUN ls -l pruned
 
 # Stage 2: Production
-FROM node:18-alpine
+FROM node:22-alpine
 #
 WORKDIR /app
 
