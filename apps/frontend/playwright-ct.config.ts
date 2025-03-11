@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/experimental-ct-react';
 import { dirname, resolve } from 'path';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
-// @ts-ignore
+// @ts-expect-error __filename and __dirname are not available in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 /**

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
+  HiveResponseDto,
   InspectionResponseDto,
   useHiveControllerFindAll,
   useInspectionsControllerFindAll,
@@ -253,7 +254,7 @@ const renderInspectionsTable = (
   inspections: InspectionResponseDto[],
   caption: string,
   navigate: (path: string) => void,
-  hives: any[] = [],
+  hives: HiveResponseDto[] = [],
 ) => {
   const getHiveName = (hiveId: string) => {
     const hive = hives.find(h => h.id === hiveId);

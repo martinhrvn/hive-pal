@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EditIcon, Icon, PlusCircle, TrashIcon, RefreshCw } from 'lucide-react';
 import { bee } from '@lucide/lab';
 
@@ -16,9 +16,9 @@ type ActionSideBarProps = {
   onRefreshData?: () => void;
 };
 
-export const ActionSideBar: React.FC<ActionSideBarProps> = ({ 
+export const ActionSideBar: React.FC<ActionSideBarProps> = ({
   hiveId,
-  onRefreshData
+  onRefreshData,
 }) => {
   const navigate = useNavigate();
 
@@ -30,7 +30,9 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => hiveId && navigate(`/hives/${hiveId}/inspections/create`)}
+                onClick={() =>
+                  hiveId && navigate(`/hives/${hiveId}/inspections/create`)
+                }
                 tooltip="Add Inspection"
                 disabled={!hiveId}
               >
@@ -41,7 +43,9 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
 
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => hiveId && navigate(`/hives/${hiveId}/queens/create`)}
+                onClick={() =>
+                  hiveId && navigate(`/hives/${hiveId}/queens/create`)
+                }
                 tooltip="Add Queen"
                 disabled={!hiveId}
               >

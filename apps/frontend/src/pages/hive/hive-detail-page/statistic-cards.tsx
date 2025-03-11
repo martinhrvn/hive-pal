@@ -5,9 +5,9 @@ import { IconJarLogoIcon } from '@radix-ui/react-icons';
 import { StatisticCard } from '@/components/common/staticstic-card.tsx';
 
 export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
-  let strength: number | null = score.populationScore;
-  let honeyStores: number | null = score.storesScore;
-  let queenScore: number | null = score.queenScore;
+  const strength: number | null = score.populationScore;
+  const honeyStores: number | null = score.storesScore;
+  const queenScore: number | null = score.queenScore;
 
   const getScoreColor = (value: number | null) => {
     if (value === null) return '';
