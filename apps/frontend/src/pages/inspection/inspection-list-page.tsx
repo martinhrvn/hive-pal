@@ -5,6 +5,7 @@ import {
   useHiveControllerFindAll,
   useInspectionsControllerFindAll,
 } from 'api-client';
+import { InspectionActionSidebar } from './components';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
   ActivityIcon,
@@ -19,7 +20,6 @@ import {
   DropletsIcon,
   HistoryIcon,
   InfoIcon,
-  Plus,
   SearchIcon,
   SunIcon,
   ThermometerIcon,
@@ -28,7 +28,6 @@ import {
 
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -72,12 +71,15 @@ export const InspectionListPage = () => {
   );
 
   // Fetch inspections and hives
-  const { data: inspectionsData, isLoading: isLoadingInspections } =
-    useInspectionsControllerFindAll(
-      selectedHiveId && selectedHiveId !== 'all'
-        ? { hiveId: selectedHiveId }
-        : undefined,
-    );
+  const {
+    data: inspectionsData,
+    isLoading: isLoadingInspections,
+    refetch: refetchInspections,
+  } = useInspectionsControllerFindAll(
+    selectedHiveId && selectedHiveId !== 'all'
+      ? { hiveId: selectedHiveId }
+      : undefined,
+  );
 
   const { data: hivesData, isLoading: isLoadingHives } =
     useHiveControllerFindAll();
@@ -139,15 +141,6 @@ export const InspectionListPage = () => {
       }
     });
   }, [filteredInspections, activeTab]);
-
-  // Handle create new inspection
-  const handleCreateInspection = () => {
-    navigate(
-      selectedHiveId
-        ? `/hives/${selectedHiveId}/inspections/create`
-        : '/inspections/create',
-    );
-  };
 
   if (isLoadingInspections || isLoadingHives) {
     return <div>Loading...</div>;
@@ -245,17 +238,12 @@ export const InspectionListPage = () => {
       </MainContent>
 
       <Sidebar>
-        <Card>
-          <CardContent className="pt-6">
-            <Button
-              onClick={handleCreateInspection}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Create Inspection
-            </Button>
-          </CardContent>
-        </Card>
+        <InspectionActionSidebar
+          onRefreshData={refetchInspections}
+          selectedHiveId={selectedHiveId}
+          onChangeView={handleTabChange}
+          currentView={activeTab}
+        />
       </Sidebar>
     </Page>
   );
