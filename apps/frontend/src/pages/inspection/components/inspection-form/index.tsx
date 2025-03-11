@@ -7,7 +7,6 @@ import {
 } from 'api-client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -36,6 +35,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { InspectionFormData, inspectionSchema } from './schema';
 import { WeatherSection } from '@/pages/inspection/components/inspection-form/weather.tsx';
 import { ObservationsSection } from '@/pages/inspection/components/inspection-form/observations.tsx';
+import { Separator } from '@/components/ui/separator';
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -101,95 +101,90 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   };
 
   return (
-    <div className={'container mx-auto max-w-xl'}>
-      <Card>
-        <CardHeader>
-          <CardTitle>New inspection</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="hiveId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hive</FormLabel>
+    <div className={'max-w-4xl ml-4'}>
+      <h1 className={'text-lg font-bold'}>New inspection</h1>
+      <Separator className="my-2" />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="hiveId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Hive</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value ?? hiveId}
+                  >
+                    <SelectTrigger className={'w-full'}>
+                      <SelectValue placeholder={'Select a hive'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {hives?.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Inspection date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
                     <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value ?? hiveId}
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'w-full pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground',
+                        )}
                       >
-                        <SelectTrigger className={'w-full'}>
-                          <SelectValue placeholder={'Select a hive'} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {hives?.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        {field.value ? (
+                          format(field.value, 'PPP')
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
                     </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <hr className={'border-t border-border'} />
+          <WeatherSection />
 
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Inspection date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-full pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground',
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <hr className={'border-t border-border'} />
+          <ObservationsSection />
 
-              <hr className={'border-t border-border'} />
-              <WeatherSection />
-
-              <hr className={'border-t border-border'} />
-              <ObservationsSection />
-
-              <Button type="submit" className="w-full">
-                Submit
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+          <Button type="submit" className="w-full">
+            Submit
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };

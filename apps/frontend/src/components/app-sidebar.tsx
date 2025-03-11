@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
-import { NavProjects } from '@/components/nav-projects';
+import { NavHives } from '@/components/nav-hives.tsx';
 import { NavUser } from '@/components/nav-user';
 import { ApiarySwitcher } from '@/components/apiary-switcher.tsx';
 import {
@@ -55,6 +55,7 @@ const data = {
       title: 'Inspections',
       url: '/inspections',
       icon: PieChart,
+      isActive: true,
       items: [
         {
           title: 'All',
@@ -62,11 +63,11 @@ const data = {
         },
         {
           title: 'Recent',
-          url: '/inspections?filter=recent',
+          url: '/inspections/list/recent',
         },
         {
           title: 'Upcoming',
-          url: '/inspections?filter=upcoming',
+          url: '/inspections/list/upcoming',
         },
       ],
     },
@@ -92,7 +93,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects />
+        <NavHives />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

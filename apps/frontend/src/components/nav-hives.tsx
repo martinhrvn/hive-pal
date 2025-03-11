@@ -25,7 +25,7 @@ import {
 import { useHiveControllerFindAll } from 'api-client';
 import { useNavigate } from 'react-router-dom';
 
-export function NavProjects() {
+export function NavHives() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const { data: hives } = useHiveControllerFindAll({

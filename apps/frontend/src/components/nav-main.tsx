@@ -1,5 +1,3 @@
-'use client';
-
 import { ChevronRight, type LucideIcon } from 'lucide-react';
 
 import {
@@ -9,7 +7,6 @@ import {
 } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -17,6 +14,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import { DashboardIcon } from '@radix-ui/react-icons';
 
 export function NavMain({
   items,
@@ -34,7 +32,14 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild>
+          <a href="/" className="flex items-center">
+            <DashboardIcon />
+            <span>Dashboard</span>
+          </a>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       <SidebarMenu>
         {items.map(item => (
           <Collapsible
