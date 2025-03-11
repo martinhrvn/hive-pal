@@ -6,9 +6,12 @@ import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
 import { CreateHivePage, HiveListPage } from '@/pages/hive';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
-import { CreateInspectionPage } from '@/pages/inspection/create-inspection.tsx';
-import { InspectionDetailPage } from '@/pages/inspection/inspection-detail-page.tsx';
-import { EditInspectionPage } from '@/pages/inspection/edit-inspection.tsx';
+import { 
+  CreateInspectionPage, 
+  InspectionDetailPage, 
+  EditInspectionPage,
+  InspectionListPage 
+} from '@/pages/inspection';
 import { CreateQueenPage } from '@/pages/queen';
 import GenericErrorPage from '@/pages/error-page.tsx';
 
@@ -45,6 +48,14 @@ const router = createBrowserRouter([
       {
         path: '/inspections/create',
         element: <CreateInspectionPage />,
+      },
+      {
+        path: '/inspections',
+        element: <InspectionListPage />,
+      },
+      {
+        path: '/inspections/list/:view',
+        element: <InspectionListPage />,
       },
       {
         path: '/inspections/:id/edit',
