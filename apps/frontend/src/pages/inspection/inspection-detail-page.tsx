@@ -1,9 +1,5 @@
-import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  useInspectionsControllerFindOne,
-  useInspectionsControllerRemove,
-} from 'api-client';
+import { useInspectionsControllerFindOne } from 'api-client';
 import { format } from 'date-fns';
 import {
   ChevronLeft,
@@ -23,6 +19,7 @@ import {
   ObservationNumberRatingView,
   InspectionDetailSidebar,
 } from './components';
+import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 
 // Get weather icon based on condition
 const getWeatherIcon = (condition: string) => {
@@ -62,7 +59,6 @@ const formatWeatherCondition = (condition: string) => {
 export const InspectionDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const {
     data: inspection,
@@ -71,24 +67,6 @@ export const InspectionDetailPage = () => {
   } = useInspectionsControllerFindOne(id ?? '', {
     query: { enabled: !!id, select: data => data.data },
   });
-
-  const { mutate: deleteInspection } = useInspectionsControllerRemove({
-    mutation: {
-      onSuccess: () => {
-        if (inspection?.hiveId) {
-          navigate(`/hives/${inspection.hiveId}`);
-        } else {
-          navigate('/');
-        }
-      },
-    },
-  });
-
-  const handleDelete = () => {
-    if (id) {
-      deleteInspection({ id });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -114,25 +92,14 @@ export const InspectionDetailPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6 w-full max-w-7xl mx-auto">
-      <div className="col-span-12">
-        <div className="mb-6">
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/hives/${inspection.hiveId}`)}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Hive
-          </Button>
-        </div>{' '}
-      </div>
-
-      <div className="col-span-12 lg:col-span-9">
-        {/* Dashboard Cards Section */}
+    <Page>
+      <MainContent>
+        {/* Info Cards Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Date Card */}
           <Card>
-            <CardContent>
-              <h3>Date</h3>
+            <CardContent className="pt-6">
+              <h3 className="font-medium mb-2">Date</h3>
               <div className="flex items-center">
                 <Calendar className="h-8 w-8 mr-3 text-blue-500" />
                 <div>
@@ -150,8 +117,8 @@ export const InspectionDetailPage = () => {
           {/* Temperature Card */}
           {inspection.temperature && (
             <Card>
-              <CardContent>
-                <h3>Temperature</h3>
+              <CardContent className="pt-6">
+                <h3 className="font-medium mb-2">Temperature</h3>
                 <div className="flex items-center">
                   <Thermometer
                     className={`h-8 w-8 mr-3 ${getTemperatureColor(inspection.temperature)}`}
@@ -178,8 +145,8 @@ export const InspectionDetailPage = () => {
           {/* Weather Conditions Card */}
           {inspection.weatherConditions && (
             <Card>
-              <CardContent>
-                <h3>Weather</h3>
+              <CardContent className="pt-6">
+                <h3 className="font-medium mb-2">Weather</h3>
                 <div className="flex items-center">
                   {getWeatherIcon(inspection.weatherConditions)}
                   <div className="ml-3">
@@ -201,84 +168,56 @@ export const InspectionDetailPage = () => {
             </Card>
           )}
         </div>
-
-        {/* Observations Section */}
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>
-                <div className="flex items-center gap-2">
-                  <ClipboardList className="h-5 w-5" />
-                  Observations
-                </div>
-              </CardTitle>
-            </div>
+            <CardTitle>
+              <div className="flex items-center gap-2">
+                <ClipboardList className="h-5 w-5" />
+                Observations
+              </div>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={'grid grid-cols-1 gap-4'}>
-              <ObservationNumberRatingView
-                rating={inspection.observations.strength}
-                label={'Strength'}
-              />
-              <ObservationNumberRatingView
-                rating={inspection.observations.uncappedBrood}
-                label={'Uncapped Brood'}
-              />
-              <ObservationNumberRatingView
-                rating={inspection.observations.cappedBrood}
-                label={'Capped Brood'}
-              />
-              <ObservationNumberRatingView
-                rating={inspection.observations.honeyStores}
-                label={'Honey Stores'}
-              />
-              <ObservationNumberRatingView
-                rating={inspection.observations.pollenStores}
-                label={'Pollen Stores'}
-              />
-              <ObservationNumberRatingView
-                rating={inspection.observations.queenCells}
-                label={'Queen cells'}
-              />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <ObservationNumberRatingView
+                  rating={inspection.observations.strength}
+                  label={'Strength'}
+                />
+                <ObservationNumberRatingView
+                  rating={inspection.observations.uncappedBrood}
+                  label={'Uncapped Brood'}
+                />
+                <ObservationNumberRatingView
+                  rating={inspection.observations.cappedBrood}
+                  label={'Capped Brood'}
+                />
+              </div>
+              <div className="space-y-6">
+                <ObservationNumberRatingView
+                  rating={inspection.observations.honeyStores}
+                  label={'Honey Stores'}
+                />
+                <ObservationNumberRatingView
+                  rating={inspection.observations.pollenStores}
+                  label={'Pollen Stores'}
+                />
+                <ObservationNumberRatingView
+                  rating={inspection.observations.queenCells}
+                  label={'Queen cells'}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
+      </MainContent>
 
-        {/* Delete Confirmation */}
-        {showDeleteConfirm && (
-          <div className="mt-6">
-            <Alert variant="destructive">
-              <AlertTitle>
-                Are you sure you want to delete this inspection?
-              </AlertTitle>
-              <AlertDescription>
-                This action cannot be undone. This will permanently delete the
-                inspection and all its data.
-              </AlertDescription>
-              <div className="flex justify-end gap-2 mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowDeleteConfirm(false)}
-                >
-                  Cancel
-                </Button>
-                <Button variant="destructive" onClick={handleDelete}>
-                  Confirm Delete
-                </Button>
-              </div>
-            </Alert>
-          </div>
-        )}
-      </div>
-
-      {/* Sidebar */}
-      <div className="col-span-12 lg:col-span-3">
+      <Sidebar>
         <InspectionDetailSidebar
           inspectionId={id || ''}
           hiveId={inspection.hiveId}
-          onDeleteClick={() => setShowDeleteConfirm(true)}
         />
-      </div>
-    </div>
+      </Sidebar>
+    </Page>
   );
 };

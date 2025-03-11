@@ -1,14 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  PlusCircle, 
+import {
+  PlusCircle,
   Pencil,
   Trash,
   ArrowLeft,
   Home,
   ClipboardList,
   CalendarRange,
-  Printer
+  Printer,
 } from 'lucide-react';
 
 import {
@@ -23,14 +23,11 @@ import { Separator } from '@/components/ui/separator';
 interface InspectionDetailSidebarProps {
   inspectionId: string;
   hiveId: string;
-  onDeleteClick: () => void;
 }
 
-export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = ({ 
-  inspectionId,
-  hiveId,
-  onDeleteClick
-}) => {
+export const InspectionDetailSidebar: React.FC<
+  InspectionDetailSidebarProps
+> = ({ inspectionId, hiveId }) => {
   const navigate = useNavigate();
 
   return (
@@ -40,7 +37,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
           <SidebarGroupLabel>Inspection Actions</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate(`/inspections/${inspectionId}/edit`)}
                 tooltip="Edit Inspection"
               >
@@ -50,7 +47,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => window.print()}
                 tooltip="Print Inspection"
               >
@@ -60,8 +57,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={onDeleteClick}
+              <SidebarMenuButton
                 tooltip="Delete Inspection"
                 className="text-red-600 hover:text-red-700"
               >
@@ -78,7 +74,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
           <SidebarGroupLabel>Related Actions</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate(`/hives/${hiveId}`)}
                 tooltip="Go to Hive"
               >
@@ -88,7 +84,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate(`/hives/${hiveId}/inspections/create`)}
                 tooltip="Create New Inspection"
               >
@@ -105,7 +101,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/inspections')}
                 tooltip="All Inspections"
               >
@@ -115,7 +111,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/inspections/list/recent')}
                 tooltip="Recent Inspections"
               >
@@ -125,10 +121,7 @@ export const InspectionDetailSidebar: React.FC<InspectionDetailSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
-                onClick={() => navigate(-1)}
-                tooltip="Go Back"
-              >
+              <SidebarMenuButton onClick={() => navigate(-1)} tooltip="Go Back">
                 <ArrowLeft className="h-4 w-4" />
                 <span>Go Back</span>
               </SidebarMenuButton>
