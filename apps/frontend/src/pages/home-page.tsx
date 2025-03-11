@@ -1,13 +1,10 @@
 import { useHiveControllerFindAll } from 'api-client';
 import { HiveList } from '@/pages/hive/components';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { HomeActionSidebar } from '@/components/home-action-sidebar';
 
 export const HomePage = () => {
-  const { data, isLoading } = useHiveControllerFindAll();
-  const navigate = useNavigate();
+  const { data, isLoading, refetch } = useHiveControllerFindAll();
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -18,13 +15,7 @@ export const HomePage = () => {
         <HiveList hives={data?.data ?? []} />
       </MainContent>
       <Sidebar>
-        <Card>
-          <CardContent>
-            <Button onClick={() => navigate('/hives/create/')}>
-              Create hive
-            </Button>
-          </CardContent>
-        </Card>
+        <HomeActionSidebar onRefreshData={refetch} />
       </Sidebar>
     </Page>
   );
