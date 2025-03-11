@@ -52,6 +52,7 @@ describe('MetricsService', () => {
 
   test.each([
     [3, null, null, 3],
+    [null, 3, 2, 2.5],
     [10, 1, 1, 5.5],
     [1, 10, 1, 3.25],
     [10, 10, 10, 10],
@@ -72,6 +73,28 @@ describe('MetricsService', () => {
       };
       const { populationScore } = service.calculateOveralScore(metrics);
       expect(populationScore).toEqual(expected);
+    },
+  );
+
+  test.each([
+    [10, true, true, false, 0],
+    [0, true, true, false, 4],
+  ])(
+    'should calculate queen score, strength: %d, cappedBrood: %d, uncappedBrood: %d, expected: %d',
+    (queenCells, swarmCells, supersedureCells, queenSeen, expected) => {
+      const metrics = {
+        strength: null,
+        cappedBrood: null,
+        uncappedBrood: null,
+        honeyStores: null,
+        pollenStores: null,
+        queenCells,
+        swarmCells,
+        supersedureCells,
+        queenSeen,
+      };
+      const { queenScore } = service.calculateOveralScore(metrics);
+      expect(queenScore).toEqual(expected);
     },
   );
 });

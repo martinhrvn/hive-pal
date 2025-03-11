@@ -39,9 +39,11 @@ export class MetricsService {
     ]);
     const queenScore = this.calculateWeightedScore([
       {
-        value: inspectionMetrics.queenCells
-          ? 10 - inspectionMetrics.queenCells
-          : null,
+        value:
+          inspectionMetrics.queenCells !== null &&
+          inspectionMetrics.queenCells !== undefined
+            ? 10 - Math.min(inspectionMetrics.queenCells, 10)
+            : null,
         weight: 2,
       },
       { value: inspectionMetrics.cappedBrood, weight: 2 },
@@ -80,7 +82,7 @@ export class MetricsService {
   calculateWeightedScore(
     values: { value: number | null | undefined; weight: number }[],
   ): number | null {
-    if (values.every(({ value }) => !value)) {
+    if (values.every(({ value }) => value !== null && value !== undefined)) {
       return null;
     }
 
@@ -91,9 +93,13 @@ export class MetricsService {
       return acc + value * weight;
     }, 0);
     const totalWeight = values.reduce(
-      (acc, { weight, value }) => (value ? acc + weight : acc),
+      (acc, { weight, value }) =>
+        value !== undefined && value !== null ? acc + weight : acc,
       0,
     );
+    if (totalWeight === 0) {
+      return null;
+    }
     return weightedSum / totalWeight;
   }
 }
