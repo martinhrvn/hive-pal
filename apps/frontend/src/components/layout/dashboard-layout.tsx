@@ -2,6 +2,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/context/auth-context.tsx';
 import { AppSidebar } from '../app-sidebar';
+import { Breadcrumbs } from '../breadcrumbs';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar.tsx';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
@@ -37,6 +38,9 @@ const DashboardLayout = () => {
             </div>
           </div>
         </header>
+        <div className="px-4 pt-4">
+          <Breadcrumbs />
+        </div>
         <main className="flex-1 overflow-y-auto p-4">
           <Outlet />
         </main>

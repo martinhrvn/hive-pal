@@ -54,9 +54,6 @@ export const HiveListPage = () => {
   return (
     <Page>
       <MainContent>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Hives</h1>
-        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
