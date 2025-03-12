@@ -11,11 +11,13 @@ import { Box } from '@prisma/client';
 import { BoxResponseDto } from './dto/box-response.dto';
 import { InspectionsService } from '../inspections/inspections.service';
 import { InspectionScoreDto } from '../inspections/dto/inspection-score.dto';
+import { MetricsService } from 'src/metrics/metrics.service';
 @Injectable()
 export class HiveService {
   constructor(
     private prisma: PrismaService,
-    private inspeectionService: InspectionsService,
+    private inspectionService: InspectionsService,
+    private metricsService: MetricsService,
   ) {}
 
   async create(createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
@@ -86,7 +88,6 @@ export class HiveService {
           },
           include: {
             observations: true,
-            hiveMetric: true,
             actions: true,
           },
         },
@@ -103,6 +104,10 @@ export class HiveService {
         ? (hive.inspections[0] ?? null)
         : null;
 
+    const metrics = this.inspectionService.mapObservationsToDto(
+      latestInspection?.observations ?? [],
+    );
+    const score = this.metricsService.calculateOveralScore(metrics);
     return plainToInstance(HiveDetailResponseDto, {
       id: hive.id,
       name: hive.name,
@@ -124,12 +129,7 @@ export class HiveService {
           type: box.type as BoxTypeDto,
         }),
       ),
-      hiveScore: plainToInstance(
-        InspectionScoreDto,
-        this.inspeectionService.mapHiveMetricsToDto(
-          latestInspection?.hiveMetric ?? null,
-        ),
-      ),
+      hiveScore: plainToInstance(InspectionScoreDto, score),
       activeQueen: activeQueen
         ? {
             id: activeQueen.id,

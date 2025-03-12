@@ -28,29 +28,6 @@ model Hive {
   queens           Queen[]
   boxes            Box[]
   inspections      Inspection[]
-  metrics          HiveMetric[]
-}
-
-model HiveMetric {
-  id               String     @id @default(uuid())
-  hiveId           String
-  inspectionId     String     @unique
-  inspection       Inspection @relation(fields: [inspectionId], references: [id])
-  hive             Hive       @relation(fields: [hiveId], references: [id])
-  date             DateTime
-  overallRating    Float?
-  populationRating Float?
-  storesRating     Float?
-  queenRating      Float?
-  cappedBrood      Int?
-  uncappedBrood    Int?
-  honeyStores      Int?
-  pollenStores     Int?
-  queenSeen        Boolean?
-  queenCells       Int?
-  swarmCells       Boolean
-  supersedureCells Boolean
-  warnings         String[]
 }
 
 model Box {
@@ -87,7 +64,6 @@ model Inspection {
   weatherConditions String?
   observations      Observation[]
   actions           Action[]
-  hiveMetric        HiveMetric?
 }
 
 model InspectionNote {

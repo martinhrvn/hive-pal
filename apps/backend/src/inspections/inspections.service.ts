@@ -5,9 +5,8 @@ import { InspectionFilterDto } from './dto/inspection-filter.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
-import { HiveMetric, Observation, Prisma } from '@prisma/client';
+import { Observation } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
-import { InspectionScoreDto } from './dto/inspection-score.dto';
 
 @Injectable()
 export class InspectionsService {
@@ -19,7 +18,7 @@ export class InspectionsService {
   create(createInspectionDto: CreateInspectionDto) {
     const { observations, ...inspectionData } = createInspectionDto;
     return this.prisma.$transaction(async (tx) => {
-      const inspection = await tx.inspection.create({
+      await tx.inspection.create({
         data: {
           ...inspectionData,
           observations: {
@@ -52,7 +51,6 @@ export class InspectionsService {
           observations: true,
         },
       });
-      await this.storeHiveMetrics(inspection.id, createInspectionDto, tx);
     });
   }
 
@@ -66,24 +64,19 @@ export class InspectionsService {
       },
       include: {
         observations: true,
-        hiveMetric: true,
       },
     });
     return inspections.map((inspection): InspectionResponseDto => {
+      const metrics = this.mapObservationsToDto(inspection.observations);
+      const score = this.metricService.calculateOveralScore(metrics);
       return {
         id: inspection.id,
         hiveId: inspection.hiveId,
         date: inspection.date.toISOString(),
         temperature: inspection.temperature ?? null,
         weatherConditions: inspection.weatherConditions ?? null,
-        observations: this.mapObservationsToDto(inspection.observations),
-        score: {
-          queenScore: inspection.hiveMetric?.queenRating ?? null,
-          storesScore: inspection.hiveMetric?.storesRating ?? null,
-          populationScore: inspection.hiveMetric?.populationRating ?? null,
-          overallScore: inspection.hiveMetric?.overallRating ?? null,
-          warnings: inspection.hiveMetric?.warnings ?? [],
-        },
+        observations: metrics,
+        score,
       };
     });
   }
@@ -93,17 +86,18 @@ export class InspectionsService {
       where: { id },
       include: {
         observations: true,
-        hiveMetric: true,
       },
     });
     if (!inspection) {
       return null;
     }
+    const metrics = this.mapObservationsToDto(inspection.observations);
+    const score = this.metricService.calculateOveralScore(metrics);
     return {
       ...inspection,
       date: inspection.date.toISOString(),
-      observations: this.mapObservationsToDto(inspection.observations),
-      score: this.mapHiveMetricsToDto(inspection.hiveMetric),
+      observations: metrics,
+      score,
     };
   }
 
@@ -115,13 +109,8 @@ export class InspectionsService {
           inspectionId: id,
         },
       });
-      await tx.hiveMetric.deleteMany({
-        where: {
-          inspectionId: id,
-        },
-      });
 
-      const inspection = await tx.inspection.update({
+      return await tx.inspection.update({
         where: { id },
         data: {
           ...inspectionData,
@@ -152,16 +141,6 @@ export class InspectionsService {
           },
         },
       });
-      await this.storeHiveMetrics(
-        id,
-        {
-          ...updateInspectionDto,
-          hiveId: inspection.hiveId,
-          date: inspection.date,
-        },
-        tx,
-      );
-      return inspection;
     });
   }
 
@@ -169,9 +148,7 @@ export class InspectionsService {
     return `This action removes a #${id} inspection`;
   }
 
-  private mapObservationsToDto(
-    observations: Observation[],
-  ): InspectionMetricsDto {
+  mapObservationsToDto(observations: Observation[]): InspectionMetricsDto {
     const observationsByType: Record<string, Observation> = observations.reduce(
       (acc, observation) => ({
         ...acc,
@@ -190,47 +167,6 @@ export class InspectionsService {
       supersedureCells:
         observationsByType.supersedure_cells?.booleanValue ?? null,
       queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
-    };
-  }
-
-  async storeHiveMetrics(
-    inspectionId: string,
-    inspection: CreateInspectionDto,
-    tx?: Prisma.TransactionClient,
-  ): Promise<void> {
-    const prisma = tx ?? this.prisma;
-    const overallRating = this.metricService.calculateOveralScore(
-      inspection.observations ?? {},
-    );
-    await prisma.hiveMetric.create({
-      data: {
-        hiveId: inspection.hiveId,
-        inspectionId: inspectionId,
-        date: inspection.date,
-        overallRating: overallRating.overallScore,
-        populationRating: overallRating.populationScore,
-        storesRating: overallRating.storesScore,
-        queenRating: overallRating.queenScore,
-        cappedBrood: inspection.observations?.cappedBrood,
-        uncappedBrood: inspection.observations?.uncappedBrood,
-        honeyStores: inspection.observations?.honeyStores,
-        pollenStores: inspection.observations?.pollenStores,
-        queenSeen: inspection.observations?.queenSeen,
-        queenCells: inspection.observations?.queenCells,
-        swarmCells: inspection.observations?.swarmCells ?? false,
-        supersedureCells: inspection.observations?.supersedureCells ?? false,
-        warnings: overallRating.warnings,
-      },
-    });
-  }
-
-  mapHiveMetricsToDto(hiveMetrics: HiveMetric | null): InspectionScoreDto {
-    return {
-      overallScore: hiveMetrics?.overallRating ?? null,
-      populationScore: hiveMetrics?.populationRating ?? null,
-      storesScore: hiveMetrics?.storesRating ?? null,
-      queenScore: hiveMetrics?.queenRating ?? null,
-      warnings: hiveMetrics?.warnings ?? [],
     };
   }
 }
