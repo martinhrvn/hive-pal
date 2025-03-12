@@ -26,6 +26,10 @@ export class InspectionResponseDto {
   @Expose()
   weatherConditions: string | null;
 
+  @ApiProperty({ required: false })
+  @Expose()
+  notes: string | null;
+
   @ApiProperty({ type: InspectionMetricsDto })
   @Expose()
   @Type(() => InspectionMetricsDto)

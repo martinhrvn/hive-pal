@@ -14,6 +14,7 @@ import {
   DropletsIcon,
   EggIcon,
   ChevronDownIcon,
+  FileTextIcon,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -180,6 +181,14 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                     >
                       {inspection.observations?.queenSeen ? 'Seen' : 'Not seen'}
                     </span>
+                  </div>
+                )}
+
+                {/* Notes indicator */}
+                {inspection.notes && (
+                  <div className="mt-2 text-sm flex items-center gap-1">
+                    <FileTextIcon size={14} className="text-muted-foreground" />
+                    <span className="text-muted-foreground">Notes available</span>
                   </div>
                 )}
               </div>

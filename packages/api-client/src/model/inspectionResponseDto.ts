@@ -16,6 +16,8 @@ export interface InspectionResponseDto {
   temperature?: number | null;
   /** @nullable */
   weatherConditions?: string | null;
+  /** @nullable */
+  notes?: string | null;
   observations: InspectionMetricsDto;
   score: InspectionScoreDto;
 }

@@ -35,6 +35,7 @@ import type {
   HiveDetailResponseDto,
   HiveResponseDto,
   InspectionResponseDto,
+  InspectionsControllerCreate201,
   InspectionsControllerFindAllParams,
   QueenResponseDto,
   UpdateHiveBoxesDto,
@@ -568,7 +569,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     
 export const inspectionsControllerCreate = (
     createInspectionDto: CreateInspectionDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<InspectionsControllerCreate201>> => {
     
     
     return axios.post(

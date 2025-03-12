@@ -28,6 +28,10 @@ export class CreateInspectionDto {
   weatherConditions?: string | null;
 
   @IsOptional()
+  @IsString()
+  notes?: string | null;
+
+  @IsOptional()
   @Type(() => CreateInspectionObservationsDto)
   observations?: CreateInspectionObservationsDto;
 }

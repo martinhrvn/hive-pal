@@ -18,6 +18,7 @@ export const inspectionSchema = z.object({
   temperature: z.number().nullish(),
   weatherConditions: z.string().nullish(),
   observations: observationSchema,
+  notes: z.string().nullish(),
 });
 
 export type ObservationFormData = z.infer<typeof observationSchema>;

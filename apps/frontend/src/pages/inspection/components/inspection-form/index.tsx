@@ -35,6 +35,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { InspectionFormData, inspectionSchema } from './schema';
 import { WeatherSection } from '@/pages/inspection/components/inspection-form/weather.tsx';
 import { ObservationsSection } from '@/pages/inspection/components/inspection-form/observations.tsx';
+import { NotesSection } from '@/pages/inspection/components/inspection-form/notes.tsx';
 import { Separator } from '@/components/ui/separator';
 
 type InspectionFormProps = {
@@ -192,6 +193,9 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
               <hr className={'border-t border-border'} />
               <ObservationsSection />
+
+              <hr className={'border-t border-border'} />
+              <NotesSection />
             </>
           )}
 

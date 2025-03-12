@@ -16,9 +16,9 @@ export class InspectionsService {
   ) {}
 
   create(createInspectionDto: CreateInspectionDto) {
-    const { observations, ...inspectionData } = createInspectionDto;
+    const { observations, notes, ...inspectionData } = createInspectionDto;
     return this.prisma.$transaction(async (tx) => {
-      await tx.inspection.create({
+      const inspection = await tx.inspection.create({
         data: {
           ...inspectionData,
           observations: {
@@ -51,6 +51,18 @@ export class InspectionsService {
           observations: true,
         },
       });
+
+      // Add notes if provided
+      if (notes) {
+        await tx.inspectionNote.create({
+          data: {
+            inspectionId: inspection.id,
+            text: notes,
+          },
+        });
+      }
+
+      return inspection;
     });
   }
 
@@ -64,6 +76,7 @@ export class InspectionsService {
       },
       include: {
         observations: true,
+        notes: true,
       },
     });
     return inspections.map((inspection): InspectionResponseDto => {
@@ -75,6 +88,7 @@ export class InspectionsService {
         date: inspection.date.toISOString(),
         temperature: inspection.temperature ?? null,
         weatherConditions: inspection.weatherConditions ?? null,
+        notes: inspection.notes?.[0]?.text ?? null,
         observations: metrics,
         score,
       };
@@ -86,6 +100,7 @@ export class InspectionsService {
       where: { id },
       include: {
         observations: true,
+        notes: true,
       },
     });
     if (!inspection) {
@@ -96,19 +111,40 @@ export class InspectionsService {
     return {
       ...inspection,
       date: inspection.date.toISOString(),
+      notes: inspection.notes?.[0]?.text ?? null,
       observations: metrics,
       score,
     };
   }
 
   update(id: string, updateInspectionDto: UpdateInspectionDto) {
-    const { observations, ...inspectionData } = updateInspectionDto;
+    const { observations, notes, ...inspectionData } = updateInspectionDto;
     return this.prisma.$transaction(async (tx) => {
       await tx.observation.deleteMany({
         where: {
           inspectionId: id,
         },
       });
+
+      // Handle notes update
+      if (notes !== undefined) {
+        // Delete existing notes 
+        await tx.inspectionNote.deleteMany({
+          where: {
+            inspectionId: id,
+          },
+        });
+
+        // Create new note if there's content
+        if (notes) {
+          await tx.inspectionNote.create({
+            data: {
+              inspectionId: id,
+              text: notes,
+            },
+          });
+        }
+      }
 
       return await tx.inspection.update({
         where: { id },

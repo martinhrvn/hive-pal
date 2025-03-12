@@ -15,5 +15,7 @@ export interface CreateInspectionDto {
   temperature?: number | null;
   /** @nullable */
   weatherConditions?: string | null;
+  /** @nullable */
+  notes?: string | null;
   observations?: CreateInspectionObservationsDto;
 }
