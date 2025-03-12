@@ -13,7 +13,12 @@ export const queenSchema = z.object({
   hiveId: z.string(),
   marking: z.string().nullish(),
   color: z.string().nullish(),
-  year: z.number().int().positive(),
+  year: z
+    .number()
+    .int()
+    .positive()
+    .gt(new Date().getFullYear() - 10)
+    .lte(new Date().getFullYear()),
   source: z.string().nullish(),
   status: queenStatusEnum,
   installedAt: z.date(),
