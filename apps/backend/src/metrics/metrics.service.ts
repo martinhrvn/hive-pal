@@ -37,6 +37,7 @@ export class MetricsService {
       { value: inspectionMetrics.honeyStores, weight: 2 },
       { value: inspectionMetrics.pollenStores, weight: 1 },
     ]);
+
     const queenScore = this.calculateWeightedScore([
       {
         value:
@@ -48,9 +49,18 @@ export class MetricsService {
       },
       { value: inspectionMetrics.cappedBrood, weight: 2 },
       { value: inspectionMetrics.uncappedBrood, weight: 2 },
-      { value: inspectionMetrics.swarmCells ? 0 : 10, weight: 1 },
-      { value: inspectionMetrics.supersedureCells ? 0 : 10, weight: 1 },
-      { value: inspectionMetrics.queenSeen ? 10 : 0, weight: 1 },
+      {
+        value: this.booleanToNumber(inspectionMetrics.swarmCells, 0, 10),
+        weight: 1,
+      },
+      {
+        value: this.booleanToNumber(inspectionMetrics.supersedureCells, 0, 10),
+        weight: 1,
+      },
+      {
+        value: this.booleanToNumber(inspectionMetrics.queenSeen, 10, 0),
+        weight: 1,
+      },
     ]);
 
     const overallScore = this.calculateWeightedScore([
@@ -79,10 +89,21 @@ export class MetricsService {
     };
   }
 
+  booleanToNumber(
+    value: boolean | null | undefined,
+    trueValue: number,
+    falseValue: number,
+  ): number | null {
+    if (value === null || value === undefined) {
+      return null;
+    }
+    return value ? trueValue : falseValue;
+  }
+
   calculateWeightedScore(
     values: { value: number | null | undefined; weight: number }[],
   ): number | null {
-    if (values.every(({ value }) => value !== null && value !== undefined)) {
+    if (values.every(({ value }) => value === null || value === undefined)) {
       return null;
     }
 

@@ -46,7 +46,7 @@ describe('MetricsService', () => {
     };
     const { overallScore, populationScore } =
       service.calculateOveralScore(metrics);
-    expect(overallScore).toEqual(5.33);
+    expect(overallScore).toEqual(3);
     expect(populationScore).toEqual(3);
   });
 
