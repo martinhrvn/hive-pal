@@ -99,7 +99,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       });
     }
   };
-
+  const date = form.watch('date');
+  const isInFuture = date && date > new Date();
   return (
     <div className={'max-w-4xl ml-4'}>
       <h1 className={'text-lg font-bold'}>New inspection</h1>
@@ -169,16 +170,30 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     />
                   </PopoverContent>
                 </Popover>
+                {isInFuture && (
+                  <div className={'p-4 rounded'}>
+                    <strong className={'text-blue-500'}>
+                      This inspection is scheduled for the future
+                    </strong>
+                    <p className={'text-blue-500'}>
+                      You are scheduling an inspection for a future date.
+                    </p>
+                  </div>
+                )}
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <hr className={'border-t border-border'} />
-          <WeatherSection />
+          {!isInFuture && (
+            <>
+              <hr className={'border-t border-border'} />
+              <WeatherSection />
 
-          <hr className={'border-t border-border'} />
-          <ObservationsSection />
+              <hr className={'border-t border-border'} />
+              <ObservationsSection />
+            </>
+          )}
 
           <Button type="submit" className="w-full">
             Submit
