@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQueenDto } from './dto/create-queen.dto';
 import { UpdateQueenDto } from './dto/update-queen.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { QueenResponseDto } from './dto/queen-response.dto';
+import { QueenResponseDto, QueenStatus } from './dto/queen-response.dto';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -10,6 +10,10 @@ export class QueensService {
   constructor(private prisma: PrismaService) {}
 
   async create(createQueenDto: CreateQueenDto): Promise<QueenResponseDto> {
+    if (createQueenDto.hiveId && createQueenDto.status === QueenStatus.ACTIVE) {
+      await this.markAllActiveQueensAsReplaced(createQueenDto.hiveId);
+    }
+
     const queen = await this.prisma.queen.create({
       data: {
         hiveId: createQueenDto.hiveId,
@@ -131,6 +135,25 @@ export class QueensService {
     // Delete queen
     return this.prisma.queen.delete({
       where: { id },
+    });
+  }
+
+  async findCurrentQueen(hiveId: string) {
+    return this.prisma.queen.findFirst({
+      where: {
+        hiveId: hiveId,
+        status: 'ACTIVE',
+      },
+    });
+  }
+
+  async markAllActiveQueensAsReplaced(hiveId: string) {
+    return this.prisma.queen.updateMany({
+      where: { hiveId, status: 'ACTIVE' },
+      data: {
+        status: 'REPLACED',
+        replacedAt: new Date(),
+      },
     });
   }
 }
