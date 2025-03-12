@@ -43,6 +43,7 @@ const TemperatureField = ({
       name={name}
       min={min}
       max={max}
+      placeholder={'Enter temperature'}
       defaultValue={defaultValue}
       renderIcon={renderTemperatureIcon}
       unit="°C"

@@ -122,7 +122,7 @@ const NumericField = ({
     showSlider && min !== undefined && max !== undefined;
 
   return (
-    <div className="w-full" ref={componentRef}>
+    <div className="w-full relative" ref={componentRef}>
       <div className="relative w-full rounded-md shadow-sm">
         {renderIcon && (
           <div
@@ -135,7 +135,7 @@ const NumericField = ({
         <Input
           type="number"
           placeholder={placeholder || defaultValue.toString()}
-          className={`${renderIcon ? 'pl-10' : ''} ${unit ? 'pr-16' : 'pr-10'} rounded-md text-right`}
+          className={`${renderIcon ? 'pl-10' : ''} ${unit ? 'pr-18' : 'pr-12'} rounded-md text-right`}
           value={numericValue === null ? '' : numericValue}
           name={name}
           onFocus={() =>
@@ -177,7 +177,7 @@ const NumericField = ({
       </div>
 
       {showSliderSection && (
-        <div className="px-2 pb-2 pt-5 bg-white border rounded-b-md shadow-sm">
+        <div className="absolute inset-x-0 -top-16 px-2 pb-2 pt-5 bg-white border rounded-t-md shadow-sm">
           <Slider
             value={[numericValue ?? defaultValue]}
             min={min}
