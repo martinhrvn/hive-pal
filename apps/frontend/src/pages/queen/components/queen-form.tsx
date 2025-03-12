@@ -33,6 +33,7 @@ import {
   useHiveControllerFindAll,
   useQueensControllerCreate,
 } from 'api-client';
+import { useMemo } from 'react';
 
 type QueenFormProps = {
   hiveId?: string;
@@ -99,13 +100,17 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
 
   const { data: hives } = useHiveControllerFindAll({
     query: {
-      select: data =>
-        data.data.map(hive => ({
-          value: hive.id,
-          label: hive.name,
-        })),
+      select: data => data.data,
     },
   });
+
+  const hiveOptions = useMemo(() => {
+    if (!hives) return [];
+    return hives.map(hive => ({
+      label: hive.name,
+      value: hive.id,
+    }));
+  }, [hives]);
 
   const { mutateAsync: createQueen } = useQueensControllerCreate();
   const form = useForm<QueenFormData>({
@@ -123,6 +128,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
   });
 
   const colorValue = useWatch({ control: form.control, name: 'color' });
+  const hiveValue = useWatch({ control: form.control, name: 'hiveId' });
   const onSubmit = async (data: QueenFormData) => {
     try {
       await createQueen({
@@ -142,6 +148,11 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
       console.error('Failed to create queen:', error);
     }
   };
+
+  const selectedHive = useMemo(() => {
+    if (!hives) return null;
+    return hives.find(hive => hive.id === hiveValue);
+  }, [hives, hiveValue]);
 
   return (
     <div className="container mx-auto max-w-xl">
@@ -168,7 +179,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                             <SelectValue placeholder="Select a hive" />
                           </SelectTrigger>
                           <SelectContent>
-                            {hives?.map(option => (
+                            {hiveOptions?.map(option => (
                               <SelectItem
                                 key={option.value}
                                 value={option.value}
@@ -416,6 +427,15 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   )}
                 />
               </div>
+
+              {selectedHive && selectedHive.activeQueen && (
+                <div className="bg-red-100 border border-red-200 p-4 rounded-md">
+                  <p className="text-red-800">
+                    This hive already has an active queen. Replacing the queen
+                    will mark the current queen as replaced.
+                  </p>
+                </div>
+              )}
 
               <div className="flex space-x-4 justify-end">
                 <Button

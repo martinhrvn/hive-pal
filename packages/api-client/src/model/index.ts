@@ -23,6 +23,7 @@ export * from './hiveDetailResponseDto';
 export * from './hiveDetailResponseDtoActiveQueen';
 export * from './hiveDetailResponseDtoStatus';
 export * from './hiveResponseDto';
+export * from './hiveResponseDtoActiveQueen';
 export * from './hiveResponseDtoStatus';
 export * from './inspectionMetricsDto';
 export * from './inspectionResponseDto';

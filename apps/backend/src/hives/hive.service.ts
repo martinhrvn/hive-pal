@@ -32,6 +32,7 @@ export class HiveService {
       notes: hive.notes,
       installationDate: hive.installationDate?.toISOString() ?? '',
       lastInspectionDate: null,
+      activeQueen: null,
     };
   }
 
@@ -47,6 +48,15 @@ export class HiveService {
           },
           take: 1,
         },
+        queens: {
+          where: {
+            status: 'ACTIVE',
+          },
+          orderBy: {
+            installedAt: 'desc',
+          },
+          take: 1,
+        },
       },
     });
 
@@ -59,6 +69,7 @@ export class HiveService {
         notes: hive.notes,
         installationDate: hive.installationDate?.toISOString() ?? '',
         lastInspectionDate: hive.inspections[0]?.date?.toISOString() ?? '',
+        activeQueen: hive.queens.length > 0 ? hive.queens[0] : null,
       }),
     );
   }

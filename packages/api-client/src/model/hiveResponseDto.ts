@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { HiveResponseDtoStatus } from './hiveResponseDtoStatus';
+import type { HiveResponseDtoActiveQueen } from './hiveResponseDtoActiveQueen';
 
 export interface HiveResponseDto {
   /** Unique identifier of the hive */
@@ -34,4 +35,9 @@ export interface HiveResponseDto {
    * @nullable
    */
   lastInspectionDate?: string | null;
+  /**
+   * The current active queen in the hive
+   * @nullable
+   */
+  activeQueen?: HiveResponseDtoActiveQueen;
 }
