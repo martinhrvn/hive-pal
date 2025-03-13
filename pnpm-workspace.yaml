@@ -1,11 +1,13 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - apps/*
+  - packages/*
 catalogs:
   zod:
     zod: latest
   prisma:
     prisma: latest
-    "@prisma/client": latest
+    '@prisma/client': latest
   typescript:
     typescript: 5.6.x
+onlyBuiltDependencies:
+  - '@nestjs/core'

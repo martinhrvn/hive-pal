@@ -7,6 +7,7 @@ import { HiveModule } from './hives/hive.module';
 import { InspectionsModule } from './inspections/inspections.module';
 import { QueensModule } from './queens/queens.module';
 import { MetricsService } from './metrics/metrics.service';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MetricsService } from './metrics/metrics.service';
     HiveModule,
     InspectionsModule,
     QueensModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, MetricsService],
