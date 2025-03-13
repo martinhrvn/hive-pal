@@ -30,7 +30,7 @@ export const HiveDetailPage = () => {
     { query: { select: data => data.data } },
   );
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return <div>Error</div>;
   }
 
   return (

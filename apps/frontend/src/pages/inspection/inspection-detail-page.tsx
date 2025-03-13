@@ -78,7 +78,7 @@ export const InspectionDetailPage = () => {
           <X className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
-            Failed to load inspection details. {error?.message}
+            Failed to load inspection details.
           </AlertDescription>
         </Alert>
         <Button variant="outline" onClick={() => navigate(-1)} className="mt-4">

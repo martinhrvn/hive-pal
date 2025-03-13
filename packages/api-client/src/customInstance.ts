@@ -11,19 +11,11 @@ export const customInstance = <T>(
 ): Promise<AxiosResponse<T>> => {
   const source = Axios.CancelToken.source();
 
-  const promise = AXIOS_INSTANCE({
+  return AXIOS_INSTANCE({
     ...config,
 
     ...options,
 
     cancelToken: source.token,
   })
-
-  // @ts-ignore
-
-  promise.cancel = () => {
-    source.cancel('Query was cancelled');
-  };
-
-  return promise;
 };
