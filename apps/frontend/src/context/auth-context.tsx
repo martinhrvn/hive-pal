@@ -8,11 +8,21 @@ import React, {
 } from 'react';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { getApiUrl } from '@/api/client.ts';
+import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 
 const TOKEN_KEY = 'hive_pal_auth_token';
 
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+  role: string;
+  passwordChangeRequired?: boolean;
+}
+
 interface AuthContextType {
   token: string | null;
+  user: User | null;
   login: (
     username: string,
     password: string,
@@ -24,7 +34,7 @@ interface AuthContextType {
     name?: string,
   ) => Promise<boolean>;
   logout: () => void;
-  isAuthenticated: boolean;
+  isLoggedIn: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -33,21 +43,73 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+const USER_KEY = 'hive_pal_user';
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => {
     // Initialize from localStorage
-    return localStorage.getItem(TOKEN_KEY);
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+
+    // Check if token is valid and not expired
+    if (storedToken && !isTokenExpired(storedToken)) {
+      return storedToken;
+    }
+
+    // Clear invalid token
+    localStorage.removeItem(TOKEN_KEY);
+    return null;
   });
 
-  const isAuthenticated = !!token;
+  const [user, setUser] = useState<User | null>(() => {
+    // Initialize user from token
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+
+    if (storedToken && !isTokenExpired(storedToken)) {
+      const decodedToken = decodeJwt(storedToken);
+
+      if (decodedToken) {
+        return {
+          id: decodedToken.sub,
+          email: decodedToken.email,
+          role: decodedToken.role,
+          passwordChangeRequired: decodedToken.passwordChangeRequired,
+        };
+      }
+    }
+
+    // Fallback to stored user data if token is not available
+    const storedUser = localStorage.getItem(USER_KEY);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  const isLoggedIn = !!token && !isTokenExpired(token);
 
   // Set up axios interceptors for authentication and handling 401 errors
+  // Update user data when token changes
   useEffect(() => {
-    // Setup token in localStorage
-    if (token) {
+    if (token && !isTokenExpired(token)) {
+      // Store token in localStorage
       localStorage.setItem(TOKEN_KEY, token);
+
+      // Extract user data from token
+      const decodedToken = decodeJwt(token);
+
+      if (decodedToken) {
+        const tokenUser = {
+          id: decodedToken.sub,
+          email: decodedToken.email,
+          role: decodedToken.role,
+          passwordChangeRequired: decodedToken.passwordChangeRequired,
+        };
+
+        setUser(tokenUser);
+        localStorage.setItem(USER_KEY, JSON.stringify(tokenUser));
+      }
     } else {
+      // Clean up when token is removed or invalid
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      setUser(null);
     }
 
     // Request interceptor to add token to all requests
@@ -94,7 +156,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (response.data && response.data.access_token) {
           setToken(response.data.access_token);
-          window.location.href = from;
+
+          if (response.data.user) {
+            setUser(response.data.user);
+          }
+
+          // Redirect to password change page if password change is required
+          if (response.data.user && response.data.user.passwordChangeRequired) {
+            window.location.href = '/account/change-password';
+          } else {
+            window.location.href = from;
+          }
+
           return true;
         } else {
           return false;
@@ -102,6 +175,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } catch (error) {
         console.error('Login error:', error);
         setToken(null);
+        setUser(null);
         return false;
       }
     },
@@ -132,12 +206,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = useCallback(() => {
     setToken(null);
+    setUser(null);
     window.location.href = '/login';
   }, []);
 
   const value = useMemo(
-    () => ({ token, login, register, logout, isAuthenticated }),
-    [token, login, register, logout, isAuthenticated],
+    () => ({ token, user, login, register, logout, isLoggedIn }),
+    [token, user, login, register, logout, isLoggedIn],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

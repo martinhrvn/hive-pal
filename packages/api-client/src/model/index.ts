@@ -6,10 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from './authControllerRegister201';
+export * from './authResponseDto';
 export * from './boxDto';
 export * from './boxDtoType';
 export * from './boxResponseDto';
 export * from './boxResponseDtoType';
+export * from './changePasswordDto';
 export * from './createHiveDto';
 export * from './createHiveDtoStatus';
 export * from './createInspectionDto';
@@ -30,12 +33,19 @@ export * from './inspectionResponseDto';
 export * from './inspectionScoreDto';
 export * from './inspectionsControllerCreate201';
 export * from './inspectionsControllerFindAllParams';
+export * from './loginDto';
 export * from './observationResponseDto';
 export * from './queenResponseDto';
 export * from './queenResponseDtoStatus';
+export * from './registerDto';
+export * from './resetPasswordDto';
 export * from './updateHiveBoxesDto';
 export * from './updateHiveDto';
 export * from './updateHiveDtoStatus';
 export * from './updateInspectionDto';
 export * from './updateQueenDto';
 export * from './updateQueenDtoStatus';
+export * from './userDto';
+export * from './userDtoRole';
+export * from './userResponseDto';
+export * from './userResponseDtoRole';

@@ -8,6 +8,7 @@ import {
   UnauthorizedException,
   NotFoundException,
   Req,
+  SerializeOptions,
 } from '@nestjs/common';
 import {
   JwtAuthGuard,
@@ -41,6 +42,7 @@ export class UsersController {
     description: 'List of all users',
     type: [UserResponseDto],
   })
+  @SerializeOptions({ type: UserResponseDto })
   async findAll(): Promise<UserResponseDto[]> {
     return this.usersService.findAll();
   }
@@ -55,6 +57,7 @@ export class UsersController {
     description: 'Password reset successful',
     type: UserResponseDto,
   })
+  @SerializeOptions({ type: UserResponseDto })
   async resetPassword(
     @Param('id') id: string,
     @Body() resetPasswordDto: ResetPasswordDto,
@@ -71,6 +74,7 @@ export class UsersController {
     description: 'Password changed successfully',
     type: UserResponseDto,
   })
+  @SerializeOptions({ type: UserResponseDto })
   async changePassword(
     @Req() req: RequestWithUser,
     @Body() changePasswordDto: ChangePasswordDto,
