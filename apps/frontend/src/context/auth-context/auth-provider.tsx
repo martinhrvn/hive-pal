@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
@@ -10,7 +10,6 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-const USER_KEY = 'hive_pal_user';
 AXIOS_INSTANCE.interceptors.request.use(config => {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) {
@@ -19,6 +18,18 @@ AXIOS_INSTANCE.interceptors.request.use(config => {
   config.baseURL = getApiUrl('');
   return config;
 });
+
+AXIOS_INSTANCE.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      // Unauthorized, clear token and redirect to login
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  },
+);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => {
     // Initialize from localStorage
@@ -47,14 +58,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const decodedToken = decodeJwt(token);
 
       if (decodedToken) {
-        const tokenUser = {
-          id: decodedToken.sub,
-          email: decodedToken.email,
-          role: decodedToken.role,
-          passwordChangeRequired: decodedToken.passwordChangeRequired,
-        };
-
-        localStorage.setItem(USER_KEY, JSON.stringify(tokenUser));
         if (
           decodedToken.passwordChangeRequired &&
           window.location.pathname !== '/account/change-password'
@@ -65,41 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } else {
       // Clean up when token is removed or invalid
       localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
     }
-
-    // Request interceptor to add token to all requests
-    const requestInterceptor = axios.interceptors.request.use(
-      (config: InternalAxiosRequestConfig) => {
-        if (token) {
-          config.headers = config.headers || {};
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      error => {
-        return Promise.reject(error);
-      },
-    );
-
-    // Response interceptor to handle 401 Unauthorized errors
-    const responseInterceptor = axios.interceptors.response.use(
-      response => response,
-      (error: AxiosError) => {
-        if (error.response?.status === 401) {
-          // Clear token and redirect to login page
-          setToken(null);
-          window.location.href = '/login';
-        }
-        return Promise.reject(error);
-      },
-    );
-
-    // Clean up interceptors when component unmounts or token changes
-    return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-      axios.interceptors.response.eject(responseInterceptor);
-    };
   }, [token]);
 
   const login = useCallback(
