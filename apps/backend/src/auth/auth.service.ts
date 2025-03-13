@@ -19,8 +19,14 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<Omit<PrismaUser, 'password'> | null> {
+    console.log('validateUser', email, password);
     const user = await this.usersService.findByEmail(email);
-
+    console.log('Found user', user);
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user?.password || '',
+    );
+    console.log('Password valid:', isPasswordValid ? 'Yes' : 'No');
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password: _, ...result } = user;
       return result;

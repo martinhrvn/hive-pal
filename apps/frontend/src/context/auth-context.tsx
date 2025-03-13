@@ -14,6 +14,11 @@ const TOKEN_KEY = 'hive_pal_auth_token';
 interface AuthContextType {
   token: string | null;
   login: (username: string, password: string) => Promise<boolean>;
+  register: (
+    email: string,
+    password: string,
+    name?: string,
+  ) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -45,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     async (username: string, password: string, from: string = '/') => {
       try {
         const token = await axios.post(getApiUrl('/api/auth/login'), {
-          username,
+          email: username,
           password,
         });
 
@@ -65,12 +70,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [],
   );
 
+  const register = useCallback(
+    async (email: string, password: string, name?: string) => {
+      try {
+        const response = await axios.post(getApiUrl('/api/auth/register'), {
+          email,
+          password,
+          ...(name && { name }),
+        });
+
+        if (response.status >= 200 && response.status < 300) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        return false;
+      }
+    },
+    [],
+  );
+
   const logout = useCallback(() => {
     setToken(null);
   }, []);
+
   const value = useMemo(
-    () => ({ token, login, logout, isAuthenticated }),
-    [token, login, logout, isAuthenticated],
+    () => ({ token, login, register, logout, isAuthenticated }),
+    [token, login, register, logout, isAuthenticated],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
