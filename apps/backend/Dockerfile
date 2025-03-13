@@ -22,8 +22,7 @@ RUN pnpm --filter backend exec prisma generate
 
 # Build the backend
 RUN pnpm --filter backend build
-RUN pnpm --filter backend deploy pruned --prod
-RUN ls -l pruned
+RUN pnpm --filter backend --prod deploy pruned
 
 # Stage 2: Production
 FROM node:22-alpine
@@ -33,5 +32,4 @@ WORKDIR /app
 # Copy dependencies and built code
 COPY --from=builder /app/pruned .
 COPY --from=builder /app/apps/backend/dist .
-RUN ls -l .
 CMD ["node", "src/main.js"]

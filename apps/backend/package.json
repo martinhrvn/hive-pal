@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "db:up": "docker-compose up -d",
-    "dev": "pnpm db:up && pnpm prisma generate && nest start --watch",
+    "dev": "pnpm db:up && nest start --watch",
     "seed": "ts-node prisma/seed.ts",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
