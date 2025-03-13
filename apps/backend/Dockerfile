@@ -14,11 +14,10 @@ COPY apps/backend/package.json ./apps/backend/
 # If shared packages exist, add their package.json here too
 
 # Install dependencies (only for the backend)
-RUN pnpm  --frozen-lockfile install
+RUN pnpm --filter backend --frozen-lockfile install
 
 # Copy source code
 COPY apps/backend ./apps/backend
-# COPY packages/shared ./packages/shared  # If shared packages exist
 RUN pnpm --filter backend exec prisma generate
 
 # Build the backend
