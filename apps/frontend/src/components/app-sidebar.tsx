@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  AudioWaveform,
-  Command,
-  HomeIcon,
-  PieChart,
-  Settings2,
-} from 'lucide-react';
+import { HomeIcon, PieChart, Settings2 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavHives } from '@/components/nav-hives.tsx';
@@ -22,23 +16,6 @@ import {
 
 // This is sample data.
 const data = {
-  apiaries: [
-    {
-      name: 'Default',
-      logo: HomeIcon,
-      plan: 'Location',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
-    },
-    {
-      name: 'Evil Corp.',
-      logo: Command,
-      plan: 'Free',
-    },
-  ],
   navMain: [
     {
       title: 'Hives',
@@ -90,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <ApiarySwitcher teams={data.apiaries} />
+        <ApiarySwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

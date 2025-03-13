@@ -29,9 +29,11 @@ import type {
   AxiosResponse
 } from 'axios'
 import type {
+  ApiaryResponseDto,
   AuthControllerRegister201,
   AuthResponseDto,
   ChangePasswordDto,
+  CreateApiaryDto,
   CreateHiveDto,
   CreateInspectionDto,
   CreateQueenDto,
@@ -44,6 +46,7 @@ import type {
   QueenResponseDto,
   RegisterDto,
   ResetPasswordDto,
+  UpdateApiaryDto,
   UpdateHiveBoxesDto,
   UpdateHiveDto,
   UpdateInspectionDto,
@@ -1594,6 +1597,334 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       > => {
 
       const mutationOptions = getQueensControllerRemoveMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+export const apiariesControllerCreate = (
+    createApiaryDto: CreateApiaryDto, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<ApiaryResponseDto>> => {
+    
+    
+    return axios.post(
+      `/api/apiaries`,
+      createApiaryDto,options
+    );
+  }
+
+
+
+export const getApiariesControllerCreateMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,{data: CreateApiaryDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,{data: CreateApiaryDto}, TContext> => {
+    
+const mutationKey = ['apiariesControllerCreate'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiariesControllerCreate>>, {data: CreateApiaryDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  apiariesControllerCreate(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApiariesControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof apiariesControllerCreate>>>
+    export type ApiariesControllerCreateMutationBody = CreateApiaryDto
+    export type ApiariesControllerCreateMutationError = AxiosError<unknown>
+
+    export const useApiariesControllerCreate = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,{data: CreateApiaryDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationResult<
+        Awaited<ReturnType<typeof apiariesControllerCreate>>,
+        TError,
+        {data: CreateApiaryDto},
+        TContext
+      > => {
+
+      const mutationOptions = getApiariesControllerCreateMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+export const apiariesControllerFindAll = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<ApiaryResponseDto[]>> => {
+    
+    
+    return axios.get(
+      `/api/apiaries`,options
+    );
+  }
+
+
+export const getApiariesControllerFindAllQueryKey = () => {
+    return [`/api/apiaries`] as const;
+    }
+
+    
+export const getApiariesControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getApiariesControllerFindAllQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiariesControllerFindAll>>> = ({ signal }) => apiariesControllerFindAll({ signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
+}
+
+export type ApiariesControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof apiariesControllerFindAll>>>
+export type ApiariesControllerFindAllQueryError = AxiosError<unknown>
+
+
+export function useApiariesControllerFindAll<TData = Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError = AxiosError<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiariesControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof apiariesControllerFindAll>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useApiariesControllerFindAll<TData = Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiariesControllerFindAll>>,
+          TError,
+          Awaited<ReturnType<typeof apiariesControllerFindAll>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useApiariesControllerFindAll<TData = Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+
+export function useApiariesControllerFindAll<TData = Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindAll>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+
+  const queryOptions = getApiariesControllerFindAllQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const apiariesControllerFindOne = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
+    
+    
+    return axios.get(
+      `/api/apiaries/${id}`,options
+    );
+  }
+
+
+export const getApiariesControllerFindOneQueryKey = (id: string,) => {
+    return [`/api/apiaries/${id}`] as const;
+    }
+
+    
+export const getApiariesControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError = AxiosError<unknown>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getApiariesControllerFindOneQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiariesControllerFindOne>>> = ({ signal }) => apiariesControllerFindOne(id, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
+}
+
+export type ApiariesControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof apiariesControllerFindOne>>>
+export type ApiariesControllerFindOneQueryError = AxiosError<unknown>
+
+
+export function useApiariesControllerFindOne<TData = Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiariesControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof apiariesControllerFindOne>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useApiariesControllerFindOne<TData = Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiariesControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof apiariesControllerFindOne>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+export function useApiariesControllerFindOne<TData = Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+
+export function useApiariesControllerFindOne<TData = Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiariesControllerFindOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+
+  const queryOptions = getApiariesControllerFindOneQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const apiariesControllerUpdate = (
+    id: string,
+    updateApiaryDto: UpdateApiaryDto, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
+    
+    
+    return axios.patch(
+      `/api/apiaries/${id}`,
+      updateApiaryDto,options
+    );
+  }
+
+
+
+export const getApiariesControllerUpdateMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string;data: UpdateApiaryDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string;data: UpdateApiaryDto}, TContext> => {
+    
+const mutationKey = ['apiariesControllerUpdate'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiariesControllerUpdate>>, {id: string;data: UpdateApiaryDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  apiariesControllerUpdate(id,data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApiariesControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof apiariesControllerUpdate>>>
+    export type ApiariesControllerUpdateMutationBody = UpdateApiaryDto
+    export type ApiariesControllerUpdateMutationError = AxiosError<unknown>
+
+    export const useApiariesControllerUpdate = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string;data: UpdateApiaryDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationResult<
+        Awaited<ReturnType<typeof apiariesControllerUpdate>>,
+        TError,
+        {id: string;data: UpdateApiaryDto},
+        TContext
+      > => {
+
+      const mutationOptions = getApiariesControllerUpdateMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+export const apiariesControllerRemove = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<string>> => {
+    
+    
+    return axios.delete(
+      `/api/apiaries/${id}`,options
+    );
+  }
+
+
+
+export const getApiariesControllerRemoveMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerRemove>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerRemove>>, TError,{id: string}, TContext> => {
+    
+const mutationKey = ['apiariesControllerRemove'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiariesControllerRemove>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  apiariesControllerRemove(id,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApiariesControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof apiariesControllerRemove>>>
+    
+    export type ApiariesControllerRemoveMutationError = AxiosError<unknown>
+
+    export const useApiariesControllerRemove = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerRemove>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationResult<
+        Awaited<ReturnType<typeof apiariesControllerRemove>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getApiariesControllerRemoveMutationOptions(options);
 
       return useMutation(mutationOptions);
     }

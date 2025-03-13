@@ -9,20 +9,21 @@ async function main() {
   await prisma.hive.deleteMany();
   await prisma.apiary.deleteMany();
 
+  const user = await prisma.user.create({
+    data: {
+      email: 'test@test.com',
+      password: 'password',
+      name: 'Test User',
+    },
+  });
+
   // Create apiaries
   const homeApiary = await prisma.apiary.create({
     data: {
       name: 'Home Apiary',
       latitude: 42.3601,
       longitude: -71.0589,
-    },
-  });
-
-  const mountainApiary = await prisma.apiary.create({
-    data: {
-      name: 'Mountain Site',
-      latitude: 42.3701,
-      longitude: -71.1089,
+      userId: user.id,
     },
   });
 
@@ -36,32 +37,12 @@ async function main() {
     },
   });
 
-  const hive2 = await prisma.hive.create({
-    data: {
-      name: 'Hive 02',
-      apiaryId: mountainApiary.id,
-      status: 'ACTIVE',
-      installationDate: new Date('2025-01-15'),
-    },
-  });
-
   // Create queens
   await prisma.queen.create({
     data: {
       hiveId: hive1.id,
       color: 'RED',
       source: 'Local breeder',
-      status: 'ACTIVE',
-      installedAt: new Date('2025-01-15'),
-    },
-  });
-
-  await prisma.queen.create({
-    data: {
-      hiveId: hive2.id,
-      year: 2024,
-      color: 'WHITE',
-      source: 'Package',
       status: 'ACTIVE',
       installedAt: new Date('2025-01-15'),
     },

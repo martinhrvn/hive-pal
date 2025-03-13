@@ -4,15 +4,27 @@ import { UpdateApiaryDto } from './dto/update-apiary.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ApiaryResponseDto } from './dto/apiary-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ApiariesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createApiaryDto: CreateApiaryDto): Promise<ApiaryResponseDto> {
+  async create(
+    createApiaryDto: CreateApiaryDto,
+    userId: string,
+  ): Promise<ApiaryResponseDto> {
+    const apiaryData: Prisma.ApiaryUncheckedCreateInput = {
+      name: createApiaryDto.name,
+      location: createApiaryDto.location,
+      latitude: createApiaryDto.latitude,
+      longitude: createApiaryDto.longitude,
+      userId,
+    };
     const apiary = await this.prisma.apiary.create({
-      data: createApiaryDto,
+      data: apiaryData,
     });
+
     return plainToInstance(ApiaryResponseDto, {
       id: apiary.id,
       name: apiary.name,

@@ -8,16 +8,17 @@ import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
 import { CreateHivePage, HiveListPage } from '@/pages/hive';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
-import { 
-  CreateInspectionPage, 
-  InspectionDetailPage, 
+import {
+  CreateInspectionPage,
+  InspectionDetailPage,
   EditInspectionPage,
-  InspectionListPage 
+  InspectionListPage,
 } from '@/pages/inspection';
 import { CreateQueenPage } from '@/pages/queen';
 import { UserManagementPage } from '@/pages/admin';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
+import { CreateApiaryPage } from '@/pages/apiaries';
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <HomePage />,
+      },
+      {
+        path: '/apiaries/create',
+        element: <CreateApiaryPage />,
       },
       {
         path: '/hives',

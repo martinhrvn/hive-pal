@@ -9,14 +9,4 @@ catalogs:
     '@prisma/client': latest
   typescript:
     typescript: 5.6.x
-onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@prisma/client'
-  - '@prisma/engines'
-  - '@scarf/scarf'
-  - '@swc/core'
-  - bcrypt
-  - cpu-features
-  - esbuild
-  - prisma
-  - ssh2
+

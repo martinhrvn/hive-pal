@@ -43,7 +43,7 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center">
+    <div className="w-full min-h-screen flex flex-col justify-center">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h1 className="text-center text-2xl font-semibold mb-2">
           Beekeeping Manager

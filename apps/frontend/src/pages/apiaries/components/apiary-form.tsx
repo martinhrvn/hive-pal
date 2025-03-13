@@ -1,0 +1,103 @@
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { apiariesSchema } from './schema';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  useApiariesControllerCreate,
+  getApiariesControllerFindAllQueryKey,
+} from 'api-client';
+import { useQueryClient } from '@tanstack/react-query';
+
+type FormData = z.infer<typeof apiariesSchema>;
+
+export const ApiaryForm = () => {
+  const navigate = useNavigate();
+
+  const { mutateAsync } = useApiariesControllerCreate();
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(apiariesSchema),
+    defaultValues: {
+      name: '',
+      location: '',
+    },
+  });
+  const queryClient = useQueryClient();
+
+  const onSubmit = async (data: FormData) => {
+    console.log('Submitting');
+    try {
+      const response = await mutateAsync({
+        data: {
+          name: data.name,
+          location: data.location,
+        },
+      });
+
+      if (response.status === 201) {
+        await queryClient.invalidateQueries({
+          queryKey: getApiariesControllerFindAllQueryKey(),
+        });
+        navigate('/'); // Navigate to home page or apiary list
+      }
+    } catch (error) {
+      console.error('Failed to create apiary', error);
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Apiary name" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Location</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Location description" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            className="mr-2"
+            onClick={() => navigate('/')}
+          >
+            Cancel
+          </Button>
+          <Button type={'submit'}>{'Create Apiary'}</Button>
+        </div>
+      </form>
+    </Form>
+  );
+};

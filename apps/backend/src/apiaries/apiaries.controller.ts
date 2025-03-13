@@ -26,8 +26,11 @@ export class ApiariesController {
   @Post()
   @ApiCreatedResponse({ type: ApiaryResponseDto })
   @SerializeOptions({ type: ApiaryResponseDto })
-  create(@Body() createApiaryDto: CreateApiaryDto): Promise<ApiaryResponseDto> {
-    return this.apiariesService.create(createApiaryDto);
+  create(
+    @Body() createApiaryDto: CreateApiaryDto,
+    @Req() req: RequestWithUser,
+  ): Promise<ApiaryResponseDto> {
+    return this.apiariesService.create(createApiaryDto, req.user.id);
   }
 
   @Get()
