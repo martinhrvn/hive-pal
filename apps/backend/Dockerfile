@@ -23,6 +23,7 @@ RUN pnpm --filter backend exec prisma generate
 # Build the backend
 RUN pnpm --filter backend build
 RUN pnpm --filter backend deploy --prod pruned
+RUN cd /app/pruned && pnpm prisma generate
 
 # Stage 2: Production
 FROM node:22-alpine
