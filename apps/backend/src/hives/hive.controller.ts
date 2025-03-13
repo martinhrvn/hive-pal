@@ -10,7 +10,9 @@ import {
   ClassSerializerInterceptor,
   SerializeOptions,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
 import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
@@ -21,6 +23,7 @@ import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthGuard)
 @ApiTags('hives')
 @Controller('hives')
 export class HiveController {

@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 
-import { useAuth } from '@/context/auth-context.tsx';
+import { useAuth } from '@/context/auth-context';
 import { AppSidebar } from '../app-sidebar';
 import { Breadcrumbs } from '../breadcrumbs';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar.tsx';
@@ -26,7 +26,7 @@ const DashboardLayout = () => {
             <Separator orientation="vertical" className="mr-2 h-4" />
             {/* Logo/Title */}
             <h1 className="text-xl font-semibold flex items-center gap-5">
-              <img className={'w-10'} src={'/hive-pal-logo.png'} />
+              <img className={'w-10'} src={'/hive-pal-logo.png'} alt={'logo'} />
               <a className={'text-foreground'} href={'/'}>
                 Hive Pal
               </a>

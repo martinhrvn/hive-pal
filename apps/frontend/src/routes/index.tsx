@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from '@/pages/login-page.tsx';
+import RegisterPage from '@/pages/register-page.tsx';
 import { ProtectedRoute } from './protected-route.tsx';
+import { AdminProtectedRoute } from './admin-protected-route.tsx';
 import { NotFoundPage } from '@/pages/not-found-page.tsx';
 import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
@@ -13,6 +15,8 @@ import {
   InspectionListPage 
 } from '@/pages/inspection';
 import { CreateQueenPage } from '@/pages/queen';
+import { UserManagementPage } from '@/pages/admin';
+import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 
 const router = createBrowserRouter([
@@ -73,11 +77,27 @@ const router = createBrowserRouter([
         path: '/hives/:hiveId/queens/create',
         element: <CreateQueenPage />,
       },
+      {
+        path: '/admin/users',
+        element: (
+          <AdminProtectedRoute>
+            <UserManagementPage />
+          </AdminProtectedRoute>
+        ),
+      },
     ],
   },
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <RegisterPage />,
+  },
+  {
+    path: '/account/change-password',
+    element: <ChangePasswordPage />,
   },
   {
     path: '*',

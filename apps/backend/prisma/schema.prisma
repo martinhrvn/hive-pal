@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                    String   @id @default(uuid())
+  email                 String   @unique
+  password              String
+  name                  String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  apiaries              Apiary[]
+  role                  Role     @default(USER)
+  passwordChangeRequired Boolean  @default(false)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
 model Apiary {
   id        String  @id @default(uuid())
   name      String
@@ -15,6 +32,8 @@ model Apiary {
   longitude Float?
   notes     String?
   hives     Hive[]
+  User      User?   @relation(fields: [userId], references: [id])
+  userId    String?
 }
 
 model Hive {

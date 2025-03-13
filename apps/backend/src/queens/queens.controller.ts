@@ -6,7 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { QueensService } from './queens.service';
 import { CreateQueenDto } from './dto/create-queen.dto';
 import { UpdateQueenDto } from './dto/update-queen.dto';
@@ -14,6 +16,7 @@ import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { QueenResponseDto } from './dto/queen-response.dto';
 
 @ApiTags('queens')
+@UseGuards(JwtAuthGuard)
 @Controller('queens')
 export class QueensController {
   constructor(private readonly queensService: QueensService) {}

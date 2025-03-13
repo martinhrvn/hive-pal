@@ -128,7 +128,7 @@ export class InspectionsService {
 
       // Handle notes update
       if (notes !== undefined) {
-        // Delete existing notes 
+        // Delete existing notes
         await tx.inspectionNote.deleteMany({
           where: {
             inspectionId: id,

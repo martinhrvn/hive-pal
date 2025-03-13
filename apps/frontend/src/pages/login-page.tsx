@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
-import { useAuth } from '@/context/auth-context.tsx';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth-context';
+import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isLoggedIn } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,12 +27,12 @@ const LoginPage = () => {
     }
   };
 
-  if (isAuthenticated) {
+  if (isLoggedIn) {
     navigate('/');
   }
 
   return (
-    <div className="min-h-screen  flex flex-col justify-center">
+    <div className="min-h-screen w-full flex flex-col justify-center">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h1 className="text-center text-2xl font-semibold  mb-2">
           Beekeeping Manager
@@ -45,15 +45,16 @@ const LoginPage = () => {
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Email</Label>
               <div className="mt-1">
                 <Input
-                  id="username"
-                  name="username"
-                  type="text"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
                   value={username}
                   onChange={e => setUsername(e.target.value)}
+                  placeholder="Your login email"
                 />
               </div>
             </div>
@@ -73,9 +74,20 @@ const LoginPage = () => {
             </div>
 
             <div>
-              <Button type="submit">Sign in</Button>
+              <Button type="submit" className="w-full">
+                Sign in
+              </Button>
             </div>
           </form>
+
+          <div className="mt-6 text-center">
+            <p>
+              Don't have an account?{' '}
+              <Link to="/register" className="text-blue-600 hover:underline">
+                Register
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
