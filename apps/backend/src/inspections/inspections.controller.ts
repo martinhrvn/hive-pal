@@ -8,7 +8,9 @@ import {
   Delete,
   Query,
   SerializeOptions,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { InspectionsService } from './inspections.service';
 import { CreateInspectionDto } from './dto/create-inspection.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
@@ -16,6 +18,7 @@ import { InspectionFilterDto } from './dto/inspection-filter.dto';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 
+@UseGuards(JwtAuthGuard)
 @Controller('inspections')
 export class InspectionsController {
   constructor(private readonly inspectionsService: InspectionsService) {}
