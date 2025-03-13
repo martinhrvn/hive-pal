@@ -77,7 +77,6 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @SerializeOptions({ type: UserResponseDto })
   async getProfile(@Request() req: RequestWithUser): Promise<UserResponseDto> {
-    console.log('req.user', req.user);
     return this.authService.getProfile(req.user.id);
   }
 }
