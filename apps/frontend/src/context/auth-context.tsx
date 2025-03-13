@@ -103,7 +103,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
 
         setUser(tokenUser);
+
         localStorage.setItem(USER_KEY, JSON.stringify(tokenUser));
+        if (
+          decodedToken.passwordChangeRequired &&
+          window.location.pathname !== '/account/change-password'
+        ) {
+          window.location.href = '/account/change-password';
+        }
       }
     } else {
       // Clean up when token is removed or invalid

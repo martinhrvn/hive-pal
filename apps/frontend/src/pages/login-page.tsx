@@ -11,7 +11,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isLoggedIn } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,12 +27,12 @@ const LoginPage = () => {
     }
   };
 
-  if (isAuthenticated) {
+  if (isLoggedIn) {
     navigate('/');
   }
 
   return (
-    <div className="min-h-screen  flex flex-col justify-center">
+    <div className="min-h-screen w-full flex flex-col justify-center">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h1 className="text-center text-2xl font-semibold  mb-2">
           Beekeeping Manager

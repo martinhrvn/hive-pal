@@ -58,6 +58,7 @@ export class AuthService {
       role: user.role,
       passwordChangeRequired: user.passwordChangeRequired || false,
     };
+    console.log('payload', payload);
 
     return {
       access_token: this.jwtService.sign(payload),
