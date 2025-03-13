@@ -8,16 +8,14 @@ type NavAdminProps = {
 };
 
 export function NavAdmin({ collapsed = false }: NavAdminProps) {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const location = useLocation();
 
   // Get role from token first (more secure), then fallback to user object
   const decodedToken = token ? decodeJwt(token) : null;
   const tokenRole = decodedToken?.role;
-  const role = tokenRole || user?.role;
-
   // Only render admin nav items if user is admin
-  if (role !== 'ADMIN') {
+  if (tokenRole !== 'ADMIN') {
     return null;
   }
 

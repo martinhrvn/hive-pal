@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/auth-context.tsx';
+import { useAuth } from '@/context/auth-context';
 import { useIsAdmin } from '@/hooks/use-is-admin.ts';
 import {
   Table,

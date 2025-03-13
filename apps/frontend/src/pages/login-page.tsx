@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useAuth } from '@/context/auth-context.tsx';
+import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

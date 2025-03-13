@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useAuth } from '@/context/auth-context.tsx';
+import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const { register, isAuthenticated } = useAuth();
+  const { register, isLoggedIn } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,7 +28,9 @@ const RegisterPage = () => {
       if (success) {
         navigate('/login');
       } else {
-        setError('Registration failed. This email might already be registered.');
+        setError(
+          'Registration failed. This email might already be registered.',
+        );
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -36,7 +38,7 @@ const RegisterPage = () => {
     }
   };
 
-  if (isAuthenticated) {
+  if (isLoggedIn) {
     navigate('/');
   }
 
@@ -111,7 +113,9 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <Button type="submit" className="w-full">Register</Button>
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
             </div>
           </form>
 

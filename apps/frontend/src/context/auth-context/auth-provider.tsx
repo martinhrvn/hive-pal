@@ -1,43 +1,10 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
+import { AuthContext } from '@/context/auth-context/auth-context.ts';
 
 const TOKEN_KEY = 'hive_pal_auth_token';
-
-interface User {
-  id: string;
-  email: string;
-  name?: string;
-  role: string;
-  passwordChangeRequired?: boolean;
-}
-
-interface AuthContextType {
-  token: string | null;
-  user: User | null;
-  login: (
-    username: string,
-    password: string,
-    from?: string,
-  ) => Promise<boolean>;
-  register: (
-    email: string,
-    password: string,
-    name?: string,
-  ) => Promise<boolean>;
-  logout: () => void;
-  isLoggedIn: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -60,28 +27,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return null;
   });
 
-  const [user, setUser] = useState<User | null>(() => {
-    // Initialize user from token
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-
-    if (storedToken && !isTokenExpired(storedToken)) {
-      const decodedToken = decodeJwt(storedToken);
-
-      if (decodedToken) {
-        return {
-          id: decodedToken.sub,
-          email: decodedToken.email,
-          role: decodedToken.role,
-          passwordChangeRequired: decodedToken.passwordChangeRequired,
-        };
-      }
-    }
-
-    // Fallback to stored user data if token is not available
-    const storedUser = localStorage.getItem(USER_KEY);
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-
   const isLoggedIn = !!token && !isTokenExpired(token);
 
   // Set up axios interceptors for authentication and handling 401 errors
@@ -102,8 +47,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           passwordChangeRequired: decodedToken.passwordChangeRequired,
         };
 
-        setUser(tokenUser);
-
         localStorage.setItem(USER_KEY, JSON.stringify(tokenUser));
         if (
           decodedToken.passwordChangeRequired &&
@@ -116,7 +59,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Clean up when token is removed or invalid
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
-      setUser(null);
     }
 
     // Request interceptor to add token to all requests
@@ -164,10 +106,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (response.data && response.data.access_token) {
           setToken(response.data.access_token);
 
-          if (response.data.user) {
-            setUser(response.data.user);
-          }
-
           // Redirect to password change page if password change is required
           if (response.data.user && response.data.user.passwordChangeRequired) {
             window.location.href = '/account/change-password';
@@ -182,7 +120,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } catch (error) {
         console.error('Login error:', error);
         setToken(null);
-        setUser(null);
         return false;
       }
     },
@@ -198,11 +135,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           ...(name && { name }),
         });
 
-        if (response.status >= 200 && response.status < 300) {
-          return true;
-        } else {
-          return false;
-        }
+        return response.status >= 200 && response.status < 300;
       } catch (error) {
         console.error('Registration error:', error);
         return false;
@@ -213,22 +146,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = useCallback(() => {
     setToken(null);
-    setUser(null);
     window.location.href = '/login';
   }, []);
 
   const value = useMemo(
-    () => ({ token, user, login, register, logout, isLoggedIn }),
-    [token, user, login, register, logout, isLoggedIn],
+    () => ({ token, login, register, logout, isLoggedIn }),
+    [token, login, register, logout, isLoggedIn],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-// Custom hook to use the auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { AuthProvider } from '@/context/auth-context.tsx';
+import { AuthProvider } from '@/context/auth-context';
 import { ThemeProvider } from './theme-provider';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import axios from 'axios';
