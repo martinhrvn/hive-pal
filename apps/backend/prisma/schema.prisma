@@ -15,6 +15,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   apiaries  Apiary[]
+  role      Role     @default(USER)
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Apiary {

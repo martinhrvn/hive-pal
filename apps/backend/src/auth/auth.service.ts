@@ -18,15 +18,21 @@ export class AuthService {
   async validateUser(
     email: string,
     password: string,
-  ): Promise<Omit<PrismaUser, 'password'> | null> {
-    console.log('validateUser', email, password);
+  ): Promise<Omit<PrismaUser, 'password' | 'createdAt' | 'updatedAt'> | null> {
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      (await bcrypt.compare(password, process.env.ADMIN_PASSWORD || ''))
+    ) {
+      return {
+        id: 'admin',
+        email: 'admin@hivepal.com',
+        name: 'Admin',
+        role: 'ADMIN',
+      };
+    }
+
     const user = await this.usersService.findByEmail(email);
-    console.log('Found user', user);
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      user?.password || '',
-    );
-    console.log('Password valid:', isPasswordValid ? 'Yes' : 'No');
+
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password: _, ...result } = user;
       return result;
@@ -47,6 +53,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
       },
     };
   }

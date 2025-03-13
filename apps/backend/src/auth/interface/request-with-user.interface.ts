@@ -8,6 +8,7 @@ export interface RequestWithUser extends Request {
 export interface JwtPayload {
   email: string;
   sub: string;
+  role: string;
 }
 
 export interface RequestWithJWTUser extends Request {
