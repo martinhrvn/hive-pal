@@ -17,6 +17,21 @@ class UserDto {
   })
   @Expose()
   name?: string;
+
+  @ApiProperty({
+    description: 'User role',
+    example: 'USER',
+    enum: ['USER', 'ADMIN'],
+  })
+  @Expose()
+  role: string;
+
+  @ApiProperty({
+    description: 'Whether the user needs to change their password',
+    example: false,
+  })
+  @Expose()
+  passwordChangeRequired: boolean;
 }
 
 export class AuthResponseDto {

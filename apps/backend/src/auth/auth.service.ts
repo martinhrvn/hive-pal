@@ -1,5 +1,10 @@
 // auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
@@ -11,6 +16,7 @@ import { User } from './interface/user.interface';
 export class AuthService {
   constructor(
     private prisma: PrismaService,
+    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
@@ -28,6 +34,7 @@ export class AuthService {
         email: 'admin@hivepal.com',
         name: 'Admin',
         role: 'ADMIN',
+        passwordChangeRequired: false,
       };
     }
 
@@ -45,7 +52,12 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    const payload = { email: user.email, sub: user.id };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      passwordChangeRequired: user.passwordChangeRequired || false,
+    };
 
     return {
       access_token: this.jwtService.sign(payload),
@@ -54,6 +66,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
+        passwordChangeRequired: user.passwordChangeRequired || false,
       },
     };
   }

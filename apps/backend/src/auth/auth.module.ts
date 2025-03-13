@@ -1,5 +1,5 @@
 // auth.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
@@ -9,11 +9,10 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { jwtConstants } from './constants';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersService } from '../users/users.service';
 
 @Module({
   imports: [
-    UsersModule,
+    forwardRef(() => UsersModule),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
@@ -21,13 +20,7 @@ import { UsersService } from '../users/users.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    UsersService,
-    PrismaService,
-  ],
-  exports: [AuthService],
+  providers: [AuthService, LocalStrategy, JwtStrategy, PrismaService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

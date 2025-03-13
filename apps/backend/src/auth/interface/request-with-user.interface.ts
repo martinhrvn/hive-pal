@@ -9,6 +9,7 @@ export interface JwtPayload {
   email: string;
   sub: string;
   role: string;
+  passwordChangeRequired: boolean;
 }
 
 export interface RequestWithJWTUser extends Request {

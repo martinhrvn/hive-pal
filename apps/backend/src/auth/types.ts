@@ -1,1 +1,1 @@
-import { Request } from 'express';
+// No types needed here yet

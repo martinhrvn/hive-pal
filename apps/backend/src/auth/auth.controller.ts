@@ -14,7 +14,6 @@ import { RequestWithUser } from './interface/request-with-user.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { HiveResponseDto } from '../hives/dto/hive-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
