@@ -8,6 +8,7 @@ import { InspectionsModule } from './inspections/inspections.module';
 import { QueensModule } from './queens/queens.module';
 import { MetricsService } from './metrics/metrics.service';
 import { UsersModule } from './users/users.module';
+import { ApiariesModule } from './apiaries/apiaries.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UsersModule } from './users/users.module';
     InspectionsModule,
     QueensModule,
     UsersModule,
+    ApiariesModule,
   ],
   controllers: [AppController],
   providers: [AppService, MetricsService],

@@ -32,8 +32,8 @@ model Apiary {
   longitude Float?
   notes     String?
   hives     Hive[]
-  User      User?   @relation(fields: [userId], references: [id])
-  userId    String?
+  User      User    @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 model Hive {
