@@ -1,14 +1,16 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/auth-context';
+import { useAuth } from '@/context/auth-context';
 import { decodeJwt } from '../utils/jwt-utils';
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) => {
-  const { isLoggedIn, token, user } = useAuth();
+export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
+  children,
+}) => {
+  const { isLoggedIn, token } = useAuth();
 
   if (!isLoggedIn || !token) {
     // If not logged in, redirect to login
@@ -17,10 +19,8 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ childr
 
   // First check token - this is more secure since it can't be tampered with client-side
   const decodedToken = token ? decodeJwt(token) : null;
-  const tokenRole = decodedToken?.role;
-  
   // Use role from token if available, otherwise fall back to user object
-  const role = tokenRole || user?.role;
+  const role = decodedToken?.role;
 
   if (role !== 'ADMIN') {
     // If logged in but not an admin, redirect to home

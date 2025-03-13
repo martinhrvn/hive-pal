@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/auth-context';
+import { useAuth } from '@/context/auth-context';
 import axios from 'axios';
 import { getApiUrl } from '@/api/client.ts';
 import {
@@ -15,9 +15,13 @@ import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
 import { Alert } from '../../components/ui/alert';
+import { useAuthControllerGetProfile } from 'api-client';
 
 const ChangePasswordPage: React.FC = () => {
-  const { token, user, logout } = useAuth();
+  const { token, logout } = useAuth();
+  const { data: user } = useAuthControllerGetProfile({
+    query: { select: data => data.data },
+  });
   const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
