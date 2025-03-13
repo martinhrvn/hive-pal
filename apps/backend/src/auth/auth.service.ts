@@ -2,6 +2,7 @@
 import {
   Injectable,
   UnauthorizedException,
+  NotFoundException,
   Inject,
   forwardRef,
 } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User as PrismaUser } from '@prisma/client';
 import { User } from './interface/user.interface';
+import { UserResponseDto } from '../users/dto';
 
 @Injectable()
 export class AuthService {
@@ -56,6 +58,7 @@ export class AuthService {
       email: user.email,
       sub: user.id,
       role: user.role,
+      name: user.name,
       passwordChangeRequired: user.passwordChangeRequired || false,
     };
     console.log('payload', payload);
@@ -93,5 +96,32 @@ export class AuthService {
     const { password: _, ...result } = newUser;
 
     return result;
+  }
+
+  async getProfile(userId: string): Promise<UserResponseDto> {
+    // Special case for admin user
+    if (userId === 'admin') {
+      return {
+        id: 'admin',
+        email: 'admin@hivepal.com',
+        name: 'Admin',
+        role: 'ADMIN',
+        passwordChangeRequired: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+    }
+
+    // For regular users, fetch from database
+    const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Remove password from response
+    const { password: _, ...userData } = user;
+
+    return userData;
   }
 }
