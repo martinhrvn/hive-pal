@@ -3,7 +3,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
-
+import { AXIOS_INSTANCE } from 'api-client';
 const TOKEN_KEY = 'hive_pal_auth_token';
 
 interface AuthProviderProps {
@@ -11,7 +11,14 @@ interface AuthProviderProps {
 }
 
 const USER_KEY = 'hive_pal_user';
-
+AXIOS_INSTANCE.interceptors.request.use(config => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  config.baseURL = getApiUrl('');
+  return config;
+});
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => {
     // Initialize from localStorage

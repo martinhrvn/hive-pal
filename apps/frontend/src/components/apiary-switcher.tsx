@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { ChevronsUpDown, HomeIcon, Plus } from 'lucide-react';
 
 import {
@@ -17,7 +16,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { ApiaryResponseDto, useApiariesControllerFindAll } from 'api-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const APIARY_SELECTION = 'hive_pal_apiary_selection';
@@ -29,44 +28,43 @@ export function ApiarySwitcher() {
   const { data: apiaries } = useApiariesControllerFindAll({
     query: { select: data => data.data },
   });
-  if (apiaries?.length === 0) {
+  if (
+    apiaries?.length === 0 &&
+    window.location.pathname !== '/apiaries/create'
+  ) {
     navigate('/apiaries/create');
   }
-  const apiaryFromLocalStorage = useMemo(() => {
+  const selectedApiaryId = useMemo(() => {
     const apiaryFromLocalStorage = localStorage.getItem(APIARY_SELECTION);
     try {
-      const apiary: ApiaryResponseDto | null = apiaryFromLocalStorage
-        ? JSON.parse(apiaryFromLocalStorage)
-        : null;
+      const apiary: string | null = apiaryFromLocalStorage;
       return apiary;
     } catch {
       return null;
     }
   }, []);
 
-  const firstApiary = useMemo(() => {
-    return apiaryFromLocalStorage ?? apiaries?.[0] ?? null;
-  }, [apiaries, apiaryFromLocalStorage]);
-  const [activeApiary, setActiveApiary] = useState(
-    apiaryFromLocalStorage ?? firstApiary,
+  const [activeApiaryId, setActiveApiaryId] = useState(
+    selectedApiaryId ?? null,
   );
 
-  useEffect(() => {
-    if (!activeApiary) {
-      setActiveApiary(firstApiary);
+  const activeApiary = useMemo(() => {
+    const apiary = apiaries?.find(apiary => apiary.id === activeApiaryId);
+    if (!apiary) {
+      const firstApiary = apiaries?.[0];
+      if (firstApiary) {
+        setActiveApiaryId(firstApiary.id);
+        localStorage.setItem(APIARY_SELECTION, firstApiary.id);
+        return firstApiary;
+      }
     }
-  }, [activeApiary, firstApiary]);
+    return apiary;
+  }, [apiaries, activeApiaryId]);
 
-  const handleSetActiveApiary = React.useCallback(
-    (apiary: ApiaryResponseDto) => {
-      setActiveApiary(apiary);
-      localStorage.setItem(APIARY_SELECTION, JSON.stringify(apiary));
-    },
-    [setActiveApiary],
-  );
-  if (!activeApiary) {
-    return null;
-  }
+  const handleSetActiveApiary = (apiary: ApiaryResponseDto) => {
+    setActiveApiaryId(apiary.id);
+    localStorage.setItem(APIARY_SELECTION, apiary.id);
+  };
 
   return (
     <SidebarMenu>
@@ -82,10 +80,10 @@ export function ApiarySwitcher() {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {activeApiary.name}
+                  {activeApiary?.name}
                 </span>
                 <span className="truncate text-xs">
-                  {activeApiary.location}
+                  {activeApiary?.location}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
