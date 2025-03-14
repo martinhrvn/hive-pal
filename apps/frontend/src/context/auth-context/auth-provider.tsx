@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
-import { AXIOS_INSTANCE } from 'api-client';
+import { AXIOS_INSTANCE, useAuthControllerRegister } from 'api-client';
 const TOKEN_KEY = 'hive_pal_auth_token';
 
 interface AuthProviderProps {
@@ -102,22 +102,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [],
   );
 
+  const { mutateAsync } = useAuthControllerRegister({ mutation: {} });
+
   const register = useCallback(
     async (email: string, password: string, name?: string) => {
-      try {
-        const response = await axios.post(getApiUrl('/api/auth/register'), {
+      return mutateAsync({
+        data: {
           email,
           password,
           ...(name && { name }),
+        },
+      })
+        .then(res => {
+          const { data } = res;
+          if (data.access_token) {
+            setToken(data.access_token);
+            return true;
+          }
+          return false;
+        })
+        .catch(error => {
+          console.error('Registration error:', error);
+          return false;
         });
-
-        return response.status >= 200 && response.status < 300;
-      } catch (error) {
-        console.error('Registration error:', error);
-        return false;
-      }
     },
-    [],
+    [mutateAsync],
   );
 
   const logout = useCallback(() => {

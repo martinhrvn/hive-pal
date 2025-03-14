@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { User as PrismaUser } from '@prisma/client';
 import { User } from './interface/user.interface';
 import { UserResponseDto } from '../users/dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -74,7 +75,11 @@ export class AuthService {
     };
   }
 
-  async register(email: string, password: string, name?: string) {
+  async register(
+    email: string,
+    password: string,
+    name?: string,
+  ): Promise<AuthResponseDto> {
     // Check if user exists
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
@@ -92,9 +97,25 @@ export class AuthService {
     });
 
     // Remove password from response
-    const { password: _, ...result } = newUser;
+    const { password: _, ...user } = newUser;
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      name: user.name,
+      passwordChangeRequired: user.passwordChangeRequired || false,
+    };
 
-    return result;
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name ?? '',
+        role: user.role,
+        passwordChangeRequired: user.passwordChangeRequired || false,
+      },
+    };
   }
 
   async getProfile(userId: string): Promise<UserResponseDto> {

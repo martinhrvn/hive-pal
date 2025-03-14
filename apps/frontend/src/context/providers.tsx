@@ -11,11 +11,11 @@ axios.defaults.baseURL = getEnvVariable('VITE_API_URL');
 export const Providers: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <SidebarProvider>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
           <ThemeProvider defaultTheme="light">{children}</ThemeProvider>
-        </QueryClientProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </SidebarProvider>
   );
 };

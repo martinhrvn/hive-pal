@@ -38,10 +38,11 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'User successfully registered',
-    type: Object,
+    type: AuthResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 409, description: 'Email already in use' })
+  @SerializeOptions({ type: AuthResponseDto })
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(
       registerDto.email,

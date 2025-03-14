@@ -24,7 +24,6 @@ import type {
 } from '@tanstack/react-query'
 import type {
   ApiaryResponseDto,
-  AuthControllerRegister201,
   AuthResponseDto,
   ChangePasswordDto,
   CreateApiaryDto,
@@ -145,7 +144,7 @@ export const authControllerRegister = (
 ) => {
       
       
-      return customInstance<AuthControllerRegister201>(
+      return customInstance<AuthResponseDto>(
       {url: `/api/auth/register`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: registerDto, signal

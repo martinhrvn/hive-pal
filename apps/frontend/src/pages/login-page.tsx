@@ -45,7 +45,7 @@ const LoginPage = () => {
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="username">Email</Label>
+              <Label htmlFor="email">Email</Label>
               <div className="mt-1">
                 <Input
                   id="email"
