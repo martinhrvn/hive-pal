@@ -18,6 +18,7 @@ import {
   getApiariesControllerFindAllQueryKey,
 } from 'api-client';
 import { useQueryClient } from '@tanstack/react-query';
+import MapPicker from '@/components/common/map-picker.tsx';
 
 type FormData = z.infer<typeof apiariesSchema>;
 
@@ -87,6 +88,12 @@ export const ApiaryForm = () => {
           )}
         />
 
+        <MapPicker
+          onLocationSelect={({ latitude, longitude }) => {
+            form.setValue('latitude', latitude);
+            form.setValue('longitude', longitude);
+          }}
+        />
         <div className="flex justify-end">
           <Button
             variant="outline"
