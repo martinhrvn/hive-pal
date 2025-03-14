@@ -50,7 +50,7 @@ export default defineConfig({
     /* Test against mobile viewports. */
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      use: { ...devices['Pixel 5'], isMobile: true },
       dependencies: ['setup'],
     },
 

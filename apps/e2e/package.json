@@ -8,8 +8,8 @@
   "license": "ISC",
   "scripts": {
     "test": "playwright test",
-    "test:local": "dotenv  -e .env.local -- playwright test --ui"
-
+    "test:ui": "dotenv  -e .env.local -- playwright test --ui",
+    "test:local": "dotenv  -e .env.local -- playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.0",

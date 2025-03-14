@@ -3,7 +3,7 @@
  * @param {number} length - Length of password (minimum 6)
  * @returns {string} Random password
  */
-export function generateRandomPassword(length = 10) {
+export function generateRandomString(length = 10, haveSpecialChars = true) {
     // Ensure minimum length of 6
     const passwordLength = Math.max(6, length);
 
@@ -21,7 +21,9 @@ export function generateRandomPassword(length = 10) {
     password += upperChars.charAt(Math.floor(Math.random() * upperChars.length));
     password += lowerChars.charAt(Math.floor(Math.random() * lowerChars.length));
     password += numbers.charAt(Math.floor(Math.random() * numbers.length));
-    password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+    if (haveSpecialChars) {
+        password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+    }
 
     // Fill the rest of the password
     for (let i = 4; i < passwordLength; i++) {

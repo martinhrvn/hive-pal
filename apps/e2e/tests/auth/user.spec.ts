@@ -1,14 +1,14 @@
 import {expect, test} from "@playwright/test";
-import {generateRandomPassword} from "./utils";
-import {createScreenshotHelper} from "./screenshot-helper";
+import {createScreenshotHelper} from "../screenshot-helper";
+import {generateRandomString} from "../utils";
 
 
 const takeScreenshot = createScreenshotHelper({ projectName: 'auth' });
 
-test('User can sign up', async ({ page }) => {
+test('User can sign up', async ({ page, isMobile }) => {
     await page.goto('/login')
     const email = `test-${Date.now()}@example.com`
-    const password = generateRandomPassword()
+    const password = generateRandomString()
     await page.getByRole('link', { name: 'Register' }).click()
     await takeScreenshot(page, 'register')
     await page.getByLabel('email').fill(email)
@@ -16,6 +16,10 @@ test('User can sign up', async ({ page }) => {
     await page.getByRole('textbox', { name: 'Confirm Password' }).fill(password)
     await page.getByRole('textbox', { name: 'Display Name' }).fill('Peter Parker')
     await page.getByRole('button', { name: /register/i }).click()
+
+    if (isMobile) {
+        await page.getByRole('button', { name: 'Toggle Sidebar' }).click()
+    }
 
     await expect(page.getByText('Peter Parker')).toBeVisible()
 

@@ -18,11 +18,13 @@ import {
 import { ApiaryResponseDto, useApiariesControllerFindAll } from 'api-client';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useIsAdmin } from '@/hooks/use-is-admin.ts';
 
 const APIARY_SELECTION = 'hive_pal_apiary_selection';
 
 export function ApiarySwitcher() {
   const { isMobile } = useSidebar();
+  const isAdmin = useIsAdmin();
 
   const navigate = useNavigate();
   const { data: apiaries } = useApiariesControllerFindAll({
@@ -30,7 +32,8 @@ export function ApiarySwitcher() {
   });
   if (
     apiaries?.length === 0 &&
-    window.location.pathname !== '/apiaries/create'
+    window.location.pathname !== '/apiaries/create' &&
+    !isAdmin
   ) {
     navigate('/apiaries/create');
   }

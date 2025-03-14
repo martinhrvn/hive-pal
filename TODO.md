@@ -32,7 +32,7 @@
 ## Queen Management
 - [x] Track current queen for each hive
 - [x] Record queen details (marking color, year, source)
-- [ ] Log queen replacements with dates
+- [x] Log queen replacements with dates
 - [ ] View queen history for a hive
 
 ## Equipment Tracking
@@ -47,6 +47,6 @@
 
 ## Mobile-Optimized Features
 - [x] Streamlined data entry forms
-- [ ] Timeline view of inspection history
+- [x] Timeline view of inspection history
 - [ ] Quick-add buttons for common actions
 - [ ] Compact, single-column layouts for mobile
