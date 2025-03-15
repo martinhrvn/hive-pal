@@ -30,7 +30,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({
     },
     locationfound(e) {
       setPosition(e.latlng);
-      map.flyTo(e.latlng, map.getZoom());
+      map.flyTo(e.latlng, 7);
       onLocationSelect?.({ latitude: e.latlng.lat, longitude: e.latlng.lng });
     },
   });
