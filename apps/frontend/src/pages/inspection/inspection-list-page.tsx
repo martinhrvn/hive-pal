@@ -66,7 +66,7 @@ export const InspectionListPage = () => {
   const activeTab = (view as InspectionTab) || InspectionTab.ALL;
 
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState<string | undefined>('');
   const [selectedHiveId, setSelectedHiveId] = useState<string | undefined>(
     undefined,
   );
@@ -96,18 +96,8 @@ export const InspectionListPage = () => {
   const filteredInspections = useMemo(() => {
     if (!inspectionsData?.data) return [];
 
-    const allInspections = [...inspectionsData.data];
-
     // First apply search filter
-    const searchFiltered = allInspections.filter(inspection => {
-      return (
-        searchTerm === '' ||
-        (inspection.weatherConditions &&
-          inspection.weatherConditions
-            .toLowerCase()
-            .includes(searchTerm?.toLowerCase() ?? ''))
-      );
-    });
+    const searchFiltered = [...inspectionsData.data];
 
     // Then apply tab filter
     switch (activeTab) {
@@ -127,7 +117,7 @@ export const InspectionListPage = () => {
       default:
         return searchFiltered;
     }
-  }, [inspectionsData?.data, activeTab, searchTerm]);
+  }, [inspectionsData?.data, activeTab]);
 
   // Sort inspections by date (most recent first for past, soonest first for upcoming)
   const sortedInspections = useMemo(() => {
@@ -146,6 +136,7 @@ export const InspectionListPage = () => {
   if (isLoadingInspections || isLoadingHives) {
     return <div>Loading...</div>;
   }
+  console.log(filteredInspections);
 
   return (
     <Page>
