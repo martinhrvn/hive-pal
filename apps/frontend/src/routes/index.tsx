@@ -23,6 +23,7 @@ import {
   ApiaryListPage,
   ApiaryDetailPage,
 } from '@/pages/apiaries';
+import { UserWizardPage } from '@/pages/onboarding';
 
 const router = createBrowserRouter([
   {
@@ -115,6 +116,14 @@ const router = createBrowserRouter([
   {
     path: '/account/change-password',
     element: <ChangePasswordPage />,
+  },
+  {
+    path: '/onboarding',
+    element: (
+      <ProtectedRoute>
+        <UserWizardPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '*',
