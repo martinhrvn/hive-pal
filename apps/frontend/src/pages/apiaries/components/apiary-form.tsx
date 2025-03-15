@@ -20,10 +20,10 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import MapPicker from '@/components/common/map-picker.tsx';
 
-type FormData = z.infer<typeof apiariesSchema>;
+export type ApiaryFormData = z.infer<typeof apiariesSchema>;
 
 type ApiaryFormProps = {
-  onSubmit?: (data: FormData) => void;
+  onSubmit?: (data: ApiaryFormData) => void;
   isLoading?: boolean;
 };
 export const ApiaryForm: React.FC<ApiaryFormProps> = ({
@@ -34,7 +34,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
 
   const { mutateAsync } = useApiariesControllerCreate();
 
-  const form = useForm<FormData>({
+  const form = useForm<ApiaryFormData>({
     resolver: zodResolver(apiariesSchema),
     defaultValues: {
       name: '',
@@ -43,7 +43,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
   });
   const queryClient = useQueryClient();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: ApiaryFormData) => {
     if (onSubmitOverride) {
       onSubmitOverride(data);
       return;

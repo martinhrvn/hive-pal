@@ -10,14 +10,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Stepper } from '@/components/ui/stepper';
-import { ApiaryForm } from '@/pages/apiaries/components/apiary-form';
-import { HiveForm } from '@/pages/hive/components/hive-form';
+import {
+  ApiaryForm,
+  ApiaryFormData,
+} from '@/pages/apiaries/components/apiary-form';
+import { HiveForm, HiveFormData } from '@/pages/hive/components/hive-form';
 import {
   useApiariesControllerCreate,
   useHiveControllerCreate,
   ApiaryResponseDto,
 } from 'api-client';
-import { BeeIcon } from '@/components/common/bee-icon';
 
 // Import CheckIcon for success step
 import { CheckIcon } from 'lucide-react';
@@ -26,14 +28,13 @@ export const UserWizardPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [apiary, setApiary] = useState<ApiaryResponseDto | null>(null);
-  const [isComplete, setIsComplete] = useState(false);
 
   const steps = ['Welcome', 'Create Apiary', 'Add First Hive', 'Complete'];
 
   const apiaryMutation = useApiariesControllerCreate();
   const hiveMutation = useHiveControllerCreate();
 
-  const handleApiarySubmit = async (data: any) => {
+  const handleApiarySubmit = async (data: ApiaryFormData) => {
     try {
       const result = await apiaryMutation.mutateAsync({ data });
       setApiary(result.data);
@@ -43,18 +44,18 @@ export const UserWizardPage = () => {
     }
   };
 
-  const handleHiveSubmit = async (data: any) => {
+  const handleHiveSubmit = async (data: HiveFormData) => {
     if (!apiary) return;
 
     try {
       await hiveMutation.mutateAsync({
         data: {
           ...data,
+          installationDate: data.installationDate.toISOString(),
           apiaryId: apiary.id,
         },
       });
       setStep(3);
-      setIsComplete(true);
     } catch (error) {
       console.error('Error creating hive:', error);
     }
@@ -85,7 +86,11 @@ export const UserWizardPage = () => {
           {step === 0 && (
             <div className="text-center py-8">
               <div className="flex justify-center mb-6">
-                <BeeIcon className="h-24 w-24 text-amber-500" />
+                <img
+                  src="/hive-pal-logo.png"
+                  className="w-24"
+                  alt="Hive-Pal Logo"
+                />
               </div>
               <h3 className="text-xl font-semibold mb-4">
                 Start Your Beekeeping Journey

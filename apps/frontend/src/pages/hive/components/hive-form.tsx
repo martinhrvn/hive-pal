@@ -41,7 +41,7 @@ const hiveSchema = z.object({
   installationDate: z.date(),
 });
 
-type HiveFormData = z.infer<typeof hiveSchema>;
+export type HiveFormData = z.infer<typeof hiveSchema>;
 
 type HiveFormProps = {
   onSubmit?: (data: HiveFormData) => void;
