@@ -5,7 +5,7 @@ import {
   useInspectionsControllerFindOne,
   useInspectionsControllerUpdate,
 } from 'api-client';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -62,15 +62,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       query: { enabled: !!inspectionId, select: data => data.data },
     },
   );
-  const hive = inspection?.hiveId ?? hiveId;
-  const url = inspectionId ? `/inspections/${inspectionId}` : `/hives/${hive}`;
-
-  const { mutate: createInspection } = useInspectionsControllerCreate({
-    mutation: { onSuccess: () => navigate(url) },
-  });
-  const { mutate: updateInspection } = useInspectionsControllerUpdate({
-    mutation: { onSuccess: () => navigate(url) },
-  });
 
   const form = useForm<InspectionFormData>({
     resolver: zodResolver(inspectionSchema),
@@ -79,6 +70,18 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       ...inspection,
       date: inspection?.date ? new Date(inspection.date) : new Date(),
     },
+  });
+
+  const hiveIdFromForm =
+    useWatch({ name: 'hiveId', control: form.control }) ?? hiveId;
+  const hive = inspection?.hiveId ?? hiveIdFromForm;
+  const url = inspectionId ? `/inspections/${inspectionId}` : `/hives/${hive}`;
+
+  const { mutate: createInspection } = useInspectionsControllerCreate({
+    mutation: { onSuccess: () => navigate(url) },
+  });
+  const { mutate: updateInspection } = useInspectionsControllerUpdate({
+    mutation: { onSuccess: () => navigate(url) },
   });
 
   const onSubmit = (data: InspectionFormData) => {
