@@ -34,6 +34,9 @@ model Apiary {
   hives     Hive[]
   user      User    @relation(fields: [userId], references: [id])
   userId    String
+
+  // Create index for quick lookup by userId - used in authorization checks
+  @@index([userId])
 }
 
 model Hive {
@@ -47,6 +50,9 @@ model Hive {
   queens           Queen[]
   boxes            Box[]
   inspections      Inspection[]
+
+  // Create index for quick lookup by apiaryId - used in authorization checks
+  @@index([apiaryId])
 }
 
 model Box {
@@ -58,6 +64,9 @@ model Box {
   maxFrameCount Int     @default(10) // Maximum number of frames the box can hold
   hasExcluder   Boolean @default(false) // Whether there's a queen excluder above this box
   type          BoxType // BROOD, HONEY, etc.
+  
+  @@index([hiveId])
+  @@index([hiveId, position]) // For looking up boxes by position in a hive
 }
 
 model Queen {
@@ -71,6 +80,9 @@ model Queen {
   status      QueenStatus @default(ACTIVE)
   installedAt DateTime?
   replacedAt  DateTime?
+  
+  // Create index for quick lookup by hiveId - used in authorization checks
+  @@index([hiveId])
 }
 
 model Inspection {
@@ -83,6 +95,11 @@ model Inspection {
   weatherConditions String?
   observations      Observation[]
   actions           Action[]
+  
+  // Create index for quick lookup by hiveId - used in authorization checks
+  @@index([hiveId])
+  // Create index for date-based queries
+  @@index([date])
 }
 
 model InspectionNote {
@@ -90,6 +107,8 @@ model InspectionNote {
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
   text         String
+  
+  @@index([inspectionId])
 }
 
 model Observation {
@@ -101,6 +120,9 @@ model Observation {
   textValue    String? // For text-based observations
   booleanValue Boolean? // For boolean observations
   notes        String? // Additional notes about the observation
+  
+  @@index([inspectionId])
+  @@index([type, inspectionId]) // For looking up specific observation types
 }
 
 model Action {
@@ -109,6 +131,9 @@ model Action {
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
   type         String // FEEDING, TREATMENT etc.
   notes        String? // Description of the action taken
+  
+  @@index([inspectionId])
+  @@index([type, inspectionId]) // For looking up specific action types
 }
 
 enum HiveStatus {
