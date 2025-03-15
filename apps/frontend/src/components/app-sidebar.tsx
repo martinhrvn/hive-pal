@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { HomeIcon, PieChart, Settings2 } from 'lucide-react';
+import { HomeIcon, PieChart, Settings2, MapPin } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavHives } from '@/components/nav-hives.tsx';
@@ -17,6 +17,22 @@ import {
 // This is sample data.
 const data = {
   navMain: [
+    {
+      title: 'Apiaries',
+      url: '/apiaries',
+      icon: MapPin,
+      isActive: true,
+      items: [
+        {
+          title: 'All Apiaries',
+          url: '/apiaries',
+        },
+        {
+          title: 'Create Apiary',
+          url: '/apiaries/create',
+        },
+      ],
+    },
     {
       title: 'Hives',
       url: '/hives',
