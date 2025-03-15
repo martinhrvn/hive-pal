@@ -18,14 +18,17 @@ import {
 import { ApiaryResponseDto } from 'api-client';
 import { useApiary } from '@/hooks/use-apiary';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function ApiarySwitcher() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const { activeApiary, setActiveApiaryId, apiaries } = useApiary();
 
+  const queryClient = useQueryClient();
   const handleSetActiveApiary = (apiary: ApiaryResponseDto) => {
     setActiveApiaryId(apiary.id);
+    queryClient.invalidateQueries();
   };
 
   return (
@@ -62,7 +65,7 @@ export function ApiarySwitcher() {
             </DropdownMenuLabel>
             {apiaries?.map((apiary, index) => (
               <DropdownMenuItem
-                key={apiary.name}
+                key={apiary.id}
                 onClick={() => handleSetActiveApiary(apiary)}
                 className="gap-2 p-2"
               >
