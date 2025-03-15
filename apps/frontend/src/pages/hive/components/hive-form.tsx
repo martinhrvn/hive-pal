@@ -51,7 +51,7 @@ export const HiveForm = () => {
   });
   const apiaryOptions = apiaries?.map(apiary => ({
     value: apiary.id,
-    label: apiary.name,
+    label: `${apiary.name}${apiary.location ? ` (${apiary.location})` : ''}`,
   }));
 
   const form = useForm<HiveFormData>({
@@ -69,7 +69,6 @@ export const HiveForm = () => {
       },
     });
   };
-  console.log('activeApiaryId', activeApiaryId);
 
   useEffect(() => {
     if (activeApiaryId) {
@@ -103,6 +102,7 @@ export const HiveForm = () => {
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
+                  value={field.value}
                   defaultValue={activeApiaryId ?? field.value}
                 >
                   <SelectTrigger className={'w-full'}>
