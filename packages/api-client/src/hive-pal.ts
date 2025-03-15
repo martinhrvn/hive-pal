@@ -1793,7 +1793,7 @@ export const apiariesControllerFindOne = (
 ) => {
       
       
-      return customInstance<string>(
+      return customInstance<ApiaryResponseDto>(
       {url: `/api/apiaries/${id}`, method: 'GET', signal
     },
       options);
@@ -1875,7 +1875,7 @@ export const apiariesControllerUpdate = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<string>(
+      return customInstance<void>(
       {url: `/api/apiaries/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateApiaryDto
@@ -1933,7 +1933,7 @@ export const apiariesControllerRemove = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<string>(
+      return customInstance<void>(
       {url: `/api/apiaries/${id}`, method: 'DELETE'
     },
       options);
