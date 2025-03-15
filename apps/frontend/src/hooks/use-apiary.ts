@@ -11,7 +11,7 @@ interface ApiaryState {
   setActiveApiaryId: (id: string) => void;
 }
 
-export const useApiaryStore = create<ApiaryState>((set) => {
+export const useApiaryStore = create<ApiaryState>(set => {
   // Initialize from localStorage
   const apiaryFromLocalStorage = localStorage.getItem(APIARY_SELECTION);
 
@@ -35,17 +35,17 @@ export const useApiary = () => {
     useShallow(state => ({
       activeApiaryId: state.activeApiaryId,
       setActiveApiaryId: state.setActiveApiaryId,
-    }))
+    })),
   );
 
-  // Redirect to create apiary page if no apiaries exist
+  // Redirect to onboarding wizard if no apiaries exist
   useEffect(() => {
     if (
       apiaries?.length === 0 &&
-      window.location.pathname !== '/apiaries/create' &&
+      window.location.pathname !== '/onboarding' &&
       !isAdmin
     ) {
-      navigate('/apiaries/create');
+      navigate('/onboarding');
     }
   }, [apiaries, navigate, isAdmin]);
 
@@ -58,7 +58,7 @@ export const useApiary = () => {
 
   // Find the active apiary object
   const activeApiary = apiaries?.find(
-    (apiary: ApiaryResponseDto) => apiary.id === activeApiaryId
+    (apiary: ApiaryResponseDto) => apiary.id === activeApiaryId,
   );
 
   return { activeApiary, setActiveApiaryId, apiaries, activeApiaryId };
