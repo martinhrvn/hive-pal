@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select.tsx';
 import { useApiary } from '@/hooks/use-apiary';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 const hiveSchema = z.object({
   name: z.string(),
@@ -43,7 +43,15 @@ const hiveSchema = z.object({
 
 type HiveFormData = z.infer<typeof hiveSchema>;
 
-export const HiveForm = () => {
+type HiveFormProps = {
+  onSubmit?: (data: HiveFormData) => void;
+  isLoading?: boolean;
+};
+
+export const HiveForm: React.FC<HiveFormProps> = ({
+  onSubmit: onSubmitOverride,
+  isLoading,
+}) => {
   const navigate = useNavigate();
   const { apiaries, activeApiaryId } = useApiary();
   const { mutate } = useHiveControllerCreate({
@@ -62,12 +70,16 @@ export const HiveForm = () => {
   });
 
   const onSubmit = (data: HiveFormData) => {
-    mutate({
-      data: {
-        ...data,
-        installationDate: data.installationDate.toISOString(),
-      },
-    });
+    if (onSubmitOverride) {
+      return onSubmitOverride(data);
+    } else {
+      mutate({
+        data: {
+          ...data,
+          installationDate: data.installationDate.toISOString(),
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -179,7 +191,9 @@ export const HiveForm = () => {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button disabled={isLoading} type="submit">
+          Submit
+        </Button>
       </form>
     </Form>
   );

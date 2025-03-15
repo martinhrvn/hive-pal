@@ -22,7 +22,14 @@ import MapPicker from '@/components/common/map-picker.tsx';
 
 type FormData = z.infer<typeof apiariesSchema>;
 
-export const ApiaryForm = () => {
+type ApiaryFormProps = {
+  onSubmit?: (data: FormData) => void;
+  isLoading?: boolean;
+};
+export const ApiaryForm: React.FC<ApiaryFormProps> = ({
+  onSubmit: onSubmitOverride,
+  isLoading,
+}) => {
   const navigate = useNavigate();
 
   const { mutateAsync } = useApiariesControllerCreate();
@@ -37,7 +44,10 @@ export const ApiaryForm = () => {
   const queryClient = useQueryClient();
 
   const onSubmit = async (data: FormData) => {
-    console.log('Submitting');
+    if (onSubmitOverride) {
+      onSubmitOverride(data);
+      return;
+    }
     try {
       const response = await mutateAsync({
         data: {
@@ -102,7 +112,9 @@ export const ApiaryForm = () => {
           >
             Cancel
           </Button>
-          <Button type={'submit'}>{'Create Apiary'}</Button>
+          <Button disabled={isLoading} type={'submit'}>
+            {'Create Apiary'}
+          </Button>
         </div>
       </form>
     </Form>
