@@ -11,6 +11,7 @@ import {
   SerializeOptions,
   Put,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
@@ -21,11 +22,14 @@ import { HiveDetailResponseDto } from './dto/hive-detail-response.dto';
 import { Type } from 'class-transformer';
 import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
+import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { RequestWithApiary } from '../interface/request-with.apiary';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard)
 @ApiTags('hives')
 @Controller('hives')
+@UseGuards(ApiaryContextGuard)
 export class HiveController {
   constructor(private readonly hiveService: HiveService) {}
 
@@ -40,8 +44,11 @@ export class HiveController {
   @Get()
   @ApiOkResponse({ type: HiveResponseDto, isArray: true })
   @SerializeOptions({ type: HiveResponseDto })
-  findAll(): Promise<HiveResponseDto[]> {
-    return this.hiveService.findAll();
+  findAll(@Req() req: RequestWithApiary): Promise<HiveResponseDto[]> {
+    return this.hiveService.findAll({
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Get(':id')

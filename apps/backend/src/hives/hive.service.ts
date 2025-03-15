@@ -12,6 +12,8 @@ import { BoxResponseDto } from './dto/box-response.dto';
 import { InspectionsService } from '../inspections/inspections.service';
 import { InspectionScoreDto } from '../inspections/dto/inspection-score.dto';
 import { MetricsService } from 'src/metrics/metrics.service';
+import { ApiaryUserFilter } from '../interface/request-with.apiary';
+
 @Injectable()
 export class HiveService {
   constructor(
@@ -36,8 +38,14 @@ export class HiveService {
     };
   }
 
-  async findAll(): Promise<HiveResponseDto[]> {
+  async findAll(filter: ApiaryUserFilter): Promise<HiveResponseDto[]> {
     const hives = await this.prisma.hive.findMany({
+      where: {
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      },
       include: {
         inspections: {
           select: {
