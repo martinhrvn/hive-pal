@@ -36,15 +36,9 @@ export class HiveController {
   @ApiConsumes('application/json')
   @SerializeOptions({ type: HiveResponseDto })
   @ApiOkResponse({ type: HiveResponseDto })
-  create(
-    @Body() createHiveDto: CreateHiveDto,
-    @Req() req: RequestWithApiary,
-  ): Promise<HiveResponseDto> {
+  create(@Body() createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
     // Set the apiaryId from the request
-    return this.hiveService.create({
-      ...createHiveDto,
-      apiaryId: req.apiaryId,
-    });
+    return this.hiveService.create(createHiveDto);
   }
 
   @Get()

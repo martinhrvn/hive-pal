@@ -41,7 +41,7 @@ export class ApiaryContextGuard implements CanActivate {
     }
 
     // Add apiary to request context
-    request.apiaryId = apiaryId;
+    request.apiaryId = apiary.id;
     return true;
   }
 }
