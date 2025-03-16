@@ -26,11 +26,17 @@ import {
 } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
+import { CustomLoggerService } from '../logger/logger.service';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly logger: CustomLoggerService
+  ) {
+    this.logger.setContext('UsersController');
+  }
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -44,6 +50,7 @@ export class UsersController {
   })
   @SerializeOptions({ type: UserResponseDto })
   async findAll(): Promise<UserResponseDto[]> {
+    this.logger.log('Admin requesting list of all users');
     return this.usersService.findAll();
   }
 
@@ -61,7 +68,9 @@ export class UsersController {
   async resetPassword(
     @Param('id') id: string,
     @Body() resetPasswordDto: ResetPasswordDto,
+    @Req() req: RequestWithUser
   ): Promise<UserResponseDto> {
+    this.logger.log(`Admin user ${req.user.id} resetting password for user ${id}`);
     return this.usersService.resetPassword(id, resetPasswordDto.tempPassword);
   }
 
@@ -79,9 +88,12 @@ export class UsersController {
     @Req() req: RequestWithUser,
     @Body() changePasswordDto: ChangePasswordDto,
   ): Promise<UserResponseDto> {
+    this.logger.log(`User ${req.user.id} changing their password`);
+    
     const user = await this.usersService.findById(req.user.id);
 
     if (!user) {
+      this.logger.warn(`User ${req.user.id} not found when trying to change password`);
       throw new NotFoundException('User not found');
     }
 
@@ -92,9 +104,11 @@ export class UsersController {
     );
 
     if (!isPasswordValid) {
+      this.logger.warn(`User ${req.user.id} provided invalid current password when changing password`);
       throw new UnauthorizedException('Current password is incorrect');
     }
 
+    this.logger.log(`Password change verified for user ${req.user.id}, updating password`);
     return this.usersService.changePassword(
       req.user.id,
       changePasswordDto.newPassword,
