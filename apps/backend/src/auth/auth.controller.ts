@@ -26,11 +26,17 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
+import { CustomLoggerService } from '../logger/logger.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private logger: CustomLoggerService
+  ) {
+    this.logger.setContext('AuthController');
+  }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -44,6 +50,7 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Email already in use' })
   @SerializeOptions({ type: AuthResponseDto })
   async register(@Body() registerDto: RegisterDto) {
+    this.logger.log(`Registering new user with email: ${registerDto.email}`);
     return this.authService.register(
       registerDto.email,
       registerDto.password,
@@ -63,6 +70,7 @@ export class AuthController {
   @SerializeOptions({ type: AuthResponseDto })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   login(@Request() req: RequestWithUser) {
+    this.logger.log(`User ${req.user.email} (ID: ${req.user.id}) logged in`);
     return this.authService.login(req.user);
   }
 
@@ -78,6 +86,7 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @SerializeOptions({ type: UserResponseDto })
   async getProfile(@Request() req: RequestWithUser): Promise<UserResponseDto> {
+    this.logger.log(`Getting profile for user ID: ${req.user.id}`);
     return this.authService.getProfile(req.user.id);
   }
 }

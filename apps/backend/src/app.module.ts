@@ -9,6 +9,13 @@ import { QueensModule } from './queens/queens.module';
 import { MetricsService } from './metrics/metrics.service';
 import { UsersModule } from './users/users.module';
 import { ApiariesModule } from './apiaries/apiaries.module';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { GlobalExceptionFilter } from './global-exception.filter';
+import { LoggerModule } from './logger/logger.module';
+import { HealthModule } from './health/health.module';
+import { PrometheusInterceptor } from './health/prometheus/prometheus.interceptor';
+import { PrometheusModule } from './health/prometheus/prometheus.module';
 
 @Module({
   imports: [
@@ -19,8 +26,26 @@ import { ApiariesModule } from './apiaries/apiaries.module';
     QueensModule,
     UsersModule,
     ApiariesModule,
+    LoggerModule,
+    HealthModule,
+    PrometheusModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MetricsService],
+  providers: [
+    AppService,
+    MetricsService,
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PrometheusInterceptor,
+    },
+  ],
 })
 export class AppModule {}

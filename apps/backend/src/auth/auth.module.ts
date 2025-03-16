@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { jwtConstants } from './constants';
 import { PrismaService } from '../prisma/prisma.service';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PrismaService } from '../prisma/prisma.service';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '7d' },
     }),
+    LoggerModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, PrismaService],
