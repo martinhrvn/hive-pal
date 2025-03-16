@@ -25,12 +25,14 @@ async function bootstrap() {
       excludeExtraneousValues: true,
     }),
   );
-  const logger = app.get(CustomLoggerService);
-  logger.setContext('Bootstrap');
-  app.useLogger(logger);
+  const loggerPromise = app.resolve(CustomLoggerService);
+  const loggerInstance = await loggerPromise;
+  loggerInstance.setContext('Bootstrap');
+  app.useLogger(loggerInstance);
+  
   setup(app);
   await app.listen(process.env.PORT ?? 3000);
-  logger.log(`Application listening on port ${process.env.PORT ?? 3000}`);
+  loggerInstance.log(`Application listening on port ${process.env.PORT ?? 3000}`);
 }
 bootstrap().catch((err) => {
   console.error('Error starting server:', err);
