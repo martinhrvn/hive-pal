@@ -52,7 +52,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   const isLoggedIn = !!token && !isTokenExpired(token);
-
   // Set up axios interceptors for authentication and handling 401 errors
   // Update user data when token changes
   useEffect(() => {
@@ -122,7 +121,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .then(res => {
           const { data } = res;
           if (data.access_token) {
+            localStorage.setItem(TOKEN_KEY, data.access_token);
+
             setToken(data.access_token);
+            window.location.href = '/onboarding';
             return true;
           }
           return false;

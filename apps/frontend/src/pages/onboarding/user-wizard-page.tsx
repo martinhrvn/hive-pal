@@ -70,7 +70,7 @@ export const UserWizardPage = () => {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-slate-50 mt-10 p-4">
+    <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 mt-10 p-4">
       <Card className="w-full max-w-3xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome to Hive-Pal!</CardTitle>
