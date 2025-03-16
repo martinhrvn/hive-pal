@@ -9,6 +9,10 @@ import { QueensModule } from './queens/queens.module';
 import { MetricsService } from './metrics/metrics.service';
 import { UsersModule } from './users/users.module';
 import { ApiariesModule } from './apiaries/apiaries.module';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { GlobalExceptionFilter } from './global-exception.filter';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -19,8 +23,20 @@ import { ApiariesModule } from './apiaries/apiaries.module';
     QueensModule,
     UsersModule,
     ApiariesModule,
+    LoggerModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MetricsService],
+  providers: [
+    AppService,
+    MetricsService,
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}

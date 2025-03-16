@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { setup } from './setup';
+import { CustomLoggerService } from './logger/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,8 +25,12 @@ async function bootstrap() {
       excludeExtraneousValues: true,
     }),
   );
+  const logger = app.get(CustomLoggerService);
+  logger.setContext('Bootstrap');
+  app.useLogger(logger);
   setup(app);
   await app.listen(process.env.PORT ?? 3000);
+  logger.log(`Application listening on port ${process.env.PORT ?? 3000}`);
 }
 bootstrap().catch((err) => {
   console.error('Error starting server:', err);
