@@ -5,9 +5,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthModule } from '../auth/auth.module';
 import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, LoggerModule],
   controllers: [HiveController],
   providers: [HiveService, PrismaService, MetricsService, InspectionsService],
 })
