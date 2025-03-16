@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -25,7 +24,6 @@ import {
 import { CheckIcon } from 'lucide-react';
 
 export const UserWizardPage = () => {
-  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [apiary, setApiary] = useState<ApiaryResponseDto | null>(null);
 
@@ -66,7 +64,7 @@ export const UserWizardPage = () => {
   };
 
   const handleFinish = () => {
-    navigate('/');
+    window.location.href = '/';
   };
 
   return (

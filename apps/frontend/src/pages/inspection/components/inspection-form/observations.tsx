@@ -137,8 +137,8 @@ export const ObservationsSection: React.FC = () => {
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>
                 <Checkbox
-                  checked={field.value ?? undefined}
-                  onChange={field.onChange}
+                  checked={field.value ?? false}
+                  onCheckedChange={field.onChange}
                 />
               </FormControl>
               <FormLabel>Queen seen</FormLabel>
@@ -148,25 +148,34 @@ export const ObservationsSection: React.FC = () => {
         />
 
         <div className="flex flex-col col-span-3 space-y-2 mt-5">
-          <ObservationItem name={'observations.strength'} label={'Strength'} />
           <ObservationItem
+            key={'strength'}
+            name={'observations.strength'}
+            label={'Strength'}
+          />
+          <ObservationItem
+            key={'cappedBrood'}
             name={'observations.cappedBrood'}
             label={'Capped Brood'}
           />
           <ObservationItem
+            key={'uncappedBrood'}
             name={'observations.uncappedBrood'}
             label={'Uncapped Brood'}
           />
           <ObservationItem
+            key={'honeyStores'}
             name={'observations.honeyStores'}
             label={'Honey Stores'}
           />
           <ObservationItem
+            key={'pollenStores'}
             name={'observations.pollenStores'}
             label={'Pollen Stores'}
           />
 
           <ObservationItem
+            key={'queenCells'}
             name={'observations.queenCells'}
             label={'Queen Cells'}
           />
@@ -179,8 +188,8 @@ export const ObservationsSection: React.FC = () => {
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 shadow">
                     <FormControl>
                       <Checkbox
-                        checked={field.value ?? undefined}
-                        onChange={field.onChange}
+                        checked={field.value ?? false}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
                     <FormLabel>Swarm cells</FormLabel>
@@ -195,8 +204,8 @@ export const ObservationsSection: React.FC = () => {
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 shadow">
                     <FormControl>
                       <Checkbox
-                        checked={field.value ?? undefined}
-                        onChange={field.onChange}
+                        checked={field.value ?? false}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
                     <FormLabel>Supersedure cells</FormLabel>

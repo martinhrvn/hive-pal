@@ -85,6 +85,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   });
 
   const onSubmit = (data: InspectionFormData) => {
+    console.log(data);
     if (!inspectionId) {
       createInspection({
         data: {
