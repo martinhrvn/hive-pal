@@ -30,7 +30,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({
     },
     locationfound(e) {
       setPosition(e.latlng);
-      map.flyTo(e.latlng, map.getZoom());
+      map.flyTo(e.latlng, 7);
       onLocationSelect?.({ latitude: e.latlng.lat, longitude: e.latlng.lng });
     },
   });
@@ -55,7 +55,7 @@ type MapPickerProps = {
 
 const MapPicker: React.FC<MapPickerProps> = ({
   onLocationSelect,
-  initialLocation = { lat: 47, lng: 47 },
+  initialLocation = { lat: 50.4133645, lng: 10.8357111 },
 }) => {
   return (
     <Card className="w-full max-w-4xl">
@@ -67,7 +67,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
           <MapContainer
             className={'w-full h-full'}
             center={initialLocation}
-            zoom={13}
+            zoom={4}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

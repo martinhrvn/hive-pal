@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateInspectionDto } from './dto/create-inspection.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionFilterDto } from './dto/inspection-filter.dto';
@@ -7,6 +7,8 @@ import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
 import { Observation } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
+import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class InspectionsService {
@@ -15,7 +17,26 @@ export class InspectionsService {
     private metricService: MetricsService,
   ) {}
 
-  create(createInspectionDto: CreateInspectionDto) {
+  async create(
+    createInspectionDto: CreateInspectionDto,
+    filter: ApiaryUserFilter,
+  ) {
+    // Verify that the hive belongs to the user's apiary
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id: createInspectionDto.hiveId,
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      },
+    });
+
+    if (!hive) {
+      throw new NotFoundException(
+        `Hive with ID ${createInspectionDto.hiveId} not found or doesn't belong to this apiary`,
+      );
+    }
     const { observations, notes, ...inspectionData } = createInspectionDto;
     return this.prisma.$transaction(async (tx) => {
       const inspection = await tx.inspection.create({
@@ -66,11 +87,25 @@ export class InspectionsService {
     });
   }
 
-  async findAll(filter: InspectionFilterDto): Promise<InspectionResponseDto[]> {
+  async findAll(
+    filter: InspectionFilterDto & Partial<ApiaryUserFilter>,
+  ): Promise<InspectionResponseDto[]> {
+    const whereClause: Prisma.InspectionWhereInput = {
+      hiveId: filter.hiveId ?? undefined,
+    };
+
+    // Add apiary filter if provided
+    if (filter.apiaryId && filter.userId) {
+      whereClause.hive = {
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      };
+    }
+
     const inspections = await this.prisma.inspection.findMany({
-      where: {
-        hiveId: filter.hiveId ?? undefined,
-      },
+      where: whereClause,
       orderBy: {
         date: 'desc',
       },
@@ -95,9 +130,20 @@ export class InspectionsService {
     });
   }
 
-  async findOne(id: string): Promise<InspectionResponseDto | null> {
-    const inspection = await this.prisma.inspection.findUnique({
-      where: { id },
+  async findOne(
+    id: string,
+    filter: ApiaryUserFilter,
+  ): Promise<InspectionResponseDto | null> {
+    const inspection = await this.prisma.inspection.findFirst({
+      where: {
+        id,
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          },
+        },
+      },
       include: {
         observations: true,
         notes: true,
@@ -117,7 +163,29 @@ export class InspectionsService {
     };
   }
 
-  update(id: string, updateInspectionDto: UpdateInspectionDto) {
+  async update(
+    id: string,
+    updateInspectionDto: UpdateInspectionDto,
+    filter: ApiaryUserFilter,
+  ) {
+    // Verify inspection exists and belongs to user's apiary
+    const inspection = await this.prisma.inspection.findFirst({
+      where: {
+        id,
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          },
+        },
+      },
+    });
+
+    if (!inspection) {
+      throw new NotFoundException(
+        `Inspection with ID ${id} not found or doesn't belong to this apiary`,
+      );
+    }
     const { observations, notes, ...inspectionData } = updateInspectionDto;
     return this.prisma.$transaction(async (tx) => {
       await tx.observation.deleteMany({
@@ -180,8 +248,32 @@ export class InspectionsService {
     });
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} inspection`;
+  async remove(id: string, filter: ApiaryUserFilter) {
+    // Verify inspection exists and belongs to user's apiary
+    const inspection = await this.prisma.inspection.findFirst({
+      where: {
+        id,
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          },
+        },
+      },
+    });
+
+    if (!inspection) {
+      throw new NotFoundException(
+        `Inspection with ID ${id} not found or doesn't belong to this apiary`,
+      );
+    }
+
+    // Delete the inspection
+    await this.prisma.inspection.delete({
+      where: { id },
+    });
+
+    return `Inspection #${id} has been successfully removed`;
   }
 
   mapObservationsToDto(observations: Observation[]): InspectionMetricsDto {

@@ -23,34 +23,70 @@ import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils.ts';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select.tsx';
+import { useApiary } from '@/hooks/use-apiary';
+import React, { useEffect } from 'react';
 
 const hiveSchema = z.object({
   name: z.string(),
   notes: z.string().optional(),
+  apiaryId: z.string(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   installationDate: z.date(),
 });
 
-type HiveFormData = z.infer<typeof hiveSchema>;
+export type HiveFormData = z.infer<typeof hiveSchema>;
 
-export const HiveForm = () => {
+type HiveFormProps = {
+  onSubmit?: (data: HiveFormData) => void;
+  isLoading?: boolean;
+};
+
+export const HiveForm: React.FC<HiveFormProps> = ({
+  onSubmit: onSubmitOverride,
+  isLoading,
+}) => {
   const navigate = useNavigate();
+  const { apiaries, activeApiaryId } = useApiary();
   const { mutate } = useHiveControllerCreate({
     mutation: { onSuccess: () => navigate('/') },
   });
+  const apiaryOptions = apiaries?.map(apiary => ({
+    value: apiary.id,
+    label: `${apiary.name}${apiary.location ? ` (${apiary.location})` : ''}`,
+  }));
 
   const form = useForm<HiveFormData>({
     resolver: zodResolver(hiveSchema),
+    defaultValues: {
+      apiaryId: activeApiaryId ?? undefined,
+    },
   });
 
   const onSubmit = (data: HiveFormData) => {
-    mutate({
-      data: {
-        ...data,
-        installationDate: data.installationDate.toISOString(),
-      },
-    });
+    if (onSubmitOverride) {
+      return onSubmitOverride(data);
+    } else {
+      mutate({
+        data: {
+          ...data,
+          installationDate: data.installationDate.toISOString(),
+        },
+      });
+    }
   };
+
+  useEffect(() => {
+    if (activeApiaryId) {
+      form.setValue('apiaryId', activeApiaryId);
+    }
+  }, [activeApiaryId, form]);
 
   return (
     <Form {...form}>
@@ -63,6 +99,35 @@ export const HiveForm = () => {
               <FormLabel>Label</FormLabel>
               <FormControl>
                 <Input placeholder="hive 01" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="apiaryId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Apiary</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  defaultValue={activeApiaryId ?? field.value}
+                >
+                  <SelectTrigger className={'w-full'}>
+                    <SelectValue placeholder={'Select a hive'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {apiaryOptions?.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
 
               <FormMessage />
@@ -126,7 +191,9 @@ export const HiveForm = () => {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button disabled={isLoading} type="submit">
+          Submit
+        </Button>
       </form>
     </Form>
   );

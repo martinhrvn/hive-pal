@@ -11,6 +11,7 @@ import {
   SerializeOptions,
   Put,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
@@ -21,11 +22,13 @@ import { HiveDetailResponseDto } from './dto/hive-detail-response.dto';
 import { Type } from 'class-transformer';
 import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
+import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { RequestWithApiary } from '../interface/request-with.apiary';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(JwtAuthGuard)
 @ApiTags('hives')
 @Controller('hives')
+@UseGuards(JwtAuthGuard, ApiaryContextGuard)
 export class HiveController {
   constructor(private readonly hiveService: HiveService) {}
 
@@ -34,32 +37,49 @@ export class HiveController {
   @SerializeOptions({ type: HiveResponseDto })
   @ApiOkResponse({ type: HiveResponseDto })
   create(@Body() createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
+    // Set the apiaryId from the request
     return this.hiveService.create(createHiveDto);
   }
 
   @Get()
   @ApiOkResponse({ type: HiveResponseDto, isArray: true })
   @SerializeOptions({ type: HiveResponseDto })
-  findAll(): Promise<HiveResponseDto[]> {
-    return this.hiveService.findAll();
+  findAll(@Req() req: RequestWithApiary): Promise<HiveResponseDto[]> {
+    return this.hiveService.findAll({
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Get(':id')
   @Type(() => HiveDetailResponseDto)
   @ApiOkResponse({ type: HiveDetailResponseDto })
   @SerializeOptions({ type: HiveDetailResponseDto })
-  findOne(@Param('id') id: string) {
-    return this.hiveService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {
+    return this.hiveService.findOne(id, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateHiveDto: UpdateHiveDto) {
-    return this.hiveService.update(id, updateHiveDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateHiveDto: UpdateHiveDto,
+    @Req() req: RequestWithApiary,
+  ) {
+    return this.hiveService.update(id, updateHiveDto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.hiveService.remove(id);
+  remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
+    return this.hiveService.remove(id, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Put(':id/boxes')
@@ -72,7 +92,11 @@ export class HiveController {
   updateBoxes(
     @Param('id') id: string,
     @Body() updateHiveBoxesDto: UpdateHiveBoxesDto,
+    @Req() req: RequestWithApiary,
   ) {
-    return this.hiveService.updateBoxes(id, updateHiveBoxesDto);
+    return this.hiveService.updateBoxes(id, updateHiveBoxesDto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 }

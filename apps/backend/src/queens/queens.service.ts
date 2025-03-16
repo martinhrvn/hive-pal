@@ -4,14 +4,32 @@ import { UpdateQueenDto } from './dto/update-queen.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { QueenResponseDto, QueenStatus } from './dto/queen-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { ApiaryUserFilter } from '../interface/request-with.apiary';
 
 @Injectable()
 export class QueensService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createQueenDto: CreateQueenDto): Promise<QueenResponseDto> {
-    if (createQueenDto.hiveId && createQueenDto.status === QueenStatus.ACTIVE) {
-      await this.markAllActiveQueensAsReplaced(createQueenDto.hiveId);
+  async create(createQueenDto: CreateQueenDto, filter: ApiaryUserFilter): Promise<QueenResponseDto> {
+    // Check if the hive belongs to the user's apiary
+    if (createQueenDto.hiveId) {
+      const hive = await this.prisma.hive.findFirst({
+        where: {
+          id: createQueenDto.hiveId,
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          }
+        }
+      });
+      
+      if (!hive) {
+        throw new NotFoundException(`Hive with ID ${createQueenDto.hiveId} not found or doesn't belong to this apiary`);
+      }
+
+      if (createQueenDto.status === QueenStatus.ACTIVE) {
+        await this.markAllActiveQueensAsReplaced(createQueenDto.hiveId);
+      }
     }
 
     const queen = await this.prisma.queen.create({
@@ -44,8 +62,18 @@ export class QueensService {
     });
   }
 
-  async findAll() {
-    const queens = await this.prisma.queen.findMany();
+  async findAll(filter: ApiaryUserFilter) {
+    // Find all queens for hives in the specified apiary owned by this user
+    const queens = await this.prisma.queen.findMany({
+      where: {
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          }
+        }
+      }
+    });
     return queens.map((queen) =>
       plainToInstance(QueenResponseDto, {
         id: queen.id,
@@ -60,9 +88,17 @@ export class QueensService {
     );
   }
 
-  async findOne(id: string) {
-    const queen = await this.prisma.queen.findUnique({
-      where: { id },
+  async findOne(id: string, filter: ApiaryUserFilter) {
+    const queen = await this.prisma.queen.findFirst({
+      where: {
+        id,
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          }
+        }
+      },
     });
 
     if (!queen) {
@@ -81,10 +117,18 @@ export class QueensService {
     });
   }
 
-  async update(id: string, updateQueenDto: UpdateQueenDto) {
-    // Check if queen exists
-    const existingQueen = await this.prisma.queen.findUnique({
-      where: { id },
+  async update(id: string, updateQueenDto: UpdateQueenDto, filter: ApiaryUserFilter) {
+    // Check if queen exists and belongs to the user's apiary
+    const existingQueen = await this.prisma.queen.findFirst({
+      where: {
+        id,
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          }
+        }
+      },
     });
 
     if (!existingQueen) {
@@ -122,10 +166,18 @@ export class QueensService {
     });
   }
 
-  async remove(id: string) {
-    // Check if queen exists
-    const existingQueen = await this.prisma.queen.findUnique({
-      where: { id },
+  async remove(id: string, filter: ApiaryUserFilter) {
+    // Check if queen exists and belongs to the user's apiary
+    const existingQueen = await this.prisma.queen.findFirst({
+      where: {
+        id,
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          }
+        }
+      },
     });
 
     if (!existingQueen) {

@@ -12,6 +12,8 @@ import { BoxResponseDto } from './dto/box-response.dto';
 import { InspectionsService } from '../inspections/inspections.service';
 import { InspectionScoreDto } from '../inspections/dto/inspection-score.dto';
 import { MetricsService } from 'src/metrics/metrics.service';
+import { ApiaryUserFilter } from '../interface/request-with.apiary';
+
 @Injectable()
 export class HiveService {
   constructor(
@@ -36,8 +38,14 @@ export class HiveService {
     };
   }
 
-  async findAll(): Promise<HiveResponseDto[]> {
+  async findAll(filter: ApiaryUserFilter): Promise<HiveResponseDto[]> {
     const hives = await this.prisma.hive.findMany({
+      where: {
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      },
       include: {
         inspections: {
           select: {
@@ -74,9 +82,15 @@ export class HiveService {
     );
   }
 
-  async findOne(id: string) {
-    const hive = await this.prisma.hive.findUnique({
-      where: { id },
+  async findOne(id: string, filter: ApiaryUserFilter) {
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id,
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      },
       include: {
         apiary: true,
         queens: {
@@ -157,23 +171,71 @@ export class HiveService {
     });
   }
 
-  update(id: string, updateHiveDto: UpdateHiveDto) {
+  async update(
+    id: string,
+    updateHiveDto: UpdateHiveDto,
+    filter: ApiaryUserFilter,
+  ) {
+    // Verify the hive belongs to the apiary and user before updating
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id,
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      },
+    });
+
+    if (!hive) {
+      throw new NotFoundException(
+        `Hive with id ${id} not found or doesn't belong to this apiary`,
+      );
+    }
+
     return this.prisma.hive.update({
       where: { id },
       data: updateHiveDto,
     });
   }
 
-  remove(id: string) {
+  async remove(id: string, filter: ApiaryUserFilter) {
+    // Verify the hive belongs to the apiary and user before deleting
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id,
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      },
+    });
+
+    if (!hive) {
+      throw new NotFoundException(
+        `Hive with id ${id} not found or doesn't belong to this apiary`,
+      );
+    }
+
     return this.prisma.hive.delete({
       where: { id },
     });
   }
 
-  async updateBoxes(id: string, updateHiveBoxesDto: UpdateHiveBoxesDto) {
-    // First check if the hive exists
-    const hive = await this.prisma.hive.findUnique({
-      where: { id },
+  async updateBoxes(
+    id: string,
+    updateHiveBoxesDto: UpdateHiveBoxesDto,
+    filter: ApiaryUserFilter,
+  ) {
+    // First check if the hive exists and belongs to the user/apiary
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id,
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      },
     });
 
     if (!hive) {

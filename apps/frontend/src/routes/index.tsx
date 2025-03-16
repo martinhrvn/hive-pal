@@ -18,7 +18,12 @@ import { CreateQueenPage } from '@/pages/queen';
 import { UserManagementPage } from '@/pages/admin';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
-import { CreateApiaryPage } from '@/pages/apiaries';
+import {
+  CreateApiaryPage,
+  ApiaryListPage,
+  ApiaryDetailPage,
+} from '@/pages/apiaries';
+import { UserWizardPage } from '@/pages/onboarding';
 
 const router = createBrowserRouter([
   {
@@ -33,6 +38,14 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <HomePage />,
+      },
+      {
+        path: '/apiaries',
+        element: <ApiaryListPage />,
+      },
+      {
+        path: '/apiaries/:id',
+        element: <ApiaryDetailPage />,
       },
       {
         path: '/apiaries/create',
@@ -103,6 +116,14 @@ const router = createBrowserRouter([
   {
     path: '/account/change-password',
     element: <ChangePasswordPage />,
+  },
+  {
+    path: '/onboarding',
+    element: (
+      <ProtectedRoute>
+        <UserWizardPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '*',

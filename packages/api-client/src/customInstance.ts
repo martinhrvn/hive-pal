@@ -1,4 +1,4 @@
-import Axios, { AxiosRequestConfig, AxiosResponse} from 'axios';
+import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export const AXIOS_INSTANCE = Axios.create(); // use your own URL here or environment variable
 
@@ -17,5 +17,5 @@ export const customInstance = <T>(
     ...options,
 
     cancelToken: source.token,
-  })
+  });
 };

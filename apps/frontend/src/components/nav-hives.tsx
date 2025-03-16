@@ -37,7 +37,7 @@ export function NavHives() {
       <SidebarGroupLabel>Hives</SidebarGroupLabel>
       <SidebarMenu>
         {hives?.slice(0, 5)?.map(item => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.id}>
             <SidebarMenuButton asChild>
               <a href={`/hive/${item.id}`} className="flex items-center">
                 <HomeIcon />

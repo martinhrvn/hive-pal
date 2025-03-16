@@ -4,7 +4,9 @@ import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
 import { AXIOS_INSTANCE, useAuthControllerRegister } from 'api-client';
+
 const TOKEN_KEY = 'hive_pal_auth_token';
+export const APIARY_SELECTION = 'hive_pal_apiary_selection';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -12,8 +14,12 @@ interface AuthProviderProps {
 
 AXIOS_INSTANCE.interceptors.request.use(config => {
   const token = localStorage.getItem(TOKEN_KEY);
+  const apiaryId = localStorage.getItem(APIARY_SELECTION);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    if (apiaryId) {
+      config.headers['x-apiary-id'] = apiaryId;
+    }
   }
   config.baseURL = getApiUrl('');
   return config;

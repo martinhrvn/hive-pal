@@ -46,15 +46,25 @@ export class ApiariesService {
     );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} apiary`;
+  findOne(apiaryId: string, userId: string) {
+    return this.prisma.apiary.findFirst({
+      where: {
+        id: apiaryId,
+        userId,
+      },
+    });
   }
 
-  update(id: number, updateApiaryDto: UpdateApiaryDto) {
-    return `This action updates a #${id} apiary`;
+  update(id: string, updateApiaryDto: UpdateApiaryDto, userId: string) {
+    return this.prisma.apiary.update({
+      where: { id, userId },
+      data: updateApiaryDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} apiary`;
+  remove(id: string, userId: string) {
+    return this.prisma.apiary.delete({
+      where: { id, userId },
+    });
   }
 }

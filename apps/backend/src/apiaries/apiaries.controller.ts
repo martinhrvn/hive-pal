@@ -41,17 +41,23 @@ export class ApiariesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.apiariesService.findOne(+id);
+  @ApiOkResponse({ type: ApiaryResponseDto })
+  @SerializeOptions({ type: ApiaryResponseDto })
+  findOne(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.apiariesService.findOne(id, req.user.id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateApiaryDto: UpdateApiaryDto) {
-    return this.apiariesService.update(+id, updateApiaryDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateApiaryDto: UpdateApiaryDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.apiariesService.update(id, updateApiaryDto, req.user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.apiariesService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.apiariesService.remove(id, req.user.id);
   }
 }

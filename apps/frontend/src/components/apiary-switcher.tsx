@@ -15,58 +15,20 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { ApiaryResponseDto, useApiariesControllerFindAll } from 'api-client';
-import { useMemo, useState } from 'react';
+import { ApiaryResponseDto } from 'api-client';
+import { useApiary } from '@/hooks/use-apiary';
 import { useNavigate } from 'react-router-dom';
-import { useIsAdmin } from '@/hooks/use-is-admin.ts';
-
-const APIARY_SELECTION = 'hive_pal_apiary_selection';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function ApiarySwitcher() {
   const { isMobile } = useSidebar();
-  const isAdmin = useIsAdmin();
-
   const navigate = useNavigate();
-  const { data: apiaries } = useApiariesControllerFindAll({
-    query: { select: data => data.data },
-  });
-  if (
-    apiaries?.length === 0 &&
-    window.location.pathname !== '/apiaries/create' &&
-    !isAdmin
-  ) {
-    navigate('/apiaries/create');
-  }
-  const selectedApiaryId = useMemo(() => {
-    const apiaryFromLocalStorage = localStorage.getItem(APIARY_SELECTION);
-    try {
-      const apiary: string | null = apiaryFromLocalStorage;
-      return apiary;
-    } catch {
-      return null;
-    }
-  }, []);
+  const { activeApiary, setActiveApiaryId, apiaries } = useApiary();
 
-  const [activeApiaryId, setActiveApiaryId] = useState(
-    selectedApiaryId ?? null,
-  );
-
-  const activeApiary = useMemo(() => {
-    const apiary = apiaries?.find(apiary => apiary.id === activeApiaryId);
-    if (!apiary) {
-      const firstApiary = apiaries?.[0];
-      if (firstApiary) {
-        setActiveApiaryId(firstApiary.id);
-        localStorage.setItem(APIARY_SELECTION, firstApiary.id);
-        return firstApiary;
-      }
-    }
-    return apiary;
-  }, [apiaries, activeApiaryId]);
-
+  const queryClient = useQueryClient();
   const handleSetActiveApiary = (apiary: ApiaryResponseDto) => {
     setActiveApiaryId(apiary.id);
-    localStorage.setItem(APIARY_SELECTION, apiary.id);
+    queryClient.invalidateQueries();
   };
 
   return (
@@ -103,7 +65,7 @@ export function ApiarySwitcher() {
             </DropdownMenuLabel>
             {apiaries?.map((apiary, index) => (
               <DropdownMenuItem
-                key={apiary.name}
+                key={apiary.id}
                 onClick={() => handleSetActiveApiary(apiary)}
                 className="gap-2 p-2"
               >
