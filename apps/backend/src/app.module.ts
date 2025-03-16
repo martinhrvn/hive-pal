@@ -13,6 +13,9 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { GlobalExceptionFilter } from './global-exception.filter';
 import { LoggerModule } from './logger/logger.module';
+import { HealthModule } from './health/health.module';
+import { PrometheusInterceptor } from './health/prometheus/prometheus.interceptor';
+import { PrometheusModule } from './health/prometheus/prometheus.module';
 
 @Module({
   imports: [
@@ -24,6 +27,8 @@ import { LoggerModule } from './logger/logger.module';
     UsersModule,
     ApiariesModule,
     LoggerModule,
+    HealthModule,
+    PrometheusModule,
   ],
   controllers: [AppController],
   providers: [
@@ -36,6 +41,10 @@ import { LoggerModule } from './logger/logger.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PrometheusInterceptor,
     },
   ],
 })

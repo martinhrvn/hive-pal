@@ -28,7 +28,6 @@ import { CustomLoggerService } from './logger.service';
         new LokiTransport({
           host: process.env.LOKI_HOST || 'http://loki:3100',
           labels: { app: 'nestjs' },
-          basicAuth: process.env.LOKI_AUTH,
           json: true,
           format: winston.format.combine(
             winston.format.timestamp(),
