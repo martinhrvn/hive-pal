@@ -1,21 +1,19 @@
-import {expect, test} from "@playwright/test";
 import {createScreenshotHelper} from "../screenshot-helper";
 import {generateRandomString} from "../utils";
+import {test, expect} from "./auth.fixture";
 
 
 const takeScreenshot = createScreenshotHelper({ projectName: 'auth' });
 
-test('User can sign up', async ({ page, isMobile }) => {
-    await page.goto('/login')
+test('User can sign up', async ({ page, loginPage, signupPage, isMobile }) => {
+    await loginPage.goToLogInPage()
     const email = `test-${Date.now()}@example.com`
     const password = generateRandomString()
-    await page.getByRole('link', { name: 'Register' }).click()
+
+    await loginPage.registerLink.click()
     await takeScreenshot(page, 'register')
-    await page.getByLabel('email').fill(email)
-    await page.getByRole('textbox', { name: 'Password', exact: true }).fill(password)
-    await page.getByRole('textbox', { name: 'Confirm Password' }).fill(password)
-    await page.getByRole('textbox', { name: 'Display Name' }).fill('Peter Parker')
-    await page.getByRole('button', { name: /register/i }).click()
+
+    await signupPage.signUp(email, password, 'Peter Parker')
 
     if (isMobile) {
         await page.getByRole('button', { name: 'Toggle Sidebar' }).click()
