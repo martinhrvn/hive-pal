@@ -10,7 +10,10 @@ import { ApiaryUserFilter } from '../interface/request-with.apiary';
 export class QueensService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createQueenDto: CreateQueenDto, filter: ApiaryUserFilter): Promise<QueenResponseDto> {
+  async create(
+    createQueenDto: CreateQueenDto,
+    filter: ApiaryUserFilter,
+  ): Promise<QueenResponseDto> {
     // Check if the hive belongs to the user's apiary
     if (createQueenDto.hiveId) {
       const hive = await this.prisma.hive.findFirst({
@@ -19,12 +22,14 @@ export class QueensService {
           apiary: {
             id: filter.apiaryId,
             userId: filter.userId,
-          }
-        }
+          },
+        },
       });
-      
+
       if (!hive) {
-        throw new NotFoundException(`Hive with ID ${createQueenDto.hiveId} not found or doesn't belong to this apiary`);
+        throw new NotFoundException(
+          `Hive with ID ${createQueenDto.hiveId} not found or doesn't belong to this apiary`,
+        );
       }
 
       if (createQueenDto.status === QueenStatus.ACTIVE) {
@@ -70,9 +75,9 @@ export class QueensService {
           apiary: {
             id: filter.apiaryId,
             userId: filter.userId,
-          }
-        }
-      }
+          },
+        },
+      },
     });
     return queens.map((queen) =>
       plainToInstance(QueenResponseDto, {
@@ -96,8 +101,8 @@ export class QueensService {
           apiary: {
             id: filter.apiaryId,
             userId: filter.userId,
-          }
-        }
+          },
+        },
       },
     });
 
@@ -117,7 +122,11 @@ export class QueensService {
     });
   }
 
-  async update(id: string, updateQueenDto: UpdateQueenDto, filter: ApiaryUserFilter) {
+  async update(
+    id: string,
+    updateQueenDto: UpdateQueenDto,
+    filter: ApiaryUserFilter,
+  ) {
     // Check if queen exists and belongs to the user's apiary
     const existingQueen = await this.prisma.queen.findFirst({
       where: {
@@ -126,8 +135,8 @@ export class QueensService {
           apiary: {
             id: filter.apiaryId,
             userId: filter.userId,
-          }
-        }
+          },
+        },
       },
     });
 
@@ -175,8 +184,8 @@ export class QueensService {
           apiary: {
             id: filter.apiaryId,
             userId: filter.userId,
-          }
-        }
+          },
+        },
       },
     });
 

@@ -34,14 +34,15 @@ export class HealthController {
     return this.health.check([
       // Check if the app is up
       () => this.http.pingCheck('nestjs-app', 'http://localhost:3000/api'),
-      
+
       // Check if the disk has enough space
-      () => this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.9 }),
-      
+      () =>
+        this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.9 }),
+
       // Check if the memory usage is below thresholds
       () => this.memory.checkHeap('memory_heap', 300 * 1024 * 1024), // 300MB
       () => this.memory.checkRSS('memory_rss', 300 * 1024 * 1024), // 300MB
-      
+
       // Check database connection
       () => this.prismaHealth.isHealthy('database'),
     ]);

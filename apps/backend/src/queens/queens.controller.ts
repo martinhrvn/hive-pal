@@ -25,7 +25,7 @@ import { CustomLoggerService } from '../logger/logger.service';
 export class QueensController {
   constructor(
     private readonly queensService: QueensService,
-    private readonly logger: CustomLoggerService
+    private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('QueensController');
   }
@@ -34,9 +34,11 @@ export class QueensController {
   @ApiCreatedResponse({ type: QueenResponseDto })
   create(
     @Body() createQueenDto: CreateQueenDto,
-    @Req() req: RequestWithApiary
+    @Req() req: RequestWithApiary,
   ) {
-    this.logger.log(`Creating queen for hive ${createQueenDto.hiveId} in apiary ${req.apiaryId}`);
+    this.logger.log(
+      `Creating queen for hive ${createQueenDto.hiveId} in apiary ${req.apiaryId}`,
+    );
     return this.queensService.create(createQueenDto, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -55,10 +57,7 @@ export class QueensController {
 
   @Get(':id')
   @ApiOkResponse({ type: QueenResponseDto })
-  findOne(
-    @Param('id') id: string,
-    @Req() req: RequestWithApiary
-  ) {
+  findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {
     this.logger.log(`Finding queen with ID ${id} in apiary ${req.apiaryId}`);
     return this.queensService.findOne(id, {
       apiaryId: req.apiaryId,
@@ -69,9 +68,9 @@ export class QueensController {
   @Patch(':id')
   @ApiOkResponse({ type: QueenResponseDto })
   update(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() updateQueenDto: UpdateQueenDto,
-    @Req() req: RequestWithApiary
+    @Req() req: RequestWithApiary,
   ) {
     this.logger.log(`Updating queen with ID ${id} in apiary ${req.apiaryId}`);
     this.logger.debug(`Update data: ${JSON.stringify(updateQueenDto)}`);
@@ -83,10 +82,7 @@ export class QueensController {
 
   @Delete(':id')
   @ApiOkResponse({ type: QueenResponseDto })
-  remove(
-    @Param('id') id: string,
-    @Req() req: RequestWithApiary
-  ) {
+  remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
     this.logger.log(`Removing queen with ID ${id} from apiary ${req.apiaryId}`);
     return this.queensService.remove(id, {
       apiaryId: req.apiaryId,

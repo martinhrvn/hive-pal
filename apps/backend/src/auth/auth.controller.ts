@@ -33,7 +33,7 @@ import { CustomLoggerService } from '../logger/logger.service';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private logger: CustomLoggerService
+    private logger: CustomLoggerService,
   ) {
     this.logger.setContext('AuthController');
   }

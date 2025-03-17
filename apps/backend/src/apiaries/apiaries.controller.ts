@@ -24,7 +24,7 @@ import { CustomLoggerService } from '../logger/logger.service';
 export class ApiariesController {
   constructor(
     private readonly apiariesService: ApiariesService,
-    private readonly logger: CustomLoggerService
+    private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('ApiariesController');
   }
@@ -36,7 +36,9 @@ export class ApiariesController {
     @Body() createApiaryDto: CreateApiaryDto,
     @Req() req: RequestWithUser,
   ): Promise<ApiaryResponseDto> {
-    this.logger.log(`Creating apiary with name ${createApiaryDto.name} for user ${req.user.id}`);
+    this.logger.log(
+      `Creating apiary with name ${createApiaryDto.name} for user ${req.user.id}`,
+    );
     return this.apiariesService.create(createApiaryDto, req.user.id);
   }
 
