@@ -95,4 +95,15 @@ describe('User (e2e)', () => {
       })
       .expect(201);
   });
+
+  it('should be possible to log in as admin', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: 'admin@hivepal.com',
+        password: 'StrongPassword',
+      })
+      .expect(201);
+    expect(res.body).toHaveProperty('access_token');
+  });
 });

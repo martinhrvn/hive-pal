@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateApiaryDto } from './dto/create-apiary.dto';
 import { UpdateApiaryDto } from './dto/update-apiary.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -71,6 +71,7 @@ export class ApiariesService {
 
     if (!apiary) {
       this.logger.warn(`Apiary ${apiaryId} not found for user ${userId}`);
+      throw new NotFoundException();
     } else {
       this.logger.debug(`Found apiary: ${apiary.name}`);
     }
