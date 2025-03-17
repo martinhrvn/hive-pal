@@ -8,7 +8,11 @@ import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
 import { Observation } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
-import { Prisma } from '@prisma/client';
+import {
+  Prisma,
+  InspectionStatus as PrismaInspectionStatus,
+} from '@prisma/client';
+import { InspectionStatus } from './dto/inspection-status.enum';
 
 @Injectable()
 export class InspectionsService {
@@ -42,6 +46,10 @@ export class InspectionsService {
       const inspection = await tx.inspection.create({
         data: {
           ...inspectionData,
+          status:
+            createInspectionDto.date > new Date()
+              ? PrismaInspectionStatus.SCHEDULED
+              : PrismaInspectionStatus.COMPLETED,
           observations: {
             create: [
               { type: 'strength', numericValue: observations?.strength },
@@ -125,6 +133,7 @@ export class InspectionsService {
         weatherConditions: inspection.weatherConditions ?? null,
         notes: inspection.notes?.[0]?.text ?? null,
         observations: metrics,
+        status: inspection.status as InspectionStatus,
         score,
       };
     });
@@ -159,6 +168,7 @@ export class InspectionsService {
       date: inspection.date.toISOString(),
       notes: inspection.notes?.[0]?.text ?? null,
       observations: metrics,
+      status: inspection.status as InspectionStatus,
       score,
     };
   }
@@ -218,6 +228,8 @@ export class InspectionsService {
         where: { id },
         data: {
           ...inspectionData,
+          hiveId: inspection.hiveId,
+          status: updateInspectionDto.status ?? inspection.status,
           observations: {
             create: [
               { type: 'strength', numericValue: observations?.strength },

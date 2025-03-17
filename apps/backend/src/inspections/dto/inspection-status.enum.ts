@@ -1,0 +1,6 @@
+export enum InspectionStatus {
+  SCHEDULED = 'SCHEDULED',
+  OVERDUE = 'OVERDUE',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}

@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { InspectionMetricsDto } from './inspection-metrics.dto';
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsEnum } from 'class-validator';
 import { InspectionScoreDto } from './inspection-score.dto';
+import { InspectionStatus } from './inspection-status.enum';
 
 export class InspectionResponseDto {
   @ApiProperty()
@@ -39,4 +40,9 @@ export class InspectionResponseDto {
   @Expose()
   @Type(() => InspectionScoreDto)
   score: InspectionScoreDto;
+
+  @ApiProperty()
+  @Expose()
+  @IsEnum(InspectionStatus)
+  status: InspectionStatus;
 }
