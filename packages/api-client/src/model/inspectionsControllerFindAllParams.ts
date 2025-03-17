@@ -7,5 +7,5 @@
  */
 
 export type InspectionsControllerFindAllParams = {
-hiveId?: string;
+  hiveId?: string;
 };

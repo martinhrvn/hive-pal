@@ -9,8 +9,8 @@
 /**
  * Status of the hive
  */
-export type HiveDetailResponseDtoStatus = typeof HiveDetailResponseDtoStatus[keyof typeof HiveDetailResponseDtoStatus];
-
+export type HiveDetailResponseDtoStatus =
+  (typeof HiveDetailResponseDtoStatus)[keyof typeof HiveDetailResponseDtoStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const HiveDetailResponseDtoStatus = {

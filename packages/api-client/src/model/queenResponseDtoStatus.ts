@@ -9,8 +9,9 @@
 /**
  * @nullable
  */
-export type QueenResponseDtoStatus = typeof QueenResponseDtoStatus[keyof typeof QueenResponseDtoStatus] | null;
-
+export type QueenResponseDtoStatus =
+  | (typeof QueenResponseDtoStatus)[keyof typeof QueenResponseDtoStatus]
+  | null;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const QueenResponseDtoStatus = {
