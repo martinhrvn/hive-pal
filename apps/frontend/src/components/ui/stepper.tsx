@@ -10,18 +10,18 @@ interface StepperProps {
 
 export function Stepper({ steps, currentStep, className }: StepperProps) {
   return (
-    <div className={cn("flex items-center w-full", className)}>
+    <div className={cn('flex items-center w-full', className)}>
       {steps.map((step, index) => (
         <React.Fragment key={index}>
           <div className="flex flex-col items-center">
             <div
               className={cn(
-                "flex items-center justify-center rounded-full border-2 w-10 h-10 text-sm font-medium",
+                'flex items-center justify-center rounded-full border-2 w-10 h-10 text-sm font-medium',
                 index < currentStep
-                  ? "bg-primary text-primary-foreground border-primary"
+                  ? 'bg-primary text-primary-foreground border-primary'
                   : index === currentStep
-                  ? "border-primary text-primary"
-                  : "border-muted-foreground text-muted-foreground"
+                    ? 'border-primary text-primary'
+                    : 'border-muted-foreground text-muted-foreground',
               )}
             >
               {index < currentStep ? (
@@ -32,10 +32,8 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
             </div>
             <span
               className={cn(
-                "mt-2 text-xs font-medium",
-                index <= currentStep
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                'mt-2 text-xs font-medium',
+                index <= currentStep ? 'text-primary' : 'text-muted-foreground',
               )}
             >
               {step}
@@ -44,10 +42,8 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
           {index < steps.length - 1 && (
             <div
               className={cn(
-                "h-0.5 flex-1 mx-2",
-                index < currentStep
-                  ? "bg-primary"
-                  : "bg-muted-foreground/30"
+                'h-0.5 flex-1 mx-2',
+                index < currentStep ? 'bg-primary' : 'bg-muted-foreground/30',
               )}
             />
           )}

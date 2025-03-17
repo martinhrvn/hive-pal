@@ -29,7 +29,7 @@ export const HiveListPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  
+
   const handleRefreshData = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -57,7 +57,6 @@ export const HiveListPage = () => {
   return (
     <Page>
       <MainContent>
-
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

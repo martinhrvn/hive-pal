@@ -1,14 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  PlusCircle, 
-  RefreshCw, 
-  FileDown, 
-  Printer, 
+import {
+  PlusCircle,
+  RefreshCw,
+  FileDown,
+  Printer,
   Share2,
   CalendarClockIcon,
   HistoryIcon,
-  ClipboardCheckIcon
+  ClipboardCheckIcon,
 } from 'lucide-react';
 
 import {
@@ -26,12 +26,9 @@ interface InspectionActionSidebarProps {
   currentView: string;
 }
 
-export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = ({ 
-  onRefreshData,
-  selectedHiveId,
-  onChangeView,
-  currentView
-}) => {
+export const InspectionActionSidebar: React.FC<
+  InspectionActionSidebarProps
+> = ({ onRefreshData, selectedHiveId, onChangeView, currentView }) => {
   const navigate = useNavigate();
 
   const handleCreateInspection = () => {
@@ -49,7 +46,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
           <SidebarGroupLabel>Actions</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={handleCreateInspection}
                 tooltip="Create New Inspection"
               >
@@ -59,7 +56,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => onRefreshData && onRefreshData()}
                 tooltip="Refresh Data"
               >
@@ -74,7 +71,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
           <SidebarGroupLabel>Views</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => onChangeView('all')}
                 tooltip="All Inspections"
                 className={currentView === 'all' ? 'bg-accent' : ''}
@@ -85,7 +82,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => onChangeView('recent')}
                 tooltip="Recent Inspections"
                 className={currentView === 'recent' ? 'bg-accent' : ''}
@@ -96,7 +93,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => onChangeView('upcoming')}
                 tooltip="Upcoming Inspections"
                 className={currentView === 'upcoming' ? 'bg-accent' : ''}
@@ -112,7 +109,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
           <SidebarGroupLabel>Data Options</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => alert('Export functionality coming soon')}
                 tooltip="Export to CSV"
               >
@@ -122,7 +119,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => window.print()}
                 tooltip="Print Inspection List"
               >
@@ -132,7 +129,7 @@ export const InspectionActionSidebar: React.FC<InspectionActionSidebarProps> = (
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => alert('Share functionality coming soon')}
                 tooltip="Share Inspection List"
               >

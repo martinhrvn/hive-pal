@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  PlusCircle, 
-  RefreshCw, 
-  ClipboardCheck, 
+import {
+  PlusCircle,
+  RefreshCw,
+  ClipboardCheck,
   CalendarCheck,
   Crown,
   Home,
-  Bell
+  Bell,
 } from 'lucide-react';
 
 import {
@@ -22,8 +22,8 @@ interface HomeActionSidebarProps {
   onRefreshData?: () => void;
 }
 
-export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({ 
-  onRefreshData 
+export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
+  onRefreshData,
 }) => {
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
           <SidebarGroupLabel>Create New</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/hives/create/')}
                 tooltip="Create New Hive"
               >
@@ -44,7 +44,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/inspections/create')}
                 tooltip="Create New Inspection"
               >
@@ -54,7 +54,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/queens/create')}
                 tooltip="Create New Queen"
               >
@@ -69,7 +69,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
           <SidebarGroupLabel>Navigate</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/')}
                 tooltip="Home"
                 className="bg-accent"
@@ -80,7 +80,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/hives')}
                 tooltip="All Hives"
               >
@@ -90,7 +90,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/inspections')}
                 tooltip="All Inspections"
               >
@@ -100,7 +100,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => navigate('/inspections/list/recent')}
                 tooltip="Recent Inspections"
               >
@@ -115,7 +115,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
           <SidebarGroupLabel>Actions</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => onRefreshData && onRefreshData()}
                 tooltip="Refresh Data"
               >
@@ -125,7 +125,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 onClick={() => alert('Notifications feature coming soon')}
                 tooltip="Notifications (Coming Soon)"
               >

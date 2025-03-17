@@ -188,7 +188,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                 {inspection.notes && (
                   <div className="mt-2 text-sm flex items-center gap-1">
                     <FileTextIcon size={14} className="text-muted-foreground" />
-                    <span className="text-muted-foreground">Notes available</span>
+                    <span className="text-muted-foreground">
+                      Notes available
+                    </span>
                   </div>
                 )}
               </div>
