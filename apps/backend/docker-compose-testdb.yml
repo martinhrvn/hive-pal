@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:14
+    ports:
+      - "9876:5432"
+    environment:
+      POSTGRES_USER: pgtest
+      POSTGRES_PASSWORD: pgtest
+      POSTGRES_DB: testdb
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_test_data:
