@@ -47,7 +47,6 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
-      - ./prometheus/entrypoint.sh:/prometheus/entrypoint.sh
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -85,7 +84,13 @@ services:
       - "3000:3000"
     depends_on:
       - prometheus
-
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      - DATA_SOURCE_NAME=${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper?sslmode=disable}
+    restart: unless-stopped
 volumes:
     postgres_data_prod:
     prometheus_data:
