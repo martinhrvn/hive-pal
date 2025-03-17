@@ -64,7 +64,7 @@ model Box {
   maxFrameCount Int     @default(10) // Maximum number of frames the box can hold
   hasExcluder   Boolean @default(false) // Whether there's a queen excluder above this box
   type          BoxType // BROOD, HONEY, etc.
-  
+
   @@index([hiveId])
   @@index([hiveId, position]) // For looking up boxes by position in a hive
 }
@@ -80,7 +80,7 @@ model Queen {
   status      QueenStatus @default(ACTIVE)
   installedAt DateTime?
   replacedAt  DateTime?
-  
+
   // Create index for quick lookup by hiveId - used in authorization checks
   @@index([hiveId])
 }
@@ -95,11 +95,19 @@ model Inspection {
   weatherConditions String?
   observations      Observation[]
   actions           Action[]
-  
+  status            InspectionStatus @default(COMPLETED)
+
   // Create index for quick lookup by hiveId - used in authorization checks
   @@index([hiveId])
   // Create index for date-based queries
   @@index([date])
+}
+
+enum InspectionStatus {
+  SCHEDULED
+  OVERDUE
+  COMPLETED
+  CANCELLED
 }
 
 model InspectionNote {
@@ -107,7 +115,7 @@ model InspectionNote {
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
   text         String
-  
+
   @@index([inspectionId])
 }
 
@@ -120,7 +128,7 @@ model Observation {
   textValue    String? // For text-based observations
   booleanValue Boolean? // For boolean observations
   notes        String? // Additional notes about the observation
-  
+
   @@index([inspectionId])
   @@index([type, inspectionId]) // For looking up specific observation types
 }
@@ -131,7 +139,7 @@ model Action {
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
   type         String // FEEDING, TREATMENT etc.
   notes        String? // Description of the action taken
-  
+
   @@index([inspectionId])
   @@index([type, inspectionId]) // For looking up specific action types
 }
