@@ -9,9 +9,9 @@ const config: Config = {
   tagline: 'Modern beekeeping management for everyone',
   favicon: 'img/favicon.ico',
   url: 'https://martinhrvn.github.io',
-  baseUrl: '/hivepal/',
+  baseUrl: '/hive-pal/',
   organizationName: 'martinhrvn',
-  projectName: 'hivepal',
+  projectName: 'hive-pal',
   trailingSlash: false,
   deploymentBranch: 'gh-pages', // The branch to deploy to
 
