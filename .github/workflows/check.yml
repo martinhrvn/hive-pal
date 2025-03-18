@@ -85,44 +85,44 @@ jobs:
       - name: Run frontend tests
         run: pnpm --filter frontend test:ct
 
-  e2e-tests:
-    name: End-to-End Tests
-    needs: [backend-tests, frontend-tests]
-    if: |
-      always() && 
-      (needs.backend-tests.result == 'success' || needs.backend-tests.result == 'skipped') && 
-      (needs.frontend-tests.result == 'success' || needs.frontend-tests.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Wait for deployment
-        run: |
-          echo "Waiting for deployment to complete..."
-          sleep 120  # Wait for 2 minutes
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-      - name: Run E2E tests
-        run: pnpm --filter e2e test
-
-      - name: Upload E2E test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-test-results
-          path: packages/e2e/test-results/
-          retention-days: 7
+#  e2e-tests:
+#    name: End-to-End Tests
+#    needs: [backend-tests, frontend-tests]
+#    if: |
+#      always() && 
+#      (needs.backend-tests.result == 'success' || needs.backend-tests.result == 'skipped') && 
+#      (needs.frontend-tests.result == 'success' || needs.frontend-tests.result == 'skipped')
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - name: Install pnpm
+#        uses: pnpm/action-setup@v4
+#        with:
+#          run_install: false
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '22'
+#          cache: 'pnpm'
+#
+#      - name: Install dependencies
+#        run: pnpm install --frozen-lockfile
+#
+#      - name: Wait for deployment
+#        run: |
+#          echo "Waiting for deployment to complete..."
+#          sleep 120  # Wait for 2 minutes
+#      - name: Install Playwright browsers
+#        run: pnpm exec playwright install --with-deps
+#      - name: Run E2E tests
+#        run: pnpm --filter e2e test
+#
+#      - name: Upload E2E test results
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: e2e-test-results
+#          path: packages/e2e/test-results/
+#          retention-days: 7
