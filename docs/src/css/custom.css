@@ -40,28 +40,126 @@
 
 /* Customize the hero section */
 .hero {
-  background-color: var(--ifm-color-primary-lightest);
-  color: #000;
+  background: linear-gradient(135deg, #ffecb3 0%, #ffcc80 100%);
+  color: #333;
+  position: relative;
+  overflow: hidden;
+  padding: 4rem 0;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 28 49'%3E%3Cpath d='M10 10h8v8h-8zm10 0h8v8h-8zm0 10h8v8h-8zM0 10h8v8H0zm0 10h8v8H0zm0-20h8v8H0zM10 0h8v8h-8zm10 0h8v8h-8zM10 20h8v8h-8z' fill='%23ff9800' fill-opacity='0.15'/%3E%3C/svg%3E");
+  opacity: 0.7;
+  z-index: 0;
+}
+
+.hero > div {
+  position: relative;
+  z-index: 1;
 }
 
 [data-theme='dark'] .hero {
-  background-color: #424242;
+  background: linear-gradient(135deg, #424242 0%, #212121 100%);
   color: white;
 }
 
+.hero__title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 .hero__subtitle {
-  color: #424242;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 [data-theme='dark'] .hero__subtitle {
-  color: #e0e0e0;
+  color: #f5f5f5;
+}
+
+.buttons {
+  margin-top: 1.5rem;
+}
+
+.button.button--secondary.button--lg {
+  background-color: var(--ifm-color-primary);
+  color: white;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.button.button--secondary.button--lg:hover {
+  background-color: var(--ifm-color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button.button--outline.button--lg {
+  color: #333;
+  border-color: var(--ifm-color-primary);
+  background-color: transparent;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+[data-theme='dark'] .button.button--outline.button--lg {
+  color: #ffffff;
+}
+
+.button.button--outline.button--lg:hover {
+  background-color: rgba(255, 152, 0, 0.1);
+  border-color: var(--ifm-color-primary-dark);
+  color: var(--ifm-color-primary-dark);
+  transform: translateY(-2px);
+}
+
+[data-theme='dark'] .button.button--outline.button--lg:hover {
+  color: var(--ifm-color-primary-lightest);
+  border-color: var(--ifm-color-primary-lightest);
 }
 
 /* Customize the footer */
 .footer {
-  background-color: var(--ifm-footer-background-color);
-  color: #f5f5f5;
+  background-color: #212121;
+  color: #ffffff;
+  padding: 3rem 0;
+}
+
+.footer__link-item {
+  color: #ffcc80 !important;
+  opacity: 0.9;
+  transition: color 0.2s ease;
+}
+
+.footer__link-item:hover {
+  color: #ffffff !important;
+  opacity: 1;
+  text-decoration: none;
+}
+
+.footer__title {
+  color: #ffffff;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.footer__copyright {
+  color: #bdbdbd;
+  font-size: 0.9rem;
 }
 
 /* Custom logo sizing */
@@ -69,9 +167,67 @@
   height: 2.5rem;
 }
 
+/* Features section styling */
+.features {
+  padding: 4rem 0;
+  background-color: #fafafa;
+}
+
+[data-theme='dark'] .features {
+  background-color: #303030;
+}
+
+.features .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.features .col {
+  margin-bottom: 2rem;
+}
+
 /* Make feature icons amber-colored */
 .featureSvg {
   fill: var(--ifm-color-primary);
+  height: 120px !important;
+  width: 120px !important;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.features h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--ifm-color-primary-dark);
+}
+
+[data-theme='dark'] .features h3 {
+  color: var(--ifm-color-primary-lighter);
+}
+
+.features p {
+  font-size: 1rem;
+  max-width: 300px;
+  margin: 0 auto;
+  color: #555;
+}
+
+[data-theme='dark'] .features p {
+  color: #e0e0e0;
+}
+
+/* Homepage description */
+.home-description {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-top: 1rem;
+  color: #444;
+}
+
+[data-theme='dark'] .home-description {
+  color: #e0e0e0;
 }
 
 /* Bee-themed elements */
