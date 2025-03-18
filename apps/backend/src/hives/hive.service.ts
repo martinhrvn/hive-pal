@@ -5,7 +5,6 @@ import { UpdateHiveDto } from './dto/update-hive.dto';
 import { HiveResponseDto } from './dto/hive-response.dto';
 import { HiveDetailResponseDto } from './dto/hive-detail-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { mapPrismaHiveStatusToDto } from './dto/hive-status.enum';
 import { BoxTypeDto, UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
 import { Box } from '@prisma/client';
 import { BoxResponseDto } from './dto/box-response.dto';
@@ -14,6 +13,8 @@ import { InspectionScoreDto } from '../inspections/dto/inspection-score.dto';
 import { MetricsService } from 'src/metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
+import { HiveStatusEnum } from './dto/hive-status.enum';
+import { HiveFilterDto } from './dto/hive-filter.dto';
 
 @Injectable()
 export class HiveService {
@@ -36,7 +37,7 @@ export class HiveService {
       id: hive.id,
       name: hive.name,
       apiaryId: hive.apiaryId,
-      status: mapPrismaHiveStatusToDto(hive.status),
+      status: hive.status as HiveStatusEnum,
       notes: hive.notes,
       installationDate: hive.installationDate?.toISOString() ?? '',
       lastInspectionDate: null,
@@ -44,7 +45,9 @@ export class HiveService {
     };
   }
 
-  async findAll(filter: ApiaryUserFilter): Promise<HiveResponseDto[]> {
+  async findAll(
+    filter: ApiaryUserFilter & HiveFilterDto,
+  ): Promise<HiveResponseDto[]> {
     this.logger.log(
       `Finding all hives for apiary ${filter.apiaryId} and user ${filter.userId}`,
     );
@@ -54,6 +57,7 @@ export class HiveService {
           id: filter.apiaryId,
           userId: filter.userId,
         },
+        status: filter.includeInactive ? undefined : 'ACTIVE',
       },
       include: {
         inspections: {
@@ -82,7 +86,7 @@ export class HiveService {
         id: hive.id,
         name: hive.name,
         apiaryId: hive.apiaryId,
-        status: mapPrismaHiveStatusToDto(hive.status),
+        status: hive.status as HiveStatusEnum,
         notes: hive.notes,
         installationDate: hive.installationDate?.toISOString() ?? '',
         lastInspectionDate: hive.inspections[0]?.date?.toISOString() ?? '',
@@ -135,7 +139,7 @@ export class HiveService {
       this.logger.warn(
         `Hive with ID: ${id} not found or user doesn't have access`,
       );
-      return null;
+      throw new NotFoundException();
     }
     this.logger.debug(`Found hive: ${hive.name} (ID: ${hive.id})`);
 
@@ -153,7 +157,7 @@ export class HiveService {
       id: hive.id,
       name: hive.name,
       apiaryId: hive.apiaryId,
-      status: mapPrismaHiveStatusToDto(hive.status),
+      status: hive.status as HiveStatusEnum,
       notes: hive.notes,
       installationDate:
         typeof hive.installationDate === 'string'
@@ -244,7 +248,8 @@ export class HiveService {
       );
     }
 
-    const deletedHive = await this.prisma.hive.delete({
+    const deletedHive = await this.prisma.hive.update({
+      data: { status: 'ARCHIVED' },
       where: { id },
     });
     this.logger.log(`Hive with ID: ${id} removed successfully`);
@@ -349,7 +354,7 @@ export class HiveService {
       id: updatedHive.id,
       name: updatedHive.name,
       apiaryId: updatedHive.apiaryId,
-      status: mapPrismaHiveStatusToDto(updatedHive.status),
+      status: updatedHive.status as HiveStatusEnum,
       notes: updatedHive.notes,
       installationDate:
         typeof updatedHive.installationDate === 'string'

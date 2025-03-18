@@ -76,6 +76,5 @@ export class UpdateHiveBoxesDto {
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => BoxDto)
   boxes: BoxDto[];
 }

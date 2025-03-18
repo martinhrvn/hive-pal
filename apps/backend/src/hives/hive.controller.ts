@@ -12,6 +12,7 @@ import {
   Put,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
@@ -25,6 +26,7 @@ import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
+import { HiveFilterDto } from './dto/hive-filter.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('hives')
@@ -56,13 +58,17 @@ export class HiveController {
   @Get()
   @ApiOkResponse({ type: HiveResponseDto, isArray: true })
   @SerializeOptions({ type: HiveResponseDto })
-  findAll(@Req() req: RequestWithApiary): Promise<HiveResponseDto[]> {
+  findAll(
+    @Query() query: HiveFilterDto,
+    @Req() req: RequestWithApiary,
+  ): Promise<HiveResponseDto[]> {
     this.logger.log(
       `Getting all hives for apiary: ${req.apiaryId} and user: ${req.user.id}`,
     );
     return this.hiveService.findAll({
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      ...query,
     });
   }
 

@@ -6,6 +6,7 @@ export enum HiveStatusEnum {
   DEAD = 'DEAD',
   SOLD = 'SOLD',
   UNKNOWN = 'UNKNOWN',
+  ARCHIVED = 'ARCHIVED',
 }
 
 export const mapPrismaHiveStatusToDto = (
