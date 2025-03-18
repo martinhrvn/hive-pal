@@ -60,13 +60,13 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    // Hive-Pal social card
+    image: 'img/hive-pal-social-card.jpg',
     navbar: {
       title: 'Hive-Pal',
       logo: {
         alt: 'Hive-Pal Logo',
-        src: 'img/logo.svg',
+        src: 'img/hive-pal-logo.png',
       },
       items: [
         {

@@ -6,25 +6,79 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  /* Amber color palette - slightly darker for better contrast */
+  --ifm-color-primary: #ff9800; /* Amber 600 - darker than original */
+  --ifm-color-primary-dark: #f57c00; /* Amber 700 */
+  --ifm-color-primary-darker: #ef6c00; /* Amber 800 */
+  --ifm-color-primary-darkest: #e65100; /* Amber 900 */
+  --ifm-color-primary-light: #ffa726; /* Amber 500 */
+  --ifm-color-primary-lighter: #ffb74d; /* Amber 400 */
+  --ifm-color-primary-lightest: #ffcc80; /* Amber 300 */
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 152, 0, 0.1);
+  
+  /* Additional colors */
+  --ifm-color-secondary: #424242; /* Dark gray for contrast */
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-footer-background-color: #424242;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* For readability concerns, adjust the palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #ffd54f; /* Amber 300 - brighter for dark mode */
+  --ifm-color-primary-dark: #ffc107; /* Amber 500 */
+  --ifm-color-primary-darker: #ffb300; /* Amber 600 */
+  --ifm-color-primary-darkest: #ffa000; /* Amber 700 */
+  --ifm-color-primary-light: #ffecb3; /* Amber 100 */
+  --ifm-color-primary-lighter: #fff8e1; /* Amber 50 */
+  --ifm-color-primary-lightest: #ffffff;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 213, 79, 0.3);
+  
+  --ifm-background-color: #303030;
+  --ifm-navbar-background-color: #212121;
+}
+
+/* Customize the hero section */
+.hero {
+  background-color: var(--ifm-color-primary-lightest);
+  color: #000;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 28 49'%3E%3Cpath d='M10 10h8v8h-8zm10 0h8v8h-8zm0 10h8v8h-8zM0 10h8v8H0zm0 10h8v8H0zm0-20h8v8H0zM10 0h8v8h-8zm10 0h8v8h-8zM10 20h8v8h-8z' fill='%23ff9800' fill-opacity='0.15'/%3E%3C/svg%3E");
+}
+
+[data-theme='dark'] .hero {
+  background-color: #424242;
+  color: white;
+}
+
+.hero__subtitle {
+  color: #424242;
+}
+
+[data-theme='dark'] .hero__subtitle {
+  color: #e0e0e0;
+}
+
+/* Customize the footer */
+.footer {
+  background-color: var(--ifm-footer-background-color);
+  color: #f5f5f5;
+}
+
+/* Custom logo sizing */
+.navbar__logo {
+  height: 2.5rem;
+}
+
+/* Make feature icons amber-colored */
+.featureSvg {
+  fill: var(--ifm-color-primary);
+}
+
+/* Bee-themed elements */
+.bee-highlight {
+  background-color: rgba(255, 152, 0, 0.15);
+  border-left: 4px solid var(--ifm-color-primary);
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 1rem 0;
 }

@@ -29,4 +29,6 @@ Beekeeping requires careful observation and record-keeping. Hive-Pal simplifies 
 
 ## Project Status
 
-⚠️ **IMPORTANT**: This project is very much a Work In Progress. Features may be incomplete or change significantly.
+<div class="bee-highlight">
+⚠️ <strong>IMPORTANT</strong>: This project is very much a Work In Progress. Features may be incomplete or change significantly.
+</div>
