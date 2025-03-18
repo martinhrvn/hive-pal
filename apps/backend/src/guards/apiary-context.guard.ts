@@ -15,7 +15,7 @@ export class ApiaryContextGuard implements CanActivate {
     const request: {
       headers: Record<string, string>;
       query: Record<string, string>;
-      apiaryId: string;
+      apiaryId: string | undefined;
       user?: { id: string };
     } = context.switchToHttp().getRequest();
 
@@ -41,7 +41,7 @@ export class ApiaryContextGuard implements CanActivate {
     }
 
     // Add apiary to request context
-    request.apiaryId = apiary.id;
+    request.apiaryId = apiaryId ? apiary.id : undefined;
     return true;
   }
 }
