@@ -1,5 +1,7 @@
 # Hive Pal 🐝
 
+[![Tests](https://github.com/martinhrvn/hive-pal/actions/workflows/check.yml/badge.svg)](https://github.com/martinhrvn/hive-pal/actions/workflows/check.yml)
+
 A modern beekeeping management application designed for both mobile and desktop use. Track your apiaries, hives, inspections, and more with our intuitive interface.
 
 **⚠️ IMPORTANT: This project is very much a Work In Progress. Features may be incomplete or change significantly.**
