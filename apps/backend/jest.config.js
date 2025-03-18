@@ -12,4 +12,14 @@ module.exports = {
     '/node_modules./',
     '<rootDir>/(coverage|dist|lib|tmp)./',
   ],
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'test-results',
+        outputName: 'junit.xml',
+      },
+    ],
+  ],
 };
