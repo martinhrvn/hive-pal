@@ -5,14 +5,13 @@ on:
     workflows: ["Comprehensive Check Workflow"]
     types:
       - completed
-    branches:
-      - main
   release:
     types: [ created ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'release' }}
     strategy:
       matrix:
         app: [frontend, backend]
