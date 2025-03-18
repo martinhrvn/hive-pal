@@ -11,32 +11,29 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Apiary Management',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Create and track multiple apiaries with location information. Organize your hives by location and track important details about each site.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Hive Tracking',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Monitor individual hives, their status, and box configuration. Keep detailed records of each colony's development and health.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Inspection Records',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Record detailed inspections with observations and metrics. Track colony health and development over time with comprehensive records.
       </>
     ),
   },

@@ -5,8 +5,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'Hive-Pal',
+  tagline: 'Modern beekeeping management for everyone',
   favicon: 'img/favicon.ico',
   url: 'https://martinhrvn.github.io',
   baseUrl: '/hivepal/',
@@ -63,9 +63,9 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'My Site',
+      title: 'Hive-Pal',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Hive-Pal Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -73,11 +73,10 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Documentation',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/martinhrvn/hive-pal',
           label: 'GitHub',
           position: 'right',
         },
@@ -87,46 +86,37 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Documentation',
           items: [
             {
-              label: 'Tutorial',
+              label: 'Introduction',
               to: '/docs/intro',
             },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'Installation',
+              to: '/docs/installation',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'User Guide',
+              to: '/docs/user-guide/overview',
             },
           ],
         },
         {
-          title: 'More',
+          title: 'Project',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/martinhrvn/hive-pal',
+            },
+            {
+              label: 'Issues',
+              href: 'https://github.com/martinhrvn/hive-pal/issues',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Hive-Pal. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
