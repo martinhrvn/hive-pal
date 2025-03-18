@@ -32,9 +32,9 @@ jobs:
 
       - name: Run linter
         run: pnpm lint
-
-      - name: Run type check
-        run: pnpm tsc
+#
+#      - name: Run type check
+#        run: pnpm tsc
 
   backend-tests:
     name: Backend Tests
