@@ -26,7 +26,7 @@ jobs:
         with:
           run_install: false
       - name: Start Docker compose
-        run: docker-compose -f apps/backend/docker-compose-testdb.yml up -d
+        run: docker compose -f apps/backend/docker-compose-testdb.yml up -d
       - name: Wait for database
         run: |
           docker run --rm --network host docker.io/jwilder/dockerize:latest \
