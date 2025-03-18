@@ -81,7 +81,7 @@ jobs:
       - name: Run linter
         run: pnpm --filter frontend lint
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
+        run: pnpm --filter frontend exec playwright install --with-deps
       - name: Run frontend tests
         run: pnpm --filter frontend test:ct
 
