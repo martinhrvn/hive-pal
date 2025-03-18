@@ -8,38 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint-and-typecheck:
-    name: Lint and Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Prisma generate
-        run: pnpm --filter backend prisma generate
-      - name: Run linter
-        run: pnpm lint
-#
-#      - name: Run type check
-#        run: pnpm tsc
-
   backend-tests:
     name: Backend Tests
-    needs: lint-and-typecheck
     runs-on: ubuntu-latest
     outputs:
       should-run: ${{ steps.filter.outputs.backend }}
@@ -62,6 +32,10 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Prisma generate
+        run: pnpm --filter backend exec prisma generate
+      - name: Run linter
+        run: pnpm --filter backend lint
       - name: Run backend tests
         run: pnpm --filter backend test:e2e
       - name: Upload backend test results
@@ -74,7 +48,6 @@ jobs:
 
   frontend-tests:
     name: Frontend Tests
-    needs: lint-and-typecheck
     runs-on: ubuntu-latest
     outputs:
       should-run: ${{ steps.filter.outputs.frontend }}
@@ -97,6 +70,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+      - name: Run linter
+        run: pnpm --filter backend lint
       - name: Run frontend tests
         run: pnpm --filter frontend test:ct
 
