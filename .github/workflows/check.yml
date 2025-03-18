@@ -80,6 +80,8 @@ jobs:
         run: pnpm install
       - name: Run linter
         run: pnpm --filter frontend lint
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
       - name: Run frontend tests
         run: pnpm --filter frontend test:ct
 
@@ -112,7 +114,8 @@ jobs:
         run: |
           echo "Waiting for deployment to complete..."
           sleep 120  # Wait for 2 minutes
-
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
       - name: Run E2E tests
         run: pnpm --filter e2e test
 
