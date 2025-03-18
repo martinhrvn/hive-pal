@@ -20,7 +20,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "pnpm db:up:test && dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --config jest.e2e.js"
+    "test:e2e": "pnpm db:up:test && dotenvx run -f .env.test -- prisma migrate deploy && dotenvx run -f .env.test -- jest --config jest.e2e.js"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",
@@ -50,6 +50,7 @@
     "winston-transport": "^4.9.0"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.39.0",
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
@@ -66,7 +67,6 @@
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
-    "dotenv-cli": "^8.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.2",
