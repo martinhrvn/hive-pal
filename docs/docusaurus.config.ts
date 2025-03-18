@@ -8,7 +8,7 @@ const config: Config = {
   title: 'Hive-Pal',
   tagline: 'Modern beekeeping management for everyone',
   favicon: 'img/favicon.ico',
-  url: 'https://martinhrvn.github.io',
+  url: 'https://martin.hrvn.eu',
   baseUrl: '/hive-pal/',
   organizationName: 'martinhrvn',
   projectName: 'hive-pal',
