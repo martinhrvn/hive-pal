@@ -150,6 +150,7 @@ enum HiveStatus {
   DEAD
   SOLD
   UNKNOWN
+  ARCHIVED
 }
 
 enum QueenStatus {
