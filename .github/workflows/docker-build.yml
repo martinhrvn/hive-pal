@@ -1,9 +1,12 @@
 name: Build and Push Docker Images
 
 on:
-  push:
-    branches: [ main ]
-    tags: [ 'v*' ]
+  workflow_run:
+    workflows: ["Comprehensive Check Workflow"]
+    types:
+      - completed
+    branches:
+      - main
   release:
     types: [ created ]
 
