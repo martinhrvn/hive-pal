@@ -177,7 +177,10 @@ const NumericField = ({
       </div>
 
       {showSliderSection && (
-        <div className="absolute inset-x-0 -top-16 px-2 pb-2 pt-5 bg-white border rounded-t-md shadow-sm">
+        <div
+          data-test="numeric-slider"
+          className="absolute inset-x-0 -top-16 px-2 pb-2 pt-5 bg-white border rounded-t-md shadow-sm"
+        >
           <Slider
             value={[numericValue ?? defaultValue]}
             min={min}

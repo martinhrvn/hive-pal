@@ -96,14 +96,14 @@ test.describe('TemperatureField', () => {
     );
 
     // Slider should not be initially visible
-    const sliderBefore = component.locator('.rounded-b-md');
+    const sliderBefore = component.locator('numeric-slider');
     await expect(sliderBefore).toHaveCount(0);
 
     // Focus the input to show the slider
     await component.locator('input').focus();
 
     // Now the slider should be visible
-    const sliderAfter = component.locator('.rounded-b-md');
+    const sliderAfter = component.getByTestId('numeric-slider');
     await expect(sliderAfter).toBeVisible();
   });
 });
