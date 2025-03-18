@@ -72,7 +72,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Run linter
-        run: pnpm --filter backend lint
+        run: pnpm --filter frontend lint
       - name: Run frontend tests
         run: pnpm --filter frontend test:ct
 
