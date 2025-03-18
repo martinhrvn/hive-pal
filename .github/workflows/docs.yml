@@ -9,8 +9,15 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
+    # Add permissions needed to deploy to GitHub Pages
+    permissions:
+      contents: write      # This permission is needed to push to gh-pages branch
+      pages: write         # This permission is needed for GitHub Pages
+      id-token: write      # This permission is needed for GitHub Pages authentication
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for use with git commit info
       - uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
@@ -26,6 +33,16 @@ jobs:
       - name: Build website
         run: pnpm --filter docs build
 
+      # This step ensures the docs/build directory exists before deployment
+      - name: Verify build directory
+        run: |
+          if [ ! -d "./docs/build" ]; then
+            echo "Error: docs/build directory does not exist!"
+            exit 1
+          fi
+          echo "Build directory exists, proceeding with deployment"
+      
+      # Deploy to GitHub Pages using the GITHUB_TOKEN with write permissions
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -33,3 +50,5 @@ jobs:
           publish_dir: ./docs/build
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          force_orphan: true # Creates a new history for the gh-pages branch, unrelated to the source branch history
+          full_commit_message: 'docs: deploy documentation site to GitHub Pages'
