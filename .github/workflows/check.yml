@@ -14,13 +14,13 @@ jobs:
     outputs:
       should-run: ${{ steps.filter.outputs.backend }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
             backend: 'apps/backend/**'
-      - name: Checkout code
-        uses: actions/checkout@v4
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -52,13 +52,14 @@ jobs:
     outputs:
       should-run: ${{ steps.filter.outputs.frontend }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
             backend: 'apps/frontend/**'
-      - name: Checkout code
-        uses: actions/checkout@v4
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
