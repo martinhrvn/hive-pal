@@ -19,14 +19,14 @@ export class CustomLoggerService implements LoggerService {
     context = context || this.context;
 
     if (message instanceof Object) {
-      const { message: msg, ...meta } = message;
+      const { message: msg, ...meta } = message as { message?: string };
       return this.logger.info(msg || 'Object message', {
         context,
         ...meta,
       });
     }
 
-    return this.logger.info(message, { context });
+    return this.logger.info(String(message), { context });
   }
 
   error(message: any, trace?: string, context?: string) {
@@ -34,8 +34,8 @@ export class CustomLoggerService implements LoggerService {
 
     if (message instanceof Error) {
       trace = trace || message.stack;
-      const { message: msg, name, stack, ...meta } = message;
-      return this.logger.error(msg, {
+      const { message: msg, name, ...meta } = message;
+      return this.logger.error(String(msg), {
         context,
         stack: trace,
         error_name: name,
@@ -44,56 +44,56 @@ export class CustomLoggerService implements LoggerService {
     }
 
     if (message instanceof Object) {
-      const { message: msg, ...meta } = message;
-      return this.logger.error(msg || 'Object message', {
+      const { message: msg, ...meta } = message as { message?: string };
+      return this.logger.error(String(msg || 'Object message'), {
         context,
         stack: trace,
         ...meta,
       });
     }
 
-    return this.logger.error(message, { context, stack: trace });
+    return this.logger.error(String(message), { context, stack: trace });
   }
 
   warn(message: any, context?: string) {
     context = context || this.context;
 
     if (message instanceof Object) {
-      const { message: msg, ...meta } = message;
-      return this.logger.warn(msg || 'Object message', {
+      const { message: msg, ...meta } = message as { message?: string };
+      return this.logger.warn(String(msg || 'Object message'), {
         context,
         ...meta,
       });
     }
 
-    return this.logger.warn(message, { context });
+    return this.logger.warn(String(message), { context });
   }
 
   debug(message: any, context?: string) {
     context = context || this.context;
 
     if (message instanceof Object) {
-      const { message: msg, ...meta } = message;
-      return this.logger.debug(msg || 'Object message', {
+      const { message: msg, ...meta } = message as { message?: string };
+      return this.logger.debug(String(msg || 'Object message'), {
         context,
         ...meta,
       });
     }
 
-    return this.logger.debug(message, { context });
+    return this.logger.debug(String(message), { context });
   }
 
   verbose(message: any, context?: string) {
     context = context || this.context;
 
     if (message instanceof Object) {
-      const { message: msg, ...meta } = message;
-      return this.logger.verbose(msg || 'Object message', {
+      const { message: msg, ...meta } = message as { message?: string };
+      return this.logger.verbose(String(msg || 'Object message'), {
         context,
         ...meta,
       });
     }
 
-    return this.logger.verbose(message, { context });
+    return this.logger.verbose(String(message), { context });
   }
 }

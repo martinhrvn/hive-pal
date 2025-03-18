@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Header,
-  Req,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Controller, Get, Header, Req } from '@nestjs/common';
 import { PrometheusService } from './prometheus.service';
 import { Request } from 'express';
 import { CustomLoggerService } from '../../logger/logger.service';

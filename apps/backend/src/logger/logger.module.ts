@@ -11,13 +11,42 @@ const transports: winston.transport[] = [
       winston.format.timestamp(),
       winston.format.ms(),
       winston.format.colorize(),
-      winston.format.printf(
-        ({ timestamp, level, message, context, trace, ...meta }) => {
-          return `${timestamp} [${context}] ${level}: ${message} ${
-            Object.keys(meta).length ? JSON.stringify(meta) : ''
-          } ${trace || ''}`;
-        },
-      ),
+      winston.format.printf((info) => {
+        const { timestamp, level, message, context, trace, ...meta } = info;
+
+        // Handle each property safely with JSON.stringify to avoid base-to-string issues
+        let ts = '';
+        if (timestamp !== undefined) {
+          ts =
+            typeof timestamp === 'string'
+              ? timestamp
+              : JSON.stringify(timestamp);
+        }
+
+        let ctx = '';
+        if (context !== undefined) {
+          ctx = typeof context === 'string' ? context : JSON.stringify(context);
+        }
+
+        let lvl = '';
+        if (level !== undefined) {
+          lvl = typeof level === 'string' ? level : JSON.stringify(level);
+        }
+
+        let msg = '';
+        if (message !== undefined) {
+          msg = typeof message === 'string' ? message : JSON.stringify(message);
+        }
+
+        let trc = '';
+        if (trace !== undefined) {
+          trc = typeof trace === 'string' ? trace : JSON.stringify(trace);
+        }
+
+        return `${ts} [${ctx}] ${lvl}: ${msg} ${
+          Object.keys(meta).length ? JSON.stringify(meta) : ''
+        } ${trc}`;
+      }),
     ),
   }),
 ];

@@ -91,8 +91,13 @@ export class ApiariesService {
 
       this.logger.log(`Apiary ${id} updated successfully`);
       return updatedApiary;
-    } catch (error) {
-      this.logger.error(`Failed to update apiary ${id}`, error.stack);
+    } catch (error: unknown) {
+      this.logger.error(
+        `Failed to update apiary ${id}`,
+        typeof (error as { stack?: string })?.stack === 'string'
+          ? String((error as { stack: string }).stack)
+          : undefined,
+      );
       throw error;
     }
   }

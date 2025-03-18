@@ -24,15 +24,25 @@ export class PrismaHealthIndicator extends HealthIndicator {
       this.logger.debug('Database health check passed');
 
       return this.getStatus(key, true);
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage =
+        typeof (error as { message?: string })?.message === 'string'
+          ? String((error as { message: string }).message)
+          : 'Unknown error';
+
+      const errorStack =
+        typeof (error as { stack?: string })?.stack === 'string'
+          ? String((error as { stack: string }).stack)
+          : undefined;
+
       this.logger.error(
-        `Database health check failed: ${error.message}`,
-        error.stack,
+        `Database health check failed: ${errorMessage}`,
+        errorStack,
       );
 
       throw new HealthCheckError(
         'Prisma health check failed',
-        this.getStatus(key, false, { message: error.message }),
+        this.getStatus(key, false, { message: errorMessage }),
       );
     }
   }

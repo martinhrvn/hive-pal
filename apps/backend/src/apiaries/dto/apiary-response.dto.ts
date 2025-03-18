@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+// No class-validator imports needed for response DTOs
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 

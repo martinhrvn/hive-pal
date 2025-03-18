@@ -18,10 +18,7 @@ import {
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import {
-  RequestWithUser,
-  RequestWithJWTUser,
-} from './interface/request-with-user.interface';
+import { RequestWithUser } from './interface/request-with-user.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';

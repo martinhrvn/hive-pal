@@ -10,7 +10,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+// Type import not used
 
 export enum BoxTypeDto {
   BROOD = 'BROOD',
