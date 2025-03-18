@@ -25,6 +25,13 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
+      - name: Start Docker compose
+        run: docker-compose -f apps/backend/docker-compose-testdb.yml up -d
+      - name: Wait for database
+        run: |
+          docker run --rm --network host docker.io/jwilder/dockerize:latest \
+            -wait tcp://localhost:9876 \
+            -timeout 60s
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
