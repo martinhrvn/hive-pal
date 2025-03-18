@@ -391,7 +391,6 @@ describe('Hives (e2e)', () => {
       .set('Authorization', `Bearer ${authToken}`)
       // No x-apiary-id header or query param
       .expect(200);
-    console.log(res.body);
     const ids = res.body.map((hive: any) => hive.id);
     const dbIds = await prisma.hive.findMany({
       where: {
