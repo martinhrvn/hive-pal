@@ -18,6 +18,11 @@ import {
   TreatmentForm,
   TreatmentView,
 } from '@/pages/inspection/components/inspection-form/actions/treatment.tsx';
+import {
+  FramesActionType,
+  FramesForm,
+  FramesView,
+} from '@/pages/inspection/components/inspection-form/actions/frames.tsx';
 import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 
@@ -31,7 +36,7 @@ const actionTypes = [
   { id: 'SPLIT', label: 'Split', Icon: GitBranch },
 ];
 
-type ActionType = FeedingActionType | TreatmentActionType;
+type ActionType = FeedingActionType | TreatmentActionType | FramesActionType;
 
 export const ActionsSection: React.FC = () => {
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -76,6 +81,9 @@ export const ActionsSection: React.FC = () => {
           {selectedAction === 'TREATMENT' && (
             <TreatmentForm onSave={handleSave} onRemove={handleRemove} />
           )}
+          {selectedAction === 'FRAMES' && (
+            <FramesForm onSave={handleSave} onRemove={handleRemove} />
+          )}
         </div>
       )}
 
@@ -98,6 +106,15 @@ export const ActionsSection: React.FC = () => {
               return (
                 <TreatmentView
                   key="treatment"
+                  onSave={handleSave}
+                  action={action}
+                  onRemove={handleRemove}
+                />
+              );
+            case 'FRAMES':
+              return (
+                <FramesView
+                  key="frames"
                   onSave={handleSave}
                   action={action}
                   onRemove={handleRemove}

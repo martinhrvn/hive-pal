@@ -160,15 +160,61 @@ class TreatmentSectionObject {
   }
 }
 
+class FramesSectionObject {
+  readonly page: Page;
+  constructor(page: Page) {
+    this.page = page;
+  }
+
+  getFramesField() {
+    return this.page.getByRole('spinbutton', { name: 'Number of frames added/removed ' });
+  }
+
+  getSaveButton() {
+    return this.page.getByRole('button', { name: 'Save' });
+  }
+
+  assertInViewMode(text: string) {
+    return this.page.getByTestId(TEST_SELECTORS.FRAMES_VIEW).getByText(text);
+  }
+
+  getEditButton() {
+    return this.page
+      .getByTestId(TEST_SELECTORS.FRAMES_VIEW)
+      .getByRole('button', { name: 'Edit' });
+  }
+
+  getRemoveButton() {
+    return this.page
+      .getByTestId(TEST_SELECTORS.FRAMES_VIEW)
+      .getByRole('button', { name: 'Delete' });
+  }
+
+  async fillFramesForm(frames: string) {
+    await this.getFramesField().fill(frames);
+    await this.getSaveButton().click();
+  }
+
+  async verifyFramesView(frames: string) {
+    await expect(this.page.getByTestId(TEST_SELECTORS.FRAMES_FORM)).not.toBeVisible();
+    await expect(this.page.getByTestId(TEST_SELECTORS.FRAMES_VIEW)).toBeVisible();
+    
+    const displayText = parseInt(frames) > 0 ? `+${frames} frames` : `${frames} frames`;
+    await expect(this.assertInViewMode(displayText)).toBeVisible();
+  }
+}
+
 class ActionsSectionObject {
   readonly page: Page;
   readonly feedingSection: FeedingsSectionObject;
   readonly treatmentSection: TreatmentSectionObject;
+  readonly framesSection: FramesSectionObject;
   
   constructor(page: Page) {
     this.page = page;
     this.feedingSection = new FeedingsSectionObject(page);
     this.treatmentSection = new TreatmentSectionObject(page);
+    this.framesSection = new FramesSectionObject(page);
   }
 
   selectAction(action: string) {
@@ -359,5 +405,82 @@ test.describe('Treatment', () => {
     await treatmentSection.getRemoveButton().click();
     await expect(page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW)).not.toBeVisible();
     await expect(actionsSection.getAction('Treatment')).toBeVisible();
+  });
+});
+
+test.describe('Frames', () => {
+  test('When selecting Frames form should be added to the inspection', async ({
+    page,
+    mount,
+  }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const framesSection = actionsSection.framesSection;
+    await actionsSection.selectAction('Frames');
+    
+    await expect(framesSection.getFramesField()).toBeVisible();
+    await expect(page.getByText('Number of frames added/removed')).toBeVisible();
+    await expect(page.getByText('Use positive numbers for frames added, negative for frames removed')).toBeVisible();
+  });
+
+  test('Should allow adding frames with positive numbers', async ({
+    page,
+    mount,
+  }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const framesSection = actionsSection.framesSection;
+    await actionsSection.selectAction('Frames');
+    
+    await framesSection.fillFramesForm('5');
+    await framesSection.verifyFramesView('5');
+
+    await expect(actionsSection.getAction('Frames')).not.toBeVisible();
+  });
+
+  test('Should allow removing frames with negative numbers', async ({
+    page,
+    mount,
+  }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const framesSection = actionsSection.framesSection;
+    await actionsSection.selectAction('Frames');
+    
+    await framesSection.fillFramesForm('-3');
+    await framesSection.verifyFramesView('-3');
+
+    await expect(actionsSection.getAction('Frames')).not.toBeVisible();
+  });
+
+  test('Edit should work', async ({ page, mount }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const framesSection = actionsSection.framesSection;
+    await actionsSection.selectAction('Frames');
+    
+    await framesSection.fillFramesForm('2');
+    await framesSection.verifyFramesView('2');
+    
+    await framesSection.getEditButton().click();
+    await expect(page.getByTestId(TEST_SELECTORS.FRAMES_FORM)).toBeVisible();
+    await framesSection.getFramesField().fill('4');
+    await framesSection.getSaveButton().click();
+    
+    await framesSection.verifyFramesView('4');
+  });
+
+  test('Remove should work', async ({ page, mount }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const framesSection = actionsSection.framesSection;
+    await actionsSection.selectAction('Frames');
+    
+    await framesSection.fillFramesForm('-2');
+    await framesSection.verifyFramesView('-2');
+    
+    await framesSection.getRemoveButton().click();
+    await expect(page.getByTestId(TEST_SELECTORS.FRAMES_VIEW)).not.toBeVisible();
+    await expect(actionsSection.getAction('Frames')).toBeVisible();
   });
 });
