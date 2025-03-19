@@ -13,6 +13,11 @@ import {
   FeedingForm,
   FeedingView,
 } from '@/pages/inspection/components/inspection-form/actions/feeding.tsx';
+import {
+  TreatmentActionType,
+  TreatmentForm,
+  TreatmentView,
+} from '@/pages/inspection/components/inspection-form/actions/treatment.tsx';
 import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 
@@ -26,7 +31,7 @@ const actionTypes = [
   { id: 'SPLIT', label: 'Split', Icon: GitBranch },
 ];
 
-type ActionType = FeedingActionType;
+type ActionType = FeedingActionType | TreatmentActionType;
 
 export const ActionsSection: React.FC = () => {
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -68,6 +73,9 @@ export const ActionsSection: React.FC = () => {
           {selectedAction === 'FEEDING' && (
             <FeedingForm onSave={handleSave} onRemove={handleRemove} />
           )}
+          {selectedAction === 'TREATMENT' && (
+            <TreatmentForm onSave={handleSave} onRemove={handleRemove} />
+          )}
         </div>
       )}
 
@@ -80,6 +88,16 @@ export const ActionsSection: React.FC = () => {
             case 'FEEDING':
               return (
                 <FeedingView
+                  key="feeding"
+                  onSave={handleSave}
+                  action={action}
+                  onRemove={handleRemove}
+                />
+              );
+            case 'TREATMENT':
+              return (
+                <TreatmentView
+                  key="treatment"
                   onSave={handleSave}
                   action={action}
                   onRemove={handleRemove}

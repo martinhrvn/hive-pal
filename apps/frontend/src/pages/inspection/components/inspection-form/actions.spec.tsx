@@ -105,12 +105,70 @@ class FeedingsSectionObject {
   }
 }
 
+class TreatmentSectionObject {
+  readonly page: Page;
+  constructor(page: Page) {
+    this.page = page;
+  }
+
+  getAmountField() {
+    return this.page.getByRole('spinbutton', { name: 'Amount ' });
+  }
+
+  getTreatmentTypeField() {
+    return this.page.getByRole('combobox');
+  }
+
+  selectTreatmentType(treatmentType: string) {
+    return this.page.getByRole('option', { name: treatmentType }).click();
+  }
+
+  getSaveButton() {
+    return this.page.getByRole('button', { name: 'Save' });
+  }
+
+  assertInViewMode(text: string) {
+    return this.page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW).getByText(text);
+  }
+
+  getEditButton() {
+    return this.page
+      .getByTestId(TEST_SELECTORS.TREATMENT_VIEW)
+      .getByRole('button', { name: 'Edit' });
+  }
+
+  getRemoveButton() {
+    return this.page
+      .getByTestId(TEST_SELECTORS.TREATMENT_VIEW)
+      .getByRole('button', { name: 'Delete' });
+  }
+
+  async fillTreatmentForm(treatmentType: string, amount: string) {
+    if (treatmentType !== 'Oxalic Acid') {
+      await this.getTreatmentTypeField().click();
+      await this.selectTreatmentType(treatmentType);
+    }
+    await this.getAmountField().fill(amount);
+    await this.getSaveButton().click();
+  }
+
+  async verifyTreatmentView(amount: string, treatmentType: string, unit: string) {
+    await expect(this.page.getByTestId(TEST_SELECTORS.TREATMENT_FORM)).not.toBeVisible();
+    await expect(this.page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW)).toBeVisible();
+    await expect(this.assertInViewMode(`${amount}${unit}`)).toBeVisible();
+    await expect(this.assertInViewMode(treatmentType)).toBeVisible();
+  }
+}
+
 class ActionsSectionObject {
   readonly page: Page;
   readonly feedingSection: FeedingsSectionObject;
+  readonly treatmentSection: TreatmentSectionObject;
+  
   constructor(page: Page) {
     this.page = page;
     this.feedingSection = new FeedingsSectionObject(page);
+    this.treatmentSection = new TreatmentSectionObject(page);
   }
 
   selectAction(action: string) {
@@ -238,5 +296,68 @@ test.describe('Feeding', () => {
       page.getByTestId(TEST_SELECTORS.FEEDING_VIEW),
     ).not.toBeVisible();
     await expect(actionsSection.getAction('Feeding')).toBeVisible();
+  });
+});
+
+test.describe('Treatment', () => {
+  test('When selecting Treatment form should be added to the inspection', async ({
+    page,
+    mount,
+  }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const treatmentSection = actionsSection.treatmentSection;
+    await actionsSection.selectAction('Treatment');
+    
+    await expect(treatmentSection.getTreatmentTypeField()).toBeVisible();
+    await expect(treatmentSection.getAmountField()).toBeVisible();
+    await expect(page.getByText('Treatment Type')).toBeVisible();
+    await expect(page.getByText('Amount')).toBeVisible();
+  });
+
+  test('Should allow selecting treatment type and setting amount', async ({
+    page,
+    mount,
+  }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const treatmentSection = actionsSection.treatmentSection;
+    await actionsSection.selectAction('Treatment');
+    
+    await treatmentSection.fillTreatmentForm('Formic Acid', '25');
+    await treatmentSection.verifyTreatmentView('25', 'Formic Acid', 'ml');
+
+    await expect(actionsSection.getAction('Treatment')).not.toBeVisible();
+  });
+
+  test('Edit should work', async ({ page, mount }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const treatmentSection = actionsSection.treatmentSection;
+    await actionsSection.selectAction('Treatment');
+    
+    await treatmentSection.fillTreatmentForm('Thymol', '15');
+    await treatmentSection.verifyTreatmentView('15', 'Thymol', 'ml');
+    
+    await treatmentSection.getEditButton().click();
+    await expect(page.getByTestId(TEST_SELECTORS.TREATMENT_FORM)).toBeVisible();
+    await treatmentSection.getAmountField().fill('20');
+    await treatmentSection.getSaveButton().click();
+    
+    await treatmentSection.verifyTreatmentView('20', 'Thymol', 'ml');
+  });
+
+  test('Remove should work', async ({ page, mount }) => {
+    await mount(<ActionsSection />);
+    const actionsSection = new ActionsSectionObject(page);
+    const treatmentSection = actionsSection.treatmentSection;
+    await actionsSection.selectAction('Treatment');
+    
+    await treatmentSection.fillTreatmentForm('Other', '30');
+    await treatmentSection.verifyTreatmentView('30', 'Other', 'ml');
+    
+    await treatmentSection.getRemoveButton().click();
+    await expect(page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW)).not.toBeVisible();
+    await expect(actionsSection.getAction('Treatment')).toBeVisible();
   });
 });
