@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
+import { Textarea } from '@/components/ui/textarea';
 
 type FeedType = 'SYRUP' | 'HONEY' | 'CANDY';
 
@@ -21,6 +22,7 @@ export type FeedingActionType = {
   quantity: number;
   unit: string;
   concentration?: string;
+  notes?: string;
 };
 
 const FEED_TYPES = [
@@ -43,10 +45,14 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
   const [quantity, setQuantity] = useState<number | null>(
     action?.quantity ?? 100,
   );
-  const [concentration, setConcentration] = useState<string>('1:1');
+  const [concentration, setConcentration] = useState<string>(
+    action?.concentration ?? '1:1'
+  );
   const [feedType, setFeedType] = useState<FeedType | null>(
     action?.feedType ?? 'SYRUP',
   );
+  const [notes, setNotes] = useState<string>(action?.notes ?? '');
+  
   const showConcentration = feedType === 'SYRUP';
   const units = useMemo(() => {
     switch (feedType) {
@@ -67,6 +73,7 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
         <div className="flex gap-4">
           {FEED_TYPES.map(({ id, label }) => (
             <Pill
+              key={id}
               color={'blue'}
               active={feedType === id}
               onClick={e => {
@@ -129,6 +136,17 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
         )}
       </div>
 
+      <div className="col-span-2 flex flex-col gap-4">
+        <label htmlFor="notes">Notes (optional)</label>
+        <Textarea
+          id="notes"
+          placeholder="Add any additional notes about this feeding"
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+          data-test={TEST_SELECTORS.FEEDING_NOTES}
+        />
+      </div>
+
       <div className="col-span-2 flex justify-end">
         {feedType && quantity && (
           <Button
@@ -139,6 +157,7 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
                 quantity,
                 concentration,
                 unit: units,
+                notes: notes.trim() || undefined,
               });
             }}
           >
@@ -184,6 +203,11 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
           </span>
           <span>{action.concentration}</span>
         </div>
+        {action.notes && (
+          <div className="text-sm text-gray-600 mt-1">
+            <span>Notes: {action.notes}</span>
+          </div>
+        )}
       </div>
       <div>
         <Button

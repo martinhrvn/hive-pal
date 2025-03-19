@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
+import { Textarea } from '@/components/ui/textarea';
 
 export type FramesActionType = {
   type: 'FRAMES';
   frames: number;
+  notes?: string;
 };
 
 type FramesActionProps = {
@@ -23,6 +25,7 @@ export const FramesForm: React.FC<FramesActionProps> = ({
   const [frames, setFrames] = useState<number | null>(
     action?.frames ?? 0,
   );
+  const [notes, setNotes] = useState<string>(action?.notes ?? '');
 
   return (
     <div
@@ -50,6 +53,17 @@ export const FramesForm: React.FC<FramesActionProps> = ({
         </div>
       </div>
 
+      <div className="col-span-2 flex flex-col gap-4">
+        <label htmlFor="notes">Notes (optional)</label>
+        <Textarea
+          id="notes"
+          placeholder="Add any additional notes about frames changes"
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+          data-test={TEST_SELECTORS.FRAMES_NOTES}
+        />
+      </div>
+
       <div className="col-span-2 flex justify-end">
         {frames !== null && (
           <Button
@@ -57,6 +71,7 @@ export const FramesForm: React.FC<FramesActionProps> = ({
               onSave({
                 type: 'FRAMES',
                 frames,
+                notes: notes.trim() || undefined,
               });
             }}
           >
@@ -102,6 +117,11 @@ export const FramesView: React.FC<FramesActionProps> = ({
         <div className={'flex gap-5 text-sm'}>
           <Badge>{framesDisplay}</Badge>
         </div>
+        {action.notes && (
+          <div className="text-sm text-gray-600 mt-1">
+            <span>Notes: {action.notes}</span>
+          </div>
+        )}
       </div>
       <div>
         <Button

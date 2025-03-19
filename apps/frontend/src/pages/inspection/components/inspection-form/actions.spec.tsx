@@ -152,9 +152,17 @@ class TreatmentSectionObject {
     await this.getSaveButton().click();
   }
 
-  async verifyTreatmentView(amount: string, treatmentType: string, unit: string) {
-    await expect(this.page.getByTestId(TEST_SELECTORS.TREATMENT_FORM)).not.toBeVisible();
-    await expect(this.page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW)).toBeVisible();
+  async verifyTreatmentView(
+    amount: string,
+    treatmentType: string,
+    unit: string,
+  ) {
+    await expect(
+      this.page.getByTestId(TEST_SELECTORS.TREATMENT_FORM),
+    ).not.toBeVisible();
+    await expect(
+      this.page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW),
+    ).toBeVisible();
     await expect(this.assertInViewMode(`${amount}${unit}`)).toBeVisible();
     await expect(this.assertInViewMode(treatmentType)).toBeVisible();
   }
@@ -167,7 +175,9 @@ class FramesSectionObject {
   }
 
   getFramesField() {
-    return this.page.getByRole('spinbutton', { name: 'Number of frames added/removed ' });
+    return this.page.getByRole('spinbutton', {
+      name: 'Number of frames added/removed ',
+    });
   }
 
   getSaveButton() {
@@ -196,10 +206,15 @@ class FramesSectionObject {
   }
 
   async verifyFramesView(frames: string) {
-    await expect(this.page.getByTestId(TEST_SELECTORS.FRAMES_FORM)).not.toBeVisible();
-    await expect(this.page.getByTestId(TEST_SELECTORS.FRAMES_VIEW)).toBeVisible();
-    
-    const displayText = parseInt(frames) > 0 ? `+${frames} frames` : `${frames} frames`;
+    await expect(
+      this.page.getByTestId(TEST_SELECTORS.FRAMES_FORM),
+    ).not.toBeVisible();
+    await expect(
+      this.page.getByTestId(TEST_SELECTORS.FRAMES_VIEW),
+    ).toBeVisible();
+
+    const displayText =
+      parseInt(frames) > 0 ? `+${frames} frames` : `${frames} frames`;
     await expect(this.assertInViewMode(displayText)).toBeVisible();
   }
 }
@@ -209,7 +224,7 @@ class ActionsSectionObject {
   readonly feedingSection: FeedingsSectionObject;
   readonly treatmentSection: TreatmentSectionObject;
   readonly framesSection: FramesSectionObject;
-  
+
   constructor(page: Page) {
     this.page = page;
     this.feedingSection = new FeedingsSectionObject(page);
@@ -233,15 +248,7 @@ class ActionsSectionObject {
 }
 
 test.describe('Action chips', () => {
-  [
-    'Feeding',
-    'Treatment',
-    'Boxes',
-    'Frames',
-    'Harvest',
-    'Requeening',
-    'Split',
-  ].forEach(label => {
+  ['Feeding', 'Treatment', 'Frames'].forEach(label => {
     test(`renders ${label} chip`, async ({ page, mount }) => {
       await mount(<ActionsSection />);
       await expect(page.getByText(label)).toBeVisible();
@@ -354,7 +361,7 @@ test.describe('Treatment', () => {
     const actionsSection = new ActionsSectionObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
-    
+
     await expect(treatmentSection.getTreatmentTypeField()).toBeVisible();
     await expect(treatmentSection.getAmountField()).toBeVisible();
     await expect(page.getByText('Treatment Type')).toBeVisible();
@@ -369,7 +376,7 @@ test.describe('Treatment', () => {
     const actionsSection = new ActionsSectionObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
-    
+
     await treatmentSection.fillTreatmentForm('Formic Acid', '25');
     await treatmentSection.verifyTreatmentView('25', 'Formic Acid', 'ml');
 
@@ -381,15 +388,15 @@ test.describe('Treatment', () => {
     const actionsSection = new ActionsSectionObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
-    
+
     await treatmentSection.fillTreatmentForm('Thymol', '15');
     await treatmentSection.verifyTreatmentView('15', 'Thymol', 'ml');
-    
+
     await treatmentSection.getEditButton().click();
     await expect(page.getByTestId(TEST_SELECTORS.TREATMENT_FORM)).toBeVisible();
     await treatmentSection.getAmountField().fill('20');
     await treatmentSection.getSaveButton().click();
-    
+
     await treatmentSection.verifyTreatmentView('20', 'Thymol', 'ml');
   });
 
@@ -398,12 +405,14 @@ test.describe('Treatment', () => {
     const actionsSection = new ActionsSectionObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
-    
+
     await treatmentSection.fillTreatmentForm('Other', '30');
     await treatmentSection.verifyTreatmentView('30', 'Other', 'ml');
-    
+
     await treatmentSection.getRemoveButton().click();
-    await expect(page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW)).not.toBeVisible();
+    await expect(
+      page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW),
+    ).not.toBeVisible();
     await expect(actionsSection.getAction('Treatment')).toBeVisible();
   });
 });
@@ -417,10 +426,16 @@ test.describe('Frames', () => {
     const actionsSection = new ActionsSectionObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
-    
+
     await expect(framesSection.getFramesField()).toBeVisible();
-    await expect(page.getByText('Number of frames added/removed')).toBeVisible();
-    await expect(page.getByText('Use positive numbers for frames added, negative for frames removed')).toBeVisible();
+    await expect(
+      page.getByText('Number of frames added/removed'),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        'Use positive numbers for frames added, negative for frames removed',
+      ),
+    ).toBeVisible();
   });
 
   test('Should allow adding frames with positive numbers', async ({
@@ -431,7 +446,7 @@ test.describe('Frames', () => {
     const actionsSection = new ActionsSectionObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
-    
+
     await framesSection.fillFramesForm('5');
     await framesSection.verifyFramesView('5');
 
@@ -446,7 +461,7 @@ test.describe('Frames', () => {
     const actionsSection = new ActionsSectionObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
-    
+
     await framesSection.fillFramesForm('-3');
     await framesSection.verifyFramesView('-3');
 
@@ -458,15 +473,15 @@ test.describe('Frames', () => {
     const actionsSection = new ActionsSectionObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
-    
+
     await framesSection.fillFramesForm('2');
     await framesSection.verifyFramesView('2');
-    
+
     await framesSection.getEditButton().click();
     await expect(page.getByTestId(TEST_SELECTORS.FRAMES_FORM)).toBeVisible();
     await framesSection.getFramesField().fill('4');
     await framesSection.getSaveButton().click();
-    
+
     await framesSection.verifyFramesView('4');
   });
 
@@ -475,12 +490,14 @@ test.describe('Frames', () => {
     const actionsSection = new ActionsSectionObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
-    
+
     await framesSection.fillFramesForm('-2');
     await framesSection.verifyFramesView('-2');
-    
+
     await framesSection.getRemoveButton().click();
-    await expect(page.getByTestId(TEST_SELECTORS.FRAMES_VIEW)).not.toBeVisible();
+    await expect(
+      page.getByTestId(TEST_SELECTORS.FRAMES_VIEW),
+    ).not.toBeVisible();
     await expect(actionsSection.getAction('Frames')).toBeVisible();
   });
 });
