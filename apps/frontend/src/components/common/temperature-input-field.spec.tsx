@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import TemperatureField from './temperature-input-field';
+import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 
 test.describe('TemperatureField', () => {
   test('renders with default values', async ({ mount }) => {
@@ -32,7 +33,9 @@ test.describe('TemperatureField', () => {
     await expect(component.locator('input')).toHaveValue('20');
 
     // Click increment button
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
 
     await component.update(
       <TemperatureField value={value} onChange={onChange} min={-10} max={40} />,
@@ -41,7 +44,9 @@ test.describe('TemperatureField', () => {
     await expect(component.locator('input')).toHaveValue('21');
 
     // Click decrement button
-    await component.locator('button').nth(1).click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON)
+      .click();
 
     await component.update(
       <TemperatureField value={value} onChange={onChange} min={-10} max={40} />,
@@ -64,7 +69,9 @@ test.describe('TemperatureField', () => {
     await expect(component.locator('input')).toHaveValue('38');
 
     // Try to exceed max value
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
 
     await component.update(
       <TemperatureField value={value} onChange={onChange} min={-10} max={40} />,
@@ -72,7 +79,9 @@ test.describe('TemperatureField', () => {
 
     await expect(component.locator('input')).toHaveValue('39');
 
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
 
     await component.update(
       <TemperatureField value={value} onChange={onChange} min={-10} max={40} />,
@@ -81,7 +90,9 @@ test.describe('TemperatureField', () => {
     await expect(component.locator('input')).toHaveValue('40');
 
     // Try to exceed max value again (should stay at max)
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
 
     await component.update(
       <TemperatureField value={value} onChange={onChange} min={-10} max={40} />,

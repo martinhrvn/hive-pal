@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { PlusIcon, MinusIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 
 export interface NumericFieldProps {
   value: number | null;
@@ -16,6 +17,7 @@ export interface NumericFieldProps {
   unit?: string;
   placeholder?: string;
   decimalPlaces?: number;
+  id?: string;
 }
 
 const NumericField = ({
@@ -31,6 +33,7 @@ const NumericField = ({
   unit,
   placeholder,
   decimalPlaces = 0,
+  id = name,
 }: NumericFieldProps) => {
   const [showSlider, setShowSlider] = useState<boolean>(false);
   const [numericValue, setNumericValue] = useState<number | null>(
@@ -122,7 +125,15 @@ const NumericField = ({
     showSlider && min !== undefined && max !== undefined;
 
   return (
-    <div className="w-full relative" ref={componentRef}>
+    <div className="w-full flex items-center" ref={componentRef}>
+      <button
+        type="button"
+        data-test={TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON}
+        className="h-1/2 px-2 text-gray-400 hover:text-gray-600 focus:outline-none"
+        onClick={decrementValue}
+      >
+        <MinusIcon className="h-6 w-6" />
+      </button>
       <div className="relative w-full rounded-md shadow-sm">
         {renderIcon && (
           <div
@@ -134,6 +145,7 @@ const NumericField = ({
         )}
         <Input
           type="number"
+          id={id}
           placeholder={placeholder || defaultValue.toString()}
           className={`${renderIcon ? 'pl-10' : ''} ${unit ? 'pr-18' : 'pr-12'} rounded-md text-right`}
           value={numericValue === null ? '' : numericValue}
@@ -158,23 +170,15 @@ const NumericField = ({
             <span className="text-gray-500 pr-2">{unit}</span>
           </div>
         )}
-        <div className="absolute inset-y-0 right-0 flex flex-col h-full">
-          <button
-            type="button"
-            className="h-1/2 px-2 text-gray-400 hover:text-gray-600 focus:outline-none"
-            onClick={incrementValue}
-          >
-            <ChevronUp className="h-3 w-3" />
-          </button>
-          <button
-            type="button"
-            className="h-1/2 px-2 text-gray-400 hover:text-gray-600 focus:outline-none"
-            onClick={decrementValue}
-          >
-            <ChevronDown className="h-3 w-3" />
-          </button>
-        </div>
       </div>
+      <button
+        type="button"
+        data-test={TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON}
+        className="h-1/2 px-2 text-gray-400 hover:text-gray-600 focus:outline-none"
+        onClick={incrementValue}
+      >
+        <PlusIcon className="h-6 w-6" />
+      </button>
 
       {showSliderSection && (
         <div

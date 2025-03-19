@@ -37,6 +37,7 @@ import { WeatherSection } from '@/pages/inspection/components/inspection-form/we
 import { ObservationsSection } from '@/pages/inspection/components/inspection-form/observations.tsx';
 import { NotesSection } from '@/pages/inspection/components/inspection-form/notes.tsx';
 import { Separator } from '@/components/ui/separator';
+import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions.tsx';
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -197,7 +198,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
               <hr className={'border-t border-border'} />
               <ObservationsSection />
-
+              <hr className={'border-t border-border'} />
+              <ActionsSection />
               <hr className={'border-t border-border'} />
               <NotesSection />
             </>

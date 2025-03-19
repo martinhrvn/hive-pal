@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import NumericField from './numeric-input-field';
 import { NumericInputFieldWithIcon } from '@/components/common/numeric-input-field.story.tsx';
+import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 
 test.describe('NumericField', () => {
   test('renders with default values', async ({ mount }) => {
@@ -48,7 +49,9 @@ test.describe('NumericField', () => {
     await expect(component.locator('input')).toHaveValue('5');
 
     // Click increment button
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
 
     // We need to remount to see the new value since our local state doesn't update the component
     await component.update(
@@ -65,7 +68,10 @@ test.describe('NumericField', () => {
     await expect(component.locator('input')).toHaveValue('6');
 
     // Click increment button again
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .first()
+      .click();
 
     await component.update(
       <NumericField
@@ -81,7 +87,9 @@ test.describe('NumericField', () => {
     await expect(component.locator('input')).toHaveValue('7');
 
     // Click decrement button
-    await component.locator('button').nth(1).click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON)
+      .click();
 
     await component.update(
       <NumericField
@@ -118,7 +126,9 @@ test.describe('NumericField', () => {
     await expect(component.locator('input')).toHaveValue('9');
 
     // Try to exceed max value
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
 
     await component.update(
       <NumericField
@@ -134,7 +144,9 @@ test.describe('NumericField', () => {
     await expect(component.locator('input')).toHaveValue('10');
 
     // Try to exceed max value again (should stay at max)
-    await component.locator('button').first().click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
 
     await component.update(
       <NumericField
@@ -150,39 +162,23 @@ test.describe('NumericField', () => {
     await expect(component.locator('input')).toHaveValue('10');
 
     // Click decrement multiple times
-    await component.locator('button').nth(1).click();
-
-    await component.update(
-      <NumericField
-        value={value}
-        onChange={onChange}
-        min={0}
-        max={10}
-        defaultValue={5}
-        unit="items"
-      />,
-    );
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON)
+      .click();
 
     await expect(component.locator('input')).toHaveValue('9');
 
-    await component.locator('button').nth(1).click();
-
-    await component.update(
-      <NumericField
-        value={value}
-        onChange={onChange}
-        min={0}
-        max={10}
-        defaultValue={5}
-        unit="items"
-      />,
-    );
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON)
+      .click();
 
     await expect(component.locator('input')).toHaveValue('8');
 
     // Try to go below min value
     for (let i = 0; i < 10; i++) {
-      await component.locator('button').nth(1).click();
+      await component
+        .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON)
+        .click();
 
       await component.update(
         <NumericField
@@ -199,7 +195,9 @@ test.describe('NumericField', () => {
     await expect(component.locator('input')).toHaveValue('0');
 
     // Try to go below min value again (should stay at min)
-    await component.locator('button').nth(1).click();
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON)
+      .click();
 
     await component.update(
       <NumericField
