@@ -7,17 +7,32 @@
  */
 import type { InspectionMetricsDto } from './inspectionMetricsDto';
 import type { InspectionScoreDto } from './inspectionScoreDto';
+import type { InspectionStatus } from './inspectionStatus';
 
 export interface InspectionResponseDto {
+  /** Unique ID of the inspection */
   id: string;
+  /** ID of the hive this inspection belongs to */
   hiveId: string;
+  /** Date when the inspection was performed */
   date: string;
-  /** @nullable */
+  /**
+   * Temperature during inspection
+   * @nullable
+   */
   temperature?: number | null;
-  /** @nullable */
+  /**
+   * Weather conditions during inspection
+   * @nullable
+   */
   weatherConditions?: string | null;
-  /** @nullable */
+  /**
+   * Additional notes about the inspection
+   * @nullable
+   */
   notes?: string | null;
   observations: InspectionMetricsDto;
   score: InspectionScoreDto;
+  /** Current status of the inspection */
+  status: InspectionStatus;
 }

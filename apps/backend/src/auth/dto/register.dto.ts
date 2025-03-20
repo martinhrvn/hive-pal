@@ -9,6 +9,7 @@ import {
 
 export class RegisterDto {
   @ApiProperty({
+    type: String,
     description: 'User email address',
     example: 'user@example.com',
   })
@@ -17,6 +18,7 @@ export class RegisterDto {
   email: string;
 
   @ApiProperty({
+    type: String,
     description: 'User password',
     example: 'password123',
     minLength: 6,
@@ -27,6 +29,7 @@ export class RegisterDto {
   password: string;
 
   @ApiPropertyOptional({
+    type: String,
     description: 'User display name (optional)',
     example: 'John Doe',
   })

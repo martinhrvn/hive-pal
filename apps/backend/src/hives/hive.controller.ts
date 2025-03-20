@@ -73,7 +73,6 @@ export class HiveController {
   }
 
   @Get(':id')
-  @Type(() => HiveDetailResponseDto)
   @ApiOkResponse({ type: HiveDetailResponseDto })
   @SerializeOptions({ type: HiveDetailResponseDto })
   findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {

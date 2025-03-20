@@ -7,22 +7,49 @@
  */
 
 export interface InspectionMetricsDto {
-  /** @nullable */
+  /**
+   * Colony strength rating
+   * @nullable
+   */
   strength: number | null;
-  /** @nullable */
+  /**
+   * Amount of uncapped brood observed
+   * @nullable
+   */
   uncappedBrood: number | null;
-  /** @nullable */
+  /**
+   * Amount of capped brood observed
+   * @nullable
+   */
   cappedBrood: number | null;
-  /** @nullable */
+  /**
+   * Amount of honey stores observed
+   * @nullable
+   */
   honeyStores: number | null;
-  /** @nullable */
+  /**
+   * Amount of pollen stores observed
+   * @nullable
+   */
   pollenStores: number | null;
-  /** @nullable */
+  /**
+   * Number of queen cells observed
+   * @nullable
+   */
   queenCells: number | null;
-  /** @nullable */
+  /**
+   * Whether swarm cells were observed
+   * @nullable
+   */
   swarmCells: boolean | null;
-  /** @nullable */
+  /**
+   * Whether supersedure cells were observed
+   * @nullable
+   */
   supersedureCells: boolean | null;
-  /** @nullable */
-  queenSeen?: boolean | null;
+  /**
+   * Whether the queen was observed during inspection
+   * @nullable
+   */
+  queenSeen: boolean | null;
 }

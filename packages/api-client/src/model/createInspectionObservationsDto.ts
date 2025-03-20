@@ -7,22 +7,49 @@
  */
 
 export interface CreateInspectionObservationsDto {
-  /** @nullable */
+  /**
+   * Colony strength rating (typically 1-5 scale)
+   * @nullable
+   */
   strength?: number | null;
-  /** @nullable */
+  /**
+   * Amount of uncapped brood observed (typically 0-5 scale)
+   * @nullable
+   */
   uncappedBrood?: number | null;
-  /** @nullable */
+  /**
+   * Amount of capped brood observed (typically 0-5 scale)
+   * @nullable
+   */
   cappedBrood?: number | null;
-  /** @nullable */
+  /**
+   * Amount of honey stores observed (typically 0-5 scale)
+   * @nullable
+   */
   honeyStores?: number | null;
-  /** @nullable */
+  /**
+   * Amount of pollen stores observed (typically 0-5 scale)
+   * @nullable
+   */
   pollenStores?: number | null;
-  /** @nullable */
+  /**
+   * Number of queen cells observed
+   * @nullable
+   */
   queenCells?: number | null;
-  /** @nullable */
+  /**
+   * Whether swarm cells were observed
+   * @nullable
+   */
   swarmCells?: boolean | null;
-  /** @nullable */
+  /**
+   * Whether supersedure cells were observed
+   * @nullable
+   */
   supersedureCells?: boolean | null;
-  /** @nullable */
+  /**
+   * Whether the queen was observed during inspection
+   * @nullable
+   */
   queenSeen?: boolean | null;
 }

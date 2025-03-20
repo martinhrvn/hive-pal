@@ -7,13 +7,26 @@
  */
 
 export interface InspectionScoreDto {
-  /** @nullable */
+  /**
+   * Score for colony population and brood pattern (0-5 scale)
+   * @nullable
+   */
   populationScore: number | null;
-  /** @nullable */
+  /**
+   * Score for queen performance and health (0-5 scale)
+   * @nullable
+   */
   queenScore: number | null;
-  /** @nullable */
+  /**
+   * Score for honey and pollen stores (0-5 scale)
+   * @nullable
+   */
   storesScore: number | null;
-  /** @nullable */
+  /**
+   * Overall health score for the colony (0-5 scale)
+   * @nullable
+   */
   overallScore: number | null;
+  /** List of warnings or issues detected during inspection */
   warnings: string[];
 }

@@ -1,5 +1,4 @@
-import { useHiveControllerFindAll } from 'api-client';
-import { HiveResponseDtoStatus } from 'api-client/dist/model';
+import { useHiveControllerFindAll, HiveResponseDtoStatus } from 'api-client';
 import { useNavigate } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';

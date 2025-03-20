@@ -4,9 +4,11 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "generate": "orval --config orval.config.js && pnpm build",
+    "client:generate": "orval --config orval.config.build.js",
+    "client:watch": "orval --config orval.config.js --watch ../../apps/backend/src",
     "build": "tsc",
     "dev": "tsc -w",
+
     "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
@@ -14,7 +16,8 @@
   "license": "ISC",
   "devDependencies": {
     "orval": "^7.5.0",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "backend": "workspace:*"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0",

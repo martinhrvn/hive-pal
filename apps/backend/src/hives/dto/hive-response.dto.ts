@@ -6,6 +6,7 @@ import { QueenResponseDto } from '../../queens/dto/queen-response.dto';
 
 export class HiveResponseDto {
   @ApiProperty({
+    type: String,
     description: 'Unique identifier of the hive',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
@@ -13,6 +14,7 @@ export class HiveResponseDto {
   id: string;
 
   @ApiProperty({
+    type: String,
     description: 'Name of the hive',
     example: 'Hive #1',
   })
@@ -20,6 +22,8 @@ export class HiveResponseDto {
   name: string;
 
   @ApiProperty({
+    enum: HiveStatusEnum,
+    enumName: 'HiveStatusEnum',
     description: 'Status of the hive',
     example: 'ACTIVE',
   })
@@ -28,6 +32,7 @@ export class HiveResponseDto {
   status: HiveStatusEnum;
 
   @ApiProperty({
+    type: String,
     description: 'ID of the apiary this hive belongs to',
     example: '123e4567-e89b-12d3-a456-426614174001',
     required: false,
@@ -37,6 +42,7 @@ export class HiveResponseDto {
   apiaryId: string | null;
 
   @ApiProperty({
+    type: String,
     description: 'Additional notes about the hive',
     example: 'Strong colony with good honey production',
     required: false,
@@ -46,6 +52,8 @@ export class HiveResponseDto {
   notes: string | null;
 
   @ApiProperty({
+    type: String,
+    format: 'date-time',
     description: 'Date when the hive was installed',
     example: '2023-04-15T12:00:00Z',
     nullable: true,
@@ -54,6 +62,8 @@ export class HiveResponseDto {
   installationDate: string | null;
 
   @ApiProperty({
+    type: String,
+    format: 'date-time',
     description: 'Date of the most recent inspection',
     example: '2023-05-20T14:30:00Z',
     required: false,

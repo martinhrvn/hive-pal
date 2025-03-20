@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { InspectionStatus } from 'api-client';
 
 export const observationSchema = z.object({
   strength: z.number().nullish(),
@@ -19,6 +20,7 @@ export const inspectionSchema = z.object({
   weatherConditions: z.string().nullish(),
   observations: observationSchema,
   notes: z.string().nullish(),
+  status: z.nativeEnum(InspectionStatus),
 });
 
 export type ObservationFormData = z.infer<typeof observationSchema>;

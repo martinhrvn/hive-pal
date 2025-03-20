@@ -20,6 +20,8 @@ export enum BoxTypeDto {
 
 export class BoxDto {
   @ApiProperty({
+    type: String,
+    format: 'uuid',
     description: 'Optional box ID (will be created if not provided)',
     required: false,
   })
@@ -28,6 +30,7 @@ export class BoxDto {
   id?: string;
 
   @ApiProperty({
+    type: Number,
     description: 'Position of the box from bottom to top (0-based)',
     example: 0,
   })
@@ -36,6 +39,7 @@ export class BoxDto {
   position: number;
 
   @ApiProperty({
+    type: Number,
     description: 'Number of frames in this box',
     example: 10,
   })
@@ -44,6 +48,7 @@ export class BoxDto {
   frameCount: number;
 
   @ApiProperty({
+    type: Boolean,
     description: 'Whether there is a queen excluder above this box',
     example: false,
   })
@@ -51,14 +56,16 @@ export class BoxDto {
   hasExcluder: boolean;
 
   @ApiProperty({
-    description: 'Type of box',
     enum: BoxTypeDto,
+    enumName: 'BoxTypeDto',
+    description: 'Type of box',
     example: BoxTypeDto.BROOD,
   })
   @IsEnum(BoxTypeDto)
   type: BoxTypeDto;
 
   @ApiProperty({
+    type: Number,
     description: 'Maximum number of frames the box can hold',
     example: 10,
     required: false,
@@ -71,8 +78,9 @@ export class BoxDto {
 
 export class UpdateHiveBoxesDto {
   @ApiProperty({
+    type: BoxDto,
     description: 'List of boxes for the hive (will replace existing boxes)',
-    type: [BoxDto],
+    isArray: true,
   })
   @IsArray()
   @ValidateNested({ each: true })
