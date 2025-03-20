@@ -40,14 +40,12 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
   action,
   onSave,
 }) => {
-  const [amount, setAmount] = useState<number | null>(
-    action?.amount ?? 10,
-  );
+  const [amount, setAmount] = useState<number | null>(action?.amount ?? 10);
   const [treatmentType, setTreatmentType] = useState<string>(
     action?.treatmentType ?? 'OXALIC_ACID',
   );
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
-  
+
   const unit = 'ml';
 
   return (
@@ -56,7 +54,7 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
       data-test={TEST_SELECTORS.TREATMENT_FORM}
     >
       <h3 className="col-span-2 text-lg font-bold">Treatment</h3>
-      <div className={'flex flex-col gap-4'}>
+      <div className={'col-span-2 lg:col-span-1 flex flex-col gap-4'}>
         <label htmlFor={'treatment-type'}>Treatment Type</label>
         <Select
           value={treatmentType}
@@ -72,10 +70,7 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
           </SelectTrigger>
           <SelectContent>
             {TREATMENT_TYPES.map(option => (
-              <SelectItem
-                key={option.id}
-                value={option.id}
-              >
+              <SelectItem key={option.id} value={option.id}>
                 {option.label}
               </SelectItem>
             ))}
@@ -83,7 +78,7 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
         </Select>
       </div>
 
-      <div className={'flex flex-col gap-4'}>
+      <div className={'col-span-2 lg:col-span-1 flex flex-col gap-4'}>
         <label htmlFor={'amount'}>Amount</label>
         <NumericInputField
           id={'amount'}
@@ -137,9 +132,11 @@ export const TreatmentView: React.FC<TreatmentActionProps> = ({
   if (!action) {
     return null;
   }
-  
-  const treatmentLabel = TREATMENT_TYPES.find(t => t.id === action.treatmentType)?.label;
-  
+
+  const treatmentLabel = TREATMENT_TYPES.find(
+    t => t.id === action.treatmentType,
+  )?.label;
+
   return isEditing ? (
     <TreatmentForm
       action={action}

@@ -115,7 +115,7 @@ export const ActionsSection: React.FC = () => {
       {renderActionForm && <div>{renderActionForm}</div>}
 
       <div
-        className="flex gap-4 divide-y"
+        className="flex flex-col divide-y"
         data-test={TEST_SELECTORS.SELECTED_ACTIONS}
       >
         {actions.map(action => renderActionView(action))}

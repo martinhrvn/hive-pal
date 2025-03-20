@@ -46,13 +46,13 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
     action?.quantity ?? 100,
   );
   const [concentration, setConcentration] = useState<string>(
-    action?.concentration ?? '1:1'
+    action?.concentration ?? '1:1',
   );
   const [feedType, setFeedType] = useState<FeedType | null>(
     action?.feedType ?? 'SYRUP',
   );
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
-  
+
   const showConcentration = feedType === 'SYRUP';
   const units = useMemo(() => {
     switch (feedType) {
@@ -64,11 +64,11 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
   }, [feedType]);
   return (
     <div
-      className={'grid grid-cols-2 gap-4 mt-5'}
+      className={'grid grid-cols-1 md:grid-cols-2 gap-4 mt-5'}
       data-test={TEST_SELECTORS.FEEDING_FORM}
     >
-      <h3 className="col-span-2 text-lg font-bold">Feeding</h3>
-      <div className="col-span-2 flex flex-col gap-4">
+      <h3 className="md:col-span-2 col-span-1 text-lg font-bold">Feeding</h3>
+      <div className="lg:col-span-2 flex flex-col gap-4">
         <label>Feed type</label>
         <div className="flex gap-4">
           {FEED_TYPES.map(({ id, label }) => (
@@ -136,7 +136,7 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
         )}
       </div>
 
-      <div className="col-span-2 flex flex-col gap-4">
+      <div className="lg:col-span-2 flex flex-col gap-4">
         <label htmlFor="notes">Notes (optional)</label>
         <Textarea
           id="notes"
@@ -147,7 +147,7 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
         />
       </div>
 
-      <div className="col-span-2 flex justify-end">
+      <div className="lg:col-span-2 flex justify-end">
         {feedType && quantity && (
           <Button
             onClick={() => {

@@ -18,21 +18,16 @@ type FramesActionProps = {
   onRemove: (action: 'FRAMES') => void;
 };
 
-export const FramesForm: React.FC<FramesActionProps> = ({
-  action,
-  onSave,
-}) => {
-  const [frames, setFrames] = useState<number | null>(
-    action?.frames ?? 0,
-  );
+export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
+  const [frames, setFrames] = useState<number | null>(action?.frames ?? 0);
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
 
   return (
     <div
-      className={'grid grid-cols-2 gap-4 mt-5'}
+      className={'grid lg:grid-cols-2 grid-cols-1 gap-4 mt-5'}
       data-test={TEST_SELECTORS.FRAMES_FORM}
     >
-      <h3 className="col-span-2 text-lg font-bold">Frames</h3>
+      <h3 className="lg:col-span-2 text-lg font-bold">Frames</h3>
       <div className={'flex flex-col gap-4 col-span-2'}>
         <label htmlFor={'frames'}>Number of frames added/removed</label>
         <NumericInputField
@@ -53,7 +48,7 @@ export const FramesForm: React.FC<FramesActionProps> = ({
         </div>
       </div>
 
-      <div className="col-span-2 flex flex-col gap-4">
+      <div className="lg:col-span-2 flex flex-col gap-4">
         <label htmlFor="notes">Notes (optional)</label>
         <Textarea
           id="notes"
@@ -93,11 +88,10 @@ export const FramesView: React.FC<FramesActionProps> = ({
   if (!action) {
     return null;
   }
-  
-  const framesDisplay = action.frames > 0 
-    ? `+${action.frames} frames` 
-    : `${action.frames} frames`;
-  
+
+  const framesDisplay =
+    action.frames > 0 ? `+${action.frames} frames` : `${action.frames} frames`;
+
   return isEditing ? (
     <FramesForm
       action={action}
