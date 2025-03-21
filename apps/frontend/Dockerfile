@@ -1,28 +1,20 @@
-# Stage 1: Build
-FROM node:22-alpine AS builder
-
+FROM node:22-alpine AS base
 RUN corepack enable
-
+RUN npm install -g turbo
 WORKDIR /app
 
-# Copy pnpm workspace files
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+FROM base AS pruner
+COPY . .
+RUN turbo prune --scope=frontend --docker
 
-# Copy frontend package.json
-COPY apps/frontend/package.json ./apps/frontend/
-COPY packages/api-client/package.json ./packages/api-client/
-# Install dependencies
-RUN pnpm --filter frontend install
-RUN pnpm --filter api-client install
+FROM base AS builder
+COPY --from=pruner /app/out/json/ .
+RUN pnpm install --frozen-lockfile
 
-# Copy source code
-COPY apps/frontend ./apps/frontend
+COPY --from=pruner /app/out/full/ .
+COPY turbo.json turbo.json
 
-COPY packages/api-client ./packages/api-client
-
-# Build the frontend
-RUN pnpm --filter frontend build
-
+RUN turbo run build --filter=frontend...
 
 # Stage 2: Serve with NGINX
 FROM nginx:alpine
