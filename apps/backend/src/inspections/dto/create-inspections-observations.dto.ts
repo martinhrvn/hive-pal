@@ -6,7 +6,7 @@ export class CreateInspectionObservationsDto {
     type: Number,
     nullable: true,
     description: 'Colony strength rating (typically 1-5 scale)',
-    example: 4
+    example: 4,
   })
   @IsNumber()
   @IsOptional()
@@ -16,7 +16,7 @@ export class CreateInspectionObservationsDto {
     type: Number,
     nullable: true,
     description: 'Amount of uncapped brood observed (typically 0-5 scale)',
-    example: 3
+    example: 3,
   })
   @IsNumber()
   @IsOptional()
@@ -26,7 +26,7 @@ export class CreateInspectionObservationsDto {
     type: Number,
     nullable: true,
     description: 'Amount of capped brood observed (typically 0-5 scale)',
-    example: 4
+    example: 4,
   })
   @IsNumber()
   @IsOptional()
@@ -36,7 +36,7 @@ export class CreateInspectionObservationsDto {
     type: Number,
     nullable: true,
     description: 'Amount of honey stores observed (typically 0-5 scale)',
-    example: 5
+    example: 5,
   })
   @IsNumber()
   @IsOptional()
@@ -46,7 +46,7 @@ export class CreateInspectionObservationsDto {
     type: Number,
     nullable: true,
     description: 'Amount of pollen stores observed (typically 0-5 scale)',
-    example: 3
+    example: 3,
   })
   @IsNumber()
   @IsOptional()
@@ -56,7 +56,7 @@ export class CreateInspectionObservationsDto {
     type: Number,
     nullable: true,
     description: 'Number of queen cells observed',
-    example: 2
+    example: 2,
   })
   @IsNumber()
   @IsOptional()
@@ -66,7 +66,7 @@ export class CreateInspectionObservationsDto {
     type: Boolean,
     nullable: true,
     description: 'Whether swarm cells were observed',
-    example: false
+    example: false,
   })
   @IsBoolean()
   @IsOptional()
@@ -76,7 +76,7 @@ export class CreateInspectionObservationsDto {
     type: Boolean,
     nullable: true,
     description: 'Whether supersedure cells were observed',
-    example: false
+    example: false,
   })
   @IsBoolean()
   @IsOptional()
@@ -86,7 +86,7 @@ export class CreateInspectionObservationsDto {
     type: Boolean,
     nullable: true,
     description: 'Whether the queen was observed during inspection',
-    example: true
+    example: true,
   })
   @IsOptional()
   @IsBoolean()

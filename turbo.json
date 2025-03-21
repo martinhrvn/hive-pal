@@ -2,7 +2,12 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsconfig.json", ".env"],
   "tasks": {
+    "lint": {
+      "outputs": [],
+      "cache": false
+    },
     "check": {
+        "dependsOn": ["lint"],
       "outputs": [],
       "cache": true
     },
@@ -31,7 +36,7 @@
       "persistent": true
     },
     "build": {
-      "dependsOn": ["^build", "client:generate"],
+      "dependsOn": ["^build", "client:generate", "prisma:generate"],
       "outputs": ["dist/**", ".next/**", "build/**"],
       "cache": true
     },

@@ -15,7 +15,7 @@ export class CreateQueenDto {
     format: 'uuid',
     required: false,
     description: 'ID of the hive this queen belongs to',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsOptional()
   @IsString()
@@ -26,7 +26,7 @@ export class CreateQueenDto {
     required: false,
     nullable: true,
     description: 'Optional marking, usually number or similar',
-    example: 'Yellow dot'
+    example: 'Yellow dot',
   })
   @IsOptional()
   @IsString()
@@ -37,7 +37,7 @@ export class CreateQueenDto {
     required: false,
     nullable: true,
     description: 'Optional color of the queen',
-    example: 'Yellow'
+    example: 'Yellow',
   })
   @IsOptional()
   @IsString()
@@ -46,7 +46,7 @@ export class CreateQueenDto {
   @ApiProperty({
     type: Number,
     description: 'Birth year of the queen',
-    example: 2025
+    example: 2025,
   })
   @Expose()
   @IsNumber()
@@ -57,7 +57,7 @@ export class CreateQueenDto {
     required: false,
     nullable: true,
     description: 'Source of the queen (breeder, etc.)',
-    example: 'Local breeder'
+    example: 'Local breeder',
   })
   @IsOptional()
   @IsString()
@@ -69,7 +69,7 @@ export class CreateQueenDto {
     required: false,
     nullable: true,
     description: 'Current status of the queen',
-    example: 'ACTIVE'
+    example: 'ACTIVE',
   })
   @IsEnum(QueenStatus)
   status: QueenStatus | null;
@@ -80,7 +80,7 @@ export class CreateQueenDto {
     required: false,
     nullable: true,
     description: 'Date when the queen was installed',
-    example: '2025-03-20T10:00:00Z'
+    example: '2025-03-20T10:00:00Z',
   })
   @Expose()
   @IsDateString()
@@ -92,7 +92,7 @@ export class CreateQueenDto {
     required: false,
     nullable: true,
     description: 'Date when the queen was replaced',
-    example: '2025-04-15T10:00:00Z'
+    example: '2025-04-15T10:00:00Z',
   })
   @Expose()
   @IsDateString()

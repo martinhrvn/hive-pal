@@ -5,7 +5,7 @@ export class CreateApiaryDto {
   @ApiProperty({
     type: String,
     description: 'Name of the apiary',
-    example: 'Meadow Apiary'
+    example: 'Meadow Apiary',
   })
   @IsString()
   name: string;
@@ -13,7 +13,7 @@ export class CreateApiaryDto {
   @ApiPropertyOptional({
     type: String,
     description: 'Location description of the apiary',
-    example: 'Behind the barn'
+    example: 'Behind the barn',
   })
   @IsString()
   location?: string;
@@ -21,7 +21,7 @@ export class CreateApiaryDto {
   @ApiPropertyOptional({
     type: Number,
     description: 'Latitude coordinate of the apiary',
-    example: 40.7128
+    example: 40.7128,
   })
   @IsNumber()
   @IsOptional()
@@ -30,7 +30,7 @@ export class CreateApiaryDto {
   @ApiPropertyOptional({
     type: Number,
     description: 'Longitude coordinate of the apiary',
-    example: -74.0060
+    example: -74.006,
   })
   @IsNumber()
   @IsOptional()

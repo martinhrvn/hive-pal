@@ -24,7 +24,7 @@ export class UserResponseDto {
     description: 'Name of the user',
     example: 'John Doe',
     required: false,
-    nullable: true
+    nullable: true,
   })
   @Expose()
   name?: string | null;

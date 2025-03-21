@@ -14,17 +14,30 @@ export class QueenResponseDto {
   @Expose()
   id: string;
 
-  @ApiProperty({ type: String, required: false, nullable: true, description: 'ID of the hive this queen belongs to' })
+  @ApiProperty({
+    type: String,
+    required: false,
+    nullable: true,
+    description: 'ID of the hive this queen belongs to',
+  })
   @Expose()
   @IsOptional()
   hiveId?: string | null;
 
-  @ApiProperty({ type: String, nullable: true, description: 'Queen marking code' })
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Queen marking code',
+  })
   @Expose()
   @IsOptional()
   marking: string | null;
 
-  @ApiProperty({ type: String, nullable: true, description: 'Queen color marking' })
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Queen color marking',
+  })
   @Expose()
   @IsOptional()
   color: string | null;

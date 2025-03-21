@@ -14,7 +14,7 @@ export class CreateInspectionDto {
     type: String,
     format: 'uuid',
     description: 'Optional inspection ID (generated if not provided)',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsOptional()
   @IsUUID()
@@ -24,7 +24,7 @@ export class CreateInspectionDto {
     type: String,
     format: 'uuid',
     description: 'ID of the hive being inspected',
-    example: '123e4567-e89b-12d3-a456-426614174001'
+    example: '123e4567-e89b-12d3-a456-426614174001',
   })
   @IsUUID()
   hiveId: string;
@@ -33,7 +33,7 @@ export class CreateInspectionDto {
     type: String,
     format: 'date-time',
     description: 'Date when the inspection was performed',
-    example: '2025-03-20T10:00:00Z'
+    example: '2025-03-20T10:00:00Z',
   })
   @IsDateString()
   date: Date;
@@ -42,7 +42,7 @@ export class CreateInspectionDto {
     type: Number,
     nullable: true,
     description: 'Temperature during inspection (in celsius)',
-    example: 22.5
+    example: 22.5,
   })
   @IsOptional()
   @IsNumber()
@@ -52,7 +52,7 @@ export class CreateInspectionDto {
     type: String,
     nullable: true,
     description: 'Weather conditions during inspection',
-    example: 'Sunny with light breeze'
+    example: 'Sunny with light breeze',
   })
   @IsOptional()
   @IsString()
@@ -62,7 +62,7 @@ export class CreateInspectionDto {
     type: String,
     nullable: true,
     description: 'Additional notes about the inspection',
-    example: 'Colony appears healthy and active'
+    example: 'Colony appears healthy and active',
   })
   @IsOptional()
   @IsString()
@@ -70,7 +70,7 @@ export class CreateInspectionDto {
 
   @ApiPropertyOptional({
     type: () => CreateInspectionObservationsDto,
-    description: 'Observations and metrics recorded during inspection'
+    description: 'Observations and metrics recorded during inspection',
   })
   @IsOptional()
   @Type(() => CreateInspectionObservationsDto)

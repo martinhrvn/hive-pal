@@ -6,7 +6,6 @@ import * as yaml from 'js-yaml';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import * as path from 'path';
 import { CustomLoggerService } from './logger/logger.service';
-import { sleep } from '@nestjs/terminus/dist/utils';
 
 /**
  * Generate Swagger documentation in YAML format
