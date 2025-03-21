@@ -1,0 +1,53 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["tsconfig.json", ".env"],
+  "tasks": {
+    "lint": {
+      "outputs": [],
+      "cache": false
+    },
+    "check": {
+        "dependsOn": ["lint"],
+      "outputs": [],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["check"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "prisma:generate": {
+      "outputs": ["node_modules/@prisma/client"],
+      "cache": true
+    },
+    "swagger:generate": {
+      "dependsOn": ["prisma:generate"],
+      "outputs": ["docs/swagger.yaml", "docs/swagger.json"],
+      "cache": true
+    },
+    "client:generate": {
+      "dependsOn": ["^swagger:generate"],
+      "outputs": ["src/**"],
+      "cache": true
+    },
+    "client:watch": {
+      "dependsOn": ["^client:generate"],
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build", "client:generate", "prisma:generate"],
+      "outputs": ["dist/**", ".next/**", "build/**"],
+      "cache": true
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

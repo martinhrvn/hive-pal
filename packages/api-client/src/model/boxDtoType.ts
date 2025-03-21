@@ -9,7 +9,8 @@
 /**
  * Type of box
  */
-export type BoxDtoType = (typeof BoxDtoType)[keyof typeof BoxDtoType];
+export type BoxDtoType = typeof BoxDtoType[keyof typeof BoxDtoType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const BoxDtoType = {

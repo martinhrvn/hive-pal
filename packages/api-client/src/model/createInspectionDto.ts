@@ -8,14 +8,27 @@
 import type { CreateInspectionObservationsDto } from './createInspectionObservationsDto';
 
 export interface CreateInspectionDto {
+  /** Optional inspection ID (generated if not provided) */
   id?: string;
+  /** ID of the hive being inspected */
   hiveId: string;
+  /** Date when the inspection was performed */
   date: string;
-  /** @nullable */
+  /**
+   * Temperature during inspection (in celsius)
+   * @nullable
+   */
   temperature?: number | null;
-  /** @nullable */
+  /**
+   * Weather conditions during inspection
+   * @nullable
+   */
   weatherConditions?: string | null;
-  /** @nullable */
+  /**
+   * Additional notes about the inspection
+   * @nullable
+   */
   notes?: string | null;
+  /** Observations and metrics recorded during inspection */
   observations?: CreateInspectionObservationsDto;
 }

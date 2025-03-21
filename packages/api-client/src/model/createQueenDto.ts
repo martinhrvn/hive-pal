@@ -8,6 +8,7 @@
 import type { CreateQueenDtoStatus } from './createQueenDtoStatus';
 
 export interface CreateQueenDto {
+  /** ID of the hive this queen belongs to */
   hiveId?: string;
   /**
    * Optional marking, usually number or similar
@@ -19,13 +20,26 @@ export interface CreateQueenDto {
    * @nullable
    */
   color?: string | null;
+  /** Birth year of the queen */
   year: number;
-  /** @nullable */
+  /**
+   * Source of the queen (breeder, etc.)
+   * @nullable
+   */
   source?: string | null;
-  /** @nullable */
+  /**
+   * Current status of the queen
+   * @nullable
+   */
   status?: CreateQueenDtoStatus;
-  /** @nullable */
+  /**
+   * Date when the queen was installed
+   * @nullable
+   */
   installedAt?: string | null;
-  /** @nullable */
+  /**
+   * Date when the queen was replaced
+   * @nullable
+   */
   replacedAt?: string | null;
 }

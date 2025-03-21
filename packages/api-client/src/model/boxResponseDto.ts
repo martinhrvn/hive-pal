@@ -5,7 +5,7 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import type { BoxResponseDtoType } from './boxResponseDtoType';
+import type { BoxTypeDto } from './boxTypeDto';
 
 export interface BoxResponseDto {
   /** Unique identifier of the box */
@@ -22,5 +22,5 @@ export interface BoxResponseDto {
   /** Whether there is a queen excluder above this box */
   hasExcluder: boolean;
   /** Type of box */
-  type: BoxResponseDtoType;
+  type: BoxTypeDto;
 }

@@ -1,4 +1,4 @@
-import { HiveResponseDto } from 'api-client/dist/model';
+import { HiveResponseDto } from 'api-client';
 import { HiveStatus } from './hive-status';
 import { ChevronRight, DotIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

@@ -6,16 +6,32 @@
  * OpenAPI spec version: 1.0
  */
 import type { CreateInspectionObservationsDto } from './createInspectionObservationsDto';
+import type { InspectionStatus } from './inspectionStatus';
 
 export interface UpdateInspectionDto {
-  id: string;
+  /** ID of the inspection to update */
+  id?: string;
+  /** ID of the hive being inspected */
   hiveId?: string;
+  /** Date when the inspection was performed */
   date?: string;
-  /** @nullable */
+  /**
+   * Temperature during inspection (in celsius)
+   * @nullable
+   */
   temperature?: number | null;
-  /** @nullable */
+  /**
+   * Weather conditions during inspection
+   * @nullable
+   */
   weatherConditions?: string | null;
-  /** @nullable */
+  /**
+   * Additional notes about the inspection
+   * @nullable
+   */
   notes?: string | null;
+  /** Observations and metrics recorded during inspection */
   observations?: CreateInspectionObservationsDto;
+  /** Current status of the inspection */
+  status: InspectionStatus;
 }

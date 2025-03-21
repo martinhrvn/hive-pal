@@ -8,5 +8,8 @@
     "format": "pnpm -r format && prettier --write \"*.{js,json,md}\"",
     "format:check": "pnpm -r exec prettier --check \"src/**/*.{ts,tsx}\" && prettier --check \"*.{js,json,md}\""
   },
-  "packageManager": "pnpm@9.6.0"
+  "packageManager": "pnpm@9.6.0",
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  }
 }

@@ -7,8 +7,12 @@
  */
 
 export interface CreateApiaryDto {
+  /** Name of the apiary */
   name: string;
+  /** Location description of the apiary */
   location?: string;
+  /** Latitude coordinate of the apiary */
   latitude?: number;
+  /** Longitude coordinate of the apiary */
   longitude?: number;
 }

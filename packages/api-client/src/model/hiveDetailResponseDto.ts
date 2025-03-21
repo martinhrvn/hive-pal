@@ -5,7 +5,7 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
-import type { HiveDetailResponseDtoStatus } from './hiveDetailResponseDtoStatus';
+import type { HiveStatusEnum } from './hiveStatusEnum';
 import type { BoxResponseDto } from './boxResponseDto';
 import type { HiveDetailResponseDtoActiveQueen } from './hiveDetailResponseDtoActiveQueen';
 import type { InspectionScoreDto } from './inspectionScoreDto';
@@ -16,7 +16,7 @@ export interface HiveDetailResponseDto {
   /** Name of the hive */
   name: string;
   /** Status of the hive */
-  status: HiveDetailResponseDtoStatus;
+  status: HiveStatusEnum;
   /**
    * ID of the apiary this hive belongs to
    * @nullable

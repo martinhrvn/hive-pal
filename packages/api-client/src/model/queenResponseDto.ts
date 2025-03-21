@@ -8,20 +8,27 @@
 import type { QueenResponseDtoStatus } from './queenResponseDtoStatus';
 
 export interface QueenResponseDto {
+  /** Unique ID of the queen */
   id: string;
-  /** @nullable */
+  /**
+   * ID of the hive this queen belongs to
+   * @nullable
+   */
   hiveId?: string | null;
-  /** @nullable */
+  /**
+   * Queen marking code
+   * @nullable
+   */
   marking: string | null;
-  /** @nullable */
+  /**
+   * Queen color marking
+   * @nullable
+   */
   color: string | null;
+  /** Birth year of the queen */
   year: number;
-  /** @nullable */
-  source?: string | null;
-  /** @nullable */
+  source?: string;
   status?: QueenResponseDtoStatus;
-  /** @nullable */
-  installedAt?: string | null;
-  /** @nullable */
-  replacedAt?: string | null;
+  installedAt?: string;
+  replacedAt?: string;
 }

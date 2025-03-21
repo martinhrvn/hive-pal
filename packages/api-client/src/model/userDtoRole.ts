@@ -9,7 +9,8 @@
 /**
  * User role
  */
-export type UserDtoRole = (typeof UserDtoRole)[keyof typeof UserDtoRole];
+export type UserDtoRole = typeof UserDtoRole[keyof typeof UserDtoRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserDtoRole = {

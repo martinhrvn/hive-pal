@@ -10,45 +10,58 @@ export enum QueenStatus {
 }
 
 export class QueenResponseDto {
-  @ApiProperty()
+  @ApiProperty({ type: String, description: 'Unique ID of the queen' })
   @Expose()
   id: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    type: String,
+    required: false,
+    nullable: true,
+    description: 'ID of the hive this queen belongs to',
+  })
   @Expose()
   @IsOptional()
   hiveId?: string | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Queen marking code',
+  })
   @Expose()
   @IsOptional()
   marking: string | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Queen color marking',
+  })
   @Expose()
   @IsOptional()
   color: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: Number, description: 'Birth year of the queen' })
   @Expose()
   year: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: String })
   @Expose()
   @IsOptional()
   source: string | null;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, enum: QueenStatus })
   @Expose()
   @IsEnum(QueenStatus)
   status: QueenStatus | null;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: String })
   @Expose()
   @IsDateString()
   installedAt?: string | null;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: String })
   @Expose()
   @IsDateString()
   replacedAt?: string | null;

@@ -10,7 +10,7 @@ import { Box } from '@prisma/client';
 import { BoxResponseDto } from './dto/box-response.dto';
 import { InspectionsService } from '../inspections/inspections.service';
 import { InspectionScoreDto } from '../inspections/dto/inspection-score.dto';
-import { MetricsService } from 'src/metrics/metrics.service';
+import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { HiveStatusEnum } from './dto/hive-status.enum';

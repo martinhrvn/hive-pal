@@ -1,0 +1,2170 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "409": {
+            "description": "Email already in use"
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "summary": "Login with email and password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "operationId": "UsersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all users (admin only)",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/{id}/reset-password": {
+      "post": {
+        "operationId": "UsersController_resetPassword",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reset a user's password (admin only)",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/change-password": {
+      "post": {
+        "operationId": "UsersController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change own password",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/hives": {
+      "post": {
+        "operationId": "HiveController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHiveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HiveResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "hives"
+        ]
+      },
+      "get": {
+        "operationId": "HiveController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HiveResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "hives"
+        ]
+      }
+    },
+    "/api/hives/{id}": {
+      "get": {
+        "operationId": "HiveController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HiveDetailResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "hives"
+        ]
+      },
+      "patch": {
+        "operationId": "HiveController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHiveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "hives"
+        ]
+      },
+      "delete": {
+        "operationId": "HiveController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "hives"
+        ]
+      }
+    },
+    "/api/hives/{id}/boxes": {
+      "put": {
+        "operationId": "HiveController_updateBoxes",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHiveBoxesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Boxes updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HiveDetailResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "hives"
+        ]
+      }
+    },
+    "/api/inspections": {
+      "post": {
+        "operationId": "InspectionsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInspectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inspections"
+        ]
+      },
+      "get": {
+        "operationId": "InspectionsController_findAll",
+        "parameters": [
+          {
+            "name": "hiveId",
+            "required": false,
+            "in": "query",
+            "description": "Unique identifier of the hive",
+            "schema": {
+              "format": "uuid",
+              "nullable": true,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InspectionResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Inspections"
+        ]
+      }
+    },
+    "/api/inspections/{id}": {
+      "get": {
+        "operationId": "InspectionsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Inspections"
+        ]
+      },
+      "patch": {
+        "operationId": "InspectionsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInspectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inspections"
+        ]
+      },
+      "delete": {
+        "operationId": "InspectionsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inspections"
+        ]
+      }
+    },
+    "/api/queens": {
+      "post": {
+        "operationId": "QueensController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQueenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueenResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "queens"
+        ]
+      },
+      "get": {
+        "operationId": "QueensController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QueenResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "queens"
+        ]
+      }
+    },
+    "/api/queens/{id}": {
+      "get": {
+        "operationId": "QueensController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueenResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "queens"
+        ]
+      },
+      "patch": {
+        "operationId": "QueensController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateQueenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueenResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "queens"
+        ]
+      },
+      "delete": {
+        "operationId": "QueensController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueenResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "queens"
+        ]
+      }
+    },
+    "/api/apiaries": {
+      "post": {
+        "operationId": "ApiariesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApiaryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiaryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Apiaries"
+        ]
+      },
+      "get": {
+        "operationId": "ApiariesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApiaryResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Apiaries"
+        ]
+      }
+    },
+    "/api/apiaries/{id}": {
+      "get": {
+        "operationId": "ApiariesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiaryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Apiaries"
+        ]
+      },
+      "patch": {
+        "operationId": "ApiariesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApiaryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Apiaries"
+        ]
+      },
+      "delete": {
+        "operationId": "ApiariesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Apiaries"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Check the health of the app",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API Example",
+    "description": "The API description",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "password123",
+            "minLength": 6
+          },
+          "name": {
+            "type": "string",
+            "description": "User display name (optional)",
+            "example": "John Doe"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID",
+            "example": "1"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "User display name",
+            "example": "John Doe"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role",
+            "example": "USER",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ]
+          },
+          "passwordChangeRequired": {
+            "type": "boolean",
+            "description": "Whether the user needs to change their password",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "passwordChangeRequired"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "description": "User information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "access_token",
+          "user"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address used for login",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "password123",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the user",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the user",
+            "example": "John Doe",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "description": "Role of the user",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ],
+            "example": "USER"
+          },
+          "passwordChangeRequired": {
+            "type": "boolean",
+            "description": "Whether the user needs to change their password",
+            "example": false
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "User creation date",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update date",
+            "example": "2023-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "passwordChangeRequired",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "tempPassword": {
+            "type": "string",
+            "description": "Temporary password to be set for the user",
+            "example": "Temp123!"
+          }
+        },
+        "required": [
+          "tempPassword"
+        ]
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "description": "Current password of the user",
+            "example": "CurrentPass123!"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "New password to be set for the user",
+            "example": "NewPass123!"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "CreateHiveDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the hive",
+            "example": "Hive #1"
+          },
+          "apiaryId": {
+            "type": "string",
+            "description": "The ID of the apiary this hive belongs to"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the hive"
+          },
+          "installationDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date when the hive was installed"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the hive",
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "DEAD",
+              "SOLD",
+              "UNKNOWN",
+              "ARCHIVED"
+            ],
+            "example": "ACTIVE"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "HiveStatusEnum": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "INACTIVE",
+          "DEAD",
+          "SOLD",
+          "UNKNOWN",
+          "ARCHIVED"
+        ],
+        "description": "Status of the hive"
+      },
+      "QueenResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique ID of the queen"
+          },
+          "hiveId": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the hive this queen belongs to"
+          },
+          "marking": {
+            "type": "string",
+            "nullable": true,
+            "description": "Queen marking code"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true,
+            "description": "Queen color marking"
+          },
+          "year": {
+            "type": "number",
+            "description": "Birth year of the queen"
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "REPLACED",
+              "DEAD",
+              "UNKNOWN"
+            ]
+          },
+          "installedAt": {
+            "type": "string"
+          },
+          "replacedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "marking",
+          "color",
+          "year"
+        ]
+      },
+      "HiveResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the hive",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the hive",
+            "example": "Hive #1"
+          },
+          "status": {
+            "description": "Status of the hive",
+            "example": "ACTIVE",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HiveStatusEnum"
+              }
+            ]
+          },
+          "apiaryId": {
+            "type": "string",
+            "description": "ID of the apiary this hive belongs to",
+            "example": "123e4567-e89b-12d3-a456-426614174001",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the hive",
+            "example": "Strong colony with good honey production",
+            "nullable": true
+          },
+          "installationDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the hive was installed",
+            "example": "2023-04-15T12:00:00Z",
+            "nullable": true
+          },
+          "lastInspectionDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date of the most recent inspection",
+            "example": "2023-05-20T14:30:00Z",
+            "nullable": true
+          },
+          "activeQueen": {
+            "description": "The current active queen in the hive",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QueenResponseDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "installationDate"
+        ]
+      },
+      "BoxTypeDto": {
+        "type": "string",
+        "enum": [
+          "BROOD",
+          "HONEY",
+          "FEEDER"
+        ],
+        "description": "Type of box"
+      },
+      "BoxResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the box",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "position": {
+            "type": "number",
+            "description": "Position of the box from bottom to top (0-based)",
+            "example": 0
+          },
+          "frameCount": {
+            "type": "number",
+            "description": "Number of frames in this box",
+            "example": 8
+          },
+          "maxFrameCount": {
+            "type": "number",
+            "description": "Maximum number of frames the box can hold",
+            "example": 10,
+            "nullable": true
+          },
+          "hasExcluder": {
+            "type": "boolean",
+            "description": "Whether there is a queen excluder above this box",
+            "example": false
+          },
+          "type": {
+            "description": "Type of box",
+            "example": "BROOD",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BoxTypeDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "position",
+          "frameCount",
+          "hasExcluder",
+          "type"
+        ]
+      },
+      "InspectionScoreDto": {
+        "type": "object",
+        "properties": {
+          "populationScore": {
+            "type": "number",
+            "nullable": true,
+            "description": "Score for colony population and brood pattern (0-5 scale)",
+            "example": 4
+          },
+          "queenScore": {
+            "type": "number",
+            "nullable": true,
+            "description": "Score for queen performance and health (0-5 scale)",
+            "example": 4
+          },
+          "storesScore": {
+            "type": "number",
+            "nullable": true,
+            "description": "Score for honey and pollen stores (0-5 scale)",
+            "example": 3
+          },
+          "overallScore": {
+            "type": "number",
+            "nullable": true,
+            "description": "Overall health score for the colony (0-5 scale)",
+            "example": 4
+          },
+          "warnings": {
+            "description": "List of warnings or issues detected during inspection",
+            "example": [
+              "Low honey stores",
+              "Queen cells present"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "populationScore",
+          "queenScore",
+          "storesScore",
+          "overallScore",
+          "warnings"
+        ]
+      },
+      "HiveDetailResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the hive",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the hive",
+            "example": "Hive #1"
+          },
+          "status": {
+            "description": "Status of the hive",
+            "example": "ACTIVE",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HiveStatusEnum"
+              }
+            ]
+          },
+          "apiaryId": {
+            "type": "string",
+            "description": "ID of the apiary this hive belongs to",
+            "example": "123e4567-e89b-12d3-a456-426614174001",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the hive",
+            "example": "Strong colony with good honey production",
+            "nullable": true
+          },
+          "installationDate": {
+            "type": "string",
+            "description": "Date when the hive was installed",
+            "example": "2023-04-15T12:00:00Z",
+            "nullable": true
+          },
+          "lastInspectionDate": {
+            "type": "string",
+            "description": "Date of the most recent inspection",
+            "example": "2023-05-20T14:30:00Z",
+            "nullable": true
+          },
+          "boxes": {
+            "description": "Boxes in the hive, ordered by position from bottom to top",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoxResponseDto"
+            }
+          },
+          "activeQueen": {
+            "description": "The current active queen in the hive",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QueenResponseDto"
+              }
+            ]
+          },
+          "hiveScore": {
+            "description": "Hive score",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InspectionScoreDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "installationDate",
+          "boxes",
+          "hiveScore"
+        ]
+      },
+      "UpdateHiveDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the hive",
+            "example": "Hive #1"
+          },
+          "apiaryId": {
+            "type": "string",
+            "description": "The ID of the apiary this hive belongs to"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the hive"
+          },
+          "installationDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date when the hive was installed"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the hive",
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "DEAD",
+              "SOLD",
+              "UNKNOWN",
+              "ARCHIVED"
+            ],
+            "example": "ACTIVE"
+          }
+        }
+      },
+      "BoxDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional box ID (will be created if not provided)"
+          },
+          "position": {
+            "type": "number",
+            "description": "Position of the box from bottom to top (0-based)",
+            "example": 0
+          },
+          "frameCount": {
+            "type": "number",
+            "description": "Number of frames in this box",
+            "example": 10
+          },
+          "hasExcluder": {
+            "type": "boolean",
+            "description": "Whether there is a queen excluder above this box",
+            "example": false
+          },
+          "type": {
+            "description": "Type of box",
+            "example": "BROOD",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BoxTypeDto"
+              }
+            ]
+          },
+          "maxFrameCount": {
+            "type": "number",
+            "description": "Maximum number of frames the box can hold",
+            "example": 10
+          }
+        },
+        "required": [
+          "position",
+          "frameCount",
+          "hasExcluder",
+          "type"
+        ]
+      },
+      "UpdateHiveBoxesDto": {
+        "type": "object",
+        "properties": {
+          "boxes": {
+            "description": "List of boxes for the hive (will replace existing boxes)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoxDto"
+            }
+          }
+        },
+        "required": [
+          "boxes"
+        ]
+      },
+      "CreateInspectionObservationsDto": {
+        "type": "object",
+        "properties": {
+          "strength": {
+            "type": "number",
+            "nullable": true,
+            "description": "Colony strength rating (typically 1-5 scale)",
+            "example": 4
+          },
+          "uncappedBrood": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of uncapped brood observed (typically 0-5 scale)",
+            "example": 3
+          },
+          "cappedBrood": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of capped brood observed (typically 0-5 scale)",
+            "example": 4
+          },
+          "honeyStores": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of honey stores observed (typically 0-5 scale)",
+            "example": 5
+          },
+          "pollenStores": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of pollen stores observed (typically 0-5 scale)",
+            "example": 3
+          },
+          "queenCells": {
+            "type": "number",
+            "nullable": true,
+            "description": "Number of queen cells observed",
+            "example": 2
+          },
+          "swarmCells": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether swarm cells were observed",
+            "example": false
+          },
+          "supersedureCells": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether supersedure cells were observed",
+            "example": false
+          },
+          "queenSeen": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether the queen was observed during inspection",
+            "example": true
+          }
+        }
+      },
+      "CreateInspectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional inspection ID (generated if not provided)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "hiveId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the hive being inspected",
+            "example": "123e4567-e89b-12d3-a456-426614174001"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the inspection was performed",
+            "example": "2025-03-20T10:00:00Z"
+          },
+          "temperature": {
+            "type": "number",
+            "nullable": true,
+            "description": "Temperature during inspection (in celsius)",
+            "example": 22.5
+          },
+          "weatherConditions": {
+            "type": "string",
+            "nullable": true,
+            "description": "Weather conditions during inspection",
+            "example": "Sunny with light breeze"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Additional notes about the inspection",
+            "example": "Colony appears healthy and active"
+          },
+          "observations": {
+            "description": "Observations and metrics recorded during inspection",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CreateInspectionObservationsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "hiveId",
+          "date"
+        ]
+      },
+      "InspectionMetricsDto": {
+        "type": "object",
+        "properties": {
+          "strength": {
+            "type": "number",
+            "nullable": true,
+            "description": "Colony strength rating"
+          },
+          "uncappedBrood": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of uncapped brood observed"
+          },
+          "cappedBrood": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of capped brood observed"
+          },
+          "honeyStores": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of honey stores observed"
+          },
+          "pollenStores": {
+            "type": "number",
+            "nullable": true,
+            "description": "Amount of pollen stores observed"
+          },
+          "queenCells": {
+            "type": "number",
+            "nullable": true,
+            "description": "Number of queen cells observed"
+          },
+          "swarmCells": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether swarm cells were observed"
+          },
+          "supersedureCells": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether supersedure cells were observed"
+          },
+          "queenSeen": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether the queen was observed during inspection"
+          }
+        },
+        "required": [
+          "strength",
+          "uncappedBrood",
+          "cappedBrood",
+          "honeyStores",
+          "pollenStores",
+          "queenCells",
+          "swarmCells",
+          "supersedureCells",
+          "queenSeen"
+        ]
+      },
+      "InspectionStatus": {
+        "type": "string",
+        "enum": [
+          "SCHEDULED",
+          "OVERDUE",
+          "COMPLETED",
+          "CANCELLED"
+        ],
+        "description": "Current status of the inspection"
+      },
+      "InspectionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique ID of the inspection"
+          },
+          "hiveId": {
+            "type": "string",
+            "description": "ID of the hive this inspection belongs to"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the inspection was performed"
+          },
+          "temperature": {
+            "type": "number",
+            "nullable": true,
+            "description": "Temperature during inspection"
+          },
+          "weatherConditions": {
+            "type": "string",
+            "nullable": true,
+            "description": "Weather conditions during inspection"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Additional notes about the inspection"
+          },
+          "observations": {
+            "$ref": "#/components/schemas/InspectionMetricsDto"
+          },
+          "score": {
+            "$ref": "#/components/schemas/InspectionScoreDto"
+          },
+          "status": {
+            "description": "Current status of the inspection",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InspectionStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "hiveId",
+          "date",
+          "observations",
+          "score",
+          "status"
+        ]
+      },
+      "UpdateInspectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the inspection to update",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "hiveId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the hive being inspected",
+            "example": "123e4567-e89b-12d3-a456-426614174001"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the inspection was performed",
+            "example": "2025-03-20T10:00:00Z"
+          },
+          "temperature": {
+            "type": "number",
+            "nullable": true,
+            "description": "Temperature during inspection (in celsius)",
+            "example": 22.5
+          },
+          "weatherConditions": {
+            "type": "string",
+            "nullable": true,
+            "description": "Weather conditions during inspection",
+            "example": "Sunny with light breeze"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Additional notes about the inspection",
+            "example": "Colony appears healthy and active"
+          },
+          "observations": {
+            "description": "Observations and metrics recorded during inspection",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CreateInspectionObservationsDto"
+              }
+            ]
+          },
+          "status": {
+            "description": "Current status of the inspection",
+            "example": "DRAFT",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InspectionStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "QueenStatus": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "REPLACED",
+          "DEAD",
+          "UNKNOWN"
+        ],
+        "description": "Current status of the queen"
+      },
+      "CreateQueenDto": {
+        "type": "object",
+        "properties": {
+          "hiveId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the hive this queen belongs to",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "marking": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional marking, usually number or similar",
+            "example": "Yellow dot"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional color of the queen",
+            "example": "Yellow"
+          },
+          "year": {
+            "type": "number",
+            "description": "Birth year of the queen",
+            "example": 2025
+          },
+          "source": {
+            "type": "string",
+            "nullable": true,
+            "description": "Source of the queen (breeder, etc.)",
+            "example": "Local breeder"
+          },
+          "status": {
+            "nullable": true,
+            "description": "Current status of the queen",
+            "example": "ACTIVE",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QueenStatus"
+              }
+            ]
+          },
+          "installedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date when the queen was installed",
+            "example": "2025-03-20T10:00:00Z"
+          },
+          "replacedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date when the queen was replaced",
+            "example": "2025-04-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "year"
+        ]
+      },
+      "UpdateQueenDto": {
+        "type": "object",
+        "properties": {
+          "hiveId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the hive this queen belongs to",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "marking": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional marking, usually number or similar",
+            "example": "Yellow dot"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional color of the queen",
+            "example": "Yellow"
+          },
+          "year": {
+            "type": "number",
+            "description": "Birth year of the queen",
+            "example": 2025
+          },
+          "source": {
+            "type": "string",
+            "nullable": true,
+            "description": "Source of the queen (breeder, etc.)",
+            "example": "Local breeder"
+          },
+          "status": {
+            "nullable": true,
+            "description": "Current status of the queen",
+            "example": "ACTIVE",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QueenStatus"
+              }
+            ]
+          },
+          "installedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date when the queen was installed",
+            "example": "2025-03-20T10:00:00Z"
+          },
+          "replacedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date when the queen was replaced",
+            "example": "2025-04-15T10:00:00Z"
+          }
+        }
+      },
+      "CreateApiaryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the apiary",
+            "example": "Meadow Apiary"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location description of the apiary",
+            "example": "Behind the barn"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "Latitude coordinate of the apiary",
+            "example": 40.7128
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude coordinate of the apiary",
+            "example": -74.006
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ApiaryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the apiary"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the apiary"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location of the apiary",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "description": "Latitude of the apiary",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude of the apiary",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "UpdateApiaryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the apiary",
+            "example": "Meadow Apiary"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location description of the apiary",
+            "example": "Behind the barn"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "Latitude coordinate of the apiary",
+            "example": 40.7128
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude coordinate of the apiary",
+            "example": -74.006
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,9 +9,6 @@
 export interface ChangePasswordDto {
   /** Current password of the user */
   currentPassword: string;
-  /**
-   * New password to be set for the user
-   * @minLength 6
-   */
+  /** New password to be set for the user */
   newPassword: string;
 }

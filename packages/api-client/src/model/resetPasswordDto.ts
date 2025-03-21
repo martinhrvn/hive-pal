@@ -7,9 +7,6 @@
  */
 
 export interface ResetPasswordDto {
-  /**
-   * Temporary password to be set for the user
-   * @minLength 6
-   */
+  /** Temporary password to be set for the user */
   tempPassword: string;
 }

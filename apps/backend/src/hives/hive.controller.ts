@@ -20,7 +20,6 @@ import { CreateHiveDto } from './dto/create-hive.dto';
 import { UpdateHiveDto } from './dto/update-hive.dto';
 import { HiveResponseDto } from './dto/hive-response.dto';
 import { HiveDetailResponseDto } from './dto/hive-detail-response.dto';
-import { Type } from 'class-transformer';
 import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
@@ -73,7 +72,6 @@ export class HiveController {
   }
 
   @Get(':id')
-  @Type(() => HiveDetailResponseDto)
   @ApiOkResponse({ type: HiveDetailResponseDto })
   @SerializeOptions({ type: HiveDetailResponseDto })
   findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {

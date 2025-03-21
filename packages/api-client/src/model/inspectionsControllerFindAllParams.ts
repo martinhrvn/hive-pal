@@ -7,5 +7,8 @@
  */
 
 export type InspectionsControllerFindAllParams = {
-  hiveId?: string;
+/**
+ * Unique identifier of the hive
+ */
+hiveId?: string | null;
 };

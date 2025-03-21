@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateApiaryDto } from './dto/create-apiary.dto';
 import { UpdateApiaryDto } from './dto/update-apiary.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ApiaryResponseDto } from './dto/apiary-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { Prisma } from '@prisma/client';
 import { CustomLoggerService } from '../logger/logger.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ApiariesService {

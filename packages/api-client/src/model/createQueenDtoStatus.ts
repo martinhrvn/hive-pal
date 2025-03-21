@@ -5,18 +5,10 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { QueenStatus } from './queenStatus';
 
 /**
+ * Current status of the queen
  * @nullable
  */
-export type CreateQueenDtoStatus =
-  | (typeof CreateQueenDtoStatus)[keyof typeof CreateQueenDtoStatus]
-  | null;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateQueenDtoStatus = {
-  ACTIVE: 'ACTIVE',
-  REPLACED: 'REPLACED',
-  DEAD: 'DEAD',
-  UNKNOWN: 'UNKNOWN',
-} as const;
+export type CreateQueenDtoStatus = QueenStatus | null;

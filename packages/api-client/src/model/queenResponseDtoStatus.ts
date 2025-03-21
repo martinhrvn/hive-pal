@@ -6,12 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * @nullable
- */
-export type QueenResponseDtoStatus =
-  | (typeof QueenResponseDtoStatus)[keyof typeof QueenResponseDtoStatus]
-  | null;
+export type QueenResponseDtoStatus = typeof QueenResponseDtoStatus[keyof typeof QueenResponseDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const QueenResponseDtoStatus = {

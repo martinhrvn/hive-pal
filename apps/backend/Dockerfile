@@ -1,36 +1,32 @@
 # Stage 1: Build
-FROM node:22-alpine AS builder
 
-# Enable corepack (pnpm)
+FROM node:22-alpine AS base
 RUN corepack enable
-
+RUN npm i -g turbo
 WORKDIR /app
 
+FROM base AS pruner
+COPY . .
+RUN turbo prune --scope=backend --docker
+
+FROM base AS builder
 # Copy pnpm workspace files
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY --from=pruner /app/out/json .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
 
-# Copy backend and shared packages' package.json files
-COPY apps/backend/package.json ./apps/backend/
-# If shared packages exist, add their package.json here too
-
-# Install dependencies (only for the backend)
-RUN pnpm --filter backend --frozen-lockfile install
-
+COPY --from=pruner /app/out/full/ .
+COPY turbo.json turbo.json
 # Copy source code
 COPY apps/backend ./apps/backend
-RUN pnpm --filter backend exec prisma generate
-
-# Build the backend
-RUN pnpm --filter backend build
-RUN pnpm --filter backend deploy --prod pruned
-RUN cd /app/pruned && pnpm prisma generate
+RUN turbo run build --filter=backend...
 
 # Stage 2: Production
-FROM node:22-alpine
+FROM node:22-alpine as production
 #
 WORKDIR /app
 
-# Copy dependencies and built code
-COPY --from=builder /app/pruned .
-COPY --from=builder /app/apps/backend/dist .
+COPY --from=builder /app/apps/backend/dist /app/dist
+COPY --from=builder /app/apps/backend/package.json /app/package.json
+COPY --from=builder /app/node_modules /app/node_modules
 CMD ["node", "src/main.js"]
