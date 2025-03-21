@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main # or your default branch
+    paths:
+      - /docs
 
 jobs:
   deploy:
@@ -41,7 +43,7 @@ jobs:
             exit 1
           fi
           echo "Build directory exists, proceeding with deployment"
-      
+
       # Deploy to GitHub Pages using the GITHUB_TOKEN with write permissions
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
