@@ -8,11 +8,9 @@ import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
 import { Observation } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
-import {
-  Prisma,
-  InspectionStatus as PrismaInspectionStatus,
-} from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { InspectionStatus } from './dto/inspection-status.enum';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class InspectionsService {
@@ -43,13 +41,14 @@ export class InspectionsService {
     }
     const { observations, notes, ...inspectionData } = createInspectionDto;
     return this.prisma.$transaction(async (tx) => {
+      const status =
+        new Date(createInspectionDto.date) > new Date()
+          ? 'SCHEDULED'
+          : 'COMPLETED';
       const inspection = await tx.inspection.create({
         data: {
           ...inspectionData,
-          status:
-            createInspectionDto.date > new Date()
-              ? PrismaInspectionStatus.SCHEDULED
-              : PrismaInspectionStatus.COMPLETED,
+          status,
           observations: {
             create: [
               { type: 'strength', numericValue: observations?.strength },
@@ -76,9 +75,6 @@ export class InspectionsService {
             ],
           },
         },
-        include: {
-          observations: true,
-        },
       });
 
       // Add notes if provided
@@ -90,8 +86,7 @@ export class InspectionsService {
           },
         });
       }
-
-      return inspection;
+      return plainToInstance(InspectionResponseDto, inspection);
     });
   }
 

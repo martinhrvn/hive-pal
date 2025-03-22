@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID, IsDate, IsEnum } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsString, IsUUID, IsEnum } from 'class-validator';
 import { HiveStatusEnum } from './hive-status.enum';
 
 export class UpdateHiveDto {
@@ -32,12 +31,11 @@ export class UpdateHiveDto {
   @ApiProperty({
     description: 'Date when the hive was installed',
     required: false,
-    type: Date,
+    type: String,
   })
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  installationDate?: Date;
+  @IsString()
+  installationDate?: string;
 
   @ApiProperty({
     description: 'Current status of the hive',

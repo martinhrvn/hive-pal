@@ -26,7 +26,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     // Get request ID if available
     const requestId = request['requestId'] as string | undefined;
-
     // Extract meaningful data
     const errorResponse = {
       statusCode: status,
@@ -42,6 +41,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       {
         exceptionName: exception.name,
         ...errorResponse,
+        exception: JSON.stringify(exception),
       },
       exception.stack,
     );

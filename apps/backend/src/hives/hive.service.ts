@@ -220,7 +220,12 @@ export class HiveService {
 
     const updatedHive = await this.prisma.hive.update({
       where: { id },
-      data: updateHiveDto,
+      data: {
+        ...updateHiveDto,
+        installationDate: updateHiveDto.installationDate
+          ? new Date(updateHiveDto.installationDate)
+          : null,
+      },
     });
     this.logger.log(`Hive with ID: ${id} updated successfully`);
     return updatedHive;

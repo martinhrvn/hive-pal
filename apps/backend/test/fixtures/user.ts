@@ -3,11 +3,14 @@ import { Prisma } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 
 export async function getRandomUser({
-  email = 'test@user.com',
+  email,
   password = 'password123',
+}: {
+  email?: string;
+  password?: string;
 } = {}): Promise<Prisma.UserCreateInput> {
   return {
-    email,
+    email: email ?? `test-${uuid()}@example.com`,
     password: await bcrypt.hash(password, 10),
     name: 'Test User',
     role: 'USER',

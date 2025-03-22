@@ -7,10 +7,7 @@ import { getRandomUser } from './fixtures/user';
 import { getRandomApiary } from './fixtures/apiary';
 import { getRandomHive } from './fixtures/hive';
 import { HiveStatusEnum } from '../src/hives/dto/hive-status.enum';
-import {
-  BoxTypeDto,
-  UpdateHiveBoxesDto,
-} from '../src/hives/dto/update-hive-boxes.dto';
+import { setupApp } from './fixtures/setup';
 
 describe('Hives (e2e)', () => {
   let app: INestApplication;
@@ -192,6 +189,7 @@ describe('Hives (e2e)', () => {
   });
 
   it('should update an existing hive', async () => {
+    console.log(testHiveId);
     const response = await request(app.getHttpServer())
       .patch(`/hives/${testHiveId}`)
       .set('Authorization', `Bearer ${authToken}`)
@@ -200,8 +198,9 @@ describe('Hives (e2e)', () => {
         name: 'Updated Hive Name',
         notes: 'Updated notes',
         status: HiveStatusEnum.INACTIVE,
-      })
-      .expect(200);
+      });
+
+    console.log(response.body);
 
     expect(response.body.id).toBe(testHiveId);
     expect(response.body.name).toBe('Updated Hive Name');

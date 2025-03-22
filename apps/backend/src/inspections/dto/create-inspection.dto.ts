@@ -36,7 +36,7 @@ export class CreateInspectionDto {
     example: '2025-03-20T10:00:00Z',
   })
   @IsDateString()
-  date: Date;
+  date: string;
 
   @ApiPropertyOptional({
     type: Number,
