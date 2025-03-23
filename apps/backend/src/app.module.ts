@@ -16,6 +16,7 @@ import { LoggerModule } from './logger/logger.module';
 import { HealthModule } from './health/health.module';
 import { PrometheusInterceptor } from './health/prometheus/prometheus.interceptor';
 import { PrometheusModule } from './health/prometheus/prometheus.module';
+import { ActionsModule } from './actions/actions.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PrometheusModule } from './health/prometheus/prometheus.module';
     LoggerModule,
     HealthModule,
     PrometheusModule,
+    ActionsModule,
   ],
   controllers: [AppController],
   providers: [

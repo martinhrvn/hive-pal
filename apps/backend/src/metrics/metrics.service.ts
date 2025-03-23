@@ -78,11 +78,10 @@ export class MetricsService {
       ).length / 3;
 
     return {
-      overallScore:
-        overallScore !== null ? parseFloat(overallScore.toFixed(2)) : null,
-      populationScore: populationScore,
-      storesScore: storesScore,
-      queenScore: queenScore,
+      overallScore: this.roundToTwoDecimals(overallScore),
+      populationScore: this.roundToTwoDecimals(populationScore),
+      storesScore: this.roundToTwoDecimals(storesScore),
+      queenScore: this.roundToTwoDecimals(queenScore),
 
       warnings,
       confidence,
@@ -98,6 +97,13 @@ export class MetricsService {
       return null;
     }
     return value ? trueValue : falseValue;
+  }
+
+  roundToTwoDecimals(value: number | null): number | null {
+    if (value === null) {
+      return null;
+    }
+    return parseFloat(value.toFixed(2));
   }
 
   calculateWeightedScore(

@@ -5,18 +5,20 @@ import { InspectionFilterDto } from './dto/inspection-filter.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
-import { Observation } from '@prisma/client';
+import { Observation, Prisma } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
-import { Prisma } from '@prisma/client';
 import { InspectionStatus } from './dto/inspection-status.enum';
 import { plainToInstance } from 'class-transformer';
+import { ActionType } from './dto/create-actions.dto';
+import { ActionsService } from '../actions/actions.service';
 
 @Injectable()
 export class InspectionsService {
   constructor(
     private prisma: PrismaService,
     private metricService: MetricsService,
+    private actionsService: ActionsService,
   ) {}
 
   async create(
@@ -39,12 +41,15 @@ export class InspectionsService {
         `Hive with ID ${createInspectionDto.hiveId} not found or doesn't belong to this apiary`,
       );
     }
-    const { observations, notes, ...inspectionData } = createInspectionDto;
+    const { observations, notes, actions, ...inspectionData } =
+      createInspectionDto;
+
     return this.prisma.$transaction(async (tx) => {
       const status =
         new Date(createInspectionDto.date) > new Date()
           ? 'SCHEDULED'
           : 'COMPLETED';
+
       const inspection = await tx.inspection.create({
         data: {
           ...inspectionData,
@@ -86,6 +91,12 @@ export class InspectionsService {
           },
         });
       }
+
+      // Add actions using ActionsService
+      if (actions && actions.length > 0) {
+        await this.actionsService.createActions(inspection.id, actions, tx);
+      }
+
       return plainToInstance(InspectionResponseDto, inspection);
     });
   }
@@ -115,11 +126,53 @@ export class InspectionsService {
       include: {
         observations: true,
         notes: true,
+        actions: {
+          include: {
+            feedingAction: true,
+            treatmentAction: true,
+            frameAction: true,
+          },
+        },
       },
     });
+
     return inspections.map((inspection): InspectionResponseDto => {
       const metrics = this.mapObservationsToDto(inspection.observations);
       const score = this.metricService.calculateOveralScore(metrics);
+
+      // Transform actions to DTOs - with explicit casting of the type
+      const transformedActions = inspection.actions.map((action) => {
+        // Map the Prisma enum to our ActionType enum
+        const actionType = action.type as unknown as ActionType;
+
+        return {
+          id: action.id,
+          type: actionType,
+          notes: action.notes || undefined,
+          feedingAction: action.feedingAction
+            ? {
+                feedType: action.feedingAction.feedType,
+                amount: action.feedingAction.amount,
+                unit: action.feedingAction.unit,
+                concentration: action.feedingAction.concentration || undefined,
+              }
+            : undefined,
+          treatmentAction: action.treatmentAction
+            ? {
+                product: action.treatmentAction.product,
+                quantity: action.treatmentAction.quantity,
+                unit: action.treatmentAction.unit,
+                duration: action.treatmentAction.duration || undefined,
+              }
+            : undefined,
+          frameAction: action.frameAction
+            ? {
+                quantity: action.frameAction.quantity,
+              }
+            : undefined,
+        };
+      });
+
       return {
         id: inspection.id,
         hiveId: inspection.hiveId,
@@ -130,6 +183,7 @@ export class InspectionsService {
         observations: metrics,
         status: inspection.status as InspectionStatus,
         score,
+        actions: transformedActions,
       };
     });
   }
@@ -151,20 +205,66 @@ export class InspectionsService {
       include: {
         observations: true,
         notes: true,
+        actions: {
+          include: {
+            feedingAction: true,
+            treatmentAction: true,
+            frameAction: true,
+          },
+        },
       },
     });
     if (!inspection) {
       return null;
     }
+
     const metrics = this.mapObservationsToDto(inspection.observations);
     const score = this.metricService.calculateOveralScore(metrics);
+
+    // Transform actions to DTOs - with explicit casting of the type
+    const transformedActions = inspection.actions.map((action) => {
+      // Map the Prisma enum to our ActionType enum
+      const actionType = action.type as unknown as ActionType;
+
+      return {
+        id: action.id,
+        type: actionType,
+        notes: action.notes || undefined,
+        feedingAction: action.feedingAction
+          ? {
+              feedType: action.feedingAction.feedType,
+              amount: action.feedingAction.amount,
+              unit: action.feedingAction.unit,
+              concentration: action.feedingAction.concentration || undefined,
+            }
+          : undefined,
+        treatmentAction: action.treatmentAction
+          ? {
+              product: action.treatmentAction.product,
+              quantity: action.treatmentAction.quantity,
+              unit: action.treatmentAction.unit,
+              duration: action.treatmentAction.duration || undefined,
+            }
+          : undefined,
+        frameAction: action.frameAction
+          ? {
+              quantity: action.frameAction.quantity,
+            }
+          : undefined,
+      };
+    });
+
     return {
-      ...inspection,
+      id: inspection.id,
+      hiveId: inspection.hiveId,
       date: inspection.date.toISOString(),
+      temperature: inspection.temperature ?? null,
+      weatherConditions: inspection.weatherConditions ?? null,
       notes: inspection.notes?.[0]?.text ?? null,
       observations: metrics,
       status: inspection.status as InspectionStatus,
       score,
+      actions: transformedActions,
     };
   }
 
@@ -191,7 +291,9 @@ export class InspectionsService {
         `Inspection with ID ${id} not found or doesn't belong to this apiary`,
       );
     }
-    const { observations, notes, ...inspectionData } = updateInspectionDto;
+    const { observations, notes, actions, ...inspectionData } =
+      updateInspectionDto;
+
     return this.prisma.$transaction(async (tx) => {
       await tx.observation.deleteMany({
         where: {
@@ -217,6 +319,11 @@ export class InspectionsService {
             },
           });
         }
+      }
+
+      // Handle actions update if provided - use ActionsService
+      if (actions !== undefined) {
+        await this.actionsService.updateActions(id, actions, tx);
       }
 
       return await tx.inspection.update({
@@ -251,6 +358,17 @@ export class InspectionsService {
             ],
           },
         },
+        include: {
+          observations: true,
+          notes: true,
+          actions: {
+            include: {
+              feedingAction: true,
+              treatmentAction: true,
+              frameAction: true,
+            },
+          },
+        },
       });
     });
   }
@@ -275,12 +393,26 @@ export class InspectionsService {
       );
     }
 
-    // Delete the inspection
-    await this.prisma.inspection.delete({
-      where: { id },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      // Delete related actions first
+      await this.actionsService.deleteActions(id, tx);
 
-    return `Inspection #${id} has been successfully removed`;
+      // Delete other related data
+      await tx.observation.deleteMany({
+        where: { inspectionId: id },
+      });
+
+      await tx.inspectionNote.deleteMany({
+        where: { inspectionId: id },
+      });
+
+      // Delete the inspection
+      await tx.inspection.delete({
+        where: { id },
+      });
+
+      return `Inspection #${id} has been successfully removed`;
+    });
   }
 
   mapObservationsToDto(observations: Observation[]): InspectionMetricsDto {

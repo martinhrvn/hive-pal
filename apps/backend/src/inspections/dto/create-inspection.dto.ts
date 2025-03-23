@@ -4,10 +4,12 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateInspectionObservationsDto } from './create-inspections-observations.dto';
+import { CreateActionDto } from './create-actions.dto';
 
 export class CreateInspectionDto {
   @ApiPropertyOptional({
@@ -75,4 +77,13 @@ export class CreateInspectionDto {
   @IsOptional()
   @Type(() => CreateInspectionObservationsDto)
   observations?: CreateInspectionObservationsDto;
+
+  @ApiPropertyOptional({
+    type: [CreateActionDto],
+    description: 'Actions performed during the inspection',
+  })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateActionDto)
+  actions?: CreateActionDto[];
 }

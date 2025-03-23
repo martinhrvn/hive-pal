@@ -137,7 +137,7 @@ model Action {
   id           String     @id @default(uuid())
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
-  type         String // FEEDING, TREATMENT etc.
+  type         ActionType // FEEDING, TREATMENT etc.
   notes        String? // Description of the action taken
 
   feedingAction   FeedingAction?
@@ -197,4 +197,11 @@ enum BoxType {
   BROOD // Brood box
   HONEY // Honey super
   FEEDER // Feeder box
+}
+
+enum ActionType {
+  FEEDING
+  TREATMENT
+  FRAME
+  OTHER
 }

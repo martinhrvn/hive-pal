@@ -6,10 +6,17 @@ import { AuthModule } from '../auth/auth.module';
 import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { LoggerModule } from '../logger/logger.module';
+import { ActionsService } from '../actions/actions.service';
 
 @Module({
   imports: [AuthModule, LoggerModule],
   controllers: [HiveController],
-  providers: [HiveService, PrismaService, MetricsService, InspectionsService],
+  providers: [
+    HiveService,
+    PrismaService,
+    MetricsService,
+    InspectionsService,
+    ActionsService,
+  ],
 })
 export class HiveModule {}

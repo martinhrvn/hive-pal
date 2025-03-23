@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  postgres:
+  postgres-testdb:
     image: postgres:14
     ports:
       - "9876:5432"

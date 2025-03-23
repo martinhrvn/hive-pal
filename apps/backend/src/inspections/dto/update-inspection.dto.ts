@@ -1,7 +1,9 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateInspectionDto } from './create-inspection.dto';
-import { IsEnum, IsUUID } from 'class-validator';
+import { IsEnum, IsUUID, ValidateNested } from 'class-validator';
 import { InspectionStatus } from './inspection-status.enum';
+import { Type } from 'class-transformer';
+import { CreateActionDto } from './create-actions.dto';
 
 export class UpdateInspectionDto extends PartialType(CreateInspectionDto) {
   @ApiProperty({
@@ -17,8 +19,16 @@ export class UpdateInspectionDto extends PartialType(CreateInspectionDto) {
     enum: InspectionStatus,
     enumName: 'InspectionStatus',
     description: 'Current status of the inspection',
-    example: 'DRAFT',
+    example: 'COMPLETED',
   })
   @IsEnum(InspectionStatus)
   status: InspectionStatus;
+  
+  @ApiPropertyOptional({
+    type: [CreateActionDto],
+    description: 'Actions performed during the inspection',
+  })
+  @ValidateNested({ each: true })
+  @Type(() => CreateActionDto)
+  actions?: CreateActionDto[];
 }
