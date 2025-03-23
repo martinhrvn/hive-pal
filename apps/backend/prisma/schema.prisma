@@ -140,8 +140,41 @@ model Action {
   type         String // FEEDING, TREATMENT etc.
   notes        String? // Description of the action taken
 
+  feedingAction   FeedingAction?
+  treatmentAction TreatmentAction?
+  frameAction     FrameAction?
+
   @@index([inspectionId])
   @@index([type, inspectionId]) // For looking up specific action types
+}
+
+model FeedingAction {
+  id            String  @id @default(uuid())
+  actionId      String  @unique
+  action        Action  @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  feedType      String // Sugar Syrup, Honey, Pollen Sub, Candy
+  amount        Float // Numeric amount
+  unit          String // liters, quarts, gallons, kg, lb
+  concentration String? // 1:1, 2:1, etc.
+}
+
+// Treatment-specific details
+model TreatmentAction {
+  id       String  @id @default(uuid())
+  actionId String  @unique
+  action   Action  @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  product  String // Apivar, Formic Pro, etc.
+  quantity Float // Numeric quantity
+  unit     String // strips, pads, grams, ml
+  duration String? // 7 days, 14 days, etc.
+}
+
+// Frame-specific details
+model FrameAction {
+  id       String @id @default(uuid())
+  actionId String @unique
+  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  quantity Int // number added/removed (positive = added, negative = removed)
 }
 
 enum HiveStatus {
