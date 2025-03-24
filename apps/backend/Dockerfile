@@ -18,15 +18,12 @@ RUN pnpm install --frozen-lockfile
 COPY --from=pruner /app/out/full/ .
 COPY turbo.json turbo.json
 # Copy source code
-COPY apps/backend ./apps/backend
 RUN turbo run build --filter=backend...
-
+RUN ls -la /app
 # Stage 2: Production
 FROM node:22-alpine as production
 #
 WORKDIR /app
 
-COPY --from=builder /app/apps/backend/dist /app/
-COPY --from=builder /app/apps/backend/package.json /app/package.json
-COPY --from=builder /app/node_modules /app/node_modules
-CMD ["node", "src/main.js"]
+COPY --from=builder /app/ /app/
+CMD ["node", "apps/backend/dist/src/main.js"]
