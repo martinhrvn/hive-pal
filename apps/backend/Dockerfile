@@ -26,7 +26,7 @@ FROM node:22-alpine as production
 #
 WORKDIR /app
 
-COPY --from=builder /app/apps/backend/dist /app/dist
+COPY --from=builder /app/apps/backend/dist /app/
 COPY --from=builder /app/apps/backend/package.json /app/package.json
 COPY --from=builder /app/node_modules /app/node_modules
 CMD ["node", "src/main.js"]
