@@ -4,7 +4,53 @@ import {
   ActionType,
   CreateActionDto,
 } from '../inspections/dto/create-actions.dto';
+import {
+  ActionDtoUnion,
+  FeedingActionDetailsDto,
+  FeedingActionDto,
+  FrameActionDto,
+  TreatmentActionDetailsDto,
+  TreatmentActionDto,
+} from './dto/create-action.dto';
 import { Prisma } from '@prisma/client';
+type ActionWithRelations = Prisma.ActionGetPayload<{
+  include: {
+    feedingAction: true;
+    treatmentAction: true;
+  };
+}>;
+export interface BaseAction {
+  id: string;
+  inspectionId: string;
+  type: ActionType;
+  notes?: string;
+}
+
+// Specific Action Detail Interfaces
+export interface FeedingActionDetails {
+  feedType: string;
+  amount: number;
+  unit: string;
+  concentration?: string;
+}
+
+export interface TreatmentActionDetails {
+  product: string;
+  quantity: number;
+  unit: string;
+  duration?: string;
+}
+
+// Union Type for Action Details
+export type ActionDetails =
+  | { type: ActionType.FEEDING; details: FeedingActionDetails }
+  | { type: ActionType.TREATMENT; details: TreatmentActionDetails }
+  | { type: ActionType.FRAME; details: null };
+
+// Complete Action Type
+export interface Action extends BaseAction {
+  details: ActionDetails;
+}
 
 @Injectable()
 export class ActionsService {
@@ -133,5 +179,113 @@ export class ActionsService {
     if (actions && actions.length > 0) {
       await this.createActions(inspectionId, actions, tx);
     }
+  }
+
+  actionToDto(action: Action): ActionDtoUnion {
+    switch (action.details.type) {
+      case ActionType.FEEDING:
+        return {
+          id: action.id,
+          inspectionId: action.inspectionId,
+          type: ActionType.FEEDING,
+          notes: action.notes,
+          details: {
+            type: ActionType.FEEDING,
+            details: action.details.details as FeedingActionDetailsDto,
+          },
+        } as FeedingActionDto;
+
+      case ActionType.TREATMENT:
+        return {
+          id: action.id,
+          inspectionId: action.inspectionId,
+          type: ActionType.TREATMENT,
+          notes: action.notes,
+          details: {
+            type: ActionType.TREATMENT,
+            details: action.details.details as TreatmentActionDetailsDto,
+          },
+        } as TreatmentActionDto;
+
+      case ActionType.FRAME:
+        return {
+          id: action.id,
+          inspectionId: action.inspectionId,
+          type: ActionType.FRAME,
+          notes: action.notes,
+          details: {
+            type: ActionType.FRAME,
+            details: null,
+          },
+        } as FrameActionDto;
+    }
+  }
+  // Prisma-to-Domain Transformation Function
+  transformAction(prismaAction: ActionWithRelations): Action {
+    let details: ActionDetails;
+
+    switch (prismaAction.type) {
+      case ActionType.FEEDING:
+        if (!prismaAction.feedingAction) {
+          throw new Error('Feeding action details missing');
+        }
+        details = {
+          type: ActionType.FEEDING,
+          details: {
+            feedType: prismaAction.feedingAction.feedType,
+            amount: prismaAction.feedingAction.amount,
+            unit: prismaAction.feedingAction.unit,
+            concentration:
+              prismaAction.feedingAction.concentration || undefined,
+          },
+        };
+        break;
+
+      case ActionType.TREATMENT:
+        if (!prismaAction.treatmentAction) {
+          throw new Error('Treatment action details missing');
+        }
+        details = {
+          type: ActionType.TREATMENT,
+          details: {
+            product: prismaAction.treatmentAction.product,
+            quantity: prismaAction.treatmentAction.quantity,
+            unit: prismaAction.treatmentAction.unit,
+            duration: prismaAction.treatmentAction.duration || undefined,
+          },
+        };
+        break;
+
+      case ActionType.FRAME:
+        details = {
+          type: ActionType.FRAME,
+          details: null,
+        };
+        break;
+
+      default:
+        throw new Error(`Unknown action type: ${prismaAction.type}`);
+    }
+
+    return {
+      id: prismaAction.id,
+      inspectionId: prismaAction.inspectionId,
+      type: prismaAction.type as ActionType,
+      notes: prismaAction.notes || undefined,
+      details,
+    };
+  }
+
+  // Example of how to use the transformation in an endpoint
+  async getActionsForInspection(inspectionId: string) {
+    const prismaActions = await this.prisma.action.findMany({
+      where: { inspectionId },
+      include: {
+        feedingAction: true,
+        treatmentAction: true,
+      },
+    });
+
+    return prismaActions.map((a) => this.transformAction(a));
   }
 }

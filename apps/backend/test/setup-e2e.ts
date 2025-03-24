@@ -8,6 +8,9 @@ jest.setTimeout(30000);
 // Global setup before all tests
 beforeAll(async () => {
   // Clean up specific tables if needed
+  await prisma.feedingAction.deleteMany();
+  await prisma.treatmentAction.deleteMany();
+  await prisma.action.deleteMany();
   await prisma.inspectionNote.deleteMany();
   await prisma.observation.deleteMany();
   await prisma.inspection.deleteMany();
