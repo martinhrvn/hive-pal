@@ -1,0 +1,11 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "globalDependencies": ["tsconfig.json", ".env"],
+  "tasks": {
+    "db:up:test": {
+    },
+    "test:e2e": {
+      "dependsOn": ["db:up:test"]
+    }
+  }}
