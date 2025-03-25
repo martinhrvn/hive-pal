@@ -4,15 +4,8 @@ import { InspectionMetricsDto } from './inspection-metrics.dto';
 import { IsDateString, IsEnum, ValidateNested } from 'class-validator';
 import { InspectionScoreDto } from './inspection-score.dto';
 import { InspectionStatus } from './inspection-status.enum';
-import {
-  ActionType,
-  FrameActionDto,
-  TreatmentActionDto,
-} from './create-actions.dto';
-import {
-  ActionDto,
-  FeedingActionDto,
-} from '../../actions/dto/create-action.dto';
+
+import { ActionDto } from '../../actions/dto/create-action.dto';
 
 export class InspectionResponseDto {
   @ApiProperty({ type: String, description: 'Unique ID of the inspection' })
@@ -83,26 +76,11 @@ export class InspectionResponseDto {
 
   @ApiProperty({
     description: 'Actions performed during the inspection',
-    type: 'array',
-    items: {
-      oneOf: [
-        { $ref: '#/components/schemas/FeedingActionDto' },
-        { $ref: '#/components/schemas/TreatmentActionDto' },
-        { $ref: '#/components/schemas/FrameActionDto' },
-      ],
-    },
+    type: ActionDto,
+    isArray: true,
   })
   @Expose()
   @ValidateNested({ each: true })
-  @Type(() => ActionDto, {
-    discriminator: {
-      property: 'type',
-      subTypes: [
-        { value: FeedingActionDto, name: ActionType.FEEDING },
-        { value: TreatmentActionDto, name: ActionType.TREATMENT },
-        { value: FrameActionDto, name: ActionType.FRAME },
-      ],
-    },
-  })
+  @Type(() => ActionDto)
   actions?: ActionDto[];
 }

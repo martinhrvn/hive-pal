@@ -1954,6 +1954,51 @@
         ],
         "description": "Current status of the inspection"
       },
+      "ActionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique ID of the action"
+          },
+          "inspectionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the inspection this action belongs to"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "FEEDING",
+              "TREATMENT",
+              "FRAME",
+              "OTHER"
+            ],
+            "description": "Type of action performed"
+          },
+          "details": {
+            "description": "Specific details for the action",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/FeedingActionDetailsDto"
+              },
+              {
+                "$ref": "#/components/schemas/TreatmentActionDetailsDto"
+              },
+              {
+                "$ref": "#/components/schemas/FrameActionDetailsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "inspectionId",
+          "type",
+          "details"
+        ]
+      },
       "InspectionResponseDto": {
         "type": "object",
         "properties": {
@@ -2000,20 +2045,10 @@
             ]
           },
           "actions": {
-            "type": "array",
             "description": "Actions performed during the inspection",
+            "type": "array",
             "items": {
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/FeedingActionDto"
-                },
-                {
-                  "$ref": "#/components/schemas/TreatmentActionDto"
-                },
-                {
-                  "$ref": "#/components/schemas/FrameActionDto"
-                }
-              ]
+              "$ref": "#/components/schemas/ActionDto"
             }
           }
         },
@@ -2308,6 +2343,40 @@
             "example": -74.006
           }
         }
+      },
+      "FeedingActionDetailsDto": {
+        "type": "object",
+        "properties": {
+          "feedType": {
+            "type": "string",
+            "description": "Type of feed (Sugar Syrup, Honey, Pollen Sub, Candy)"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of feed"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement (liters, quarts, gallons, kg, lb)"
+          },
+          "concentration": {
+            "type": "string",
+            "description": "Concentration of feed (1:1, 2:1, etc.)"
+          }
+        },
+        "required": [
+          "feedType",
+          "amount",
+          "unit"
+        ]
+      },
+      "TreatmentActionDetailsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "FrameActionDetailsDto": {
+        "type": "object",
+        "properties": {}
       }
     }
   }

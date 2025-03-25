@@ -5,12 +5,9 @@ import {
   CreateActionDto,
 } from '../inspections/dto/create-actions.dto';
 import {
-  ActionDtoUnion,
+  ActionDto,
   FeedingActionDetailsDto,
-  FeedingActionDto,
-  FrameActionDto,
   TreatmentActionDetailsDto,
-  TreatmentActionDto,
 } from './dto/create-action.dto';
 import { Prisma } from '@prisma/client';
 type ActionWithRelations = Prisma.ActionGetPayload<{
@@ -187,7 +184,7 @@ export class ActionsService {
     }
   }
 
-  actionToDto(action: Action): ActionDtoUnion {
+  actionToDto(action: Action): ActionDto {
     switch (action.details.type) {
       case ActionType.FEEDING:
         return {
@@ -196,7 +193,7 @@ export class ActionsService {
           type: ActionType.FEEDING,
           notes: action.notes,
           details: action.details.details as FeedingActionDetailsDto,
-        } as FeedingActionDto;
+        };
 
       case ActionType.TREATMENT:
         return {
@@ -205,7 +202,7 @@ export class ActionsService {
           type: ActionType.TREATMENT,
           notes: action.notes,
           details: action.details.details as TreatmentActionDetailsDto,
-        } as TreatmentActionDto;
+        };
 
       case ActionType.FRAME:
         return {
@@ -214,7 +211,7 @@ export class ActionsService {
           type: ActionType.FRAME,
           notes: action.notes,
           details: action.details.details,
-        } as FrameActionDto;
+        };
       default:
         return {
           id: action.id,

@@ -6,6 +6,11 @@ import * as yaml from 'js-yaml';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import * as path from 'path';
 import { CustomLoggerService } from './logger/logger.service';
+import {
+  FeedingActionDetailsDto,
+  FrameActionDetailsDto,
+  TreatmentActionDetailsDto,
+} from './actions/dto/create-action.dto';
 
 /**
  * Generate Swagger documentation in YAML format
@@ -25,6 +30,7 @@ async function generateSwaggerYAML() {
       forbidNonWhitelisted: true, // Throw errors if unknown properties are present
     }),
   );
+
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector), {
       strategy: 'excludeAll',
@@ -41,7 +47,13 @@ async function generateSwaggerYAML() {
     .setVersion('1.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    extraModels: [
+      FeedingActionDetailsDto,
+      TreatmentActionDetailsDto,
+      FrameActionDetailsDto,
+    ],
+  });
   const docsDir = path.join(process.cwd(), 'docs');
   if (!fs.existsSync(docsDir)) {
     fs.mkdirSync(docsDir, { recursive: true });

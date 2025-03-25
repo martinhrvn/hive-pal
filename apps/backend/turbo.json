@@ -4,7 +4,17 @@
   "tasks": {
     "db:up:test": {
     },
+    "prisma:generate": {
+      "inputs": ["prisma/schema.prisma"],
+      "outputs": ["node_modules/@prisma/client"],
+      "cache": true
+    },
     "test:e2e": {
       "dependsOn": ["db:up:test"]
+    },
+    "swagger:generate": {
+      "dependsOn": ["prisma:generate"],
+      "outputs": ["docs/swagger.yaml", "docs/swagger.json"],
+      "cache": true
     }
   }}

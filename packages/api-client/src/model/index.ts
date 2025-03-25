@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from './actionDto';
+export * from './actionDtoDetails';
+export * from './actionDtoType';
 export * from './apiaryResponseDto';
 export * from './authControllerRegister201';
 export * from './authResponseDto';
@@ -34,7 +37,9 @@ export * from './createQueenDtoMarking';
 export * from './createQueenDtoReplacedAt';
 export * from './createQueenDtoSource';
 export * from './createQueenDtoStatus';
+export * from './feedingActionDetailsDto';
 export * from './feedingActionDto';
+export * from './frameActionDetailsDto';
 export * from './frameActionDto';
 export * from './healthControllerCheck200';
 export * from './healthControllerCheck200Details';
@@ -97,6 +102,7 @@ export * from './queenResponseDtoStatus';
 export * from './queenStatus';
 export * from './registerDto';
 export * from './resetPasswordDto';
+export * from './treatmentActionDetailsDto';
 export * from './treatmentActionDto';
 export * from './updateApiaryDto';
 export * from './updateHiveBoxesDto';
