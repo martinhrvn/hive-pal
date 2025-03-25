@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import {
+  CreateActionDto,
   useHiveControllerFindAll,
   useInspectionsControllerCreate,
   useInspectionsControllerFindOne,
@@ -70,6 +71,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       hiveId,
       ...inspection,
       date: inspection?.date ? new Date(inspection.date) : new Date(),
+      actions: inspection?.actions || [],
     },
   });
 
@@ -87,11 +89,52 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
   const onSubmit = (data: InspectionFormData) => {
     console.log(data);
+
+    // Transform actions to match API format
+    const transformedActions = data.actions
+      ?.map((action): CreateActionDto | null => {
+        switch (action.type) {
+          case 'FEEDING':
+            return {
+              type: action.type,
+              notes: action.notes,
+              feedingAction: {
+                feedType: action.feedType,
+                amount: action.quantity,
+                unit: action.unit,
+                concentration: action.concentration,
+              },
+            };
+          case 'TREATMENT':
+            return {
+              type: action.type,
+              notes: action.notes,
+              treatmentAction: {
+                product: action.treatmentType,
+                quantity: action.amount,
+                unit: action.unit,
+              },
+            };
+          case 'FRAMES':
+            return {
+              type: 'FRAME', // API expects FRAME (singular), not FRAMES
+              notes: action.notes,
+              frameAction: {
+                quantity: action.frames,
+              },
+            };
+          default:
+            return null;
+        }
+      })
+      .filter((a): a is CreateActionDto => Boolean(a));
+
     if (!inspectionId) {
       createInspection({
         data: {
           ...data,
           date: data.date.toISOString(),
+          actions: transformedActions,
         },
       });
     } else {
@@ -101,6 +144,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
           ...data,
           id: inspectionId,
           date: data.date.toISOString(),
+          actions: transformedActions,
         },
       });
     }

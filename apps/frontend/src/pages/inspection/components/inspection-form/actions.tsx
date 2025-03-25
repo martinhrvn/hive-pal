@@ -17,6 +17,8 @@ import {
 } from '@/pages/inspection/components/inspection-form/actions/frames.tsx';
 import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
+import { useFormContext } from 'react-hook-form';
+import { ActionData, InspectionFormData } from './schema.ts';
 
 const actionTypes = [
   { id: 'FEEDING', label: 'Feeding', Icon: Droplet },
@@ -27,17 +29,40 @@ const actionTypes = [
 type ActionType = FeedingActionType | TreatmentActionType | FramesActionType;
 
 export const ActionsSection: React.FC = () => {
+  const { setValue, getValues, watch } = useFormContext<InspectionFormData>();
+  console.log('values', getValues());
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
-  const [actions, setActions] = useState<ActionType[]>([]);
-  const handleSave = useCallback((x: ActionType) => {
-    setActions(actions => [...actions.filter(a => x.type !== a.type), x]);
-    setSelectedAction(null);
-  }, []);
+
+  // Watch for changes to the actions array in the form
+  const formActions = watch('actions') || [];
+
+  const handleSave = useCallback(
+    (action: ActionType) => {
+      const currentActions = getValues('actions') || [];
+      const updatedActions = [
+        ...currentActions.filter(a => a.type !== action.type),
+        action as ActionData,
+      ];
+
+      setValue('actions', updatedActions, {
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+      setSelectedAction(null);
+    },
+    [getValues, setValue],
+  );
 
   const handleRemove = useCallback(
-    (x: ActionType['type']) =>
-      setActions(actions => [...actions.filter(a => x !== a.type)]),
-    [],
+    (actionType: ActionType['type']) => {
+      const currentActions = getValues('actions') || [];
+      setValue(
+        'actions',
+        currentActions.filter(a => a.type !== actionType),
+        { shouldDirty: true, shouldTouch: true },
+      );
+    },
+    [getValues, setValue],
   );
 
   const renderActionForm = useMemo(() => {
@@ -95,7 +120,7 @@ export const ActionsSection: React.FC = () => {
         className="flex flex-wrap gap-2"
       >
         {actionTypes.map(({ id, label, Icon }) => {
-          if (actions.some(a => a.type === id)) return null;
+          if (formActions.some(a => a.type === id)) return null;
           return (
             <Button
               size={'sm'}
@@ -118,7 +143,11 @@ export const ActionsSection: React.FC = () => {
         className="flex flex-col divide-y"
         data-test={TEST_SELECTORS.SELECTED_ACTIONS}
       >
-        {actions.map(action => renderActionView(action))}
+        {formActions.map((action, index) => (
+          <div key={`${action.type}-${index}`}>
+            {renderActionView(action as ActionType)}
+          </div>
+        ))}
       </div>
     </div>
   );

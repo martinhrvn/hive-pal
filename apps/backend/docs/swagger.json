@@ -1573,7 +1573,6 @@
             "description": "Additional notes about the hive"
           },
           "installationDate": {
-            "format": "date-time",
             "type": "string",
             "description": "Date when the hive was installed"
           },
@@ -1711,6 +1710,119 @@
           }
         }
       },
+      "FeedingActionDto": {
+        "type": "object",
+        "properties": {
+          "feedType": {
+            "type": "string",
+            "description": "Type of feed (Sugar Syrup, Honey, Pollen Sub, Candy)"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of feed"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement (liters, quarts, gallons, kg, lb)"
+          },
+          "concentration": {
+            "type": "string",
+            "description": "Concentration of feed (1:1, 2:1, etc.)"
+          }
+        },
+        "required": [
+          "feedType",
+          "amount",
+          "unit"
+        ]
+      },
+      "TreatmentActionDto": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "type": "string",
+            "description": "Treatment product name (Apivar, Formic Pro, etc.)"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "Quantity of treatment"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement (strips, pads, grams, ml)"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Duration of treatment (7 days, 14 days, etc.)"
+          }
+        },
+        "required": [
+          "product",
+          "quantity",
+          "unit"
+        ]
+      },
+      "FrameActionDto": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "description": "Number of frames added (positive) or removed (negative)"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "CreateActionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "FEEDING",
+              "TREATMENT",
+              "FRAME",
+              "OTHER"
+            ],
+            "description": "Type of action performed"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the action"
+          },
+          "feedingAction": {
+            "description": "Feeding details",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeedingActionDto"
+              }
+            ]
+          },
+          "treatmentAction": {
+            "description": "Treatment details",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TreatmentActionDto"
+              }
+            ]
+          },
+          "frameAction": {
+            "description": "Frame details",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FrameActionDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
       "CreateInspectionDto": {
         "type": "object",
         "properties": {
@@ -1757,6 +1869,13 @@
                 "$ref": "#/components/schemas/CreateInspectionObservationsDto"
               }
             ]
+          },
+          "actions": {
+            "description": "Actions performed during the inspection",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateActionDto"
+            }
           }
         },
         "required": [
@@ -1879,6 +1998,23 @@
                 "$ref": "#/components/schemas/InspectionStatus"
               }
             ]
+          },
+          "actions": {
+            "type": "array",
+            "description": "Actions performed during the inspection",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/FeedingActionDto"
+                },
+                {
+                  "$ref": "#/components/schemas/TreatmentActionDto"
+                },
+                {
+                  "$ref": "#/components/schemas/FrameActionDto"
+                }
+              ]
+            }
           }
         },
         "required": [
@@ -1887,7 +2023,8 @@
           "date",
           "observations",
           "score",
-          "status"
+          "status",
+          "actions"
         ]
       },
       "UpdateInspectionDto": {
@@ -1937,9 +2074,16 @@
               }
             ]
           },
+          "actions": {
+            "description": "Actions performed during the inspection",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateActionDto"
+            }
+          },
           "status": {
             "description": "Current status of the inspection",
-            "example": "DRAFT",
+            "example": "COMPLETED",
             "allOf": [
               {
                 "$ref": "#/components/schemas/InspectionStatus"

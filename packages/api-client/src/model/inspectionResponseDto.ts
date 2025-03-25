@@ -8,6 +8,7 @@
 import type { InspectionMetricsDto } from './inspectionMetricsDto';
 import type { InspectionScoreDto } from './inspectionScoreDto';
 import type { InspectionStatus } from './inspectionStatus';
+import type { InspectionResponseDtoActionsItem } from './inspectionResponseDtoActionsItem';
 
 export interface InspectionResponseDto {
   /** Unique ID of the inspection */
@@ -35,4 +36,6 @@ export interface InspectionResponseDto {
   score: InspectionScoreDto;
   /** Current status of the inspection */
   status: InspectionStatus;
+  /** Actions performed during the inspection */
+  actions: InspectionResponseDtoActionsItem[];
 }

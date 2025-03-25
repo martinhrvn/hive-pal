@@ -87,28 +87,34 @@ export class CreateActionDto {
   @IsOptional()
   notes?: string;
 
-  @ApiProperty({ description: 'Feeding details', type: FeedingActionDto })
+  @ApiPropertyOptional({
+    description: 'Feeding details',
+    type: FeedingActionDto,
+    nullable: true,
+  })
   @ValidateNested()
   @Type(() => FeedingActionDto)
   @ValidateIf((o: CreateActionDto) => o.type === ActionType.FEEDING)
-  @IsNotEmpty({
-    message: 'Feeding details are required for FEEDING action type',
-  })
-  feedingAction?: FeedingActionDto;
+  feedingAction?: FeedingActionDto | null;
 
-  @ApiProperty({ description: 'Treatment details', type: TreatmentActionDto })
+  @ApiPropertyOptional({
+    description: 'Treatment details',
+    type: TreatmentActionDto,
+    nullable: true,
+  })
   @ValidateNested()
   @Type(() => TreatmentActionDto)
   @ValidateIf((o: CreateActionDto) => o.type === ActionType.TREATMENT)
-  @IsNotEmpty({
-    message: 'Treatment details are required for TREATMENT action type',
-  })
-  treatmentAction?: TreatmentActionDto;
+  @IsOptional()
+  treatmentAction?: TreatmentActionDto | null;
 
-  @ApiProperty({ description: 'Frame details', type: FrameActionDto })
+  @ApiPropertyOptional({
+    description: 'Frame details',
+    type: FrameActionDto,
+    nullable: true,
+  })
   @ValidateNested()
   @Type(() => FrameActionDto)
   @ValidateIf((o: CreateActionDto) => o.type === ActionType.FRAME)
-  @IsNotEmpty({ message: 'Frame details are required for FRAME action type' })
-  frameAction?: FrameActionDto;
+  frameAction?: FrameActionDto | null;
 }

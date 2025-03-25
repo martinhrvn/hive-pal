@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { CreateInspectionObservationsDto } from './createInspectionObservationsDto';
+import type { CreateActionDto } from './createActionDto';
 
 export interface CreateInspectionDto {
   /** Optional inspection ID (generated if not provided) */
@@ -31,4 +32,6 @@ export interface CreateInspectionDto {
   notes?: string | null;
   /** Observations and metrics recorded during inspection */
   observations?: CreateInspectionObservationsDto;
+  /** Actions performed during the inspection */
+  actions?: CreateActionDto[];
 }
