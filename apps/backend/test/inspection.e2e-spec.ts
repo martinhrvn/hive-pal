@@ -229,7 +229,7 @@ it('should create an inspection with FEEDING action', async () => {
   expect(getResponse.body.actions[0]).toMatchObject({
     type: 'FEEDING',
     notes: 'Fall feeding',
-    feedingAction: {
+    details: {
       feedType: 'Sugar Syrup',
       amount: 2.5,
       unit: 'liters',
@@ -302,7 +302,7 @@ it('should create an inspection with TREATMENT action', async () => {
   expect(getResponse.body.actions[0]).toMatchObject({
     type: 'TREATMENT',
     notes: 'Mite treatment',
-    treatmentAction: {
+    details: {
       product: 'Apivar',
       quantity: 2,
       unit: 'strips',
@@ -369,7 +369,7 @@ it('should create an inspection with FRAME action', async () => {
   expect(getResponse.body.actions[0]).toMatchObject({
     type: 'FRAME',
     notes: 'Added frames for honey flow',
-    frameAction: {
+    details: {
       quantity: 3,
     },
   });
@@ -478,9 +478,9 @@ it('should create an inspection with multiple actions of different types', async
   });
 
   expect(actions).toHaveLength(3);
-  
+
   // Check FEEDING action
-  const feedingAction = actions.find(a => a.type === 'FEEDING');
+  const feedingAction = actions.find((a) => a.type === 'FEEDING');
   expect(feedingAction).toBeDefined();
   if (feedingAction) {
     expect(feedingAction).toMatchObject({
@@ -494,9 +494,9 @@ it('should create an inspection with multiple actions of different types', async
       unit: 'kg',
     });
   }
-  
+
   // Check FRAME action
-  const frameAction = actions.find(a => a.type === 'FRAME');
+  const frameAction = actions.find((a) => a.type === 'FRAME');
   expect(frameAction).toBeDefined();
   if (frameAction) {
     expect(frameAction).toMatchObject({
@@ -508,9 +508,9 @@ it('should create an inspection with multiple actions of different types', async
       quantity: -2,
     });
   }
-  
+
   // Check OTHER action
-  const otherAction = actions.find(a => a.type === 'OTHER');
+  const otherAction = actions.find((a) => a.type === 'OTHER');
   expect(otherAction).toBeDefined();
   if (otherAction) {
     expect(otherAction).toMatchObject({
@@ -529,31 +529,37 @@ it('should create an inspection with multiple actions of different types', async
   // Verify actions in the response
   expect(getResponse.body).toHaveProperty('actions');
   expect(getResponse.body.actions).toHaveLength(3);
-  
+
   // Find each action by type in the response
-  const respFeedingAction = getResponse.body.actions.find(a => a.type === 'FEEDING');
+  const respFeedingAction = getResponse.body.actions.find(
+    (a) => a.type === 'FEEDING',
+  );
   expect(respFeedingAction).toBeDefined();
   expect(respFeedingAction).toMatchObject({
     type: 'FEEDING',
     notes: 'Spring feeding',
-    feedingAction: {
+    details: {
       feedType: 'Pollen Sub',
       amount: 0.5,
       unit: 'kg',
     },
   });
-  
-  const respFrameAction = getResponse.body.actions.find(a => a.type === 'FRAME');
+
+  const respFrameAction = getResponse.body.actions.find(
+    (a) => a.type === 'FRAME',
+  );
   expect(respFrameAction).toBeDefined();
   expect(respFrameAction).toMatchObject({
     type: 'FRAME',
     notes: 'Removed old frames',
-    frameAction: {
+    details: {
       quantity: -2,
     },
   });
-  
-  const respOtherAction = getResponse.body.actions.find(a => a.type === 'OTHER');
+
+  const respOtherAction = getResponse.body.actions.find(
+    (a) => a.type === 'OTHER',
+  );
   expect(respOtherAction).toBeDefined();
   expect(respOtherAction).toMatchObject({
     type: 'OTHER',

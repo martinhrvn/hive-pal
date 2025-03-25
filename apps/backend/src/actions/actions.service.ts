@@ -17,6 +17,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
     feedingAction: true;
     treatmentAction: true;
+    frameAction: true;
   };
 }>;
 export interface BaseAction {
@@ -41,11 +42,16 @@ export interface TreatmentActionDetails {
   duration?: string;
 }
 
+export interface FrameActionDetails {
+  quantity: number;
+}
+
 // Union Type for Action Details
 export type ActionDetails =
   | { type: ActionType.FEEDING; details: FeedingActionDetails }
   | { type: ActionType.TREATMENT; details: TreatmentActionDetails }
-  | { type: ActionType.FRAME; details: null };
+  | { type: ActionType.FRAME; details: FrameActionDetails }
+  | { type: ActionType.OTHER; details: null };
 
 // Complete Action Type
 export interface Action extends BaseAction {
@@ -189,10 +195,7 @@ export class ActionsService {
           inspectionId: action.inspectionId,
           type: ActionType.FEEDING,
           notes: action.notes,
-          details: {
-            type: ActionType.FEEDING,
-            details: action.details.details as FeedingActionDetailsDto,
-          },
+          details: action.details.details as FeedingActionDetailsDto,
         } as FeedingActionDto;
 
       case ActionType.TREATMENT:
@@ -201,10 +204,7 @@ export class ActionsService {
           inspectionId: action.inspectionId,
           type: ActionType.TREATMENT,
           notes: action.notes,
-          details: {
-            type: ActionType.TREATMENT,
-            details: action.details.details as TreatmentActionDetailsDto,
-          },
+          details: action.details.details as TreatmentActionDetailsDto,
         } as TreatmentActionDto;
 
       case ActionType.FRAME:
@@ -213,15 +213,19 @@ export class ActionsService {
           inspectionId: action.inspectionId,
           type: ActionType.FRAME,
           notes: action.notes,
-          details: {
-            type: ActionType.FRAME,
-            details: null,
-          },
+          details: action.details.details,
         } as FrameActionDto;
+      default:
+        return {
+          id: action.id,
+          inspectionId: action.inspectionId,
+          type: ActionType.OTHER,
+          notes: action.notes,
+        };
     }
   }
   // Prisma-to-Domain Transformation Function
-  transformAction(prismaAction: ActionWithRelations): Action {
+  mapPrismaToDomain(prismaAction: ActionWithRelations): Action {
     let details: ActionDetails;
 
     switch (prismaAction.type) {
@@ -257,14 +261,23 @@ export class ActionsService {
         break;
 
       case ActionType.FRAME:
+        if (!prismaAction.frameAction) {
+          throw new Error('Frame action details missing');
+        }
         details = {
           type: ActionType.FRAME,
-          details: null,
+          details: {
+            quantity: prismaAction.frameAction.quantity,
+          },
         };
         break;
 
       default:
-        throw new Error(`Unknown action type: ${prismaAction.type}`);
+        details = {
+          type: ActionType.OTHER,
+          details: null,
+        };
+        break;
     }
 
     return {
@@ -283,9 +296,10 @@ export class ActionsService {
       include: {
         feedingAction: true,
         treatmentAction: true,
+        frameAction: true,
       },
     });
 
-    return prismaActions.map((a) => this.transformAction(a));
+    return prismaActions.map((a) => this.mapPrismaToDomain(a));
   }
 }

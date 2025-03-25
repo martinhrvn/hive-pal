@@ -6,7 +6,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ActionType } from '../../inspections/dto/create-actions.dto';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ActionDto {
   @IsString()
@@ -54,34 +55,45 @@ export class TreatmentActionDetailsDto {
   duration?: string;
 }
 
+export class FrameActionDetailsDto {
+  @IsNumber()
+  quantity: number;
+}
+
 // Discriminated Union DTO for Action Details
 export class FeedingActionDto extends ActionDto {
+  @Expose()
+  type: ActionType.FEEDING;
   @ValidateNested()
   @Type(() => FeedingActionDetailsDto)
-  details: {
-    type: ActionType.FEEDING;
-    details: FeedingActionDetailsDto;
-  };
+  @Expose()
+  details: FeedingActionDetailsDto;
 }
 
 export class TreatmentActionDto extends ActionDto {
+  @Expose()
+  type: ActionType.TREATMENT;
   @ValidateNested()
+  @ApiProperty({ type: FeedingActionDetailsDto })
   @Type(() => TreatmentActionDetailsDto)
-  details: {
-    type: ActionType.TREATMENT;
-    details: TreatmentActionDetailsDto;
-  };
+  details: TreatmentActionDetailsDto;
 }
 
 export class FrameActionDto extends ActionDto {
-  details: {
-    type: ActionType.FRAME;
-    details: null;
-  };
+  @Expose()
+  type: ActionType.FRAME;
+  @ValidateNested()
+  details: FrameActionDetailsDto;
+}
+
+export class OtherActionDto extends ActionDto {
+  @Expose()
+  type: ActionType.OTHER;
 }
 
 // Union type for all possible Action DTOs
 export type ActionDtoUnion =
   | FeedingActionDto
   | TreatmentActionDto
-  | FrameActionDto;
+  | FrameActionDto
+  | OtherActionDto;

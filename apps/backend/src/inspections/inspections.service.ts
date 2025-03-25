@@ -10,7 +10,6 @@ import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { InspectionStatus } from './dto/inspection-status.enum';
 import { plainToInstance } from 'class-transformer';
-import { ActionType } from './dto/create-actions.dto';
 import { ActionsService } from '../actions/actions.service';
 
 @Injectable()
@@ -141,37 +140,11 @@ export class InspectionsService {
       const score = this.metricService.calculateOveralScore(metrics);
 
       // Transform actions to DTOs - with explicit casting of the type
-      const transformedActions = inspection.actions.map((action) => {
-        // Map the Prisma enum to our ActionType enum
-        const actionType = action.type as unknown as ActionType;
-
-        return {
-          id: action.id,
-          type: actionType,
-          notes: action.notes || undefined,
-          feedingAction: action.feedingAction
-            ? {
-                feedType: action.feedingAction.feedType,
-                amount: action.feedingAction.amount,
-                unit: action.feedingAction.unit,
-                concentration: action.feedingAction.concentration || undefined,
-              }
-            : undefined,
-          treatmentAction: action.treatmentAction
-            ? {
-                product: action.treatmentAction.product,
-                quantity: action.treatmentAction.quantity,
-                unit: action.treatmentAction.unit,
-                duration: action.treatmentAction.duration || undefined,
-              }
-            : undefined,
-          frameAction: action.frameAction
-            ? {
-                quantity: action.frameAction.quantity,
-              }
-            : undefined,
-        };
-      });
+      const actions = inspection.actions.map((action) =>
+        this.actionsService.actionToDto(
+          this.actionsService.mapPrismaToDomain(action),
+        ),
+      );
 
       return {
         id: inspection.id,
@@ -183,7 +156,7 @@ export class InspectionsService {
         observations: metrics,
         status: inspection.status as InspectionStatus,
         score,
-        actions: transformedActions,
+        actions,
       };
     });
   }
@@ -222,38 +195,12 @@ export class InspectionsService {
     const score = this.metricService.calculateOveralScore(metrics);
 
     // Transform actions to DTOs - with explicit casting of the type
-    const transformedActions = inspection.actions.map((action) => {
-      // Map the Prisma enum to our ActionType enum
-      const actionType = action.type as unknown as ActionType;
 
-      return {
-        id: action.id,
-        type: actionType,
-        notes: action.notes || undefined,
-        feedingAction: action.feedingAction
-          ? {
-              feedType: action.feedingAction.feedType,
-              amount: action.feedingAction.amount,
-              unit: action.feedingAction.unit,
-              concentration: action.feedingAction.concentration || undefined,
-            }
-          : undefined,
-        treatmentAction: action.treatmentAction
-          ? {
-              product: action.treatmentAction.product,
-              quantity: action.treatmentAction.quantity,
-              unit: action.treatmentAction.unit,
-              duration: action.treatmentAction.duration || undefined,
-            }
-          : undefined,
-        frameAction: action.frameAction
-          ? {
-              quantity: action.frameAction.quantity,
-            }
-          : undefined,
-      };
-    });
-
+    const actions = inspection.actions.map((action) =>
+      this.actionsService.actionToDto(
+        this.actionsService.mapPrismaToDomain(action),
+      ),
+    );
     return {
       id: inspection.id,
       hiveId: inspection.hiveId,
@@ -264,7 +211,7 @@ export class InspectionsService {
       observations: metrics,
       status: inspection.status as InspectionStatus,
       score,
-      actions: transformedActions,
+      actions,
     };
   }
 
