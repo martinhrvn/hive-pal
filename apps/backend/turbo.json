@@ -1,7 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
-  "globalDependencies": ["tsconfig.json", ".env"],
   "tasks": {
     "db:up:test": {
     },
