@@ -48,6 +48,17 @@ export class FeedingActionDetailsDto {
   concentration?: string;
 }
 
+@ApiSchema({ name: 'OtherActionDetails' })
+export class OtherActionDetailsDto {
+  @ApiProperty({
+    enum: [ActionType.OTHER],
+    description: 'Type of action',
+  })
+  @IsString()
+  @Expose()
+  type: ActionType.OTHER;
+}
+
 @ApiSchema({ name: 'TreatmentActionDetailsDto' })
 export class TreatmentActionDetailsDto {
   @ApiProperty({
@@ -93,6 +104,11 @@ export class FrameActionDetailsDto {
   @IsNumber()
   @Expose()
   quantity: number;
+
+  @ApiPropertyOptional({
+    enum: ['FRAME'],
+  })
+  type: ActionType.FRAME;
 }
 // Base class for all actions
 export class BaseActionDto {
@@ -248,5 +264,9 @@ export class ActionDtoSchema implements BaseActionDto {
       },
     },
   })
-  details: any;
+  details:
+    | FeedingActionDetailsDto
+    | TreatmentActionDetailsDto
+    | FrameActionDetailsDto
+    | OtherActionDetailsDto;
 }

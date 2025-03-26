@@ -85,5 +85,5 @@ export class InspectionResponseDto {
   @Expose()
   @ValidateNested({ each: true })
   @Type(() => ActionDtoSchema)
-  actions?: ActionDto[];
+  actions?: ActionDtoSchema[];
 }

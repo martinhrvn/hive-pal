@@ -141,9 +141,7 @@ export class InspectionsService {
 
       // Transform actions to DTOs - with explicit casting of the type
       const actions = inspection.actions.map((action) =>
-        this.actionsService.actionToDto(
-          this.actionsService.mapPrismaToDomain(action),
-        ),
+        this.actionsService.mapPrismaToDto(action),
       );
 
       return {
@@ -197,9 +195,7 @@ export class InspectionsService {
     // Transform actions to DTOs - with explicit casting of the type
 
     const actions = inspection.actions.map((action) =>
-      this.actionsService.actionToDto(
-        this.actionsService.mapPrismaToDomain(action),
-      ),
+      this.actionsService.mapPrismaToDto(action),
     );
     return {
       id: inspection.id,
