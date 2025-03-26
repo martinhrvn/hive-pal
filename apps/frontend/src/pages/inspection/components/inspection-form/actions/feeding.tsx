@@ -14,7 +14,7 @@ import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 
-type FeedType = 'SYRUP' | 'HONEY' | 'CANDY';
+export type FeedType = 'SYRUP' | 'HONEY' | 'CANDY';
 
 export type FeedingActionType = {
   type: 'FEEDING';

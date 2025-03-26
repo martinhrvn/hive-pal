@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import {
   CreateActionDto,
+  FeedingActionDetailsDto,
+  FrameActionDetailsDto,
+  TreatmentActionDetailsDto,
   useHiveControllerFindAll,
   useInspectionsControllerCreate,
   useInspectionsControllerFindOne,
@@ -38,7 +41,14 @@ import { WeatherSection } from '@/pages/inspection/components/inspection-form/we
 import { ObservationsSection } from '@/pages/inspection/components/inspection-form/observations.tsx';
 import { NotesSection } from '@/pages/inspection/components/inspection-form/notes.tsx';
 import { Separator } from '@/components/ui/separator';
-import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions.tsx';
+import {
+  ActionsSection,
+  ActionType,
+  OtherActionType,
+} from '@/pages/inspection/components/inspection-form/actions.tsx';
+import { FeedingActionType, FeedType } from './actions/feeding';
+import { TreatmentActionType } from '@/pages/inspection/components/inspection-form/actions/treatment.tsx';
+import { FramesActionType } from '@/pages/inspection/components/inspection-form/actions/frames.tsx';
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -71,7 +81,42 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       hiveId,
       ...inspection,
       date: inspection?.date ? new Date(inspection.date) : new Date(),
-      actions: inspection?.actions || [],
+      actions:
+        inspection?.actions.map((action): ActionType => {
+          const type = action.type;
+          if (type === 'FEEDING') {
+            const details = action.details as FeedingActionDetailsDto;
+            return {
+              type: 'FEEDING',
+              notes: action.notes,
+              feedType: details.feedType as FeedType,
+              quantity: details.amount,
+              unit: details.unit,
+              concentration: details.concentration,
+            } as FeedingActionType;
+          } else if (type === 'TREATMENT') {
+            const details = action.details as TreatmentActionDetailsDto;
+            return {
+              type: 'TREATMENT',
+              notes: action.notes,
+              amount: details.quantity,
+              treatmentType: details.product,
+              unit: details.unit,
+            } as TreatmentActionType;
+          } else if (type === 'FRAME') {
+            const details = action.details as FrameActionDetailsDto;
+            return {
+              type: 'FRAMES',
+              notes: action.notes,
+              frames: details.quantity,
+            } as FramesActionType;
+          } else {
+            return {
+              type: 'OTHER',
+              notes: action.notes,
+            } as OtherActionType;
+          }
+        }) || [],
     },
   });
 

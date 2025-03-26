@@ -25,7 +25,7 @@ export const feedingActionSchema = z.object({
 
 export const treatmentActionSchema = z.object({
   type: z.literal('TREATMENT'),
-  treatmentType: z.enum(['OXALIC_ACID', 'FORMIC_ACID', 'THYMOL', 'OTHER']),
+  treatmentType: z.string(),
   amount: z.number(),
   unit: z.string(),
   notes: z.string().optional(),
@@ -37,10 +37,16 @@ export const framesActionSchema = z.object({
   notes: z.string().optional(),
 });
 
+export const otherActionSchema = z.object({
+  type: z.literal('OTHER'),
+  notes: z.string(),
+});
+
 export const actionSchema = z.discriminatedUnion('type', [
   feedingActionSchema,
   treatmentActionSchema,
   framesActionSchema,
+  otherActionSchema,
 ]);
 
 export const inspectionSchema = z.object({

@@ -17,7 +17,7 @@ type TreatmentType = 'OXALIC_ACID' | 'FORMIC_ACID' | 'THYMOL' | 'OTHER';
 
 export type TreatmentActionType = {
   type: 'TREATMENT';
-  treatmentType: TreatmentType;
+  treatmentType: string;
   amount: number;
   unit: string;
   notes?: string;

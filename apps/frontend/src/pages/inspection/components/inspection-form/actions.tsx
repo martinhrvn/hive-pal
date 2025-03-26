@@ -26,7 +26,16 @@ const actionTypes = [
   { id: 'FRAMES', label: 'Frames', Icon: Grid },
 ];
 
-type ActionType = FeedingActionType | TreatmentActionType | FramesActionType;
+export type OtherActionType = {
+  type: 'OTHER';
+  notes: string;
+};
+
+export type ActionType =
+  | FeedingActionType
+  | TreatmentActionType
+  | FramesActionType
+  | OtherActionType;
 
 export const ActionsSection: React.FC = () => {
   const { setValue, getValues, watch } = useFormContext<InspectionFormData>();
