@@ -5,7 +5,10 @@ import { IsDateString, IsEnum, ValidateNested } from 'class-validator';
 import { InspectionScoreDto } from './inspection-score.dto';
 import { InspectionStatus } from './inspection-status.enum';
 
-import { ActionDto } from '../../actions/dto/create-action.dto';
+import {
+  ActionDto,
+  ActionDtoSchema,
+} from '../../actions/dto/create-action.dto';
 
 export class InspectionResponseDto {
   @ApiProperty({ type: String, description: 'Unique ID of the inspection' })
@@ -76,11 +79,11 @@ export class InspectionResponseDto {
 
   @ApiProperty({
     description: 'Actions performed during the inspection',
-    type: ActionDto,
+    type: ActionDtoSchema,
     isArray: true,
   })
   @Expose()
   @ValidateNested({ each: true })
-  @Type(() => ActionDto)
+  @Type(() => ActionDtoSchema)
   actions?: ActionDto[];
 }

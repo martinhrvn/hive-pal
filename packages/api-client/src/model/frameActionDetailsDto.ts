@@ -6,4 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface FrameActionDetailsDto { [key: string]: unknown }
+export interface FrameActionDetailsDto {
+  /** Quantity of frames */
+  quantity: number;
+}

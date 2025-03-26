@@ -6,4 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface TreatmentActionDetailsDto { [key: string]: unknown }
+export interface TreatmentActionDetailsDto {
+  /** Treatment product name */
+  product: string;
+  /** Treatment quantity */
+  quantity: number;
+  /** Unit of measurement */
+  unit: string;
+  /** Treatment duration */
+  duration?: string;
+}

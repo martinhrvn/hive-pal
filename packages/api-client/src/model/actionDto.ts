@@ -15,6 +15,8 @@ export interface ActionDto {
   inspectionId: string;
   /** Type of action performed */
   type: ActionDtoType;
+  /** Additional notes about the action */
+  notes?: string;
   /** Specific details for the action */
   details: ActionDtoDetails;
 }

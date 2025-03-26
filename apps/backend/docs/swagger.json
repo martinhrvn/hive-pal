@@ -1977,6 +1977,10 @@
             ],
             "description": "Type of action performed"
           },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the action"
+          },
           "details": {
             "description": "Specific details for the action",
             "oneOf": [
@@ -1989,7 +1993,15 @@
               {
                 "$ref": "#/components/schemas/FrameActionDetailsDto"
               }
-            ]
+            ],
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "FEEDING": "#/components/schemas/FeedingActionDetailsDto",
+                "TREATMENT": "#/components/schemas/TreatmentActionDetailsDto",
+                "FRAME": "#/components/schemas/FrameActionDetailsDto"
+              }
+            }
           }
         },
         "required": [
@@ -2372,11 +2384,41 @@
       },
       "TreatmentActionDetailsDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "product": {
+            "type": "string",
+            "description": "Treatment product name"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "Treatment quantity"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Treatment duration"
+          }
+        },
+        "required": [
+          "product",
+          "quantity",
+          "unit"
+        ]
       },
       "FrameActionDetailsDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "description": "Quantity of frames"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
       }
     }
   }
