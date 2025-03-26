@@ -6,3 +6,4 @@ export * from './inspection-detail-sidebar';
 export * from './inspection-header';
 export * from './notes-card';
 export * from './observations-card';
+export * from './actions-card';

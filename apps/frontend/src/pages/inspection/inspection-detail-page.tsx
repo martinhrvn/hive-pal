@@ -7,6 +7,7 @@ import { ChevronLeft, X } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
+  ActionsCard,
   InspectionDetailSidebar,
   InspectionHeader,
   NotesCard,
@@ -66,6 +67,9 @@ export const InspectionDetailPage = () => {
         <div className="flex gap-4 mb-6"></div>
         <StatisticCards score={inspection.score} />
         <ObservationsCard observations={inspection.observations} />
+        {inspection.actions && inspection.actions.length > 0 && (
+          <ActionsCard actions={inspection.actions} />
+        )}
         <NotesCard notes={inspection.notes} />
       </MainContent>
 
