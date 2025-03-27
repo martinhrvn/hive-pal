@@ -9,7 +9,7 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateInspectionObservationsDto } from './create-inspections-observations.dto';
-import { CreateActionDto } from './create-actions.dto';
+import { CreateActionDtoSchema } from '../../actions/dto/create-action.dto';
 
 export class CreateInspectionDto {
   @ApiPropertyOptional({
@@ -79,11 +79,11 @@ export class CreateInspectionDto {
   observations?: CreateInspectionObservationsDto;
 
   @ApiPropertyOptional({
-    type: [CreateActionDto],
+    type: [CreateActionDtoSchema],
     description: 'Actions performed during the inspection',
   })
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => CreateActionDto)
-  actions?: CreateActionDto[];
+  @Type(() => CreateActionDtoSchema)
+  actions?: CreateActionDtoSchema[];
 }

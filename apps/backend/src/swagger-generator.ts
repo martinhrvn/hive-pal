@@ -10,7 +10,7 @@ import {
   FeedingActionDetailsDto,
   FrameActionDetailsDto,
   TreatmentActionDetailsDto,
-} from './actions/dto/create-action.dto';
+} from './actions/dto/action-response.dto';
 
 /**
  * Generate Swagger documentation in YAML format

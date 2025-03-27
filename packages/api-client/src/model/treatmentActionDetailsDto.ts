@@ -5,6 +5,7 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { TreatmentActionDetailsDtoType } from './treatmentActionDetailsDtoType';
 
 export interface TreatmentActionDetailsDto {
   /** Treatment product name */
@@ -15,4 +16,6 @@ export interface TreatmentActionDetailsDto {
   unit: string;
   /** Treatment duration */
   duration?: string;
+  /** Type of action */
+  type: TreatmentActionDetailsDtoType;
 }

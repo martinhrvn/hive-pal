@@ -5,6 +5,7 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { FeedingActionDetailsDtoType } from './feedingActionDetailsDtoType';
 
 export interface FeedingActionDetailsDto {
   /** Type of feed (Sugar Syrup, Honey, Pollen Sub, Candy) */
@@ -15,4 +16,6 @@ export interface FeedingActionDetailsDto {
   unit: string;
   /** Concentration of feed (1:1, 2:1, etc.) */
   concentration?: string;
+  /** Type of action */
+  type: FeedingActionDetailsDtoType;
 }

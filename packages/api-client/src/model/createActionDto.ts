@@ -6,28 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 import type { CreateActionDtoType } from './createActionDtoType';
-import type { CreateActionDtoFeedingAction } from './createActionDtoFeedingAction';
-import type { CreateActionDtoTreatmentAction } from './createActionDtoTreatmentAction';
-import type { CreateActionDtoFrameAction } from './createActionDtoFrameAction';
+import type { CreateActionDtoDetails } from './createActionDtoDetails';
 
 export interface CreateActionDto {
   /** Type of action performed */
   type: CreateActionDtoType;
   /** Additional notes about the action */
   notes?: string;
-  /**
-   * Feeding details
-   * @nullable
-   */
-  feedingAction?: CreateActionDtoFeedingAction;
-  /**
-   * Treatment details
-   * @nullable
-   */
-  treatmentAction?: CreateActionDtoTreatmentAction;
-  /**
-   * Frame details
-   * @nullable
-   */
-  frameAction?: CreateActionDtoFrameAction;
+  /** Specific details for the action */
+  details: CreateActionDtoDetails;
 }

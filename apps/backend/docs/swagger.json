@@ -1710,70 +1710,6 @@
           }
         }
       },
-      "FeedingActionDto": {
-        "type": "object",
-        "properties": {
-          "feedType": {
-            "type": "string",
-            "description": "Type of feed (Sugar Syrup, Honey, Pollen Sub, Candy)"
-          },
-          "amount": {
-            "type": "number",
-            "description": "Amount of feed"
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement (liters, quarts, gallons, kg, lb)"
-          },
-          "concentration": {
-            "type": "string",
-            "description": "Concentration of feed (1:1, 2:1, etc.)"
-          }
-        },
-        "required": [
-          "feedType",
-          "amount",
-          "unit"
-        ]
-      },
-      "TreatmentActionDto": {
-        "type": "object",
-        "properties": {
-          "product": {
-            "type": "string",
-            "description": "Treatment product name (Apivar, Formic Pro, etc.)"
-          },
-          "quantity": {
-            "type": "number",
-            "description": "Quantity of treatment"
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement (strips, pads, grams, ml)"
-          },
-          "duration": {
-            "type": "string",
-            "description": "Duration of treatment (7 days, 14 days, etc.)"
-          }
-        },
-        "required": [
-          "product",
-          "quantity",
-          "unit"
-        ]
-      },
-      "FrameActionDto": {
-        "type": "object",
-        "properties": {
-          "quantity": {
-            "type": "number",
-            "description": "Number of frames added (positive) or removed (negative)"
-          }
-        },
-        "required": [
-          "quantity"
-        ]
-      },
       "CreateActionDto": {
         "type": "object",
         "properties": {
@@ -1791,36 +1727,32 @@
             "type": "string",
             "description": "Additional notes about the action"
           },
-          "feedingAction": {
-            "description": "Feeding details",
-            "nullable": true,
-            "allOf": [
+          "details": {
+            "description": "Specific details for the action",
+            "oneOf": [
               {
-                "$ref": "#/components/schemas/FeedingActionDto"
-              }
-            ]
-          },
-          "treatmentAction": {
-            "description": "Treatment details",
-            "nullable": true,
-            "allOf": [
+                "$ref": "#/components/schemas/FeedingActionDetailsDto"
+              },
               {
-                "$ref": "#/components/schemas/TreatmentActionDto"
-              }
-            ]
-          },
-          "frameAction": {
-            "description": "Frame details",
-            "nullable": true,
-            "allOf": [
+                "$ref": "#/components/schemas/TreatmentActionDetailsDto"
+              },
               {
-                "$ref": "#/components/schemas/FrameActionDto"
+                "$ref": "#/components/schemas/FrameActionDetailsDto"
               }
-            ]
+            ],
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "FEEDING": "#/components/schemas/FeedingActionDetailsDto",
+                "TREATMENT": "#/components/schemas/TreatmentActionDetailsDto",
+                "FRAME": "#/components/schemas/FrameActionDetailsDto"
+              }
+            }
           }
         },
         "required": [
-          "type"
+          "type",
+          "details"
         ]
       },
       "CreateInspectionDto": {
@@ -2374,12 +2306,20 @@
           "concentration": {
             "type": "string",
             "description": "Concentration of feed (1:1, 2:1, etc.)"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "FEEDING"
+            ],
+            "description": "Type of action"
           }
         },
         "required": [
           "feedType",
           "amount",
-          "unit"
+          "unit",
+          "type"
         ]
       },
       "TreatmentActionDetailsDto": {
@@ -2400,12 +2340,20 @@
           "duration": {
             "type": "string",
             "description": "Treatment duration"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TREATMENT"
+            ],
+            "description": "Type of action"
           }
         },
         "required": [
           "product",
           "quantity",
-          "unit"
+          "unit",
+          "type"
         ]
       },
       "FrameActionDetailsDto": {
@@ -2414,6 +2362,12 @@
           "quantity": {
             "type": "number",
             "description": "Quantity of frames"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "FRAME"
+            ]
           }
         },
         "required": [

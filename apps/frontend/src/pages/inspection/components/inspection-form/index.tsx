@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import {
+  ActionDto,
   CreateActionDto,
   FeedingActionDetailsDto,
   FrameActionDetailsDto,
@@ -143,7 +144,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             return {
               type: action.type,
               notes: action.notes,
-              feedingAction: {
+              details: {
+                type: action.type,
                 feedType: action.feedType,
                 amount: action.quantity,
                 unit: action.unit,
@@ -154,7 +156,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             return {
               type: action.type,
               notes: action.notes,
-              treatmentAction: {
+              details: {
                 product: action.treatmentType,
                 quantity: action.amount,
                 unit: action.unit,
@@ -164,7 +166,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             return {
               type: 'FRAME', // API expects FRAME (singular), not FRAMES
               notes: action.notes,
-              frameAction: {
+              details: {
                 quantity: action.frames,
               },
             };
@@ -172,7 +174,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             return null;
         }
       })
-      .filter((a): a is CreateActionDto => Boolean(a));
+      .filter((a): a is ActionDto => Boolean(a));
 
     if (!inspectionId) {
       createInspection({

@@ -5,8 +5,10 @@
  * The API description
  * OpenAPI spec version: 1.0
  */
+import type { FrameActionDetailsDtoType } from './frameActionDetailsDtoType';
 
 export interface FrameActionDetailsDto {
   /** Quantity of frames */
   quantity: number;
+  type?: FrameActionDetailsDtoType;
 }

@@ -8,7 +8,7 @@ import { InspectionStatus } from './inspection-status.enum';
 import {
   ActionDto,
   ActionDtoSchema,
-} from '../../actions/dto/create-action.dto';
+} from '../../actions/dto/action-response.dto';
 
 export class InspectionResponseDto {
   @ApiProperty({ type: String, description: 'Unique ID of the inspection' })

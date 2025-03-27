@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  ActionType,
-  CreateActionDto,
-} from '../inspections/dto/create-actions.dto';
-import {
   ActionDtoSchema,
+  ActionType,
+  FeedingActionDetailsDto,
   FrameActionDetailsDto,
-} from './dto/create-action.dto';
+  TreatmentActionDetailsDto,
+} from './dto/action-response.dto';
 import { Prisma } from '@prisma/client';
+import { CreateActionDtoSchema } from './dto/create-action.dto';
+
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
     feedingAction: true;
@@ -29,7 +30,7 @@ export class ActionsService {
    */
   async createActions(
     inspectionId: string,
-    actions: CreateActionDto[],
+    actions: CreateActionDtoSchema[],
     tx: Prisma.TransactionClient,
   ): Promise<void> {
     if (!actions || actions.length === 0) {
@@ -37,8 +38,7 @@ export class ActionsService {
     }
 
     for (const action of actions) {
-      const { type, notes, feedingAction, treatmentAction, frameAction } =
-        action;
+      const { type, notes, details } = action;
 
       // Create the base action
       const createdAction = await tx.action.create({
@@ -50,44 +50,33 @@ export class ActionsService {
       });
 
       // Add type-specific details based on the action type
-      switch (type) {
-        case ActionType.FEEDING:
-          if (feedingAction) {
-            await tx.feedingAction.create({
-              data: {
-                actionId: createdAction.id,
-                feedType: feedingAction.feedType,
-                amount: feedingAction.amount,
-                unit: feedingAction.unit,
-                concentration: feedingAction.concentration,
-              },
-            });
-          }
-          break;
-        case ActionType.TREATMENT:
-          if (treatmentAction) {
-            await tx.treatmentAction.create({
-              data: {
-                actionId: createdAction.id,
-                product: treatmentAction.product,
-                quantity: treatmentAction.quantity,
-                unit: treatmentAction.unit,
-                duration: treatmentAction.duration,
-              },
-            });
-          }
-          break;
-        case ActionType.FRAME:
-          if (frameAction) {
-            await tx.frameAction.create({
-              data: {
-                actionId: createdAction.id,
-                quantity: frameAction.quantity,
-              },
-            });
-          }
-          break;
-        // OTHER type doesn't need additional data
+      if (details instanceof FeedingActionDetailsDto) {
+        await tx.feedingAction.create({
+          data: {
+            actionId: createdAction.id,
+            feedType: details.feedType,
+            amount: details.amount,
+            unit: details.unit,
+            concentration: details.concentration,
+          },
+        });
+      } else if (details instanceof FrameActionDetailsDto) {
+        await tx.frameAction.create({
+          data: {
+            actionId: createdAction.id,
+            quantity: details.quantity,
+          },
+        });
+      } else if (details instanceof TreatmentActionDetailsDto) {
+        await tx.treatmentAction.create({
+          data: {
+            actionId: createdAction.id,
+            product: details.product,
+            quantity: details.quantity,
+            unit: details.unit,
+            duration: details.duration,
+          },
+        });
       }
     }
   }
@@ -134,7 +123,7 @@ export class ActionsService {
    */
   async updateActions(
     inspectionId: string,
-    actions: CreateActionDto[],
+    actions: CreateActionDtoSchema[],
     tx: Prisma.TransactionClient,
   ): Promise<void> {
     // Delete existing actions
@@ -162,6 +151,7 @@ export class ActionsService {
           ...base,
           type: ActionType.FEEDING,
           details: {
+            type: ActionType.FEEDING,
             feedType: prismaAction.feedingAction.feedType,
             amount: prismaAction.feedingAction.amount,
             unit: prismaAction.feedingAction.unit,
@@ -178,6 +168,7 @@ export class ActionsService {
           ...base,
           type: ActionType.TREATMENT,
           details: {
+            type: ActionType.TREATMENT,
             product: prismaAction.treatmentAction.product,
             quantity: prismaAction.treatmentAction.quantity,
             unit: prismaAction.treatmentAction.unit,
