@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { HiveResponseDto, useHiveControllerFindAll } from 'api-client';
-import { useInspections } from '@/api/hooks';
-import { InspectionResponse } from 'shared-schemas';
+import { useHives, useInspections } from '@/api/hooks';
+import { HiveResponse, InspectionResponse } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
@@ -79,8 +78,7 @@ export const InspectionListPage = () => {
       : undefined,
   );
 
-  const { data: hivesData, isLoading: isLoadingHives } =
-    useHiveControllerFindAll();
+  const { data: hivesData, isLoading: isLoadingHives } = useHives();
 
   // Handle tab changes
   const handleTabChange = (value: string) => {
@@ -133,7 +131,6 @@ export const InspectionListPage = () => {
   if (isLoadingInspections || isLoadingHives) {
     return <div>Loading...</div>;
   }
-  console.log(filteredInspections);
 
   return (
     <Page>
@@ -186,7 +183,7 @@ export const InspectionListPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Hives</SelectItem>
-                    {hivesData?.data.map(hive => (
+                    {hivesData?.map(hive => (
                       <SelectItem key={hive.id} value={hive.id}>
                         {hive.name}
                       </SelectItem>
@@ -202,7 +199,7 @@ export const InspectionListPage = () => {
               sortedInspections,
               'All Inspections',
               navigate,
-              hivesData?.data,
+              hivesData,
             )}
           </TabsContent>
 
@@ -211,7 +208,7 @@ export const InspectionListPage = () => {
               sortedInspections,
               'Recent Inspections',
               navigate,
-              hivesData?.data,
+              hivesData,
             )}
           </TabsContent>
 
@@ -220,7 +217,7 @@ export const InspectionListPage = () => {
               sortedInspections,
               'Upcoming Inspections',
               navigate,
-              hivesData?.data,
+              hivesData,
             )}
           </TabsContent>
         </Tabs>
@@ -242,7 +239,7 @@ const renderInspectionsTable = (
   inspections: InspectionResponse[],
   caption: string,
   navigate: (path: string) => void,
-  hives: HiveResponseDto[] = [],
+  hives: HiveResponse[] = [],
 ) => {
   const getHiveName = (hiveId: string) => {
     const hive = hives.find(h => h.id === hiveId);

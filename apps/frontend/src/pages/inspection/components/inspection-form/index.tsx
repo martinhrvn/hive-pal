@@ -1,10 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import {
-  FeedingActionDetailsDto,
-  FrameActionDetailsDto,
-  TreatmentActionDetailsDto,
-  useHiveControllerFindAll,
-} from 'api-client';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -41,6 +35,7 @@ import { ActionsSection } from '@/pages/inspection/components/inspection-form/ac
 import { FeedType } from './actions/feeding';
 import {
   useCreateInspection,
+  useHiveOptions,
   useInspection,
   useUpdateInspection,
 } from '@/api/hooks';
@@ -56,15 +51,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   inspectionId,
 }) => {
   const navigate = useNavigate();
-  const { data: hives } = useHiveControllerFindAll({
-    query: {
-      select: data =>
-        data.data.map(hive => ({
-          value: hive.id,
-          label: hive.name,
-        })),
-    },
-  });
+  const { data: hives } = useHiveOptions();
 
   // Use our new custom hooks
   const { data: inspection } = useInspection(inspectionId as string, {
@@ -79,9 +66,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       date: inspection?.date ? new Date(inspection.date) : new Date(),
       actions:
         inspection?.actions?.map(action => {
-          const type = action.type;
-          if (type === 'FEEDING') {
-            const details = action.details as FeedingActionDetailsDto;
+          if (action.details.type === ActionType.FEEDING) {
+            const details = action.details;
             return {
               type: ActionType.FEEDING,
               notes: action.notes,
@@ -90,8 +76,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               unit: details.unit,
               concentration: details.concentration,
             };
-          } else if (type === 'TREATMENT') {
-            const details = action.details as TreatmentActionDetailsDto;
+          } else if (action.details.type === ActionType.TREATMENT) {
+            const details = action.details;
             return {
               type: ActionType.TREATMENT,
               notes: action.notes,
@@ -99,8 +85,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               treatmentType: details.product,
               unit: details.unit,
             };
-          } else if (type === 'FRAME') {
-            const details = action.details as FrameActionDetailsDto;
+          } else if (action.details.type === ActionType.FRAME) {
+            const details = action.details;
             return {
               type: ActionType.FRAME,
               notes: action.notes,

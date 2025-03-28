@@ -51,7 +51,7 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
     year: z.number().optional().nullable(),
     color: z.string().optional().nullable(),
     installedAt: z.string().datetime().optional().or(z.date()).nullable(),
-    marking: z.union([z.string(), z.boolean()]).optional().nullable(),
+    marking: z.string().optional().nullable(),
     replacedAt: z.string().datetime().optional().or(z.date()).optional().nullable(),
     status: z.string().optional().nullable(),
     source: z.string().optional().nullable(),
@@ -66,8 +66,8 @@ export const hiveResponseSchema = z.object({
   status: hiveStatusSchema,
   apiaryId: z.string().uuid().optional(),
   notes: z.string().optional(),
-  installationDate: z.string().datetime().or(z.date()).optional(),
-  lastInspectionDate: z.string().datetime().or(z.date()).optional(),
+  installationDate: z.string().datetime().optional(),
+  lastInspectionDate: z.string().datetime().optional() ,
   activeQueen: z.object({
     id: z.string().uuid(),
     hiveId: z.string().uuid().optional(),
@@ -88,4 +88,5 @@ export type UpdateHive = z.infer<typeof updateHiveSchema>;
 export type UpdateHiveResponse = z.infer<typeof updateHiveResponseSchema>;
 export type HiveDetailResponse = z.infer<typeof hiveDetailResponseSchema>;
 export type HiveResponse = z.infer<typeof hiveResponseSchema>;
+export type HiveScore = z.infer<typeof hiveScoreSchema>;
 export type HiveFilter = z.infer<typeof hiveFilterSchema>;

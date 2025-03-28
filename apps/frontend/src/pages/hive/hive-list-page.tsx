@@ -1,4 +1,3 @@
-import { useHiveControllerFindAll, HiveResponseDtoStatus } from 'api-client';
 import { useNavigate } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -22,9 +21,11 @@ import {
 } from '@/components/ui/table';
 import { HiveStatus, HiveActionSidebar } from './components';
 import { ChevronRight, Search } from 'lucide-react';
+import { useHives } from '@/api/hooks';
+import { HiveResponse, HiveStatus as HiveStatusEnum } from 'shared-schemas';
 
 export const HiveListPage = () => {
-  const { data, isLoading, refetch } = useHiveControllerFindAll();
+  const { data: hivesResponse, isLoading, refetch } = useHives();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -37,10 +38,10 @@ export const HiveListPage = () => {
     return <div>Loading...</div>;
   }
 
-  const allHives = data?.data ?? [];
+  const allHives = hivesResponse ?? [];
 
   // Apply filters
-  const hives = allHives.filter(hive => {
+  const hives: HiveResponse[] = allHives.filter(hive => {
     const matchesSearch =
       searchTerm === '' ||
       hive.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -77,17 +78,13 @@ export const HiveListPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">All Statuses</SelectItem>
-                <SelectItem value={HiveResponseDtoStatus.ACTIVE}>
-                  Active
-                </SelectItem>
-                <SelectItem value={HiveResponseDtoStatus.INACTIVE}>
+                <SelectItem value={HiveStatusEnum.ACTIVE}>Active</SelectItem>
+                <SelectItem value={HiveStatusEnum.INACTIVE}>
                   Inactive
                 </SelectItem>
-                <SelectItem value={HiveResponseDtoStatus.DEAD}>Dead</SelectItem>
-                <SelectItem value={HiveResponseDtoStatus.SOLD}>Sold</SelectItem>
-                <SelectItem value={HiveResponseDtoStatus.UNKNOWN}>
-                  Unknown
-                </SelectItem>
+                <SelectItem value={HiveStatusEnum.DEAD}>Dead</SelectItem>
+                <SelectItem value={HiveStatusEnum.SOLD}>Sold</SelectItem>
+                <SelectItem value={HiveStatusEnum.UNKNOWN}>Unknown</SelectItem>
               </SelectContent>
             </Select>
           </div>

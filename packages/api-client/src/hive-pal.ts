@@ -27,19 +27,14 @@ import type {
   AuthResponseDto,
   ChangePasswordDto,
   CreateApiaryDto,
-  CreateHiveDto,
   CreateQueenDto,
   HealthControllerCheck200,
   HealthControllerCheck503,
-  HiveDetailResponseDto,
-  HiveResponseDto,
   LoginDto,
   QueenResponseDto,
   RegisterDto,
   ResetPasswordDto,
   UpdateApiaryDto,
-  UpdateHiveBoxesDto,
-  UpdateHiveDto,
   UpdateQueenDto,
   UserResponseDto
 } from './model'
@@ -570,15 +565,13 @@ export const useUsersControllerChangePassword = <TError = unknown,
     }
     
 export const hiveControllerCreate = (
-    createHiveDto: CreateHiveDto,
+    
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<HiveResponseDto>(
-      {url: `/api/hives`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createHiveDto, signal
+      return customInstance<void>(
+      {url: `/api/hives`, method: 'POST', signal
     },
       options);
     }
@@ -586,8 +579,8 @@ export const hiveControllerCreate = (
 
 
 export const getHiveControllerCreateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,{data: CreateHiveDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,{data: CreateHiveDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,void, TContext> => {
     
 const mutationKey = ['hiveControllerCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -599,10 +592,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerCreate>>, {data: CreateHiveDto}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerCreate>>, void> = () => {
+          
 
-          return  hiveControllerCreate(data,requestOptions)
+          return  hiveControllerCreate(requestOptions)
         }
 
         
@@ -611,15 +604,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type HiveControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof hiveControllerCreate>>>
-    export type HiveControllerCreateMutationBody = CreateHiveDto
+    
     export type HiveControllerCreateMutationError = unknown
 
     export const useHiveControllerCreate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,{data: CreateHiveDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof hiveControllerCreate>>,
         TError,
-        {data: CreateHiveDto},
+        void,
         TContext
       > => {
 
@@ -634,7 +627,7 @@ export const hiveControllerFindAll = (
 ) => {
       
       
-      return customInstance<HiveResponseDto[]>(
+      return customInstance<void>(
       {url: `/api/hives`, method: 'GET', signal
     },
       options);
@@ -716,7 +709,7 @@ export const hiveControllerFindOne = (
 ) => {
       
       
-      return customInstance<HiveDetailResponseDto>(
+      return customInstance<void>(
       {url: `/api/hives/${id}`, method: 'GET', signal
     },
       options);
@@ -794,14 +787,11 @@ export function useHiveControllerFindOne<TData = Awaited<ReturnType<typeof hiveC
 
 export const hiveControllerUpdate = (
     id: string,
-    updateHiveDto: UpdateHiveDto,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<void>(
-      {url: `/api/hives/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateHiveDto
+      {url: `/api/hives/${id}`, method: 'PATCH'
     },
       options);
     }
@@ -809,8 +799,8 @@ export const hiveControllerUpdate = (
 
 
 export const getHiveControllerUpdateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string}, TContext> => {
     
 const mutationKey = ['hiveControllerUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -822,10 +812,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerUpdate>>, {id: string;data: UpdateHiveDto}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerUpdate>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-          return  hiveControllerUpdate(id,data,requestOptions)
+          return  hiveControllerUpdate(id,requestOptions)
         }
 
         
@@ -834,15 +824,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type HiveControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof hiveControllerUpdate>>>
-    export type HiveControllerUpdateMutationBody = UpdateHiveDto
+    
     export type HiveControllerUpdateMutationError = unknown
 
     export const useHiveControllerUpdate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string;data: UpdateHiveDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof hiveControllerUpdate>>,
         TError,
-        {id: string;data: UpdateHiveDto},
+        {id: string},
         TContext
       > => {
 
@@ -909,14 +899,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     
 export const hiveControllerUpdateBoxes = (
     id: string,
-    updateHiveBoxesDto: UpdateHiveBoxesDto,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<HiveDetailResponseDto>(
-      {url: `/api/hives/${id}/boxes`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: updateHiveBoxesDto
+      return customInstance<void>(
+      {url: `/api/hives/${id}/boxes`, method: 'PUT'
     },
       options);
     }
@@ -924,8 +911,8 @@ export const hiveControllerUpdateBoxes = (
 
 
 export const getHiveControllerUpdateBoxesMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, TError,{id: string;data: UpdateHiveBoxesDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, TError,{id: string;data: UpdateHiveBoxesDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, TError,{id: string}, TContext> => {
     
 const mutationKey = ['hiveControllerUpdateBoxes'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -937,10 +924,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, {id: string;data: UpdateHiveBoxesDto}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-          return  hiveControllerUpdateBoxes(id,data,requestOptions)
+          return  hiveControllerUpdateBoxes(id,requestOptions)
         }
 
         
@@ -949,15 +936,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type HiveControllerUpdateBoxesMutationResult = NonNullable<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>>
-    export type HiveControllerUpdateBoxesMutationBody = UpdateHiveBoxesDto
+    
     export type HiveControllerUpdateBoxesMutationError = unknown
 
     export const useHiveControllerUpdateBoxes = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, TError,{id: string;data: UpdateHiveBoxesDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof hiveControllerUpdateBoxes>>,
         TError,
-        {id: string;data: UpdateHiveBoxesDto},
+        {id: string},
         TContext
       > => {
 

@@ -235,26 +235,9 @@
       "post": {
         "operationId": "HiveController_create",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateHiveDto"
-              }
-            }
-          }
-        },
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HiveResponseDto"
-                }
-              }
-            }
+          "201": {
+            "description": ""
           }
         },
         "tags": [
@@ -266,17 +249,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/HiveResponseDto"
-                  }
-                }
-              }
-            }
+            "description": ""
           }
         },
         "tags": [
@@ -299,14 +272,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HiveDetailResponseDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "tags": [
@@ -325,16 +291,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateHiveDto"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": ""
@@ -379,26 +335,9 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateHiveBoxesDto"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Boxes updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HiveDetailResponseDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "tags": [
@@ -1155,453 +1094,6 @@
           "newPassword"
         ]
       },
-      "CreateHiveDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The name of the hive",
-            "example": "Hive #1"
-          },
-          "apiaryId": {
-            "type": "string",
-            "description": "The ID of the apiary this hive belongs to"
-          },
-          "notes": {
-            "type": "string",
-            "description": "Additional notes about the hive"
-          },
-          "installationDate": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Date when the hive was installed"
-          },
-          "status": {
-            "type": "string",
-            "description": "Current status of the hive",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE",
-              "DEAD",
-              "SOLD",
-              "UNKNOWN",
-              "ARCHIVED"
-            ],
-            "example": "ACTIVE"
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
-      "HiveStatusEnum": {
-        "type": "string",
-        "enum": [
-          "ACTIVE",
-          "INACTIVE",
-          "DEAD",
-          "SOLD",
-          "UNKNOWN",
-          "ARCHIVED"
-        ],
-        "description": "Status of the hive"
-      },
-      "QueenResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique ID of the queen"
-          },
-          "hiveId": {
-            "type": "string",
-            "nullable": true,
-            "description": "ID of the hive this queen belongs to"
-          },
-          "marking": {
-            "type": "string",
-            "nullable": true,
-            "description": "Queen marking code"
-          },
-          "color": {
-            "type": "string",
-            "nullable": true,
-            "description": "Queen color marking"
-          },
-          "year": {
-            "type": "number",
-            "description": "Birth year of the queen"
-          },
-          "source": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "ACTIVE",
-              "REPLACED",
-              "DEAD",
-              "UNKNOWN"
-            ]
-          },
-          "installedAt": {
-            "type": "string"
-          },
-          "replacedAt": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "marking",
-          "color",
-          "year"
-        ]
-      },
-      "HiveResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier of the hive",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the hive",
-            "example": "Hive #1"
-          },
-          "status": {
-            "description": "Status of the hive",
-            "example": "ACTIVE",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HiveStatusEnum"
-              }
-            ]
-          },
-          "apiaryId": {
-            "type": "string",
-            "description": "ID of the apiary this hive belongs to",
-            "example": "123e4567-e89b-12d3-a456-426614174001",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string",
-            "description": "Additional notes about the hive",
-            "example": "Strong colony with good honey production",
-            "nullable": true
-          },
-          "installationDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Date when the hive was installed",
-            "example": "2023-04-15T12:00:00Z",
-            "nullable": true
-          },
-          "lastInspectionDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Date of the most recent inspection",
-            "example": "2023-05-20T14:30:00Z",
-            "nullable": true
-          },
-          "activeQueen": {
-            "description": "The current active queen in the hive",
-            "nullable": true,
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/QueenResponseDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "status",
-          "installationDate"
-        ]
-      },
-      "BoxTypeDto": {
-        "type": "string",
-        "enum": [
-          "BROOD",
-          "HONEY",
-          "FEEDER"
-        ],
-        "description": "Type of box"
-      },
-      "BoxResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Unique identifier of the box",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "position": {
-            "type": "number",
-            "description": "Position of the box from bottom to top (0-based)",
-            "example": 0
-          },
-          "frameCount": {
-            "type": "number",
-            "description": "Number of frames in this box",
-            "example": 8
-          },
-          "maxFrameCount": {
-            "type": "number",
-            "description": "Maximum number of frames the box can hold",
-            "example": 10,
-            "nullable": true
-          },
-          "hasExcluder": {
-            "type": "boolean",
-            "description": "Whether there is a queen excluder above this box",
-            "example": false
-          },
-          "type": {
-            "description": "Type of box",
-            "example": "BROOD",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BoxTypeDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "position",
-          "frameCount",
-          "hasExcluder",
-          "type"
-        ]
-      },
-      "InspectionScoreDto": {
-        "type": "object",
-        "properties": {
-          "populationScore": {
-            "type": "number",
-            "nullable": true,
-            "description": "Score for colony population and brood pattern (0-5 scale)",
-            "example": 4
-          },
-          "queenScore": {
-            "type": "number",
-            "nullable": true,
-            "description": "Score for queen performance and health (0-5 scale)",
-            "example": 4
-          },
-          "storesScore": {
-            "type": "number",
-            "nullable": true,
-            "description": "Score for honey and pollen stores (0-5 scale)",
-            "example": 3
-          },
-          "overallScore": {
-            "type": "number",
-            "nullable": true,
-            "description": "Overall health score for the colony (0-5 scale)",
-            "example": 4
-          },
-          "warnings": {
-            "description": "List of warnings or issues detected during inspection",
-            "example": [
-              "Low honey stores",
-              "Queen cells present"
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "populationScore",
-          "queenScore",
-          "storesScore",
-          "overallScore",
-          "warnings"
-        ]
-      },
-      "HiveDetailResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier of the hive",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the hive",
-            "example": "Hive #1"
-          },
-          "status": {
-            "description": "Status of the hive",
-            "example": "ACTIVE",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HiveStatusEnum"
-              }
-            ]
-          },
-          "apiaryId": {
-            "type": "string",
-            "description": "ID of the apiary this hive belongs to",
-            "example": "123e4567-e89b-12d3-a456-426614174001",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string",
-            "description": "Additional notes about the hive",
-            "example": "Strong colony with good honey production",
-            "nullable": true
-          },
-          "installationDate": {
-            "type": "string",
-            "description": "Date when the hive was installed",
-            "example": "2023-04-15T12:00:00Z",
-            "nullable": true
-          },
-          "lastInspectionDate": {
-            "type": "string",
-            "description": "Date of the most recent inspection",
-            "example": "2023-05-20T14:30:00Z",
-            "nullable": true
-          },
-          "boxes": {
-            "description": "Boxes in the hive, ordered by position from bottom to top",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BoxResponseDto"
-            }
-          },
-          "activeQueen": {
-            "description": "The current active queen in the hive",
-            "nullable": true,
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/QueenResponseDto"
-              }
-            ]
-          },
-          "hiveScore": {
-            "description": "Hive score",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InspectionScoreDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "status",
-          "installationDate",
-          "boxes",
-          "hiveScore"
-        ]
-      },
-      "UpdateHiveDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The name of the hive",
-            "example": "Hive #1"
-          },
-          "apiaryId": {
-            "type": "string",
-            "description": "The ID of the apiary this hive belongs to"
-          },
-          "notes": {
-            "type": "string",
-            "description": "Additional notes about the hive"
-          },
-          "installationDate": {
-            "type": "string",
-            "description": "Date when the hive was installed"
-          },
-          "status": {
-            "type": "string",
-            "description": "Current status of the hive",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE",
-              "DEAD",
-              "SOLD",
-              "UNKNOWN",
-              "ARCHIVED"
-            ],
-            "example": "ACTIVE"
-          }
-        }
-      },
-      "BoxDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Optional box ID (will be created if not provided)"
-          },
-          "position": {
-            "type": "number",
-            "description": "Position of the box from bottom to top (0-based)",
-            "example": 0
-          },
-          "frameCount": {
-            "type": "number",
-            "description": "Number of frames in this box",
-            "example": 10
-          },
-          "hasExcluder": {
-            "type": "boolean",
-            "description": "Whether there is a queen excluder above this box",
-            "example": false
-          },
-          "type": {
-            "description": "Type of box",
-            "example": "BROOD",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BoxTypeDto"
-              }
-            ]
-          },
-          "maxFrameCount": {
-            "type": "number",
-            "description": "Maximum number of frames the box can hold",
-            "example": 10
-          }
-        },
-        "required": [
-          "position",
-          "frameCount",
-          "hasExcluder",
-          "type"
-        ]
-      },
-      "UpdateHiveBoxesDto": {
-        "type": "object",
-        "properties": {
-          "boxes": {
-            "description": "List of boxes for the hive (will replace existing boxes)",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BoxDto"
-            }
-          }
-        },
-        "required": [
-          "boxes"
-        ]
-      },
       "QueenStatus": {
         "type": "string",
         "enum": [
@@ -1670,6 +1162,58 @@
           }
         },
         "required": [
+          "year"
+        ]
+      },
+      "QueenResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique ID of the queen"
+          },
+          "hiveId": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the hive this queen belongs to"
+          },
+          "marking": {
+            "type": "string",
+            "nullable": true,
+            "description": "Queen marking code"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true,
+            "description": "Queen color marking"
+          },
+          "year": {
+            "type": "number",
+            "description": "Birth year of the queen"
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "REPLACED",
+              "DEAD",
+              "UNKNOWN"
+            ]
+          },
+          "installedAt": {
+            "type": "string"
+          },
+          "replacedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "marking",
+          "color",
           "year"
         ]
       },

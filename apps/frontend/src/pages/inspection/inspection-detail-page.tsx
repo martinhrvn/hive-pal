@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useHiveControllerFindOne } from 'api-client';
 import { ChevronLeft, X } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,7 @@ import {
 } from './components';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
-import { useInspection } from '@/api/hooks';
+import { useHive, useInspection } from '@/api/hooks';
 
 export const InspectionDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,9 +25,7 @@ export const InspectionDetailPage = () => {
     enabled: !!id,
   });
 
-  const { data: hive } = useHiveControllerFindOne(inspection?.hiveId ?? '', {
-    query: { enabled: !!inspection?.hiveId, select: data => data.data },
-  });
+  const { data: hive } = useHive(inspection?.hiveId ?? '');
 
   if (isLoading) {
     return <div>Loading inspection...</div>;

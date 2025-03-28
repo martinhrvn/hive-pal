@@ -29,11 +29,9 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { QueenFormData, queenSchema } from './schema';
-import {
-  useHiveControllerFindAll,
-  useQueensControllerCreate,
-} from 'api-client';
+import { useQueensControllerCreate } from 'api-client';
 import { useMemo } from 'react';
+import { useHives } from '@/api/hooks';
 
 type QueenFormProps = {
   hiveId?: string;
@@ -98,11 +96,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
 
   const effectiveHiveId = propHiveId || urlHiveId;
 
-  const { data: hives } = useHiveControllerFindAll({
-    query: {
-      select: data => data.data,
-    },
-  });
+  const { data: hives } = useHives();
 
   const hiveOptions = useMemo(() => {
     if (!hives) return [];

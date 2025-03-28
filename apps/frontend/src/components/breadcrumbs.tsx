@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { useHiveControllerFindOne } from 'api-client';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Home } from 'lucide-react';
+import { useHive } from '@/api/hooks';
 
 interface BreadcrumbItem {
   label: string;
@@ -24,9 +24,7 @@ export const Breadcrumbs = () => {
 
   // For retrieving hive name when on a hive detail page
   const hiveId = params.id || params.hiveId;
-  const { data: hiveData } = useHiveControllerFindOne(hiveId as string, {
-    query: { enabled: !!hiveId },
-  });
+  const { data: hive } = useHive(hiveId as string);
 
   useEffect(() => {
     const generateBreadcrumbs = async () => {
@@ -102,10 +100,10 @@ export const Breadcrumbs = () => {
           continue;
         }
 
-        // Handle ID segments - use the hiveData to get the name
-        if (segment === hiveId && hiveData) {
+        // Handle ID segments - use the hive to get the name
+        if (segment === hiveId && hive) {
           breadcrumbItems.push({
-            label: hiveData.data.name,
+            label: hive.name,
             path: currentPath,
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -127,7 +125,7 @@ export const Breadcrumbs = () => {
     };
 
     generateBreadcrumbs();
-  }, [location, hiveData, hiveId]);
+  }, [location, hive, hiveId]);
 
   // Don't render breadcrumbs on the homepage
   if (location.pathname === '/') {

@@ -1,5 +1,5 @@
-import { HiveDetailResponseDto } from 'api-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { HiveDetailResponse } from 'shared-schemas';
 
 /**
  * A component for configuring boxes in a hive
@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export const BoxConfigurator = ({
   hive,
 }: {
-  hive: HiveDetailResponseDto | undefined;
+  hive: HiveDetailResponse | undefined;
 }) => {
   return (
     <div>

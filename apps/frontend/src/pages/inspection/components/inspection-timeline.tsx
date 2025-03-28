@@ -1,4 +1,3 @@
-import { InspectionResponseDto } from 'api-client';
 import {
   addWeeks,
   isWithinInterval,
@@ -19,9 +18,10 @@ import {
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { InspectionResponse } from 'shared-schemas';
 
 type InspectionTimelineProps = {
-  inspections: InspectionResponseDto[];
+  inspections: InspectionResponse[];
 };
 
 export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
@@ -80,7 +80,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
   };
 
   // Get the highest priority metrics if available
-  const calculateBroodScore = (inspection: InspectionResponseDto) => {
+  const calculateBroodScore = (inspection: InspectionResponse) => {
     const cappedBrood = inspection.observations?.cappedBrood ?? null;
     const uncappedBrood = inspection.observations?.uncappedBrood ?? null;
 

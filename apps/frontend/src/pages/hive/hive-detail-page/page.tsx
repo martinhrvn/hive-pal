@@ -1,7 +1,3 @@
-import {
-  useHiveControllerFindOne,
-  useInspectionsControllerFindAll,
-} from 'api-client';
 import { useParams } from 'react-router-dom';
 import { HiveStatus } from '@/pages/hive/components';
 import { Section } from '@/components/common/section';
@@ -11,24 +7,14 @@ import { StatisticCards } from './statistic-cards';
 import { BoxConfigurator } from './box-configurator';
 import { ActionSideBar } from '@/pages/hive/hive-detail-page/action-sidebar.tsx';
 import { QueenInformation } from '@/pages/hive/hive-detail-page/queen-information.tsx';
+import { useHive, useInspections } from '@/api/hooks';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
-  const {
-    data: hive,
-    error,
-    refetch,
-  } = useHiveControllerFindOne(hiveId ?? '', {
-    query: {
-      select: data => data.data,
-    },
+  const { data: hive, error, refetch } = useHive(hiveId as string);
+  const { data: inspections } = useInspections({
+    hiveId: hiveId,
   });
-  const { data: inspections } = useInspectionsControllerFindAll(
-    {
-      hiveId: hiveId,
-    },
-    { query: { select: data => data.data } },
-  );
   if (error) {
     return <div>Error</div>;
   }

@@ -22,15 +22,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { useHiveControllerFindAll } from 'api-client';
 import { useNavigate } from 'react-router-dom';
+import { useHives } from '@/api/hooks';
 
 export function NavHives() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
-  const { data: hives } = useHiveControllerFindAll({
-    query: { select: data => data.data },
-  });
+  const { data: hives } = useHives();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">

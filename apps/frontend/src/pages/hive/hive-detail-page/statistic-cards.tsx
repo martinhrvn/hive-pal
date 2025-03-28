@@ -1,16 +1,16 @@
-import { InspectionScoreDto } from 'api-client';
 import { BarChart, CrownIcon } from 'lucide-react';
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { IconJarLogoIcon } from '@radix-ui/react-icons';
 import { StatisticCard } from '@/components/common/staticstic-card.tsx';
+import { HiveScore } from 'shared-schemas';
 
-export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
-  const strength: number | null = score.populationScore;
-  const honeyStores: number | null = score.storesScore;
-  const queenScore: number | null = score.queenScore;
+export const StatisticCards = ({ score }: { score: HiveScore }) => {
+  const strength = score.populationScore;
+  const honeyStores = score.storesScore;
+  const queenScore = score.queenScore;
 
-  const getScoreColor = (value: number | null) => {
-    if (value === null) return '';
+  const getScoreColor = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return '';
     if (value >= 6) return 'text-green-600';
     if (value >= 3) return 'text-amber-500';
     return 'text-red-500';
@@ -24,9 +24,7 @@ export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
           emphasized
           value={
             <span className={getScoreColor(strength)}>
-              {score.overallScore !== null
-                ? score.overallScore.toFixed(1)
-                : '—'}
+              {score.overallScore?.toFixed(1) ?? '—'}
             </span>
           }
           subtitle={''}
@@ -39,7 +37,7 @@ export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
         title="Population score"
         value={
           <span className={getScoreColor(strength)}>
-            {strength !== null ? strength.toFixed(1) : '—'}
+            {strength?.toFixed(1) ?? '—'}
           </span>
         }
         subtitle={''}
@@ -50,7 +48,7 @@ export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
         title="Stores score"
         value={
           <span className={getScoreColor(honeyStores)}>
-            {honeyStores !== null ? honeyStores.toFixed(1) : '—'}
+            {honeyStores?.toFixed(1) ?? '—'}
           </span>
         }
         subtitle={''}
@@ -61,7 +59,7 @@ export const StatisticCards = ({ score }: { score: InspectionScoreDto }) => {
         title="Queen score"
         value={
           <span className={getScoreColor(honeyStores)}>
-            {queenScore !== null ? queenScore.toFixed(1) : '—'}
+            {queenScore?.toFixed(1) ?? '—'}
           </span>
         }
         subtitle={''}
