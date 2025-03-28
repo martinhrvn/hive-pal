@@ -5,7 +5,7 @@ import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
 import { AXIOS_INSTANCE, useAuthControllerRegister } from 'api-client';
 
-const TOKEN_KEY = 'hive_pal_auth_token';
+export const TOKEN_KEY = 'hive_pal_auth_token';
 export const APIARY_SELECTION = 'hive_pal_apiary_selection';
 
 interface AuthProviderProps {

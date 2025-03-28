@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   Query,
-  SerializeOptions,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -15,12 +14,19 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { InspectionsService } from './inspections.service';
-import { CreateInspectionDto } from './dto/create-inspection.dto';
-import { UpdateInspectionDto } from './dto/update-inspection.dto';
-import { InspectionFilterDto } from './dto/inspection-filter.dto';
-import { InspectionResponseDto } from './dto/inspection-response.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
 import { CustomLoggerService } from '../logger/logger.service';
+import {
+  createInspectionSchema,
+  updateInspectionSchema,
+  inspectionFilterSchema,
+  CreateInspection,
+  UpdateInspection,
+  InspectionFilter,
+  InspectionResponse,
+  UpdateInspectionResponse,
+  CreateInspectionResponse,
+} from 'shared-schemas';
+import { ZodValidation } from '../common';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard)
 @Controller('inspections')
@@ -33,10 +39,11 @@ export class InspectionsController {
   }
 
   @Post()
-  create(
-    @Body() createInspectionDto: CreateInspectionDto,
+  @ZodValidation(createInspectionSchema)
+  async create(
+    @Body() createInspectionDto: CreateInspection,
     @Req() req: RequestWithApiary,
-  ) {
+  ): Promise<CreateInspectionResponse> {
     this.logger.log(
       `Creating inspection for hive ${createInspectionDto.hiveId} in apiary ${req.apiaryId}`,
     );
@@ -47,12 +54,11 @@ export class InspectionsController {
   }
 
   @Get()
-  @SerializeOptions({ type: InspectionResponseDto })
-  @ApiOkResponse({ type: InspectionResponseDto, isArray: true })
-  findAll(
-    @Query() query: InspectionFilterDto,
+  @ZodValidation(inspectionFilterSchema)
+  async findAll(
+    @Query() query: InspectionFilter,
     @Req() req: RequestWithApiary,
-  ): Promise<InspectionResponseDto[]> {
+  ): Promise<InspectionResponse[]> {
     this.logger.log(
       `Finding inspections for apiary ${req.apiaryId}${query.hiveId ? `, hive ${query.hiveId}` : ''}`,
     );
@@ -64,9 +70,10 @@ export class InspectionsController {
   }
 
   @Get(':id')
-  @SerializeOptions({ type: InspectionResponseDto })
-  @ApiOkResponse({ type: InspectionResponseDto })
-  findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async findOne(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiary,
+  ): Promise<InspectionResponse | null> {
     this.logger.log(
       `Finding inspection with ID ${id} in apiary ${req.apiaryId}`,
     );
@@ -77,11 +84,12 @@ export class InspectionsController {
   }
 
   @Patch(':id')
-  update(
+  @ZodValidation(updateInspectionSchema)
+  async update(
     @Param('id') id: string,
-    @Body() updateInspectionDto: UpdateInspectionDto,
+    @Body() updateInspectionDto: UpdateInspection,
     @Req() req: RequestWithApiary,
-  ) {
+  ): Promise<UpdateInspectionResponse> {
     this.logger.log(
       `Updating inspection with ID ${id} in apiary ${req.apiaryId}`,
     );
@@ -93,7 +101,7 @@ export class InspectionsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
     this.logger.log(
       `Removing inspection with ID ${id} from apiary ${req.apiaryId}`,
     );

@@ -28,14 +28,11 @@ import type {
   ChangePasswordDto,
   CreateApiaryDto,
   CreateHiveDto,
-  CreateInspectionDto,
   CreateQueenDto,
   HealthControllerCheck200,
   HealthControllerCheck503,
   HiveDetailResponseDto,
   HiveResponseDto,
-  InspectionResponseDto,
-  InspectionsControllerFindAllParams,
   LoginDto,
   QueenResponseDto,
   RegisterDto,
@@ -43,7 +40,6 @@ import type {
   UpdateApiaryDto,
   UpdateHiveBoxesDto,
   UpdateHiveDto,
-  UpdateInspectionDto,
   UpdateQueenDto,
   UserResponseDto
 } from './model'
@@ -971,15 +967,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     }
     
 export const inspectionsControllerCreate = (
-    createInspectionDto: CreateInspectionDto,
+    
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/api/inspections`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createInspectionDto, signal
+      {url: `/api/inspections`, method: 'POST', signal
     },
       options);
     }
@@ -987,8 +981,8 @@ export const inspectionsControllerCreate = (
 
 
 export const getInspectionsControllerCreateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,{data: CreateInspectionDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,{data: CreateInspectionDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,void, TContext> => {
     
 const mutationKey = ['inspectionsControllerCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1000,10 +994,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inspectionsControllerCreate>>, {data: CreateInspectionDto}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inspectionsControllerCreate>>, void> = () => {
+          
 
-          return  inspectionsControllerCreate(data,requestOptions)
+          return  inspectionsControllerCreate(requestOptions)
         }
 
         
@@ -1012,15 +1006,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type InspectionsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof inspectionsControllerCreate>>>
-    export type InspectionsControllerCreateMutationBody = CreateInspectionDto
+    
     export type InspectionsControllerCreateMutationError = unknown
 
     export const useInspectionsControllerCreate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,{data: CreateInspectionDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof inspectionsControllerCreate>>,
         TError,
-        {data: CreateInspectionDto},
+        void,
         TContext
       > => {
 
@@ -1030,34 +1024,33 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     }
     
 export const inspectionsControllerFindAll = (
-    params?: InspectionsControllerFindAllParams,
+    
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<InspectionResponseDto[]>(
-      {url: `/api/inspections`, method: 'GET',
-        params, signal
+      return customInstance<void>(
+      {url: `/api/inspections`, method: 'GET', signal
     },
       options);
     }
   
 
-export const getInspectionsControllerFindAllQueryKey = (params?: InspectionsControllerFindAllParams,) => {
-    return [`/api/inspections`, ...(params ? [params]: [])] as const;
+export const getInspectionsControllerFindAllQueryKey = () => {
+    return [`/api/inspections`] as const;
     }
 
     
-export const getInspectionsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = unknown>(params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getInspectionsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getInspectionsControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getInspectionsControllerFindAllQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof inspectionsControllerFindAll>>> = ({ signal }) => inspectionsControllerFindAll(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof inspectionsControllerFindAll>>> = ({ signal }) => inspectionsControllerFindAll(requestOptions, signal);
 
       
 
@@ -1071,7 +1064,7 @@ export type InspectionsControllerFindAllQueryError = unknown
 
 
 export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = unknown>(
- params: undefined |  InspectionsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>> & Pick<
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof inspectionsControllerFindAll>>,
           TError,
@@ -1081,7 +1074,7 @@ export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeo
 
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
 export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = unknown>(
- params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>> & Pick<
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof inspectionsControllerFindAll>>,
           TError,
@@ -1091,16 +1084,16 @@ export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeo
 
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
 export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = unknown>(
- params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
 
 export function useInspectionsControllerFindAll<TData = Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError = unknown>(
- params?: InspectionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof inspectionsControllerFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
 
-  const queryOptions = getInspectionsControllerFindAllQueryOptions(params,options)
+  const queryOptions = getInspectionsControllerFindAllQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 
@@ -1118,7 +1111,7 @@ export const inspectionsControllerFindOne = (
 ) => {
       
       
-      return customInstance<InspectionResponseDto>(
+      return customInstance<void>(
       {url: `/api/inspections/${id}`, method: 'GET', signal
     },
       options);
@@ -1196,14 +1189,11 @@ export function useInspectionsControllerFindOne<TData = Awaited<ReturnType<typeo
 
 export const inspectionsControllerUpdate = (
     id: string,
-    updateInspectionDto: UpdateInspectionDto,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<void>(
-      {url: `/api/inspections/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateInspectionDto
+      {url: `/api/inspections/${id}`, method: 'PATCH'
     },
       options);
     }
@@ -1211,8 +1201,8 @@ export const inspectionsControllerUpdate = (
 
 
 export const getInspectionsControllerUpdateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string;data: UpdateInspectionDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string;data: UpdateInspectionDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string}, TContext> => {
     
 const mutationKey = ['inspectionsControllerUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1224,10 +1214,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, {id: string;data: UpdateInspectionDto}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-          return  inspectionsControllerUpdate(id,data,requestOptions)
+          return  inspectionsControllerUpdate(id,requestOptions)
         }
 
         
@@ -1236,15 +1226,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type InspectionsControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof inspectionsControllerUpdate>>>
-    export type InspectionsControllerUpdateMutationBody = UpdateInspectionDto
+    
     export type InspectionsControllerUpdateMutationError = unknown
 
     export const useInspectionsControllerUpdate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string;data: UpdateInspectionDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inspectionsControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof inspectionsControllerUpdate>>,
         TError,
-        {id: string;data: UpdateInspectionDto},
+        {id: string},
         TContext
       > => {
 

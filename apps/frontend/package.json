@@ -36,6 +36,7 @@
     "api-client": "workspace:*",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
+    "shared-schemas": "workspace:*",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "leaflet": "^1.9.4",

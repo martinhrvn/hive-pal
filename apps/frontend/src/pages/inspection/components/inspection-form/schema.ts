@@ -1,21 +1,22 @@
 import { z } from 'zod';
-import { InspectionStatus } from 'api-client';
+import {
+  createInspectionSchema,
+  ActionType,
+  observationSchema,
+} from 'shared-schemas';
 
-export const observationSchema = z.object({
-  strength: z.number().nullish(),
-  uncappedBrood: z.number().nullish(),
-  cappedBrood: z.number().nullish(),
-  honeyStores: z.number().nullish(),
-  pollenStores: z.number().nullish(),
-  queenCells: z.number().nullish(),
-  swarmCells: z.boolean().nullish(),
-  supersedureCells: z.boolean().nullish(),
-  queenSeen: z.boolean().nullish(),
-});
+// Frontend-specific modifications for the form
+// We use date object instead of datetime string
+const inspectionFormSchema = createInspectionSchema
+  .omit({ date: true })
+  .extend({
+    date: z.date().or(z.string().transform(v => new Date(v))),
+  });
 
-// Action schemas
+// Action schema modifications for the frontend
+// Feeding action
 export const feedingActionSchema = z.object({
-  type: z.literal('FEEDING'),
+  type: z.literal(ActionType.FEEDING),
   feedType: z.enum(['SYRUP', 'HONEY', 'CANDY']),
   quantity: z.number(),
   unit: z.string(),
@@ -23,25 +24,29 @@ export const feedingActionSchema = z.object({
   notes: z.string().optional(),
 });
 
+// Treatment action
 export const treatmentActionSchema = z.object({
-  type: z.literal('TREATMENT'),
+  type: z.literal(ActionType.TREATMENT),
   treatmentType: z.string(),
   amount: z.number(),
   unit: z.string(),
   notes: z.string().optional(),
 });
 
+// Frames action
 export const framesActionSchema = z.object({
-  type: z.literal('FRAMES'),
+  type: z.literal(ActionType.FRAME),
   frames: z.number(),
   notes: z.string().optional(),
 });
 
+// Other action
 export const otherActionSchema = z.object({
-  type: z.literal('OTHER'),
+  type: z.literal(ActionType.OTHER),
   notes: z.string(),
 });
 
+// Combined action schema
 export const actionSchema = z.discriminatedUnion('type', [
   feedingActionSchema,
   treatmentActionSchema,
@@ -49,14 +54,8 @@ export const actionSchema = z.discriminatedUnion('type', [
   otherActionSchema,
 ]);
 
-export const inspectionSchema = z.object({
-  hiveId: z.string(),
-  date: z.date(),
-  temperature: z.number().nullish(),
-  weatherConditions: z.string().nullish(),
-  observations: observationSchema,
-  notes: z.string().nullish(),
-  status: z.nativeEnum(InspectionStatus),
+// Final inspection schema
+export const inspectionSchema = inspectionFormSchema.extend({
   actions: z.array(actionSchema).optional(),
 });
 

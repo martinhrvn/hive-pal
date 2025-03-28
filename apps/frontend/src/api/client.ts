@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { APIARY_SELECTION, TOKEN_KEY } from '@/context/auth-context';
+
 export const getEnvVariable = (key: string): string => {
   if (
     window.ENV &&
@@ -63,3 +66,34 @@ export const createApiClient = (getToken: () => string | null) => {
       }) as Promise<T>,
   };
 };
+
+export const apiClient = axios.create({
+  baseURL: getApiUrl(getEnvVariable('VITE_API_URL')),
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+apiClient.interceptors.request.use(config => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  const apiaryId = localStorage.getItem(APIARY_SELECTION);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    if (apiaryId) {
+      config.headers['x-apiary-id'] = apiaryId;
+    }
+  }
+  config.baseURL = getApiUrl('');
+  return config;
+});
+
+apiClient.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      // Unauthorized, clear token and redirect to login
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  },
+);

@@ -1,8 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  useHiveControllerFindOne,
-  useInspectionsControllerFindOne,
-} from 'api-client';
+import { useHiveControllerFindOne } from 'api-client';
 import { ChevronLeft, X } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -15,6 +12,7 @@ import {
 } from './components';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
+import { useInspection } from '@/api/hooks';
 
 export const InspectionDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,59 +22,80 @@ export const InspectionDetailPage = () => {
     data: inspection,
     isLoading,
     error,
-  } = useInspectionsControllerFindOne(id ?? '', {
-    query: { enabled: !!id, select: data => data.data },
+  } = useInspection(id ?? '', {
+    enabled: !!id,
   });
+
   const { data: hive } = useHiveControllerFindOne(inspection?.hiveId ?? '', {
     query: { enabled: !!inspection?.hiveId, select: data => data.data },
   });
 
   if (isLoading) {
-    return (
-      <div className="container mx-auto p-4">Loading inspection details...</div>
-    );
+    return <div>Loading inspection...</div>;
   }
 
   if (error || !inspection) {
     return (
-      <div className="container mx-auto p-4">
-        <Alert variant="destructive">
-          <X className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Failed to load inspection details.
-          </AlertDescription>
-        </Alert>
-        <Button variant="outline" onClick={() => navigate(-1)} className="mt-4">
-          <ChevronLeft className="mr-2 h-4 w-4" /> Go Back
-        </Button>
-      </div>
+      <Alert variant="destructive">
+        <X className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Failed to load inspection details.{' '}
+          <Button
+            variant="link"
+            className="p-0 h-auto"
+            onClick={() => navigate(-1)}
+          >
+            Go back
+          </Button>
+        </AlertDescription>
+      </Alert>
     );
+  }
+
+  if (!inspection || !hive) {
+    return <div>Inspection not found</div>;
   }
 
   return (
     <Page>
       <MainContent>
-        <InspectionHeader
-          hiveName={hive?.name || ''}
-          hiveId={inspection.hiveId}
-          date={inspection.date}
-          temperature={inspection.temperature ?? undefined}
-          weatherConditions={inspection.weatherConditions ?? undefined}
-        />
-        <div className="flex gap-4 mb-6"></div>
-        <StatisticCards score={inspection.score} />
-        <ObservationsCard observations={inspection.observations} />
-        {inspection.actions && inspection.actions.length > 0 && (
-          <ActionsCard actions={inspection.actions} />
-        )}
-        <NotesCard notes={inspection.notes} />
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="mb-4"
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" /> Back
+          </Button>
+
+          <InspectionHeader
+            hiveId={hive.id}
+            date={inspection.date}
+            hiveName={hive.name}
+          />
+
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* First column */}
+            <div className="space-y-6">
+              <ObservationsCard observations={inspection.observations} />
+              <NotesCard notes={inspection.notes} />
+            </div>
+
+            {/* Second column */}
+            <div className="space-y-6">
+              <ActionsCard actions={inspection.actions ?? []} />
+              {hive && <StatisticCards score={hive.hiveScore} />}
+            </div>
+          </div>
+        </div>
       </MainContent>
 
       <Sidebar>
         <InspectionDetailSidebar
-          inspectionId={id || ''}
-          hiveId={inspection.hiveId}
+          inspectionId={inspection.id}
+          hiveId={hive.id}
         />
       </Sidebar>
     </Page>

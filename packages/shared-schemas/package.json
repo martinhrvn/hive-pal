@@ -1,0 +1,19 @@
+{
+  "name": "shared-schemas",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint --ext .ts src"
+  },
+  "dependencies": {
+    "zod": "^3.24.2",
+    "@nestjs/swagger": "^11.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "typescript": "^5.6.0"
+  }
+}

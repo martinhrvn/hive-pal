@@ -1,11 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  HiveResponseDto,
-  InspectionResponseDto,
-  useHiveControllerFindAll,
-  useInspectionsControllerFindAll,
-} from 'api-client';
+import { HiveResponseDto, useHiveControllerFindAll } from 'api-client';
+import { useInspections } from '@/api/hooks';
+import { InspectionResponse } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
@@ -73,10 +70,10 @@ export const InspectionListPage = () => {
 
   // Fetch inspections and hives
   const {
-    data: inspectionsData,
+    data: inspections,
     isLoading: isLoadingInspections,
     refetch: refetchInspections,
-  } = useInspectionsControllerFindAll(
+  } = useInspections(
     selectedHiveId && selectedHiveId !== 'all'
       ? { hiveId: selectedHiveId }
       : undefined,
@@ -94,22 +91,22 @@ export const InspectionListPage = () => {
 
   // Filter inspections based on tab and search term
   const filteredInspections = useMemo(() => {
-    if (!inspectionsData?.data) return [];
+    if (!inspections) return [];
 
     // First apply search filter
-    const searchFiltered = [...inspectionsData.data];
+    const searchFiltered = [...inspections];
 
     // Then apply tab filter
     switch (activeTab) {
       case InspectionTab.RECENT:
         return searchFiltered.filter(inspection => {
-          const inspectionDate = parseISO(inspection.date);
+          const inspectionDate = parseISO(inspection.date as string);
           return isPast(inspectionDate) && !isToday(inspectionDate);
         });
 
       case InspectionTab.UPCOMING:
         return searchFiltered.filter(inspection => {
-          const inspectionDate = parseISO(inspection.date);
+          const inspectionDate = parseISO(inspection.date as string);
           return isFuture(inspectionDate) || isToday(inspectionDate);
         });
 
@@ -117,7 +114,7 @@ export const InspectionListPage = () => {
       default:
         return searchFiltered;
     }
-  }, [inspectionsData?.data, activeTab]);
+  }, [inspections, activeTab]);
 
   // Sort inspections by date (most recent first for past, soonest first for upcoming)
   const sortedInspections = useMemo(() => {
@@ -231,7 +228,7 @@ export const InspectionListPage = () => {
 
       <Sidebar>
         <InspectionActionSidebar
-          onRefreshData={refetchInspections}
+          onRefreshData={() => refetchInspections()}
           selectedHiveId={selectedHiveId}
           onChangeView={handleTabChange}
           currentView={activeTab}
@@ -242,7 +239,7 @@ export const InspectionListPage = () => {
 };
 
 const renderInspectionsTable = (
-  inspections: InspectionResponseDto[],
+  inspections: InspectionResponse[],
   caption: string,
   navigate: (path: string) => void,
   hives: HiveResponseDto[] = [],
@@ -387,12 +384,12 @@ const renderInspectionsTable = (
               ) : (
                 <span
                   className={
-                    inspection.observations.queenSeen
+                    inspection.observations?.queenSeen
                       ? 'text-green-600'
                       : 'text-amber-500'
                   }
                 >
-                  {inspection.observations.queenSeen ? 'Yes' : 'No'}
+                  {inspection.observations?.queenSeen ? 'Yes' : 'No'}
                 </span>
               )}
             </TableCell>

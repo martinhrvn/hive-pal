@@ -1,14 +1,9 @@
 import request from 'supertest';
-import { HiveStatusEnum } from '../src/hives/dto/hive-status.enum';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { Test } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { getRandomUser } from './fixtures/user';
-import { getRandomApiary } from './fixtures/apiary';
 import { setupApiary, setupApp, setupHive, setupUser } from './fixtures/setup';
 import { CreateInspectionDto } from '../src/inspections/dto/create-inspection.dto';
-import { ActionType } from '../src/inspections/dto/create-actions.dto';
+import { ActionType } from '../src/actions/dto/action-response.dto';
 
 let app: INestApplication;
 let prisma: PrismaService;
@@ -176,7 +171,8 @@ it('should create an inspection with FEEDING action', async () => {
       {
         type: ActionType.FEEDING,
         notes: 'Fall feeding',
-        feedingAction: {
+        details: {
+          type: ActionType.FEEDING,
           feedType: 'Sugar Syrup',
           amount: 2.5,
           unit: 'liters',
@@ -249,7 +245,8 @@ it('should create an inspection with TREATMENT action', async () => {
       {
         type: ActionType.TREATMENT,
         notes: 'Mite treatment',
-        treatmentAction: {
+        details: {
+          type: ActionType.TREATMENT,
           product: 'Apivar',
           quantity: 2,
           unit: 'strips',
@@ -322,7 +319,8 @@ it('should create an inspection with FRAME action', async () => {
       {
         type: ActionType.FRAME,
         notes: 'Added frames for honey flow',
-        frameAction: {
+        details: {
+          type: ActionType.FRAME,
           quantity: 3,
         },
       },
@@ -439,7 +437,8 @@ it('should create an inspection with multiple actions of different types', async
       {
         type: ActionType.FEEDING,
         notes: 'Spring feeding',
-        feedingAction: {
+        details: {
+          type: ActionType.FEEDING,
           feedType: 'Pollen Sub',
           amount: 0.5,
           unit: 'kg',
@@ -448,7 +447,8 @@ it('should create an inspection with multiple actions of different types', async
       {
         type: ActionType.FRAME,
         notes: 'Removed old frames',
-        frameAction: {
+        details: {
+          type: ActionType.FRAME,
           quantity: -2,
         },
       },

@@ -1,16 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateInspectionDto } from './dto/create-inspection.dto';
-import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionFilterDto } from './dto/inspection-filter.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
 import { Observation, Prisma } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { InspectionStatus } from './dto/inspection-status.enum';
-import { plainToInstance } from 'class-transformer';
 import { ActionsService } from '../actions/actions.service';
+import { CustomLoggerService } from '../logger/logger.service';
+import {
+  CreateInspectionResponse,
+  InspectionResponse,
+  UpdateInspection,
+  UpdateInspectionResponse,
+} from 'shared-schemas';
 
 @Injectable()
 export class InspectionsService {
@@ -18,12 +22,13 @@ export class InspectionsService {
     private prisma: PrismaService,
     private metricService: MetricsService,
     private actionsService: ActionsService,
+    private logger: CustomLoggerService,
   ) {}
 
   async create(
     createInspectionDto: CreateInspectionDto,
     filter: ApiaryUserFilter,
-  ) {
+  ): Promise<CreateInspectionResponse> {
     // Verify that the hive belongs to the user's apiary
     const hive = await this.prisma.hive.findFirst({
       where: {
@@ -43,66 +48,76 @@ export class InspectionsService {
     const { observations, notes, actions, ...inspectionData } =
       createInspectionDto;
 
-    return this.prisma.$transaction(async (tx) => {
-      const status =
-        new Date(createInspectionDto.date) > new Date()
-          ? 'SCHEDULED'
-          : 'COMPLETED';
+    return this.prisma.$transaction(
+      async (tx): Promise<CreateInspectionResponse> => {
+        const status =
+          new Date(createInspectionDto.date) > new Date()
+            ? 'SCHEDULED'
+            : 'COMPLETED';
 
-      const inspection = await tx.inspection.create({
-        data: {
-          ...inspectionData,
-          status,
-          observations: {
-            create: [
-              { type: 'strength', numericValue: observations?.strength },
-              {
-                type: 'capped_brood',
-                numericValue: observations?.cappedBrood,
-              },
-              {
-                type: 'uncapped_brood',
-                numericValue: observations?.uncappedBrood,
-              },
-              { type: 'honey_stores', numericValue: observations?.honeyStores },
-              {
-                type: 'pollen_stores',
-                numericValue: observations?.pollenStores,
-              },
-              { type: 'queen_cells', numericValue: observations?.queenCells },
-              { type: 'swarm_cells', booleanValue: observations?.swarmCells },
-              {
-                type: 'supersedure_cells',
-                booleanValue: observations?.supersedureCells,
-              },
-              { type: 'queen_seen', booleanValue: observations?.queenSeen },
-            ],
-          },
-        },
-      });
-
-      // Add notes if provided
-      if (notes) {
-        await tx.inspectionNote.create({
+        const inspection = await tx.inspection.create({
           data: {
-            inspectionId: inspection.id,
-            text: notes,
+            ...inspectionData,
+            status,
+            observations: {
+              create: [
+                { type: 'strength', numericValue: observations?.strength },
+                {
+                  type: 'capped_brood',
+                  numericValue: observations?.cappedBrood,
+                },
+                {
+                  type: 'uncapped_brood',
+                  numericValue: observations?.uncappedBrood,
+                },
+                {
+                  type: 'honey_stores',
+                  numericValue: observations?.honeyStores,
+                },
+                {
+                  type: 'pollen_stores',
+                  numericValue: observations?.pollenStores,
+                },
+                { type: 'queen_cells', numericValue: observations?.queenCells },
+                { type: 'swarm_cells', booleanValue: observations?.swarmCells },
+                {
+                  type: 'supersedure_cells',
+                  booleanValue: observations?.supersedureCells,
+                },
+                { type: 'queen_seen', booleanValue: observations?.queenSeen },
+              ],
+            },
           },
         });
-      }
 
-      // Add actions using ActionsService
-      if (actions && actions.length > 0) {
-        await this.actionsService.createActions(inspection.id, actions, tx);
-      }
+        // Add notes if provided
+        if (notes) {
+          await tx.inspectionNote.create({
+            data: {
+              inspectionId: inspection.id,
+              text: notes,
+            },
+          });
+        }
 
-      return plainToInstance(InspectionResponseDto, inspection);
-    });
+        // Add actions using ActionsService
+        if (actions && actions.length > 0) {
+          await this.actionsService.createActions(inspection.id, actions, tx);
+        }
+
+        return {
+          date: inspection.date.toISOString(),
+          id: inspection.id,
+          hiveId: inspection.hiveId,
+          status: inspection.status as InspectionStatus,
+        };
+      },
+    );
   }
 
   async findAll(
     filter: InspectionFilterDto & Partial<ApiaryUserFilter>,
-  ): Promise<InspectionResponseDto[]> {
+  ): Promise<InspectionResponse[]> {
     const whereClause: Prisma.InspectionWhereInput = {
       hiveId: filter.hiveId ?? undefined,
     };
@@ -135,7 +150,7 @@ export class InspectionsService {
       },
     });
 
-    return inspections.map((inspection): InspectionResponseDto => {
+    return inspections.map((inspection): InspectionResponse => {
       const metrics = this.mapObservationsToDto(inspection.observations);
       const score = this.metricService.calculateOveralScore(metrics);
 
@@ -162,7 +177,7 @@ export class InspectionsService {
   async findOne(
     id: string,
     filter: ApiaryUserFilter,
-  ): Promise<InspectionResponseDto | null> {
+  ): Promise<InspectionResponse | null> {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
@@ -213,9 +228,10 @@ export class InspectionsService {
 
   async update(
     id: string,
-    updateInspectionDto: UpdateInspectionDto,
+    updateInspectionDto: UpdateInspection,
     filter: ApiaryUserFilter,
-  ) {
+  ): Promise<UpdateInspectionResponse> {
+    this.logger.debug({ message: 'Updating inspection', updateInspectionDto });
     // Verify inspection exists and belongs to user's apiary
     const inspection = await this.prisma.inspection.findFirst({
       where: {
@@ -237,83 +253,83 @@ export class InspectionsService {
     const { observations, notes, actions, ...inspectionData } =
       updateInspectionDto;
 
-    return this.prisma.$transaction(async (tx) => {
-      await tx.observation.deleteMany({
-        where: {
-          inspectionId: id,
-        },
-      });
-
-      // Handle notes update
-      if (notes !== undefined) {
-        // Delete existing notes
-        await tx.inspectionNote.deleteMany({
+    return this.prisma.$transaction(
+      async (tx): Promise<UpdateInspectionResponse> => {
+        await tx.observation.deleteMany({
           where: {
             inspectionId: id,
           },
         });
 
-        // Create new note if there's content
-        if (notes) {
-          await tx.inspectionNote.create({
-            data: {
+        // Handle notes update
+        if (notes !== undefined) {
+          // Delete existing notes
+          await tx.inspectionNote.deleteMany({
+            where: {
               inspectionId: id,
-              text: notes,
             },
           });
+
+          // Create new note if there's content
+          if (notes) {
+            await tx.inspectionNote.create({
+              data: {
+                inspectionId: id,
+                text: notes,
+              },
+            });
+          }
         }
-      }
 
-      // Handle actions update if provided - use ActionsService
-      if (actions !== undefined) {
-        await this.actionsService.updateActions(id, actions, tx);
-      }
+        // Handle actions update if provided - use ActionsService
+        if (actions !== undefined) {
+          await this.actionsService.updateActions(id, actions, tx);
+        }
 
-      return await tx.inspection.update({
-        where: { id },
-        data: {
-          ...inspectionData,
-          hiveId: inspection.hiveId,
-          status: updateInspectionDto.status ?? inspection.status,
-          observations: {
-            create: [
-              { type: 'strength', numericValue: observations?.strength },
-              {
-                type: 'capped_brood',
-                numericValue: observations?.cappedBrood,
-              },
-              {
-                type: 'uncapped_brood',
-                numericValue: observations?.uncappedBrood,
-              },
-              { type: 'honey_stores', numericValue: observations?.honeyStores },
-              {
-                type: 'pollen_stores',
-                numericValue: observations?.pollenStores,
-              },
-              { type: 'queen_cells', numericValue: observations?.queenCells },
-              { type: 'swarm_cells', booleanValue: observations?.swarmCells },
-              {
-                type: 'supersedure_cells',
-                booleanValue: observations?.supersedureCells,
-              },
-              { type: 'queen_seen', booleanValue: observations?.queenSeen },
-            ],
-          },
-        },
-        include: {
-          observations: true,
-          notes: true,
-          actions: {
-            include: {
-              feedingAction: true,
-              treatmentAction: true,
-              frameAction: true,
+        const updated = await tx.inspection.update({
+          where: { id },
+          data: {
+            ...inspectionData,
+            hiveId: inspection.hiveId,
+            status: updateInspectionDto.status ?? inspection.status,
+            observations: {
+              create: [
+                { type: 'strength', numericValue: observations?.strength },
+                {
+                  type: 'capped_brood',
+                  numericValue: observations?.cappedBrood,
+                },
+                {
+                  type: 'uncapped_brood',
+                  numericValue: observations?.uncappedBrood,
+                },
+                {
+                  type: 'honey_stores',
+                  numericValue: observations?.honeyStores,
+                },
+                {
+                  type: 'pollen_stores',
+                  numericValue: observations?.pollenStores,
+                },
+                { type: 'queen_cells', numericValue: observations?.queenCells },
+                { type: 'swarm_cells', booleanValue: observations?.swarmCells },
+                {
+                  type: 'supersedure_cells',
+                  booleanValue: observations?.supersedureCells,
+                },
+                { type: 'queen_seen', booleanValue: observations?.queenSeen },
+              ],
             },
           },
-        },
-      });
-    });
+        });
+        return {
+          date: updated.date.toISOString(),
+          id: updated.id,
+          hiveId: updated.hiveId,
+          status: updated.status as InspectionStatus,
+        };
+      },
+    );
   }
 
   async remove(id: string, filter: ApiaryUserFilter) {

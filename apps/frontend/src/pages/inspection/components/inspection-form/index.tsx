@@ -1,14 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import {
-  ActionDto,
-  CreateActionDto,
   FeedingActionDetailsDto,
   FrameActionDetailsDto,
   TreatmentActionDetailsDto,
   useHiveControllerFindAll,
-  useInspectionsControllerCreate,
-  useInspectionsControllerFindOne,
-  useInspectionsControllerUpdate,
 } from 'api-client';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,19 +37,20 @@ import { WeatherSection } from '@/pages/inspection/components/inspection-form/we
 import { ObservationsSection } from '@/pages/inspection/components/inspection-form/observations.tsx';
 import { NotesSection } from '@/pages/inspection/components/inspection-form/notes.tsx';
 import { Separator } from '@/components/ui/separator';
+import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions.tsx';
+import { FeedType } from './actions/feeding';
 import {
-  ActionsSection,
-  ActionType,
-  OtherActionType,
-} from '@/pages/inspection/components/inspection-form/actions.tsx';
-import { FeedingActionType, FeedType } from './actions/feeding';
-import { TreatmentActionType } from '@/pages/inspection/components/inspection-form/actions/treatment.tsx';
-import { FramesActionType } from '@/pages/inspection/components/inspection-form/actions/frames.tsx';
+  useCreateInspection,
+  useInspection,
+  useUpdateInspection,
+} from '@/api/hooks';
+import { ActionType, CreateAction } from 'shared-schemas';
 
 type InspectionFormProps = {
   hiveId?: string;
   inspectionId?: string;
 };
+
 export const InspectionForm: React.FC<InspectionFormProps> = ({
   hiveId,
   inspectionId,
@@ -69,12 +65,11 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
         })),
     },
   });
-  const { data: inspection } = useInspectionsControllerFindOne(
-    inspectionId as string,
-    {
-      query: { enabled: !!inspectionId, select: data => data.data },
-    },
-  );
+
+  // Use our new custom hooks
+  const { data: inspection } = useInspection(inspectionId as string, {
+    enabled: !!inspectionId,
+  });
 
   const form = useForm<InspectionFormData>({
     resolver: zodResolver(inspectionSchema),
@@ -83,39 +78,39 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       ...inspection,
       date: inspection?.date ? new Date(inspection.date) : new Date(),
       actions:
-        inspection?.actions.map((action): ActionType => {
+        inspection?.actions?.map(action => {
           const type = action.type;
           if (type === 'FEEDING') {
             const details = action.details as FeedingActionDetailsDto;
             return {
-              type: 'FEEDING',
+              type: ActionType.FEEDING,
               notes: action.notes,
               feedType: details.feedType as FeedType,
               quantity: details.amount,
               unit: details.unit,
               concentration: details.concentration,
-            } as FeedingActionType;
+            };
           } else if (type === 'TREATMENT') {
             const details = action.details as TreatmentActionDetailsDto;
             return {
-              type: 'TREATMENT',
+              type: ActionType.TREATMENT,
               notes: action.notes,
               amount: details.quantity,
               treatmentType: details.product,
               unit: details.unit,
-            } as TreatmentActionType;
+            };
           } else if (type === 'FRAME') {
             const details = action.details as FrameActionDetailsDto;
             return {
-              type: 'FRAMES',
+              type: ActionType.FRAME,
               notes: action.notes,
               frames: details.quantity,
-            } as FramesActionType;
+            };
           } else {
             return {
-              type: 'OTHER',
+              type: ActionType.OTHER,
               notes: action.notes,
-            } as OtherActionType;
+            };
           }
         }) || [],
     },
@@ -123,22 +118,19 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
   const hiveIdFromForm =
     useWatch({ name: 'hiveId', control: form.control }) ?? hiveId;
-  const hive = inspection?.hiveId ?? hiveIdFromForm;
-  const url = inspectionId ? `/inspections/${inspectionId}` : `/hives/${hive}`;
+  const hiveForUrl = inspection?.hiveId ?? hiveIdFromForm;
+  const url = inspectionId
+    ? `/inspections/${inspectionId}`
+    : `/hives/${hiveForUrl}`;
 
-  const { mutate: createInspection } = useInspectionsControllerCreate({
-    mutation: { onSuccess: () => navigate(url) },
-  });
-  const { mutate: updateInspection } = useInspectionsControllerUpdate({
-    mutation: { onSuccess: () => navigate(url) },
-  });
+  // Use our new custom hooks
+  const { mutate: createInspectionMutation } = useCreateInspection();
+  const { mutate: updateInspectionMutation } = useUpdateInspection();
 
   const onSubmit = (data: InspectionFormData) => {
-    console.log(data);
-
     // Transform actions to match API format
     const transformedActions = data.actions
-      ?.map((action): CreateActionDto | null => {
+      ?.map((action): CreateAction | null => {
         switch (action.type) {
           case 'FEEDING':
             return {
@@ -157,16 +149,18 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               type: action.type,
               notes: action.notes,
               details: {
+                type: action.type,
                 product: action.treatmentType,
                 quantity: action.amount,
                 unit: action.unit,
               },
             };
-          case 'FRAMES':
+          case 'FRAME':
             return {
-              type: 'FRAME', // API expects FRAME (singular), not FRAMES
+              type: ActionType.FRAME,
               notes: action.notes,
               details: {
+                type: ActionType.FRAME,
                 quantity: action.frames,
               },
             };
@@ -174,30 +168,37 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             return null;
         }
       })
-      .filter((a): a is ActionDto => Boolean(a));
+      .filter((a): a is CreateAction => Boolean(a));
+
+    const formattedData = {
+      ...data,
+      date: data.date.toISOString(),
+      actions: transformedActions,
+    };
 
     if (!inspectionId) {
-      createInspection({
-        data: {
-          ...data,
-          date: data.date.toISOString(),
-          actions: transformedActions,
-        },
+      createInspectionMutation(formattedData, {
+        onSuccess: () => navigate(url),
       });
     } else {
-      updateInspection({
-        id: inspectionId,
-        data: {
-          ...data,
+      updateInspectionMutation(
+        {
           id: inspectionId,
-          date: data.date.toISOString(),
-          actions: transformedActions,
+          data: {
+            ...formattedData,
+            id: inspectionId,
+          },
         },
-      });
+        {
+          onSuccess: () => navigate(url),
+        },
+      );
     }
   };
+
   const date = form.watch('date');
   const isInFuture = date && date > new Date();
+
   return (
     <div className={'max-w-4xl ml-4'}>
       <h1 className={'text-lg font-bold'}>New inspection</h1>

@@ -3,9 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   ActionDtoSchema,
   ActionType,
-  FeedingActionDetailsDto,
   FrameActionDetailsDto,
-  TreatmentActionDetailsDto,
 } from './dto/action-response.dto';
 import { Prisma } from '@prisma/client';
 import { CreateActionDtoSchema } from './dto/create-action.dto';
@@ -50,24 +48,25 @@ export class ActionsService {
       });
 
       // Add type-specific details based on the action type
-      if (details instanceof FeedingActionDetailsDto) {
+      if (details?.type === ActionType.FEEDING) {
+        const feedingDetails = details;
         await tx.feedingAction.create({
           data: {
             actionId: createdAction.id,
-            feedType: details.feedType,
-            amount: details.amount,
-            unit: details.unit,
-            concentration: details.concentration,
+            feedType: feedingDetails.feedType,
+            amount: feedingDetails.amount,
+            unit: feedingDetails.unit,
+            concentration: feedingDetails.concentration,
           },
         });
-      } else if (details instanceof FrameActionDetailsDto) {
+      } else if (details?.type === ActionType.FRAME) {
         await tx.frameAction.create({
           data: {
             actionId: createdAction.id,
             quantity: details.quantity,
           },
         });
-      } else if (details instanceof TreatmentActionDetailsDto) {
+      } else if (details?.type === ActionType.TREATMENT) {
         await tx.treatmentAction.create({
           data: {
             actionId: createdAction.id,

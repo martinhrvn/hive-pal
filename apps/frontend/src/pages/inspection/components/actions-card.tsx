@@ -2,12 +2,12 @@ import { ClipboardCheck, Droplet, Grid, Pill } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  ActionDto,
   ActionDtoType,
   FeedingActionDetailsDto,
   FrameActionDetailsDto,
   TreatmentActionDetailsDto,
 } from 'api-client';
+import { ActionResponse } from 'shared-schemas';
 
 type ActionIconProps = {
   type: ActionDtoType;
@@ -81,7 +81,7 @@ const FrameDetails = ({ details }: FrameDetailsProps) => {
 };
 
 type ActionDetailsProps = {
-  action: ActionDto;
+  action: ActionResponse;
 };
 
 const ActionDetails = ({ action }: ActionDetailsProps) => {
@@ -102,7 +102,7 @@ const ActionDetails = ({ action }: ActionDetailsProps) => {
 };
 
 type ActionItemProps = {
-  action: ActionDto;
+  action: ActionResponse;
 };
 
 const ActionItem = ({ action }: ActionItemProps) => {
@@ -123,7 +123,7 @@ const ActionItem = ({ action }: ActionItemProps) => {
 };
 
 type ActionsCardProps = {
-  actions: ActionDto[];
+  actions: ActionResponse[];
 };
 
 export const ActionsCard = ({ actions }: ActionsCardProps) => {

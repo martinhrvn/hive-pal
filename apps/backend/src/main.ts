@@ -20,12 +20,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Throw errors if unknown properties are present
     }),
   );
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get(Reflector), {
-      strategy: 'excludeAll',
-      excludeExtraneousValues: true,
-    }),
-  );
+
   const loggerPromise = app.resolve(CustomLoggerService);
   const loggerInstance = await loggerPromise;
   loggerInstance.setContext('Bootstrap');

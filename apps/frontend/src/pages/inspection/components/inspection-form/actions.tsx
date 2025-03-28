@@ -38,8 +38,8 @@ export type ActionType =
   | OtherActionType;
 
 export const ActionsSection: React.FC = () => {
-  const { setValue, getValues, watch } = useFormContext<InspectionFormData>();
-  console.log('values', getValues());
+  const { setValue, getValues, watch, formState } =
+    useFormContext<InspectionFormData>();
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
   // Watch for changes to the actions array in the form
@@ -147,7 +147,9 @@ export const ActionsSection: React.FC = () => {
       </div>
 
       {renderActionForm && <div>{renderActionForm}</div>}
-
+      {formState.errors.actions && (
+        <div className="text-red-500">{formState.errors.actions.message}</div>
+      )}
       <div
         className="flex flex-col divide-y"
         data-test={TEST_SELECTORS.SELECTED_ACTIONS}

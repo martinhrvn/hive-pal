@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ObservationNumberRatingView } from './observation-number-rating-view';
 
 type ObservationsCardProps = {
-  observations: {
+  observations?: {
     strength?: number | null;
     uncappedBrood?: number | null;
     cappedBrood?: number | null;

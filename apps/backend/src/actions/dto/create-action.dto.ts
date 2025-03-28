@@ -12,6 +12,8 @@ import {
   OtherActionDetailsDto,
   TreatmentActionDetailsDto,
 } from './action-response.dto';
+import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 // Helper to define the API schema for the union type
 @ApiSchema({ name: 'CreateActionDto' })
@@ -20,12 +22,15 @@ export class CreateActionDtoSchema implements BaseActionDto {
     enum: ActionType,
     description: 'Type of action performed',
   })
+  @IsEnum(ActionType)
   type: ActionType;
 
   @ApiPropertyOptional({
     type: String,
     description: 'Additional notes about the action',
   })
+  @IsString()
+  @IsOptional()
   notes?: string;
 
   @ApiProperty({
@@ -44,7 +49,20 @@ export class CreateActionDtoSchema implements BaseActionDto {
       },
     },
   })
-  details:
+  @Type(() => Object, {
+    // This is the key part - dynamically determine the correct type based on the 'type' field
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: FeedingActionDetailsDto, name: ActionType.FEEDING },
+        { value: TreatmentActionDetailsDto, name: ActionType.TREATMENT },
+        { value: FrameActionDetailsDto, name: ActionType.FRAME },
+        { value: OtherActionDetailsDto, name: ActionType.OTHER },
+      ],
+    },
+  })
+  @ValidateNested()
+  details?:
     | FeedingActionDetailsDto
     | TreatmentActionDetailsDto
     | FrameActionDetailsDto

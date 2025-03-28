@@ -248,6 +248,7 @@ export class ActionDtoSchema implements BaseActionDto {
     enum: ActionType,
     description: 'Type of action performed',
   })
+  @Expose()
   type: ActionType;
 
   @ApiPropertyOptional({
@@ -272,6 +273,7 @@ export class ActionDtoSchema implements BaseActionDto {
       },
     },
   })
+  @ValidateNested()
   details:
     | FeedingActionDetailsDto
     | TreatmentActionDetailsDto
