@@ -15,10 +15,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { ApiaryResponseDto } from 'api-client';
 import { useApiary } from '@/hooks/use-apiary';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { ApiaryResponse } from 'shared-schemas';
 
 export function ApiarySwitcher() {
   const { isMobile } = useSidebar();
@@ -26,7 +26,7 @@ export function ApiarySwitcher() {
   const { activeApiary, setActiveApiaryId, apiaries } = useApiary();
 
   const queryClient = useQueryClient();
-  const handleSetActiveApiary = (apiary: ApiaryResponseDto) => {
+  const handleSetActiveApiary = (apiary: ApiaryResponse) => {
     setActiveApiaryId(apiary.id);
     queryClient.invalidateQueries();
   };

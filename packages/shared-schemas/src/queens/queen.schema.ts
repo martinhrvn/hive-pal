@@ -29,6 +29,18 @@ export const queenResponseSchema = z.object({
   replacedAt: z.string().datetime().optional().nullable(),
 });
 
+export const activeQueenSchema = z.object({
+  id: z.string().uuid(),
+  hiveId: z.string().uuid().optional(),
+  year: z.number().nullish(),
+  marking: z.string().nullish(),
+  installedAt: z.string().datetime().optional().or(z.date()).nullable(),
+  color: z.string().nullish(),
+  status: queenStatusSchema.nullish()
+})
+
+export type ActiveQueen = z.infer<typeof activeQueenSchema>;
+
 export type CreateQueen = z.infer<typeof createQueenSchema>;
 export type UpdateQueen = z.infer<typeof updateQueenSchema>;
 export type QueenResponse = z.infer<typeof queenResponseSchema>;

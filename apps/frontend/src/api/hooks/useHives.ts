@@ -67,7 +67,7 @@ export const useHive = (id: string, options = {}) => {
 };
 
 // Create a new hive
-export const useCreateHive = () => {
+export const useCreateHive = (callbacks?: { onSuccess: () => void }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -76,6 +76,7 @@ export const useCreateHive = () => {
       return response.data;
     },
     onSuccess: async () => {
+      callbacks?.onSuccess?.();
       // Invalidate hive lists to refresh data
       await queryClient.invalidateQueries({
         queryKey: HIVES_KEYS.lists(),

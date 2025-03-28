@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { ApiaryResponseDto, useApiariesControllerFindAll } from 'api-client';
 import { useEffect } from 'react';
 import { APIARY_SELECTION } from '@/context/auth-context';
 import { useIsAdmin } from '@/hooks/use-is-admin.ts';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
+import { useApiaries } from '@/api/hooks';
+import { ApiaryResponse } from 'shared-schemas';
 
 interface ApiaryState {
   activeApiaryId: string | null;
@@ -27,9 +28,7 @@ export const useApiaryStore = create<ApiaryState>(set => {
 
 export const useApiary = () => {
   const navigate = useNavigate();
-  const { data: apiaries } = useApiariesControllerFindAll({
-    query: { select: data => data.data },
-  });
+  const { data: apiaries } = useApiaries();
   const isAdmin = useIsAdmin();
   const { activeApiaryId, setActiveApiaryId } = useApiaryStore(
     useShallow(state => ({
@@ -58,7 +57,7 @@ export const useApiary = () => {
 
   // Find the active apiary object
   const activeApiary = apiaries?.find(
-    (apiary: ApiaryResponseDto) => apiary.id === activeApiaryId,
+    (apiary: ApiaryResponse) => apiary.id === activeApiaryId,
   );
 
   return { activeApiary, setActiveApiaryId, apiaries, activeApiaryId };

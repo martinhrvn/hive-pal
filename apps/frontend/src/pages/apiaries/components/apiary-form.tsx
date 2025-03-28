@@ -13,12 +13,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  useApiariesControllerCreate,
-  getApiariesControllerFindAllQueryKey,
-} from 'api-client';
-import { useQueryClient } from '@tanstack/react-query';
+
 import MapPicker from '@/components/common/map-picker.tsx';
+import { useCreateApiary } from '@/api/hooks';
 
 export type ApiaryFormData = z.infer<typeof apiariesSchema>;
 
@@ -32,7 +29,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const { mutateAsync } = useApiariesControllerCreate();
+  const { mutateAsync } = useCreateApiary();
 
   const form = useForm<ApiaryFormData>({
     resolver: zodResolver(apiariesSchema),
@@ -41,7 +38,6 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
       location: '',
     },
   });
-  const queryClient = useQueryClient();
 
   const onSubmit = async (data: ApiaryFormData) => {
     if (onSubmitOverride) {
@@ -49,19 +45,14 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
       return;
     }
     try {
-      const response = await mutateAsync({
-        data: {
-          name: data.name,
-          location: data.location,
-        },
+      await mutateAsync({
+        name: data.name,
+        location: data.location,
+        latitude: data.latitude,
+        longitude: data.longitude,
       });
 
-      if (response.status === 201) {
-        await queryClient.invalidateQueries({
-          queryKey: getApiariesControllerFindAllQueryKey(),
-        });
-        navigate('/'); // Navigate to home page or apiary list
-      }
+      navigate('/'); // Navigate to home page or apiary list
     } catch (error) {
       console.error('Failed to create apiary', error);
     }

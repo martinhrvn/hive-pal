@@ -1,10 +1,10 @@
-import { HiveResponseDto } from 'api-client';
 import { HiveStatus } from './hive-status';
 import { ChevronRight, DotIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { HiveResponse } from 'shared-schemas';
 
 type HiveListProps = {
-  hives: HiveResponseDto[];
+  hives: HiveResponse[];
 };
 
 export const HiveList: React.FC<HiveListProps> = ({ hives }) => {

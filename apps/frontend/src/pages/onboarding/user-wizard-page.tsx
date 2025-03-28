@@ -14,26 +14,25 @@ import {
   ApiaryFormData,
 } from '@/pages/apiaries/components/apiary-form';
 import { HiveForm, HiveFormData } from '@/pages/hive/components/hive-form';
-import { useApiariesControllerCreate, ApiaryResponseDto } from 'api-client';
-import { HiveStatus } from 'shared-schemas';
+import { ApiaryResponse, HiveStatus } from 'shared-schemas';
 
 // Import CheckIcon for success step
 import { CheckIcon } from 'lucide-react';
-import { useCreateHive } from '@/api/hooks';
+import { useCreateApiary, useCreateHive } from '@/api/hooks';
 
 export const UserWizardPage = () => {
   const [step, setStep] = useState(0);
-  const [apiary, setApiary] = useState<ApiaryResponseDto | null>(null);
+  const [apiary, setApiary] = useState<ApiaryResponse | null>(null);
 
   const steps = ['Welcome', 'Create Apiary', 'Add First Hive', 'Complete'];
 
-  const apiaryMutation = useApiariesControllerCreate();
+  const apiaryMutation = useCreateApiary();
   const hiveMutation = useCreateHive();
 
   const handleApiarySubmit = async (data: ApiaryFormData) => {
     try {
-      const result = await apiaryMutation.mutateAsync({ data });
-      setApiary(result.data);
+      const result = await apiaryMutation.mutateAsync({ ...data });
+      setApiary(result);
       setStep(2);
     } catch (error) {
       console.error('Error creating apiary:', error);

@@ -1,4 +1,3 @@
-import { useApiariesControllerFindOne } from 'api-client';
 import { useParams } from 'react-router-dom';
 import { Section } from '@/components/common/section';
 import { ApiaryActionSidebar } from './components';
@@ -10,18 +9,11 @@ import {
   Page,
   Sidebar,
 } from '@/components/layout/sidebar-layout.tsx';
+import { useApiary } from '@/api/hooks';
 
 export const ApiaryDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const {
-    data: apiary,
-    isLoading,
-    refetch,
-  } = useApiariesControllerFindOne(id ?? '', {
-    query: {
-      select: data => data.data,
-    },
-  });
+  const { data: apiary, isLoading, refetch } = useApiary(id ?? '');
 
   if (isLoading) {
     return <div>Loading...</div>;

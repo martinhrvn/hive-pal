@@ -1,21 +1,22 @@
 import { ClipboardCheck, Droplet, Grid, Pill } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+
 import {
-  ActionDtoType,
-  FeedingActionDetailsDto,
-  FrameActionDetailsDto,
-  TreatmentActionDetailsDto,
-} from 'api-client';
-import { ActionResponse } from 'shared-schemas';
+  ActionResponse,
+  ActionType,
+  FeedingActionDetails,
+  FrameActionDetails,
+  TreatmentActionDetails,
+} from 'shared-schemas';
 
 type ActionIconProps = {
-  type: ActionDtoType;
+  type: ActionType;
 };
 
 const ActionIcon = ({ type }: ActionIconProps) => {
   switch (type) {
-    case 'FEEDING':
+    case ActionType.FEEDING:
       return <Droplet className="h-4 w-4" />;
     case 'TREATMENT':
       return <Pill className="h-4 w-4" />;
@@ -27,7 +28,7 @@ const ActionIcon = ({ type }: ActionIconProps) => {
 };
 
 type FeedingDetailsProps = {
-  details: FeedingActionDetailsDto;
+  details: FeedingActionDetails;
 };
 
 const FeedingDetails = ({ details }: FeedingDetailsProps) => {
@@ -45,7 +46,7 @@ const FeedingDetails = ({ details }: FeedingDetailsProps) => {
 };
 
 type TreatmentDetailsProps = {
-  details: TreatmentActionDetailsDto;
+  details: TreatmentActionDetails;
 };
 
 const TreatmentDetails = ({ details }: TreatmentDetailsProps) => {
@@ -63,7 +64,7 @@ const TreatmentDetails = ({ details }: TreatmentDetailsProps) => {
 };
 
 type FrameDetailsProps = {
-  details: FrameActionDetailsDto;
+  details: FrameActionDetails;
 };
 
 const FrameDetails = ({ details }: FrameDetailsProps) => {
@@ -85,17 +86,15 @@ type ActionDetailsProps = {
 };
 
 const ActionDetails = ({ action }: ActionDetailsProps) => {
-  const { type, details } = action;
+  const { details } = action;
 
-  switch (type) {
+  switch (details.type) {
     case 'FEEDING':
-      return <FeedingDetails details={details as FeedingActionDetailsDto} />;
+      return <FeedingDetails details={details} />;
     case 'TREATMENT':
-      return (
-        <TreatmentDetails details={details as TreatmentActionDetailsDto} />
-      );
+      return <TreatmentDetails details={details} />;
     case 'FRAME':
-      return <FrameDetails details={details as FrameActionDetailsDto} />;
+      return <FrameDetails details={details} />;
     default:
       return <span>Unknown action type</span>;
   }

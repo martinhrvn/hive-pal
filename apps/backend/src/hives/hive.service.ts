@@ -186,10 +186,8 @@ export class HiveService {
             marking: activeQueen.marking || null,
             color: activeQueen.color,
             year: activeQueen.year,
-            source: activeQueen.source,
             status: activeQueen.status,
             installedAt: activeQueen.installedAt?.toISOString(),
-            replacedAt: activeQueen.replacedAt?.toISOString(),
           }
         : null,
     };

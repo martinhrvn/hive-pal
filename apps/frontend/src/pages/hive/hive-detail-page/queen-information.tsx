@@ -9,17 +9,17 @@ import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { CalendarDays, MoreHorizontal } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { buttonVariants } from '@/components/ui/button.tsx';
-import { HiveDetailResponseDtoActiveQueen } from 'api-client';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ActiveQueen } from 'shared-schemas';
 
 type QueenInformationProps = {
   hiveId?: string;
-  activeQueen?: HiveDetailResponseDtoActiveQueen;
+  activeQueen?: ActiveQueen | null;
   onQueenUpdated?: () => void;
 };
 export const QueenInformation: React.FC<QueenInformationProps> = ({

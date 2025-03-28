@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ActionType, actionTypeSchema } from './types';
+import { ActionType } from './types';
 
 // Base details schemas for specific action types
 export const feedingActionDetailsSchema = z.object({

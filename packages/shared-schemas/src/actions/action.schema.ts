@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { actionDetailsSchema } from './details.schema';
-import { ActionType, actionTypeSchema } from './types';
+import { actionTypeSchema } from './types';
 
 // Base schema for all actions
 export const baseActionSchema = z.object({

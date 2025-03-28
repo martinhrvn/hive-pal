@@ -29,9 +29,8 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { QueenFormData, queenSchema } from './schema';
-import { useQueensControllerCreate } from 'api-client';
 import { useMemo } from 'react';
-import { useHives } from '@/api/hooks';
+import { useCreateQueen, useHives } from '@/api/hooks';
 
 type QueenFormProps = {
   hiveId?: string;
@@ -106,7 +105,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
     }));
   }, [hives]);
 
-  const { mutateAsync: createQueen } = useQueensControllerCreate();
+  const { mutateAsync: createQueen } = useCreateQueen();
   const form = useForm<QueenFormData>({
     resolver: zodResolver(queenSchema),
     defaultValues: {
@@ -126,11 +125,9 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
   const onSubmit = async (data: QueenFormData) => {
     try {
       await createQueen({
-        data: {
-          ...data,
-          installedAt: data.installedAt.toISOString(),
-          replacedAt: data.replacedAt?.toISOString() ?? null,
-        },
+        ...data,
+        installedAt: data.installedAt.toISOString(),
+        replacedAt: data.replacedAt?.toISOString() ?? null,
       });
       // Navigate to the hive detail page after successful creation
       if (data.hiveId) {

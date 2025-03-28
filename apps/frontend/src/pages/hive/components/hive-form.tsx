@@ -9,7 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useHiveControllerCreate } from 'api-client';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import {
@@ -32,6 +31,8 @@ import {
 } from '@/components/ui/select.tsx';
 import { useApiary } from '@/hooks/use-apiary';
 import React, { useEffect } from 'react';
+import { useCreateHive } from '@/api/hooks';
+import type { HiveStatus as HiveStatusEnum } from 'shared-schemas';
 
 const hiveSchema = z.object({
   name: z.string(),
@@ -54,8 +55,8 @@ export const HiveForm: React.FC<HiveFormProps> = ({
 }) => {
   const navigate = useNavigate();
   const { apiaries, activeApiaryId } = useApiary();
-  const { mutate } = useHiveControllerCreate({
-    mutation: { onSuccess: () => navigate('/') },
+  const { mutate } = useCreateHive({
+    onSuccess: () => navigate('/'),
   });
   const apiaryOptions = apiaries?.map(apiary => ({
     value: apiary.id,
@@ -74,10 +75,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
       return onSubmitOverride(data);
     } else {
       mutate({
-        data: {
-          ...data,
-          installationDate: data.installationDate.toISOString(),
-        },
+        ...data,
+        status: data.status as HiveStatusEnum,
+        installationDate: data.installationDate.toISOString(),
       });
     }
   };

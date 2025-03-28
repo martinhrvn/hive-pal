@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { hiveStatusSchema } from './status';
 import { boxSchema } from './box.schema';
+import {activeQueenSchema} from "../queens";
 
 // Base schema for creating hives
 export const createHiveSchema = z.object({
@@ -45,19 +46,11 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   status: hiveStatusSchema,
   boxes: z.array(boxSchema),
   hiveScore: hiveScoreSchema,
-  activeQueen: z.object({
-    id: z.string().uuid(),
-    hiveId: z.string().uuid().optional(),
-    year: z.number().optional().nullable(),
-    color: z.string().optional().nullable(),
-    installedAt: z.string().datetime().optional().or(z.date()).nullable(),
-    marking: z.string().optional().nullable(),
-    replacedAt: z.string().datetime().optional().or(z.date()).optional().nullable(),
-    status: z.string().optional().nullable(),
-    source: z.string().optional().nullable(),
-  }).optional().nullable(),
+  activeQueen: activeQueenSchema.nullish(),
   lastInspectionDate: z.string().datetime().or(z.date()).optional(),
 });
+
+
 
 // Schema for basic hive response
 export const hiveResponseSchema = z.object({
@@ -68,11 +61,7 @@ export const hiveResponseSchema = z.object({
   notes: z.string().optional(),
   installationDate: z.string().datetime().optional(),
   lastInspectionDate: z.string().datetime().optional() ,
-  activeQueen: z.object({
-    id: z.string().uuid(),
-    hiveId: z.string().uuid().optional(),
-    year: z.number().optional().nullable(),
-  }).optional().nullable(),
+  activeQueen: activeQueenSchema.nullish(),
 });
 
 // Schema for filtering hives
