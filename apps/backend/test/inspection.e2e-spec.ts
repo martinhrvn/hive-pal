@@ -2,8 +2,8 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { setupApiary, setupApp, setupHive, setupUser } from './fixtures/setup';
-import { CreateInspectionDto } from '../src/inspections/dto/create-inspection.dto';
 import { ActionType } from '../src/actions/dto/action-response.dto';
+import { CreateInspection } from 'shared-schemas';
 
 let app: INestApplication;
 let prisma: PrismaService;
@@ -47,7 +47,7 @@ afterAll(async () => {
 });
 
 it('should create a minimal inspection', async () => {
-  const req: CreateInspectionDto = {
+  const req: CreateInspection = {
     date: new Date().toISOString(),
     hiveId: testHiveId,
     notes: 'This is a test inspection',
@@ -86,7 +86,7 @@ it('should create a minimal inspection', async () => {
 });
 
 it('should create an inspection with observations', async () => {
-  const req: CreateInspectionDto = {
+  const req: CreateInspection = {
     date: new Date().toISOString(),
     hiveId: testHiveId,
     notes: 'Inspection with observations',
@@ -161,7 +161,7 @@ it('should create an inspection with observations', async () => {
 });
 
 it('should create an inspection with FEEDING action', async () => {
-  const req: CreateInspectionDto = {
+  const req: CreateInspection = {
     date: new Date().toISOString(),
     hiveId: testHiveId,
     notes: 'Inspection with feeding action',
@@ -235,7 +235,7 @@ it('should create an inspection with FEEDING action', async () => {
 });
 
 it('should create an inspection with TREATMENT action', async () => {
-  const req: CreateInspectionDto = {
+  const req: CreateInspection = {
     date: new Date().toISOString(),
     hiveId: testHiveId,
     notes: 'Inspection with treatment action',
@@ -309,7 +309,7 @@ it('should create an inspection with TREATMENT action', async () => {
 });
 
 it('should create an inspection with FRAME action', async () => {
-  const req: CreateInspectionDto = {
+  const req: CreateInspection = {
     date: new Date().toISOString(),
     hiveId: testHiveId,
     notes: 'Inspection with frame action',
@@ -374,7 +374,7 @@ it('should create an inspection with FRAME action', async () => {
 });
 
 it('should create an inspection with OTHER action', async () => {
-  const req: CreateInspectionDto = {
+  const req: CreateInspection = {
     date: new Date().toISOString(),
     hiveId: testHiveId,
     notes: 'Inspection with other action',
@@ -384,6 +384,9 @@ it('should create an inspection with OTHER action', async () => {
       {
         type: ActionType.OTHER,
         notes: 'Cleaned bottom board',
+        details: {
+          type: ActionType.OTHER,
+        },
       },
     ],
   };
@@ -427,7 +430,7 @@ it('should create an inspection with OTHER action', async () => {
 });
 
 it('should create an inspection with multiple actions of different types', async () => {
-  const req: CreateInspectionDto = {
+  const req: CreateInspection = {
     date: new Date().toISOString(),
     hiveId: testHiveId,
     notes: 'Inspection with multiple actions',
@@ -455,6 +458,9 @@ it('should create an inspection with multiple actions of different types', async
       {
         type: ActionType.OTHER,
         notes: 'Replaced hive stand',
+        details: {
+          type: ActionType.OTHER,
+        },
       },
     ],
   };

@@ -1,17 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateInspectionDto } from './dto/create-inspection.dto';
-import { InspectionFilterDto } from './dto/inspection-filter.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { InspectionMetricsDto } from './dto/inspection-metrics.dto';
 import { Observation, Prisma } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
-import { InspectionStatus } from './dto/inspection-status.enum';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
+  CreateInspection,
   CreateInspectionResponse,
+  InspectionFilter,
   InspectionResponse,
+  InspectionStatus,
+  ObservationSchemaType,
   UpdateInspection,
   UpdateInspectionResponse,
 } from 'shared-schemas';
@@ -26,7 +26,7 @@ export class InspectionsService {
   ) {}
 
   async create(
-    createInspectionDto: CreateInspectionDto,
+    createInspectionDto: CreateInspection,
     filter: ApiaryUserFilter,
   ): Promise<CreateInspectionResponse> {
     // Verify that the hive belongs to the user's apiary
@@ -116,7 +116,7 @@ export class InspectionsService {
   }
 
   async findAll(
-    filter: InspectionFilterDto & Partial<ApiaryUserFilter>,
+    filter: InspectionFilter & Partial<ApiaryUserFilter>,
   ): Promise<InspectionResponse[]> {
     const whereClause: Prisma.InspectionWhereInput = {
       hiveId: filter.hiveId ?? undefined,
@@ -374,7 +374,7 @@ export class InspectionsService {
     });
   }
 
-  mapObservationsToDto(observations: Observation[]): InspectionMetricsDto {
+  mapObservationsToDto(observations: Observation[]): ObservationSchemaType {
     const observationsByType: Record<string, Observation> = observations.reduce(
       (acc, observation) => ({
         ...acc,

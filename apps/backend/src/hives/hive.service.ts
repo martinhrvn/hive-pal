@@ -1,20 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateHiveDto } from './dto/create-hive.dto';
-import { UpdateHiveDto } from './dto/update-hive.dto';
-import { HiveResponseDto } from './dto/hive-response.dto';
-import { HiveDetailResponseDto } from './dto/hive-detail-response.dto';
-import { plainToInstance } from 'class-transformer';
-import { BoxTypeDto, UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
-import { Box } from '@prisma/client';
-import { BoxResponseDto } from './dto/box-response.dto';
 import { InspectionsService } from '../inspections/inspections.service';
-import { InspectionScoreDto } from '../inspections/dto/inspection-score.dto';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
-import { HiveStatusEnum } from './dto/hive-status.enum';
-import { HiveFilterDto } from './dto/hive-filter.dto';
+import {
+  CreateHive,
+  UpdateHive,
+  HiveResponse,
+  HiveDetailResponse,
+  UpdateHiveBoxes,
+  BoxTypeEnum,
+  HiveStatus,
+  HiveFilter,
+  UpdateHiveResponse,
+  CreateHiveResponse,
+} from 'shared-schemas';
 
 @Injectable()
 export class HiveService {
@@ -27,7 +28,7 @@ export class HiveService {
     this.logger.setContext('HiveService');
   }
 
-  async create(createHiveDto: CreateHiveDto): Promise<HiveResponseDto> {
+  async create(createHiveDto: CreateHive): Promise<CreateHiveResponse> {
     this.logger.log(`Creating new hive in apiary ${createHiveDto.apiaryId}`);
     const hive = await this.prisma.hive.create({
       data: createHiveDto,
@@ -35,19 +36,13 @@ export class HiveService {
     this.logger.log(`Hive created with ID: ${hive.id}`);
     return {
       id: hive.id,
-      name: hive.name,
-      apiaryId: hive.apiaryId,
-      status: hive.status as HiveStatusEnum,
-      notes: hive.notes,
-      installationDate: hive.installationDate?.toISOString() ?? '',
-      lastInspectionDate: null,
-      activeQueen: null,
+      status: hive.status as HiveStatus,
     };
   }
 
   async findAll(
-    filter: ApiaryUserFilter & HiveFilterDto,
-  ): Promise<HiveResponseDto[]> {
+    filter: ApiaryUserFilter & HiveFilter,
+  ): Promise<HiveResponse[]> {
     this.logger.log(
       `Finding all hives for apiary ${filter.apiaryId} and user ${filter.userId}`,
     );
@@ -81,21 +76,31 @@ export class HiveService {
       },
     });
 
-    return hives.map((hive) =>
-      plainToInstance(HiveResponseDto, {
+    return hives.map(
+      (hive): HiveResponse => ({
         id: hive.id,
         name: hive.name,
-        apiaryId: hive.apiaryId,
-        status: hive.status as HiveStatusEnum,
-        notes: hive.notes,
-        installationDate: hive.installationDate?.toISOString() ?? '',
-        lastInspectionDate: hive.inspections[0]?.date?.toISOString() ?? '',
-        activeQueen: hive.queens.length > 0 ? hive.queens[0] : null,
+        apiaryId: hive.apiaryId || undefined,
+        status: hive.status as HiveStatus,
+        notes: hive.notes || undefined,
+        installationDate: hive.installationDate?.toISOString(),
+        lastInspectionDate: hive.inspections[0]?.date?.toISOString(),
+        activeQueen:
+          hive.queens.length > 0
+            ? {
+                id: hive.queens[0].id,
+                hiveId: hive.queens[0].hiveId || undefined,
+                year: hive.queens[0].year || undefined,
+              }
+            : null,
       }),
     );
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter) {
+  async findOne(
+    id: string,
+    filter: ApiaryUserFilter,
+  ): Promise<HiveDetailResponse> {
     this.logger.log(
       `Finding hive with ID: ${id} for apiary ${filter.apiaryId} and user ${filter.userId}`,
     );
@@ -153,49 +158,48 @@ export class HiveService {
       latestInspection?.observations ?? [],
     );
     const score = this.metricsService.calculateOveralScore(metrics);
-    return plainToInstance(HiveDetailResponseDto, {
+
+    return {
       id: hive.id,
       name: hive.name,
-      apiaryId: hive.apiaryId,
-      status: hive.status as HiveStatusEnum,
-      notes: hive.notes,
+      apiaryId: hive.apiaryId || undefined,
+      status: hive.status as HiveStatus,
+      notes: hive.notes || undefined,
       installationDate:
         typeof hive.installationDate === 'string'
           ? hive.installationDate
-          : (hive.installationDate?.toISOString() ?? null),
+          : hive.installationDate?.toISOString(),
       lastInspectionDate: latestInspection?.date?.toISOString(),
-      boxes: hive.boxes.map(
-        (box): BoxResponseDto => ({
-          id: box.id,
-          position: box.position,
-          frameCount: box.frameCount,
-          maxFrameCount: box.maxFrameCount,
-          hasExcluder: box.hasExcluder,
-          type: box.type as BoxTypeDto,
-        }),
-      ),
-      hiveScore: plainToInstance(InspectionScoreDto, score),
+      boxes: hive.boxes.map((box) => ({
+        id: box.id,
+        position: box.position,
+        frameCount: box.frameCount,
+        maxFrameCount: box.maxFrameCount,
+        hasExcluder: box.hasExcluder,
+        type: box.type as BoxTypeEnum,
+      })),
+      hiveScore: score,
       activeQueen: activeQueen
         ? {
             id: activeQueen.id,
-            hiveId: activeQueen.hiveId,
-            marking: '', // Since the database field is markingColor
+            hiveId: activeQueen.hiveId || undefined,
+            marking: activeQueen.marking || null,
             color: activeQueen.color,
             year: activeQueen.year,
             source: activeQueen.source,
             status: activeQueen.status,
             installedAt: activeQueen.installedAt?.toISOString(),
-            replacedAt: activeQueen.replacedAt?.toISOString() || null,
+            replacedAt: activeQueen.replacedAt?.toISOString(),
           }
         : null,
-    });
+    };
   }
 
   async update(
     id: string,
-    updateHiveDto: UpdateHiveDto,
+    updateHiveDto: UpdateHive,
     filter: ApiaryUserFilter,
-  ) {
+  ): Promise<UpdateHiveResponse> {
     this.logger.log(`Updating hive with ID: ${id}`);
     this.logger.debug(`Update data: ${JSON.stringify(updateHiveDto)}`);
     // Verify the hive belongs to the apiary and user before updating
@@ -226,9 +230,37 @@ export class HiveService {
           ? new Date(updateHiveDto.installationDate)
           : null,
       },
+      include: {
+        queens: {
+          where: {
+            status: 'ACTIVE',
+          },
+          orderBy: {
+            installedAt: 'desc',
+          },
+          take: 1,
+        },
+        inspections: {
+          select: {
+            date: true,
+          },
+          orderBy: {
+            date: 'desc',
+          },
+          take: 1,
+        },
+      },
     });
     this.logger.log(`Hive with ID: ${id} updated successfully`);
-    return updatedHive;
+
+    return {
+      id: updatedHive.id,
+      name: updatedHive.name,
+      apiaryId: updatedHive.apiaryId || undefined,
+      status: updatedHive.status as HiveStatus,
+      notes: updatedHive.notes || undefined,
+      installationDate: updatedHive.installationDate?.toISOString(),
+    };
   }
 
   async remove(id: string, filter: ApiaryUserFilter) {
@@ -263,9 +295,9 @@ export class HiveService {
 
   async updateBoxes(
     id: string,
-    updateHiveBoxesDto: UpdateHiveBoxesDto,
+    updateHiveBoxesDto: UpdateHiveBoxes,
     filter: ApiaryUserFilter,
-  ) {
+  ): Promise<UpdateHiveResponse> {
     this.logger.log(`Updating boxes for hive with ID: ${id}`);
     this.logger.debug(`Box data: ${JSON.stringify(updateHiveBoxesDto)}`);
     // First check if the hive exists and belongs to the user/apiary
@@ -355,28 +387,16 @@ export class HiveService {
 
     this.logger.log(`Successfully updated boxes for hive: ${id}`);
 
-    return plainToInstance(HiveDetailResponseDto, {
+    return {
       id: updatedHive.id,
       name: updatedHive.name,
-      apiaryId: updatedHive.apiaryId,
-      status: updatedHive.status as HiveStatusEnum,
-      notes: updatedHive.notes,
+      apiaryId: updatedHive.apiaryId || undefined,
+      status: updatedHive.status as HiveStatus,
+      notes: updatedHive.notes || undefined,
       installationDate:
         typeof updatedHive.installationDate === 'string'
           ? updatedHive.installationDate
-          : (updatedHive.installationDate?.toISOString() ?? null),
-      lastInspectionDate:
-        updatedHive.inspections && updatedHive.inspections.length > 0
-          ? (updatedHive.inspections[0].date?.toISOString() ?? null)
-          : null,
-      boxes: updatedHive.boxes.map((box: Box) => ({
-        id: box.id,
-        position: box.position,
-        frameCount: box.frameCount,
-        type: box.type,
-        maxFrameCount: box.maxFrameCount,
-        hasExcluder: box.hasExcluder,
-      })),
-    });
+          : updatedHive.installationDate?.toISOString(),
+    };
   }
 }

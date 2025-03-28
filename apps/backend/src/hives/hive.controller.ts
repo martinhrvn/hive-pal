@@ -8,7 +8,6 @@ import {
   Delete,
   UseInterceptors,
   ClassSerializerInterceptor,
-  SerializeOptions,
   Put,
   UseGuards,
   Req,
@@ -16,16 +15,25 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
-import { CreateHiveDto } from './dto/create-hive.dto';
-import { UpdateHiveDto } from './dto/update-hive.dto';
-import { HiveResponseDto } from './dto/hive-response.dto';
-import { HiveDetailResponseDto } from './dto/hive-detail-response.dto';
-import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { UpdateHiveBoxesDto } from './dto/update-hive-boxes.dto';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
-import { HiveFilterDto } from './dto/hive-filter.dto';
+import { ZodValidation } from '../common';
+import {
+  createHiveSchema,
+  updateHiveSchema,
+  updateHiveBoxesSchema,
+  hiveFilterSchema,
+  CreateHive,
+  UpdateHive,
+  UpdateHiveBoxes,
+  HiveResponse,
+  HiveDetailResponse,
+  HiveFilter,
+  UpdateHiveResponse,
+  CreateHiveResponse,
+} from 'shared-schemas';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('hives')
@@ -41,12 +49,11 @@ export class HiveController {
 
   @Post()
   @ApiConsumes('application/json')
-  @SerializeOptions({ type: HiveResponseDto })
-  @ApiOkResponse({ type: HiveResponseDto })
+  @ZodValidation(createHiveSchema)
   create(
-    @Body() createHiveDto: CreateHiveDto,
+    @Body() createHiveDto: CreateHive,
     @Req() req: RequestWithApiary,
-  ): Promise<HiveResponseDto> {
+  ): Promise<CreateHiveResponse> {
     this.logger.log(
       `Creating hive in apiary: ${createHiveDto.apiaryId} by user: ${req.user.id}`,
     );
@@ -55,12 +62,11 @@ export class HiveController {
   }
 
   @Get()
-  @ApiOkResponse({ type: HiveResponseDto, isArray: true })
-  @SerializeOptions({ type: HiveResponseDto })
+  @ZodValidation(hiveFilterSchema)
   findAll(
-    @Query() query: HiveFilterDto,
+    @Query() query: HiveFilter,
     @Req() req: RequestWithApiary,
-  ): Promise<HiveResponseDto[]> {
+  ): Promise<HiveResponse[]> {
     this.logger.log(
       `Getting all hives for apiary: ${req.apiaryId} and user: ${req.user.id}`,
     );
@@ -72,9 +78,10 @@ export class HiveController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: HiveDetailResponseDto })
-  @SerializeOptions({ type: HiveDetailResponseDto })
-  findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  findOne(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiary,
+  ): Promise<HiveDetailResponse> {
     this.logger.log(
       `Getting hive details for ID: ${id} in apiary: ${req.apiaryId}`,
     );
@@ -85,11 +92,12 @@ export class HiveController {
   }
 
   @Patch(':id')
+  @ZodValidation(updateHiveSchema)
   update(
     @Param('id') id: string,
-    @Body() updateHiveDto: UpdateHiveDto,
+    @Body() updateHiveDto: UpdateHive,
     @Req() req: RequestWithApiary,
-  ) {
+  ): Promise<UpdateHiveResponse> {
     return this.hiveService.update(id, updateHiveDto, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -106,16 +114,12 @@ export class HiveController {
 
   @Put(':id/boxes')
   @ApiConsumes('application/json')
-  @ApiOkResponse({
-    description: 'Boxes updated successfully',
-    type: HiveDetailResponseDto,
-  })
-  @SerializeOptions({ type: HiveDetailResponseDto })
+  @ZodValidation(updateHiveBoxesSchema)
   updateBoxes(
     @Param('id') id: string,
-    @Body() updateHiveBoxesDto: UpdateHiveBoxesDto,
+    @Body() updateHiveBoxesDto: UpdateHiveBoxes,
     @Req() req: RequestWithApiary,
-  ) {
+  ): Promise<UpdateHiveResponse> {
     this.logger.log(
       `Updating boxes for hive ID: ${id} with ${updateHiveBoxesDto.boxes.length} boxes`,
     );

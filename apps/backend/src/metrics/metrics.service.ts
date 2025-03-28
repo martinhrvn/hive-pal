@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateInspectionObservationsDto } from '../inspections/dto/create-inspections-observations.dto';
+import { ObservationSchemaType } from 'shared-schemas/dist';
 
 @Injectable()
 export class MetricsService {
   WARNING_CONFIGURATION: ((
-    metric: CreateInspectionObservationsDto,
+    metric: ObservationSchemaType,
   ) => string | undefined)[] = [
     (metric) =>
       metric.cappedBrood === 0 && metric.uncappedBrood === 0
@@ -20,7 +20,7 @@ export class MetricsService {
         : undefined,
   ];
 
-  calculateOveralScore(inspectionMetrics: CreateInspectionObservationsDto): {
+  calculateOveralScore(inspectionMetrics: ObservationSchemaType): {
     overallScore: number | null;
     populationScore: number | null;
     storesScore: number | null;
