@@ -3,9 +3,9 @@ import { z } from 'zod';
 // Base schema for creating apiaries
 export const createApiarySchema = z.object({
   name: z.string(),
-  location: z.string().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
+  location: z.string().nullish(),
+  latitude: z.number().nullish(),
+  longitude: z.number().nullish(),
 });
 
 // Schema for updating apiaries

@@ -1,11 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateApiaryDto } from './dto/create-apiary.dto';
-import { UpdateApiaryDto } from './dto/update-apiary.dto';
-import { ApiaryResponseDto } from './dto/apiary-response.dto';
-import { plainToInstance } from 'class-transformer';
 import { Prisma } from '@prisma/client';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ApiaryResponse, CreateApiary, UpdateApiary } from 'shared-schemas';
 
 @Injectable()
 export class ApiariesService {
@@ -17,15 +14,15 @@ export class ApiariesService {
   }
 
   async create(
-    createApiaryDto: CreateApiaryDto,
+    createApiaryDto: CreateApiary,
     userId: string,
-  ): Promise<ApiaryResponseDto> {
+  ): Promise<ApiaryResponse> {
     this.logger.log(`Creating apiary for user ${userId}`);
     this.logger.debug(`Apiary data: ${JSON.stringify(createApiaryDto)}`);
 
     const apiaryData: Prisma.ApiaryUncheckedCreateInput = {
       name: createApiaryDto.name,
-      location: createApiaryDto.location,
+      location: createApiaryDto.location ?? null,
       latitude: createApiaryDto.latitude,
       longitude: createApiaryDto.longitude,
       userId,
@@ -36,17 +33,16 @@ export class ApiariesService {
 
     this.logger.log(`Apiary created with ID: ${apiary.id}`);
 
-    return plainToInstance(ApiaryResponseDto, {
+    return {
       id: apiary.id,
       name: apiary.name,
       location: apiary.location,
       latitude: apiary.latitude,
       longitude: apiary.longitude,
-      notes: apiary.notes,
-    });
+    };
   }
 
-  async findAll(userId: string): Promise<ApiaryResponseDto[]> {
+  async findAll(userId: string): Promise<ApiaryResponse[]> {
     this.logger.log(`Fetching all apiaries for user ${userId}`);
 
     const apiaries = await this.prisma.apiary.findMany({
@@ -56,10 +52,16 @@ export class ApiariesService {
     });
 
     this.logger.log(`Found ${apiaries.length} apiaries for user ${userId}`);
-    return plainToInstance(ApiaryResponseDto, apiaries);
+    return apiaries.map((apiary) => ({
+      id: apiary.id,
+      name: apiary.name,
+      location: apiary.location,
+      latitude: apiary.latitude,
+      longitude: apiary.longitude,
+    }));
   }
 
-  async findOne(apiaryId: string, userId: string) {
+  async findOne(apiaryId: string, userId: string): Promise<ApiaryResponse> {
     this.logger.log(`Fetching apiary ${apiaryId} for user ${userId}`);
 
     const apiary = await this.prisma.apiary.findFirst({
@@ -76,10 +78,20 @@ export class ApiariesService {
       this.logger.debug(`Found apiary: ${apiary.name}`);
     }
 
-    return apiary;
+    return {
+      id: apiary.id,
+      name: apiary.name,
+      location: apiary.location,
+      latitude: apiary.latitude,
+      longitude: apiary.longitude,
+    };
   }
 
-  async update(id: string, updateApiaryDto: UpdateApiaryDto, userId: string) {
+  async update(
+    id: string,
+    updateApiaryDto: UpdateApiary,
+    userId: string,
+  ): Promise<ApiaryResponse> {
     this.logger.log(`Updating apiary ${id} for user ${userId}`);
     this.logger.debug(`Update data: ${JSON.stringify(updateApiaryDto)}`);
 
@@ -90,7 +102,13 @@ export class ApiariesService {
       });
 
       this.logger.log(`Apiary ${id} updated successfully`);
-      return updatedApiary;
+      return {
+        id: updatedApiary.id,
+        name: updatedApiary.name,
+        location: updatedApiary.location,
+        latitude: updatedApiary.latitude,
+        longitude: updatedApiary.longitude,
+      };
     } catch (error: unknown) {
       this.logger.error(
         `Failed to update apiary ${id}`,
