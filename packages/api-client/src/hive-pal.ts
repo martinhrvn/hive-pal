@@ -23,19 +23,18 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query'
 import type {
-  ApiaryResponseDto,
   AuthResponseDto,
   ChangePasswordDto,
-  CreateApiaryDto,
-  CreateQueenDto,
   HealthControllerCheck200,
   HealthControllerCheck503,
   LoginDto,
-  QueenResponseDto,
+  QueensControllerCreate201,
+  QueensControllerFindAll200Item,
+  QueensControllerFindOne200,
+  QueensControllerRemove200,
+  QueensControllerUpdate200,
   RegisterDto,
   ResetPasswordDto,
-  UpdateApiaryDto,
-  UpdateQueenDto,
   UserResponseDto
 } from './model'
 import { customInstance } from './customInstance';
@@ -1287,15 +1286,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     }
     
 export const queensControllerCreate = (
-    createQueenDto: CreateQueenDto,
+    
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<QueenResponseDto>(
-      {url: `/api/queens`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createQueenDto, signal
+      return customInstance<QueensControllerCreate201>(
+      {url: `/api/queens`, method: 'POST', signal
     },
       options);
     }
@@ -1303,8 +1300,8 @@ export const queensControllerCreate = (
 
 
 export const getQueensControllerCreateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerCreate>>, TError,{data: CreateQueenDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof queensControllerCreate>>, TError,{data: CreateQueenDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof queensControllerCreate>>, TError,void, TContext> => {
     
 const mutationKey = ['queensControllerCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1316,10 +1313,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof queensControllerCreate>>, {data: CreateQueenDto}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof queensControllerCreate>>, void> = () => {
+          
 
-          return  queensControllerCreate(data,requestOptions)
+          return  queensControllerCreate(requestOptions)
         }
 
         
@@ -1328,15 +1325,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type QueensControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof queensControllerCreate>>>
-    export type QueensControllerCreateMutationBody = CreateQueenDto
+    
     export type QueensControllerCreateMutationError = unknown
 
     export const useQueensControllerCreate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerCreate>>, TError,{data: CreateQueenDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof queensControllerCreate>>,
         TError,
-        {data: CreateQueenDto},
+        void,
         TContext
       > => {
 
@@ -1351,7 +1348,7 @@ export const queensControllerFindAll = (
 ) => {
       
       
-      return customInstance<QueenResponseDto[]>(
+      return customInstance<QueensControllerFindAll200Item[]>(
       {url: `/api/queens`, method: 'GET', signal
     },
       options);
@@ -1433,7 +1430,7 @@ export const queensControllerFindOne = (
 ) => {
       
       
-      return customInstance<QueenResponseDto>(
+      return customInstance<QueensControllerFindOne200>(
       {url: `/api/queens/${id}`, method: 'GET', signal
     },
       options);
@@ -1511,14 +1508,11 @@ export function useQueensControllerFindOne<TData = Awaited<ReturnType<typeof que
 
 export const queensControllerUpdate = (
     id: string,
-    updateQueenDto: UpdateQueenDto,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<QueenResponseDto>(
-      {url: `/api/queens/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateQueenDto
+      return customInstance<QueensControllerUpdate200>(
+      {url: `/api/queens/${id}`, method: 'PATCH'
     },
       options);
     }
@@ -1526,8 +1520,8 @@ export const queensControllerUpdate = (
 
 
 export const getQueensControllerUpdateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerUpdate>>, TError,{id: string;data: UpdateQueenDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof queensControllerUpdate>>, TError,{id: string;data: UpdateQueenDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof queensControllerUpdate>>, TError,{id: string}, TContext> => {
     
 const mutationKey = ['queensControllerUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1539,10 +1533,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof queensControllerUpdate>>, {id: string;data: UpdateQueenDto}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof queensControllerUpdate>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-          return  queensControllerUpdate(id,data,requestOptions)
+          return  queensControllerUpdate(id,requestOptions)
         }
 
         
@@ -1551,15 +1545,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type QueensControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof queensControllerUpdate>>>
-    export type QueensControllerUpdateMutationBody = UpdateQueenDto
+    
     export type QueensControllerUpdateMutationError = unknown
 
     export const useQueensControllerUpdate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerUpdate>>, TError,{id: string;data: UpdateQueenDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof queensControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof queensControllerUpdate>>,
         TError,
-        {id: string;data: UpdateQueenDto},
+        {id: string},
         TContext
       > => {
 
@@ -1573,7 +1567,7 @@ export const queensControllerRemove = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<QueenResponseDto>(
+      return customInstance<QueensControllerRemove200>(
       {url: `/api/queens/${id}`, method: 'DELETE'
     },
       options);
@@ -1625,15 +1619,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     }
     
 export const apiariesControllerCreate = (
-    createApiaryDto: CreateApiaryDto,
+    
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<ApiaryResponseDto>(
-      {url: `/api/apiaries`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createApiaryDto, signal
+      return customInstance<void>(
+      {url: `/api/apiaries`, method: 'POST', signal
     },
       options);
     }
@@ -1641,8 +1633,8 @@ export const apiariesControllerCreate = (
 
 
 export const getApiariesControllerCreateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,{data: CreateApiaryDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,{data: CreateApiaryDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,void, TContext> => {
     
 const mutationKey = ['apiariesControllerCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1654,10 +1646,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiariesControllerCreate>>, {data: CreateApiaryDto}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiariesControllerCreate>>, void> = () => {
+          
 
-          return  apiariesControllerCreate(data,requestOptions)
+          return  apiariesControllerCreate(requestOptions)
         }
 
         
@@ -1666,15 +1658,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type ApiariesControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof apiariesControllerCreate>>>
-    export type ApiariesControllerCreateMutationBody = CreateApiaryDto
+    
     export type ApiariesControllerCreateMutationError = unknown
 
     export const useApiariesControllerCreate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,{data: CreateApiaryDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof apiariesControllerCreate>>,
         TError,
-        {data: CreateApiaryDto},
+        void,
         TContext
       > => {
 
@@ -1689,7 +1681,7 @@ export const apiariesControllerFindAll = (
 ) => {
       
       
-      return customInstance<ApiaryResponseDto[]>(
+      return customInstance<void>(
       {url: `/api/apiaries`, method: 'GET', signal
     },
       options);
@@ -1771,7 +1763,7 @@ export const apiariesControllerFindOne = (
 ) => {
       
       
-      return customInstance<ApiaryResponseDto>(
+      return customInstance<void>(
       {url: `/api/apiaries/${id}`, method: 'GET', signal
     },
       options);
@@ -1849,14 +1841,11 @@ export function useApiariesControllerFindOne<TData = Awaited<ReturnType<typeof a
 
 export const apiariesControllerUpdate = (
     id: string,
-    updateApiaryDto: UpdateApiaryDto,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<void>(
-      {url: `/api/apiaries/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateApiaryDto
+      {url: `/api/apiaries/${id}`, method: 'PATCH'
     },
       options);
     }
@@ -1864,8 +1853,8 @@ export const apiariesControllerUpdate = (
 
 
 export const getApiariesControllerUpdateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string;data: UpdateApiaryDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string;data: UpdateApiaryDto}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string}, TContext> => {
     
 const mutationKey = ['apiariesControllerUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1877,10 +1866,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiariesControllerUpdate>>, {id: string;data: UpdateApiaryDto}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiariesControllerUpdate>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-          return  apiariesControllerUpdate(id,data,requestOptions)
+          return  apiariesControllerUpdate(id,requestOptions)
         }
 
         
@@ -1889,15 +1878,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type ApiariesControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof apiariesControllerUpdate>>>
-    export type ApiariesControllerUpdateMutationBody = UpdateApiaryDto
+    
     export type ApiariesControllerUpdateMutationError = unknown
 
     export const useApiariesControllerUpdate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string;data: UpdateApiaryDto}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiariesControllerUpdate>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationResult<
         Awaited<ReturnType<typeof apiariesControllerUpdate>>,
         TError,
-        {id: string;data: UpdateApiaryDto},
+        {id: string},
         TContext
       > => {
 

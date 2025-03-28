@@ -8,20 +8,28 @@ import {
   Delete,
   UseGuards,
   Req,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { QueensService } from './queens.service';
-import { CreateQueenDto } from './dto/create-queen.dto';
-import { UpdateQueenDto } from './dto/update-queen.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { QueenResponseDto } from './dto/queen-response.dto';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
+import { ZodValidation } from '../common';
+import {
+  createQueenSchema,
+  updateQueenSchema,
+  CreateQueen,
+  UpdateQueen,
+  QueenResponse,
+} from 'shared-schemas';
 
 @ApiTags('queens')
 @UseGuards(JwtAuthGuard, ApiaryContextGuard)
 @Controller('queens')
+@UseInterceptors(ClassSerializerInterceptor)
 export class QueensController {
   constructor(
     private readonly queensService: QueensService,
@@ -31,11 +39,12 @@ export class QueensController {
   }
 
   @Post()
-  @ApiCreatedResponse({ type: QueenResponseDto })
+  @ApiCreatedResponse({ type: Object })
+  @ZodValidation(createQueenSchema)
   create(
-    @Body() createQueenDto: CreateQueenDto,
+    @Body() createQueenDto: CreateQueen,
     @Req() req: RequestWithApiary,
-  ) {
+  ): Promise<QueenResponse> {
     this.logger.log(
       `Creating queen for hive ${createQueenDto.hiveId} in apiary ${req.apiaryId}`,
     );
@@ -46,8 +55,8 @@ export class QueensController {
   }
 
   @Get()
-  @ApiOkResponse({ type: [QueenResponseDto] })
-  findAll(@Req() req: RequestWithApiary) {
+  @ApiOkResponse({ type: Object, isArray: true })
+  findAll(@Req() req: RequestWithApiary): Promise<QueenResponse[]> {
     this.logger.log(`Finding all queens in apiary ${req.apiaryId}`);
     return this.queensService.findAll({
       apiaryId: req.apiaryId,
@@ -56,8 +65,11 @@ export class QueensController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: QueenResponseDto })
-  findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  @ApiOkResponse({ type: Object })
+  findOne(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiary,
+  ): Promise<QueenResponse> {
     this.logger.log(`Finding queen with ID ${id} in apiary ${req.apiaryId}`);
     return this.queensService.findOne(id, {
       apiaryId: req.apiaryId,
@@ -66,12 +78,13 @@ export class QueensController {
   }
 
   @Patch(':id')
-  @ApiOkResponse({ type: QueenResponseDto })
+  @ApiOkResponse({ type: Object })
+  @ZodValidation(updateQueenSchema)
   update(
     @Param('id') id: string,
-    @Body() updateQueenDto: UpdateQueenDto,
+    @Body() updateQueenDto: UpdateQueen,
     @Req() req: RequestWithApiary,
-  ) {
+  ): Promise<QueenResponse> {
     this.logger.log(`Updating queen with ID ${id} in apiary ${req.apiaryId}`);
     this.logger.debug(`Update data: ${JSON.stringify(updateQueenDto)}`);
     return this.queensService.update(id, updateQueenDto, {
@@ -81,7 +94,7 @@ export class QueensController {
   }
 
   @Delete(':id')
-  @ApiOkResponse({ type: QueenResponseDto })
+  @ApiOkResponse({ type: Object })
   remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
     this.logger.log(`Removing queen with ID ${id} from apiary ${req.apiaryId}`);
     return this.queensService.remove(id, {

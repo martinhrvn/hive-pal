@@ -259,19 +259,13 @@ paths:
     post:
       operationId: QueensController_create
       parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateQueenDto'
       responses:
         '201':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueenResponseDto'
+                type: object
       tags: &ref_4
         - queens
     get:
@@ -285,7 +279,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/QueenResponseDto'
+                  type: object
       tags: *ref_4
   /api/queens/{id}:
     get:
@@ -302,7 +296,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueenResponseDto'
+                type: object
       tags: *ref_4
     patch:
       operationId: QueensController_update
@@ -312,19 +306,13 @@ paths:
           in: path
           schema:
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateQueenDto'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueenResponseDto'
+                type: object
       tags: *ref_4
     delete:
       operationId: QueensController_remove
@@ -340,25 +328,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueenResponseDto'
+                type: object
       tags: *ref_4
   /api/apiaries:
     post:
       operationId: ApiariesController_create
       parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateApiaryDto'
       responses:
         '201':
           description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiaryResponseDto'
       tags: &ref_5
         - Apiaries
     get:
@@ -367,12 +345,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ApiaryResponseDto'
       tags: *ref_5
   /api/apiaries/{id}:
     get:
@@ -386,10 +358,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiaryResponseDto'
       tags: *ref_5
     patch:
       operationId: ApiariesController_update
@@ -399,12 +367,6 @@ paths:
           in: path
           schema:
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateApiaryDto'
       responses:
         '200':
           description: ''
@@ -681,209 +643,6 @@ components:
       required:
         - currentPassword
         - newPassword
-    QueenStatus:
-      type: string
-      enum:
-        - ACTIVE
-        - REPLACED
-        - DEAD
-        - UNKNOWN
-      description: Current status of the queen
-    CreateQueenDto:
-      type: object
-      properties:
-        hiveId:
-          type: string
-          format: uuid
-          description: ID of the hive this queen belongs to
-          example: 123e4567-e89b-12d3-a456-426614174000
-        marking:
-          type: string
-          nullable: true
-          description: Optional marking, usually number or similar
-          example: Yellow dot
-        color:
-          type: string
-          nullable: true
-          description: Optional color of the queen
-          example: Yellow
-        year:
-          type: number
-          description: Birth year of the queen
-          example: 2025
-        source:
-          type: string
-          nullable: true
-          description: Source of the queen (breeder, etc.)
-          example: Local breeder
-        status:
-          nullable: true
-          description: Current status of the queen
-          example: ACTIVE
-          allOf:
-            - $ref: '#/components/schemas/QueenStatus'
-        installedAt:
-          type: string
-          format: date-time
-          nullable: true
-          description: Date when the queen was installed
-          example: '2025-03-20T10:00:00Z'
-        replacedAt:
-          type: string
-          format: date-time
-          nullable: true
-          description: Date when the queen was replaced
-          example: '2025-04-15T10:00:00Z'
-      required:
-        - year
-    QueenResponseDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique ID of the queen
-        hiveId:
-          type: string
-          nullable: true
-          description: ID of the hive this queen belongs to
-        marking:
-          type: string
-          nullable: true
-          description: Queen marking code
-        color:
-          type: string
-          nullable: true
-          description: Queen color marking
-        year:
-          type: number
-          description: Birth year of the queen
-        source:
-          type: string
-        status:
-          type: string
-          enum:
-            - ACTIVE
-            - REPLACED
-            - DEAD
-            - UNKNOWN
-        installedAt:
-          type: string
-        replacedAt:
-          type: string
-      required:
-        - id
-        - marking
-        - color
-        - year
-    UpdateQueenDto:
-      type: object
-      properties:
-        hiveId:
-          type: string
-          format: uuid
-          description: ID of the hive this queen belongs to
-          example: 123e4567-e89b-12d3-a456-426614174000
-        marking:
-          type: string
-          nullable: true
-          description: Optional marking, usually number or similar
-          example: Yellow dot
-        color:
-          type: string
-          nullable: true
-          description: Optional color of the queen
-          example: Yellow
-        year:
-          type: number
-          description: Birth year of the queen
-          example: 2025
-        source:
-          type: string
-          nullable: true
-          description: Source of the queen (breeder, etc.)
-          example: Local breeder
-        status:
-          nullable: true
-          description: Current status of the queen
-          example: ACTIVE
-          allOf:
-            - $ref: '#/components/schemas/QueenStatus'
-        installedAt:
-          type: string
-          format: date-time
-          nullable: true
-          description: Date when the queen was installed
-          example: '2025-03-20T10:00:00Z'
-        replacedAt:
-          type: string
-          format: date-time
-          nullable: true
-          description: Date when the queen was replaced
-          example: '2025-04-15T10:00:00Z'
-    CreateApiaryDto:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the apiary
-          example: Meadow Apiary
-        location:
-          type: string
-          description: Location description of the apiary
-          example: Behind the barn
-        latitude:
-          type: number
-          description: Latitude coordinate of the apiary
-          example: 40.7128
-        longitude:
-          type: number
-          description: Longitude coordinate of the apiary
-          example: -74.006
-      required:
-        - name
-    ApiaryResponseDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the apiary
-        name:
-          type: string
-          description: Name of the apiary
-        location:
-          type: string
-          description: Location of the apiary
-          nullable: true
-        latitude:
-          type: number
-          description: Latitude of the apiary
-          nullable: true
-        longitude:
-          type: number
-          description: Longitude of the apiary
-          nullable: true
-      required:
-        - id
-        - name
-    UpdateApiaryDto:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the apiary
-          example: Meadow Apiary
-        location:
-          type: string
-          description: Location description of the apiary
-          example: Behind the barn
-        latitude:
-          type: number
-          description: Latitude coordinate of the apiary
-          example: 40.7128
-        longitude:
-          type: number
-          description: Longitude coordinate of the apiary
-          example: -74.006
     FeedingActionDetailsDto:
       type: object
       properties:

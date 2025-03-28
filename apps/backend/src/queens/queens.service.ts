@@ -1,19 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateQueenDto } from './dto/create-queen.dto';
-import { UpdateQueenDto } from './dto/update-queen.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { QueenResponseDto, QueenStatus } from './dto/queen-response.dto';
-import { plainToInstance } from 'class-transformer';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { CreateQueen, QueenResponse, UpdateQueen } from 'shared-schemas';
 
 @Injectable()
 export class QueensService {
   constructor(private prisma: PrismaService) {}
 
   async create(
-    createQueenDto: CreateQueenDto,
+    createQueenDto: CreateQueen,
     filter: ApiaryUserFilter,
-  ): Promise<QueenResponseDto> {
+  ): Promise<QueenResponse> {
     // Check if the hive belongs to the user's apiary
     if (createQueenDto.hiveId) {
       const hive = await this.prisma.hive.findFirst({
@@ -32,7 +29,7 @@ export class QueensService {
         );
       }
 
-      if (createQueenDto.status === QueenStatus.ACTIVE) {
+      if (createQueenDto.status === 'ACTIVE') {
         await this.markAllActiveQueensAsReplaced(createQueenDto.hiveId);
       }
     }
@@ -54,7 +51,7 @@ export class QueensService {
       },
     });
 
-    return plainToInstance(QueenResponseDto, {
+    return {
       id: queen.id,
       hiveId: queen.hiveId,
       marking: createQueenDto.marking,
@@ -64,10 +61,10 @@ export class QueensService {
       status: queen.status,
       installedAt: queen.installedAt?.toISOString(),
       replacedAt: queen.replacedAt?.toISOString() || null,
-    });
+    };
   }
 
-  async findAll(filter: ApiaryUserFilter) {
+  async findAll(filter: ApiaryUserFilter): Promise<QueenResponse[]> {
     // Find all queens for hives in the specified apiary owned by this user
     const queens = await this.prisma.queen.findMany({
       where: {
@@ -79,21 +76,21 @@ export class QueensService {
         },
       },
     });
-    return queens.map((queen) =>
-      plainToInstance(QueenResponseDto, {
-        id: queen.id,
-        hiveId: queen.hiveId,
-        color: queen.color,
-        year: queen.year,
-        source: queen.source,
-        status: queen.status,
-        installedAt: queen.installedAt?.toISOString(),
-        replacedAt: queen.replacedAt?.toISOString() || null,
-      }),
-    );
+
+    return queens.map((queen) => ({
+      id: queen.id,
+      hiveId: queen.hiveId,
+      marking: queen.marking,
+      color: queen.color,
+      year: queen.year,
+      source: queen.source,
+      status: queen.status,
+      installedAt: queen.installedAt?.toISOString(),
+      replacedAt: queen.replacedAt?.toISOString() || null,
+    }));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter) {
+  async findOne(id: string, filter: ApiaryUserFilter): Promise<QueenResponse> {
     const queen = await this.prisma.queen.findFirst({
       where: {
         id,
@@ -110,23 +107,24 @@ export class QueensService {
       throw new NotFoundException(`Queen with ID ${id} not found`);
     }
 
-    return plainToInstance(QueenResponseDto, {
+    return {
       id: queen.id,
       hiveId: queen.hiveId,
+      marking: queen.marking,
       color: queen.color,
       year: queen.year,
       source: queen.source,
       status: queen.status,
       installedAt: queen.installedAt?.toISOString(),
       replacedAt: queen.replacedAt?.toISOString() || null,
-    });
+    };
   }
 
   async update(
     id: string,
-    updateQueenDto: UpdateQueenDto,
+    updateQueenDto: UpdateQueen,
     filter: ApiaryUserFilter,
-  ) {
+  ): Promise<QueenResponse> {
     // Check if queen exists and belongs to the user's apiary
     const existingQueen = await this.prisma.queen.findFirst({
       where: {
@@ -149,10 +147,11 @@ export class QueensService {
       where: { id },
       data: {
         hiveId: updateQueenDto.hiveId,
+        marking: updateQueenDto.marking,
         color: updateQueenDto.color,
         year: updateQueenDto.year,
         source: updateQueenDto.source,
-        status: updateQueenDto.status ?? 'ACTIVE',
+        status: updateQueenDto.status ?? undefined,
         installedAt: updateQueenDto.installedAt
           ? new Date(updateQueenDto.installedAt)
           : undefined,
@@ -162,17 +161,17 @@ export class QueensService {
       },
     });
 
-    return plainToInstance(QueenResponseDto, {
+    return {
       id: updatedQueen.id,
       hiveId: updatedQueen.hiveId,
-      marking: updateQueenDto.marking,
+      marking: updatedQueen.marking,
       color: updatedQueen.color,
       year: updatedQueen.year,
       source: updatedQueen.source,
       status: updatedQueen.status,
       installedAt: updatedQueen.installedAt?.toISOString(),
       replacedAt: updatedQueen.replacedAt?.toISOString() || null,
-    });
+    };
   }
 
   async remove(id: string, filter: ApiaryUserFilter) {
