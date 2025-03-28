@@ -15,15 +15,21 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { 
+  loginSchema, 
+  registerSchema, 
+  authResponseSchema, 
+  Login, 
+  Register, 
+  AuthResponse 
+} from '@hive-pal/shared-schemas';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RequestWithUser } from './interface/request-with-user.interface';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { CustomLoggerService } from '../logger/logger.service';
+import { ZodValidation } from '../common/decorators/zod-validation.decorator';
 
 @ApiTags('auth')
 @Controller('auth')

@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  ActionDtoSchema,
-  ActionType,
-  FrameActionDetailsDto,
-} from './dto/action-response.dto';
+
 import { Prisma } from '@prisma/client';
-import { CreateActionDtoSchema } from './dto/create-action.dto';
+import { ActionResponse, ActionType, CreateAction } from 'shared-schemas';
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
@@ -28,7 +24,7 @@ export class ActionsService {
    */
   async createActions(
     inspectionId: string,
-    actions: CreateActionDtoSchema[],
+    actions: CreateAction[],
     tx: Prisma.TransactionClient,
   ): Promise<void> {
     if (!actions || actions.length === 0) {
@@ -122,7 +118,7 @@ export class ActionsService {
    */
   async updateActions(
     inspectionId: string,
-    actions: CreateActionDtoSchema[],
+    actions: CreateAction[],
     tx: Prisma.TransactionClient,
   ): Promise<void> {
     // Delete existing actions
@@ -135,7 +131,7 @@ export class ActionsService {
   }
 
   // Prisma-to-Domain Transformation Function
-  mapPrismaToDto(prismaAction: ActionWithRelations): ActionDtoSchema {
+  mapPrismaToDto(prismaAction: ActionWithRelations): ActionResponse {
     const base = {
       id: prismaAction.id,
       inspectionId: prismaAction.inspectionId,
@@ -185,7 +181,7 @@ export class ActionsService {
           details: {
             type: ActionType.FRAME,
             quantity: prismaAction.frameAction.quantity,
-          } as FrameActionDetailsDto,
+          },
         };
 
       default:

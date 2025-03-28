@@ -6,11 +6,6 @@ import * as yaml from 'js-yaml';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import * as path from 'path';
 import { CustomLoggerService } from './logger/logger.service';
-import {
-  FeedingActionDetailsDto,
-  FrameActionDetailsDto,
-  TreatmentActionDetailsDto,
-} from './actions/dto/action-response.dto';
 
 /**
  * Generate Swagger documentation in YAML format
@@ -47,13 +42,7 @@ async function generateSwaggerYAML() {
     .setVersion('1.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [
-      FeedingActionDetailsDto,
-      TreatmentActionDetailsDto,
-      FrameActionDetailsDto,
-    ],
-  });
+  const document = SwaggerModule.createDocument(app, config, {});
   const docsDir = path.join(process.cwd(), 'docs');
   if (!fs.existsSync(docsDir)) {
     fs.mkdirSync(docsDir, { recursive: true });
