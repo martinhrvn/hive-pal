@@ -2,19 +2,21 @@
   "name": "shared-schemas",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "echo 'No watch needed - using source files directly'",
     "lint": "eslint --ext .ts src"
   },
   "dependencies": {
-    "zod": "^3.24.2",
-    "@nestjs/swagger": "^11.1.0"
+    "@nestjs/swagger": "^11.1.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
+    "tsup": "^8.4.0",
     "typescript": "^5.6.0"
   }
 }
