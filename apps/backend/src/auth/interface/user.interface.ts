@@ -2,6 +2,6 @@ export interface User {
   id: string;
   email: string;
   name?: string;
-  role?: string;
+  role?: 'ADMIN' | 'USER';
   passwordChangeRequired?: boolean;
 }

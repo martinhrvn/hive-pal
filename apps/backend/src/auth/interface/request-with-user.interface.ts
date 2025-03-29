@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { User } from './user.interface';
+import { User } from 'shared-schemas';
 
 export interface RequestWithUser extends Request {
   user: User;
@@ -8,7 +8,8 @@ export interface RequestWithUser extends Request {
 export interface JwtPayload {
   email: string;
   sub: string;
-  role: string;
+  role: User['role'];
+  name: User['name'];
   passwordChangeRequired: boolean;
 }
 

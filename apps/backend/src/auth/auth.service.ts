@@ -11,9 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User as PrismaUser } from '@prisma/client';
-import { User } from './interface/user.interface';
-import { UserResponseDto } from '../users/dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { AuthResponse, User } from 'shared-schemas';
 
 @Injectable()
 export class AuthService {
@@ -50,7 +48,7 @@ export class AuthService {
     return null;
   }
 
-  login(user: User) {
+  login(user: User): AuthResponse {
     // If validation failed
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
@@ -79,7 +77,7 @@ export class AuthService {
     email: string,
     password: string,
     name?: string,
-  ): Promise<AuthResponseDto> {
+  ): Promise<AuthResponse> {
     // Check if user exists
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
@@ -118,7 +116,7 @@ export class AuthService {
     };
   }
 
-  async getProfile(userId: string): Promise<UserResponseDto> {
+  async getProfile(userId: string): Promise<User> {
     // Special case for admin user
     if (userId === 'admin') {
       return {
@@ -127,8 +125,6 @@ export class AuthService {
         name: 'Admin',
         role: 'ADMIN',
         passwordChangeRequired: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       };
     }
 

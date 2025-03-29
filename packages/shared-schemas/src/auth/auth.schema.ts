@@ -15,8 +15,8 @@ export const registerSchema = loginSchema.extend({
 export const userSchema = z.object({
   id: z.string(),
   email: z.string().email(),
-  name: z.string().optional(),
-  role: z.enum(['USER', 'ADMIN']),
+  name: z.string().nullable(),
+  role: z.enum(['USER', 'ADMIN']).nullable(),
   passwordChangeRequired: z.boolean(),
 });
 
