@@ -17,8 +17,9 @@ import { Alert } from '../../components/ui/alert';
 
 const ChangePasswordPage: React.FC = () => {
   const { logout } = useAuthContext();
-  const { mutateAsync: changePassword, isPending: isChangingPassword } = useChangePassword();
-  const { data: user, isLoading } = useUserProfile();
+  const { mutateAsync: changePassword, isPending: isChangingPassword } =
+    useChangePassword();
+  const { data: user } = useUserProfile();
 
   const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState('');
