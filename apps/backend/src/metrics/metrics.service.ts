@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ObservationSchemaType } from 'shared-schemas/dist';
+import { ObservationSchemaType } from 'shared-schemas';
 
 @Injectable()
 export class MetricsService {
