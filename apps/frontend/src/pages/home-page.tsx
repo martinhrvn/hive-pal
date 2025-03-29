@@ -1,10 +1,10 @@
-import { useHiveControllerFindAll } from 'api-client';
 import { HiveList } from '@/pages/hive/components';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { HomeActionSidebar } from '@/components/home-action-sidebar';
+import { useHives } from '@/api/hooks';
 
 export const HomePage = () => {
-  const { data, isLoading, refetch } = useHiveControllerFindAll();
+  const { data, isLoading, refetch } = useHives();
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -12,7 +12,7 @@ export const HomePage = () => {
   return (
     <Page>
       <MainContent>
-        <HiveList hives={data?.data ?? []} />
+        <HiveList hives={data ?? []} />
       </MainContent>
       <Sidebar>
         <HomeActionSidebar onRefreshData={refetch} />

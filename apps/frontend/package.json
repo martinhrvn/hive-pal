@@ -33,7 +33,6 @@
     "@tailwindcss/vite": "^4.0.14",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-table": "^8.21.2",
-    "api-client": "workspace:*",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "shared-schemas": "workspace:*",

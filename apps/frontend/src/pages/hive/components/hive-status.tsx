@@ -1,10 +1,10 @@
 import React from 'react';
-import { HiveResponseDto } from 'api-client';
+import { HiveResponse } from 'shared-schemas';
 
-type HiveStatusEnum = HiveResponseDto['status'];
+type HiveStatusEnum = HiveResponse['status'];
 
 type HiveStatusProps = {
-  status?: HiveResponseDto['status'];
+  status?: HiveResponse['status'];
 };
 
 const getStatusClasses = (status: HiveStatusEnum) => {

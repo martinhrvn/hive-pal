@@ -11,10 +11,5 @@
     },
     "test:e2e": {
       "dependsOn": ["db:up:test"]
-    },
-    "swagger:generate": {
-      "dependsOn": ["prisma:generate"],
-      "outputs": ["docs/swagger.yaml", "docs/swagger.json"],
-      "cache": true
     }
   }}

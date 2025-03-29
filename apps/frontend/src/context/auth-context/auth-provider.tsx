@@ -3,7 +3,6 @@ import axios from 'axios';
 import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
-import { AXIOS_INSTANCE } from 'api-client';
 import { useRegister } from '@/api/hooks/useAuth';
 
 export const TOKEN_KEY = 'hive_pal_auth_token';
@@ -13,30 +12,6 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-AXIOS_INSTANCE.interceptors.request.use(config => {
-  const token = localStorage.getItem(TOKEN_KEY);
-  const apiaryId = localStorage.getItem(APIARY_SELECTION);
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    if (apiaryId) {
-      config.headers['x-apiary-id'] = apiaryId;
-    }
-  }
-  config.baseURL = getApiUrl('');
-  return config;
-});
-
-AXIOS_INSTANCE.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      // Unauthorized, clear token and redirect to login
-      localStorage.removeItem(TOKEN_KEY);
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  },
-);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => {
     // Initialize from localStorage
