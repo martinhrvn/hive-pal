@@ -3,7 +3,8 @@ import axios from 'axios';
 import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
-import { AXIOS_INSTANCE, useAuthControllerRegister } from 'api-client';
+import { AXIOS_INSTANCE } from 'api-client';
+import { useRegister } from '@/api/hooks/useAuth';
 
 export const TOKEN_KEY = 'hive_pal_auth_token';
 export const APIARY_SELECTION = 'hive_pal_apiary_selection';
@@ -107,19 +108,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [],
   );
 
-  const { mutateAsync } = useAuthControllerRegister({ mutation: {} });
+  const { mutateAsync } = useRegister();
 
   const register = useCallback(
     async (email: string, password: string, name?: string) => {
       return mutateAsync({
-        data: {
-          email,
-          password,
-          ...(name && { name }),
-        },
+        email,
+        password,
+        ...(name && { name }),
       })
-        .then(res => {
-          const { data } = res;
+        .then(data => {
           if (data.access_token) {
             localStorage.setItem(TOKEN_KEY, data.access_token);
 

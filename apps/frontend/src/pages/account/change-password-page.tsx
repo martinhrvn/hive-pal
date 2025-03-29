@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/auth-context';
-import axios from 'axios';
-import { getApiUrl } from '@/api/client.ts';
+import { useAuth as useAuthContext } from '@/context/auth-context';
+import { useChangePassword, useUserProfile } from '@/api/hooks/useAuth';
 import {
   Card,
   CardContent,
@@ -15,19 +14,17 @@ import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
 import { Alert } from '../../components/ui/alert';
-import { useAuthControllerGetProfile } from 'api-client';
 
 const ChangePasswordPage: React.FC = () => {
-  const { token, logout } = useAuth();
-  const { data: user } = useAuthControllerGetProfile({
-    query: { select: data => data.data },
-  });
+  const { logout } = useAuthContext();
+  const { mutateAsync: changePassword, isPending: isChangingPassword } = useChangePassword();
+  const { data: user, isLoading } = useUserProfile();
+
   const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,29 +45,19 @@ const ChangePasswordPage: React.FC = () => {
       return;
     }
 
-    setLoading(true);
     setError(null);
 
     try {
-      await axios.post(
-        getApiUrl('/api/users/change-password'),
-        {
-          currentPassword,
-          newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await changePassword({
+        currentPassword,
+        newPassword,
+      });
+
       logout();
       navigate('/login');
     } catch (err: unknown) {
       console.error('Error changing password:', err);
       setError('Failed to change password');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -127,8 +114,12 @@ const ChangePasswordPage: React.FC = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Changing Password...' : 'Change Password'}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isChangingPassword}
+            >
+              {isChangingPassword ? 'Changing Password...' : 'Change Password'}
             </Button>
           </form>
         </CardContent>

@@ -18,14 +18,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { useAuthControllerGetProfile } from 'api-client';
+import { useUserProfile } from '@/api/hooks/useAuth';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { data: user } = useAuthControllerGetProfile({
-    query: { select: data => data.data },
-  });
-  if (!user) {
+  const { data: user, isLoading } = useUserProfile();
+  
+  if (isLoading || !user) {
     return null;
   }
   return (

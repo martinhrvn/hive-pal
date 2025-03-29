@@ -19,27 +19,7 @@
       "post": {
         "operationId": "AuthController_register",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterDto"
-              }
-            }
-          }
-        },
         "responses": {
-          "201": {
-            "description": "User successfully registered",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Bad request"
           },
@@ -47,7 +27,6 @@
             "description": "Email already in use"
           }
         },
-        "summary": "Register a new user",
         "tags": [
           "auth"
         ]
@@ -57,32 +36,11 @@
       "post": {
         "operationId": "AuthController_login",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginDto"
-              }
-            }
-          }
-        },
         "responses": {
-          "200": {
-            "description": "User successfully logged in",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          },
           "401": {
             "description": "Unauthorized"
           }
         },
-        "summary": "Login with email and password",
         "tags": [
           "auth"
         ]
@@ -94,25 +52,9 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "User profile retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
+            "description": ""
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get current user profile",
         "tags": [
           "auth"
         ]
@@ -836,113 +778,6 @@
   "servers": [],
   "components": {
     "schemas": {
-      "RegisterDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User email address",
-            "example": "user@example.com"
-          },
-          "password": {
-            "type": "string",
-            "description": "User password",
-            "example": "password123",
-            "minLength": 6
-          },
-          "name": {
-            "type": "string",
-            "description": "User display name (optional)",
-            "example": "John Doe"
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
-      "UserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "User ID",
-            "example": "1"
-          },
-          "email": {
-            "type": "string",
-            "description": "User email",
-            "example": "user@example.com"
-          },
-          "name": {
-            "type": "string",
-            "description": "User display name",
-            "example": "John Doe"
-          },
-          "role": {
-            "type": "string",
-            "description": "User role",
-            "example": "USER",
-            "enum": [
-              "USER",
-              "ADMIN"
-            ]
-          },
-          "passwordChangeRequired": {
-            "type": "boolean",
-            "description": "Whether the user needs to change their password",
-            "example": false
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "role",
-          "passwordChangeRequired"
-        ]
-      },
-      "AuthResponseDto": {
-        "type": "object",
-        "properties": {
-          "access_token": {
-            "type": "string",
-            "description": "JWT access token",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          },
-          "user": {
-            "description": "User information",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/UserDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "access_token",
-          "user"
-        ]
-      },
-      "LoginDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User email address used for login",
-            "example": "user@example.com"
-          },
-          "password": {
-            "type": "string",
-            "description": "User password",
-            "example": "password123",
-            "minLength": 6
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
       "UserResponseDto": {
         "type": "object",
         "properties": {
@@ -1028,92 +863,6 @@
         "required": [
           "currentPassword",
           "newPassword"
-        ]
-      },
-      "FeedingActionDetailsDto": {
-        "type": "object",
-        "properties": {
-          "feedType": {
-            "type": "string",
-            "description": "Type of feed (Sugar Syrup, Honey, Pollen Sub, Candy)"
-          },
-          "amount": {
-            "type": "number",
-            "description": "Amount of feed"
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement (liters, quarts, gallons, kg, lb)"
-          },
-          "concentration": {
-            "type": "string",
-            "description": "Concentration of feed (1:1, 2:1, etc.)"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "FEEDING"
-            ],
-            "description": "Type of action"
-          }
-        },
-        "required": [
-          "feedType",
-          "amount",
-          "unit",
-          "type"
-        ]
-      },
-      "TreatmentActionDetailsDto": {
-        "type": "object",
-        "properties": {
-          "product": {
-            "type": "string",
-            "description": "Treatment product name"
-          },
-          "quantity": {
-            "type": "number",
-            "description": "Treatment quantity"
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement"
-          },
-          "duration": {
-            "type": "string",
-            "description": "Treatment duration"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "TREATMENT"
-            ],
-            "description": "Type of action"
-          }
-        },
-        "required": [
-          "product",
-          "quantity",
-          "unit",
-          "type"
-        ]
-      },
-      "FrameActionDetailsDto": {
-        "type": "object",
-        "properties": {
-          "quantity": {
-            "type": "number",
-            "description": "Quantity of frames"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "FRAME"
-            ]
-          }
-        },
-        "required": [
-          "quantity"
         ]
       }
     }
