@@ -30,7 +30,7 @@ setup('authenticate as user', async ({ page, isMobile }) => {
     .fill('Peter Parker');
   await page.getByRole('button', { name: /register/i }).click();
 
-  await expect(page.getByText('Peter Parker')).toBeVisible();
+  await expect(page.getByText('Welcome to Hive-Pal!')).toBeVisible();
 
   await page.context().storageState({ path: userFile });
 });

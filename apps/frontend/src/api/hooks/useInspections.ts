@@ -59,12 +59,9 @@ export const useCreateInspection = () => {
 
   return useMutation({
     mutationFn: async (data: CreateInspection) => {
-      const response = await apiClient.get<CreateInspectionResponse>(
+      const response = await apiClient.post<CreateInspectionResponse>(
         `/api/inspections`,
-        {
-          method: 'POST',
-          data,
-        },
+        data,
       );
 
       return response.data;
@@ -92,9 +89,7 @@ export const useUpdateInspection = () => {
     }) => {
       const response = await apiClient.patch<UpdateInspectionResponse>(
         `/api/inspections/${id}`,
-        {
-          data,
-        },
+        data,
       );
 
       return response.data;
