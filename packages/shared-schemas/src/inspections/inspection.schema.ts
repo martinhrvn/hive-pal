@@ -17,7 +17,6 @@ export const createInspectionSchema = z.object({
 
 // Schema for updating inspections
 export const updateInspectionSchema = createInspectionSchema.partial().extend({
-  id: z.string().uuid(),
   status: inspectionStatusSchema.optional(),
 });
 
