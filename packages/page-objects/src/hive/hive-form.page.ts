@@ -15,7 +15,7 @@ export class HiveFormPage {
     this.nameInput = page.getByLabel('Label');
     this.apiarySelect = page.getByRole('combobox', { name: 'Apiary' });
     this.notesTextarea = page.getByLabel('notes');
-    this.installationDateButton = page.getByRole('button', { name: /Pick a date|[A-Za-z]+ \d+, \d+/ });
+    this.installationDateButton = page.getByRole('button',  { name: 'Installation date' });
     this.calendar = page.locator('.rdp-month');
     this.submitButton = page.getByRole('button', { name: 'Submit' });
   }
@@ -67,15 +67,15 @@ export class HiveFormPage {
     installationDate?: Date;
   }) {
     await this.nameInput.fill(name);
-    
+
     if (apiaryName) {
       await this.selectApiary(apiaryName);
     }
-    
+
     if (notes) {
       await this.notesTextarea.fill(notes);
     }
-    
+
     if (installationDate) {
       await this.selectDate(installationDate);
     } else {
