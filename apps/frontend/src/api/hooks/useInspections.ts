@@ -31,7 +31,7 @@ export const useInspections = (filters?: InspectionFilter) => {
       if (filters?.endDate) params.append('endDate', filters.endDate);
       if (filters?.status) params.append('status', filters.status);
 
-      const url = `/inspections${params.toString() ? `?${params.toString()}` : ''}`;
+      const url = `/api/inspections${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await apiClient.get<InspectionResponse[]>(url);
       return response.data;
     },
@@ -44,7 +44,7 @@ export const useInspection = (id: string, options = {}) => {
     queryKey: INSPECTIONS_KEYS.detail(id),
     queryFn: async () => {
       const response = await apiClient.get<InspectionResponse>(
-        `/inspections/${id}`,
+        `/api/inspections/${id}`,
       );
       return response.data;
     },
@@ -60,7 +60,7 @@ export const useCreateInspection = () => {
   return useMutation({
     mutationFn: async (data: CreateInspection) => {
       const response = await apiClient.get<CreateInspectionResponse>(
-        `/inspections`,
+        `/api/inspections`,
         {
           method: 'POST',
           data,
@@ -91,7 +91,7 @@ export const useUpdateInspection = () => {
       data: UpdateInspection;
     }) => {
       const response = await apiClient.patch<UpdateInspectionResponse>(
-        `/inspections/${id}`,
+        `/api/inspections/${id}`,
         {
           data,
         },
@@ -118,7 +118,7 @@ export const useDeleteInspection = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(getApiUrl(`/inspections/${id}`), {
+      const response = await fetch(getApiUrl(`/api/inspections/${id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

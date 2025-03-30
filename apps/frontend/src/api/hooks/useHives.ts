@@ -37,7 +37,7 @@ export const useHives = (
       if (filters?.includeInactive !== undefined)
         params.append('includeInactive', filters.includeInactive.toString());
 
-      const url = `/hives${params.toString() ? `?${params.toString()}` : ''}`;
+      const url = `/api/hives${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await apiClient.get<HiveResponse[]>(url);
       return response.data;
     },
@@ -58,7 +58,9 @@ export const useHive = (id: string, options = {}) => {
   return useQuery<HiveDetailResponse>({
     queryKey: HIVES_KEYS.detail(id),
     queryFn: async () => {
-      const response = await apiClient.get<HiveDetailResponse>(`/hives/${id}`);
+      const response = await apiClient.get<HiveDetailResponse>(
+        `/api/hives/${id}`,
+      );
       return response.data;
     },
     enabled: !!id,
@@ -72,7 +74,10 @@ export const useCreateHive = (callbacks?: { onSuccess: () => void }) => {
 
   return useMutation({
     mutationFn: async (data: CreateHive) => {
-      const response = await apiClient.post<CreateHiveResponse>('/hives', data);
+      const response = await apiClient.post<CreateHiveResponse>(
+        '/api/hives',
+        data,
+      );
       return response.data;
     },
     onSuccess: async () => {
@@ -92,7 +97,7 @@ export const useUpdateHive = () => {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateHive }) => {
       const response = await apiClient.patch<UpdateHiveResponse>(
-        `/hives/${id}`,
+        `/api/hives/${id}`,
         data,
       );
 
@@ -117,7 +122,7 @@ export const useDeleteHive = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(getApiUrl(`/hives/${id}`), {
+      const response = await fetch(getApiUrl(`/api/hives/${id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

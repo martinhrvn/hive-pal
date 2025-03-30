@@ -1,10 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, getApiUrl } from '../client';
-import {
-  CreateQueen,
-  UpdateQueen,
-  QueenResponse,
-} from 'shared-schemas';
+import { CreateQueen, UpdateQueen, QueenResponse } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
@@ -28,7 +24,7 @@ export const useQueens = (
       const params = new URLSearchParams();
       if (hiveId) params.append('hiveId', hiveId);
 
-      const url = `/queens${params.toString() ? `?${params.toString()}` : ''}`;
+      const url = `/api/queens${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await apiClient.get<QueenResponse[]>(url);
       return response.data;
     },
@@ -41,7 +37,7 @@ export const useQueen = (id: string, options = {}) => {
   return useQuery<QueenResponse>({
     queryKey: QUEENS_KEYS.detail(id),
     queryFn: async () => {
-      const response = await apiClient.get<QueenResponse>(`/queens/${id}`);
+      const response = await apiClient.get<QueenResponse>(`/api/queens/${id}`);
       return response.data;
     },
     enabled: !!id,
@@ -55,10 +51,10 @@ export const useCreateQueen = (callbacks?: { onSuccess: () => void }) => {
 
   return useMutation({
     mutationFn: async (data: CreateQueen) => {
-      const response = await apiClient.post<QueenResponse>('/queens', data);
+      const response = await apiClient.post<QueenResponse>('/api/queens', data);
       return response.data;
     },
-    onSuccess: async (data) => {
+    onSuccess: async data => {
       callbacks?.onSuccess?.();
       // Invalidate queen lists to refresh data
       await queryClient.invalidateQueries({
@@ -81,7 +77,7 @@ export const useUpdateQueen = () => {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateQueen }) => {
       const response = await apiClient.patch<QueenResponse>(
-        `/queens/${id}`,
+        `/api/queens/${id}`,
         data,
       );
 
@@ -112,7 +108,7 @@ export const useDeleteQueen = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(getApiUrl(`/queens/${id}`), {
+      const response = await fetch(getApiUrl(`/api/queens/${id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

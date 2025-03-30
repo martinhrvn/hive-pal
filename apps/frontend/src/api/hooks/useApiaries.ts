@@ -1,10 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, getApiUrl } from '../client';
-import {
-  CreateApiary,
-  UpdateApiary,
-  ApiaryResponse,
-} from 'shared-schemas';
+import { CreateApiary, UpdateApiary, ApiaryResponse } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
@@ -18,11 +14,13 @@ const APIARIES_KEYS = {
 };
 
 // Get all apiaries
-export const useApiaries = (queryOptions?: UseQueryOptions<ApiaryResponse[]>) => {
+export const useApiaries = (
+  queryOptions?: UseQueryOptions<ApiaryResponse[]>,
+) => {
   return useQuery<ApiaryResponse[]>({
     queryKey: APIARIES_KEYS.list(),
     queryFn: async () => {
-      const response = await apiClient.get<ApiaryResponse[]>('/apiaries');
+      const response = await apiClient.get<ApiaryResponse[]>('/api/apiaries');
       return response.data;
     },
     ...queryOptions,
@@ -42,7 +40,9 @@ export const useApiary = (id: string, options = {}) => {
   return useQuery<ApiaryResponse>({
     queryKey: APIARIES_KEYS.detail(id),
     queryFn: async () => {
-      const response = await apiClient.get<ApiaryResponse>(`/apiaries/${id}`);
+      const response = await apiClient.get<ApiaryResponse>(
+        `/api/apiaries/${id}`,
+      );
       return response.data;
     },
     enabled: !!id,
@@ -56,7 +56,10 @@ export const useCreateApiary = (callbacks?: { onSuccess: () => void }) => {
 
   return useMutation({
     mutationFn: async (data: CreateApiary) => {
-      const response = await apiClient.post<ApiaryResponse>('/apiaries', data);
+      const response = await apiClient.post<ApiaryResponse>(
+        '/api/apiaries',
+        data,
+      );
       return response.data;
     },
     onSuccess: async () => {
@@ -76,7 +79,7 @@ export const useUpdateApiary = () => {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateApiary }) => {
       const response = await apiClient.patch<ApiaryResponse>(
-        `/apiaries/${id}`,
+        `/api/apiaries/${id}`,
         data,
       );
 
@@ -101,7 +104,7 @@ export const useDeleteApiary = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(getApiUrl(`/apiaries/${id}`), {
+      const response = await fetch(getApiUrl(`/api/apiaries/${id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

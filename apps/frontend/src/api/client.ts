@@ -68,7 +68,7 @@ export const createApiClient = (getToken: () => string | null) => {
 };
 
 export const apiClient = axios.create({
-  baseURL: getApiUrl(getEnvVariable('VITE_API_URL')),
+  baseURL: `${getApiUrl(getEnvVariable('VITE_API_URL'))}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
