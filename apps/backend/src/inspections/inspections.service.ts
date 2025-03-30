@@ -238,7 +238,6 @@ export class InspectionsService {
         id,
         hive: {
           apiary: {
-            id: filter.apiaryId,
             userId: filter.userId,
           },
         },

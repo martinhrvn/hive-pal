@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   Req,
+  UsePipes,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
@@ -26,7 +27,7 @@ import {
   UpdateInspectionResponse,
   CreateInspectionResponse,
 } from 'shared-schemas';
-import { ZodValidation } from '../common';
+import { ZodValidation, ZodValidationPipe } from '../common';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard)
 @Controller('inspections')
@@ -84,7 +85,7 @@ export class InspectionsController {
   }
 
   @Patch(':id')
-  @ZodValidation(updateInspectionSchema)
+  @UsePipes(new ZodValidationPipe(updateInspectionSchema))
   async update(
     @Param('id') id: string,
     @Body() updateInspectionDto: UpdateInspection,
@@ -93,7 +94,6 @@ export class InspectionsController {
     this.logger.log(
       `Updating inspection with ID ${id} in apiary ${req.apiaryId}`,
     );
-    this.logger.debug(`Update data: ${JSON.stringify(updateInspectionDto)}`);
     return this.inspectionsService.update(id, updateInspectionDto, {
       apiaryId: req.apiaryId,
       userId: req.user.id,

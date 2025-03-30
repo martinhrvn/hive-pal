@@ -7,6 +7,7 @@ import { CustomLoggerService } from './logger.service';
 const transports: winston.transport[] = [
   // Console transport for local development
   new winston.transports.Console({
+    level: process.env.LOG_LEVEL || 'info',
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.ms(),
@@ -50,8 +51,6 @@ const transports: winston.transport[] = [
     ),
   }),
 ];
-
-console.log(process.env.LOKI_HOST);
 
 // Conditionally add Loki transport if LOKI_HOST is set
 if (process.env.LOKI_HOST) {

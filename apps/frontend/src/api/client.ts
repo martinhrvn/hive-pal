@@ -78,6 +78,7 @@ apiClient.interceptors.request.use(config => {
   const apiaryId = localStorage.getItem(APIARY_SELECTION);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    config.headers['Content-Type'] = 'application/json';
     if (apiaryId) {
       config.headers['x-apiary-id'] = apiaryId;
     }
