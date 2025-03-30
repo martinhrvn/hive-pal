@@ -40,6 +40,7 @@
     "date-fns": "^4.1.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.475.0",
+    "page-objects": "workspace:*",
     "react": "^19.0.0",
     "react-day-picker": "8.10.1",
     "react-dom": "^19.0.0",
@@ -64,6 +65,7 @@
     "@types/react-dom": "^19.0.4",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+
     "autoprefixer": "^10.4.20",
     "eslint": "^9.19.0",
     "eslint-plugin-react-hooks": "^5.2.0",

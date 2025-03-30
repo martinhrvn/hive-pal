@@ -14,7 +14,8 @@
   "devDependencies": {
     "@playwright/test": "^1.51.0",
     "@types/node": "^22.13.10",
-    "dotenv-cli": "^8.0.0"
+    "dotenv-cli": "^8.0.0",
+    "page-objects": "workspace:*"
   },
   "dependencies": {
     "uuid": "^11.1.0"

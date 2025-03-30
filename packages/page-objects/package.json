@@ -1,0 +1,23 @@
+{
+  "name": "page-objects",
+  "version": "0.1.0",
+  "description": "Shared page objects for component and E2E tests",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src/**/*.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "tsup": "^8.0.0",
+    "eslint": "^8.0.0"
+  },
+  "peerDependencies": {
+    "playwright": "^1.40.0",
+    "@playwright/test": "^1.40.0"
+  }
+}

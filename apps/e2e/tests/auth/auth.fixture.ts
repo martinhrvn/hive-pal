@@ -1,7 +1,6 @@
 
 import { test as base } from '@playwright/test';
-import {SignupPage} from "./signup.page";
-import {LoginPage} from "./login.page";
+import { SignupPage, LoginPage } from "page-objects";
 
 
 export const test = base.extend<{ signupPage: SignupPage, loginPage: LoginPage }>({

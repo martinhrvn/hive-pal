@@ -1,8 +1,7 @@
 import {createScreenshotHelper} from "../screenshot-helper";
 import { test , expect} from './auth.fixture'
 import {generateRandomString} from "../utils";
-import {SignupPage} from "./signup.page";
-import {LoginPage} from "./login.page";
+import {LoginPage, SignupPage} from "page-objects";
 
 const takeScreenshot = createScreenshotHelper({ projectName: 'admin' });
 
