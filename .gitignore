@@ -65,3 +65,4 @@ packages/prisma/node_modules/.prisma
 
 # Local development SSL certificates
 *.pem
+.direnv
