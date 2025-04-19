@@ -23,7 +23,7 @@ import { ActionData, InspectionFormData } from './schema.ts';
 const actionTypes = [
   { id: 'FEEDING', label: 'Feeding', Icon: Droplet },
   { id: 'TREATMENT', label: 'Treatment', Icon: Pill },
-  { id: 'FRAMES', label: 'Frames', Icon: Grid },
+  { id: 'FRAME', label: 'Frames', Icon: Grid },
 ];
 
 export type OtherActionType = {
@@ -82,7 +82,7 @@ export const ActionsSection: React.FC = () => {
         return <FeedingForm onSave={handleSave} onRemove={handleRemove} />;
       case 'TREATMENT':
         return <TreatmentForm onSave={handleSave} onRemove={handleRemove} />;
-      case 'FRAMES':
+      case 'FRAME':
         return <FramesForm onSave={handleSave} onRemove={handleRemove} />;
       default:
         return null;
@@ -109,7 +109,7 @@ export const ActionsSection: React.FC = () => {
             onRemove={handleRemove}
           />
         );
-      case 'FRAMES':
+      case 'FRAME':
         return (
           <FramesView
             key="frames"

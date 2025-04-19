@@ -101,6 +101,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
         }) || [],
     },
   });
+  console.log(form.formState.errors)
 
   const hiveIdFromForm =
     useWatch({ name: 'hiveId', control: form.control }) ?? hiveId;

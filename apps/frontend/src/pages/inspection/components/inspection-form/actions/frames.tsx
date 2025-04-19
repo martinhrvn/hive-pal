@@ -7,7 +7,7 @@ import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 
 export type FramesActionType = {
-  type: 'FRAMES';
+  type: 'FRAME';
   frames: number;
   notes?: string;
 };
@@ -15,7 +15,7 @@ export type FramesActionType = {
 type FramesActionProps = {
   action?: FramesActionType;
   onSave: (action: FramesActionType) => void;
-  onRemove: (action: 'FRAMES') => void;
+  onRemove: (action: 'FRAME') => void;
 };
 
 export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
@@ -64,7 +64,7 @@ export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
           <Button
             onClick={() => {
               onSave({
-                type: 'FRAMES',
+                type: 'FRAME',
                 frames,
                 notes: notes.trim() || undefined,
               });
@@ -128,7 +128,7 @@ export const FramesView: React.FC<FramesActionProps> = ({
         <Button
           variant={'ghost'}
           aria-label={'Delete'}
-          onClick={() => onRemove('FRAMES')}
+          onClick={() => onRemove('FRAME')}
         >
           <TrashIcon />
         </Button>
