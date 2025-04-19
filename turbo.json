@@ -36,7 +36,7 @@
       "persistent": true
     },
     "build": {
-      "dependsOn": ["^build", "client:generate", "prisma:generate"],
+      "dependsOn": ["^build", "client:generate", "^prisma:generate"],
       "outputs": ["dist/**", ".next/**", "build/**"],
       "cache": true
     },
