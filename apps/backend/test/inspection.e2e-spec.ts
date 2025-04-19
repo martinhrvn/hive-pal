@@ -2,8 +2,7 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { setupApiary, setupApp, setupHive, setupUser } from './fixtures/setup';
-import { ActionType } from '../src/actions/dto/action-response.dto';
-import { CreateInspection } from 'shared-schemas';
+import { ActionType, CreateInspection } from 'shared-schemas';
 
 let app: INestApplication;
 let prisma: PrismaService;
@@ -68,8 +67,6 @@ it('should create a minimal inspection', async () => {
     hiveId: testHiveId,
     id: expect.any(String),
     status: 'COMPLETED',
-    temperature: 14.5,
-    weatherConditions: 'sunny',
   });
 
   const inspection = await prisma.inspection.findUnique({

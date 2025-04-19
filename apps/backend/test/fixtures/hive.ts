@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
-import { HiveStatusEnum } from '../../src/hives/dto/hive-status.enum';
 
 export function getRandomHive({
   name = 'Test Hive',
