@@ -41,6 +41,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Prisma generate
         run: pnpm --filter backend exec prisma generate
+      - name: Run build
+        run: turbo build --filter=backend
       - name: Run linter
         run: pnpm --filter backend lint
       - name: Run backend tests
@@ -78,6 +80,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+      - name: Run build
+        run: turbo build --filter=frontend
       - name: Run linter
         run: pnpm --filter frontend lint
       - name: Install Playwright browsers
