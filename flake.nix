@@ -23,11 +23,18 @@
             pnpm_9
             turbo
             playwright-driver.browsers
+            nodePackages.prisma
+            openssl
+            prisma-engines
           ];
           shellHook = ''
             export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
             export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
             echo "Node.js $(node --version) and PNPM $(pnpm --version) environment activated"
+            export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines}/bin/query-engine"
+            export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines}/lib/libquery_engine.node"
+            export PRISMA_INTROSPECTION_ENGINE_BINARY="${pkgs.prisma-engines}/bin/introspection-engine"
+            export PRISMA_FMT_BINARY="${pkgs.prisma-engines}/bin/prisma-fmt"
           '';
         };
       });
