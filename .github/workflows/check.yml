@@ -42,7 +42,7 @@ jobs:
       - name: Prisma generate
         run: pnpm --filter backend exec prisma generate
       - name: Run build
-        run: turbo build --filter=backend
+        run: npx turbo build --filter=backend
       - name: Run linter
         run: pnpm --filter backend lint
       - name: Run backend tests
@@ -81,7 +81,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Run build
-        run: turbo build --filter=frontend
+        run: npx turbo build --filter=frontend
       - name: Run linter
         run: pnpm --filter frontend lint
       - name: Install Playwright browsers
