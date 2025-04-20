@@ -30,7 +30,7 @@ import { format, parseISO, isValid } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 export const ActionsList = ({ hiveId }: { hiveId: string }) => {
-  const [selectedType, setSelectedType] = useState<ActionType | ''>('');
+  const [selectedType, setSelectedType] = useState<ActionType | 'all'>('all');
   const [dateRange, setDateRange] = useState<{
     startDate: string | undefined;
     endDate: string | undefined;
@@ -41,7 +41,7 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
 
   const { data: actions, isLoading } = useActions({
     hiveId,
-    type: selectedType || undefined,
+    type: selectedType === 'all' ? undefined : selectedType,
     startDate: dateRange.startDate,
     endDate: dateRange.endDate,
   });
@@ -226,12 +226,15 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
 
             <Select
               value={selectedType}
-              onValueChange={value => setSelectedType(value as ActionType | '')}
+              onValueChange={value =>
+                setSelectedType(value as ActionType | 'all')
+              }
             >
               <SelectTrigger className="w-[130px] h-9">
                 <SelectValue placeholder="All types" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">All types</SelectItem>
                 <SelectItem value={ActionType.FEEDING}>Feeding</SelectItem>
                 <SelectItem value={ActionType.TREATMENT}>Treatment</SelectItem>
                 <SelectItem value={ActionType.FRAME}>Frame</SelectItem>
@@ -313,7 +316,7 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setSelectedType('');
+                    setSelectedType('all');
                     setDateRange({ startDate: undefined, endDate: undefined });
                   }}
                 >
