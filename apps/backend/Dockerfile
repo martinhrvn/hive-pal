@@ -18,6 +18,7 @@ RUN pnpm install --frozen-lockfile
 COPY --from=pruner /app/out/full/ .
 COPY turbo.json turbo.json
 # Copy source code
+RUN pnpm --filter backend exec prisma generate
 RUN turbo run build --filter=backend...
 RUN ls -la /app
 # Stage 2: Production
