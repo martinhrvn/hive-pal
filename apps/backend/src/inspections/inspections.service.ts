@@ -55,13 +55,13 @@ export class InspectionsService {
         const status =
           createInspectionDto.status ||
           (new Date(createInspectionDto.date) > new Date()
-            ? 'PENDING'
-            : 'DONE');
+            ? 'SCHEDULED'
+            : 'COMPLETED');
 
         const inspection = await tx.inspection.create({
           data: {
             ...inspectionData,
-            status: status as InspectionStatus,
+            status: status,
             observations: {
               create: [
                 { type: 'strength', numericValue: observations?.strength },
@@ -289,15 +289,7 @@ export class InspectionsService {
         }
 
         // Determine status based on explicit input or date-based default
-        let status = updateInspectionDto.status;
-
-        // If status isn't specified but date is, determine status based on date
-        if (!status && updateInspectionDto.date) {
-          status =
-            new Date(updateInspectionDto.date) > new Date()
-              ? ('PENDING' as InspectionStatus)
-              : ('COMPLETED' as InspectionStatus);
-        }
+        const status = updateInspectionDto.status;
 
         const updated = await tx.inspection.update({
           where: { id },

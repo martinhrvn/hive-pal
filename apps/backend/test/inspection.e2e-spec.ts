@@ -66,7 +66,7 @@ it('should create a minimal inspection', async () => {
     date: req.date,
     hiveId: testHiveId,
     id: expect.any(String),
-    status: 'DONE',
+    status: 'COMPLETED',
   });
 
   const inspection = await prisma.inspection.findUnique({
@@ -77,7 +77,7 @@ it('should create a minimal inspection', async () => {
   if (inspection) {
     expect(inspection.date.toISOString()).toBe(req.date);
     expect(inspection.temperature).toBe(14.5);
-    expect(inspection.status).toBe('DONE');
+    expect(inspection.status).toBe('COMPLETED');
     expect(inspection.hiveId).toBe(testHiveId);
   }
 });
@@ -125,7 +125,7 @@ it('should create an inspection with observations', async () => {
     id: inspectionId,
     date: req.date,
     hiveId: testHiveId,
-    status: 'DONE',
+    status: 'COMPLETED',
     temperature: 18.5,
     weatherConditions: 'partly cloudy',
     notes: 'Inspection with observations',
@@ -154,6 +154,81 @@ it('should create an inspection with observations', async () => {
     queenScore: 6.67,
     storesScore: 4.67,
     warnings: [],
+  });
+});
+
+describe('Create status', () => {
+  const getReq = (date = new Date()) => ({
+    date: date.toISOString(),
+    hiveId: testHiveId,
+    notes: 'Inspection with observations',
+    temperature: 18.5,
+    weatherConditions: 'partly cloudy',
+  });
+
+  console.log('Hive id: ', testHiveId);
+  it('should set default status for creating inspection with past date', async () => {
+    // Create the inspection
+    const createResponse = await request(app.getHttpServer())
+      .post('/inspections')
+      .set('Authorization', `Bearer ${authToken}`)
+      .set('x-apiary-id', apiaryId)
+      .send(getReq());
+
+    console.log(createResponse.body);
+    expect(createResponse.body).toHaveProperty('id');
+    const inspectionId = createResponse.body.id;
+
+    // Fetch the inspection to verify observations
+    const getResponse = await request(app.getHttpServer())
+      .get(`/inspections/${inspectionId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+
+    // Verify basic inspection properties
+    expect(getResponse.body.status).toEqual('COMPLETED');
+  });
+
+  it('should set status to PENDING for future date', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .post('/inspections')
+      .set('Authorization', `Bearer ${authToken}`)
+      .set('x-apiary-id', apiaryId)
+      .send(getReq(new Date(Date.now() + 1000 * 60 * 60 * 24))) // Future date
+      .expect(201);
+
+    expect(createResponse.body).toHaveProperty('id');
+    const inspectionId = createResponse.body.id;
+    // Fetch the inspection to verify observations
+    const getResponse = await request(app.getHttpServer())
+      .get(`/inspections/${inspectionId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+
+    // Verify basic inspection properties
+    expect(getResponse.body.status).toEqual('SCHEDULED');
+  });
+
+  it('should set manual status', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .post('/inspections')
+      .set('Authorization', `Bearer ${authToken}`)
+      .set('x-apiary-id', apiaryId)
+      .send({ ...getReq(), status: 'CANCELLED' }) // Future date
+      .expect(201);
+
+    expect(createResponse.body).toHaveProperty('id');
+    const inspectionId = createResponse.body.id;
+    const getResponse = await request(app.getHttpServer())
+      .get(`/inspections/${inspectionId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+
+    // Verify basic inspection properties
+    expect(getResponse.body.status).toEqual('CANCELLED');
   });
 });
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { observationSchema } from './observations.schema';
-import { inspectionStatusSchema } from './status';
+import {  inspectionStatusSchema } from './status';
 import {actionResponseSchema, createActionSchema} from '../actions';
 
 // Base schema for creating inspections
