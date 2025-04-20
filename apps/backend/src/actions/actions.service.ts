@@ -2,7 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 import { Prisma } from '@prisma/client';
-import { ActionResponse, ActionType, CreateAction } from 'shared-schemas';
+import {
+  ActionFilter,
+  ActionResponse,
+  ActionType,
+  CreateAction,
+} from 'shared-schemas';
+import { ApiaryUserFilter } from '../interface/request-with.apiary';
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
@@ -128,6 +134,46 @@ export class ActionsService {
     if (actions && actions.length > 0) {
       await this.createActions(inspectionId, actions, tx);
     }
+  }
+
+  /**
+   * Find all actions based on filter criteria
+   * @param filter Filter criteria for actions
+   * @returns Array of action responses
+   */
+  async findAll(
+    filter: ActionFilter & Partial<ApiaryUserFilter>,
+  ): Promise<ActionResponse[]> {
+    const whereClause: Prisma.ActionWhereInput = {
+      type: filter.type ?? undefined,
+      inspection: {
+        date: {
+          ...(filter.startDate && { gte: new Date(filter.startDate) }),
+          ...(filter.endDate && { lte: new Date(filter.endDate) }),
+        },
+        hive: {
+          ...(filter.hiveId && { id: filter.hiveId }),
+          ...(filter.apiaryId && {
+            apiary: {
+              id: filter.apiaryId,
+              userId: filter.userId,
+            },
+          }),
+        },
+      },
+    };
+
+    const actions = await this.prisma.action.findMany({
+      where: whereClause,
+      orderBy: [{ inspection: { date: 'desc' } }, { id: 'asc' }],
+      include: {
+        feedingAction: true,
+        treatmentAction: true,
+        frameAction: true,
+      },
+    });
+
+    return actions.map((action) => this.mapPrismaToDto(action));
   }
 
   // Prisma-to-Domain Transformation Function

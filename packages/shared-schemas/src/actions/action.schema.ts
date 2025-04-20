@@ -19,5 +19,14 @@ export const actionResponseSchema = createActionSchema.extend({
   inspectionId: z.string().uuid(),
 });
 
+// Filter schema for actions
+export const actionFilterSchema = z.object({
+  hiveId: z.string().uuid().optional(),
+  type: actionTypeSchema.optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+});
+
 export type CreateAction = z.infer<typeof createActionSchema>;
 export type ActionResponse = z.infer<typeof actionResponseSchema>;
+export type ActionFilter = z.infer<typeof actionFilterSchema>;
