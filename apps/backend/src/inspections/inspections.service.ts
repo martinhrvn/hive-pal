@@ -50,15 +50,18 @@ export class InspectionsService {
 
     return this.prisma.$transaction(
       async (tx): Promise<CreateInspectionResponse> => {
+        // Default status: future date -> PENDING, otherwise DONE
+        // If status was explicitly provided, use that instead
         const status =
-          new Date(createInspectionDto.date) > new Date()
-            ? 'SCHEDULED'
-            : 'COMPLETED';
+          createInspectionDto.status ||
+          (new Date(createInspectionDto.date) > new Date()
+            ? 'PENDING'
+            : 'DONE');
 
         const inspection = await tx.inspection.create({
           data: {
             ...inspectionData,
-            status,
+            status: status as InspectionStatus,
             observations: {
               create: [
                 { type: 'strength', numericValue: observations?.strength },
@@ -285,12 +288,23 @@ export class InspectionsService {
           await this.actionsService.updateActions(id, actions, tx);
         }
 
+        // Determine status based on explicit input or date-based default
+        let status = updateInspectionDto.status;
+
+        // If status isn't specified but date is, determine status based on date
+        if (!status && updateInspectionDto.date) {
+          status =
+            new Date(updateInspectionDto.date) > new Date()
+              ? ('PENDING' as InspectionStatus)
+              : ('COMPLETED' as InspectionStatus);
+        }
+
         const updated = await tx.inspection.update({
           where: { id },
           data: {
             ...inspectionData,
             hiveId: inspection.hiveId,
-            status: updateInspectionDto.status ?? inspection.status,
+            status: status ?? inspection.status,
             observations: {
               create: [
                 { type: 'strength', numericValue: observations?.strength },

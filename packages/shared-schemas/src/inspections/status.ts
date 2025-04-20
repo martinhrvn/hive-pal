@@ -1,9 +1,8 @@
 import { z } from 'zod';
 
 export enum InspectionStatus {
-  SCHEDULED = 'SCHEDULED',
-  OVERDUE = 'OVERDUE',
-  COMPLETED = 'COMPLETED',
+  PENDING = 'PENDING',
+  DONE = 'COMPLETED',
   CANCELLED = 'CANCELLED',
 }
 

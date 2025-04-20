@@ -13,6 +13,7 @@ export const createInspectionSchema = z.object({
   notes: z.string().nullish(),
   observations: observationSchema.optional(),
   actions: z.array(createActionSchema).optional(),
+  status: inspectionStatusSchema.optional(),
 });
 
 // Schema for updating inspections

@@ -66,7 +66,7 @@ it('should create a minimal inspection', async () => {
     date: req.date,
     hiveId: testHiveId,
     id: expect.any(String),
-    status: 'COMPLETED',
+    status: 'DONE',
   });
 
   const inspection = await prisma.inspection.findUnique({
@@ -77,7 +77,7 @@ it('should create a minimal inspection', async () => {
   if (inspection) {
     expect(inspection.date.toISOString()).toBe(req.date);
     expect(inspection.temperature).toBe(14.5);
-    expect(inspection.status).toBe('COMPLETED');
+    expect(inspection.status).toBe('DONE');
     expect(inspection.hiveId).toBe(testHiveId);
   }
 });
@@ -125,7 +125,7 @@ it('should create an inspection with observations', async () => {
     id: inspectionId,
     date: req.date,
     hiveId: testHiveId,
-    status: 'COMPLETED',
+    status: 'DONE',
     temperature: 18.5,
     weatherConditions: 'partly cloudy',
     notes: 'Inspection with observations',
