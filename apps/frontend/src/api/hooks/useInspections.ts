@@ -1,14 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, getApiUrl } from '../client';
 import {
+  ActionType,
+  CreateAction,
   CreateInspection,
   CreateInspectionResponse,
   InspectionFilter,
   InspectionResponse,
+  InspectionStatus,
   UpdateInspection,
   UpdateInspectionResponse,
 } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
+import { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema.ts';
+import { useNavigate } from 'react-router-dom';
 
 // Query keys
 const INSPECTIONS_KEYS = {
@@ -132,4 +137,80 @@ export const useDeleteInspection = () => {
       queryClient.invalidateQueries({ queryKey: INSPECTIONS_KEYS.lists() });
     },
   });
+};
+
+export const useUpsertInspection = (inspectionId?: string) => {
+  const { mutate: createInspectionMutation } = useCreateInspection();
+  const { mutate: updateInspectionMutation } = useUpdateInspection();
+  const getUrl = (inspectionId?: string) => `/inspections/${inspectionId}`;
+  const navigate = useNavigate();
+  return (data: InspectionFormData, status?: InspectionStatus) => {
+    // Transform actions to match API format
+    const transformedActions = data.actions
+      ?.map((action): CreateAction | null => {
+        switch (action.type) {
+          case 'FEEDING':
+            return {
+              type: action.type,
+              notes: action.notes,
+              details: {
+                type: action.type,
+                feedType: action.feedType,
+                amount: action.quantity,
+                unit: action.unit,
+                concentration: action.concentration,
+              },
+            };
+          case 'TREATMENT':
+            return {
+              type: action.type,
+              notes: action.notes,
+              details: {
+                type: action.type,
+                product: action.treatmentType,
+                quantity: action.amount,
+                unit: action.unit,
+              },
+            };
+          case 'FRAME':
+            return {
+              type: ActionType.FRAME,
+              notes: action.notes,
+              details: {
+                type: ActionType.FRAME,
+                quantity: action.frames,
+              },
+            };
+          default:
+            return null;
+        }
+      })
+      .filter((a): a is CreateAction => Boolean(a));
+
+    const formattedData = {
+      ...data,
+      date: data.date.toISOString(),
+      status: status || data.status,
+      actions: transformedActions,
+    };
+
+    if (!inspectionId) {
+      createInspectionMutation(formattedData, {
+        onSuccess: res => navigate(getUrl(res.id)),
+      });
+    } else {
+      updateInspectionMutation(
+        {
+          id: inspectionId,
+          data: {
+            ...formattedData,
+            id: inspectionId,
+          },
+        },
+        {
+          onSuccess: res => navigate(getUrl(res.id)),
+        },
+      );
+    }
+  };
 };

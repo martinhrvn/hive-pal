@@ -1,5 +1,4 @@
-import { useNavigate } from 'react-router-dom';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -34,12 +33,11 @@ import { Separator } from '@/components/ui/separator';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions.tsx';
 import { FeedType } from './actions/feeding';
 import {
-  useCreateInspection,
   useHiveOptions,
   useInspection,
-  useUpdateInspection,
+  useUpsertInspection,
 } from '@/api/hooks';
-import { ActionType, CreateAction } from 'shared-schemas';
+import { ActionType, InspectionStatus } from 'shared-schemas';
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -50,7 +48,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   hiveId,
   inspectionId,
 }) => {
-  const navigate = useNavigate();
   const { data: hives } = useHiveOptions();
 
   // Use our new custom hooks
@@ -101,97 +98,25 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
         }) || [],
     },
   });
-  console.log(form.formState.errors)
 
-  const hiveIdFromForm =
-    useWatch({ name: 'hiveId', control: form.control }) ?? hiveId;
-  const hiveForUrl = inspection?.hiveId ?? hiveIdFromForm;
-  const url = inspectionId
-    ? `/inspections/${inspectionId}`
-    : `/hives/${hiveForUrl}`;
+  const onSubmit = useUpsertInspection();
+  // Handler for regular save button
+  const handleSave = form.handleSubmit(data => onSubmit(data));
 
-  // Use our new custom hooks
-  const { mutate: createInspectionMutation } = useCreateInspection();
-  const { mutate: updateInspectionMutation } = useUpdateInspection();
-
-  const onSubmit = (data: InspectionFormData) => {
-    // Transform actions to match API format
-    const transformedActions = data.actions
-      ?.map((action): CreateAction | null => {
-        switch (action.type) {
-          case 'FEEDING':
-            return {
-              type: action.type,
-              notes: action.notes,
-              details: {
-                type: action.type,
-                feedType: action.feedType,
-                amount: action.quantity,
-                unit: action.unit,
-                concentration: action.concentration,
-              },
-            };
-          case 'TREATMENT':
-            return {
-              type: action.type,
-              notes: action.notes,
-              details: {
-                type: action.type,
-                product: action.treatmentType,
-                quantity: action.amount,
-                unit: action.unit,
-              },
-            };
-          case 'FRAME':
-            return {
-              type: ActionType.FRAME,
-              notes: action.notes,
-              details: {
-                type: ActionType.FRAME,
-                quantity: action.frames,
-              },
-            };
-          default:
-            return null;
-        }
-      })
-      .filter((a): a is CreateAction => Boolean(a));
-
-    const formattedData = {
-      ...data,
-      date: data.date.toISOString(),
-      actions: transformedActions,
-    };
-
-    if (!inspectionId) {
-      createInspectionMutation(formattedData, {
-        onSuccess: () => navigate(url),
-      });
-    } else {
-      updateInspectionMutation(
-        {
-          id: inspectionId,
-          data: {
-            ...formattedData,
-            id: inspectionId,
-          },
-        },
-        {
-          onSuccess: () => navigate(url),
-        },
-      );
-    }
-  };
-
+  // Handler for save and complete button
+  const handleSaveAndComplete = form.handleSubmit(data =>
+    onSubmit(data, InspectionStatus.COMPLETED),
+  );
   const date = form.watch('date');
   const isInFuture = date && date > new Date();
-
+  const isEdit = Boolean(inspectionId);
+  const isCompleted = inspection?.status === InspectionStatus.COMPLETED;
   return (
     <div className={'max-w-4xl ml-4'}>
       <h1 className={'text-lg font-bold'}>New inspection</h1>
       <Separator className="my-2" />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={e => e.preventDefault()} className="space-y-6">
           <FormField
             control={form.control}
             name="hiveId"
@@ -284,9 +209,30 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             </>
           )}
 
-          <Button type="submit" className="w-full">
-            Submit
-          </Button>
+          {isEdit && !isCompleted ? (
+            <>
+              <Button
+                onClick={handleSave}
+                variant={'outline'}
+                type="submit"
+                className="w-full"
+              >
+                Save
+              </Button>
+              <Button
+                onClick={handleSaveAndComplete}
+                type="submit"
+                className="w-full"
+                variant={'default'}
+              >
+                Save and complete
+              </Button>
+            </>
+          ) : (
+            <Button onClick={handleSave} type="submit" className="w-full">
+              Save
+            </Button>
+          )}
         </form>
       </Form>
     </div>
