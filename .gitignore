@@ -11,6 +11,7 @@ out
 .nuxt
 .output
 .cache
+.devenv
 
 # Testing
 coverage
