@@ -3,7 +3,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    playwright.url = "github:pietdevries94/playwright-web-flake/1.51.0";
+    playwright.url = "github:pietdevries94/playwright-web-flake/1.50.1";
   };
   outputs = { self, nixpkgs, flake-utils, playwright }:
     flake-utils.lib.eachDefaultSystem (system:
@@ -22,6 +22,8 @@
             nodejs_22
             pnpm_9
             turbo
+            go-task
+            docker
             playwright-driver.browsers
             openssl
             prisma

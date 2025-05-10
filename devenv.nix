@@ -6,6 +6,7 @@
     playwright-driver.browsers
     openssl
     prisma
+    go-task
     prisma-engines
   ];
 
@@ -16,6 +17,14 @@
     PRISMA_QUERY_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/query-engine";
     PRISMA_QUERY_ENGINE_LIBRARY = "${pkgs.prisma-engines}/lib/libquery_engine.node";
     PRISMA_FMT_BINARY = "${pkgs.prisma-engines}/bin/prisma-fmt";
+  };
+
+  processes = {
+    dev.exec = "pnpm dev";
+  };
+
+  tasks = {
+    e2e.exec = "turbo test:e2e";
   };
 
   enterShell = ''

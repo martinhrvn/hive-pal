@@ -7,8 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "echo 'No watch needed - using source files directly'",
-    "lint": "eslint --ext .ts src"
+    "dev": "echo 'No watch needed - using source files directly'"
   },
   "dependencies": {
     "@nestjs/swagger": "^11.1.0",

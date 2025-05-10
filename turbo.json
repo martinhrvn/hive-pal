@@ -1,13 +1,17 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsconfig.json", ".env"],
+  "globalPassThroughEnv": [
+    "PRISMA_QUERY_ENGINE_LIBRARY",
+    "PRISMA_SCHEMA_ENGINE_BINARY"
+  ],
   "tasks": {
     "lint": {
       "outputs": [],
       "cache": false
     },
     "check": {
-        "dependsOn": ["lint"],
+      "dependsOn": ["lint"],
       "outputs": [],
       "cache": true
     },
@@ -16,27 +20,25 @@
       "outputs": ["coverage/**"],
       "cache": true
     },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": false
+    },
     "prisma:generate": {
       "outputs": ["node_modules/@prisma/client"],
       "cache": true
+    },
+    "prisma:migrate": {
+      "cache": false
     },
     "swagger:generate": {
       "dependsOn": ["prisma:generate"],
       "outputs": ["docs/swagger.yaml", "docs/swagger.json"],
       "cache": true
     },
-    "client:generate": {
-      "dependsOn": ["^swagger:generate"],
-      "outputs": ["src/**"],
-      "cache": true
-    },
-    "client:watch": {
-      "dependsOn": ["^client:generate"],
-      "cache": false,
-      "persistent": true
-    },
     "build": {
-      "dependsOn": ["^build", "client:generate", "^prisma:generate"],
+      "dependsOn": ["^build", "^prisma:generate"],
       "outputs": ["dist/**", ".next/**", "build/**"],
       "cache": true
     },
@@ -46,8 +48,23 @@
       "persistent": true
     },
     "dev": {
+      "dependsOn": ["db:up", "^prisma:generate"],
       "cache": false,
       "persistent": true
+    },
+    "format": {
+      "outputs": [],
+      "cache": false
+    },
+    "format:check": {
+      "outputs": [],
+      "cache": false
+    },
+    "db:up": {
+      "cache": false
+    },
+    "db:up:test": {
+      "cache": false
     }
   }
 }

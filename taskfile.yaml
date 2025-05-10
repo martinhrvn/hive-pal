@@ -1,0 +1,61 @@
+version: '3'
+env:
+  PRISMA_QUERY_ENGINE_BINARY: '{{.PRISMA_QUERY_ENGINE_BINARY}}'
+  PRISMA_MIGRATION_ENGINE_BINARY: '{{.PRISMA_MIGRATION_ENGINE_BINARY}}'
+  PRISMA_INTROSPECTION_ENGINE_BINARY: '{{.PRISMA_INTROSPECTION_ENGINE_BINARY}}'
+  PRISMA_QUERY_ENGINE_LIBRARY: '{{.PRISMA_QUERY_ENGINE_LIBRARY}}'
+  PRISMA_FMT_BINARY: '{{.PRISMA_FMT_BINARY}}'
+tasks:
+  db:up:dev:
+    desc: Start the local development database
+    dir: apps/backend
+    cmds:
+      - docker compose up -d
+
+  db:up:test:
+    desc: Start the test database
+    dir: apps/backend
+    cmds:
+      - docker compose -f docker-compose-testdb.yml up -d
+
+  build:
+    desc: Build the project
+    cmds:
+      - echo $PRISMA_QUERY_ENGINE_BINARY
+      - turbo build
+  prisma:migrate:
+    desc: Run Prisma migrations
+    dir: apps/backend
+    cmds:
+      - prisma migrate dev
+  dev:
+    desc: Start the local development environment
+    deps: [build, db:up:dev, prisma:migrate]
+    cmds:
+      - pnpm dev
+
+  # Additional useful tasks
+  db:down:dev:
+    desc: Stop the local development database
+    dir: apps/backend
+    cmds:
+      - docker compose down
+
+  db:down:test:
+    desc: Stop the test database
+    dir: apps/backend
+    cmds:
+      - docker compose -f docker-compose.test.yml down
+
+  test:backend:e2e:
+    desc: Run end-to-end tests for the backend
+    dir: apps/backend
+    deps: [db:up:test]
+    cmds:
+      - pnpm test:e2e
+  test:e2e:
+    desc: Run end-to-end tests for the frontend
+    dir: apps/e2e
+    deps: [db:up:test, dev]
+    cmds:
+      - pnpm test:local
