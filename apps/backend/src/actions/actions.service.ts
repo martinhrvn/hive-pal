@@ -158,26 +158,31 @@ export class ActionsService {
   ): Promise<ActionResponse[]> {
     const whereClause: Prisma.ActionWhereInput = {
       type: filter.type ?? undefined,
-      inspection: {
-        date: {
-          ...(filter.startDate && { gte: new Date(filter.startDate) }),
-          ...(filter.endDate && { lte: new Date(filter.endDate) }),
-        },
-        hive: {
-          ...(filter.hiveId && { id: filter.hiveId }),
-          ...(filter.apiaryId && {
-            apiary: {
-              id: filter.apiaryId,
-              userId: filter.userId,
+      // Filter by date range (using action date now, not inspection date)
+      ...(filter.startDate || filter.endDate
+        ? {
+            date: {
+              ...(filter.startDate && { gte: new Date(filter.startDate) }),
+              ...(filter.endDate && { lte: new Date(filter.endDate) }),
             },
-          }),
-        },
+          }
+        : {}),
+      // Filter by hive if specified
+      ...(filter.hiveId && { hiveId: filter.hiveId }),
+      // Ensure the action belongs to the user's apiary
+      hive: {
+        ...(filter.apiaryId && {
+          apiary: {
+            id: filter.apiaryId,
+            userId: filter.userId,
+          },
+        }),
       },
     };
 
     const actions = await this.prisma.action.findMany({
       where: whereClause,
-      orderBy: [{ inspection: { date: 'desc' } }, { id: 'asc' }],
+      orderBy: [{ date: 'desc' }, { id: 'asc' }],
       include: {
         feedingAction: true,
         treatmentAction: true,
