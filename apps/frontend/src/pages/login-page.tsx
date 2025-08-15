@@ -40,7 +40,6 @@ const LoginPage = () => {
         <h2 className="text-center text-lg mb-8">Sign in to your account</h2>
       </div>
 
-      {error && <p className={'color-red-400'}>{error}</p>}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -72,6 +71,12 @@ const LoginPage = () => {
                 />
               </div>
             </div>
+
+            {error && (
+              <div className="text-red-500 text-sm">
+                {error}
+              </div>
+            )}
 
             <div>
               <Button type="submit" className="w-full">
