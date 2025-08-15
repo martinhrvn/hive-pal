@@ -13,6 +13,7 @@ import {
   InspectionDetailPage,
   EditInspectionPage,
   InspectionListPage,
+  ScheduleInspectionPage,
 } from '@/pages/inspection';
 import { CreateQueenPage } from '@/pages/queen';
 import { UserManagementPage } from '@/pages/admin';
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: '/inspections/create',
         element: <CreateInspectionPage />,
+      },
+      {
+        path: '/inspections/schedule',
+        element: <ScheduleInspectionPage />,
       },
       {
         path: '/inspections',

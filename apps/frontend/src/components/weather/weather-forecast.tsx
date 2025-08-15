@@ -166,9 +166,9 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
 
       {dailyForecast && dailyForecast.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">5-Day Forecast</h3>
+          <h3 className="text-sm font-semibold">7-Day Forecast</h3>
           <div className="space-y-1">
-            {dailyForecast.slice(0, compact ? 3 : 5).map((day) => (
+            {dailyForecast.slice(0, compact ? 3 : 7).map((day) => (
               <div
                 key={day.id}
                 className="flex items-center justify-between p-2 hover:bg-accent rounded-md transition-colors"

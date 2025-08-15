@@ -5,6 +5,7 @@ import {
   RefreshCw,
   ClipboardCheck,
   CalendarCheck,
+  CalendarPlus,
   Crown,
   Home,
   Bell,
@@ -63,6 +64,16 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
               >
                 <ClipboardCheck className="h-4 w-4 text-blue-600" />
                 <span>New Inspection</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate('/inspections/schedule')}
+                tooltip="Schedule Inspection"
+              >
+                <CalendarPlus className="h-4 w-4 text-indigo-600" />
+                <span>Schedule Inspection</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 

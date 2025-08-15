@@ -52,7 +52,7 @@ export const useWeatherHourlyForecast = (
   });
 };
 
-// Get 5-day daily forecast for an apiary
+// Get 7-day daily forecast for an apiary
 export const useWeatherDailyForecast = (
   apiaryId: string,
   queryOptions?: Partial<UseQueryOptions<WeatherForecastResponse[]>>,

@@ -335,7 +335,7 @@ export class WeatherService {
   }
 
   /**
-   * Get daily weather forecast for an apiary (next 5 days)
+   * Get daily weather forecast for an apiary (next 7 days)
    */
   async getDailyForecast(apiaryId: string) {
     const today = new Date();
@@ -347,7 +347,7 @@ export class WeatherService {
         date: { gte: today },
       },
       orderBy: { date: 'asc' },
-      take: 5,
+      take: 7,
     });
   }
 

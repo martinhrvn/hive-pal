@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { EditIcon, Icon, PlusCircle, TrashIcon, RefreshCw } from 'lucide-react';
+import { EditIcon, Icon, PlusCircle, TrashIcon, RefreshCw, CalendarPlus } from 'lucide-react';
 import { bee } from '@lucide/lab';
 
 import {
@@ -51,6 +51,16 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               >
                 <PlusCircle className="h-4 w-4" />
                 <span>Add Inspection</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate(`/inspections/schedule`)}
+                tooltip="Schedule Inspection"
+              >
+                <CalendarPlus className="h-4 w-4" />
+                <span>Schedule Inspection</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 

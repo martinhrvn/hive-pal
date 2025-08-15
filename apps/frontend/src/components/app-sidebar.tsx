@@ -56,6 +56,10 @@ const data = {
           url: '/inspections',
         },
         {
+          title: 'Schedule',
+          url: '/inspections/schedule',
+        },
+        {
           title: 'Recent',
           url: '/inspections/list/recent',
         },

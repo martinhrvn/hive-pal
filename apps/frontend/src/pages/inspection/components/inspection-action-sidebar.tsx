@@ -7,6 +7,7 @@ import {
   Printer,
   Share2,
   CalendarClockIcon,
+  CalendarPlus,
   HistoryIcon,
   ClipboardCheckIcon,
 } from 'lucide-react';
@@ -52,6 +53,16 @@ export const InspectionActionSidebar: React.FC<
               >
                 <PlusCircle className="h-4 w-4" />
                 <span>Create Inspection</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate('/inspections/schedule')}
+                tooltip="Schedule Inspection"
+              >
+                <CalendarPlus className="h-4 w-4" />
+                <span>Schedule Inspection</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 

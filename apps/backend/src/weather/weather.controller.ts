@@ -23,7 +23,7 @@ export class WeatherController {
   }
 
   @Get('daily-forecast/:apiaryId')
-  @ApiOperation({ summary: 'Get 5-day daily forecast for an apiary' })
+  @ApiOperation({ summary: 'Get 7-day daily forecast for an apiary' })
   async getDailyForecast(@Param('apiaryId') apiaryId: string) {
     return this.weatherService.getDailyForecast(apiaryId);
   }
