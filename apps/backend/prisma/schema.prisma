@@ -25,15 +25,17 @@ enum Role {
 }
 
 model Apiary {
-  id        String  @id @default(uuid())
-  name      String
-  location  String?
-  latitude  Float?
-  longitude Float?
-  notes     String?
-  hives     Hive[]
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String
+  id               String            @id @default(uuid())
+  name             String
+  location         String?
+  latitude         Float?
+  longitude        Float?
+  notes            String?
+  hives            Hive[]
+  user             User              @relation(fields: [userId], references: [id])
+  userId           String
+  weather          Weather[]
+  weatherForecasts WeatherForecast[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -204,4 +206,53 @@ enum ActionType {
   TREATMENT
   FRAME
   OTHER
+}
+
+// Weather condition simplified categories
+enum WeatherCondition {
+  CLEAR
+  PARTLY_CLOUDY
+  OVERCAST
+  FOG
+  DRIZZLE
+  RAIN
+  SNOW
+}
+
+// Weather data for apiaries
+model Weather {
+  id          String            @id @default(uuid())
+  apiaryId    String
+  apiary      Apiary            @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  timestamp   DateTime          // When the weather data is for
+  fetchedAt   DateTime          @default(now()) // When we fetched this data
+  condition   WeatherCondition
+  temperature Float             // in Celsius
+  feelsLike   Float             // in Celsius
+  humidity    Int               // percentage
+  windSpeed   Float             // in km/h
+  
+  @@unique([apiaryId, timestamp]) // Prevent duplicate entries for same apiary and time
+  @@index([apiaryId])
+  @@index([timestamp])
+  @@index([apiaryId, timestamp])
+}
+
+// Weather forecast for apiaries (daily forecast)
+model WeatherForecast {
+  id             String            @id @default(uuid())
+  apiaryId       String
+  apiary         Apiary            @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  date           DateTime          // The date this forecast is for
+  fetchedAt      DateTime          @default(now()) // When we fetched this data
+  condition      WeatherCondition
+  temperatureMin Float             // in Celsius
+  temperatureMax Float             // in Celsius
+  humidity       Int               // percentage
+  windSpeed      Float             // in km/h
+  
+  @@unique([apiaryId, date]) // Prevent duplicate entries for same apiary and date
+  @@index([apiaryId])
+  @@index([date])
+  @@index([apiaryId, date])
 }

@@ -1,7 +1,7 @@
 {
   inputs =
     let
-      version = "1.6.0";
+      version = "1.8.1";
 system = "x86_64-linux";
 devenv_root = "/home/martin/proj/hive-pal";
 devenv_dotfile = ./.devenv;
@@ -24,7 +24,7 @@ devenv_direnvrc_latest_version = 1;
 
       outputs = { nixpkgs, ... }@inputs:
         let
-          version = "1.6.0";
+          version = "1.8.1";
 system = "x86_64-linux";
 devenv_root = "/home/martin/proj/hive-pal";
 devenv_dotfile = ./.devenv;
@@ -51,9 +51,11 @@ devenv_direnvrc_latest_version = 1;
           pkgs = import nixpkgs {
             inherit system;
             config = {
-              allowUnfree = devenv.allowUnfree or false;
-              allowBroken = devenv.allowBroken or false;
-              permittedInsecurePackages = devenv.permittedInsecurePackages or [ ];
+              allowUnfree = devenv.nixpkgs.per-platform."${system}".allowUnfree or devenv.nixpkgs.allowUnfree or devenv.allowUnfree or false;
+              allowBroken = devenv.nixpkgs.per-platform."${system}".allowBroken or devenv.nixpkgs.allowBroken or devenv.allowBroken or false;
+              cudaSupport = devenv.nixpkgs.per-platform."${system}".cudaSupport or devenv.nixpkgs.cudaSupport or false;
+              cudaCapabilities = devenv.nixpkgs.per-platform."${system}".cudaCapabilities or devenv.nixpkgs.cudaCapabilities or [ ];
+              permittedInsecurePackages = devenv.nixpkgs.per-platform."${system}".permittedInsecurePackages or devenv.nixpkgs.permittedInsecurePackages or devenv.permittedInsecurePackages or [ ];
             };
             inherit overlays;
           };
@@ -132,13 +134,17 @@ devenv_direnvrc_latest_version = 1;
               );
           };
 
+          # Recursively search for outputs in the config.
+          # This is used when not building a specific output by attrpath.
           build = options: config:
             lib.concatMapAttrs
               (name: option:
-                if builtins.hasAttr "type" option then
-                  if option.type.name == "output" || option.type.name == "outputOf" then {
-                    ${name} = config.${name};
-                  } else { }
+                if lib.isOption option then
+                  let typeName = option.type.name or "";
+                  in
+                  if builtins.elem typeName [ "output" "outputOf" ] then
+                    { ${name} = config.${name}; }
+                  else { }
                 else
                   let v = build option config.${name};
                   in if v != { } then {
