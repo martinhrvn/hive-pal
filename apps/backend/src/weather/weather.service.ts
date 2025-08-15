@@ -54,6 +54,7 @@ export class WeatherService {
 
   /**
    * Fetch current and hourly weather data from Open-Meteo API
+   * Now fetches next 6 hours for both current and forecast data
    */
   async fetchHourlyWeather(
     latitude: number,
@@ -68,7 +69,7 @@ export class WeatherService {
           longitude,
           hourly:
             'temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code',
-          forecast_days: 1,
+          forecast_hours: 6, // Get next 6 hours
           timezone: 'auto',
         },
       });
@@ -99,7 +100,7 @@ export class WeatherService {
           longitude,
           daily:
             'temperature_2m_max,temperature_2m_min,weather_code,wind_speed_10m_max,relative_humidity_2m_mean',
-          forecast_days: 5,
+          forecast_days: 10,
           timezone: 'auto',
         },
       });
@@ -116,6 +117,7 @@ export class WeatherService {
 
   /**
    * Save hourly weather data to database
+   * Stores current hour as historical data and next 5 hours as forecast
    */
   async saveHourlyWeather(
     apiaryId: string,
@@ -135,13 +137,13 @@ export class WeatherService {
       weather_code,
     } = data.hourly;
 
-    // Get the current hour's data (first item in arrays)
+    // Save current hour as historical weather data
     const currentIndex = 0;
-    const timestamp = new Date(time[currentIndex]);
+    const currentTimestamp = new Date(time[currentIndex]);
 
-    const weatherData: Prisma.WeatherCreateInput = {
+    const currentWeatherData: Prisma.WeatherCreateInput = {
       apiary: { connect: { id: apiaryId } },
-      timestamp,
+      timestamp: currentTimestamp,
       temperature: temperature_2m[currentIndex],
       feelsLike: apparent_temperature[currentIndex],
       humidity: Math.round(relative_humidity_2m[currentIndex]),
@@ -150,20 +152,49 @@ export class WeatherService {
     };
 
     try {
+      // Store current weather as historical data
       await this.prisma.weather.upsert({
         where: {
           apiaryId_timestamp: {
             apiaryId,
-            timestamp,
+            timestamp: currentTimestamp,
           },
         },
-        update: weatherData,
-        create: weatherData,
+        update: currentWeatherData,
+        create: currentWeatherData,
       });
 
       this.logger.log(
-        `Saved hourly weather for apiary ${apiaryId} at ${timestamp.toISOString()}`,
+        `Saved current weather for apiary ${apiaryId} at ${currentTimestamp.toISOString()}`,
       );
+
+      // Clear old hourly forecasts for this apiary
+      await this.prisma.weatherHourlyForecast.deleteMany({
+        where: { apiaryId },
+      });
+
+      // Save next 5 hours as hourly forecast
+      for (let i = 1; i <= 5 && i < time.length; i++) {
+        const forecastTimestamp = new Date(time[i]);
+
+        const hourlyForecastData: Prisma.WeatherHourlyForecastCreateInput = {
+          apiary: { connect: { id: apiaryId } },
+          timestamp: forecastTimestamp,
+          temperature: temperature_2m[i],
+          feelsLike: apparent_temperature[i],
+          humidity: Math.round(relative_humidity_2m[i]),
+          windSpeed: wind_speed_10m[i],
+          condition: this.mapWeatherCode(weather_code[i]),
+        };
+
+        await this.prisma.weatherHourlyForecast.create({
+          data: hourlyForecastData,
+        });
+
+        this.logger.log(
+          `Saved hourly forecast for apiary ${apiaryId} at ${forecastTimestamp.toISOString()}`,
+        );
+      }
     } catch (error) {
       this.logger.error(
         `Failed to save hourly weather for apiary ${apiaryId}:`,
@@ -278,7 +309,7 @@ export class WeatherService {
   }
 
   /**
-   * Get current weather for an apiary
+   * Get current weather for an apiary (latest historical entry)
    */
   async getCurrentWeather(apiaryId: string) {
     return this.prisma.weather.findFirst({
@@ -288,9 +319,25 @@ export class WeatherService {
   }
 
   /**
-   * Get weather forecast for an apiary
+   * Get hourly forecast for an apiary (next 5 hours)
    */
-  async getForecast(apiaryId: string) {
+  async getHourlyForecast(apiaryId: string) {
+    const now = new Date();
+
+    return this.prisma.weatherHourlyForecast.findMany({
+      where: {
+        apiaryId,
+        timestamp: { gte: now },
+      },
+      orderBy: { timestamp: 'asc' },
+      take: 5,
+    });
+  }
+
+  /**
+   * Get daily weather forecast for an apiary (next 5 days)
+   */
+  async getDailyForecast(apiaryId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -305,18 +352,63 @@ export class WeatherService {
   }
 
   /**
-   * Clean up old weather data (older than 30 days)
+   * Get weather history for an apiary
+   */
+  async getWeatherHistory(
+    apiaryId: string,
+    startDate?: string,
+    endDate?: string,
+    limit: number = 24 * 7, // Default to last week (hourly)
+  ) {
+    const where: any = { apiaryId };
+
+    if (startDate || endDate) {
+      where.timestamp = {};
+      if (startDate) where.timestamp.gte = new Date(startDate);
+      if (endDate) where.timestamp.lte = new Date(endDate);
+    }
+
+    return this.prisma.weather.findMany({
+      where,
+      orderBy: { timestamp: 'desc' },
+      take: limit,
+    });
+  }
+
+  /**
+   * Clean up old weather data and forecasts
    */
   async cleanupOldWeatherData(): Promise<void> {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const deleted = await this.prisma.weather.deleteMany({
+    // Clean up old historical weather data (keep 30 days)
+    const deletedWeather = await this.prisma.weather.deleteMany({
       where: {
         timestamp: { lt: thirtyDaysAgo },
       },
     });
 
-    this.logger.log(`Cleaned up ${deleted.count} old weather records`);
+    // Clean up old daily forecasts (older than 1 day)
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const deletedForecasts = await this.prisma.weatherForecast.deleteMany({
+      where: {
+        date: { lt: yesterday },
+      },
+    });
+
+    // Clean up old hourly forecasts (older than current time)
+    const now = new Date();
+    const deletedHourly = await this.prisma.weatherHourlyForecast.deleteMany({
+      where: {
+        timestamp: { lt: now },
+      },
+    });
+
+    this.logger.log(
+      `Cleaned up ${deletedWeather.count} old weather records, ${deletedForecasts.count} old daily forecasts, and ${deletedHourly.count} old hourly forecasts`,
+    );
   }
 }

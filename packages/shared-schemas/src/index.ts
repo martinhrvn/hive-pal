@@ -5,3 +5,4 @@ export * from './hives';
 export * from './apiaries';
 export * from './queens';
 export * from './auth';
+export * from './weather';

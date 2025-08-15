@@ -10,6 +10,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { WeatherForecast } from '@/components/weather';
+import { useHive } from '@/api/hooks';
 
 type ActionSideBarProps = {
   hiveId?: string;
@@ -21,10 +23,21 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
   onRefreshData,
 }) => {
   const navigate = useNavigate();
+  const { data: hive } = useHive(hiveId || '', { enabled: !!hiveId });
 
   return (
-    <div className="border rounded-md">
-      <div className="p-2">
+    <div className="space-y-4">
+      {hive?.apiaryId && (
+        <div className="border rounded-md">
+          <SidebarGroup>
+            <SidebarGroupLabel className="px-2 pt-2">Weather Forecast</SidebarGroupLabel>
+            <WeatherForecast apiaryId={hive.apiaryId} compact />
+          </SidebarGroup>
+        </div>
+      )}
+      
+      <div className="border rounded-md">
+        <div className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel>Hive Actions</SidebarGroupLabel>
           <SidebarMenu>
@@ -92,6 +105,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+      </div>
       </div>
     </div>
   );

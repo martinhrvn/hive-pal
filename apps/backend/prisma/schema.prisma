@@ -31,11 +31,12 @@ model Apiary {
   latitude         Float?
   longitude        Float?
   notes            String?
-  hives            Hive[]
-  user             User              @relation(fields: [userId], references: [id])
-  userId           String
-  weather          Weather[]
-  weatherForecasts WeatherForecast[]
+  hives                 Hive[]
+  user                  User                    @relation(fields: [userId], references: [id])
+  userId                String
+  weather               Weather[]
+  weatherHourlyForecasts WeatherHourlyForecast[]
+  weatherForecasts      WeatherForecast[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -219,12 +220,12 @@ enum WeatherCondition {
   SNOW
 }
 
-// Weather data for apiaries
+// Historical weather data for apiaries (stored hourly)
 model Weather {
   id          String            @id @default(uuid())
   apiaryId    String
   apiary      Apiary            @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
-  timestamp   DateTime          // When the weather data is for
+  timestamp   DateTime          // When the weather data is for (hourly)
   fetchedAt   DateTime          @default(now()) // When we fetched this data
   condition   WeatherCondition
   temperature Float             // in Celsius
@@ -238,7 +239,26 @@ model Weather {
   @@index([apiaryId, timestamp])
 }
 
-// Weather forecast for apiaries (daily forecast)
+// Hourly weather forecast for the next 5 hours
+model WeatherHourlyForecast {
+  id          String            @id @default(uuid())
+  apiaryId    String
+  apiary      Apiary            @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  timestamp   DateTime          // The hour this forecast is for
+  fetchedAt   DateTime          @default(now()) // When we fetched this data
+  condition   WeatherCondition
+  temperature Float             // in Celsius
+  feelsLike   Float             // in Celsius
+  humidity    Int               // percentage
+  windSpeed   Float             // in km/h
+  
+  @@unique([apiaryId, timestamp]) // Prevent duplicate entries for same apiary and time
+  @@index([apiaryId])
+  @@index([timestamp])
+  @@index([apiaryId, timestamp])
+}
+
+// Daily weather forecast for the next 5 days
 model WeatherForecast {
   id             String            @id @default(uuid())
   apiaryId       String

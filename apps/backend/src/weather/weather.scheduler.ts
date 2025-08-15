@@ -11,7 +11,7 @@ export class WeatherScheduler {
   /**
    * Run every hour to fetch latest weather data
    */
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleWeatherUpdate() {
     this.logger.log('Starting scheduled weather update');
 

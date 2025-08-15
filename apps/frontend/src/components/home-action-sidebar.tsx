@@ -17,6 +17,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { WeatherForecast } from '@/components/weather';
+import { useApiary } from '@/hooks/use-apiary';
 
 interface HomeActionSidebarProps {
   onRefreshData?: () => void;
@@ -26,10 +28,21 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
   onRefreshData,
 }) => {
   const navigate = useNavigate();
+  const { activeApiaryId } = useApiary();
 
   return (
-    <div className="border rounded-md">
-      <div className="p-2">
+    <div className="space-y-4">
+      {activeApiaryId && (
+        <div className="border rounded-md">
+          <SidebarGroup>
+            <SidebarGroupLabel className="px-2 pt-2">Weather Forecast</SidebarGroupLabel>
+            <WeatherForecast apiaryId={activeApiaryId} />
+          </SidebarGroup>
+        </div>
+      )}
+      
+      <div className="border rounded-md">
+        <div className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel>Create New</SidebarGroupLabel>
           <SidebarMenu>
@@ -135,6 +148,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+      </div>
       </div>
     </div>
   );
