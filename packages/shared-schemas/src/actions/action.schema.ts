@@ -13,10 +13,18 @@ export const createActionSchema = baseActionSchema.extend({
   details: actionDetailsSchema,
 });
 
+// Create schema for standalone actions (not tied to inspection)
+export const createStandaloneActionSchema = createActionSchema.extend({
+  hiveId: z.string().uuid(),
+  date: z.string().datetime().optional(),
+});
+
 // Response schema for actions (with IDs)
 export const actionResponseSchema = createActionSchema.extend({
   id: z.string().uuid(),
-  inspectionId: z.string().uuid(),
+  hiveId: z.string().uuid(),
+  inspectionId: z.string().uuid().nullable(),
+  date: z.string().datetime(),
 });
 
 // Filter schema for actions
@@ -28,5 +36,6 @@ export const actionFilterSchema = z.object({
 });
 
 export type CreateAction = z.infer<typeof createActionSchema>;
+export type CreateStandaloneAction = z.infer<typeof createStandaloneActionSchema>;
 export type ActionResponse = z.infer<typeof actionResponseSchema>;
 export type ActionFilter = z.infer<typeof actionFilterSchema>;

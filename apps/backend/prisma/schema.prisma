@@ -55,6 +55,7 @@ model Hive {
   queens           Queen[]
   boxes            Box[]
   inspections      Inspection[]
+  actions          Action[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -142,17 +143,22 @@ model Observation {
 
 model Action {
   id           String     @id @default(uuid())
-  inspectionId String
-  inspection   Inspection @relation(fields: [inspectionId], references: [id])
+  hiveId       String
+  hive         Hive       @relation(fields: [hiveId], references: [id])
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id])
   type         ActionType // FEEDING, TREATMENT etc.
   notes        String? // Description of the action taken
+  date         DateTime   @default(now()) // Date when action was performed
 
   feedingAction   FeedingAction?
   treatmentAction TreatmentAction?
   frameAction     FrameAction?
 
+  @@index([hiveId])
   @@index([inspectionId])
-  @@index([type, inspectionId]) // For looking up specific action types
+  @@index([type, hiveId]) // For looking up specific action types
+  @@index([date]) // For date-based queries
 }
 
 model FeedingAction {

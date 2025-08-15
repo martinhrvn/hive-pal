@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import { ActionFilter, ActionResponse } from 'shared-schemas';
+import { ActionFilter, ActionResponse, CreateStandaloneAction } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
 // Query keys
@@ -32,5 +32,27 @@ export const useActions = (
       return response.data;
     },
     ...queryOptions,
+  });
+};
+
+// Create a new standalone action
+export const useCreateAction = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation<ActionResponse, Error, CreateStandaloneAction>({
+    mutationFn: async (data: CreateStandaloneAction) => {
+      const response = await apiClient.post<ActionResponse>('/api/actions', data);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      // Invalidate actions queries for the affected hive
+      queryClient.invalidateQueries({ 
+        queryKey: ACTIONS_KEYS.list({ hiveId: variables.hiveId })
+      });
+      // Also invalidate all actions queries
+      queryClient.invalidateQueries({ 
+        queryKey: ACTIONS_KEYS.all
+      });
+    },
   });
 };

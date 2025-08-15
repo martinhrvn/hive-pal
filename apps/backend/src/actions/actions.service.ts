@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 import { Prisma } from '@prisma/client';
@@ -7,6 +7,7 @@ import {
   ActionResponse,
   ActionType,
   CreateAction,
+  CreateStandaloneAction,
 } from 'shared-schemas';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 
@@ -37,12 +38,23 @@ export class ActionsService {
       return;
     }
 
+    // Get the hiveId from the inspection
+    const inspection = await tx.inspection.findUnique({
+      where: { id: inspectionId },
+      select: { hiveId: true },
+    });
+
+    if (!inspection) {
+      throw new Error('Inspection not found');
+    }
+
     for (const action of actions) {
       const { type, notes, details } = action;
 
       // Create the base action
       const createdAction = await tx.action.create({
         data: {
+          hiveId: inspection.hiveId,
           inspectionId,
           type,
           notes,
@@ -176,11 +188,103 @@ export class ActionsService {
     return actions.map((action) => this.mapPrismaToDto(action));
   }
 
+  /**
+   * Creates a standalone action (not tied to an inspection)
+   * @param createActionDto The action data to create
+   * @param apiaryId The apiary ID for authorization
+   * @param userId The user ID for authorization
+   * @returns The created action
+   */
+  async createStandaloneAction(
+    createActionDto: CreateStandaloneAction,
+    apiaryId: string,
+    userId: string,
+  ): Promise<ActionResponse> {
+    // Verify the hive belongs to the user's apiary
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id: createActionDto.hiveId,
+        apiary: {
+          id: apiaryId,
+          userId: userId,
+        },
+      },
+    });
+
+    if (!hive) {
+      throw new ForbiddenException('Hive not found or access denied');
+    }
+
+    const { type, notes, details, date } = createActionDto;
+
+    // Use transaction to create action and related details
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Create the base action
+      const createdAction = await tx.action.create({
+        data: {
+          hiveId: createActionDto.hiveId,
+          type,
+          notes,
+          date: date ? new Date(date) : new Date(),
+        },
+      });
+
+      // Add type-specific details based on the action type
+      if (details?.type === ActionType.FEEDING) {
+        const feedingDetails = details;
+        await tx.feedingAction.create({
+          data: {
+            actionId: createdAction.id,
+            feedType: feedingDetails.feedType,
+            amount: feedingDetails.amount,
+            unit: feedingDetails.unit,
+            concentration: feedingDetails.concentration,
+          },
+        });
+      } else if (details?.type === ActionType.FRAME) {
+        await tx.frameAction.create({
+          data: {
+            actionId: createdAction.id,
+            quantity: details.quantity,
+          },
+        });
+      } else if (details?.type === ActionType.TREATMENT) {
+        await tx.treatmentAction.create({
+          data: {
+            actionId: createdAction.id,
+            product: details.product,
+            quantity: details.quantity,
+            unit: details.unit,
+            duration: details.duration,
+          },
+        });
+      }
+
+      // Fetch the complete action with relations
+      return await tx.action.findUnique({
+        where: { id: createdAction.id },
+        include: {
+          feedingAction: true,
+          treatmentAction: true,
+          frameAction: true,
+        },
+      });
+    });
+
+    if (!result) {
+      throw new Error('Failed to create action');
+    }
+
+    return this.mapPrismaToDto(result);
+  }
+
   // Prisma-to-Domain Transformation Function
   mapPrismaToDto(prismaAction: ActionWithRelations): ActionResponse {
     const base = {
       id: prismaAction.id,
+      hiveId: prismaAction.hiveId,
       inspectionId: prismaAction.inspectionId,
+      date: prismaAction.date.toISOString(),
       notes: prismaAction.notes || undefined,
     };
     switch (prismaAction.type) {

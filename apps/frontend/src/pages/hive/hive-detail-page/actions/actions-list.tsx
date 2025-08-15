@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format, parseISO, isValid } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { AddActionDialog } from './add-action-dialog';
 
 export const ActionsList = ({ hiveId }: { hiveId: string }) => {
   const [selectedType, setSelectedType] = useState<ActionType | 'all'>('all');
@@ -140,6 +141,7 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
         <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2">
           <CardTitle className="text-lg">Actions History</CardTitle>
           <div className="mt-2 sm:mt-0 flex flex-col sm:flex-row gap-2">
+            <AddActionDialog hiveId={hiveId} />
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -261,7 +263,7 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
                   <TableHead>Type</TableHead>
                   <TableHead>Details</TableHead>
                   <TableHead>Notes</TableHead>
-                  <TableHead className="text-right">Inspection Date</TableHead>
+                  <TableHead className="text-right">Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -281,28 +283,15 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      {inspections?.find(
-                        insp => insp.id === action.inspectionId,
-                      ) && (
+                      {action.inspectionId ? (
                         <Link to={`/inspections/${action.inspectionId}`}>
                           <div className="text-right cursor-pointer hover:underline flex items-center justify-end space-x-1">
-                            <span>
-                              {inspections?.find(
-                                insp => insp.id === action.inspectionId,
-                              )?.date
-                                ? format(
-                                    new Date(
-                                      inspections.find(
-                                        insp => insp.id === action.inspectionId,
-                                      )!.date,
-                                    ),
-                                    'MMM d, yyyy',
-                                  )
-                                : 'Unknown date'}
-                            </span>
+                            <span>{formatDate(action.date)}</span>
                             <ExternalLink size={14} />
                           </div>
                         </Link>
+                      ) : (
+                        <span>{formatDate(action.date)}</span>
                       )}
                     </TableCell>
                   </TableRow>
