@@ -108,6 +108,7 @@ export const useUpdateHive = () => {
       await queryClient.invalidateQueries({
         queryKey: HIVES_KEYS.detail(variables.id),
       });
+
       await queryClient.invalidateQueries({
         queryKey: HIVES_KEYS.lists(),
       });

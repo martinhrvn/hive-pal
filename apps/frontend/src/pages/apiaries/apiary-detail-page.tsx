@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Section } from '@/components/common/section';
-import { ApiaryActionSidebar } from './components';
+import { ApiaryActionSidebar, HivesLayout } from './components';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MapPicker from '@/components/common/map-picker';
@@ -89,7 +89,7 @@ export const ApiaryDetailPage = () => {
           </TabsContent>
 
           <TabsContent value="hives">
-            <Section title="Hives in this Apiary">Not implemented yet</Section>
+            <HivesLayout apiaryId={apiary.id} />
           </TabsContent>
 
           <TabsContent value="location">

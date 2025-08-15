@@ -10,6 +10,8 @@ export const createHiveSchema = z.object({
   notes: z.string().optional(),
   installationDate: z.date().optional().or(z.string().datetime().optional()),
   status: hiveStatusSchema.optional(),
+  positionRow: z.number().int().min(0).optional(),
+  positionCol: z.number().int().min(0).optional(),
 });
 
 export const createHiveResponseSchema = z.object({
@@ -29,6 +31,8 @@ export const updateHiveResponseSchema = z.object({
     notes: z.string().optional(),
     installationDate: z.string().datetime().or(z.date()).optional(),
     status: hiveStatusSchema.optional(),
+    positionRow: z.number().int().min(0).optional(),
+    positionCol: z.number().int().min(0).optional(),
 })
 
 export const hiveScoreSchema = z.object({
@@ -62,6 +66,8 @@ export const hiveResponseSchema = z.object({
   installationDate: z.string().datetime().optional(),
   lastInspectionDate: z.string().datetime().optional() ,
   activeQueen: activeQueenSchema.nullish(),
+  positionRow: z.number().int().min(0).optional(),
+  positionCol: z.number().int().min(0).optional(),
 });
 
 // Schema for filtering hives

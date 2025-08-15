@@ -85,6 +85,8 @@ export class HiveService {
         notes: hive.notes || undefined,
         installationDate: hive.installationDate?.toISOString(),
         lastInspectionDate: hive.inspections[0]?.date?.toISOString(),
+        positionRow: hive.positionRow ?? undefined,
+        positionCol: hive.positionCol ?? undefined,
         activeQueen:
           hive.queens.length > 0
             ? {
@@ -258,6 +260,8 @@ export class HiveService {
       status: updatedHive.status as HiveStatus,
       notes: updatedHive.notes || undefined,
       installationDate: updatedHive.installationDate?.toISOString(),
+      positionRow: updatedHive.positionRow ?? undefined,
+      positionCol: updatedHive.positionCol ?? undefined,
     };
   }
 

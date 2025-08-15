@@ -50,12 +50,16 @@ model Hive {
   apiary           Apiary?      @relation(fields: [apiaryId], references: [id])
   status           HiveStatus   @default(ACTIVE)
   installationDate DateTime?
+  positionRow      Int?         // Row position in apiary layout (0-based)
+  positionCol      Int?         // Column position within row (0-based)
   queens           Queen[]
   boxes            Box[]
   inspections      Inspection[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
+  // Create index for position-based queries within an apiary
+  @@index([apiaryId, positionRow, positionCol])
 }
 
 model Box {
