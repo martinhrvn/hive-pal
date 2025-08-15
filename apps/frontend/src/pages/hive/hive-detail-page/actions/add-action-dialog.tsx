@@ -52,6 +52,7 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
         let details: any = {};
         
         if (action.type === 'FEEDING') {
+          // Feeding: quantity -> amount
           details = {
             type: 'FEEDING',
             feedType: (action as any).feedType,
@@ -60,17 +61,19 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
             concentration: (action as any).concentration,
           };
         } else if (action.type === 'TREATMENT') {
+          // Treatment: treatmentType -> product, amount -> quantity
           details = {
             type: 'TREATMENT',
-            product: (action as any).product,
-            quantity: (action as any).quantity,
+            product: (action as any).treatmentType,
+            quantity: (action as any).amount,
             unit: (action as any).unit,
             duration: (action as any).duration,
           };
         } else if (action.type === 'FRAME') {
+          // Frame: frames -> quantity
           details = {
             type: 'FRAME',
-            quantity: (action as any).quantity,
+            quantity: (action as any).frames,
           };
         } else {
           details = {
