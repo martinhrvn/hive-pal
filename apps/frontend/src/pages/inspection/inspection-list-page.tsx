@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useHives, useInspections } from '@/api/hooks';
-import { HiveResponse, InspectionResponse } from 'shared-schemas';
+import { HiveResponse, InspectionResponse, InspectionStatus } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -200,6 +201,7 @@ export const InspectionListPage = () => {
               'All Inspections',
               navigate,
               hivesData,
+              InspectionTab.ALL,
             )}
           </TabsContent>
 
@@ -209,6 +211,7 @@ export const InspectionListPage = () => {
               'Recent Inspections',
               navigate,
               hivesData,
+              InspectionTab.RECENT,
             )}
           </TabsContent>
 
@@ -218,6 +221,7 @@ export const InspectionListPage = () => {
               'Upcoming Inspections',
               navigate,
               hivesData,
+              InspectionTab.UPCOMING,
             )}
           </TabsContent>
         </Tabs>
@@ -240,10 +244,26 @@ const renderInspectionsTable = (
   caption: string,
   navigate: (path: string) => void,
   hives: HiveResponse[] = [],
+  activeTab: InspectionTab = InspectionTab.ALL,
 ) => {
   const getHiveName = (hiveId: string) => {
     const hive = hives.find(h => h.id === hiveId);
     return hive ? hive.name : 'Unknown Hive';
+  };
+
+  const getStatusBadge = (status: InspectionStatus) => {
+    switch (status) {
+      case InspectionStatus.SCHEDULED:
+        return <Badge variant="outline" className="text-blue-600 border-blue-600">Scheduled</Badge>;
+      case InspectionStatus.COMPLETED:
+        return <Badge variant="outline" className="text-green-600 border-green-600">Completed</Badge>;
+      case InspectionStatus.OVERDUE:
+        return <Badge variant="outline" className="text-red-600 border-red-600">Overdue</Badge>;
+      case InspectionStatus.CANCELLED:
+        return <Badge variant="outline" className="text-gray-600 border-gray-600">Cancelled</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
   };
 
   return inspections.length > 0 ? (
@@ -254,7 +274,9 @@ const renderInspectionsTable = (
           <TableHead>Date & Time</TableHead>
           <TableHead>Hive</TableHead>
           <TableHead>Weather</TableHead>
-          <TableHead>Overall Score</TableHead>
+          <TableHead>
+            {activeTab === InspectionTab.UPCOMING ? 'Status' : 'Score/Status'}
+          </TableHead>
           <TableHead>Queen Seen</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
@@ -300,78 +322,82 @@ const renderInspectionsTable = (
               </div>
             </TableCell>
             <TableCell>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={`flex items-center gap-2 p-0 h-auto ${getMetricColorClass(inspection.score?.overallScore)}`}
-                  >
-                    <BarChartIcon className="h-4 w-4" />
-                    <span className="font-medium">
-                      {inspection.score?.overallScore !== null
-                        ? inspection.score?.overallScore
-                        : 'N/A'}
-                    </span>
-                    <InfoIcon className="h-3 w-3 text-muted-foreground" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-60">
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Inspection Scores</h4>
-                    <div className="grid grid-cols-[20px_1fr_auto] gap-2 items-center">
-                      <UsersIcon className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm">Population</span>
-                      <span
-                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.populationScore)}`}
-                      >
-                        {inspection.score?.populationScore?.toFixed(2) ?? 'N/A'}
+              {activeTab === InspectionTab.UPCOMING || inspection.status === InspectionStatus.SCHEDULED ? (
+                getStatusBadge(inspection.status)
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`flex items-center gap-2 p-0 h-auto ${getMetricColorClass(inspection.score?.overallScore)}`}
+                    >
+                      <BarChartIcon className="h-4 w-4" />
+                      <span className="font-medium">
+                        {inspection.score?.overallScore !== null
+                          ? inspection.score?.overallScore
+                          : 'N/A'}
                       </span>
+                      <InfoIcon className="h-3 w-3 text-muted-foreground" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-60">
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">Inspection Scores</h4>
+                      <div className="grid grid-cols-[20px_1fr_auto] gap-2 items-center">
+                        <UsersIcon className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm">Population</span>
+                        <span
+                          className={`text-sm font-medium ${getMetricColorClass(inspection.score?.populationScore)}`}
+                        >
+                          {inspection.score?.populationScore?.toFixed(2) ?? 'N/A'}
+                        </span>
 
-                      <DropletsIcon className="h-4 w-4 text-amber-500" />
-                      <span className="text-sm">Stores</span>
-                      <span
-                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.storesScore)}`}
-                      >
-                        {inspection.score?.storesScore?.toFixed(2) ?? 'N/A'}
-                      </span>
+                        <DropletsIcon className="h-4 w-4 text-amber-500" />
+                        <span className="text-sm">Stores</span>
+                        <span
+                          className={`text-sm font-medium ${getMetricColorClass(inspection.score?.storesScore)}`}
+                        >
+                          {inspection.score?.storesScore?.toFixed(2) ?? 'N/A'}
+                        </span>
 
-                      <CrownIcon className="h-4 w-4 text-purple-500" />
-                      <span className="text-sm">Queen</span>
-                      <span
-                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.queenScore)}`}
-                      >
-                        {inspection.score?.queenScore?.toFixed(2) ?? 'N/A'}
-                      </span>
+                        <CrownIcon className="h-4 w-4 text-purple-500" />
+                        <span className="text-sm">Queen</span>
+                        <span
+                          className={`text-sm font-medium ${getMetricColorClass(inspection.score?.queenScore)}`}
+                        >
+                          {inspection.score?.queenScore?.toFixed(2) ?? 'N/A'}
+                        </span>
 
-                      <BarChartIcon className="h-4 w-4 text-green-500" />
-                      <span className="text-sm font-medium">Overall</span>
-                      <span
-                        className={`text-sm font-medium ${getMetricColorClass(inspection.score?.overallScore)}`}
-                      >
-                        {inspection.score?.overallScore?.toFixed(2) ?? 'N/A'}
-                      </span>
+                        <BarChartIcon className="h-4 w-4 text-green-500" />
+                        <span className="text-sm font-medium">Overall</span>
+                        <span
+                          className={`text-sm font-medium ${getMetricColorClass(inspection.score?.overallScore)}`}
+                        >
+                          {inspection.score?.overallScore?.toFixed(2) ?? 'N/A'}
+                        </span>
+                      </div>
+
+                      {inspection.score?.warnings &&
+                        inspection.score.warnings.length > 0 && (
+                          <div className="mt-2 pt-2 border-t">
+                            <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1">
+                              <ActivityIcon className="h-3 w-3" />
+                              Warnings
+                            </h5>
+                            <ul className="mt-1 text-xs space-y-1">
+                              {inspection.score.warnings.map((warning, i) => (
+                                <li key={i} className="text-muted-foreground">
+                                  {warning}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                     </div>
-
-                    {inspection.score?.warnings &&
-                      inspection.score.warnings.length > 0 && (
-                        <div className="mt-2 pt-2 border-t">
-                          <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1">
-                            <ActivityIcon className="h-3 w-3" />
-                            Warnings
-                          </h5>
-                          <ul className="mt-1 text-xs space-y-1">
-                            {inspection.score.warnings.map((warning, i) => (
-                              <li key={i} className="text-muted-foreground">
-                                {warning}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                  </div>
-                </PopoverContent>
-              </Popover>
+                  </PopoverContent>
+                </Popover>
+              )}
             </TableCell>
             <TableCell>
               {inspection.observations?.queenSeen === null ? (
