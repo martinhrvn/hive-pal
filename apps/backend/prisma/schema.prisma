@@ -143,8 +143,8 @@ model Observation {
 
 model Action {
   id           String     @id @default(uuid())
-  hiveId       String
-  hive         Hive       @relation(fields: [hiveId], references: [id])
+  hiveId       String?
+  hive         Hive?      @relation(fields: [hiveId], references: [id])
   inspectionId String?
   inspection   Inspection? @relation(fields: [inspectionId], references: [id])
   type         ActionType // FEEDING, TREATMENT etc.
