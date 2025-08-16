@@ -7,7 +7,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Plus, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions';
 import { useCreateAction } from '@/api/hooks/useActions';
 import { CreateStandaloneAction, ActionType } from 'shared-schemas';
@@ -19,9 +27,10 @@ interface AddActionDialogProps {
 }
 
 interface ActionFormData {
+  date: Date;
   actions: Array<{
     type: ActionType;
-    details: any;
+    details: Record<string, unknown>;
     notes?: string;
   }>;
 }
@@ -29,9 +38,10 @@ interface ActionFormData {
 export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
   const [open, setOpen] = useState(false);
   const createAction = useCreateAction();
-  
+
   const methods = useForm<ActionFormData>({
     defaultValues: {
+      date: new Date(),
       actions: [],
     },
   });
@@ -39,7 +49,8 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
   const handleSave = async () => {
     const values = methods.getValues();
     const actions = values.actions || [];
-    
+    const selectedDate = values.date;
+
     if (actions.length === 0) {
       toast.error('Please add at least one action before saving.');
       return;
@@ -49,45 +60,59 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
       // Create each action individually
       for (const action of actions) {
         // Map the action data from the form to the API structure
-        let details: any = {};
-        
+        let details: Record<string, unknown> = {};
+
         if (action.type === 'FEEDING') {
           // Feeding: quantity -> amount
+          const feedingAction = action as {
+            feedType: string;
+            quantity: number;
+            unit: string;
+            concentration?: number;
+          };
           details = {
             type: 'FEEDING',
-            feedType: (action as any).feedType,
-            amount: (action as any).quantity,
-            unit: (action as any).unit,
-            concentration: (action as any).concentration,
+            feedType: feedingAction.feedType,
+            amount: feedingAction.quantity,
+            unit: feedingAction.unit,
+            concentration: feedingAction.concentration,
           };
         } else if (action.type === 'TREATMENT') {
           // Treatment: treatmentType -> product, amount -> quantity
+          const treatmentAction = action as {
+            treatmentType: string;
+            amount: number;
+            unit: string;
+            duration?: number;
+          };
           details = {
             type: 'TREATMENT',
-            product: (action as any).treatmentType,
-            quantity: (action as any).amount,
-            unit: (action as any).unit,
-            duration: (action as any).duration,
+            product: treatmentAction.treatmentType,
+            quantity: treatmentAction.amount,
+            unit: treatmentAction.unit,
+            duration: treatmentAction.duration,
           };
         } else if (action.type === 'FRAME') {
           // Frame: frames -> quantity
+          const frameAction = action as { frames: number };
           details = {
             type: 'FRAME',
-            quantity: (action as any).frames,
+            quantity: frameAction.frames,
           };
         } else {
           details = {
             type: 'OTHER',
           };
         }
-        
+
         const data: CreateStandaloneAction = {
           hiveId,
           type: action.type,
-          details,
+          details: details as CreateStandaloneAction['details'],
           notes: action.notes,
+          date: selectedDate.toISOString(),
         };
-        
+
         await createAction.mutateAsync(data);
       }
 
@@ -96,7 +121,7 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
       // Reset form and close dialog
       methods.reset();
       setOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('There was an error saving the actions. Please try again.');
     }
   };
@@ -114,7 +139,38 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
           <DialogTitle>Add Actions</DialogTitle>
         </DialogHeader>
         <FormProvider {...methods}>
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={e => e.preventDefault()}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Action Date
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'w-full justify-start text-left font-normal',
+                      !methods.watch('date') && 'text-muted-foreground',
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {methods.watch('date') ? (
+                      format(methods.watch('date'), 'PPP')
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={methods.watch('date')}
+                    onSelect={date => date && methods.setValue('date', date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
             <ActionsSection />
             <div className="flex justify-end gap-2 mt-6">
               <Button
