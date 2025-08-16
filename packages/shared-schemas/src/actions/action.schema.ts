@@ -22,7 +22,7 @@ export const createStandaloneActionSchema = createActionSchema.extend({
 // Response schema for actions (with IDs)
 export const actionResponseSchema = createActionSchema.extend({
   id: z.string().uuid(),
-  hiveId: z.string().uuid(),
+  hiveId: z.string().uuid().nullable(),
   inspectionId: z.string().uuid().nullable(),
   date: z.string().datetime(),
 });
@@ -36,6 +36,8 @@ export const actionFilterSchema = z.object({
 });
 
 export type CreateAction = z.infer<typeof createActionSchema>;
-export type CreateStandaloneAction = z.infer<typeof createStandaloneActionSchema>;
+export type CreateStandaloneAction = z.infer<
+  typeof createStandaloneActionSchema
+>;
 export type ActionResponse = z.infer<typeof actionResponseSchema>;
 export type ActionFilter = z.infer<typeof actionFilterSchema>;
