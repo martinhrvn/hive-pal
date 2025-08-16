@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useActions, useInspections } from '@/api/hooks';
+import { useActions } from '@/api/hooks';
 import {
   Select,
   SelectContent,
@@ -46,9 +46,6 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
     startDate: dateRange.startDate,
     endDate: dateRange.endDate,
   });
-
-  // Get inspections data to be able to link to inspection details
-  const { data: inspections } = useInspections({ hiveId });
 
   const formatDate = (dateString: string) => {
     try {
