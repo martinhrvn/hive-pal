@@ -1,7 +1,12 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 
 @ApiTags('weather')
 @Controller('weather')
@@ -30,9 +35,24 @@ export class WeatherController {
 
   @Get('history/:apiaryId')
   @ApiOperation({ summary: 'Get weather history for an apiary' })
-  @ApiQuery({ name: 'startDate', required: false, type: String, description: 'ISO date string' })
-  @ApiQuery({ name: 'endDate', required: false, type: String, description: 'ISO date string' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Maximum number of records' })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'ISO date string',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'ISO date string',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Maximum number of records',
+  })
   async getWeatherHistory(
     @Param('apiaryId') apiaryId: string,
     @Query('startDate') startDate?: string,
@@ -40,12 +60,19 @@ export class WeatherController {
     @Query('limit') limit?: string,
   ) {
     const numLimit = limit ? parseInt(limit, 10) : undefined;
-    return this.weatherService.getWeatherHistory(apiaryId, startDate, endDate, numLimit);
+    return this.weatherService.getWeatherHistory(
+      apiaryId,
+      startDate,
+      endDate,
+      numLimit,
+    );
   }
 
   // Legacy endpoint for backward compatibility
   @Get('forecast/:apiaryId')
-  @ApiOperation({ summary: 'Get 5-day forecast for an apiary (now returns daily forecast)' })
+  @ApiOperation({
+    summary: 'Get 5-day forecast for an apiary (now returns daily forecast)',
+  })
   async getForecast(@Param('apiaryId') apiaryId: string) {
     return this.weatherService.getDailyForecast(apiaryId);
   }

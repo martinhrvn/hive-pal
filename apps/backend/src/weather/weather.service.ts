@@ -360,7 +360,13 @@ export class WeatherService {
     endDate?: string,
     limit: number = 24 * 7, // Default to last week (hourly)
   ) {
-    const where: any = { apiaryId };
+    const where: {
+      apiaryId: string;
+      timestamp?: {
+        gte?: Date;
+        lte?: Date;
+      };
+    } = { apiaryId };
 
     if (startDate || endDate) {
       where.timestamp = {};

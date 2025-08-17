@@ -13,7 +13,7 @@ const WEATHER_KEYS = {
   dailyForecast: () => [...WEATHER_KEYS.all, 'daily-forecast'] as const,
   dailyForecastByApiary: (apiaryId: string) => [...WEATHER_KEYS.dailyForecast(), apiaryId] as const,
   history: () => [...WEATHER_KEYS.all, 'history'] as const,
-  historyByApiary: (apiaryId: string, params?: any) => [...WEATHER_KEYS.history(), apiaryId, params] as const,
+  historyByApiary: (apiaryId: string, params?: { startDate?: string; endDate?: string; limit?: number }) => [...WEATHER_KEYS.history(), apiaryId, params] as const,
 };
 
 // Get current weather for an apiary
