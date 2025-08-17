@@ -18,9 +18,10 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions';
 import { useCreateAction } from '@/api/hooks/useActions';
-import { CreateStandaloneAction, ActionType } from 'shared-schemas';
+import { CreateStandaloneAction } from 'shared-schemas';
 import { toast } from 'sonner';
 import { useForm, FormProvider } from 'react-hook-form';
+import type { ActionData, FeedingActionData, TreatmentActionData, FramesActionData } from '@/pages/inspection/components/inspection-form/schema';
 
 interface AddActionDialogProps {
   hiveId: string;
@@ -28,11 +29,7 @@ interface AddActionDialogProps {
 
 interface ActionFormData {
   date: Date;
-  actions: Array<{
-    type: ActionType;
-    details: Record<string, unknown>;
-    notes?: string;
-  }>;
+  actions: ActionData[];
 }
 
 export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
@@ -64,12 +61,7 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
 
         if (action.type === 'FEEDING') {
           // Feeding: quantity -> amount
-          const feedingAction = action as {
-            feedType: string;
-            quantity: number;
-            unit: string;
-            concentration?: number;
-          };
+          const feedingAction = action as FeedingActionData;
           details = {
             type: 'FEEDING',
             feedType: feedingAction.feedType,
@@ -79,22 +71,16 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
           };
         } else if (action.type === 'TREATMENT') {
           // Treatment: treatmentType -> product, amount -> quantity
-          const treatmentAction = action as {
-            treatmentType: string;
-            amount: number;
-            unit: string;
-            duration?: number;
-          };
+          const treatmentAction = action as TreatmentActionData;
           details = {
             type: 'TREATMENT',
             product: treatmentAction.treatmentType,
             quantity: treatmentAction.amount,
             unit: treatmentAction.unit,
-            duration: treatmentAction.duration,
           };
         } else if (action.type === 'FRAME') {
           // Frame: frames -> quantity
-          const frameAction = action as { frames: number };
+          const frameAction = action as FramesActionData;
           details = {
             type: 'FRAME',
             quantity: frameAction.frames,
