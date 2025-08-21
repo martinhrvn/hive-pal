@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { t } = useTranslation('auth');
 
   const navigate = useNavigate();
   const { login, isLoggedIn } = useAuth();
@@ -19,11 +21,11 @@ const LoginPage = () => {
     try {
       const success = await login(username, password);
       if (!success) {
-        setError('Invalid username or password');
+        setError(t('login.invalidCredentials'));
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('An error occurred during login');
+      setError(t('login.invalidCredentials'));
     }
   };
 
@@ -37,14 +39,14 @@ const LoginPage = () => {
         <h1 className="text-center text-2xl font-semibold  mb-2">
           Beekeeping Manager
         </h1>
-        <h2 className="text-center text-lg mb-8">Sign in to your account</h2>
+        <h2 className="text-center text-lg mb-8">{t('login.title')}</h2>
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('login.email')}</Label>
               <div className="mt-1">
                 <Input
                   id="email"
@@ -53,13 +55,13 @@ const LoginPage = () => {
                   required
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  placeholder="Your login email"
+                  placeholder={t('login.email')}
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('login.password')}</Label>
               <div className="mt-1">
                 <Input
                   id="password"
@@ -80,16 +82,16 @@ const LoginPage = () => {
 
             <div>
               <Button type="submit" className="w-full">
-                Sign in
+                {t('login.submit')}
               </Button>
             </div>
           </form>
 
           <div className="mt-6 text-center">
             <p>
-              Don't have an account?{' '}
+              {t('login.noAccount')}{' '}
               <Link to="/register" className="text-blue-600 hover:underline">
-                Register
+                {t('login.signUp')}
               </Link>
             </p>
           </div>

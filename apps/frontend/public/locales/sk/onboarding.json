@@ -1,0 +1,28 @@
+{
+  "title": "Vitajte v Hive-Pal!",
+  "subtitle": "Nastavme vaše včelárske prostredie",
+  "steps": {
+    "welcome": "Vitajte",
+    "createApiary": "Vytvoriť včelnicu",
+    "addHive": "Pridať prvý úľ",
+    "complete": "Dokončiť"
+  },
+  "welcome": {
+    "title": "Začnite svoju včelársku cestu",
+    "description": "Vitajte v Hive-Pal, vašom digitálnom včelárskom asistentovi! Prevedieme vás nastavením vašej prvej včelnice a úľa, aby ste mohli začať.",
+    "action": "Začnime"
+  },
+  "apiary": {
+    "title": "Vytvorte svoju prvú včelnicu",
+    "description": "Včelnica je miesto, kde sú umiestnené vaše úle. Poďme vytvoriť vašu prvú."
+  },
+  "hive": {
+    "title": "Pridajte svoj prvý úľ",
+    "description": "Teraz pridajme váš prvý úľ do vašej novej včelnice: {{apiaryName}}."
+  },
+  "complete": {
+    "title": "Gratulujeme!",
+    "description": "Úspešne ste nastavili svoju prvú včelnicu a úľ. Ste pripravený začať sledovať svoje včelárske aktivity s Hive-Pal!",
+    "action": "Prejsť na nástenku"
+  }
+}

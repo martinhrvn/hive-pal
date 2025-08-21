@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,6 +12,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const { t } = useTranslation('auth');
 
   const navigate = useNavigate();
   const { register, isLoggedIn } = useAuth();
@@ -19,7 +21,7 @@ const RegisterPage = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('register.passwordMismatch'));
       return;
     }
 
@@ -28,13 +30,11 @@ const RegisterPage = () => {
       if (success) {
         navigate('/login');
       } else {
-        setError(
-          'Registration failed. This email might already be registered.',
-        );
+        setError(t('register.registrationFailed'));
       }
     } catch (err) {
       console.error('Registration error:', err);
-      setError('An error occurred during registration');
+      setError(t('register.errorOccurred'));
     }
   };
 
@@ -48,7 +48,7 @@ const RegisterPage = () => {
         <h1 className="text-center text-2xl font-semibold mb-2">
           Beekeeping Manager
         </h1>
-        <h2 className="text-center text-lg mb-8">Create an account</h2>
+        <h2 className="text-center text-lg mb-8">{t('register.title')}</h2>
       </div>
 
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
@@ -56,7 +56,7 @@ const RegisterPage = () => {
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('register.email')}</Label>
               <div className="mt-1">
                 <Input
                   id="email"
@@ -65,13 +65,13 @@ const RegisterPage = () => {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="Your login email"
+                  placeholder={t('register.emailPlaceholder')}
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="name">Display Name (optional)</Label>
+              <Label htmlFor="name">{t('register.displayName')}</Label>
               <div className="mt-1">
                 <Input
                   id="name"
@@ -79,13 +79,13 @@ const RegisterPage = () => {
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  placeholder="How you'd like to be known"
+                  placeholder={t('register.displayNamePlaceholder')}
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('register.password')}</Label>
               <div className="mt-1">
                 <Input
                   id="password"
@@ -99,7 +99,7 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">{t('register.confirmPassword')}</Label>
               <div className="mt-1">
                 <Input
                   id="confirmPassword"
@@ -114,16 +114,16 @@ const RegisterPage = () => {
 
             <div>
               <Button type="submit" className="w-full">
-                Register
+                {t('register.submit')}
               </Button>
             </div>
           </form>
 
           <div className="mt-6 text-center">
             <p>
-              Already have an account?{' '}
+              {t('register.hasAccount')}{' '}
               <Link to="/login" className="text-blue-600 hover:underline">
-                Sign in
+                {t('register.signIn')}
               </Link>
             </p>
           </div>
