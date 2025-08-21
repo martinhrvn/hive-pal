@@ -1,0 +1,72 @@
+{
+  "navigation": {
+    "home": "Domov",
+    "apiaries": "Včelnice",
+    "hives": "Úle",
+    "inspections": "Prehliadky",
+    "queens": "Matky",
+    "settings": "Nastavenia",
+    "admin": "Administrácia",
+    "users": "Používatelia",
+    "logout": "Odhlásiť"
+  },
+  "actions": {
+    "save": "Uložiť",
+    "cancel": "Zrušiť",
+    "delete": "Vymazať",
+    "edit": "Upraviť",
+    "create": "Vytvoriť",
+    "add": "Pridať",
+    "remove": "Odstrániť",
+    "search": "Hľadať",
+    "filter": "Filtrovať",
+    "export": "Exportovať",
+    "import": "Importovať",
+    "submit": "Odoslať",
+    "back": "Späť",
+    "next": "Ďalej",
+    "previous": "Predchádzajúce",
+    "close": "Zavrieť",
+    "confirm": "Potvrdiť",
+    "view": "Zobraziť",
+    "download": "Stiahnuť",
+    "upload": "Nahrať",
+    "refresh": "Obnoviť"
+  },
+  "status": {
+    "loading": "Načítava sa...",
+    "success": "Úspech",
+    "error": "Chyba",
+    "warning": "Upozornenie",
+    "info": "Informácia",
+    "pending": "Čaká sa",
+    "completed": "Dokončené",
+    "failed": "Zlyhalo",
+    "active": "Aktívne",
+    "inactive": "Neaktívne",
+    "archived": "Archivované"
+  },
+  "messages": {
+    "confirmDelete": "Naozaj chcete vymazať túto položku?",
+    "changesSaved": "Zmeny boli úspešne uložené",
+    "errorOccurred": "Vyskytla sa chyba",
+    "noData": "Žiadne údaje nie sú k dispozícii",
+    "required": "Toto pole je povinné",
+    "invalidEmail": "Neplatná emailová adresa",
+    "invalidFormat": "Neplatný formát"
+  },
+  "time": {
+    "today": "Dnes",
+    "yesterday": "Včera",
+    "tomorrow": "Zajtra",
+    "week": "Týždeň",
+    "month": "Mesiac",
+    "year": "Rok",
+    "date": "Dátum",
+    "time": "Čas",
+    "days": "Dni",
+    "hours": "Hodiny",
+    "minutes": "Minúty",
+    "seconds": "Sekundy"
+  }
+}

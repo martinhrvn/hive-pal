@@ -1,0 +1,53 @@
+{
+  "title": "Úle",
+  "singular": "Úľ",
+  "plural": "Úle",
+  "list": {
+    "title": "Zoznam úľov",
+    "noHives": "Žiadne úle neboli nájdené",
+    "createFirst": "Vytvorte svoj prvý úľ"
+  },
+  "create": {
+    "title": "Vytvoriť nový úľ",
+    "success": "Úľ bol úspešne vytvorený"
+  },
+  "edit": {
+    "title": "Upraviť úľ",
+    "success": "Úľ bol úspešne aktualizovaný"
+  },
+  "delete": {
+    "confirm": "Naozaj chcete vymazať tento úľ?",
+    "success": "Úľ bol úspešne vymazaný"
+  },
+  "fields": {
+    "name": "Názov úľa",
+    "number": "Číslo úľa",
+    "type": "Typ úľa",
+    "status": "Stav",
+    "location": "Umiestnenie",
+    "notes": "Poznámky",
+    "queen": "Matka",
+    "lastInspection": "Posledná prehliadka",
+    "established": "Založený",
+    "boxes": "Nadstavky",
+    "frames": "Rámiky",
+    "position": "Pozícia"
+  },
+  "status": {
+    "active": "Aktívny",
+    "inactive": "Neaktívny",
+    "queenless": "Bezmatečný",
+    "weak": "Slabý",
+    "strong": "Silný",
+    "dead": "Mŕtvy",
+    "archived": "Archivovaný"
+  },
+  "actions": {
+    "inspect": "Prezrieť",
+    "addBox": "Pridať nadstavok",
+    "removeBox": "Odstrániť nadstavok",
+    "addQueen": "Pridať matku",
+    "archive": "Archivovať",
+    "restore": "Obnoviť"
+  }
+}
