@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { HomeIcon, PieChart, Settings2, MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { NavMain } from '@/components/nav-main';
 import { NavHives } from '@/components/nav-hives.tsx';
@@ -14,76 +15,79 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 
-// This is sample data.
-const data = {
+// Navigation data factory function
+const getNavData = (t: (key: string) => string) => ({
   navMain: [
     {
-      title: 'Apiaries',
+      title: t('navigation.apiaries'),
       url: '/apiaries',
       icon: MapPin,
       isActive: true,
       items: [
         {
-          title: 'All Apiaries',
+          title: t('navigation.allApiaries'),
           url: '/apiaries',
         },
         {
-          title: 'Create Apiary',
+          title: t('navigation.createApiary'),
           url: '/apiaries/create',
         },
       ],
     },
     {
-      title: 'Hives',
+      title: t('navigation.hives'),
       url: '/hives',
       icon: HomeIcon,
       isActive: true,
       items: [
         {
-          title: 'All Hives',
+          title: t('navigation.allHives'),
           url: '/hives',
         },
       ],
     },
     {
-      title: 'Inspections',
+      title: t('navigation.inspections'),
       url: '/inspections',
       icon: PieChart,
       isActive: true,
       items: [
         {
-          title: 'All',
+          title: t('navigation.allInspections'),
           url: '/inspections',
         },
         {
-          title: 'Schedule',
+          title: t('navigation.schedule'),
           url: '/inspections/schedule',
         },
         {
-          title: 'Recent',
+          title: t('navigation.recent'),
           url: '/inspections/list/recent',
         },
         {
-          title: 'Upcoming',
+          title: t('navigation.upcoming'),
           url: '/inspections/list/upcoming',
         },
       ],
     },
     {
-      title: 'Settings',
+      title: t('navigation.settings'),
       url: '/settings',
       icon: Settings2,
       items: [
         {
-          title: 'General',
+          title: t('navigation.general'),
           url: '/settings',
         },
       ],
     },
   ],
-};
+});
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { t } = useTranslation('common');
+  const data = getNavData(t);
+  
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

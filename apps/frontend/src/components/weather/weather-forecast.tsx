@@ -5,6 +5,7 @@ import {
   useWeatherDailyForecast 
 } from '@/api/hooks/useWeather';
 import { Cloud, CloudRain, CloudSnow, Sun, CloudDrizzle, CloudFog } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { WeatherCondition } from 'shared-schemas';
@@ -36,16 +37,16 @@ const getWeatherIcon = (condition: WeatherCondition) => {
   }
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string, t: (key: string) => string) => {
   const date = new Date(dateString);
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   
   if (date.toDateString() === today.toDateString()) {
-    return 'Today';
+    return t('time.today');
   } else if (date.toDateString() === tomorrow.toDateString()) {
-    return 'Tomorrow';
+    return t('time.tomorrow');
   } else {
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   }
@@ -56,6 +57,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
   compact = false, 
   showHourly = true,
 }) => {
+  const { t } = useTranslation('common');
   const { data: currentWeather, isLoading: loadingCurrent, error: currentError } = useCurrentWeather(
     apiaryId || '', 
     { enabled: !!apiaryId }
@@ -74,7 +76,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
   if (!apiaryId) {
     return (
       <div className="p-4 text-sm text-muted-foreground">
-        Select a hive with an apiary to view weather
+        {t('weather.selectHiveToView')}
       </div>
     );
   }
@@ -93,7 +95,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
     return (
       <Alert className="m-4">
         <AlertDescription>
-          Unable to load weather data
+          {t('weather.unableToLoad')}
         </AlertDescription>
       </Alert>
     );
@@ -102,7 +104,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
   if (!currentWeather && !hourlyForecast && !dailyForecast) {
     return (
       <div className="p-4 text-sm text-muted-foreground">
-        No weather data available
+        {t('weather.noWeatherData')}
       </div>
     );
   }
@@ -111,7 +113,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
     <div className="p-4 space-y-4">
       {currentWeather && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Current Weather</h3>
+          <h3 className="text-sm font-semibold">{t('weather.currentWeather')}</h3>
           <div className="flex items-center justify-between p-3 bg-accent rounded-md">
             <div className="flex items-center gap-3">
               {getWeatherIcon(currentWeather.condition)}
@@ -120,13 +122,13 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                   {Math.round(currentWeather.temperature)}°C
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Feels like {Math.round(currentWeather.feelsLike)}°C
+                  {t('weather.feelsLike', { temperature: Math.round(currentWeather.feelsLike) })}
                 </div>
               </div>
             </div>
             <div className="text-right text-xs">
-              <div>Humidity: {currentWeather.humidity}%</div>
-              <div>Wind: {Math.round(currentWeather.windSpeed)} km/h</div>
+              <div>{t('weather.humidity')}: {currentWeather.humidity}%</div>
+              <div>{t('weather.wind')}: {Math.round(currentWeather.windSpeed)} km/h</div>
             </div>
           </div>
         </div>
@@ -134,7 +136,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
 
       {showHourly && hourlyForecast && hourlyForecast.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Next 5 Hours</h3>
+          <h3 className="text-sm font-semibold">{t('weather.nextHours')}</h3>
           <div className="space-y-1">
             {hourlyForecast.slice(0, compact ? 3 : 5).map((hour) => (
               <div
@@ -166,7 +168,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
 
       {dailyForecast && dailyForecast.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">7-Day Forecast</h3>
+          <h3 className="text-sm font-semibold">{t('weather.dayForecast')}</h3>
           <div className="space-y-1">
             {dailyForecast.slice(0, compact ? 3 : 7).map((day) => (
               <div
@@ -175,7 +177,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
               >
                 <div className="flex items-center gap-2 flex-1">
                   {getWeatherIcon(day.condition)}
-                  <span className="text-sm">{formatDate(day.date)}</span>
+                  <span className="text-sm">{formatDate(day.date, t)}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <span className="text-muted-foreground">

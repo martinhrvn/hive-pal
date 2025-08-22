@@ -1,6 +1,7 @@
 {
   "navigation": {
     "home": "Home",
+    "dashboard": "Dashboard",
     "apiaries": "Apiaries",
     "hives": "Hives",
     "inspections": "Inspections",
@@ -8,7 +9,15 @@
     "settings": "Settings",
     "admin": "Admin",
     "users": "Users",
-    "logout": "Logout"
+    "logout": "Logout",
+    "allApiaries": "All Apiaries",
+    "createApiary": "Create Apiary",
+    "allHives": "All Hives",
+    "allInspections": "All Inspections",
+    "schedule": "Schedule",
+    "recent": "Recent",
+    "upcoming": "Upcoming",
+    "general": "General"
   },
   "actions": {
     "save": "Save",
@@ -32,7 +41,16 @@
     "download": "Download",
     "upload": "Upload",
     "refresh": "Refresh",
-    "actions": "Actions"
+    "actions": "Actions",
+    "createNew": "Create New",
+    "navigate": "Navigate",
+    "refreshData": "Refresh Data",
+    "notifications": "Notifications",
+    "newHive": "New Hive",
+    "newInspection": "New Inspection",
+    "scheduleInspection": "Schedule Inspection",
+    "newQueen": "New Queen",
+    "recentInspections": "Recent Inspections"
   },
   "status": {
     "loading": "Loading...",
@@ -54,7 +72,8 @@
     "noData": "No data available",
     "required": "This field is required",
     "invalidEmail": "Invalid email address",
-    "invalidFormat": "Invalid format"
+    "invalidFormat": "Invalid format",
+    "notificationsComingSoon": "Notifications feature coming soon"
   },
   "time": {
     "today": "Today",
@@ -69,5 +88,17 @@
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds"
+  },
+  "weather": {
+    "selectHiveToView": "Select a hive with an apiary to view weather",
+    "unableToLoad": "Unable to load weather data",
+    "noWeatherData": "No weather data available",
+    "currentWeather": "Current Weather",
+    "feelsLike": "Feels like {{temperature}}°C",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "nextHours": "Next 5 Hours",
+    "dayForecast": "7-Day Forecast",
+    "weatherForecast": "Weather Forecast"
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PlusCircle,
   RefreshCw,
@@ -28,6 +29,7 @@ interface HomeActionSidebarProps {
 export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
   onRefreshData,
 }) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { activeApiaryId } = useApiary();
 
@@ -36,7 +38,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
       {activeApiaryId && (
         <div className="border rounded-md">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-2 pt-2">Weather Forecast</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-2 pt-2">{t('weather.weatherForecast')}</SidebarGroupLabel>
             <WeatherForecast apiaryId={activeApiaryId} />
           </SidebarGroup>
         </div>
@@ -45,116 +47,116 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
       <div className="border rounded-md">
         <div className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Create New</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('actions.createNew')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/hives/create/')}
-                tooltip="Create New Hive"
+                tooltip={t('actions.newHive')}
               >
                 <PlusCircle className="h-4 w-4 text-green-600" />
-                <span>New Hive</span>
+                <span>{t('actions.newHive')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/inspections/create')}
-                tooltip="Create New Inspection"
+                tooltip={t('actions.newInspection')}
               >
                 <ClipboardCheck className="h-4 w-4 text-blue-600" />
-                <span>New Inspection</span>
+                <span>{t('actions.newInspection')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/inspections/schedule')}
-                tooltip="Schedule Inspection"
+                tooltip={t('actions.scheduleInspection')}
               >
                 <CalendarPlus className="h-4 w-4 text-indigo-600" />
-                <span>Schedule Inspection</span>
+                <span>{t('actions.scheduleInspection')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/queens/create')}
-                tooltip="Create New Queen"
+                tooltip={t('actions.newQueen')}
               >
                 <Crown className="h-4 w-4 text-purple-600" />
-                <span>New Queen</span>
+                <span>{t('actions.newQueen')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>Navigate</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('actions.navigate')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/')}
-                tooltip="Home"
+                tooltip={t('navigation.home')}
                 className="bg-accent"
               >
                 <Home className="h-4 w-4" />
-                <span>Home</span>
+                <span>{t('navigation.home')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/hives')}
-                tooltip="All Hives"
+                tooltip={t('navigation.allHives')}
               >
                 <Home className="h-4 w-4" />
-                <span>All Hives</span>
+                <span>{t('navigation.allHives')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/inspections')}
-                tooltip="All Inspections"
+                tooltip={t('navigation.allInspections')}
               >
                 <ClipboardCheck className="h-4 w-4" />
-                <span>All Inspections</span>
+                <span>{t('navigation.allInspections')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/inspections/list/recent')}
-                tooltip="Recent Inspections"
+                tooltip={t('actions.recentInspections')}
               >
                 <CalendarCheck className="h-4 w-4" />
-                <span>Recent Inspections</span>
+                <span>{t('actions.recentInspections')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>Actions</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('actions.actions')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => onRefreshData && onRefreshData()}
-                tooltip="Refresh Data"
+                tooltip={t('actions.refreshData')}
               >
                 <RefreshCw className="h-4 w-4" />
-                <span>Refresh Data</span>
+                <span>{t('actions.refreshData')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => alert('Notifications feature coming soon')}
-                tooltip="Notifications (Coming Soon)"
+                onClick={() => alert(t('messages.notificationsComingSoon'))}
+                tooltip={`${t('actions.notifications')} (${t('messages.notificationsComingSoon')})`}
               >
                 <Bell className="h-4 w-4" />
-                <span>Notifications</span>
+                <span>{t('actions.notifications')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

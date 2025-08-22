@@ -1,6 +1,7 @@
 {
   "navigation": {
     "home": "Domov",
+    "dashboard": "Dashboard",
     "apiaries": "Včelnice",
     "hives": "Úle",
     "inspections": "Prehliadky",
@@ -8,7 +9,15 @@
     "settings": "Nastavenia",
     "admin": "Administrácia",
     "users": "Používatelia",
-    "logout": "Odhlásiť"
+    "logout": "Odhlásiť",
+    "allApiaries": "Všetky včelnice",
+    "createApiary": "Vytvoriť včelnicu",
+    "allHives": "Všetky úle",
+    "allInspections": "Všetky prehliadky",
+    "schedule": "Naplánovať",
+    "recent": "Nedávne",
+    "upcoming": "Nadchádzajúce",
+    "general": "Všeobecné"
   },
   "actions": {
     "save": "Uložiť",
@@ -32,7 +41,16 @@
     "download": "Stiahnuť",
     "upload": "Nahrať",
     "refresh": "Obnoviť",
-    "actions": "Akcie"
+    "actions": "Akcie",
+    "createNew": "Vytvoriť nové",
+    "navigate": "Navigácia",
+    "refreshData": "Obnoviť údaje",
+    "notifications": "Oznámenia",
+    "newHive": "Nový úľ",
+    "newInspection": "Nová prehliadka",
+    "scheduleInspection": "Naplánovať prehliadku",
+    "newQueen": "Nová matka",
+    "recentInspections": "Nedávne prehliadky"
   },
   "status": {
     "loading": "Načítava sa...",
@@ -54,7 +72,8 @@
     "noData": "Žiadne údaje nie sú k dispozícii",
     "required": "Toto pole je povinné",
     "invalidEmail": "Neplatná emailová adresa",
-    "invalidFormat": "Neplatný formát"
+    "invalidFormat": "Neplatný formát",
+    "notificationsComingSoon": "Funkcia oznámení bude čoskoro k dispozícii"
   },
   "time": {
     "today": "Dnes",
@@ -69,5 +88,17 @@
     "hours": "Hodiny",
     "minutes": "Minúty",
     "seconds": "Sekundy"
+  },
+  "weather": {
+    "selectHiveToView": "Vyberte úľ s včelnicou na zobrazenie počasia",
+    "unableToLoad": "Nie je možné načítať údaje o počasí",
+    "noWeatherData": "Žiadne údaje o počasí nie sú k dispozícii",
+    "currentWeather": "Aktuálne počasie",
+    "feelsLike": "Pocitovo {{temperature}}°C",
+    "humidity": "Vlhkosť",
+    "wind": "Vietor",
+    "nextHours": "Najbližších 5 hodín",
+    "dayForecast": "7-dňová predpoveď",
+    "weatherForecast": "Predpoveď počasia"
   }
 }
