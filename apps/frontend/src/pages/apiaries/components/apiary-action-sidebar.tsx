@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PlusCircle, RefreshCw, FileDown, Printer, Share2 } from 'lucide-react';
 
 import {
@@ -17,66 +18,67 @@ interface ApiaryActionSidebarProps {
 export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
   onRefreshData,
 }) => {
+  const { t } = useTranslation(['apiary', 'common']);
   const navigate = useNavigate();
 
   return (
     <div className="border rounded-md">
       <div className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Actions</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('common:actions.actions', { defaultValue: 'Actions' })}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/apiaries/create/')}
-                tooltip="Create New Apiary"
+                tooltip={t('apiary:create.button')}
               >
                 <PlusCircle className="h-4 w-4" />
-                <span>Create New Apiary</span>
+                <span>{t('apiary:create.button')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => onRefreshData && onRefreshData()}
-                tooltip="Refresh Data"
+                tooltip={t('apiary:actions.refreshData')}
               >
                 <RefreshCw className="h-4 w-4" />
-                <span>Refresh Data</span>
+                <span>{t('apiary:actions.refreshData')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>Data Options</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('apiary:actions.dataOptions')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => alert('Export functionality coming soon')}
-                tooltip="Export to CSV"
+                onClick={() => alert(t('apiary:messages.exportComingSoon'))}
+                tooltip={t('apiary:actions.exportCSV')}
               >
                 <FileDown className="h-4 w-4" />
-                <span>Export to CSV</span>
+                <span>{t('apiary:actions.exportCSV')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => window.print()}
-                tooltip="Print Apiary List"
+                tooltip={t('apiary:actions.print')}
               >
                 <Printer className="h-4 w-4" />
-                <span>Print Apiary List</span>
+                <span>{t('apiary:actions.print')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => alert('Share functionality coming soon')}
-                tooltip="Share Apiary List"
+                onClick={() => alert(t('apiary:messages.shareComingSoon'))}
+                tooltip={t('apiary:actions.share')}
               >
                 <Share2 className="h-4 w-4" />
-                <span>Share Apiary List</span>
+                <span>{t('apiary:actions.share')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

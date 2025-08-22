@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import { ChevronRight, Search } from 'lucide-react';
 import { useApiaries } from '@/api/hooks';
 
 export const ApiaryListPage = () => {
+  const { t } = useTranslation(['apiary', 'common']);
   const { data, isLoading, refetch } = useApiaries();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,7 +28,7 @@ export const ApiaryListPage = () => {
   }, [refetch]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{t('common:status.loading')}</div>;
   }
 
   const allApiaries = data || [];
@@ -48,7 +50,7 @@ export const ApiaryListPage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search apiaries..."
+              placeholder={t('apiary:list.searchPlaceholder')}
               className="pl-8"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
@@ -58,25 +60,25 @@ export const ApiaryListPage = () => {
 
         {apiaries.length > 0 ? (
           <Table>
-            <TableCaption>A list of all your apiaries</TableCaption>
+            <TableCaption>{t('apiary:list.caption')}</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Coordinates</TableHead>
-                <TableHead>Hives Count</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('apiary:fields.name')}</TableHead>
+                <TableHead>{t('apiary:fields.location')}</TableHead>
+                <TableHead>{t('apiary:fields.coordinates')}</TableHead>
+                <TableHead>{t('apiary:fields.hivesCount')}</TableHead>
+                <TableHead className="text-right">{t('common:actions.actions', { defaultValue: 'Actions' })}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {apiaries.map(apiary => (
                 <TableRow key={apiary.id}>
                   <TableCell className="font-medium">{apiary.name}</TableCell>
-                  <TableCell>{apiary.location || 'No location'}</TableCell>
+                  <TableCell>{apiary.location || t('apiary:fields.noLocation')}</TableCell>
                   <TableCell>
                     {apiary.latitude && apiary.longitude
                       ? `${apiary.latitude.toFixed(6)}, ${apiary.longitude.toFixed(6)}`
-                      : 'No coordinates'}
+                      : t('apiary:fields.noCoordinates')}
                   </TableCell>
                   <TableCell>{0}</TableCell>
                   <TableCell className="text-right">
@@ -86,7 +88,7 @@ export const ApiaryListPage = () => {
                       onClick={() => navigate(`/apiaries/${apiary.id}`)}
                       className="flex items-center"
                     >
-                      Details <ChevronRight className="ml-1 h-4 w-4" />
+                      {t('apiary:actions.details')} <ChevronRight className="ml-1 h-4 w-4" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -97,8 +99,8 @@ export const ApiaryListPage = () => {
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <p className="text-muted-foreground mb-4">
               {searchTerm
-                ? `No apiaries found matching "${searchTerm}"`
-                : 'No apiaries found'}
+                ? t('apiary:list.noApiariesMatching', { searchTerm })
+                : t('apiary:list.noApiaries')}
             </p>
             {searchTerm && (
               <Button
@@ -106,7 +108,7 @@ export const ApiaryListPage = () => {
                   setSearchTerm('');
                 }}
               >
-                Clear filters
+                {t('apiary:list.clearFilters')}
               </Button>
             )}
           </div>

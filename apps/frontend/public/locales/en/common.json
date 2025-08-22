@@ -31,7 +31,8 @@
     "view": "View",
     "download": "Download",
     "upload": "Upload",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "actions": "Actions"
   },
   "status": {
     "loading": "Loading...",

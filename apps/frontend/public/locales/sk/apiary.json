@@ -1,0 +1,71 @@
+{
+  "title": "Včelnice",
+  "singular": "Včelnica",
+  "plural": "Včelnice",
+  "list": {
+    "title": "Zoznam včelníc",
+    "caption": "Zoznam všetkých vašich včelníc",
+    "searchPlaceholder": "Hľadať včelnice...",
+    "noApiaries": "Nenašli sa žiadne včelnice",
+    "noApiariesMatching": "Nenašli sa žiadne včelnice zodpovedajúce \"{{searchTerm}}\"",
+    "clearFilters": "Vymazať filtre"
+  },
+  "create": {
+    "title": "Vytvoriť včelnicu",
+    "button": "Vytvoriť novú včelnicu",
+    "success": "Včelnica bola úspešne vytvorená"
+  },
+  "edit": {
+    "title": "Upraviť včelnicu",
+    "success": "Včelnica bola úspešne aktualizovaná"
+  },
+  "delete": {
+    "confirm": "Naozaj chcete vymazať túto včelnicu?",
+    "success": "Včelnica bola úspešne vymazaná"
+  },
+  "detail": {
+    "notFound": "Včelnica sa nenašla",
+    "noLocationSpecified": "Žiadna špecifikovaná poloha",
+    "tabs": {
+      "overview": "Prehľad",
+      "hives": "Úle",
+      "location": "Poloha"
+    },
+    "apiaryInformation": "Informácie o včelnici",
+    "locationMap": "Mapa polohy",
+    "apiaryLocation": "Poloha včelnice",
+    "noCoordinates": "Pre túto včelnicu nie sú k dispozícii súradnice polohy"
+  },
+  "fields": {
+    "name": "Názov",
+    "location": "Poloha",
+    "locationDescription": "Popis polohy",
+    "coordinates": "Súradnice",
+    "hivesCount": "Počet úľov",
+    "latitude": "Zemepisná šírka",
+    "longitude": "Zemepisná dĺžka",
+    "notSpecified": "Nešpecifikované",
+    "noLocation": "Žiadna poloha",
+    "noCoordinates": "Žiadne súradnice"
+  },
+  "actions": {
+    "details": "Podrobnosti",
+    "refreshData": "Obnoviť údaje",
+    "exportCSV": "Exportovať do CSV",
+    "print": "Tlačiť zoznam včelníc",
+    "share": "Zdieľať zoznam včelníc",
+    "dataOptions": "Možnosti údajov"
+  },
+  "messages": {
+    "exportComingSoon": "Funkcia exportu bude čoskoro k dispozícii",
+    "shareComingSoon": "Funkcia zdieľania bude čoskoro k dispozícii"
+  },
+  "switcher": {
+    "teams": "Tímy",
+    "addApiary": "Pridať včelnicu"
+  },
+  "form": {
+    "namePlaceholder": "Názov včelnice",
+    "locationPlaceholder": "Popis polohy"
+  }
+}

@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Section } from '@/components/common/section';
 import { ApiaryActionSidebar, HivesLayout } from './components';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,15 +13,16 @@ import {
 import { useApiary } from '@/api/hooks';
 
 export const ApiaryDetailPage = () => {
+  const { t } = useTranslation(['apiary', 'common']);
   const { id } = useParams<{ id: string }>();
   const { data: apiary, isLoading, refetch } = useApiary(id ?? '');
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{t('common:status.loading')}</div>;
   }
 
   if (!apiary) {
-    return <div>Apiary not found</div>;
+    return <div>{t('apiary:detail.notFound')}</div>;
   }
 
   return (
@@ -29,40 +31,40 @@ export const ApiaryDetailPage = () => {
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">{apiary.name}</h1>
           <p className="text-muted-foreground">
-            {apiary.location || 'No location specified'}
+            {apiary.location || t('apiary:detail.noLocationSpecified')}
           </p>
         </div>
 
         <Tabs defaultValue="overview" className="mb-6">
           <TabsList className="mb-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="hives">Hives</TabsTrigger>
-            <TabsTrigger value="location">Location</TabsTrigger>
+            <TabsTrigger value="overview">{t('apiary:detail.tabs.overview')}</TabsTrigger>
+            <TabsTrigger value="hives">{t('apiary:detail.tabs.hives')}</TabsTrigger>
+            <TabsTrigger value="location">{t('apiary:detail.tabs.location')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Apiary Information</CardTitle>
+                  <CardTitle>{t('apiary:detail.apiaryInformation')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     <div>
-                      <span className="font-medium">Name:</span> {apiary.name}
+                      <span className="font-medium">{t('apiary:fields.name')}:</span> {apiary.name}
                     </div>
                     <div>
-                      <span className="font-medium">Location:</span>{' '}
-                      {apiary.location || 'Not specified'}
+                      <span className="font-medium">{t('apiary:fields.location')}:</span>{' '}
+                      {apiary.location || t('apiary:fields.notSpecified')}
                     </div>
                     <div>
-                      <span className="font-medium">Coordinates:</span>{' '}
+                      <span className="font-medium">{t('apiary:fields.coordinates')}:</span>{' '}
                       {apiary.latitude && apiary.longitude
                         ? `${apiary.latitude.toFixed(6)}, ${apiary.longitude.toFixed(6)}`
-                        : 'Not specified'}
+                        : t('apiary:fields.notSpecified')}
                     </div>
                     <div>
-                      <span className="font-medium">Hives:</span> {0}
+                      <span className="font-medium">{t('hive:plural')}:</span> {0}
                     </div>
                   </div>
                 </CardContent>
@@ -71,7 +73,7 @@ export const ApiaryDetailPage = () => {
               {apiary.latitude && apiary.longitude && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Location Map</CardTitle>
+                    <CardTitle>{t('apiary:detail.locationMap')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="h-[200px]">
@@ -93,7 +95,7 @@ export const ApiaryDetailPage = () => {
           </TabsContent>
 
           <TabsContent value="location">
-            <Section title="Apiary Location">
+            <Section title={t('apiary:detail.apiaryLocation')}>
               {apiary.latitude && apiary.longitude ? (
                 <div className="h-[400px]">
                   <MapPicker
@@ -105,7 +107,7 @@ export const ApiaryDetailPage = () => {
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No location coordinates available for this apiary
+                  {t('apiary:detail.noCoordinates')}
                 </div>
               )}
             </Section>

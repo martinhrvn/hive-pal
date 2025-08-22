@@ -1,0 +1,71 @@
+{
+  "title": "Apiaries",
+  "singular": "Apiary",
+  "plural": "Apiaries",
+  "list": {
+    "title": "Apiary List",
+    "caption": "A list of all your apiaries",
+    "searchPlaceholder": "Search apiaries...",
+    "noApiaries": "No apiaries found",
+    "noApiariesMatching": "No apiaries found matching \"{{searchTerm}}\"",
+    "clearFilters": "Clear filters"
+  },
+  "create": {
+    "title": "Create Apiary",
+    "button": "Create New Apiary",
+    "success": "Apiary created successfully"
+  },
+  "edit": {
+    "title": "Edit Apiary",
+    "success": "Apiary updated successfully"
+  },
+  "delete": {
+    "confirm": "Are you sure you want to delete this apiary?",
+    "success": "Apiary deleted successfully"
+  },
+  "detail": {
+    "notFound": "Apiary not found",
+    "noLocationSpecified": "No location specified",
+    "tabs": {
+      "overview": "Overview",
+      "hives": "Hives",
+      "location": "Location"
+    },
+    "apiaryInformation": "Apiary Information",
+    "locationMap": "Location Map",
+    "apiaryLocation": "Apiary Location",
+    "noCoordinates": "No location coordinates available for this apiary"
+  },
+  "fields": {
+    "name": "Name",
+    "location": "Location",
+    "locationDescription": "Location description",
+    "coordinates": "Coordinates",
+    "hivesCount": "Hives Count",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "notSpecified": "Not specified",
+    "noLocation": "No location",
+    "noCoordinates": "No coordinates"
+  },
+  "actions": {
+    "details": "Details",
+    "refreshData": "Refresh Data",
+    "exportCSV": "Export to CSV",
+    "print": "Print Apiary List",
+    "share": "Share Apiary List",
+    "dataOptions": "Data Options"
+  },
+  "messages": {
+    "exportComingSoon": "Export functionality coming soon",
+    "shareComingSoon": "Share functionality coming soon"
+  },
+  "switcher": {
+    "teams": "Teams",
+    "addApiary": "Add apiary"
+  },
+  "form": {
+    "namePlaceholder": "Apiary name",
+    "locationPlaceholder": "Location description"
+  }
+}

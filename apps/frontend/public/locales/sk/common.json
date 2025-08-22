@@ -31,7 +31,8 @@
     "view": "Zobraziť",
     "download": "Stiahnuť",
     "upload": "Nahrať",
-    "refresh": "Obnoviť"
+    "refresh": "Obnoviť",
+    "actions": "Akcie"
   },
   "status": {
     "loading": "Načítava sa...",
