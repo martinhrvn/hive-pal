@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -53,6 +54,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   onSubmit: onSubmitOverride,
   isLoading,
 }) => {
+  const { t } = useTranslation(['hive', 'common']);
   const navigate = useNavigate();
   const { apiaries, activeApiaryId } = useApiary();
   const { mutate } = useCreateHive({
@@ -96,9 +98,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Label</FormLabel>
+              <FormLabel>{t('hive:fields.label')}</FormLabel>
               <FormControl>
-                <Input placeholder="hive 01" {...field} />
+                <Input placeholder={t('hive:form.hivePlaceholder')} {...field} />
               </FormControl>
 
               <FormMessage />
@@ -110,7 +112,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           name="apiaryId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Apiary</FormLabel>
+              <FormLabel>{t('hive:fields.apiary')}</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -118,7 +120,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                   defaultValue={activeApiaryId ?? field.value}
                 >
                   <SelectTrigger className={'w-full'}>
-                    <SelectValue placeholder={'Select a hive'} />
+                    <SelectValue placeholder={t('hive:form.selectHive')} />
                   </SelectTrigger>
                   <SelectContent>
                     {apiaryOptions?.map(option => (
@@ -139,9 +141,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>notes</FormLabel>
+              <FormLabel>{t('hive:fields.notes')}</FormLabel>
               <FormControl>
-                <Textarea placeholder="Good hive" {...field} />
+                <Textarea placeholder={t('hive:form.notesPlaceholder')} {...field} />
               </FormControl>
 
               <FormMessage />
@@ -154,7 +156,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           name="installationDate"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Installation date</FormLabel>
+              <FormLabel>{t('hive:fields.installationDate')}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -168,7 +170,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                       {field.value ? (
                         format(field.value, 'PPP')
                       ) : (
-                        <span>Pick a date</span>
+                        <span>{t('hive:form.pickDate')}</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -192,7 +194,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
         />
 
         <Button disabled={isLoading} type="submit">
-          Submit
+          {t('hive:form.submit')}
         </Button>
       </form>
     </Form>

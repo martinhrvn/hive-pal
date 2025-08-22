@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PlusCircle, RefreshCw, FileDown, Printer, Share2 } from 'lucide-react';
 
 import {
@@ -19,6 +20,7 @@ interface HiveActionSidebarProps {
 export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
   onRefreshData,
 }) => {
+  const { t } = useTranslation(['hive', 'common']);
   const navigate = useNavigate();
   const { activeApiaryId } = useApiary();
 
@@ -27,7 +29,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
       {activeApiaryId && (
         <div className="border rounded-md">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-2 pt-2">Weather Forecast</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-2 pt-2">{t('hive:weather.forecast')}</SidebarGroupLabel>
             <WeatherForecast apiaryId={activeApiaryId} compact />
           </SidebarGroup>
         </div>
@@ -36,60 +38,60 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
       <div className="border rounded-md">
         <div className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Actions</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('common:actions.actions')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/hives/create/')}
-                tooltip="Create New Hive"
+                tooltip={t('hive:actions.createNewHive')}
               >
                 <PlusCircle className="h-4 w-4" />
-                <span>Create New Hive</span>
+                <span>{t('hive:actions.createNewHive')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => onRefreshData && onRefreshData()}
-                tooltip="Refresh Data"
+                tooltip={t('hive:actions.refreshData')}
               >
                 <RefreshCw className="h-4 w-4" />
-                <span>Refresh Data</span>
+                <span>{t('hive:actions.refreshData')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>Data Options</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('hive:actions.dataOptions')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => alert('Export functionality coming soon')}
-                tooltip="Export to CSV"
+                onClick={() => alert(t('hive:messages.exportComingSoon'))}
+                tooltip={t('hive:actions.exportCSV')}
               >
                 <FileDown className="h-4 w-4" />
-                <span>Export to CSV</span>
+                <span>{t('hive:actions.exportCSV')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => window.print()}
-                tooltip="Print Hive List"
+                tooltip={t('hive:actions.print')}
               >
                 <Printer className="h-4 w-4" />
-                <span>Print Hive List</span>
+                <span>{t('hive:actions.print')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => alert('Share functionality coming soon')}
-                tooltip="Share Hive List"
+                onClick={() => alert(t('hive:messages.shareComingSoon'))}
+                tooltip={t('hive:actions.share')}
               >
                 <Share2 className="h-4 w-4" />
-                <span>Share Hive List</span>
+                <span>{t('hive:actions.share')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
