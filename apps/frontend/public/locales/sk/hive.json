@@ -1,0 +1,99 @@
+{
+  "title": "Úle",
+  "singular": "Úľ",
+  "plural": "Úle",
+  "list": {
+    "title": "Zoznam úľov",
+    "caption": "Zoznam všetkých vašich úľov",
+    "captionFiltered": "Zobrazuje sa {{count}} {{status}} úľ",
+    "captionFilteredPlural": "Zobrazuje sa {{count}} {{status}} úľov",
+    "searchPlaceholder": "Hľadať úle...",
+    "filterByStatus": "Filtrovať podľa stavu",
+    "allStatuses": "Všetky stavy",
+    "noHives": "Žiadne úle neboli nájdené",
+    "noHivesMatchingBoth": "Nenašli sa žiadne {{status}} úle zodpovedajúce \"{{searchTerm}}\"",
+    "noHivesMatchingSearch": "Nenašli sa žiadne úle zodpovedajúce \"{{searchTerm}}\"",
+    "noHivesWithStatus": "Nenašli sa žiadne {{status}} úle",
+    "clearFilters": "Vymazať filtre",
+    "createFirst": "Vytvorte svoj prvý úľ"
+  },
+  "create": {
+    "title": "Vytvoriť nový úľ",
+    "success": "Úľ bol úspešne vytvorený"
+  },
+  "edit": {
+    "title": "Upraviť úľ",
+    "success": "Úľ bol úspešne aktualizovaný"
+  },
+  "delete": {
+    "confirm": "Naozaj chcete vymazať tento úľ?",
+    "success": "Úľ bol úspešne vymazaný"
+  },
+  "fields": {
+    "name": "Názov",
+    "label": "Označenie",
+    "number": "Číslo úľa",
+    "type": "Typ úľa",
+    "status": "Stav",
+    "location": "Umiestnenie",
+    "notes": "Poznámky",
+    "queen": "Matka",
+    "lastInspection": "Posledná prehliadka",
+    "installationDate": "Dátum inštalácie",
+    "established": "Založený",
+    "boxes": "Nadstavky",
+    "frames": "Rámiky",
+    "position": "Pozícia",
+    "apiary": "Včelnica",
+    "notSpecified": "Nešpecifikované",
+    "noInspectionYet": "Zatiaľ žiadna prehliadka",
+    "noNotes": "Žiadne poznámky"
+  },
+  "status": {
+    "active": "Aktívny",
+    "inactive": "Neaktívny",
+    "queenless": "Bezmatečný",
+    "weak": "Slabý",
+    "strong": "Silný",
+    "dead": "Mŕtvy",
+    "sold": "Predaný",
+    "unknown": "Neznámy",
+    "archived": "Archivovaný"
+  },
+  "actions": {
+    "inspect": "Prezrieť",
+    "addBox": "Pridať nadstavok",
+    "removeBox": "Odstrániť nadstavok",
+    "addQueen": "Pridať matku",
+    "archive": "Archivovať",
+    "restore": "Obnoviť",
+    "details": "Podrobnosti",
+    "refreshData": "Obnoviť údaje",
+    "exportCSV": "Exportovať do CSV",
+    "print": "Tlačiť zoznam úľov",
+    "share": "Zdieľať zoznam úľov",
+    "dataOptions": "Možnosti údajov",
+    "createNewHive": "Vytvoriť nový úľ"
+  },
+  "form": {
+    "selectHive": "Vybrať úľ",
+    "hivePlaceholder": "úľ 01",
+    "notesPlaceholder": "Dobrý úľ",
+    "pickDate": "Vybrať dátum",
+    "submit": "Odoslať"
+  },
+  "weather": {
+    "forecast": "Predpoveď počasia"
+  },
+  "messages": {
+    "exportComingSoon": "Funkcia exportu bude čoskoro k dispozícii",
+    "shareComingSoon": "Funkcia zdieľania bude čoskoro k dispozícii"
+  },
+  "layout": {
+    "title": "Rozloženie úľov",
+    "grid": "Mriežka",
+    "unpositionedHives": "Neumiestnené úle",
+    "noHivesInApiary": "V tejto včelnici zatiaľ nie sú žiadne úle.",
+    "dragToOrganize": "Pridajte úle a presuňte ich do mriežky vyššie, aby ste usporiadali rozloženie včelnice."
+  }
+}

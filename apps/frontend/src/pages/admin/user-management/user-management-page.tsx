@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/auth-context';
 import { useIsAdmin } from '@/hooks/use-is-admin.ts';
 import {
@@ -43,6 +44,7 @@ interface User {
 }
 
 const UserManagementPage: React.FC = () => {
+  const { t } = useTranslation('admin');
   const { token } = useAuth();
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
@@ -76,9 +78,9 @@ const UserManagementPage: React.FC = () => {
         setUsers(response.data);
       } catch (err) {
         if (err instanceof AxiosError) {
-          setError(err.response?.data?.message || 'Failed to fetch users');
+          setError(err.response?.data?.message || t('messages.failedToFetch'));
         } else {
-          setError('An unexpected error occurred');
+          setError(t('messages.unexpectedError'));
         }
       } finally {
         setLoading(false);
@@ -117,9 +119,9 @@ const UserManagementPage: React.FC = () => {
       setTempPassword('');
     } catch (err) {
       if (err instanceof AxiosError) {
-        setError(err.response?.data?.message || 'Failed to reset password');
+        setError(err.response?.data?.message || t('messages.failedToReset'));
       } else {
-        setError('An unexpected error occurred');
+        setError(t('messages.unexpectedError'));
       }
     }
   };
@@ -132,8 +134,8 @@ const UserManagementPage: React.FC = () => {
     <div className="container mx-auto py-6">
       <Card>
         <CardHeader>
-          <CardTitle>User Management</CardTitle>
-          <CardDescription>Manage users and reset passwords</CardDescription>
+          <CardTitle>{t('title')}</CardTitle>
+          <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -143,27 +145,27 @@ const UserManagementPage: React.FC = () => {
           )}
 
           {loading ? (
-            <div className="flex justify-center py-8">Loading users...</div>
+            <div className="flex justify-center py-8">{t('messages.loadingUsers')}</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Password Change Required</TableHead>
-                  <TableHead>Created At</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('table.email')}</TableHead>
+                  <TableHead>{t('table.name')}</TableHead>
+                  <TableHead>{t('table.role')}</TableHead>
+                  <TableHead>{t('table.passwordChangeRequired')}</TableHead>
+                  <TableHead>{t('table.createdAt')}</TableHead>
+                  <TableHead>{t('table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users.map(user => (
                   <TableRow key={user.id}>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.name || '-'}</TableCell>
+                    <TableCell>{user.name || t('status.dash')}</TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
-                      {user.passwordChangeRequired ? 'Yes' : 'No'}
+                      {user.passwordChangeRequired ? t('status.yes') : t('status.no')}
                     </TableCell>
                     <TableCell>{formatDate(user.createdAt)}</TableCell>
                     <TableCell>
@@ -177,30 +179,27 @@ const UserManagementPage: React.FC = () => {
                               setResetSuccess(false);
                             }}
                           >
-                            Reset Password
+                            {t('actions.resetPassword')}
                           </Button>
                         </SheetTrigger>
                         <SheetContent>
                           <SheetHeader>
-                            <SheetTitle>Reset User Password</SheetTitle>
+                            <SheetTitle>{t('resetPasswordDialog.title')}</SheetTitle>
                             <SheetDescription>
-                              Set a temporary password for {selectedUser?.email}
-                              . The user will be required to change their
-                              password on next login.
+                              {t('resetPasswordDialog.description', { email: selectedUser?.email })}
                             </SheetDescription>
                           </SheetHeader>
 
                           <div className="mt-8 space-y-4">
                             {resetSuccess ? (
                               <div className="bg-green-50 text-green-800 p-4 rounded-md">
-                                Password reset successful! The user will be
-                                required to change their password on next login.
+                                {t('messages.resetSuccess')}
                               </div>
                             ) : (
                               <>
                                 <div className="space-y-2">
                                   <Label htmlFor="temp-password">
-                                    Temporary Password
+                                    {t('resetPasswordDialog.tempPasswordLabel')}
                                   </Label>
                                   <Input
                                     id="temp-password"
@@ -209,10 +208,10 @@ const UserManagementPage: React.FC = () => {
                                     onChange={e =>
                                       setTempPassword(e.target.value)
                                     }
-                                    placeholder="Enter temporary password"
+                                    placeholder={t('resetPasswordDialog.tempPasswordPlaceholder')}
                                   />
                                   <p className="text-sm text-gray-500">
-                                    Minimum 6 characters
+                                    {t('resetPasswordDialog.minCharacters')}
                                   </p>
                                 </div>
 
@@ -224,7 +223,7 @@ const UserManagementPage: React.FC = () => {
                                   }
                                   className="w-full"
                                 >
-                                  Reset Password
+                                  {t('resetPasswordDialog.submit')}
                                 </Button>
                               </>
                             )}

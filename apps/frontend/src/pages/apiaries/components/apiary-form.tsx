@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiariesSchema } from './schema';
@@ -27,6 +28,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
   onSubmit: onSubmitOverride,
   isLoading,
 }) => {
+  const { t } = useTranslation(['apiary', 'common']);
   const navigate = useNavigate();
 
   const { mutateAsync } = useCreateApiary();
@@ -66,9 +68,9 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t('apiary:fields.name')}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Apiary name" />
+                <Input {...field} placeholder={t('apiary:form.namePlaceholder')} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,9 +82,9 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Location</FormLabel>
+              <FormLabel>{t('apiary:fields.location')}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Location description" />
+                <Input {...field} placeholder={t('apiary:form.locationPlaceholder')} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -101,10 +103,10 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
             className="mr-2"
             onClick={() => navigate('/')}
           >
-            Cancel
+            {t('common:actions.cancel')}
           </Button>
           <Button disabled={isLoading} type={'submit'}>
-            {'Create Apiary'}
+            {t('apiary:create.title')}
           </Button>
         </div>
       </form>

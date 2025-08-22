@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -36,60 +37,61 @@ type QueenFormProps = {
   hiveId?: string;
 };
 
-const COLOR_OPTIONS = [
+const getColorOptions = (t: (key: string) => string) => [
   {
-    label: 'Blue',
+    label: t('queen:colors.blue'),
     value: 'blue',
     style: 'bg-blue-500',
   },
   {
-    label: 'Green',
+    label: t('queen:colors.green'),
     value: 'green',
     style: 'bg-green-500',
   },
   {
-    label: 'Red',
+    label: t('queen:colors.red'),
     value: 'red',
     style: 'bg-red-500',
   },
   {
-    label: 'Yellow',
+    label: t('queen:colors.yellow'),
     value: 'yellow',
     style: 'bg-yellow-500',
   },
   {
-    label: 'Purple',
+    label: t('queen:colors.purple'),
     value: 'purple',
     style: 'bg-purple-500',
   },
   {
-    label: 'Indigo',
+    label: t('queen:colors.indigo'),
     value: 'indigo',
     style: 'bg-indigo-500',
   },
   {
-    label: 'Pink',
+    label: t('queen:colors.pink'),
     value: 'pink',
     style: 'bg-pink-500',
   },
   {
-    label: 'Gray',
+    label: t('queen:colors.gray'),
     value: 'gray',
     style: 'bg-gray-500',
   },
   {
-    label: 'Black',
+    label: t('queen:colors.black'),
     value: 'black',
     style: 'bg-black',
   },
   {
-    label: 'White',
+    label: t('queen:colors.white'),
     value: 'white',
     style: 'bg-white border border-gray-300',
   },
 ];
 
 export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
+  const { t } = useTranslation(['queen', 'common']);
   const navigate = useNavigate();
   const { hiveId: urlHiveId } = useParams();
 
@@ -122,6 +124,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
 
   const colorValue = useWatch({ control: form.control, name: 'color' });
   const hiveValue = useWatch({ control: form.control, name: 'hiveId' });
+  const colorOptions = getColorOptions(t);
   const onSubmit = async (data: QueenFormData) => {
     try {
       await createQueen({
@@ -149,7 +152,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
     <div className="container mx-auto max-w-xl">
       <Card>
         <CardHeader>
-          <CardTitle>New Queen</CardTitle>
+          <CardTitle>{t('queen:create.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -160,14 +163,14 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   name="hiveId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Hive</FormLabel>
+                      <FormLabel>{t('queen:fields.hive')}</FormLabel>
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a hive" />
+                            <SelectValue placeholder={t('queen:form.selectHive')} />
                           </SelectTrigger>
                           <SelectContent>
                             {hiveOptions?.map(option => (
@@ -192,11 +195,11 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                 name="year"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Year</FormLabel>
+                    <FormLabel>{t('queen:fields.year')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder="Enter year"
+                        placeholder={t('queen:form.enterYear')}
                         {...field}
                         value={field.value || ''}
                         onChange={e =>
@@ -248,17 +251,17 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   name="color"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Color</FormLabel>
+                      <FormLabel>{t('queen:fields.color')}</FormLabel>
                       <FormControl>
                         <Select
                           value={field.value ?? undefined}
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select color" />
+                            <SelectValue placeholder={t('queen:form.selectColor')} />
                           </SelectTrigger>
                           <SelectContent>
-                            {COLOR_OPTIONS.map(option => (
+                            {colorOptions.map(option => (
                               <SelectItem
                                 key={option.value}
                                 value={option.value}
@@ -281,10 +284,10 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   name="marking"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Marking</FormLabel>
+                      <FormLabel>{t('queen:fields.marking')}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter queen marking"
+                          placeholder={t('queen:form.enterMarking')}
                           {...field}
                           value={field.value || ''}
                         />
@@ -300,10 +303,10 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                 name="source"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Source</FormLabel>
+                    <FormLabel>{t('queen:fields.source')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter queen source"
+                        placeholder={t('queen:form.enterSource')}
                         {...field}
                         value={field.value || ''}
                       />
@@ -318,20 +321,20 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>{t('queen:fields.status')}</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue placeholder={t('queen:form.selectStatus')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ACTIVE">Active</SelectItem>
-                          <SelectItem value="REPLACED">Replaced</SelectItem>
-                          <SelectItem value="DEAD">Dead</SelectItem>
-                          <SelectItem value="UNKNOWN">Unknown</SelectItem>
+                          <SelectItem value="ACTIVE">{t('queen:status.active')}</SelectItem>
+                          <SelectItem value="REPLACED">{t('queen:status.replaced')}</SelectItem>
+                          <SelectItem value="DEAD">{t('queen:status.dead')}</SelectItem>
+                          <SelectItem value="UNKNOWN">{t('queen:status.unknown')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -345,7 +348,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   name="installedAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Installation Date</FormLabel>
+                      <FormLabel>{t('queen:fields.installationDate')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -359,7 +362,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                               {field.value ? (
                                 format(field.value, 'PPP')
                               ) : (
-                                <span>Pick a date</span>
+                                <span>{t('queen:form.pickDate')}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -384,7 +387,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   name="replacedAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Replaced Date (Optional)</FormLabel>
+                      <FormLabel>{t('queen:fields.replacedDate')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -398,7 +401,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                               {field.value ? (
                                 format(field.value, 'PPP')
                               ) : (
-                                <span>Pick a date</span>
+                                <span>{t('queen:form.pickDate')}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -422,8 +425,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
               {selectedHive && selectedHive.activeQueen && (
                 <div className="bg-red-100 border border-red-200 p-4 rounded-md">
                   <p className="text-red-800">
-                    This hive already has an active queen. Replacing the queen
-                    will mark the current queen as replaced.
+                    {t('queen:information.hasActiveQueen')}
                   </p>
                 </div>
               )}
@@ -438,9 +440,9 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                     )
                   }
                 >
-                  Cancel
+                  {t('common:actions.cancel')}
                 </Button>
-                <Button type="submit">Create Queen</Button>
+                <Button type="submit">{t('queen:create.button')}</Button>
               </div>
             </form>
           </Form>

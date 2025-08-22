@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PlusCircle,
   RefreshCw,
@@ -30,6 +31,7 @@ interface InspectionActionSidebarProps {
 export const InspectionActionSidebar: React.FC<
   InspectionActionSidebarProps
 > = ({ onRefreshData, selectedHiveId, onChangeView, currentView }) => {
+  const { t } = useTranslation(['inspection', 'common']);
   const navigate = useNavigate();
 
   const handleCreateInspection = () => {
@@ -44,108 +46,108 @@ export const InspectionActionSidebar: React.FC<
     <div className="border rounded-md">
       <div className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Actions</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('inspection:sidebar.actions')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={handleCreateInspection}
-                tooltip="Create New Inspection"
+                tooltip={t('inspection:actions.createInspection')}
               >
                 <PlusCircle className="h-4 w-4" />
-                <span>Create Inspection</span>
+                <span>{t('inspection:actions.createInspection')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => navigate('/inspections/schedule')}
-                tooltip="Schedule Inspection"
+                tooltip={t('inspection:actions.scheduleInspection')}
               >
                 <CalendarPlus className="h-4 w-4" />
-                <span>Schedule Inspection</span>
+                <span>{t('inspection:actions.scheduleInspection')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => onRefreshData && onRefreshData()}
-                tooltip="Refresh Data"
+                tooltip={t('inspection:actions.refreshData')}
               >
                 <RefreshCw className="h-4 w-4" />
-                <span>Refresh Data</span>
+                <span>{t('inspection:actions.refreshData')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>Views</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('inspection:sidebar.views')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => onChangeView('all')}
-                tooltip="All Inspections"
+                tooltip={t('inspection:sidebar.allInspections')}
                 className={currentView === 'all' ? 'bg-accent' : ''}
               >
                 <ClipboardCheckIcon className="h-4 w-4" />
-                <span>All Inspections</span>
+                <span>{t('inspection:sidebar.allInspections')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => onChangeView('recent')}
-                tooltip="Recent Inspections"
+                tooltip={t('inspection:sidebar.recentInspections')}
                 className={currentView === 'recent' ? 'bg-accent' : ''}
               >
                 <HistoryIcon className="h-4 w-4" />
-                <span>Recent Inspections</span>
+                <span>{t('inspection:sidebar.recentInspections')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => onChangeView('upcoming')}
-                tooltip="Upcoming Inspections"
+                tooltip={t('inspection:sidebar.upcomingInspections')}
                 className={currentView === 'upcoming' ? 'bg-accent' : ''}
               >
                 <CalendarClockIcon className="h-4 w-4" />
-                <span>Upcoming Inspections</span>
+                <span>{t('inspection:sidebar.upcomingInspections')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>Data Options</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('inspection:actions.dataOptions')}</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => alert('Export functionality coming soon')}
-                tooltip="Export to CSV"
+                onClick={() => alert(t('inspection:messages.exportComingSoon'))}
+                tooltip={t('inspection:actions.exportCSV')}
               >
                 <FileDown className="h-4 w-4" />
-                <span>Export to CSV</span>
+                <span>{t('inspection:actions.exportCSV')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => window.print()}
-                tooltip="Print Inspection List"
+                tooltip={t('inspection:sidebar.printInspectionList')}
               >
                 <Printer className="h-4 w-4" />
-                <span>Print List</span>
+                <span>{t('inspection:actions.printList')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => alert('Share functionality coming soon')}
-                tooltip="Share Inspection List"
+                onClick={() => alert(t('inspection:messages.shareComingSoon'))}
+                tooltip={t('inspection:sidebar.shareInspectionList')}
               >
                 <Share2 className="h-4 w-4" />
-                <span>Share List</span>
+                <span>{t('inspection:actions.shareList')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useHives, useInspections } from '@/api/hooks';
 import { HiveResponse, InspectionResponse, InspectionStatus } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
@@ -58,6 +59,7 @@ enum InspectionTab {
 }
 
 export const InspectionListPage = () => {
+  const { t } = useTranslation(['inspection', 'common']);
   // Get view type from URL param, defaults to 'all'
   const { view } = useParams<{ view: string }>();
   const activeTab = (view as InspectionTab) || InspectionTab.ALL;
@@ -130,7 +132,7 @@ export const InspectionListPage = () => {
   }, [filteredInspections, activeTab]);
 
   if (isLoadingInspections || isLoadingHives) {
-    return <div>Loading...</div>;
+    return <div>{t('common:status.loading')}</div>;
   }
 
   return (
@@ -145,21 +147,21 @@ export const InspectionListPage = () => {
                 className="flex items-center gap-1"
               >
                 <ClipboardCheckIcon className="h-4 w-4" />
-                <span>All</span>
+                <span>{t('inspection:tabs.all')}</span>
               </TabsTrigger>
               <TabsTrigger
                 value={InspectionTab.RECENT}
                 className="flex items-center gap-1"
               >
                 <HistoryIcon className="h-4 w-4" />
-                <span>Recent</span>
+                <span>{t('inspection:tabs.recent')}</span>
               </TabsTrigger>
               <TabsTrigger
                 value={InspectionTab.UPCOMING}
                 className="flex items-center gap-1"
               >
                 <CalendarClockIcon className="h-4 w-4" />
-                <span>Upcoming</span>
+                <span>{t('inspection:tabs.upcoming')}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -167,7 +169,7 @@ export const InspectionListPage = () => {
               <div className="relative flex-1">
                 <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search inspections..."
+                  placeholder={t('inspection:list.searchPlaceholder')}
                   className="pl-8"
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
@@ -180,10 +182,10 @@ export const InspectionListPage = () => {
                   onValueChange={value => setSelectedHiveId(value)}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Filter by hive" />
+                    <SelectValue placeholder={t('inspection:list.filterByHive')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Hives</SelectItem>
+                    <SelectItem value="all">{t('inspection:list.allHives')}</SelectItem>
                     {hivesData?.map(hive => (
                       <SelectItem key={hive.id} value={hive.id}>
                         {hive.name}
@@ -198,30 +200,33 @@ export const InspectionListPage = () => {
           <TabsContent value={InspectionTab.ALL}>
             {renderInspectionsTable(
               sortedInspections,
-              'All Inspections',
+              t('inspection:list.allInspections'),
               navigate,
               hivesData,
               InspectionTab.ALL,
+              t,
             )}
           </TabsContent>
 
           <TabsContent value={InspectionTab.RECENT}>
             {renderInspectionsTable(
               sortedInspections,
-              'Recent Inspections',
+              t('inspection:list.recentInspections'),
               navigate,
               hivesData,
               InspectionTab.RECENT,
+              t,
             )}
           </TabsContent>
 
           <TabsContent value={InspectionTab.UPCOMING}>
             {renderInspectionsTable(
               sortedInspections,
-              'Upcoming Inspections',
+              t('inspection:list.upcomingInspections'),
               navigate,
               hivesData,
               InspectionTab.UPCOMING,
+              t,
             )}
           </TabsContent>
         </Tabs>
@@ -245,22 +250,23 @@ const renderInspectionsTable = (
   navigate: (path: string) => void,
   hives: HiveResponse[] = [],
   activeTab: InspectionTab = InspectionTab.ALL,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ) => {
   const getHiveName = (hiveId: string) => {
     const hive = hives.find(h => h.id === hiveId);
-    return hive ? hive.name : 'Unknown Hive';
+    return hive ? hive.name : t('inspection:list.unknownHive');
   };
 
   const getStatusBadge = (status: InspectionStatus) => {
     switch (status) {
       case InspectionStatus.SCHEDULED:
-        return <Badge variant="outline" className="text-blue-600 border-blue-600">Scheduled</Badge>;
+        return <Badge variant="outline" className="text-blue-600 border-blue-600">{t('inspection:status.scheduled')}</Badge>;
       case InspectionStatus.COMPLETED:
-        return <Badge variant="outline" className="text-green-600 border-green-600">Completed</Badge>;
+        return <Badge variant="outline" className="text-green-600 border-green-600">{t('inspection:status.completed')}</Badge>;
       case InspectionStatus.OVERDUE:
-        return <Badge variant="outline" className="text-red-600 border-red-600">Overdue</Badge>;
+        return <Badge variant="outline" className="text-red-600 border-red-600">{t('inspection:status.overdue')}</Badge>;
       case InspectionStatus.CANCELLED:
-        return <Badge variant="outline" className="text-gray-600 border-gray-600">Cancelled</Badge>;
+        return <Badge variant="outline" className="text-gray-600 border-gray-600">{t('inspection:status.cancelled')}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -271,14 +277,14 @@ const renderInspectionsTable = (
       <TableCaption>{caption}</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Date & Time</TableHead>
-          <TableHead>Hive</TableHead>
-          <TableHead>Weather</TableHead>
+          <TableHead>{t('inspection:fields.dateTime')}</TableHead>
+          <TableHead>{t('inspection:fields.hive')}</TableHead>
+          <TableHead>{t('inspection:fields.weather')}</TableHead>
           <TableHead>
-            {activeTab === InspectionTab.UPCOMING ? 'Status' : 'Score/Status'}
+            {activeTab === InspectionTab.UPCOMING ? t('inspection:fields.status') : t('inspection:fields.scoreStatus')}
           </TableHead>
-          <TableHead>Queen Seen</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          <TableHead>{t('inspection:fields.queenSeen')}</TableHead>
+          <TableHead className="text-right">{t('common:actions.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -316,7 +322,7 @@ const renderInspectionsTable = (
                   </div>
                 ) : (
                   <span className="text-muted-foreground italic">
-                    Not recorded
+                    {t('inspection:fields.notRecorded')}
                   </span>
                 )}
               </div>
@@ -343,10 +349,10 @@ const renderInspectionsTable = (
                   </PopoverTrigger>
                   <PopoverContent className="w-60">
                     <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Inspection Scores</h4>
+                      <h4 className="font-medium text-sm">{t('inspection:scores.title')}</h4>
                       <div className="grid grid-cols-[20px_1fr_auto] gap-2 items-center">
                         <UsersIcon className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm">Population</span>
+                        <span className="text-sm">{t('inspection:scores.population')}</span>
                         <span
                           className={`text-sm font-medium ${getMetricColorClass(inspection.score?.populationScore)}`}
                         >
@@ -354,7 +360,7 @@ const renderInspectionsTable = (
                         </span>
 
                         <DropletsIcon className="h-4 w-4 text-amber-500" />
-                        <span className="text-sm">Stores</span>
+                        <span className="text-sm">{t('inspection:scores.stores')}</span>
                         <span
                           className={`text-sm font-medium ${getMetricColorClass(inspection.score?.storesScore)}`}
                         >
@@ -362,7 +368,7 @@ const renderInspectionsTable = (
                         </span>
 
                         <CrownIcon className="h-4 w-4 text-purple-500" />
-                        <span className="text-sm">Queen</span>
+                        <span className="text-sm">{t('inspection:scores.queen')}</span>
                         <span
                           className={`text-sm font-medium ${getMetricColorClass(inspection.score?.queenScore)}`}
                         >
@@ -370,7 +376,7 @@ const renderInspectionsTable = (
                         </span>
 
                         <BarChartIcon className="h-4 w-4 text-green-500" />
-                        <span className="text-sm font-medium">Overall</span>
+                        <span className="text-sm font-medium">{t('inspection:scores.overall')}</span>
                         <span
                           className={`text-sm font-medium ${getMetricColorClass(inspection.score?.overallScore)}`}
                         >
@@ -383,7 +389,7 @@ const renderInspectionsTable = (
                           <div className="mt-2 pt-2 border-t">
                             <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1">
                               <ActivityIcon className="h-3 w-3" />
-                              Warnings
+                              {t('inspection:scores.warnings')}
                             </h5>
                             <ul className="mt-1 text-xs space-y-1">
                               {inspection.score.warnings.map((warning, i) => (
@@ -402,7 +408,7 @@ const renderInspectionsTable = (
             <TableCell>
               {inspection.observations?.queenSeen === null ? (
                 <span className="text-muted-foreground italic">
-                  Not recorded
+                  {t('inspection:fields.notRecorded')}
                 </span>
               ) : (
                 <span
@@ -412,7 +418,7 @@ const renderInspectionsTable = (
                       : 'text-amber-500'
                   }
                 >
-                  {inspection.observations?.queenSeen ? 'Yes' : 'No'}
+                  {inspection.observations?.queenSeen ? t('inspection:fields.yes') : t('inspection:fields.no')}
                 </span>
               )}
             </TableCell>
@@ -423,7 +429,7 @@ const renderInspectionsTable = (
                 onClick={() => navigate(`/inspections/${inspection.id}`)}
                 className="flex items-center"
               >
-                Details <ChevronRight className="ml-1 h-4 w-4" />
+                {t('inspection:actions.details')} <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </TableCell>
           </TableRow>
@@ -432,7 +438,7 @@ const renderInspectionsTable = (
     </Table>
   ) : (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <p className="text-muted-foreground mb-4">No inspections found</p>
+      <p className="text-muted-foreground mb-4">{t('inspection:list.noInspections')}</p>
     </div>
   );
 };

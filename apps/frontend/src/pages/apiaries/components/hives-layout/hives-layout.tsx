@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, X } from 'lucide-react';
@@ -14,6 +15,7 @@ const INITIAL_ROWS = 5;
 const INITIAL_COLS = 5;
 
 export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
+  const { t } = useTranslation('hive');
   const { data: allHives = [], refetch } = useHives({ apiaryId });
   const updateHiveMutation = useUpdateHive();
   const [draggedHive, setDraggedHive] = useState<HiveResponse | null>(null);
@@ -182,9 +184,9 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Hive Layout</h2>
+        <h2 className="text-lg font-semibold">{t('layout.title')}</h2>
         <p className="text-sm text-muted-foreground">
-          Grid: {gridDimensions.rows} × {gridDimensions.cols}
+          {t('layout.grid')}: {gridDimensions.rows} × {gridDimensions.cols}
         </p>
       </div>
 
@@ -208,7 +210,7 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
       {unpositionedHives.length > 0 && (
         <Card className="p-4">
           <h3 className="text-sm font-medium text-muted-foreground mb-3">
-            Unpositioned Hives
+            {t('layout.unpositionedHives')}
           </h3>
           <div className="flex flex-wrap gap-3">
             {unpositionedHives.map(hive => (
@@ -234,9 +236,9 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
 
       {allHives.length === 0 && (
         <Card className="p-8 text-center">
-          <p className="text-muted-foreground">No hives in this apiary yet.</p>
+          <p className="text-muted-foreground">{t('layout.noHivesInApiary')}</p>
           <p className="text-sm text-muted-foreground mt-2">
-            Add hives and drag them to the grid above to organize your apiary layout.
+            {t('layout.dragToOrganize')}
           </p>
         </Card>
       )}

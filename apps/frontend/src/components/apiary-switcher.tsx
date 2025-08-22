@@ -1,4 +1,5 @@
 import { ChevronsUpDown, HomeIcon, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import {
   DropdownMenu,
@@ -21,6 +22,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ApiaryResponse } from 'shared-schemas';
 
 export function ApiarySwitcher() {
+  const { t } = useTranslation('apiary');
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const { activeApiary, setActiveApiaryId, apiaries } = useApiary();
@@ -61,7 +63,7 @@ export function ApiarySwitcher() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-muted-foreground text-xs">
-              Teams
+              {t('switcher.teams')}
             </DropdownMenuLabel>
             {apiaries?.map((apiary, index) => (
               <DropdownMenuItem
@@ -87,7 +89,7 @@ export function ApiarySwitcher() {
                 <Plus className="size-4" />
               </div>
               <div className="text-muted-foreground font-medium">
-                Add apiary
+                {t('switcher.addApiary')}
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>

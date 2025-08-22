@@ -1,0 +1,28 @@
+{
+  "title": "Welcome to Hive-Pal!",
+  "subtitle": "Let's set up your beekeeping environment",
+  "steps": {
+    "welcome": "Welcome",
+    "createApiary": "Create Apiary",
+    "addHive": "Add First Hive",
+    "complete": "Complete"
+  },
+  "welcome": {
+    "title": "Start Your Beekeeping Journey",
+    "description": "Welcome to Hive-Pal, your digital beekeeping assistant! We'll guide you through setting up your first apiary and hive to get you started.",
+    "action": "Let's Get Started"
+  },
+  "apiary": {
+    "title": "Create Your First Apiary",
+    "description": "An apiary is a location where your hives are kept. Let's create your first one."
+  },
+  "hive": {
+    "title": "Add Your First Hive",
+    "description": "Now let's add your first hive to your new apiary: {{apiaryName}}."
+  },
+  "complete": {
+    "title": "Congratulations!",
+    "description": "You've successfully set up your first apiary and hive. You're ready to start tracking your beekeeping activities with Hive-Pal!",
+    "action": "Go to Dashboard"
+  }
+}

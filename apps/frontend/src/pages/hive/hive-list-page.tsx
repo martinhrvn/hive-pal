@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,7 @@ import { useHives } from '@/api/hooks';
 import { HiveResponse, HiveStatus as HiveStatusEnum } from 'shared-schemas';
 
 export const HiveListPage = () => {
+  const { t } = useTranslation(['hive', 'common']);
   const { data: hivesResponse, isLoading, refetch } = useHives();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,7 +37,7 @@ export const HiveListPage = () => {
   }, [refetch]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{t('common:status.loading')}</div>;
   }
 
   const allHives = hivesResponse ?? [];
@@ -61,7 +63,7 @@ export const HiveListPage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search hives..."
+              placeholder={t('hive:list.searchPlaceholder')}
               className="pl-8"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
@@ -74,17 +76,17 @@ export const HiveListPage = () => {
               onValueChange={value => setStatusFilter(value)}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder={t('hive:list.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All Statuses</SelectItem>
-                <SelectItem value={HiveStatusEnum.ACTIVE}>Active</SelectItem>
+                <SelectItem value="ALL">{t('hive:list.allStatuses')}</SelectItem>
+                <SelectItem value={HiveStatusEnum.ACTIVE}>{t('hive:status.active')}</SelectItem>
                 <SelectItem value={HiveStatusEnum.INACTIVE}>
-                  Inactive
+                  {t('hive:status.inactive')}
                 </SelectItem>
-                <SelectItem value={HiveStatusEnum.DEAD}>Dead</SelectItem>
-                <SelectItem value={HiveStatusEnum.SOLD}>Sold</SelectItem>
-                <SelectItem value={HiveStatusEnum.UNKNOWN}>Unknown</SelectItem>
+                <SelectItem value={HiveStatusEnum.DEAD}>{t('hive:status.dead')}</SelectItem>
+                <SelectItem value={HiveStatusEnum.SOLD}>{t('hive:status.sold')}</SelectItem>
+                <SelectItem value={HiveStatusEnum.UNKNOWN}>{t('hive:status.unknown')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -94,17 +96,20 @@ export const HiveListPage = () => {
           <Table>
             <TableCaption>
               {statusFilter === 'ALL'
-                ? 'A list of all your hives'
-                : `Showing ${hives.length} ${statusFilter.toLowerCase()} hive${hives.length !== 1 ? 's' : ''}`}
+                ? t('hive:list.caption')
+                : t(hives.length === 1 ? 'hive:list.captionFiltered' : 'hive:list.captionFilteredPlural', { 
+                    count: hives.length, 
+                    status: statusFilter.toLowerCase() 
+                  })}
             </TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Installation Date</TableHead>
-                <TableHead>Last Inspection</TableHead>
-                <TableHead>Notes</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('hive:fields.name')}</TableHead>
+                <TableHead>{t('hive:fields.status')}</TableHead>
+                <TableHead>{t('hive:fields.installationDate')}</TableHead>
+                <TableHead>{t('hive:fields.lastInspection')}</TableHead>
+                <TableHead>{t('hive:fields.notes')}</TableHead>
+                <TableHead className="text-right">{t('common:actions.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -115,13 +120,13 @@ export const HiveListPage = () => {
                     <HiveStatus status={hive.status} />
                   </TableCell>
                   <TableCell>
-                    {hive.installationDate ?? 'Not specified'}
+                    {hive.installationDate ?? t('hive:fields.notSpecified')}
                   </TableCell>
                   <TableCell>
-                    {hive.lastInspectionDate ?? 'No inspection yet'}
+                    {hive.lastInspectionDate ?? t('hive:fields.noInspectionYet')}
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate">
-                    {hive.notes ?? 'No notes'}
+                    {hive.notes ?? t('hive:fields.noNotes')}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -130,7 +135,7 @@ export const HiveListPage = () => {
                       onClick={() => navigate(`/hives/${hive.id}`)}
                       className="flex items-center"
                     >
-                      Details <ChevronRight className="ml-1 h-4 w-4" />
+                      {t('hive:actions.details')} <ChevronRight className="ml-1 h-4 w-4" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -141,12 +146,12 @@ export const HiveListPage = () => {
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <p className="text-muted-foreground mb-4">
               {searchTerm && statusFilter !== 'ALL'
-                ? `No ${statusFilter.toLowerCase()} hives found matching "${searchTerm}"`
+                ? t('hive:list.noHivesMatchingBoth', { status: statusFilter.toLowerCase(), searchTerm })
                 : searchTerm
-                  ? `No hives found matching "${searchTerm}"`
+                  ? t('hive:list.noHivesMatchingSearch', { searchTerm })
                   : statusFilter !== 'ALL'
-                    ? `No ${statusFilter.toLowerCase()} hives found`
-                    : 'No hives found'}
+                    ? t('hive:list.noHivesWithStatus', { status: statusFilter.toLowerCase() })
+                    : t('hive:list.noHives')}
             </p>
             <Button
               onClick={() => {
@@ -154,7 +159,7 @@ export const HiveListPage = () => {
                 setStatusFilter('ALL');
               }}
             >
-              Clear filters
+              {t('hive:list.clearFilters')}
             </Button>
           </div>
         )}

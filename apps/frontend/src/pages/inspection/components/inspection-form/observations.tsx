@@ -1,5 +1,6 @@
 import React from 'react';
 import { FieldPath, useFormContext, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   FormControl,
@@ -20,6 +21,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
   name,
   label,
 }: ObservationItemProps<TName>) => {
+  const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
   const [hoveredValue, setHoveredValue] = React.useState<number | null>(null);
   return (
@@ -51,7 +53,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                         e.stopPropagation();
                         field.onChange(0);
                       }}
-                      aria-label="Rate as 0"
+                      aria-label={t('observations.rateAs', { value: 0 })}
                     >
                       0
                     </button>
@@ -80,7 +82,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                               field.onChange(fullValue);
                               setHoveredValue(null);
                             }}
-                            aria-label={`Rate as ${fullValue}`}
+                            aria-label={t('observations.rateAs', { value: fullValue })}
                           >
                             {hoveredValue === fullValue && hoveredValue}
                           </button>
@@ -104,7 +106,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                         e.stopPropagation();
                         field.onChange(undefined);
                       }}
-                      aria-label="Clear rating"
+                      aria-label={t('observations.clearRating')}
                     >
                       <X size={16} />
                     </Button>
@@ -121,12 +123,13 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 };
 
 export const ObservationsSection: React.FC = () => {
+  const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
   const queenCells = useWatch({ name: 'observations.queenCells', control });
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Observations</h3>
+        <h3 className="text-lg font-medium">{t('observations.title')}</h3>
       </div>
 
       <div className={'grid md:grid-cols-3 grid-cols-2 space-2'}>
@@ -141,7 +144,7 @@ export const ObservationsSection: React.FC = () => {
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormLabel>Queen seen</FormLabel>
+              <FormLabel>{t('observations.queenSeen')}</FormLabel>
               <FormMessage />
             </FormItem>
           )}
@@ -151,33 +154,33 @@ export const ObservationsSection: React.FC = () => {
           <ObservationItem
             key={'strength'}
             name={'observations.strength'}
-            label={'Strength'}
+            label={t('observations.strength')}
           />
           <ObservationItem
             key={'cappedBrood'}
             name={'observations.cappedBrood'}
-            label={'Capped Brood'}
+            label={t('observations.cappedBrood')}
           />
           <ObservationItem
             key={'uncappedBrood'}
             name={'observations.uncappedBrood'}
-            label={'Uncapped Brood'}
+            label={t('observations.uncappedBrood')}
           />
           <ObservationItem
             key={'honeyStores'}
             name={'observations.honeyStores'}
-            label={'Honey Stores'}
+            label={t('observations.honeyStores')}
           />
           <ObservationItem
             key={'pollenStores'}
             name={'observations.pollenStores'}
-            label={'Pollen Stores'}
+            label={t('observations.pollenStores')}
           />
 
           <ObservationItem
             key={'queenCells'}
             name={'observations.queenCells'}
-            label={'Queen Cells'}
+            label={t('observations.queenCells')}
           />
           {(queenCells ?? 0) > 0 && (
             <div className={'grid grid-cols-2 space-x-2'}>
@@ -192,7 +195,7 @@ export const ObservationsSection: React.FC = () => {
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel>Swarm cells</FormLabel>
+                    <FormLabel>{t('observations.swarmCells')}</FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -208,7 +211,7 @@ export const ObservationsSection: React.FC = () => {
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel>Supersedure cells</FormLabel>
+                    <FormLabel>{t('observations.supersedureCells')}</FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}

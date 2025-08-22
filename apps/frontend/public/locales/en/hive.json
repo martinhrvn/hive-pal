@@ -1,0 +1,99 @@
+{
+  "title": "Hives",
+  "singular": "Hive",
+  "plural": "Hives",
+  "list": {
+    "title": "Hive List",
+    "caption": "A list of all your hives",
+    "captionFiltered": "Showing {{count}} {{status}} hive",
+    "captionFilteredPlural": "Showing {{count}} {{status}} hives",
+    "searchPlaceholder": "Search hives...",
+    "filterByStatus": "Filter by status",
+    "allStatuses": "All Statuses",
+    "noHives": "No hives found",
+    "noHivesMatchingBoth": "No {{status}} hives found matching \"{{searchTerm}}\"",
+    "noHivesMatchingSearch": "No hives found matching \"{{searchTerm}}\"",
+    "noHivesWithStatus": "No {{status}} hives found",
+    "clearFilters": "Clear filters",
+    "createFirst": "Create your first hive"
+  },
+  "create": {
+    "title": "Create New Hive",
+    "success": "Hive created successfully"
+  },
+  "edit": {
+    "title": "Edit Hive",
+    "success": "Hive updated successfully"
+  },
+  "delete": {
+    "confirm": "Are you sure you want to delete this hive?",
+    "success": "Hive deleted successfully"
+  },
+  "fields": {
+    "name": "Name",
+    "label": "Label",
+    "number": "Hive Number",
+    "type": "Hive Type",
+    "status": "Status",
+    "location": "Location",
+    "notes": "Notes",
+    "queen": "Queen",
+    "lastInspection": "Last Inspection",
+    "installationDate": "Installation Date",
+    "established": "Established",
+    "boxes": "Boxes",
+    "frames": "Frames",
+    "position": "Position",
+    "apiary": "Apiary",
+    "notSpecified": "Not specified",
+    "noInspectionYet": "No inspection yet",
+    "noNotes": "No notes"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "queenless": "Queenless",
+    "weak": "Weak",
+    "strong": "Strong",
+    "dead": "Dead",
+    "sold": "Sold",
+    "unknown": "Unknown",
+    "archived": "Archived"
+  },
+  "actions": {
+    "inspect": "Inspect",
+    "addBox": "Add Box",
+    "removeBox": "Remove Box",
+    "addQueen": "Add Queen",
+    "archive": "Archive",
+    "restore": "Restore",
+    "details": "Details",
+    "refreshData": "Refresh Data",
+    "exportCSV": "Export to CSV",
+    "print": "Print Hive List",
+    "share": "Share Hive List",
+    "dataOptions": "Data Options",
+    "createNewHive": "Create New Hive"
+  },
+  "form": {
+    "selectHive": "Select a hive",
+    "hivePlaceholder": "hive 01",
+    "notesPlaceholder": "Good hive",
+    "pickDate": "Pick a date",
+    "submit": "Submit"
+  },
+  "weather": {
+    "forecast": "Weather Forecast"
+  },
+  "messages": {
+    "exportComingSoon": "Export functionality coming soon",
+    "shareComingSoon": "Share functionality coming soon"
+  },
+  "layout": {
+    "title": "Hive Layout",
+    "grid": "Grid",
+    "unpositionedHives": "Unpositioned Hives",
+    "noHivesInApiary": "No hives in this apiary yet.",
+    "dragToOrganize": "Add hives and drag them to the grid above to organize your apiary layout."
+  }
+}

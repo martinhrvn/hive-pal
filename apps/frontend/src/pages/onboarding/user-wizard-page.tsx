@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -23,8 +24,14 @@ import { useCreateApiary, useCreateHive } from '@/api/hooks';
 export const UserWizardPage = () => {
   const [step, setStep] = useState(0);
   const [apiary, setApiary] = useState<ApiaryResponse | null>(null);
+  const { t } = useTranslation('onboarding');
 
-  const steps = ['Welcome', 'Create Apiary', 'Add First Hive', 'Complete'];
+  const steps = [
+    t('steps.welcome'),
+    t('steps.createApiary'),
+    t('steps.addHive'),
+    t('steps.complete')
+  ];
 
   const apiaryMutation = useCreateApiary();
   const hiveMutation = useCreateHive();
@@ -67,9 +74,9 @@ export const UserWizardPage = () => {
     <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 mt-10 p-4">
       <Card className="w-full max-w-3xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to Hive-Pal!</CardTitle>
+          <CardTitle className="text-2xl">{t('title')}</CardTitle>
           <CardDescription>
-            Let's set up your beekeeping environment
+            {t('subtitle')}
           </CardDescription>
           <div className="mt-6">
             <Stepper steps={steps} currentStep={step} />
@@ -87,12 +94,10 @@ export const UserWizardPage = () => {
                 />
               </div>
               <h3 className="text-xl font-semibold mb-4">
-                Start Your Beekeeping Journey
+                {t('welcome.title')}
               </h3>
               <p className="mb-6 text-muted-foreground max-w-lg mx-auto">
-                Welcome to Hive-Pal, your digital beekeeping assistant! We'll
-                guide you through setting up your first apiary and hive to get
-                you started.
+                {t('welcome.description')}
               </p>
             </div>
           )}
@@ -100,11 +105,10 @@ export const UserWizardPage = () => {
           {step === 1 && (
             <div className="py-4">
               <h3 className="text-xl font-semibold mb-4">
-                Create Your First Apiary
+                {t('apiary.title')}
               </h3>
               <p className="mb-6 text-muted-foreground">
-                An apiary is a location where your hives are kept. Let's create
-                your first one.
+                {t('apiary.description')}
               </p>
               <ApiaryForm
                 onSubmit={handleApiarySubmit}
@@ -116,10 +120,10 @@ export const UserWizardPage = () => {
           {step === 2 && apiary && (
             <div className="py-4">
               <h3 className="text-xl font-semibold mb-4">
-                Add Your First Hive
+                {t('hive.title')}
               </h3>
               <p className="mb-6 text-muted-foreground">
-                Now let's add your first hive to your new apiary: {apiary.name}.
+                {t('hive.description', { apiaryName: apiary.name })}
               </p>
               <HiveForm
                 onSubmit={handleHiveSubmit}
@@ -135,11 +139,9 @@ export const UserWizardPage = () => {
                   <CheckIcon className="h-12 w-12 text-green-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Congratulations!</h3>
+              <h3 className="text-xl font-semibold mb-4">{t('complete.title')}</h3>
               <p className="mb-6 text-muted-foreground max-w-lg mx-auto">
-                You've successfully set up your first apiary and hive. You're
-                ready to start tracking your beekeeping activities with
-                Hive-Pal!
+                {t('complete.description')}
               </p>
             </div>
           )}
@@ -149,7 +151,7 @@ export const UserWizardPage = () => {
           {step === 0 && (
             <div className="w-full">
               <Button onClick={handleStart} className="w-full">
-                Let's Get Started
+                {t('welcome.action')}
               </Button>
             </div>
           )}
@@ -157,7 +159,7 @@ export const UserWizardPage = () => {
           {step === 3 && (
             <div className="w-full">
               <Button onClick={handleFinish} className="w-full">
-                Go to Dashboard
+                {t('complete.action')}
               </Button>
             </div>
           )}

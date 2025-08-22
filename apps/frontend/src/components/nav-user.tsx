@@ -1,6 +1,7 @@
 'use client';
 
-import { Bell, ChevronsUpDown, LogOut } from 'lucide-react';
+import { Bell, ChevronsUpDown, LogOut, Languages } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -10,6 +11,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -20,9 +24,20 @@ import {
 } from '@/components/ui/sidebar';
 import { useUserProfile } from '@/api/hooks/useAuth';
 
+const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
+];
+
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { data: user, isLoading } = useUserProfile();
+  const { t, i18n } = useTranslation('common');
+
+  const handleLanguageChange = (languageCode: string) => {
+    i18n.changeLanguage(languageCode);
+    localStorage.setItem('language', languageCode);
+  };
   
   if (isLoading || !user) {
     return null;
@@ -69,13 +84,31 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Bell />
-                Notifications
+                {t('actions.notifications')}
               </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Languages />
+                  {t('actions.language')}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  {LANGUAGES.map((language) => (
+                    <DropdownMenuItem
+                      key={language.code}
+                      onClick={() => handleLanguageChange(language.code)}
+                      className={i18n.language === language.code ? 'bg-accent' : ''}
+                    >
+                      <span className="mr-2">{language.flag}</span>
+                      {language.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut />
-              Log out
+              {t('actions.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

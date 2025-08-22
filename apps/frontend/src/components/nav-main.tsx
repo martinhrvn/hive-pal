@@ -1,4 +1,5 @@
 import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Collapsible,
@@ -30,13 +31,14 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const { t } = useTranslation('common');
   return (
     <SidebarGroup>
       <SidebarMenuItem>
         <SidebarMenuButton asChild>
           <a href="/" className="flex items-center">
             <DashboardIcon />
-            <span>Dashboard</span>
+            <span>{t('navigation.dashboard')}</span>
           </a>
         </SidebarMenuButton>
       </SidebarMenuItem>
