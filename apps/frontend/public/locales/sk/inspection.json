@@ -1,0 +1,93 @@
+{
+  "title": "Prehliadky",
+  "singular": "Prehliadka",
+  "plural": "Prehliadky",
+  "tabs": {
+    "all": "Všetky",
+    "recent": "Nedávne",
+    "upcoming": "Nadchádzajúce"
+  },
+  "list": {
+    "title": "Zoznam prehliadok",
+    "allInspections": "Všetky prehliadky",
+    "recentInspections": "Nedávne prehliadky",
+    "upcomingInspections": "Nadchádzajúce prehliadky",
+    "searchPlaceholder": "Hľadať prehliadky...",
+    "filterByHive": "Filtrovať podľa úľa",
+    "allHives": "Všetky úle",
+    "noInspections": "Nenašli sa žiadne prehliadky",
+    "unknownHive": "Neznámy úľ"
+  },
+  "status": {
+    "scheduled": "Naplánované",
+    "completed": "Dokončené",
+    "overdue": "Po termíne",
+    "cancelled": "Zrušené"
+  },
+  "fields": {
+    "dateTime": "Dátum a čas",
+    "hive": "Úľ",
+    "weather": "Počasie",
+    "scoreStatus": "Skóre/Stav",
+    "status": "Stav",
+    "queenSeen": "Matka videná",
+    "temperature": "Teplota",
+    "weatherConditions": "Poveternostné podmienky",
+    "notRecorded": "Nezaznamenané",
+    "yes": "Áno",
+    "no": "Nie"
+  },
+  "scores": {
+    "title": "Skóre prehliadky",
+    "population": "Populácia",
+    "stores": "Zásoby",
+    "queen": "Matka",
+    "overall": "Celkové",
+    "warnings": "Upozornenia"
+  },
+  "observations": {
+    "title": "Pozorovania",
+    "queenSeen": "Matka videná",
+    "strength": "Sila",
+    "cappedBrood": "Zavíčkovaný plod",
+    "uncappedBrood": "Nezavíčkovaný plod",
+    "honeyStores": "Zásoby medu",
+    "pollenStores": "Zásoby peľu",
+    "queenCells": "Matečníky",
+    "swarmCells": "Rojové matečníky",
+    "supersedureCells": "Tichá výmena matky",
+    "clearRating": "Vymazať hodnotenie",
+    "rateAs": "Ohodnotiť ako {{value}}"
+  },
+  "actions": {
+    "details": "Podrobnosti",
+    "createInspection": "Vytvoriť prehliadku",
+    "scheduleInspection": "Naplánovať prehliadku",
+    "refreshData": "Obnoviť údaje",
+    "exportCSV": "Exportovať do CSV",
+    "printList": "Tlačiť zoznam",
+    "shareList": "Zdieľať zoznam",
+    "dataOptions": "Možnosti údajov"
+  },
+  "sidebar": {
+    "actions": "Akcie",
+    "views": "Zobrazenia",
+    "allInspections": "Všetky prehliadky",
+    "recentInspections": "Nedávne prehliadky",
+    "upcomingInspections": "Nadchádzajúce prehliadky",
+    "printInspectionList": "Tlačiť zoznam prehliadok",
+    "shareInspectionList": "Zdieľať zoznam prehliadok"
+  },
+  "messages": {
+    "exportComingSoon": "Funkcia exportu bude čoskoro k dispozícii",
+    "shareComingSoon": "Funkcia zdieľania bude čoskoro k dispozícii"
+  },
+  "weather": {
+    "sunny": "Slnečno",
+    "clear": "Jasno",
+    "partlyCloudy": "Polojasno",
+    "cloudy": "Oblačno",
+    "overcast": "Zamračené",
+    "rain": "Dážď"
+  }
+}

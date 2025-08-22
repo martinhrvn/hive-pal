@@ -1,0 +1,93 @@
+{
+  "title": "Inspections",
+  "singular": "Inspection",
+  "plural": "Inspections",
+  "tabs": {
+    "all": "All",
+    "recent": "Recent",
+    "upcoming": "Upcoming"
+  },
+  "list": {
+    "title": "Inspection List",
+    "allInspections": "All Inspections",
+    "recentInspections": "Recent Inspections",
+    "upcomingInspections": "Upcoming Inspections",
+    "searchPlaceholder": "Search inspections...",
+    "filterByHive": "Filter by hive",
+    "allHives": "All Hives",
+    "noInspections": "No inspections found",
+    "unknownHive": "Unknown Hive"
+  },
+  "status": {
+    "scheduled": "Scheduled",
+    "completed": "Completed",
+    "overdue": "Overdue",
+    "cancelled": "Cancelled"
+  },
+  "fields": {
+    "dateTime": "Date & Time",
+    "hive": "Hive",
+    "weather": "Weather",
+    "scoreStatus": "Score/Status",
+    "status": "Status",
+    "queenSeen": "Queen Seen",
+    "temperature": "Temperature",
+    "weatherConditions": "Weather Conditions",
+    "notRecorded": "Not recorded",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "scores": {
+    "title": "Inspection Scores",
+    "population": "Population",
+    "stores": "Stores",
+    "queen": "Queen",
+    "overall": "Overall",
+    "warnings": "Warnings"
+  },
+  "observations": {
+    "title": "Observations",
+    "queenSeen": "Queen seen",
+    "strength": "Strength",
+    "cappedBrood": "Capped Brood",
+    "uncappedBrood": "Uncapped Brood",
+    "honeyStores": "Honey Stores",
+    "pollenStores": "Pollen Stores",
+    "queenCells": "Queen Cells",
+    "swarmCells": "Swarm cells",
+    "supersedureCells": "Supersedure cells",
+    "clearRating": "Clear rating",
+    "rateAs": "Rate as {{value}}"
+  },
+  "actions": {
+    "details": "Details",
+    "createInspection": "Create Inspection",
+    "scheduleInspection": "Schedule Inspection",
+    "refreshData": "Refresh Data",
+    "exportCSV": "Export to CSV",
+    "printList": "Print List",
+    "shareList": "Share List",
+    "dataOptions": "Data Options"
+  },
+  "sidebar": {
+    "actions": "Actions",
+    "views": "Views",
+    "allInspections": "All Inspections",
+    "recentInspections": "Recent Inspections",
+    "upcomingInspections": "Upcoming Inspections",
+    "printInspectionList": "Print Inspection List",
+    "shareInspectionList": "Share Inspection List"
+  },
+  "messages": {
+    "exportComingSoon": "Export functionality coming soon",
+    "shareComingSoon": "Share functionality coming soon"
+  },
+  "weather": {
+    "sunny": "Sunny",
+    "clear": "Clear",
+    "partlyCloudy": "Partly Cloudy",
+    "cloudy": "Cloudy",
+    "overcast": "Overcast",
+    "rain": "Rain"
+  }
+}
