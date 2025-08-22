@@ -1,0 +1,67 @@
+{
+  "title": "Matky",
+  "singular": "Matka",
+  "plural": "Matky",
+  "create": {
+    "title": "Nová matka",
+    "button": "Vytvoriť matku",
+    "success": "Matka bola úspešne vytvorená"
+  },
+  "edit": {
+    "title": "Upraviť matku",
+    "success": "Matka bola úspešne aktualizovaná"
+  },
+  "delete": {
+    "confirm": "Naozaj chcete vymazať túto matku?",
+    "success": "Matka bola úspešne vymazaná"
+  },
+  "fields": {
+    "hive": "Úľ",
+    "year": "Rok",
+    "color": "Farba",
+    "marking": "Označenie",
+    "source": "Zdroj",
+    "status": "Stav",
+    "installationDate": "Dátum inštalácie",
+    "replacedDate": "Dátum výmeny (voliteľné)",
+    "installedOn": "Inštalovaná {{date}}",
+    "via": "cez {{source}}"
+  },
+  "colors": {
+    "blue": "Modrá",
+    "green": "Zelená",
+    "red": "Červená",
+    "yellow": "Žltá",
+    "purple": "Fialová",
+    "indigo": "Indigová",
+    "pink": "Ružová",
+    "gray": "Sivá",
+    "black": "Čierna",
+    "white": "Biela"
+  },
+  "status": {
+    "active": "Aktívna",
+    "replaced": "Vymenená",
+    "dead": "Mŕtva",
+    "unknown": "Neznáma"
+  },
+  "actions": {
+    "replaceQueen": "Vymeniť matku",
+    "markAsDead": "Označiť ako mŕtvu",
+    "markAsLostMissing": "Označiť ako stratenú/chýbajúcu",
+    "addQueen": "Pridať matku"
+  },
+  "form": {
+    "selectHive": "Vybrať úľ",
+    "enterYear": "Zadať rok",
+    "selectColor": "Vybrať farbu",
+    "enterMarking": "Zadať označenie matky",
+    "enterSource": "Zadať zdroj matky",
+    "selectStatus": "Vybrať stav",
+    "pickDate": "Vybrať dátum"
+  },
+  "information": {
+    "noActiveQueen": "Nenašla sa žiadna aktívna matka",
+    "hasActiveQueen": "Tento úľ už má aktívnu matku. Výmenou matky sa súčasná matka označí ako vymenená."
+  }
+}

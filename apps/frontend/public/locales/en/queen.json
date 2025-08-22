@@ -1,0 +1,67 @@
+{
+  "title": "Queens",
+  "singular": "Queen",
+  "plural": "Queens",
+  "create": {
+    "title": "New Queen",
+    "button": "Create Queen",
+    "success": "Queen created successfully"
+  },
+  "edit": {
+    "title": "Edit Queen",
+    "success": "Queen updated successfully"
+  },
+  "delete": {
+    "confirm": "Are you sure you want to delete this queen?",
+    "success": "Queen deleted successfully"
+  },
+  "fields": {
+    "hive": "Hive",
+    "year": "Year",
+    "color": "Color",
+    "marking": "Marking",
+    "source": "Source",
+    "status": "Status",
+    "installationDate": "Installation Date",
+    "replacedDate": "Replaced Date (Optional)",
+    "installedOn": "Installed on {{date}}",
+    "via": "via {{source}}"
+  },
+  "colors": {
+    "blue": "Blue",
+    "green": "Green",
+    "red": "Red",
+    "yellow": "Yellow",
+    "purple": "Purple",
+    "indigo": "Indigo",
+    "pink": "Pink",
+    "gray": "Gray",
+    "black": "Black",
+    "white": "White"
+  },
+  "status": {
+    "active": "Active",
+    "replaced": "Replaced",
+    "dead": "Dead",
+    "unknown": "Unknown"
+  },
+  "actions": {
+    "replaceQueen": "Replace Queen",
+    "markAsDead": "Mark as Dead",
+    "markAsLostMissing": "Mark as Lost/Missing",
+    "addQueen": "Add Queen"
+  },
+  "form": {
+    "selectHive": "Select a hive",
+    "enterYear": "Enter year",
+    "selectColor": "Select color",
+    "enterMarking": "Enter queen marking",
+    "enterSource": "Enter queen source",
+    "selectStatus": "Select status",
+    "pickDate": "Pick a date"
+  },
+  "information": {
+    "noActiveQueen": "No active queen found",
+    "hasActiveQueen": "This hive already has an active queen. Replacing the queen will mark the current queen as replaced."
+  }
+}
