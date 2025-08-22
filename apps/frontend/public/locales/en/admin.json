@@ -1,0 +1,36 @@
+{
+  "title": "User Management",
+  "description": "Manage users and reset passwords",
+  "table": {
+    "email": "Email",
+    "name": "Name",
+    "role": "Role",
+    "passwordChangeRequired": "Password Change Required",
+    "createdAt": "Created At",
+    "actions": "Actions"
+  },
+  "actions": {
+    "resetPassword": "Reset Password"
+  },
+  "resetPasswordDialog": {
+    "title": "Reset User Password",
+    "description": "Set a temporary password for {email}. The user will be required to change their password on next login.",
+    "tempPasswordLabel": "Temporary Password",
+    "tempPasswordPlaceholder": "Enter temporary password",
+    "minCharacters": "Minimum 6 characters",
+    "submit": "Reset Password"
+  },
+  "messages": {
+    "loadingUsers": "Loading users...",
+    "noUsers": "No users found",
+    "resetSuccess": "Password reset successful! The user will be required to change their password on next login.",
+    "failedToFetch": "Failed to fetch users",
+    "failedToReset": "Failed to reset password",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "status": {
+    "yes": "Yes",
+    "no": "No",
+    "dash": "-"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Správa používateľov",
+  "description": "Spravovať používateľov a resetovať heslá",
+  "table": {
+    "email": "Email",
+    "name": "Meno",
+    "role": "Rola",
+    "passwordChangeRequired": "Vyžaduje zmenu hesla",
+    "createdAt": "Vytvorené",
+    "actions": "Akcie"
+  },
+  "actions": {
+    "resetPassword": "Resetovať heslo"
+  },
+  "resetPasswordDialog": {
+    "title": "Resetovať heslo používateľa",
+    "description": "Nastavte dočasné heslo pre {email}. Používateľ bude musieť zmeniť svoje heslo pri ďalšom prihlásení.",
+    "tempPasswordLabel": "Dočasné heslo",
+    "tempPasswordPlaceholder": "Zadajte dočasné heslo",
+    "minCharacters": "Minimálne 6 znakov",
+    "submit": "Resetovať heslo"
+  },
+  "messages": {
+    "loadingUsers": "Načítavam používateľov...",
+    "noUsers": "Nenašli sa žiadni používatelia",
+    "resetSuccess": "Reset hesla úspešný! Používateľ bude musieť zmeniť svoje heslo pri ďalšom prihlásení.",
+    "failedToFetch": "Nepodarilo sa načítať používateľov",
+    "failedToReset": "Nepodarilo sa resetovať heslo",
+    "unexpectedError": "Nastala neočakávaná chyba"
+  },
+  "status": {
+    "yes": "Áno",
+    "no": "Nie",
+    "dash": "-"
+  }
+}
