@@ -4,26 +4,21 @@ import {
   subWeeks,
   format,
   formatDistanceToNow,
-  parseISO,
-  isPast,
-  isToday,
 } from 'date-fns';
 import { useState, useCallback } from 'react';
 import {
   CalendarIcon,
-  ChevronRightIcon,
   ActivityIcon,
   DropletsIcon,
   EggIcon,
   ChevronDownIcon,
   FileTextIcon,
-  AlertTriangle,
   Clock,
   MoreVertical,
   Eye,
   Edit,
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

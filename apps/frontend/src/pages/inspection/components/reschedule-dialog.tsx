@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, addDays, isSameDay, startOfDay, isToday } from 'date-fns';
+import { format, addDays, isSameDay, startOfDay } from 'date-fns';
 import { 
   Calendar, 
   CalendarPlus,

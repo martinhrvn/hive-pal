@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format, isToday, isPast, parseISO } from 'date-fns';
-import { 
-  Calendar, 
-  CheckCircle, 
-  X, 
-  Clock, 
+import {
+  Calendar,
+  CheckCircle,
+  X,
+  Clock,
   AlertTriangle,
   Home,
   Cloud,
@@ -14,9 +14,9 @@ import {
   Sun,
   Thermometer,
   MoreVertical,
-  CalendarClock
+  CalendarClock,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -47,24 +47,24 @@ interface ScheduledInspectionCardProps {
 
 const getWeatherIcon = (condition: string | null | undefined) => {
   if (!condition) return <Thermometer className="h-4 w-4 text-gray-500" />;
-  
+
   const c = condition.toLowerCase();
-  if (c.includes('clear') || c.includes('sunny')) return <Sun className="h-4 w-4 text-yellow-500" />;
-  if (c.includes('rain')) return <CloudRain className="h-4 w-4 text-blue-500" />;
+  if (c.includes('clear') || c.includes('sunny'))
+    return <Sun className="h-4 w-4 text-yellow-500" />;
+  if (c.includes('rain'))
+    return <CloudRain className="h-4 w-4 text-blue-500" />;
   return <Cloud className="h-4 w-4 text-gray-400" />;
 };
 
-export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = ({
-  inspection,
-  hiveName,
-  onUpdate,
-}) => {
+export const ScheduledInspectionCard: React.FC<
+  ScheduledInspectionCardProps
+> = ({ inspection, hiveName, onUpdate }) => {
   const { t } = useTranslation(['inspection']);
   const navigate = useNavigate();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
-  const { mutate: updateInspection, isLoading } = useUpdateInspection();
-  
+  const { mutate: updateInspection, isPending } = useUpdateInspection();
+
   const inspectionDate = parseISO(inspection.date as string);
   const isOverdue = isPast(inspectionDate) && !isToday(inspectionDate);
   const isTodayInspection = isToday(inspectionDate);
@@ -86,7 +86,7 @@ export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = (
           setShowCancelDialog(false);
           onUpdate?.();
         },
-      }
+      },
     );
   };
 
@@ -104,7 +104,7 @@ export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = (
           setShowRescheduleDialog(false);
           onUpdate?.();
         },
-      }
+      },
     );
   };
 
@@ -119,14 +119,20 @@ export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = (
     }
     if (isTodayInspection) {
       return (
-        <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1">
+        <Badge
+          variant="default"
+          className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1"
+        >
           <Clock className="h-3 w-3" />
           {t('inspection:scheduled.today')}
         </Badge>
       );
     }
     return (
-      <Badge variant="outline" className="text-blue-600 border-blue-600 flex items-center gap-1">
+      <Badge
+        variant="outline"
+        className="text-blue-600 border-blue-600 flex items-center gap-1"
+      >
         <Calendar className="h-3 w-3" />
         {t('inspection:status.scheduled')}
       </Badge>
@@ -135,11 +141,13 @@ export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = (
 
   return (
     <>
-      <Card className={cn(
-        'transition-all hover:shadow-md',
-        isOverdue && 'border-red-200 bg-red-50 dark:bg-red-950/20',
-        isTodayInspection && 'border-blue-200 bg-blue-50 dark:bg-blue-950/20'
-      )}>
+      <Card
+        className={cn(
+          'transition-all hover:shadow-md',
+          isOverdue && 'border-red-200 bg-red-50 dark:bg-red-950/20',
+          isTodayInspection && 'border-blue-200 bg-blue-50 dark:bg-blue-950/20',
+        )}
+      >
         <div className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -153,36 +161,40 @@ export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = (
                 </span>
                 {getStatusBadge()}
               </div>
-              
+
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Home className="h-3 w-3" />
                   <span>{hiveName}</span>
                 </div>
-                
+
                 {(inspection.temperature || inspection.weatherConditions) && (
                   <div className="flex items-center gap-1">
                     {getWeatherIcon(inspection.weatherConditions)}
-                    {inspection.temperature && <span>{inspection.temperature}°</span>}
-                    {inspection.weatherConditions && <span>{inspection.weatherConditions}</span>}
+                    {inspection.temperature && (
+                      <span>{inspection.temperature}°</span>
+                    )}
+                    {inspection.weatherConditions && (
+                      <span>{inspection.weatherConditions}</span>
+                    )}
                   </div>
                 )}
               </div>
-              
+
               {inspection.notes && (
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-1">
                   {inspection.notes}
                 </p>
               )}
             </div>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-8 w-8 p-0"
-                  disabled={isLoading}
+                  disabled={isPending}
                 >
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">Open menu</span>
@@ -198,7 +210,7 @@ export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = (
                   {t('inspection:actions.reschedule')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setShowCancelDialog(true)}
                   className="text-red-600 focus:text-red-600"
                 >
@@ -214,25 +226,24 @@ export const ScheduledInspectionCard: React.FC<ScheduledInspectionCardProps> = (
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('inspection:dialogs.cancelInspection.title')}</DialogTitle>
+            <DialogTitle>
+              {t('inspection:dialogs.cancelInspection.title')}
+            </DialogTitle>
             <DialogDescription>
               {t('inspection:dialogs.cancelInspection.description', {
                 hiveName,
-                date: format(inspectionDate, 'EEEE, MMMM d, yyyy')
+                date: format(inspectionDate, 'EEEE, MMMM d, yyyy'),
               })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => setShowCancelDialog(false)}
             >
               {t('inspection:dialogs.cancelInspection.keepInspection')}
             </Button>
-            <Button 
-              onClick={handleCancelInspection}
-              variant="destructive"
-            >
+            <Button onClick={handleCancelInspection} variant="destructive">
               {t('inspection:dialogs.cancelInspection.cancelInspection')}
             </Button>
           </DialogFooter>
