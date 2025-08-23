@@ -26,7 +26,7 @@ export const BoxStack = ({
     // Moving up in the stack means increasing position (going higher physically)
     const boxToMove = boxes.find(b => b.id === boxId);
     if (!boxToMove || boxToMove.position >= boxes.length - 1) return;
-    
+
     const newBoxes = boxes.map(box => {
       if (box.id === boxId) {
         return { ...box, position: box.position + 1 };
@@ -35,7 +35,7 @@ export const BoxStack = ({
       }
       return box;
     });
-    
+
     onReorder(newBoxes);
   };
 
@@ -43,7 +43,7 @@ export const BoxStack = ({
     // Moving down in the stack means decreasing position (going lower physically)
     const boxToMove = boxes.find(b => b.id === boxId);
     if (!boxToMove || boxToMove.position <= 0) return;
-    
+
     const newBoxes = boxes.map(box => {
       if (box.id === boxId) {
         return { ...box, position: box.position - 1 };
@@ -52,7 +52,7 @@ export const BoxStack = ({
       }
       return box;
     });
-    
+
     onReorder(newBoxes);
   };
 
@@ -60,20 +60,20 @@ export const BoxStack = ({
     return (
       <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg">
         <p className="text-muted-foreground">
-          {isEditing ? 'Click "Add Box" to start building your hive' : 'No boxes configured yet'}
+          {isEditing
+            ? 'Click "Add Box" to start building your hive'
+            : 'No boxes configured yet'}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center space-y-0 py-4">
-      {sortedBoxes.map((box, index) => (
+    <div className="flex flex-col items-center space-y-1 py-4">
+      {sortedBoxes.map(box => (
         <div key={box.id} className="flex flex-col items-center">
           {/* Show queen excluder above this box if hasExcluder is true */}
-          {box.hasExcluder && (
-            <QueenExcluder />
-          )}
+          {box.hasExcluder && <QueenExcluder />}
           <BoxItem
             box={box}
             isSelected={selectedBoxId === box.id}

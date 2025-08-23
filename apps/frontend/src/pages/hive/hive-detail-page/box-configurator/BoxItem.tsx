@@ -18,20 +18,20 @@ interface BoxItemProps {
 
 const getBoxHeight = (variant?: BoxVariantEnum) => {
   if (!variant) return 'h-20';
-  
+
   const deepVariants = [
     BoxVariantEnum.LANGSTROTH_DEEP,
     BoxVariantEnum.B_DEEP,
     BoxVariantEnum.NATIONAL_DEEP,
     BoxVariantEnum.DADANT,
   ];
-  
+
   const shallowVariants = [
     BoxVariantEnum.LANGSTROTH_SHALLOW,
     BoxVariantEnum.B_SHALLOW,
     BoxVariantEnum.NATIONAL_SHALLOW,
   ];
-  
+
   if (deepVariants.includes(variant)) return 'h-28';
   if (shallowVariants.includes(variant)) return 'h-20';
   return 'h-24'; // Default for WARRE, TOP_BAR, CUSTOM
@@ -46,9 +46,18 @@ const getBoxTypeLabel = (type: string) => {
   return labels[type] || type;
 };
 
+const getBoxTypeBadgeClass = (type: string) => {
+  const classes: Record<string, string> = {
+    BROOD: 'bg-green-100 text-green-800 border-green-200',
+    HONEY: 'bg-amber-100 text-amber-800 border-amber-200',
+    FEEDER: 'bg-blue-100 text-blue-800 border-blue-200',
+  };
+  return classes[type] || 'bg-gray-100 text-gray-800 border-gray-200';
+};
+
 const getVariantLabel = (variant?: BoxVariantEnum) => {
   if (!variant) return '';
-  
+
   const labels: Record<BoxVariantEnum, string> = {
     [BoxVariantEnum.LANGSTROTH_DEEP]: 'Langstroth Deep',
     [BoxVariantEnum.LANGSTROTH_SHALLOW]: 'Langstroth Shallow',
@@ -77,14 +86,14 @@ export const BoxItem = ({
 }: BoxItemProps) => {
   const height = getBoxHeight(box.variant);
   const defaultColor = '#CD853F'; // Default wood color
-  
+
   return (
     <div
       className={cn(
-        'relative w-64 rounded-md border-2 cursor-pointer transition-all',
+        'relative w-64 rounded border-2 cursor-pointer transition-all',
         height,
         isSelected && isEditing ? 'ring-2 ring-primary ring-offset-2' : '',
-        isEditing ? 'hover:shadow-lg' : ''
+        isEditing ? 'hover:shadow-lg' : '',
       )}
       style={{
         backgroundColor: box.color || defaultColor,
@@ -92,26 +101,32 @@ export const BoxItem = ({
       }}
       onClick={isEditing ? onSelect : undefined}
     >
-      {/* Box content */}
-      <div className="absolute inset-0 flex flex-col justify-center items-center p-2">
-        <div className="flex items-center gap-2 mb-1">
-          <Package className="h-4 w-4 text-white/80" />
-          <span className="text-white font-medium text-sm">
-            {getBoxTypeLabel(box.type)}
+      {/* Type badge in upper right */}
+      <div className="absolute top-2 right-2">
+        <Badge 
+          variant="secondary" 
+          className={cn('font-semibold border', getBoxTypeBadgeClass(box.type))}
+        >
+          {getBoxTypeLabel(box.type)}
+        </Badge>
+      </div>
+
+      {/* Frame count in bottom left */}
+      <div className="absolute bottom-2 left-2 flex items-center gap-1">
+        <Package className="h-4 w-4 text-white/90" />
+        <span className="text-white font-semibold text-sm">
+          {box.frameCount}/{box.maxFrameCount || 10}
+        </span>
+      </div>
+
+      {/* Variant type in bottom right */}
+      {box.variant && (
+        <div className="absolute bottom-2 right-2">
+          <span className="text-white/80 text-xs font-medium">
+            {getVariantLabel(box.variant)}
           </span>
         </div>
-        
-        <div className="flex gap-2 flex-wrap justify-center">
-          <Badge variant="secondary" className="text-xs">
-            {box.frameCount} frames
-          </Badge>
-          {box.variant && (
-            <Badge variant="secondary" className="text-xs">
-              {getVariantLabel(box.variant)}
-            </Badge>
-          )}
-        </div>
-      </div>
+      )}
 
       {/* Controls when editing */}
       {isEditing && (
@@ -120,7 +135,7 @@ export const BoxItem = ({
             size="icon"
             variant="ghost"
             className="h-8 w-8"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onMoveUp();
             }}
@@ -132,7 +147,7 @@ export const BoxItem = ({
             size="icon"
             variant="ghost"
             className="h-8 w-8"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onMoveDown();
             }}
@@ -144,7 +159,7 @@ export const BoxItem = ({
             size="icon"
             variant="ghost"
             className="h-8 w-8 text-destructive"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onRemove();
             }}
@@ -155,10 +170,11 @@ export const BoxItem = ({
       )}
 
       {/* Wood texture overlay for visual effect */}
-      <div 
+      <div
         className="absolute inset-0 rounded-md opacity-20"
         style={{
-          backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)',
+          backgroundImage:
+            'repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)',
         }}
       />
     </div>
