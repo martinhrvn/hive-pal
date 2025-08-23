@@ -1,5 +1,4 @@
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { Package } from 'lucide-react';
@@ -55,51 +54,42 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
   };
 
   // Sort boxes by position (bottom to top) and limit to show max 4-5 boxes
-  const sortedBoxes = hive.boxes ? [...hive.boxes]
-    .sort((a, b) => b.position - a.position)
-    .slice(0, 4) : [];
+  const sortedBoxes = hive.boxes
+    ? [...hive.boxes].sort((a, b) => b.position - a.position).slice(0, 4)
+    : [];
 
   return (
     <Card
       className={cn(
         'cursor-move hover:shadow-md transition-shadow min-w-[140px] max-w-[180px] overflow-hidden',
         isDragging && 'opacity-50',
-        className
+        className,
       )}
     >
       {/* Header with hive info */}
-      <div className="p-3 pb-2 space-y-2">
+      <div className="space-y-0.5 px-2">
         <div className="flex items-center justify-between">
           <h4 className="font-medium text-sm truncate">{hive.name}</h4>
           <div
-            className={cn(
-              'w-2 h-2 rounded-full',
-              getStatusColor(hive.status)
-            )}
+            className={cn('w-2 h-2 rounded-full', getStatusColor(hive.status))}
           />
         </div>
-        
-        <div className="flex items-center justify-between">
-          <Badge variant="outline" className="text-xs">
-            {hive.status}
-          </Badge>
-          
-          {hive.lastInspectionDate && (
-            <p className="text-xs text-muted-foreground">
-              {new Date(hive.lastInspectionDate).toLocaleDateString()}
-            </p>
-          )}
-        </div>
+
+        {hive.lastInspectionDate && (
+          <p className="text-xs text-muted-foreground">
+            Last: {new Date(hive.lastInspectionDate).toLocaleDateString()}
+          </p>
+        )}
       </div>
-      
+
       {/* Mini hive visualization */}
       {sortedBoxes.length > 0 ? (
-        <div className="px-4 pb-3">
+        <div className="px-2 ">
           <div className="flex flex-col items-center space-y-0.5">
             {sortedBoxes.map((box, index) => {
               const height = getBoxHeight(box.variant);
               const defaultColor = '#CD853F';
-              
+
               return (
                 <div
                   key={box.id || index}
@@ -107,7 +97,7 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
                     'relative w-full rounded-sm border border-gray-400/60',
                     height,
                     index === 0 && 'rounded-t-sm',
-                    index === sortedBoxes.length - 1 && 'rounded-b-sm'
+                    index === sortedBoxes.length - 1 && 'rounded-b-sm',
                   )}
                   style={{
                     backgroundColor: box.color || defaultColor,
@@ -120,7 +110,7 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
                       {getBoxTypeLabel(box.type)}
                     </span>
                   </div>
-                  
+
                   {/* Frame count for larger boxes */}
                   {(height === 'h-12' || height === 'h-10') && (
                     <div className="absolute bottom-0.5 left-1 flex items-center gap-0.5">
@@ -130,7 +120,7 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
                       </span>
                     </div>
                   )}
-                  
+
                   {/* Wood texture overlay */}
                   <div
                     className="absolute inset-0 rounded-sm opacity-20"
@@ -142,7 +132,7 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
                 </div>
               );
             })}
-            
+
             {hive.boxes && hive.boxes.length > 4 && (
               <div className="text-xs text-muted-foreground mt-1">
                 +{hive.boxes.length - 4} more
@@ -151,7 +141,7 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
           </div>
         </div>
       ) : (
-        <div className="px-4 pb-3">
+        <div className="px-2 pb-2">
           <div className="flex items-center justify-center h-16 border-2 border-dashed border-gray-300 rounded">
             <p className="text-xs text-muted-foreground">No boxes</p>
           </div>
