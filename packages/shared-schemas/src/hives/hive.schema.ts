@@ -70,11 +70,17 @@ export const hiveResponseSchema = z.object({
   positionCol: z.number().int().min(0).optional(),
 });
 
+// Schema for hive response with boxes (for apiary layout)
+export const hiveWithBoxesResponseSchema = hiveResponseSchema.extend({
+  boxes: z.array(boxSchema),
+});
+
 // Schema for filtering hives
 export const hiveFilterSchema = z.object({
   apiaryId: z.string().uuid().optional(),
   status: hiveStatusSchema.optional(),
   includeInactive: z.boolean().optional(),
+  includeBoxes: z.boolean().optional(),
 });
 
 export type CreateHive = z.infer<typeof createHiveSchema>;
@@ -83,5 +89,6 @@ export type UpdateHive = z.infer<typeof updateHiveSchema>;
 export type UpdateHiveResponse = z.infer<typeof updateHiveResponseSchema>;
 export type HiveDetailResponse = z.infer<typeof hiveDetailResponseSchema>;
 export type HiveResponse = z.infer<typeof hiveResponseSchema>;
+export type HiveWithBoxesResponse = z.infer<typeof hiveWithBoxesResponseSchema>;
 export type HiveScore = z.infer<typeof hiveScoreSchema>;
 export type HiveFilter = z.infer<typeof hiveFilterSchema>;

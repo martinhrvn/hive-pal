@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, X } from 'lucide-react';
 import { HiveCard } from './hive-card';
-import { HiveResponse } from 'shared-schemas';
-import { useHives, useUpdateHive } from '@/api/hooks';
+import { HiveWithBoxesResponse } from 'shared-schemas';
+import { useHivesWithBoxes, useUpdateHive } from '@/api/hooks';
 
 interface HivesLayoutProps {
   apiaryId: string;
@@ -16,14 +16,14 @@ const INITIAL_COLS = 5;
 
 export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
   const { t } = useTranslation('hive');
-  const { data: allHives = [], refetch } = useHives({ apiaryId });
+  const { data: allHives = [], refetch } = useHivesWithBoxes({ apiaryId });
   const updateHiveMutation = useUpdateHive();
-  const [draggedHive, setDraggedHive] = useState<HiveResponse | null>(null);
+  const [draggedHive, setDraggedHive] = useState<HiveWithBoxesResponse | null>(null);
 
   // Organize hives by position
   const { hivesGrid, unpositionedHives, maxRow, maxCol } = useMemo(() => {
-    const grid: Record<string, HiveResponse> = {};
-    const unpositioned: HiveResponse[] = [];
+    const grid: Record<string, HiveWithBoxesResponse> = {};
+    const unpositioned: HiveWithBoxesResponse[] = [];
     let maxRowNum = 0;
     let maxColNum = 0;
 
@@ -119,7 +119,7 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
     }
   };
 
-  const handleDragStart = (hive: HiveResponse) => {
+  const handleDragStart = (hive: HiveWithBoxesResponse) => {
     setDraggedHive(hive);
   };
 

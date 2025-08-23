@@ -6,6 +6,7 @@ import {
   HiveDetailResponse,
   HiveFilter,
   HiveResponse,
+  HiveWithBoxesResponse,
   UpdateHive,
   UpdateHiveResponse,
   UpdateHiveBoxes,
@@ -19,6 +20,9 @@ const HIVES_KEYS = {
   lists: () => [...HIVES_KEYS.all, 'list'] as const,
   list: (filters: HiveFilter | undefined) =>
     [...HIVES_KEYS.lists(), filters] as const,
+  listsWithBoxes: () => [...HIVES_KEYS.all, 'listWithBoxes'] as const,
+  listWithBoxes: (filters: HiveFilter | undefined) =>
+    [...HIVES_KEYS.listsWithBoxes(), filters] as const,
   details: () => [...HIVES_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...HIVES_KEYS.details(), id] as const,
 };
@@ -52,6 +56,30 @@ export const useHiveOptions = (filters?: HiveFilter) => {
     ...queryOptions,
     data: data?.map(hive => ({ value: hive.id, label: hive.name })),
   };
+};
+
+// Get all hives with boxes for apiary layout
+export const useHivesWithBoxes = (
+  filters?: HiveFilter,
+  queryOptions?: UseQueryOptions<HiveWithBoxesResponse[]>,
+) => {
+  return useQuery<HiveWithBoxesResponse[]>({
+    ...queryOptions,
+    queryKey: HIVES_KEYS.listWithBoxes(filters),
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (filters?.apiaryId) params.append('apiaryId', filters.apiaryId);
+      if (filters?.status) params.append('status', filters.status);
+      if (filters?.includeInactive !== undefined)
+        params.append('includeInactive', filters.includeInactive.toString());
+      params.append('includeBoxes', 'true');
+
+      const url = `/api/hives${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await apiClient.get<HiveWithBoxesResponse[]>(url);
+      return response.data;
+    },
+    ...queryOptions,
+  });
 };
 
 // Get a single hive by ID

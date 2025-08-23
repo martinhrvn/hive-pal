@@ -2,15 +2,15 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus } from 'lucide-react';
 import { HiveCard } from './hive-card';
-import { HiveResponse } from 'shared-schemas';
+import { HiveWithBoxesResponse } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 
 interface HiveRowProps {
   rowIndex: number;
-  hives: HiveResponse[];
+  hives: HiveWithBoxesResponse[];
   onRemoveRow?: (rowIndex: number) => void;
   onDropHive?: (hiveId: string, rowIndex: number, colIndex: number) => void;
-  onDragStart?: (hive: HiveResponse) => void;
+  onDragStart?: (hive: HiveWithBoxesResponse) => void;
   onDragEnd?: () => void;
   canRemove?: boolean;
   className?: string;
@@ -38,7 +38,7 @@ export const HiveRow = ({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, hive: HiveResponse) => {
+  const handleDragStart = (e: React.DragEvent, hive: HiveWithBoxesResponse) => {
     e.dataTransfer.setData('text/plain', hive.id);
     if (onDragStart) {
       onDragStart(hive);

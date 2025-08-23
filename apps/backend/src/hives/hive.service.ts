@@ -46,6 +46,35 @@ export class HiveService {
     this.logger.log(
       `Finding all hives for apiary ${filter.apiaryId} and user ${filter.userId}`,
     );
+
+    const includeConfig = {
+      inspections: {
+        select: {
+          date: true,
+        },
+        orderBy: {
+          date: 'desc' as const,
+        },
+        take: 1,
+      },
+      queens: {
+        where: {
+          status: 'ACTIVE' as const,
+        },
+        orderBy: {
+          installedAt: 'desc' as const,
+        },
+        take: 1,
+      },
+      ...(filter.includeBoxes && {
+        boxes: {
+          orderBy: {
+            position: 'asc' as const,
+          },
+        },
+      }),
+    };
+
     const hives = await this.prisma.hive.findMany({
       where: {
         apiary: {
@@ -54,30 +83,11 @@ export class HiveService {
         },
         status: filter.includeInactive ? undefined : 'ACTIVE',
       },
-      include: {
-        inspections: {
-          select: {
-            date: true,
-          },
-          orderBy: {
-            date: 'desc',
-          },
-          take: 1,
-        },
-        queens: {
-          where: {
-            status: 'ACTIVE',
-          },
-          orderBy: {
-            installedAt: 'desc',
-          },
-          take: 1,
-        },
-      },
+      include: includeConfig,
     });
 
-    return hives.map(
-      (hive): HiveResponse => ({
+    return hives.map((hive): HiveResponse => {
+      const baseHive = {
         id: hive.id,
         name: hive.name,
         apiaryId: hive.apiaryId || undefined,
@@ -95,8 +105,27 @@ export class HiveService {
                 year: hive.queens[0].year || undefined,
               }
             : null,
-      }),
-    );
+      };
+
+      // Add boxes if requested
+      if (filter.includeBoxes && 'boxes' in hive) {
+        return {
+          ...baseHive,
+          boxes: hive.boxes.map((box: any) => ({
+            id: box.id,
+            position: box.position,
+            frameCount: box.frameCount,
+            maxFrameCount: box.maxFrameCount,
+            hasExcluder: box.hasExcluder,
+            type: box.type,
+            variant: box.variant,
+            color: box.color,
+          })),
+        } as any; // Cast to handle the union type
+      }
+
+      return baseHive;
+    });
   }
 
   async findOne(
