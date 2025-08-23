@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSearchParams } from 'react-router-dom';
 import {
   Form,
   FormControl,
@@ -48,6 +49,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   hiveId,
   inspectionId,
 }) => {
+  const [searchParams] = useSearchParams();
+  const fromScheduled = searchParams.get('from') === 'scheduled';
   const { data: hives } = useHiveOptions();
 
   // Use our new custom hooks
@@ -101,7 +104,11 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
   const onSubmit = useUpsertInspection(inspectionId);
   // Handler for regular save button
-  const handleSave = form.handleSubmit(data => onSubmit(data));
+  const handleSave = form.handleSubmit(data => {
+    // If coming from scheduled inspection, automatically mark as completed
+    const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
+    onSubmit(data, status);
+  });
 
   // Handler for save and complete button
   const handleSaveAndComplete = form.handleSubmit(data =>
@@ -211,22 +218,35 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
           {isEdit && !isCompleted ? (
             <>
-              <Button
-                onClick={handleSave}
-                variant={'outline'}
-                type="submit"
-                className="w-full"
-              >
-                Save
-              </Button>
-              <Button
-                onClick={handleSaveAndComplete}
-                type="submit"
-                className="w-full"
-                variant={'default'}
-              >
-                Save and complete
-              </Button>
+              {fromScheduled ? (
+                <Button
+                  onClick={handleSave}
+                  type="submit"
+                  className="w-full"
+                  variant={'default'}
+                >
+                  Complete Inspection
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    onClick={handleSave}
+                    variant={'outline'}
+                    type="submit"
+                    className="w-full"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    onClick={handleSaveAndComplete}
+                    type="submit"
+                    className="w-full"
+                    variant={'default'}
+                  >
+                    Save and complete
+                  </Button>
+                </>
+              )}
             </>
           ) : (
             <Button onClick={handleSave} type="submit" className="w-full">

@@ -67,7 +67,11 @@
     "exportCSV": "Export to CSV",
     "printList": "Print List",
     "shareList": "Share List",
-    "dataOptions": "Data Options"
+    "dataOptions": "Data Options",
+    "doInspection": "Do Inspection",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel",
+    "completeInspection": "Complete Inspection"
   },
   "sidebar": {
     "actions": "Actions",
@@ -81,6 +85,41 @@
   "messages": {
     "exportComingSoon": "Export functionality coming soon",
     "shareComingSoon": "Share functionality coming soon"
+  },
+  "scheduled": {
+    "title": "Scheduled Inspections",
+    "overdueInspections": "Overdue Inspections",
+    "todaysInspections": "Today's Inspections",
+    "upcomingInspections": "Upcoming Inspections",
+    "otherUpcomingInspections": "Other Upcoming Inspections",
+    "doInspection": "Do Inspection",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel",
+    "today": "Today",
+    "overdue": "Overdue"
+  },
+  "dialogs": {
+    "cancelInspection": {
+      "title": "Cancel Inspection",
+      "description": "Are you sure you want to cancel the inspection for {{hiveName}} scheduled for {{date}}? This action cannot be undone.",
+      "keepInspection": "Keep Inspection",
+      "cancelInspection": "Cancel Inspection"
+    },
+    "reschedule": {
+      "title": "Reschedule Inspection",
+      "description": "Choose a new date for the inspection of {{hiveName}}. Weather forecast is shown for the next 7 days.",
+      "newDate": "New inspection date: {{date}}",
+      "cancel": "Cancel",
+      "reschedule": "Reschedule Inspection",
+      "showFewerDays": "Show Fewer Days",
+      "showMoreDays": "Show More Days (+7)",
+      "noForecast": "No forecast available",
+      "noWeatherData": "No weather data"
+    },
+    "completingScheduled": {
+      "title": "Completing scheduled inspection from {{date}}",
+      "description": "This inspection will be marked as completed when you save your changes."
+    }
   },
   "weather": {
     "sunny": "Sunny",

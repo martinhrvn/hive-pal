@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useHives, useInspections } from '@/api/hooks';
 import { HiveResponse, InspectionResponse, InspectionStatus } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
+import { ScheduledInspectionCard } from './components/scheduled-inspection-card';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
   ActivityIcon,
@@ -220,13 +221,12 @@ export const InspectionListPage = () => {
           </TabsContent>
 
           <TabsContent value={InspectionTab.UPCOMING}>
-            {renderInspectionsTable(
+            {renderUpcomingInspections(
               sortedInspections,
-              t('inspection:list.upcomingInspections'),
-              navigate,
               hivesData,
-              InspectionTab.UPCOMING,
               t,
+              navigate,
+              refetchInspections,
             )}
           </TabsContent>
         </Tabs>
@@ -439,6 +439,128 @@ const renderInspectionsTable = (
   ) : (
     <div className="flex flex-col items-center justify-center py-12 text-center">
       <p className="text-muted-foreground mb-4">{t('inspection:list.noInspections')}</p>
+    </div>
+  );
+};
+
+const renderUpcomingInspections = (
+  inspections: InspectionResponse[],
+  hives: HiveResponse[] = [],
+  t: (key: string, options?: Record<string, unknown>) => string,
+  navigate: (path: string) => void,
+  refetchInspections: () => void,
+) => {
+  const getHiveName = (hiveId: string) => {
+    const hive = hives.find(h => h.id === hiveId);
+    return hive ? hive.name : t('inspection:list.unknownHive');
+  };
+
+  // Filter only scheduled inspections for cards
+  const scheduledInspections = inspections.filter(
+    inspection => inspection.status === InspectionStatus.SCHEDULED
+  );
+
+  // Group inspections by date category
+  const today = [];
+  const upcoming = [];
+  const overdue = [];
+
+  for (const inspection of scheduledInspections) {
+    const inspectionDate = parseISO(inspection.date as string);
+    if (isToday(inspectionDate)) {
+      today.push(inspection);
+    } else if (isPast(inspectionDate)) {
+      overdue.push(inspection);
+    } else {
+      upcoming.push(inspection);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Overdue inspections */}
+      {overdue.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold text-red-600 mb-3 flex items-center gap-2">
+            <CalendarClockIcon className="h-5 w-5" />
+            {t('inspection:scheduled.overdueInspections')} ({overdue.length})
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {overdue.map(inspection => (
+              <ScheduledInspectionCard
+                key={inspection.id}
+                inspection={inspection}
+                hiveName={getHiveName(inspection.hiveId)}
+                onUpdate={refetchInspections}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Today's inspections */}
+      {today.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold text-blue-600 mb-3 flex items-center gap-2">
+            <CalendarClockIcon className="h-5 w-5" />
+            {t('inspection:scheduled.todaysInspections')} ({today.length})
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {today.map(inspection => (
+              <ScheduledInspectionCard
+                key={inspection.id}
+                inspection={inspection}
+                hiveName={getHiveName(inspection.hiveId)}
+                onUpdate={refetchInspections}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming inspections */}
+      {upcoming.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <CalendarClockIcon className="h-5 w-5" />
+            {t('inspection:scheduled.upcomingInspections')} ({upcoming.length})
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {upcoming.map(inspection => (
+              <ScheduledInspectionCard
+                key={inspection.id}
+                inspection={inspection}
+                hiveName={getHiveName(inspection.hiveId)}
+                onUpdate={refetchInspections}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Show completed/cancelled inspections in a table below */}
+      {inspections.some(i => i.status !== InspectionStatus.SCHEDULED) && (
+        <div>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <HistoryIcon className="h-5 w-5" />
+            {t('inspection:scheduled.otherUpcomingInspections')}
+          </h3>
+          {renderInspectionsTable(
+            inspections.filter(i => i.status !== InspectionStatus.SCHEDULED),
+            'Completed and cancelled inspections',
+            navigate,
+            hives,
+            InspectionTab.UPCOMING,
+            t,
+          )}
+        </div>
+      )}
+
+      {scheduledInspections.length === 0 && inspections.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-muted-foreground mb-4">{t('inspection:list.noInspections')}</p>
+        </div>
+      )}
     </div>
   );
 };
