@@ -17,7 +17,9 @@
     "schedule": "Naplánovať",
     "recent": "Nedávne",
     "upcoming": "Nadchádzajúce",
-    "general": "Všeobecné"
+    "general": "Všeobecné",
+    "harvests": "Zbery",
+    "allHarvests": "Všetky zbery"
   },
   "actions": {
     "save": "Uložiť",

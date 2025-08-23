@@ -17,7 +17,9 @@
     "schedule": "Schedule",
     "recent": "Recent",
     "upcoming": "Upcoming",
-    "general": "General"
+    "general": "General",
+    "harvests": "Harvests",
+    "allHarvests": "All Harvests"
   },
   "actions": {
     "save": "Save",

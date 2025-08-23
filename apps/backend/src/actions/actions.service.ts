@@ -16,6 +16,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
     feedingAction: true;
     treatmentAction: true;
     frameAction: true;
+    harvestAction: true;
   };
 }>;
 
@@ -187,6 +188,7 @@ export class ActionsService {
         feedingAction: true,
         treatmentAction: true,
         frameAction: true,
+        harvestAction: true,
       },
     });
 
@@ -272,6 +274,7 @@ export class ActionsService {
           feedingAction: true,
           treatmentAction: true,
           frameAction: true,
+          harvestAction: true,
         },
       });
     });
@@ -336,6 +339,20 @@ export class ActionsService {
           details: {
             type: ActionType.FRAME,
             quantity: prismaAction.frameAction.quantity,
+          },
+        };
+
+      case ActionType.HARVEST:
+        if (!prismaAction.harvestAction) {
+          throw new Error('Harvest action details missing');
+        }
+        return {
+          ...base,
+          type: ActionType.HARVEST,
+          details: {
+            type: ActionType.HARVEST,
+            amount: prismaAction.harvestAction.amount,
+            unit: prismaAction.harvestAction.unit,
           },
         };
 

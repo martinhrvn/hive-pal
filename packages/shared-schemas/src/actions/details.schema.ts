@@ -23,6 +23,12 @@ export const frameActionDetailsSchema = z.object({
   quantity: z.number().int(),
 });
 
+export const harvestActionDetailsSchema = z.object({
+  type: z.literal(ActionType.HARVEST),
+  amount: z.number().min(0),
+  unit: z.string().default('kg'),
+});
+
 export const otherActionDetailsSchema = z.object({
   type: z.literal(ActionType.OTHER),
 });
@@ -32,11 +38,13 @@ export const actionDetailsSchema = z.discriminatedUnion('type', [
   feedingActionDetailsSchema,
   treatmentActionDetailsSchema,
   frameActionDetailsSchema,
+  harvestActionDetailsSchema,
   otherActionDetailsSchema,
 ]);
 
 export type FeedingActionDetails = z.infer<typeof feedingActionDetailsSchema>;
 export type TreatmentActionDetails = z.infer<typeof treatmentActionDetailsSchema>;
 export type FrameActionDetails = z.infer<typeof frameActionDetailsSchema>;
+export type HarvestActionDetails = z.infer<typeof harvestActionDetailsSchema>;
 export type OtherActionDetails = z.infer<typeof otherActionDetailsSchema>;
 export type ActionDetails = z.infer<typeof actionDetailsSchema>;

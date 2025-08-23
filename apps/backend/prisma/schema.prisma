@@ -32,6 +32,7 @@ model Apiary {
   longitude        Float?
   notes            String?
   hives                 Hive[]
+  harvests              Harvest[]
   user                  User                    @relation(fields: [userId], references: [id])
   userId                String
   weather               Weather[]
@@ -56,6 +57,7 @@ model Hive {
   boxes            Box[]
   inspections      Inspection[]
   actions          Action[]
+  harvestHives     HarvestHive[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -149,16 +151,20 @@ model Action {
   hive         Hive?      @relation(fields: [hiveId], references: [id])
   inspectionId String?
   inspection   Inspection? @relation(fields: [inspectionId], references: [id])
-  type         ActionType // FEEDING, TREATMENT etc.
+  harvestId    String?    // Link to harvest if action from harvest
+  harvest      Harvest?   @relation(fields: [harvestId], references: [id])
+  type         ActionType // FEEDING, TREATMENT, HARVEST etc.
   notes        String? // Description of the action taken
   date         DateTime   @default(now()) // Date when action was performed
 
   feedingAction   FeedingAction?
   treatmentAction TreatmentAction?
   frameAction     FrameAction?
+  harvestAction   HarvestAction?
 
   @@index([hiveId])
   @@index([inspectionId])
+  @@index([harvestId])
   @@index([type, hiveId]) // For looking up specific action types
   @@index([date]) // For date-based queries
 }
@@ -190,6 +196,49 @@ model FrameAction {
   actionId String @unique
   action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
   quantity Int // number added/removed (positive = added, negative = removed)
+}
+
+// Harvest-specific details
+model HarvestAction {
+  id       String @id @default(uuid())
+  actionId String @unique
+  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  amount   Float  // kg of honey harvested from this hive
+  unit     String @default("kg") // Unit of measurement
+}
+
+// Harvest tracking
+model Harvest {
+  id            String         @id @default(uuid())
+  apiaryId      String
+  apiary        Apiary         @relation(fields: [apiaryId], references: [id])
+  date          DateTime
+  status        HarvestStatus  @default(DRAFT)
+  totalWeight   Float?         // kg of honey extracted
+  notes         String?
+  harvestHives  HarvestHive[]
+  actions       Action[]       // Actions created when harvest is finalized
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([apiaryId])
+  @@index([date])
+  @@index([status])
+}
+
+model HarvestHive {
+  id              String   @id @default(uuid())
+  harvestId       String
+  harvest         Harvest  @relation(fields: [harvestId], references: [id], onDelete: Cascade)
+  hiveId          String
+  hive            Hive     @relation(fields: [hiveId], references: [id])
+  framesTaken     Int      // Number of frames harvested from this hive
+  honeyAmount     Float?   // Calculated kg after weight entry
+  honeyPercentage Float?   // Percentage of total harvest
+
+  @@unique([harvestId, hiveId]) // Prevent duplicate hive entries in same harvest
+  @@index([harvestId])
+  @@index([hiveId])
 }
 
 enum HiveStatus {
@@ -231,7 +280,14 @@ enum ActionType {
   FEEDING
   TREATMENT
   FRAME
+  HARVEST
   OTHER
+}
+
+enum HarvestStatus {
+  DRAFT       // Initial state - selecting hives/frames
+  IN_PROGRESS // Extraction ongoing - can set weight
+  COMPLETED   // Finalized - actions created, read-only
 }
 
 // Weather condition simplified categories

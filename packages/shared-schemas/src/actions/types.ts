@@ -4,6 +4,7 @@ export enum ActionType {
   FEEDING = 'FEEDING',
   TREATMENT = 'TREATMENT',
   FRAME = 'FRAME',
+  HARVEST = 'HARVEST',
   OTHER = 'OTHER',
 }
 

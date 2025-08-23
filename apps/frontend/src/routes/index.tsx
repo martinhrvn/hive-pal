@@ -25,6 +25,8 @@ import {
   ApiaryDetailPage,
 } from '@/pages/apiaries';
 import { UserWizardPage } from '@/pages/onboarding';
+import { HarvestListPage } from '@/pages/harvest/harvest-list-page';
+import { HarvestDetailPage } from '@/pages/harvest/harvest-detail-page';
 
 const router = createBrowserRouter([
   {
@@ -99,6 +101,14 @@ const router = createBrowserRouter([
       {
         path: '/hives/:hiveId/queens/create',
         element: <CreateQueenPage />,
+      },
+      {
+        path: '/harvests',
+        element: <HarvestListPage />,
+      },
+      {
+        path: '/harvests/:harvestId',
+        element: <HarvestDetailPage />,
       },
       {
         path: '/admin/users',
