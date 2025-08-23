@@ -32,7 +32,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
       hasExcluder: false,
       type: BoxTypeEnum.BROOD,
       variant: BoxVariantEnum.LANGSTROTH_DEEP,
-      color: '#8B4513',
+      color: '#3b82f6', // blue-500
     };
     setBoxes([...boxes, newBox]);
     setSelectedBoxId(newBox.id ?? null);

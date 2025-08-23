@@ -155,22 +155,33 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
           <Label>Color Presets</Label>
           <div className="grid grid-cols-5 gap-2">
             {[
-              '#CD853F', // Wood
-              '#8B4513', // Saddle Brown
-              '#D2691E', // Chocolate
-              '#FFD700', // Gold
-              '#228B22', // Forest Green
-              '#4169E1', // Royal Blue
-              '#FF6347', // Tomato
-              '#9370DB', // Medium Purple
-              '#20B2AA', // Light Sea Green
-              '#FF69B4', // Hot Pink
+              '#ef4444', // red-500
+              '#f97316', // orange-500
+              '#f59e0b', // amber-500
+              '#eab308', // yellow-500
+              '#84cc16', // lime-500
+              '#22c55e', // green-500
+              '#10b981', // emerald-500
+              '#14b8a6', // teal-500
+              '#06b6d4', // cyan-500
+              '#0ea5e9', // sky-500
+              '#3b82f6', // blue-500
+              '#6366f1', // indigo-500
+              '#8b5cf6', // violet-500
+              '#a855f7', // purple-500
+              '#d946ef', // fuchsia-500
+              '#ec4899', // pink-500
+              '#f43f5e', // rose-500
+              '#6b7280', // gray-500
+              '#a16207', // yellow-700
+              '#92400e', // amber-700
             ].map((color) => (
               <button
                 key={color}
-                className="w-10 h-10 rounded border-2 border-gray-300 hover:border-gray-500"
+                className="w-10 h-10 rounded border-2 border-gray-300 hover:border-gray-500 transition-colors"
                 style={{ backgroundColor: color }}
                 onClick={() => handleColorChange(color)}
+                title={color}
               />
             ))}
           </div>
