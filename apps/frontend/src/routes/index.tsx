@@ -27,6 +27,7 @@ import {
 import { UserWizardPage } from '@/pages/onboarding';
 import { HarvestListPage } from '@/pages/harvest/harvest-list-page';
 import { HarvestDetailPage } from '@/pages/harvest/harvest-detail-page';
+import { ReleasesPage } from '@/pages/releases';
 
 const router = createBrowserRouter([
   {
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
       {
         path: '/harvests/:harvestId',
         element: <HarvestDetailPage />,
+      },
+      {
+        path: '/releases',
+        element: <ReleasesPage />,
       },
       {
         path: '/admin/users',

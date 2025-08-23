@@ -79,6 +79,15 @@
     "invalidFormat": "Neplatný formát",
     "notificationsComingSoon": "Funkcia oznámení bude čoskoro k dispozícii"
   },
+  "releaseNotes": {
+    "title": "Novinky v HivePal",
+    "version": "Verzia {{version}}",
+    "released": "Vydané {{date}}",
+    "newVersionAvailable": "Nová verzia v{{version}} je k dispozícii!",
+    "checkLatestFeatures": "Pozrite si najnovšie funkcie a vylepšenia.",
+    "whatsNew": "Čo je nové",
+    "dismiss": "Zamietnuť"
+  },
   "time": {
     "today": "Dnes",
     "yesterday": "Včera",

@@ -1,0 +1,1 @@
+export { ReleasesPage } from './releases-page';

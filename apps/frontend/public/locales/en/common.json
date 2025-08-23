@@ -79,6 +79,15 @@
     "invalidFormat": "Invalid format",
     "notificationsComingSoon": "Notifications feature coming soon"
   },
+  "releaseNotes": {
+    "title": "What's New in HivePal",
+    "version": "Version {{version}}",
+    "released": "Released {{date}}",
+    "newVersionAvailable": "New version v{{version}} is available!",
+    "checkLatestFeatures": "Check out the latest features and improvements.",
+    "whatsNew": "What's New",
+    "dismiss": "Dismiss"
+  },
   "time": {
     "today": "Today",
     "yesterday": "Yesterday",
