@@ -63,8 +63,9 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
   }, []);
 
   const handleReorder = useCallback((newBoxes: Box[]) => {
-    // Update positions based on new order
-    const reorderedBoxes = newBoxes.map((box, index) => ({
+    // Sort by position and ensure positions are sequential
+    const sortedBoxes = [...newBoxes].sort((a, b) => a.position - b.position);
+    const reorderedBoxes = sortedBoxes.map((box, index) => ({
       ...box,
       position: index,
     }));
@@ -85,7 +86,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
       });
       toast.success('Box configuration saved successfully');
       setIsEditing(false);
-    } catch (error) {
+    } catch {
       toast.error('Failed to save box configuration');
     }
   };

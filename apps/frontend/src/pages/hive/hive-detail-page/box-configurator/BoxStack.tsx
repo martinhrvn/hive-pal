@@ -23,21 +23,37 @@ export const BoxStack = ({
   const sortedBoxes = [...boxes].sort((a, b) => b.position - a.position);
 
   const handleMoveUp = (boxId: string) => {
-    const index = boxes.findIndex(b => b.id === boxId);
-    if (index > 0) {
-      const newBoxes = [...boxes];
-      [newBoxes[index], newBoxes[index - 1]] = [newBoxes[index - 1], newBoxes[index]];
-      onReorder(newBoxes);
-    }
+    // Moving up in the stack means increasing position (going higher physically)
+    const boxToMove = boxes.find(b => b.id === boxId);
+    if (!boxToMove || boxToMove.position >= boxes.length - 1) return;
+    
+    const newBoxes = boxes.map(box => {
+      if (box.id === boxId) {
+        return { ...box, position: box.position + 1 };
+      } else if (box.position === boxToMove.position + 1) {
+        return { ...box, position: box.position - 1 };
+      }
+      return box;
+    });
+    
+    onReorder(newBoxes);
   };
 
   const handleMoveDown = (boxId: string) => {
-    const index = boxes.findIndex(b => b.id === boxId);
-    if (index < boxes.length - 1) {
-      const newBoxes = [...boxes];
-      [newBoxes[index], newBoxes[index + 1]] = [newBoxes[index + 1], newBoxes[index]];
-      onReorder(newBoxes);
-    }
+    // Moving down in the stack means decreasing position (going lower physically)
+    const boxToMove = boxes.find(b => b.id === boxId);
+    if (!boxToMove || boxToMove.position <= 0) return;
+    
+    const newBoxes = boxes.map(box => {
+      if (box.id === boxId) {
+        return { ...box, position: box.position - 1 };
+      } else if (box.position === boxToMove.position - 1) {
+        return { ...box, position: box.position + 1 };
+      }
+      return box;
+    });
+    
+    onReorder(newBoxes);
   };
 
   if (boxes.length === 0) {
@@ -54,6 +70,10 @@ export const BoxStack = ({
     <div className="flex flex-col items-center space-y-0 py-4">
       {sortedBoxes.map((box, index) => (
         <div key={box.id} className="flex flex-col items-center">
+          {/* Show queen excluder above this box if hasExcluder is true */}
+          {box.hasExcluder && (
+            <QueenExcluder />
+          )}
           <BoxItem
             box={box}
             isSelected={selectedBoxId === box.id}
@@ -65,9 +85,6 @@ export const BoxStack = ({
             canMoveDown={box.position > 0}
             isEditing={isEditing}
           />
-          {index < sortedBoxes.length - 1 && sortedBoxes[index].hasExcluder && (
-            <QueenExcluder />
-          )}
         </div>
       ))}
     </div>
