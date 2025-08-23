@@ -342,6 +342,8 @@ export class HiveService {
             hasExcluder: box.hasExcluder,
             type: box.type, // BoxType enum matches our DTO enum
             maxFrameCount: box.maxFrameCount,
+            variant: box.variant, // New field for box variant
+            color: box.color, // New field for box color
           },
         });
       });

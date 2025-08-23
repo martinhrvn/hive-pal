@@ -49,6 +49,43 @@
     "noInspectionYet": "No inspection yet",
     "noNotes": "No notes"
   },
+  "boxConfigurator": {
+    "title": "Box Configuration",
+    "description": "Visualize and configure your hive's box stack. Boxes are shown from bottom to top.",
+    "editConfiguration": "Edit Configuration",
+    "cancel": "Cancel",
+    "save": "Save",
+    "addBox": "Add Box",
+    "noBoxes": "No boxes configured yet",
+    "clickToAdd": "Click \"Add Box\" to start building your hive",
+    "saveSuccess": "Box configuration saved successfully",
+    "saveError": "Failed to save box configuration",
+    "boxProperties": "Box Properties",
+    "purpose": "Purpose",
+    "boxType": "Box Type",
+    "frames": "Frames",
+    "maximumFrames": "Maximum Frames",
+    "color": "Color",
+    "colorPresets": "Color Presets",
+    "queenExcluder": "Queen excluder above this box",
+    "boxTypes": {
+      "brood": "Brood Box",
+      "honey": "Honey Super",
+      "feeder": "Feeder Box"
+    },
+    "boxVariants": {
+      "langstrothDeep": "Langstroth Deep",
+      "langstrothShallow": "Langstroth Shallow",
+      "bDeep": "B Deep",
+      "bShallow": "B Shallow",
+      "dadant": "Dadant",
+      "nationalDeep": "National Deep",
+      "nationalShallow": "National Shallow",
+      "warre": "Warré",
+      "topBar": "Top Bar",
+      "custom": "Custom"
+    }
+  },
   "status": {
     "active": "Active",
     "inactive": "Inactive",

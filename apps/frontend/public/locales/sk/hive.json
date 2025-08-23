@@ -49,6 +49,43 @@
     "noInspectionYet": "Zatiaľ žiadna prehliadka",
     "noNotes": "Žiadne poznámky"
   },
+  "boxConfigurator": {
+    "title": "Konfigurácia nadstavkov",
+    "description": "Vizualizujte a konfigurujte nadstavky vášho úľa. Nadstavky sú zobrazené zdola nahor.",
+    "editConfiguration": "Upraviť konfiguráciu",
+    "cancel": "Zrušiť",
+    "save": "Uložiť",
+    "addBox": "Pridať nadstavok",
+    "noBoxes": "Zatiaľ nie sú nakonfigurované žiadne nadstavky",
+    "clickToAdd": "Kliknite na \"Pridať nadstavok\" pre začatie stavby úľa",
+    "saveSuccess": "Konfigurácia nadstavkov bola úspešne uložená",
+    "saveError": "Nepodarilo sa uložiť konfiguráciu nadstavkov",
+    "boxProperties": "Vlastnosti nadstavku",
+    "purpose": "Účel",
+    "boxType": "Typ nadstavku",
+    "frames": "Rámiky",
+    "maximumFrames": "Maximum rámikov",
+    "color": "Farba",
+    "colorPresets": "Predvolené farby",
+    "queenExcluder": "Matečník nad týmto nadstavkom",
+    "boxTypes": {
+      "brood": "Plodiská",
+      "honey": "Medník",
+      "feeder": "Kŕmny nadstavok"
+    },
+    "boxVariants": {
+      "langstrothDeep": "Langstroth vysoký",
+      "langstrothShallow": "Langstroth nízky",
+      "bDeep": "B vysoký",
+      "bShallow": "B nízky",
+      "dadant": "Dadant",
+      "nationalDeep": "National vysoký",
+      "nationalShallow": "National nízky",
+      "warre": "Warré",
+      "topBar": "Top Bar",
+      "custom": "Vlastný"
+    }
+  },
   "status": {
     "active": "Aktívny",
     "inactive": "Neaktívny",

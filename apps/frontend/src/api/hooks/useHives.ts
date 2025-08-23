@@ -8,6 +8,7 @@ import {
   HiveResponse,
   UpdateHive,
   UpdateHiveResponse,
+  UpdateHiveBoxes,
 } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -140,6 +141,27 @@ export const useDeleteHive = () => {
     onSuccess: async () => {
       // Remove from cache and invalidate lists
       queryClient.invalidateQueries({ queryKey: HIVES_KEYS.lists() });
+    },
+  });
+};
+
+// Update hive boxes
+export const useUpdateHiveBoxes = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, boxes }: { id: string; boxes: UpdateHiveBoxes['boxes'] }) => {
+      const response = await apiClient.put<UpdateHiveResponse>(
+        `/api/hives/${id}/boxes`,
+        { boxes },
+      );
+      return response.data;
+    },
+    onSuccess: async (_data, variables) => {
+      // Invalidate the specific hive to refresh box data
+      await queryClient.invalidateQueries({
+        queryKey: HIVES_KEYS.detail(variables.id),
+      });
     },
   });
 };

@@ -64,14 +64,16 @@ model Hive {
 }
 
 model Box {
-  id            String  @id @default(uuid())
+  id            String      @id @default(uuid())
   hiveId        String
-  hive          Hive    @relation(fields: [hiveId], references: [id])
+  hive          Hive        @relation(fields: [hiveId], references: [id])
   position      Int // Position from bottom up
   frameCount    Int // Number of frames in this box
-  maxFrameCount Int     @default(10) // Maximum number of frames the box can hold
-  hasExcluder   Boolean @default(false) // Whether there's a queen excluder above this box
+  maxFrameCount Int         @default(10) // Maximum number of frames the box can hold
+  hasExcluder   Boolean     @default(false) // Whether there's a queen excluder above this box
   type          BoxType // BROOD, HONEY, etc.
+  variant       BoxVariant? // LANGSTROTH_DEEP, LANGSTROTH_SHALLOW, etc.
+  color         String? // Hex color code for visual representation
 
   @@index([hiveId])
   @@index([hiveId, position]) // For looking up boxes by position in a hive
@@ -210,6 +212,19 @@ enum BoxType {
   BROOD // Brood box
   HONEY // Honey super
   FEEDER // Feeder box
+}
+
+enum BoxVariant {
+  LANGSTROTH_DEEP // Standard Langstroth deep box
+  LANGSTROTH_SHALLOW // Standard Langstroth shallow/medium box
+  B_DEEP // B-hive deep box
+  B_SHALLOW // B-hive shallow box
+  DADANT // Dadant box
+  NATIONAL_DEEP // British National deep
+  NATIONAL_SHALLOW // British National shallow
+  WARRE // Warré hive box
+  TOP_BAR // Top bar hive
+  CUSTOM // Custom size
 }
 
 enum ActionType {

@@ -1,0 +1,6 @@
+-- CreateEnum
+CREATE TYPE "BoxVariant" AS ENUM ('LANGSTROTH_DEEP', 'LANGSTROTH_SHALLOW', 'B_DEEP', 'B_SHALLOW', 'DADANT', 'NATIONAL_DEEP', 'NATIONAL_SHALLOW', 'WARRE', 'TOP_BAR', 'CUSTOM');
+
+-- AlterTable
+ALTER TABLE "Box" ADD COLUMN     "color" TEXT,
+ADD COLUMN     "variant" "BoxVariant";
