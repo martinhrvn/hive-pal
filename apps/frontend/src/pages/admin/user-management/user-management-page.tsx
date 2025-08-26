@@ -88,7 +88,7 @@ const UserManagementPage: React.FC = () => {
     };
 
     fetchUsers();
-  }, [token]);
+  }, [t, token]);
 
   const handleResetPassword = async () => {
     if (!selectedUser || !tempPassword.trim()) return;
@@ -145,7 +145,9 @@ const UserManagementPage: React.FC = () => {
           )}
 
           {loading ? (
-            <div className="flex justify-center py-8">{t('messages.loadingUsers')}</div>
+            <div className="flex justify-center py-8">
+              {t('messages.loadingUsers')}
+            </div>
           ) : (
             <Table>
               <TableHeader>
@@ -165,7 +167,9 @@ const UserManagementPage: React.FC = () => {
                     <TableCell>{user.name || t('status.dash')}</TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
-                      {user.passwordChangeRequired ? t('status.yes') : t('status.no')}
+                      {user.passwordChangeRequired
+                        ? t('status.yes')
+                        : t('status.no')}
                     </TableCell>
                     <TableCell>{formatDate(user.createdAt)}</TableCell>
                     <TableCell>
@@ -184,9 +188,13 @@ const UserManagementPage: React.FC = () => {
                         </SheetTrigger>
                         <SheetContent>
                           <SheetHeader>
-                            <SheetTitle>{t('resetPasswordDialog.title')}</SheetTitle>
+                            <SheetTitle>
+                              {t('resetPasswordDialog.title')}
+                            </SheetTitle>
                             <SheetDescription>
-                              {t('resetPasswordDialog.description', { email: selectedUser?.email })}
+                              {t('resetPasswordDialog.description', {
+                                email: selectedUser?.email,
+                              })}
                             </SheetDescription>
                           </SheetHeader>
 
@@ -208,7 +216,9 @@ const UserManagementPage: React.FC = () => {
                                     onChange={e =>
                                       setTempPassword(e.target.value)
                                     }
-                                    placeholder={t('resetPasswordDialog.tempPasswordPlaceholder')}
+                                    placeholder={t(
+                                      'resetPasswordDialog.tempPasswordPlaceholder',
+                                    )}
                                   />
                                   <p className="text-sm text-gray-500">
                                     {t('resetPasswordDialog.minCharacters')}

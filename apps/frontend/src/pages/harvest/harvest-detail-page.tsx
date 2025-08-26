@@ -5,23 +5,23 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  ArrowLeft, 
-  Check, 
-  Edit, 
-  Droplets, 
+import {
+  ArrowLeft,
+  Check,
+  Edit,
+  Droplets,
   RefreshCw,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { 
-  useHarvest, 
-  useUpdateHarvest, 
+import {
+  useHarvest,
+  useUpdateHarvest,
   useSetHarvestWeight,
   useFinalizeHarvest,
   useReopenHarvest,
-  useDeleteHarvest
+  useDeleteHarvest,
 } from '@/api/hooks/useHarvests';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -81,7 +81,7 @@ export const HarvestDetailPage = () => {
       toast.success('Weight set successfully');
       setIsEditingWeight(false);
       setWeight('');
-    } catch (error) {
+    } catch {
       toast.error('Failed to set weight');
     }
   };
@@ -94,7 +94,7 @@ export const HarvestDetailPage = () => {
       });
       toast.success('Notes updated');
       setIsEditingNotes(false);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update notes');
     }
   };
@@ -103,7 +103,7 @@ export const HarvestDetailPage = () => {
     try {
       await finalizeHarvest.mutateAsync(harvest.id);
       toast.success('Harvest finalized successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to finalize harvest');
     }
   };
@@ -112,7 +112,7 @@ export const HarvestDetailPage = () => {
     try {
       await reopenHarvest.mutateAsync(harvest.id);
       toast.success('Harvest reopened for editing');
-    } catch (error) {
+    } catch {
       toast.error('Failed to reopen harvest');
     }
   };
@@ -122,7 +122,7 @@ export const HarvestDetailPage = () => {
       await deleteHarvest.mutateAsync(harvest.id);
       toast.success('Harvest deleted');
       navigate('/harvests');
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete harvest');
     }
   };
@@ -164,12 +164,13 @@ export const HarvestDetailPage = () => {
               Reopen
             </Button>
           )}
-          {harvest.status === HarvestStatus.IN_PROGRESS && harvest.totalWeight && (
-            <Button onClick={handleFinalize}>
-              <Check className="mr-2 h-4 w-4" />
-              Finalize
-            </Button>
-          )}
+          {harvest.status === HarvestStatus.IN_PROGRESS &&
+            harvest.totalWeight && (
+              <Button onClick={handleFinalize}>
+                <Check className="mr-2 h-4 w-4" />
+                Finalize
+              </Button>
+            )}
           {harvest.status === HarvestStatus.DRAFT && (
             <Dialog>
               <DialogTrigger asChild>
@@ -181,7 +182,8 @@ export const HarvestDetailPage = () => {
                 <DialogHeader>
                   <DialogTitle>Delete Harvest?</DialogTitle>
                   <DialogDescription>
-                    This action cannot be undone. This will permanently delete the harvest.
+                    This action cannot be undone. This will permanently delete
+                    the harvest.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -207,7 +209,9 @@ export const HarvestDetailPage = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-muted-foreground">Date</Label>
-              <p className="font-medium">{format(new Date(harvest.date), 'PPP')}</p>
+              <p className="font-medium">
+                {format(new Date(harvest.date), 'PPP')}
+              </p>
             </div>
             <div>
               <Label className="text-muted-foreground">Total Hives</Label>
@@ -219,7 +223,9 @@ export const HarvestDetailPage = () => {
             </div>
             <div>
               <Label className="text-muted-foreground">Total Weight</Label>
-              {harvest.status !== HarvestStatus.COMPLETED && !harvest.totalWeight && !isEditingWeight ? (
+              {harvest.status !== HarvestStatus.COMPLETED &&
+              !harvest.totalWeight &&
+              !isEditingWeight ? (
                 <Button
                   variant="outline"
                   size="sm"
@@ -234,14 +240,16 @@ export const HarvestDetailPage = () => {
                     type="number"
                     step="0.1"
                     value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
+                    onChange={e => setWeight(e.target.value)}
                     placeholder="0.0"
                     className="w-24"
                   />
                   <span className="flex items-center">kg</span>
-                  <Button size="sm" onClick={handleSetWeight}>Save</Button>
-                  <Button 
-                    size="sm" 
+                  <Button size="sm" onClick={handleSetWeight}>
+                    Save
+                  </Button>
+                  <Button
+                    size="sm"
                     variant="outline"
                     onClick={() => {
                       setIsEditingWeight(false);
@@ -253,7 +261,9 @@ export const HarvestDetailPage = () => {
                 </div>
               ) : (
                 <p className="font-medium">
-                  {harvest.totalWeight ? `${harvest.totalWeight} kg` : 'Not set'}
+                  {harvest.totalWeight
+                    ? `${harvest.totalWeight} kg`
+                    : 'Not set'}
                 </p>
               )}
             </div>
@@ -263,30 +273,33 @@ export const HarvestDetailPage = () => {
           <div>
             <div className="flex items-center justify-between mb-2">
               <Label className="text-muted-foreground">Notes</Label>
-              {harvest.status !== HarvestStatus.COMPLETED && !isEditingNotes && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setNotes(harvest.notes || '');
-                    setIsEditingNotes(true);
-                  }}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              )}
+              {harvest.status !== HarvestStatus.COMPLETED &&
+                !isEditingNotes && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setNotes(harvest.notes || '');
+                      setIsEditingNotes(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                )}
             </div>
             {isEditingNotes ? (
               <div className="space-y-2">
                 <Textarea
                   value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  onChange={e => setNotes(e.target.value)}
                   rows={3}
                 />
                 <div className="flex space-x-2">
-                  <Button size="sm" onClick={handleUpdateNotes}>Save</Button>
-                  <Button 
-                    size="sm" 
+                  <Button size="sm" onClick={handleUpdateNotes}>
+                    Save
+                  </Button>
+                  <Button
+                    size="sm"
                     variant="outline"
                     onClick={() => setIsEditingNotes(false)}
                   >
@@ -308,7 +321,7 @@ export const HarvestDetailPage = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {harvest.harvestHives.map((hh) => (
+            {harvest.harvestHives.map(hh => (
               <div
                 key={hh.id}
                 className="flex items-center justify-between p-3 border rounded-lg"
@@ -321,7 +334,9 @@ export const HarvestDetailPage = () => {
                 </div>
                 {hh.honeyAmount && (
                   <div className="text-right">
-                    <p className="font-medium">{hh.honeyAmount.toFixed(2)} kg</p>
+                    <p className="font-medium">
+                      {hh.honeyAmount.toFixed(2)} kg
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {hh.honeyPercentage?.toFixed(1)}%
                     </p>
@@ -339,7 +354,8 @@ export const HarvestDetailPage = () => {
           <AlertTriangle className="h-5 w-5 text-yellow-600" />
           <AlertTitle className="text-yellow-900">Draft Harvest</AlertTitle>
           <AlertDescription className="text-yellow-700">
-            This harvest is in draft status. Set the total weight to proceed with calculations.
+            This harvest is in draft status. Set the total weight to proceed
+            with calculations.
           </AlertDescription>
         </Alert>
       )}
@@ -349,7 +365,8 @@ export const HarvestDetailPage = () => {
           <AlertTriangle className="h-5 w-5 text-blue-600" />
           <AlertTitle className="text-blue-900">Ready to Finalize</AlertTitle>
           <AlertDescription className="text-blue-700">
-            Weight has been set and distribution calculated. Click "Finalize" to create harvest actions for each hive.
+            Weight has been set and distribution calculated. Click "Finalize" to
+            create harvest actions for each hive.
           </AlertDescription>
         </Alert>
       )}
