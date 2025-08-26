@@ -16,6 +16,7 @@ import {
   HiveFilter,
   UpdateHiveResponse,
   CreateHiveResponse,
+  BoxVariantEnum,
 } from 'shared-schemas';
 
 @Injectable()
@@ -118,9 +119,9 @@ export class HiveService {
             frameCount: box.frameCount,
             maxFrameCount: box.maxFrameCount,
             hasExcluder: box.hasExcluder,
-            type: box.type,
-            variant: box.variant,
-            color: box.color,
+            type: box.type as BoxTypeEnum,
+            variant: box.variant as BoxVariantEnum,
+            color: box.color ?? undefined,
           })),
         };
       }

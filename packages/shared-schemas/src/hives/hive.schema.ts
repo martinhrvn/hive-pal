@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { hiveStatusSchema } from './status';
 import { boxSchema } from './box.schema';
-import {activeQueenSchema} from "../queens";
+import { activeQueenSchema } from '../queens';
 
 // Base schema for creating hives
 export const createHiveSchema = z.object({
@@ -17,7 +17,7 @@ export const createHiveSchema = z.object({
 export const createHiveResponseSchema = z.object({
   id: z.string().uuid(),
   status: hiveStatusSchema,
-})
+});
 
 // Schema for updating hives
 export const updateHiveSchema = createHiveSchema.partial().extend({
@@ -25,15 +25,15 @@ export const updateHiveSchema = createHiveSchema.partial().extend({
 });
 
 export const updateHiveResponseSchema = z.object({
-    id: z.string().uuid(),
-    name: z.string(),
-    apiaryId: z.string().uuid().optional(),
-    notes: z.string().optional(),
-    installationDate: z.string().datetime().or(z.date()).optional(),
-    status: hiveStatusSchema.optional(),
-    positionRow: z.number().int().min(0).optional(),
-    positionCol: z.number().int().min(0).optional(),
-})
+  id: z.string().uuid(),
+  name: z.string(),
+  apiaryId: z.string().uuid().optional(),
+  notes: z.string().optional(),
+  installationDate: z.string().datetime().or(z.date()).optional(),
+  status: hiveStatusSchema.optional(),
+  positionRow: z.number().int().min(0).optional(),
+  positionCol: z.number().int().min(0).optional(),
+});
 
 export const hiveScoreSchema = z.object({
   overallScore: z.number().nullish(),
@@ -43,7 +43,7 @@ export const hiveScoreSchema = z.object({
 
   warnings: z.array(z.string()),
   confidence: z.number(),
-})
+});
 // Schema for detailed hive response
 export const hiveDetailResponseSchema = createHiveSchema.extend({
   id: z.string().uuid(),
@@ -54,8 +54,6 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   lastInspectionDate: z.string().datetime().or(z.date()).optional(),
 });
 
-
-
 // Schema for basic hive response
 export const hiveResponseSchema = z.object({
   id: z.string().uuid(),
@@ -64,10 +62,11 @@ export const hiveResponseSchema = z.object({
   apiaryId: z.string().uuid().optional(),
   notes: z.string().optional(),
   installationDate: z.string().datetime().optional(),
-  lastInspectionDate: z.string().datetime().optional() ,
+  lastInspectionDate: z.string().datetime().optional(),
   activeQueen: activeQueenSchema.nullish(),
   positionRow: z.number().int().min(0).optional(),
   positionCol: z.number().int().min(0).optional(),
+  boxes: z.array(boxSchema).optional(),
 });
 
 // Schema for hive response with boxes (for apiary layout)
