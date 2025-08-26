@@ -221,10 +221,7 @@ export class HarvestsService {
     return this.mapToResponse(updatedHarvest);
   }
 
-  async finalize(
-    harvestId: string,
-    userId: string,
-  ): Promise<HarvestResponse> {
+  async finalize(harvestId: string, userId: string): Promise<HarvestResponse> {
     // Get the harvest and verify ownership
     const harvest = await this.prisma.harvest.findFirst({
       where: {
@@ -372,10 +369,7 @@ export class HarvestsService {
     return this.mapToResponse(reopenedHarvest);
   }
 
-  async findOne(
-    harvestId: string,
-    userId: string,
-  ): Promise<HarvestResponse> {
+  async findOne(harvestId: string, userId: string): Promise<HarvestResponse> {
     const harvest = await this.prisma.harvest.findFirst({
       where: {
         id: harvestId,

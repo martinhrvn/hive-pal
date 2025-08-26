@@ -4,6 +4,7 @@ import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
+import { Box as PrismaBox } from '@prisma/client';
 import {
   CreateHive,
   UpdateHive,
@@ -111,7 +112,7 @@ export class HiveService {
       if (filter.includeBoxes && 'boxes' in hive) {
         return {
           ...baseHive,
-          boxes: hive.boxes.map((box: any) => ({
+          boxes: hive.boxes.map((box: PrismaBox) => ({
             id: box.id,
             position: box.position,
             frameCount: box.frameCount,
@@ -121,7 +122,7 @@ export class HiveService {
             variant: box.variant,
             color: box.color,
           })),
-        } as any; // Cast to handle the union type
+        };
       }
 
       return baseHive;
