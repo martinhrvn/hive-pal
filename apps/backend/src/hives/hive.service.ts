@@ -17,6 +17,7 @@ import {
   UpdateHiveResponse,
   CreateHiveResponse,
   BoxVariantEnum,
+  HiveSettings,
 } from 'shared-schemas';
 
 @Injectable()
@@ -115,7 +116,7 @@ export class HiveService {
         lastInspectionDate: hive.inspections[0]?.date?.toISOString(),
         positionRow: hive.positionRow ?? undefined,
         positionCol: hive.positionCol ?? undefined,
-        settings: hive.settings || undefined,
+        settings: (hive.settings as HiveSettings) || undefined,
         activeQueen:
           hive.queens.length > 0
             ? {
@@ -220,7 +221,7 @@ export class HiveService {
           ? hive.installationDate
           : hive.installationDate?.toISOString(),
       lastInspectionDate: latestInspection?.date?.toISOString(),
-      settings: hive.settings || undefined,
+      settings: (hive.settings as HiveSettings) || undefined,
       boxes: hive.boxes.map((box) => ({
         id: box.id,
         position: box.position,
@@ -311,7 +312,7 @@ export class HiveService {
       installationDate: updatedHive.installationDate?.toISOString(),
       positionRow: updatedHive.positionRow ?? undefined,
       positionCol: updatedHive.positionCol ?? undefined,
-      settings: updatedHive.settings || undefined,
+      settings: (updatedHive.settings as HiveSettings) || undefined,
     };
   }
 
@@ -451,7 +452,7 @@ export class HiveService {
         typeof updatedHive.installationDate === 'string'
           ? updatedHive.installationDate
           : updatedHive.installationDate?.toISOString(),
-      settings: updatedHive.settings || undefined,
+      settings: (updatedHive.settings as HiveSettings) || undefined,
     };
   }
 }
