@@ -18,6 +18,8 @@ import {
   CreateHiveResponse,
   BoxVariantEnum,
   HiveSettings,
+  AlertSeverity,
+  AlertStatus,
 } from 'shared-schemas';
 
 @Injectable()
@@ -85,6 +87,14 @@ export class HiveService {
         },
         take: 1,
       },
+      alerts: {
+        where: {
+          status: 'ACTIVE' as const,
+        },
+        orderBy: {
+          createdAt: 'desc' as const,
+        },
+      },
       ...(filter.includeBoxes && {
         boxes: {
           orderBy: {
@@ -125,6 +135,17 @@ export class HiveService {
                 year: hive.queens[0].year || undefined,
               }
             : null,
+        alerts: hive.alerts?.map((alert) => ({
+          id: alert.id,
+          hiveId: alert.hiveId || undefined,
+          type: alert.type,
+          message: alert.message,
+          severity: alert.severity as AlertSeverity,
+          status: alert.status as AlertStatus,
+          metadata: alert.metadata as Record<string, unknown> | undefined,
+          createdAt: alert.createdAt.toISOString(),
+          updatedAt: alert.updatedAt.toISOString(),
+        })) || [],
       };
 
       // Add boxes if requested
@@ -188,6 +209,14 @@ export class HiveService {
             actions: true,
           },
         },
+        alerts: {
+          where: {
+            status: 'ACTIVE',
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
     });
 
@@ -242,6 +271,17 @@ export class HiveService {
             installedAt: activeQueen.installedAt?.toISOString(),
           }
         : null,
+      alerts: hive.alerts?.map((alert) => ({
+        id: alert.id,
+        hiveId: alert.hiveId || undefined,
+        type: alert.type,
+        message: alert.message,
+        severity: alert.severity as AlertSeverity,
+        status: alert.status as AlertStatus,
+        metadata: alert.metadata as Record<string, unknown> | undefined,
+        createdAt: alert.createdAt.toISOString(),
+        updatedAt: alert.updatedAt.toISOString(),
+      })) || [],
     };
   }
 

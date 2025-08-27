@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { WeatherForecast } from '@/components/weather';
+import { AlertItem } from '@/components/alerts';
 import { useHive } from '@/api/hooks';
 
 type ActionSideBarProps = {
@@ -27,6 +28,24 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Alerts Section */}
+      {hive?.alerts && hive.alerts.length > 0 && (
+        <div className="border rounded-md">
+          <SidebarGroup>
+            <SidebarGroupLabel className="px-2 pt-2">Active Alerts</SidebarGroupLabel>
+            <div className="px-2 pb-2 space-y-1 max-h-64 overflow-y-auto">
+              {hive.alerts.map((alert) => (
+                <AlertItem 
+                  key={alert.id} 
+                  alert={alert} 
+                  showActions={true}
+                />
+              ))}
+            </div>
+          </SidebarGroup>
+        </div>
+      )}
+      
       {hive?.apiaryId && (
         <div className="border rounded-md">
           <SidebarGroup>

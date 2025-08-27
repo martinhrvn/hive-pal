@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { Package } from 'lucide-react';
+import { AlertsPopover } from '@/components/alerts';
 
 interface HiveCardProps {
   hive: HiveWithBoxesResponse;
@@ -80,6 +81,9 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
             Last: {new Date(hive.lastInspectionDate).toLocaleDateString()}
           </p>
         )}
+        
+        {/* Alerts with popover */}
+        <AlertsPopover alerts={hive.alerts || []} />
       </div>
 
       {/* Mini hive visualization */}

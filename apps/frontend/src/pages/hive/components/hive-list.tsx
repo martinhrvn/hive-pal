@@ -2,6 +2,7 @@ import { HiveStatus } from './hive-status';
 import { ChevronRight, Activity, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HiveResponse } from 'shared-schemas';
+import { AlertsPopover } from '@/components/alerts';
 import { useHive } from '@/api/hooks/useHives';
 import { useActions } from '@/api/hooks/useActions';
 import {
@@ -88,6 +89,9 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
             </span>
           </div>
         )}
+
+        {/* Alerts (show below feeding or other metrics) */}
+        <AlertsPopover alerts={hive.alerts || []} />
 
         <p className={'col-start-1 flex'}>
           <a href={`/hives/${hive.id}`} className={'flex gap-4'}>

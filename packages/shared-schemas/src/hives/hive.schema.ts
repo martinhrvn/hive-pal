@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { hiveStatusSchema } from './status';
 import { boxSchema } from './box.schema';
 import { activeQueenSchema } from '../queens';
+import { alertResponseSchema } from '../alerts';
 
 // Schema for hive settings
 export const hiveSettingsSchema = z.object({
@@ -67,6 +68,7 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   activeQueen: activeQueenSchema.nullish(),
   lastInspectionDate: z.string().datetime().or(z.date()).optional(),
   settings: hiveSettingsSchema,
+  alerts: z.array(alertResponseSchema).default([]),
 });
 
 // Schema for basic hive response
@@ -83,6 +85,7 @@ export const hiveResponseSchema = z.object({
   positionCol: z.number().int().min(0).optional(),
   boxes: z.array(boxSchema).optional(),
   settings: hiveSettingsSchema,
+  alerts: z.array(alertResponseSchema).default([]),
 });
 
 // Schema for hive response with boxes (for apiary layout)
