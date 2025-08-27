@@ -17,6 +17,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
     treatmentAction: true;
     frameAction: true;
     harvestAction: true;
+    boxConfigurationAction: true;
   };
 }>;
 
@@ -63,7 +64,9 @@ export class ActionsService {
       });
 
       // Add type-specific details based on the action type
-      if (details?.type === ActionType.FEEDING) {
+      if (!details) continue;
+
+      if (details.type === ActionType.FEEDING) {
         const feedingDetails = details;
         await tx.feedingAction.create({
           data: {
@@ -74,14 +77,14 @@ export class ActionsService {
             concentration: feedingDetails.concentration,
           },
         });
-      } else if (details?.type === ActionType.FRAME) {
+      } else if (details.type === ActionType.FRAME) {
         await tx.frameAction.create({
           data: {
             actionId: createdAction.id,
             quantity: details.quantity,
           },
         });
-      } else if (details?.type === ActionType.TREATMENT) {
+      } else if (details.type === ActionType.TREATMENT) {
         await tx.treatmentAction.create({
           data: {
             actionId: createdAction.id,
@@ -89,6 +92,18 @@ export class ActionsService {
             quantity: details.quantity,
             unit: details.unit,
             duration: details.duration,
+          },
+        });
+      } else if (details.type === ActionType.BOX_CONFIGURATION) {
+        await tx.boxConfigurationAction.create({
+          data: {
+            actionId: createdAction.id,
+            boxesAdded: details.boxesAdded,
+            boxesRemoved: details.boxesRemoved,
+            framesAdded: details.framesAdded,
+            framesRemoved: details.framesRemoved,
+            totalBoxes: details.totalBoxes,
+            totalFrames: details.totalFrames,
           },
         });
       }
@@ -119,6 +134,9 @@ export class ActionsService {
         where: { actionId: action.id },
       });
       await tx.frameAction.deleteMany({
+        where: { actionId: action.id },
+      });
+      await tx.boxConfigurationAction.deleteMany({
         where: { actionId: action.id },
       });
     }
@@ -189,6 +207,7 @@ export class ActionsService {
         treatmentAction: true,
         frameAction: true,
         harvestAction: true,
+        boxConfigurationAction: true,
       },
     });
 
@@ -237,7 +256,9 @@ export class ActionsService {
       });
 
       // Add type-specific details based on the action type
-      if (details?.type === ActionType.FEEDING) {
+      if (!details) return;
+
+      if (details.type === ActionType.FEEDING) {
         const feedingDetails = details;
         await tx.feedingAction.create({
           data: {
@@ -248,14 +269,14 @@ export class ActionsService {
             concentration: feedingDetails.concentration,
           },
         });
-      } else if (details?.type === ActionType.FRAME) {
+      } else if (details.type === ActionType.FRAME) {
         await tx.frameAction.create({
           data: {
             actionId: createdAction.id,
             quantity: details.quantity,
           },
         });
-      } else if (details?.type === ActionType.TREATMENT) {
+      } else if (details.type === ActionType.TREATMENT) {
         await tx.treatmentAction.create({
           data: {
             actionId: createdAction.id,
@@ -263,6 +284,18 @@ export class ActionsService {
             quantity: details.quantity,
             unit: details.unit,
             duration: details.duration,
+          },
+        });
+      } else if (details.type === ActionType.BOX_CONFIGURATION) {
+        await tx.boxConfigurationAction.create({
+          data: {
+            actionId: createdAction.id,
+            boxesAdded: details.boxesAdded,
+            boxesRemoved: details.boxesRemoved,
+            framesAdded: details.framesAdded,
+            framesRemoved: details.framesRemoved,
+            totalBoxes: details.totalBoxes,
+            totalFrames: details.totalFrames,
           },
         });
       }
@@ -275,6 +308,7 @@ export class ActionsService {
           treatmentAction: true,
           frameAction: true,
           harvestAction: true,
+          boxConfigurationAction: true,
         },
       });
     });
@@ -353,6 +387,24 @@ export class ActionsService {
             type: ActionType.HARVEST,
             amount: prismaAction.harvestAction.amount,
             unit: prismaAction.harvestAction.unit,
+          },
+        };
+
+      case ActionType.BOX_CONFIGURATION:
+        if (!prismaAction.boxConfigurationAction) {
+          throw new Error('Box configuration action details missing');
+        }
+        return {
+          ...base,
+          type: ActionType.BOX_CONFIGURATION,
+          details: {
+            type: ActionType.BOX_CONFIGURATION as const,
+            boxesAdded: prismaAction.boxConfigurationAction.boxesAdded,
+            boxesRemoved: prismaAction.boxConfigurationAction.boxesRemoved,
+            framesAdded: prismaAction.boxConfigurationAction.framesAdded,
+            framesRemoved: prismaAction.boxConfigurationAction.framesRemoved,
+            totalBoxes: prismaAction.boxConfigurationAction.totalBoxes,
+            totalFrames: prismaAction.boxConfigurationAction.totalFrames,
           },
         };
 

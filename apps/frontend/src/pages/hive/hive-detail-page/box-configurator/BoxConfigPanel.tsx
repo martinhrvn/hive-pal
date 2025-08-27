@@ -26,7 +26,7 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
 
   const handleMaxFrameCountChange = (value: string) => {
     const num = parseInt(value, 10);
-    if (!isNaN(num) && num > 0) {
+    if (!isNaN(num) && num >= 0) {
       onUpdate({ 
         ...box, 
         maxFrameCount: num,
@@ -93,7 +93,7 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
           </Label>
           <Slider
             id="frame-count"
-            min={1}
+            min={0}
             max={box.maxFrameCount || 10}
             step={1}
             value={[box.frameCount]}
@@ -107,7 +107,7 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
           <Input
             id="max-frames"
             type="number"
-            min="1"
+            min="0"
             max="20"
             value={box.maxFrameCount || 10}
             onChange={(e) => handleMaxFrameCountChange(e.target.value)}

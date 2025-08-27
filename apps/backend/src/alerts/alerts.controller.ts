@@ -18,6 +18,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { RequestWithApiary } from '../interface/request-with.apiary';
 import { AlertsService } from './alerts.service';
 import { AlertsScheduler } from './alerts.scheduler';
 import {
@@ -46,10 +47,12 @@ export class AlertsController {
   })
   async findAll(
     @Query(new ZodValidationPipe(alertFilterSchema)) query: AlertFilter,
-    @Request() req: any,
+    @Request() req: RequestWithApiary,
   ): Promise<AlertResponse[]> {
     return this.alertsService.findAll({
-      ...req.apiaryContext,
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+      includeSuperseded: query?.includeSuperseded ?? false,
       ...(query || {}),
     });
   }
@@ -66,9 +69,12 @@ export class AlertsController {
   })
   async findOne(
     @Param('id') id: string,
-    @Request() req: any,
+    @Request() req: RequestWithApiary,
   ): Promise<AlertResponse> {
-    return this.alertsService.findOne(id, req.apiaryContext);
+    return this.alertsService.findOne(id, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Patch(':id')
@@ -84,9 +90,12 @@ export class AlertsController {
   async update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateAlertSchema)) updateAlertDto: UpdateAlert,
-    @Request() req: any,
+    @Request() req: RequestWithApiary,
   ): Promise<AlertResponse> {
-    return this.alertsService.update(id, updateAlertDto, req.apiaryContext);
+    return this.alertsService.update(id, updateAlertDto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Post(':id/dismiss')
@@ -101,9 +110,12 @@ export class AlertsController {
   })
   async dismiss(
     @Param('id') id: string,
-    @Request() req: any,
+    @Request() req: RequestWithApiary,
   ): Promise<AlertResponse> {
-    return this.alertsService.dismiss(id, req.apiaryContext);
+    return this.alertsService.dismiss(id, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Post(':id/resolve')
@@ -118,9 +130,12 @@ export class AlertsController {
   })
   async resolve(
     @Param('id') id: string,
-    @Request() req: any,
+    @Request() req: RequestWithApiary,
   ): Promise<AlertResponse> {
-    return this.alertsService.resolve(id, req.apiaryContext);
+    return this.alertsService.resolve(id, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Post('check')
@@ -143,7 +158,7 @@ export class AlertsController {
     status: 200,
     description: 'List of registered checkers',
   })
-  async getCheckersStatus(): Promise<{ checkers: string[] }> {
+  getCheckersStatus(): { checkers: string[] } {
     return {
       checkers: this.alertsScheduler.getRegisteredCheckers(),
     };

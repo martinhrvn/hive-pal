@@ -5,6 +5,7 @@ export enum ActionType {
   TREATMENT = 'TREATMENT',
   FRAME = 'FRAME',
   HARVEST = 'HARVEST',
+  BOX_CONFIGURATION = 'BOX_CONFIGURATION',
   OTHER = 'OTHER',
 }
 

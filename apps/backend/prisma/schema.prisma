@@ -163,6 +163,7 @@ model Action {
   treatmentAction TreatmentAction?
   frameAction     FrameAction?
   harvestAction   HarvestAction?
+  boxConfigurationAction BoxConfigurationAction?
 
   @@index([hiveId])
   @@index([inspectionId])
@@ -207,6 +208,19 @@ model HarvestAction {
   action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
   amount   Float  // kg of honey harvested from this hive
   unit     String @default("kg") // Unit of measurement
+}
+
+// Box configuration change details
+model BoxConfigurationAction {
+  id            String @id @default(uuid())
+  actionId      String @unique
+  action        Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  boxesAdded    Int    @default(0) // Number of boxes added
+  boxesRemoved  Int    @default(0) // Number of boxes removed
+  framesAdded   Int    @default(0) // Total number of frames added
+  framesRemoved Int    @default(0) // Total number of frames removed
+  totalBoxes    Int    // Total boxes after the change
+  totalFrames   Int    // Total frames after the change
 }
 
 // Harvest tracking
@@ -283,6 +297,7 @@ enum ActionType {
   TREATMENT
   FRAME
   HARVEST
+  BOX_CONFIGURATION
   OTHER
 }
 

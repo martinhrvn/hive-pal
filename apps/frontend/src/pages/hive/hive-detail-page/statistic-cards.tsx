@@ -47,7 +47,7 @@ export const StatisticCards = ({ score }: { score: HiveScore }) => {
 
   return (
     <Card className="p-6">
-      <div className="h-full space-y-8 grid grid-cols-2 items-center justify-center">
+      <div className="h-full grid grid-cols-2 items-center justify-center">
         <ScoreItem
           title="Overall Score"
           value={score.overallScore}

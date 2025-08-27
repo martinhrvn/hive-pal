@@ -135,17 +135,18 @@ export class HiveService {
                 year: hive.queens[0].year || undefined,
               }
             : null,
-        alerts: hive.alerts?.map((alert) => ({
-          id: alert.id,
-          hiveId: alert.hiveId || undefined,
-          type: alert.type,
-          message: alert.message,
-          severity: alert.severity as AlertSeverity,
-          status: alert.status as AlertStatus,
-          metadata: alert.metadata as Record<string, unknown> | undefined,
-          createdAt: alert.createdAt.toISOString(),
-          updatedAt: alert.updatedAt.toISOString(),
-        })) || [],
+        alerts:
+          hive.alerts?.map((alert) => ({
+            id: alert.id,
+            hiveId: alert.hiveId || undefined,
+            type: alert.type,
+            message: alert.message,
+            severity: alert.severity as AlertSeverity,
+            status: alert.status as AlertStatus,
+            metadata: alert.metadata as Record<string, string> | undefined,
+            createdAt: alert.createdAt.toISOString(),
+            updatedAt: alert.updatedAt.toISOString(),
+          })) || [],
       };
 
       // Add boxes if requested
@@ -271,17 +272,18 @@ export class HiveService {
             installedAt: activeQueen.installedAt?.toISOString(),
           }
         : null,
-      alerts: hive.alerts?.map((alert) => ({
-        id: alert.id,
-        hiveId: alert.hiveId || undefined,
-        type: alert.type,
-        message: alert.message,
-        severity: alert.severity as AlertSeverity,
-        status: alert.status as AlertStatus,
-        metadata: alert.metadata as Record<string, unknown> | undefined,
-        createdAt: alert.createdAt.toISOString(),
-        updatedAt: alert.updatedAt.toISOString(),
-      })) || [],
+      alerts:
+        hive.alerts?.map((alert) => ({
+          id: alert.id,
+          hiveId: alert.hiveId || undefined,
+          type: alert.type,
+          message: alert.message,
+          severity: alert.severity as AlertSeverity,
+          status: alert.status as AlertStatus,
+          metadata: alert.metadata as Record<string, string> | undefined,
+          createdAt: alert.createdAt.toISOString(),
+          updatedAt: alert.updatedAt.toISOString(),
+        })) || [],
     };
   }
 
@@ -402,12 +404,39 @@ export class HiveService {
           userId: filter.userId,
         },
       },
+      include: {
+        boxes: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
+      },
     });
 
     if (!hive) {
       this.logger.warn(`Hive with ID: ${id} not found when updating boxes`);
       throw new NotFoundException(`Hive with id ${id} not found`);
     }
+
+    // Calculate changes before the transaction
+    const oldBoxes = hive.boxes || [];
+    const newBoxes = updateHiveBoxesDto.boxes || [];
+
+    const oldBoxCount = oldBoxes.length;
+    const newBoxCount = newBoxes.length;
+    const oldFrameCount = oldBoxes.reduce(
+      (sum, box) => sum + (box.frameCount || 0),
+      0,
+    );
+    const newFrameCount = newBoxes.reduce(
+      (sum, box) => sum + (box.frameCount || 0),
+      0,
+    );
+
+    const boxesAdded = Math.max(0, newBoxCount - oldBoxCount);
+    const boxesRemoved = Math.max(0, oldBoxCount - newBoxCount);
+    const framesAdded = Math.max(0, newFrameCount - oldFrameCount);
+    const framesRemoved = Math.max(0, oldFrameCount - newFrameCount);
 
     this.logger.debug(`Found hive, proceeding with box updates`);
     // Use a transaction to ensure atomicity
@@ -441,6 +470,44 @@ export class HiveService {
 
       await Promise.all(boxPromises);
       this.logger.debug(`All new boxes created successfully`);
+
+      // Create action record if there were changes
+      if (
+        boxesAdded > 0 ||
+        boxesRemoved > 0 ||
+        framesAdded > 0 ||
+        framesRemoved > 0
+      ) {
+        this.logger.debug(
+          `Creating box configuration action for tracking changes`,
+        );
+
+        // Create the action record
+        const action = await tx.action.create({
+          data: {
+            hiveId: id,
+            type: 'BOX_CONFIGURATION',
+            notes:
+              `Box configuration updated: ${boxesAdded > 0 ? `+${boxesAdded} boxes` : ''}${boxesRemoved > 0 ? `-${boxesRemoved} boxes` : ''} ${framesAdded > 0 ? `+${framesAdded} frames` : ''}${framesRemoved > 0 ? `-${framesRemoved} frames` : ''}`.trim(),
+            date: new Date(),
+          },
+        });
+
+        // Create the box configuration action details
+        await tx.boxConfigurationAction.create({
+          data: {
+            actionId: action.id,
+            boxesAdded,
+            boxesRemoved,
+            framesAdded,
+            framesRemoved,
+            totalBoxes: newBoxCount,
+            totalFrames: newFrameCount,
+          },
+        });
+
+        this.logger.debug(`Box configuration action created successfully`);
+      }
 
       // Return the hive with the updated boxes
       return tx.hive.findUnique({

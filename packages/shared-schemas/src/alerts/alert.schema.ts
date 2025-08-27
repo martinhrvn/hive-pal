@@ -3,10 +3,15 @@ import { z } from 'zod';
 // Enums
 export const alertSeveritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH']);
 
-export const alertStatusSchema = z.enum(['ACTIVE', 'DISMISSED', 'RESOLVED', 'SUPERSEDED']);
+export const alertStatusSchema = z.enum([
+  'ACTIVE',
+  'DISMISSED',
+  'RESOLVED',
+  'SUPERSEDED',
+]);
 
 // Base schemas
-export const alertMetadataSchema = z.record(z.unknown()).optional();
+export const alertMetadataSchema = z.record(z.string(), z.string()).optional();
 
 export const createAlertSchema = z.object({
   hiveId: z.string().uuid().optional(),
@@ -16,9 +21,11 @@ export const createAlertSchema = z.object({
   metadata: alertMetadataSchema,
 });
 
-export const updateAlertSchema = z.object({
-  status: alertStatusSchema,
-}).partial();
+export const updateAlertSchema = z
+  .object({
+    status: alertStatusSchema,
+  })
+  .partial();
 
 export const alertResponseSchema = z.object({
   id: z.string().uuid(),
@@ -32,13 +39,15 @@ export const alertResponseSchema = z.object({
   updatedAt: z.string().datetime().or(z.date()),
 });
 
-export const alertFilterSchema = z.object({
-  hiveId: z.string().uuid().optional(),
-  type: z.string().optional(),
-  severity: alertSeveritySchema.optional(),
-  status: alertStatusSchema.optional(),
-  includeSuperseded: z.boolean().default(false),
-}).optional();
+export const alertFilterSchema = z
+  .object({
+    hiveId: z.string().uuid().optional(),
+    type: z.string().optional(),
+    severity: alertSeveritySchema.optional(),
+    status: alertStatusSchema.optional(),
+    includeSuperseded: z.boolean().optional().default(false),
+  })
+  .optional();
 
 // Types
 export type AlertSeverity = z.infer<typeof alertSeveritySchema>;

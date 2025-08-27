@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
+import { Alert, Prisma } from '@prisma/client';
 import {
   CreateAlert,
   UpdateAlert,
@@ -29,7 +30,7 @@ export class AlertsService {
         type: createAlertDto.type,
         message: createAlertDto.message,
         severity: createAlertDto.severity,
-        metadata: createAlertDto.metadata as any,
+        metadata: (createAlertDto.metadata as Record<string, string>) ?? null,
         hiveId: createAlertDto.hiveId || null,
       },
     });
@@ -45,7 +46,7 @@ export class AlertsService {
       `Finding alerts for apiary ${filter.apiaryId} and user ${filter.userId}`,
     );
 
-    const where: any = {};
+    const where: Prisma.AlertWhereInput = {};
 
     // Add hive filter with apiary/user context
     if (filter.hiveId) {
@@ -88,7 +89,7 @@ export class AlertsService {
     }
 
     const alerts = await this.prisma.alert.findMany({
-      where,
+      where: where,
       include: {
         hive: {
           select: {
@@ -220,9 +221,7 @@ export class AlertsService {
     const existingActiveAlert = existingAlerts.find(
       (alert) => alert.status === 'ACTIVE',
     );
-    const existingDismissedAlert = existingAlerts.find(
-      (alert) => alert.status === 'DISMISSED',
-    );
+    existingAlerts.find((alert) => alert.status === 'DISMISSED');
 
     // If there's an active alert with different severity, supersede it
     if (
@@ -258,15 +257,17 @@ export class AlertsService {
     }
   }
 
-  private mapToResponse(alert: any): AlertResponse {
+  private mapToResponse(
+    alert: Alert & { hive?: { id: string; name: string } | null },
+  ): AlertResponse {
     return {
       id: alert.id,
-      hiveId: alert.hiveId || undefined,
+      hiveId: alert.hiveId ?? undefined,
       type: alert.type,
       message: alert.message,
       severity: alert.severity as AlertSeverity,
       status: alert.status as AlertStatus,
-      metadata: alert.metadata || undefined,
+      metadata: alert.metadata as Record<string, string>,
       createdAt: alert.createdAt.toISOString(),
       updatedAt: alert.updatedAt.toISOString(),
     };

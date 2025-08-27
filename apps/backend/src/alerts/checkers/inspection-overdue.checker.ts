@@ -26,7 +26,11 @@ export class InspectionOverdueChecker extends HiveChecker {
     }
 
     // Get inspection frequency from hive settings (default 7 days)
-    const inspectionFrequency = hive.settings?.inspection?.frequencyDays || 7;
+    const settings = hive.settings as
+      | { inspection?: { frequencyDays?: number } }
+      | null
+      | undefined;
+    const inspectionFrequency = settings?.inspection?.frequencyDays ?? 7;
 
     // If no last inspection date, consider it overdue immediately
     if (!hive.lastInspectionDate) {
@@ -35,7 +39,7 @@ export class InspectionOverdueChecker extends HiveChecker {
         message: `Hive "${hive.name}" has no recorded inspections and needs attention`,
         severity: 'MEDIUM',
         metadata: {
-          daysSinceLastInspection: null,
+          daysSinceLastInspection: null as number | null,
           expectedFrequencyDays: inspectionFrequency,
           hiveName: hive.name,
         },
