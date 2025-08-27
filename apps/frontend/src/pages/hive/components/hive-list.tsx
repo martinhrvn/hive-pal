@@ -23,13 +23,15 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
   );
 
   const feedingInfo = useMemo(() => {
-    if (!actions || !hiveDetails?.settings) return null;
+    if (!actions) return null;
 
-    const isInWindow = isWithinFeedingWindow(hiveDetails.settings);
+    // Use settings if available, otherwise the utility functions will use defaults
+    const settings = hiveDetails?.settings || undefined;
+    const isInWindow = isWithinFeedingWindow(settings);
     if (!isInWindow) return null;
 
-    const totals = calculateFeedingTotals(actions, hiveDetails.settings);
-    const optimalAmount = hiveDetails.settings.autumnFeeding?.amountKg ?? 12;
+    const totals = calculateFeedingTotals(actions, settings);
+    const optimalAmount = settings?.autumnFeeding?.amountKg ?? 12;
 
     return {
       fed: totals.autumnSugarKg,
