@@ -27,7 +27,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { InspectionResponse, InspectionStatus, ActionResponse, CreateStandaloneAction } from 'shared-schemas';
+import {
+  InspectionResponse,
+  InspectionStatus,
+  ActionResponse,
+  CreateStandaloneAction,
+  ActionType,
+} from 'shared-schemas';
 import { useActions, useInspections, useCreateAction } from '@/api/hooks';
 import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
@@ -45,14 +51,23 @@ interface HiveTimelineProps {
   hiveId: string | undefined;
 }
 
-type EventTypeFilter = 'all' | 'inspections' | 'feeding' | 'treatment' | 'harvest' | 'notes' | 'other';
+type EventTypeFilter =
+  | 'all'
+  | 'inspections'
+  | 'feeding'
+  | 'treatment'
+  | 'harvest'
+  | 'notes'
+  | 'other';
 type DateRangeFilter = 'all' | '1month' | '3months' | '6months' | 'year';
 
 export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
-  const [eventTypeFilter, setEventTypeFilter] = useState<EventTypeFilter>('all');
-  const [dateRangeFilter, setDateRangeFilter] = useState<DateRangeFilter>('all');
+  const [eventTypeFilter, setEventTypeFilter] =
+    useState<EventTypeFilter>('all');
+  const [dateRangeFilter, setDateRangeFilter] =
+    useState<DateRangeFilter>('all');
   const [noteContent, setNoteContent] = useState('');
   const [isSavingNote, setIsSavingNote] = useState(false);
   const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -61,19 +76,19 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
   // Fetch inspections and actions
   const { data: inspections, isLoading: inspectionsLoading } = useInspections(
-    hiveId ? { hiveId } : undefined
+    hiveId ? { hiveId } : undefined,
   );
 
   const { data: actions, isLoading: actionsLoading } = useActions(
     hiveId ? { hiveId } : undefined,
-    { enabled: !!hiveId }
+    { enabled: !!hiveId },
   );
 
   // Combine all events into a unified timeline with filtering
   const timelineEvents = useMemo(() => {
     const events: TimelineEvent[] = [];
     const now = new Date();
-    
+
     // Calculate date range
     let startDate: Date | null = null;
     if (dateRangeFilter !== 'all') {
@@ -94,7 +109,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
     }
 
     // Add inspections to timeline
-    if (inspections && (eventTypeFilter === 'all' || eventTypeFilter === 'inspections')) {
+    if (
+      inspections &&
+      (eventTypeFilter === 'all' || eventTypeFilter === 'inspections')
+    ) {
       inspections.forEach(inspection => {
         const eventDate = new Date(inspection.date);
         if (!startDate || eventDate >= startDate) {
@@ -110,40 +128,56 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
     // Add standalone actions to timeline (not tied to inspections)
     if (actions) {
-      actions.filter(action => !action.inspectionId).forEach(action => {
-        const eventDate = new Date(action.date);
-        if (!startDate || eventDate >= startDate) {
-          // Filter by action type
-          let includeAction = false;
-          if (eventTypeFilter === 'all') {
-            includeAction = true;
-          } else if (eventTypeFilter === 'feeding' && action.type === 'FEEDING') {
-            includeAction = true;
-          } else if (eventTypeFilter === 'treatment' && action.type === 'TREATMENT') {
-            includeAction = true;
-          } else if (eventTypeFilter === 'harvest' && action.type === 'HARVEST') {
-            includeAction = true;
-          } else if (eventTypeFilter === 'notes' && action.type === 'NOTE') {
-            includeAction = true;
-          } else if (eventTypeFilter === 'other' && (action.type === 'FRAME' || action.type === 'OTHER' || action.type === 'BOX_CONFIGURATION')) {
-            includeAction = true;
+      actions
+        .filter(action => !action.inspectionId)
+        .forEach(action => {
+          const eventDate = new Date(action.date);
+          if (!startDate || eventDate >= startDate) {
+            // Filter by action type
+            let includeAction = false;
+            if (eventTypeFilter === 'all') {
+              includeAction = true;
+            } else if (
+              eventTypeFilter === 'feeding' &&
+              action.type === 'FEEDING'
+            ) {
+              includeAction = true;
+            } else if (
+              eventTypeFilter === 'treatment' &&
+              action.type === 'TREATMENT'
+            ) {
+              includeAction = true;
+            } else if (
+              eventTypeFilter === 'harvest' &&
+              action.type === 'HARVEST'
+            ) {
+              includeAction = true;
+            } else if (eventTypeFilter === 'notes' && action.type === 'NOTE') {
+              includeAction = true;
+            } else if (
+              eventTypeFilter === 'other' &&
+              (action.type === 'FRAME' ||
+                action.type === 'OTHER' ||
+                action.type === 'BOX_CONFIGURATION')
+            ) {
+              includeAction = true;
+            }
+
+            if (includeAction) {
+              events.push({
+                id: `action-${action.id}`,
+                date: action.date,
+                type: 'action',
+                data: action,
+              });
+            }
           }
-          
-          if (includeAction) {
-            events.push({
-              id: `action-${action.id}`,
-              date: action.date,
-              type: 'action',
-              data: action,
-            });
-          }
-        }
-      });
+        });
     }
 
     // Sort by date (newest first)
-    return events.sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
+    return events.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
   }, [inspections, actions, eventTypeFilter, dateRangeFilter]);
 
@@ -154,8 +188,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
   const formatDate = (date: string) => {
     const parsedDate = new Date(date);
     const now = new Date();
-    const diffInDays = Math.floor((now.getTime() - parsedDate.getTime()) / (1000 * 60 * 60 * 24));
-    
+    const diffInDays = Math.floor(
+      (now.getTime() - parsedDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
     if (diffInDays < 14) {
       return formatDistanceToNow(parsedDate, { addSuffix: true });
     }
@@ -188,7 +224,9 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
       case 'FEEDING':
         if (action.details?.type === 'FEEDING') {
           return `Fed ${action.details.amount} ${action.details.unit} of ${action.details.feedType}${
-            action.details.concentration ? ` (${action.details.concentration})` : ''
+            action.details.concentration
+              ? ` (${action.details.concentration})`
+              : ''
           }`;
         }
         return 'Feeding';
@@ -219,11 +257,15 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
     }
   };
 
-  const renderTimelineEvent = (event: TimelineEvent, _index: number, isLast: boolean) => {
+  const renderTimelineEvent = (
+    event: TimelineEvent,
+    _index: number,
+    isLast: boolean,
+  ) => {
     const isInspection = event.type === 'inspection';
-    const inspection = isInspection ? event.data as InspectionResponse : null;
-    const action = !isInspection ? event.data as ActionResponse : null;
-    
+    const inspection = isInspection ? (event.data as InspectionResponse) : null;
+    const action = !isInspection ? (event.data as ActionResponse) : null;
+
     const isScheduled = inspection?.status === InspectionStatus.SCHEDULED;
     const isCancelled = inspection?.status === InspectionStatus.CANCELLED;
 
@@ -231,12 +273,14 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
       <div key={event.id} className="flex gap-4 pb-8 relative">
         {/* Timeline line and dot */}
         <div className="flex flex-col items-center">
-          <div className={cn(
-            "w-3 h-3 rounded-full border-2 bg-background z-10",
-            isInspection ? "border-blue-500" : "border-gray-400",
-            isScheduled && "border-amber-500",
-            isCancelled && "border-gray-300"
-          )}>
+          <div
+            className={cn(
+              'w-3 h-3 rounded-full border-2 bg-background z-10',
+              isInspection ? 'border-blue-500' : 'border-gray-400',
+              isScheduled && 'border-amber-500',
+              isCancelled && 'border-gray-300',
+            )}
+          >
             {isInspection && (
               <CircleIcon className="w-2 h-2 -mt-0.5 -ml-0.5 fill-current text-blue-500" />
             )}
@@ -255,7 +299,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
           {/* Inspection content */}
           {isInspection && inspection && (
-            <div 
+            <div
               className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 -ml-2 transition-colors"
               onClick={() => navigate(`/inspections/${inspection.id}`)}
             >
@@ -263,17 +307,23 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
                 <CalendarIcon className="h-4 w-4 text-blue-500" />
                 <span className="font-medium text-sm">Inspection</span>
                 {isScheduled && (
-                  <Badge variant="outline" className="text-amber-600 border-amber-600 text-xs">
+                  <Badge
+                    variant="outline"
+                    className="text-amber-600 border-amber-600 text-xs"
+                  >
                     Scheduled
                   </Badge>
                 )}
                 {isCancelled && (
-                  <Badge variant="outline" className="text-gray-500 border-gray-300 text-xs">
+                  <Badge
+                    variant="outline"
+                    className="text-gray-500 border-gray-300 text-xs"
+                  >
                     Cancelled
                   </Badge>
                 )}
               </div>
-              
+
               {!isScheduled && !isCancelled && inspection.observations && (
                 <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
                   {inspection.observations.strength !== null && (
@@ -291,12 +341,13 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
                   {inspection.observations.queenSeen !== null && (
                     <span className="flex items-center gap-1">
                       <Crown className="h-3 w-3" />
-                      Queen {inspection.observations.queenSeen ? 'seen' : 'not seen'}
+                      Queen{' '}
+                      {inspection.observations.queenSeen ? 'seen' : 'not seen'}
                     </span>
                   )}
                 </div>
               )}
-              
+
               {inspection.notes && (
                 <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                   <FileTextIcon className="h-3 w-3" />
@@ -335,7 +386,9 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
             <div key={i} className="flex gap-4 pb-8 relative">
               <div className="flex flex-col items-center">
                 <div className="w-3 h-3 rounded-full bg-gray-200 animate-pulse" />
-                {i < 3 && <div className="w-0.5 bg-gray-100 h-full absolute top-3 left-1.5" />}
+                {i < 3 && (
+                  <div className="w-0.5 bg-gray-100 h-full absolute top-3 left-1.5" />
+                )}
               </div>
               <div className="flex-1">
                 <div className="h-3 bg-gray-200 rounded w-24 mb-2 animate-pulse"></div>
@@ -348,28 +401,26 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
     );
   }
 
-  const hasActiveFilters = eventTypeFilter !== 'all' || dateRangeFilter !== 'all';
+  const hasActiveFilters =
+    eventTypeFilter !== 'all' || dateRangeFilter !== 'all';
 
   const handleSaveNote = async () => {
     if (!hiveId || !noteContent.trim()) return;
-    
+
     setIsSavingNote(true);
     try {
       const noteAction: CreateStandaloneAction = {
         hiveId,
-        type: 'NOTE',
-        details: {
-          type: 'NOTE',
-          content: noteContent.trim(),
-        },
+        type: ActionType.NOTE,
         notes: noteContent.trim(),
+        details: { type: ActionType.NOTE, content: noteContent.trim() },
         date: new Date().toISOString(),
       };
-      
+
       await createAction.mutateAsync(noteAction);
       setNoteContent('');
       toast.success('Note added successfully');
-      
+
       // Reset textarea height
       if (noteTextareaRef.current) {
         noteTextareaRef.current.style.height = 'auto';
@@ -383,7 +434,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNoteContent(e.target.value);
-    
+
     // Auto-resize textarea
     const textarea = e.target;
     textarea.style.height = 'auto';
@@ -422,7 +473,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
       {/* Filters */}
       <div className="flex gap-2 mb-4 flex-wrap">
-        <Select value={eventTypeFilter} onValueChange={(value) => setEventTypeFilter(value as EventTypeFilter)}>
+        <Select
+          value={eventTypeFilter}
+          onValueChange={value => setEventTypeFilter(value as EventTypeFilter)}
+        >
           <SelectTrigger className="w-40">
             <Filter className="h-3 w-3 mr-2" />
             <SelectValue placeholder="Event type" />
@@ -438,7 +492,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
           </SelectContent>
         </Select>
 
-        <Select value={dateRangeFilter} onValueChange={(value) => setDateRangeFilter(value as DateRangeFilter)}>
+        <Select
+          value={dateRangeFilter}
+          onValueChange={value => setDateRangeFilter(value as DateRangeFilter)}
+        >
           <SelectTrigger className="w-40">
             <CalendarIcon className="h-3 w-3 mr-2" />
             <SelectValue placeholder="Date range" />
@@ -471,18 +528,18 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
       <div className="relative">
         {displayedEvents.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
-            {hasActiveFilters 
+            {hasActiveFilters
               ? 'No events match the selected filters'
               : 'No activity recorded for this hive yet'}
           </div>
         ) : (
           <>
-            {displayedEvents.map((event, index) => 
+            {displayedEvents.map((event, index) =>
               renderTimelineEvent(
-                event, 
-                index, 
-                index === displayedEvents.length - 1
-              )
+                event,
+                index,
+                index === displayedEvents.length - 1,
+              ),
             )}
 
             {timelineEvents.length > MAX_DISPLAYED && (
