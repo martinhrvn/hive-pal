@@ -59,6 +59,7 @@ model Hive {
   inspections      Inspection[]
   actions          Action[]
   harvestHives     HarvestHive[]
+  alerts           Alert[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -357,4 +358,38 @@ model WeatherForecast {
   @@index([apiaryId])
   @@index([date])
   @@index([apiaryId, date])
+}
+
+// Alert system for hive management notifications
+model Alert {
+  id        String        @id @default(uuid())
+  hiveId    String?       // Optional - alerts can be hive-specific or general
+  hive      Hive?         @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  type      String        // e.g., "inspection_overdue", "feeding_required", etc.
+  message   String        // Human-readable alert message
+  severity  AlertSeverity // LOW, MEDIUM, HIGH
+  status    AlertStatus   @default(ACTIVE) // ACTIVE, DISMISSED, RESOLVED, SUPERSEDED
+  metadata  Json?         // Additional checker-specific data
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([hiveId])
+  @@index([type])
+  @@index([status])
+  @@index([severity])
+  @@index([hiveId, type, status]) // Composite index for efficient alert queries
+  @@index([createdAt])
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum AlertStatus {
+  ACTIVE      // Alert is currently relevant
+  DISMISSED   // User has dismissed the alert
+  RESOLVED    // Issue has been resolved
+  SUPERSEDED  // Alert replaced by newer alert with different priority
 }

@@ -7,3 +7,4 @@ export * from './queens';
 export * from './auth';
 export * from './weather';
 export * from './harvests';
+export * from './alerts';

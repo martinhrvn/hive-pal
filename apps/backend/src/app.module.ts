@@ -19,6 +19,7 @@ import { PrometheusModule } from './health/prometheus/prometheus.module';
 import { ActionsModule } from './actions/actions.module';
 import { WeatherModule } from './weather/weather.module';
 import { HarvestsModule } from './harvests/harvests.module';
+import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { HarvestsModule } from './harvests/harvests.module';
     ActionsModule,
     WeatherModule,
     HarvestsModule,
+    AlertsModule,
   ],
   controllers: [AppController],
   providers: [
