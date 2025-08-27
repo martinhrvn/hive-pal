@@ -32,8 +32,24 @@ export class HiveService {
 
   async create(createHiveDto: CreateHive): Promise<CreateHiveResponse> {
     this.logger.log(`Creating new hive in apiary ${createHiveDto.apiaryId}`);
+    
+    // Apply default settings if not provided
+    const defaultSettings = {
+      autumnFeeding: {
+        startMonth: 8,
+        endMonth: 10,
+        amountKg: 12,
+      },
+      inspection: {
+        frequencyDays: 7,
+      },
+    };
+    
     const hive = await this.prisma.hive.create({
-      data: createHiveDto,
+      data: {
+        ...createHiveDto,
+        settings: createHiveDto.settings || defaultSettings,
+      },
     });
     this.logger.log(`Hive created with ID: ${hive.id}`);
     return {
@@ -99,6 +115,7 @@ export class HiveService {
         lastInspectionDate: hive.inspections[0]?.date?.toISOString(),
         positionRow: hive.positionRow ?? undefined,
         positionCol: hive.positionCol ?? undefined,
+        settings: hive.settings || undefined,
         activeQueen:
           hive.queens.length > 0
             ? {
@@ -203,6 +220,7 @@ export class HiveService {
           ? hive.installationDate
           : hive.installationDate?.toISOString(),
       lastInspectionDate: latestInspection?.date?.toISOString(),
+      settings: hive.settings || undefined,
       boxes: hive.boxes.map((box) => ({
         id: box.id,
         position: box.position,
@@ -293,6 +311,7 @@ export class HiveService {
       installationDate: updatedHive.installationDate?.toISOString(),
       positionRow: updatedHive.positionRow ?? undefined,
       positionCol: updatedHive.positionCol ?? undefined,
+      settings: updatedHive.settings || undefined,
     };
   }
 
@@ -432,6 +451,7 @@ export class HiveService {
         typeof updatedHive.installationDate === 'string'
           ? updatedHive.installationDate
           : updatedHive.installationDate?.toISOString(),
+      settings: updatedHive.settings || undefined,
     };
   }
 }

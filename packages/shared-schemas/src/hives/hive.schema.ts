@@ -3,6 +3,18 @@ import { hiveStatusSchema } from './status';
 import { boxSchema } from './box.schema';
 import { activeQueenSchema } from '../queens';
 
+// Schema for hive settings
+export const hiveSettingsSchema = z.object({
+  autumnFeeding: z.object({
+    startMonth: z.number().int().min(1).max(12).default(8),
+    endMonth: z.number().int().min(1).max(12).default(10),
+    amountKg: z.number().positive().default(12),
+  }).optional(),
+  inspection: z.object({
+    frequencyDays: z.number().int().positive().default(7),
+  }).optional(),
+}).optional();
+
 // Base schema for creating hives
 export const createHiveSchema = z.object({
   name: z.string(),
@@ -12,6 +24,7 @@ export const createHiveSchema = z.object({
   status: hiveStatusSchema.optional(),
   positionRow: z.number().int().min(0).optional(),
   positionCol: z.number().int().min(0).optional(),
+  settings: hiveSettingsSchema,
 });
 
 export const createHiveResponseSchema = z.object({
@@ -33,6 +46,7 @@ export const updateHiveResponseSchema = z.object({
   status: hiveStatusSchema.optional(),
   positionRow: z.number().int().min(0).optional(),
   positionCol: z.number().int().min(0).optional(),
+  settings: hiveSettingsSchema,
 });
 
 export const hiveScoreSchema = z.object({
@@ -52,6 +66,7 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   hiveScore: hiveScoreSchema,
   activeQueen: activeQueenSchema.nullish(),
   lastInspectionDate: z.string().datetime().or(z.date()).optional(),
+  settings: hiveSettingsSchema,
 });
 
 // Schema for basic hive response
@@ -67,6 +82,7 @@ export const hiveResponseSchema = z.object({
   positionRow: z.number().int().min(0).optional(),
   positionCol: z.number().int().min(0).optional(),
   boxes: z.array(boxSchema).optional(),
+  settings: hiveSettingsSchema,
 });
 
 // Schema for hive response with boxes (for apiary layout)
@@ -82,6 +98,7 @@ export const hiveFilterSchema = z.object({
   includeBoxes: z.boolean().optional(),
 });
 
+export type HiveSettings = z.infer<typeof hiveSettingsSchema>;
 export type CreateHive = z.infer<typeof createHiveSchema>;
 export type CreateHiveResponse = z.infer<typeof createHiveResponseSchema>;
 export type UpdateHive = z.infer<typeof updateHiveSchema>;

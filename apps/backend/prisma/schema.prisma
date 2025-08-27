@@ -53,6 +53,7 @@ model Hive {
   installationDate DateTime?
   positionRow      Int?         // Row position in apiary layout (0-based)
   positionCol      Int?         // Column position within row (0-based)
+  settings         Json?        // JSON field for hive-specific settings (feeding, inspection frequency, etc.)
   queens           Queen[]
   boxes            Box[]
   inspections      Inspection[]

@@ -33,6 +33,17 @@ export interface FeedingTotals {
   autumnSyrupLiters: number;
 }
 
+export interface HiveSettings {
+  autumnFeeding?: {
+    startMonth: number;
+    endMonth: number;
+    amountKg: number;
+  };
+  inspection?: {
+    frequencyDays: number;
+  };
+}
+
 /**
  * Calculate sugar content from syrup feeding
  */
@@ -53,10 +64,14 @@ export function calculateSugarFromSyrup(
 /**
  * Calculate feeding totals from actions
  */
-export function calculateFeedingTotals(actions: ActionResponse[]): FeedingTotals {
+export function calculateFeedingTotals(actions: ActionResponse[], hiveSettings?: HiveSettings): FeedingTotals {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1; // 1-based month
-  const isAfterAugust = currentMonth >= 8;
+  
+  // Use hive settings for autumn feeding window, with fallback to defaults
+  const autumnStartMonth = hiveSettings?.autumnFeeding?.startMonth ?? 8;
+  const autumnEndMonth = hiveSettings?.autumnFeeding?.endMonth ?? 10;
+  const isAfterAutumnStart = currentMonth >= autumnStartMonth;
   
   let totalSugarGrams = 0;
   let totalSyrupMl = 0;
@@ -104,13 +119,13 @@ export function calculateFeedingTotals(actions: ActionResponse[]): FeedingTotals
       currentYearSugarGrams += sugarGrams;
       currentYearSyrupMl += syrupMl;
       
-      // Add to autumn totals (August onwards)
-      if (actionMonth >= 8) {
+      // Add to autumn totals (within autumn feeding window)
+      if (actionMonth >= autumnStartMonth && actionMonth <= autumnEndMonth) {
         autumnSugarGrams += sugarGrams;
         autumnSyrupMl += syrupMl;
       }
-    } else if (actionYear === currentYear - 1 && actionMonth >= 8 && !isAfterAugust) {
-      // If we're before August this year, include last year's autumn feeding
+    } else if (actionYear === currentYear - 1 && actionMonth >= autumnStartMonth && actionMonth <= autumnEndMonth && !isAfterAutumnStart) {
+      // If we're before autumn start this year, include last year's autumn feeding
       autumnSugarGrams += sugarGrams;
       autumnSyrupMl += syrupMl;
     }

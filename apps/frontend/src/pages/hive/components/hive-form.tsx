@@ -18,7 +18,7 @@ import {
   PopoverContent,
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils.ts';
@@ -30,8 +30,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select.tsx';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useApiary } from '@/hooks/use-apiary';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCreateHive } from '@/api/hooks';
 import type { HiveStatus as HiveStatusEnum } from 'shared-schemas';
 
@@ -41,6 +42,16 @@ const hiveSchema = z.object({
   apiaryId: z.string(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   installationDate: z.date(),
+  settings: z.object({
+    autumnFeeding: z.object({
+      startMonth: z.number().int().min(1).max(12).default(8),
+      endMonth: z.number().int().min(1).max(12).default(10),
+      amountKg: z.number().positive().default(12),
+    }).optional(),
+    inspection: z.object({
+      frequencyDays: z.number().int().positive().default(7),
+    }).optional(),
+  }).optional(),
 });
 
 export type HiveFormData = z.infer<typeof hiveSchema>;
@@ -60,15 +71,41 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   const { mutate } = useCreateHive({
     onSuccess: () => navigate('/'),
   });
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const apiaryOptions = apiaries?.map(apiary => ({
     value: apiary.id,
     label: `${apiary.name}${apiary.location ? ` (${apiary.location})` : ''}`,
   }));
 
+  const monthOptions = [
+    { value: 1, label: 'January' },
+    { value: 2, label: 'February' },
+    { value: 3, label: 'March' },
+    { value: 4, label: 'April' },
+    { value: 5, label: 'May' },
+    { value: 6, label: 'June' },
+    { value: 7, label: 'July' },
+    { value: 8, label: 'August' },
+    { value: 9, label: 'September' },
+    { value: 10, label: 'October' },
+    { value: 11, label: 'November' },
+    { value: 12, label: 'December' },
+  ];
+
   const form = useForm<HiveFormData>({
     resolver: zodResolver(hiveSchema),
     defaultValues: {
       apiaryId: activeApiaryId ?? undefined,
+      settings: {
+        autumnFeeding: {
+          startMonth: 8,
+          endMonth: 10,
+          amountKg: 12,
+        },
+        inspection: {
+          frequencyDays: 7,
+        },
+      },
     },
   });
 
@@ -192,6 +229,124 @@ export const HiveForm: React.FC<HiveFormProps> = ({
             </FormItem>
           )}
         />
+
+        <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="outline"
+              type="button"
+              className="w-full justify-between"
+            >
+              Advanced Settings
+              {isAdvancedOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 pt-4">
+            <div className="text-sm text-muted-foreground mb-2">
+              Configure feeding and inspection preferences for this hive
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="settings.autumnFeeding.startMonth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Autumn Feeding Start</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                        value={field.value?.toString()}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {monthOptions.map(month => (
+                            <SelectItem key={month.value} value={month.value.toString()}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="settings.autumnFeeding.endMonth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Autumn Feeding End</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                        value={field.value?.toString()}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {monthOptions.map(month => (
+                            <SelectItem key={month.value} value={month.value.toString()}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="settings.autumnFeeding.amountKg"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Target Autumn Feeding (kg)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="12"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="settings.inspection.frequencyDays"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Inspection Frequency (days)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="365"
+                        placeholder="7"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 7)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         <Button disabled={isLoading} type="submit">
           {t('hive:form.submit')}
