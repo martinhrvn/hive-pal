@@ -1,4 +1,4 @@
-import { useActions } from '@/api/hooks';
+import { useActions, useHive } from '@/api/hooks';
 import { Section } from '@/components/common/section';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,24 +10,26 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { ActionType } from 'shared-schemas';
 
 interface FeedingSectionProps {
-  hiveId: string | undefined;
+  hiveId: string;
 }
 
 export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
   const { data: actions, isLoading } = useActions(
-    hiveId ? { hiveId, type: 'FEEDING' } : undefined,
+    hiveId ? { hiveId, type: ActionType.FEEDING } : undefined,
     {
       enabled: !!hiveId,
-    }
+    },
   );
+  const { data: hive } = useHive(hiveId);
 
   if (!hiveId || isLoading) {
     return (
       <Section title="Feeding">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <Card key={i} className="p-4">
               <Skeleton className="h-4 w-24 mb-2" />
               <Skeleton className="h-8 w-32" />
@@ -48,7 +50,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
     );
   }
 
-  const totals = calculateFeedingTotals(actions);
+  const totals = calculateFeedingTotals(actions, hive?.settings);
   const currentMonth = new Date().getMonth() + 1;
   const isAfterAugust = currentMonth >= 8;
 

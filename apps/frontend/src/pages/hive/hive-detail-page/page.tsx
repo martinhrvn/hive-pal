@@ -60,7 +60,7 @@ export const HiveDetailPage = () => {
                 onQueenUpdated={() => refetch()}
               />
               {/* Feeding section */}
-              <FeedingSection hiveId={hive?.id} />
+              {hive && <FeedingSection hiveId={hive.id} />}
               {/* Hive timeline */}
               <HiveTimeline hiveId={hiveId} />
             </TabsContent>
@@ -68,7 +68,7 @@ export const HiveDetailPage = () => {
             <TabsContent value="actions">
               <ActionsList hiveId={hiveId as string} />
             </TabsContent>
-            
+
             <TabsContent value="boxes">
               <BoxConfigurator hive={hive} />
             </TabsContent>

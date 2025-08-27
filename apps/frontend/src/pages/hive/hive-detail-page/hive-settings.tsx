@@ -19,7 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select.tsx';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { useUpdateHive } from '@/api/hooks';
 import { toast } from 'sonner';
 import type { HiveDetailResponse } from 'shared-schemas';
@@ -44,7 +50,10 @@ interface HiveSettingsProps {
   onHiveUpdated: () => void;
 }
 
-export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated }) => {
+export const HiveSettings: React.FC<HiveSettingsProps> = ({
+  hive,
+  onHiveUpdated,
+}) => {
   const { mutate: updateHive, isPending } = useUpdateHive();
 
   const monthOptions = [
@@ -88,6 +97,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
       {
         id: hive.id,
         data: {
+          id: hive.id,
           settings: data.settings,
         },
       },
@@ -96,11 +106,11 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
           toast.success('Hive settings updated successfully');
           onHiveUpdated();
         },
-        onError: (error) => {
+        onError: error => {
           toast.error('Failed to update hive settings');
           console.error('Update hive settings error:', error);
         },
-      }
+      },
     );
   };
 
@@ -114,22 +124,23 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
         <CardHeader>
           <CardTitle>Hive Settings</CardTitle>
           <CardDescription>
-            Configure feeding schedules and inspection frequencies specific to this hive.
+            Configure feeding schedules and inspection frequencies specific to
+            this hive.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
               {/* Autumn Feeding Settings */}
               <div className="space-y-4">
                 <div className="pb-2 border-b">
                   <h3 className="text-lg font-medium">Autumn Feeding</h3>
                   <p className="text-sm text-muted-foreground">
-                    Define the autumn feeding window and target amount for this hive.
+                    Define the autumn feeding window and target amount for this
+                    hive.
                   </p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
@@ -139,7 +150,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
                         <FormLabel>Start Month</FormLabel>
                         <FormControl>
                           <Select
-                            onValueChange={(value) => field.onChange(Number(value))}
+                            onValueChange={value =>
+                              field.onChange(Number(value))
+                            }
                             value={field.value?.toString()}
                           >
                             <SelectTrigger>
@@ -147,7 +160,10 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
                             </SelectTrigger>
                             <SelectContent>
                               {monthOptions.map(month => (
-                                <SelectItem key={month.value} value={month.value.toString()}>
+                                <SelectItem
+                                  key={month.value}
+                                  value={month.value.toString()}
+                                >
                                   {month.label}
                                 </SelectItem>
                               ))}
@@ -170,7 +186,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
                         <FormLabel>End Month</FormLabel>
                         <FormControl>
                           <Select
-                            onValueChange={(value) => field.onChange(Number(value))}
+                            onValueChange={value =>
+                              field.onChange(Number(value))
+                            }
                             value={field.value?.toString()}
                           >
                             <SelectTrigger>
@@ -178,7 +196,10 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
                             </SelectTrigger>
                             <SelectContent>
                               {monthOptions.map(month => (
-                                <SelectItem key={month.value} value={month.value.toString()}>
+                                <SelectItem
+                                  key={month.value}
+                                  value={month.value.toString()}
+                                >
                                   {month.label}
                                 </SelectItem>
                               ))}
@@ -206,7 +227,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
                             min="0"
                             placeholder="12"
                             {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            onChange={e =>
+                              field.onChange(Number(e.target.value) || 0)
+                            }
                           />
                         </FormControl>
                         <FormDescription>
@@ -227,7 +250,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
                     Set the preferred inspection frequency for this hive.
                   </p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -242,7 +265,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({ hive, onHiveUpdated 
                             max="365"
                             placeholder="7"
                             {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value) || 7)}
+                            onChange={e =>
+                              field.onChange(Number(e.target.value) || 7)
+                            }
                           />
                         </FormControl>
                         <FormDescription>

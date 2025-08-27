@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import { ActionFilter, ActionResponse, CreateStandaloneAction } from 'shared-schemas';
+import {
+  ActionFilter,
+  ActionResponse,
+  CreateStandaloneAction,
+} from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
 // Query keys
@@ -16,7 +20,7 @@ const ACTIONS_KEYS = {
 // Get all actions with optional filtering
 export const useActions = (
   filters?: ActionFilter,
-  queryOptions?: UseQueryOptions<ActionResponse[]>,
+  queryOptions?: Partial<UseQueryOptions<ActionResponse[]>>,
 ) => {
   return useQuery<ActionResponse[]>({
     queryKey: ACTIONS_KEYS.list(filters),
@@ -38,20 +42,23 @@ export const useActions = (
 // Create a new standalone action
 export const useCreateAction = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<ActionResponse, Error, CreateStandaloneAction>({
     mutationFn: async (data: CreateStandaloneAction) => {
-      const response = await apiClient.post<ActionResponse>('/api/actions', data);
+      const response = await apiClient.post<ActionResponse>(
+        '/api/actions',
+        data,
+      );
       return response.data;
     },
     onSuccess: (_, variables) => {
       // Invalidate actions queries for the affected hive
-      queryClient.invalidateQueries({ 
-        queryKey: ACTIONS_KEYS.list({ hiveId: variables.hiveId })
+      queryClient.invalidateQueries({
+        queryKey: ACTIONS_KEYS.list({ hiveId: variables.hiveId }),
       });
       // Also invalidate all actions queries
-      queryClient.invalidateQueries({ 
-        queryKey: ACTIONS_KEYS.all
+      queryClient.invalidateQueries({
+        queryKey: ACTIONS_KEYS.all,
       });
     },
   });
