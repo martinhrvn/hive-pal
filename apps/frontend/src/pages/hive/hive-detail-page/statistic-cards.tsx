@@ -52,23 +52,27 @@ export const StatisticCards = ({ score }: { score: HiveScore }) => {
           title="Overall Score"
           value={score.overallScore}
           icon={<BarChart className="text-muted-foreground/60" />}
+          emphasized
         />
 
         <ScoreItem
           title="Population"
           value={strength}
           icon={<BeeIcon className="text-muted-foreground/60" />}
+          emphasized
         />
         <ScoreItem
           title="Stores"
           value={honeyStores}
           icon={<IconJarLogoIcon className="text-muted-foreground/60" />}
+          emphasized
         />
 
         <ScoreItem
           title="Queen Score"
           value={queenScore}
           icon={<CrownIcon className="text-muted-foreground/60" />}
+          emphasized
         />
       </div>
     </Card>
