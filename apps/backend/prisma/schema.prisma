@@ -298,6 +298,7 @@ enum ActionType {
   FRAME
   HARVEST
   BOX_CONFIGURATION
+  NOTE
   OTHER
 }
 

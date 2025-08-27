@@ -66,7 +66,10 @@ export class ActionsService {
       // Add type-specific details based on the action type
       if (!details) continue;
 
-      if (details.type === ActionType.FEEDING) {
+      if (details.type === ActionType.NOTE) {
+        // For NOTE type, the content is stored in the notes field
+        // No additional table needed
+      } else if (details.type === ActionType.FEEDING) {
         const feedingDetails = details;
         await tx.feedingAction.create({
           data: {
@@ -258,7 +261,10 @@ export class ActionsService {
       // Add type-specific details based on the action type
       if (!details) return;
 
-      if (details.type === ActionType.FEEDING) {
+      if (details.type === ActionType.NOTE) {
+        // For NOTE type, the content is stored in the notes field
+        // No additional table needed
+      } else if (details.type === ActionType.FEEDING) {
         const feedingDetails = details;
         await tx.feedingAction.create({
           data: {
@@ -387,6 +393,16 @@ export class ActionsService {
             type: ActionType.HARVEST,
             amount: prismaAction.harvestAction.amount,
             unit: prismaAction.harvestAction.unit,
+          },
+        };
+
+      case ActionType.NOTE:
+        return {
+          ...base,
+          type: ActionType.NOTE,
+          details: {
+            type: ActionType.NOTE,
+            content: prismaAction.notes || '',
           },
         };
 

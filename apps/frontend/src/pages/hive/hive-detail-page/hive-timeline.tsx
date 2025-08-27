@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { format, formatDistanceToNow, subMonths } from 'date-fns';
 import {
   CalendarIcon,
@@ -14,9 +14,11 @@ import {
   CircleIcon,
   Filter,
   X,
+  StickyNote,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -25,8 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { InspectionResponse, InspectionStatus, ActionResponse } from 'shared-schemas';
-import { useActions, useInspections } from '@/api/hooks';
+import { InspectionResponse, InspectionStatus, ActionResponse, CreateStandaloneAction } from 'shared-schemas';
+import { useActions, useInspections, useCreateAction } from '@/api/hooks';
+import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
 import { cn } from '@/lib/utils';
 
@@ -41,7 +44,7 @@ interface HiveTimelineProps {
   hiveId: string | undefined;
 }
 
-type EventTypeFilter = 'all' | 'inspections' | 'feeding' | 'treatment' | 'harvest' | 'other';
+type EventTypeFilter = 'all' | 'inspections' | 'feeding' | 'treatment' | 'harvest' | 'notes' | 'other';
 type DateRangeFilter = 'all' | '1month' | '3months' | '6months' | 'year';
 
 export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
@@ -49,6 +52,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
   const [showAll, setShowAll] = useState(false);
   const [eventTypeFilter, setEventTypeFilter] = useState<EventTypeFilter>('all');
   const [dateRangeFilter, setDateRangeFilter] = useState<DateRangeFilter>('all');
+  const [noteContent, setNoteContent] = useState('');
+  const [isSavingNote, setIsSavingNote] = useState(false);
+  const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const createAction = useCreateAction();
   const MAX_DISPLAYED = 10;
 
   // Fetch inspections and actions
@@ -115,7 +122,9 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
             includeAction = true;
           } else if (eventTypeFilter === 'harvest' && action.type === 'HARVEST') {
             includeAction = true;
-          } else if (eventTypeFilter === 'other' && (action.type === 'FRAME' || action.type === 'OTHER')) {
+          } else if (eventTypeFilter === 'notes' && action.type === 'NOTE') {
+            includeAction = true;
+          } else if (eventTypeFilter === 'other' && (action.type === 'FRAME' || action.type === 'OTHER' || action.type === 'BOX_CONFIGURATION')) {
             includeAction = true;
           }
           
@@ -166,6 +175,8 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
         return <Frame className="h-4 w-4" />;
       case 'HARVEST':
         return <Package className="h-4 w-4" />;
+      case 'NOTE':
+        return <StickyNote className="h-4 w-4" />;
       default:
         return <ActivityIcon className="h-4 w-4" />;
     }
@@ -195,6 +206,13 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
           return `Harvested ${action.details.amount} ${action.details.unit}`;
         }
         return 'Harvest';
+      case 'NOTE':
+        if (action.details?.type === 'NOTE') {
+          return 'Note';
+        }
+        return 'Note';
+      case 'BOX_CONFIGURATION':
+        return 'Box configuration';
       default:
         return action.type;
     }
@@ -331,8 +349,73 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
   const hasActiveFilters = eventTypeFilter !== 'all' || dateRangeFilter !== 'all';
 
+  const handleSaveNote = async () => {
+    if (!hiveId || !noteContent.trim()) return;
+    
+    setIsSavingNote(true);
+    try {
+      const noteAction: CreateStandaloneAction = {
+        hiveId,
+        type: 'NOTE',
+        details: {
+          type: 'NOTE',
+          content: noteContent.trim(),
+        },
+        notes: noteContent.trim(),
+        date: new Date().toISOString(),
+      };
+      
+      await createAction.mutateAsync(noteAction);
+      setNoteContent('');
+      toast.success('Note added successfully');
+      
+      // Reset textarea height
+      if (noteTextareaRef.current) {
+        noteTextareaRef.current.style.height = 'auto';
+      }
+    } catch (error) {
+      toast.error('Failed to add note');
+    } finally {
+      setIsSavingNote(false);
+    }
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNoteContent(e.target.value);
+    
+    // Auto-resize textarea
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
   return (
     <Section title="Activity Timeline">
+      {/* Quick Note Input */}
+      <div className="mb-4 space-y-2">
+        <Textarea
+          ref={noteTextareaRef}
+          value={noteContent}
+          onChange={handleTextareaChange}
+          placeholder="Add a quick note about this hive..."
+          className="min-h-[80px] resize-none"
+          maxLength={500}
+        />
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-muted-foreground">
+            {noteContent.length}/500 characters
+          </span>
+          <Button
+            onClick={handleSaveNote}
+            disabled={!noteContent.trim() || isSavingNote}
+            size="sm"
+          >
+            <StickyNote className="mr-2 h-4 w-4" />
+            {isSavingNote ? 'Saving...' : 'Add Note'}
+          </Button>
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex gap-2 mb-4 flex-wrap">
         <Select value={eventTypeFilter} onValueChange={(value) => setEventTypeFilter(value as EventTypeFilter)}>
@@ -346,6 +429,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
             <SelectItem value="feeding">Feeding</SelectItem>
             <SelectItem value="treatment">Treatments</SelectItem>
             <SelectItem value="harvest">Harvests</SelectItem>
+            <SelectItem value="notes">Notes</SelectItem>
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>

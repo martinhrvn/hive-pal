@@ -39,6 +39,11 @@ export const boxConfigurationActionDetailsSchema = z.object({
   totalFrames: z.number().min(0),
 });
 
+export const noteActionDetailsSchema = z.object({
+  type: z.literal(ActionType.NOTE),
+  content: z.string().min(1),
+});
+
 export const otherActionDetailsSchema = z.object({
   type: z.literal(ActionType.OTHER),
 });
@@ -50,6 +55,7 @@ export const actionDetailsSchema = z.discriminatedUnion('type', [
   frameActionDetailsSchema,
   harvestActionDetailsSchema,
   boxConfigurationActionDetailsSchema,
+  noteActionDetailsSchema,
   otherActionDetailsSchema,
 ]);
 
@@ -58,5 +64,6 @@ export type TreatmentActionDetails = z.infer<typeof treatmentActionDetailsSchema
 export type FrameActionDetails = z.infer<typeof frameActionDetailsSchema>;
 export type HarvestActionDetails = z.infer<typeof harvestActionDetailsSchema>;
 export type BoxConfigurationActionDetails = z.infer<typeof boxConfigurationActionDetailsSchema>;
+export type NoteActionDetails = z.infer<typeof noteActionDetailsSchema>;
 export type OtherActionDetails = z.infer<typeof otherActionDetailsSchema>;
 export type ActionDetails = z.infer<typeof actionDetailsSchema>;

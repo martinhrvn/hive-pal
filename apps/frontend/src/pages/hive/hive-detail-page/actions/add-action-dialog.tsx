@@ -21,7 +21,7 @@ import { useCreateAction } from '@/api/hooks/useActions';
 import { CreateStandaloneAction } from 'shared-schemas';
 import { toast } from 'sonner';
 import { useForm, FormProvider } from 'react-hook-form';
-import type { ActionData, FeedingActionData, TreatmentActionData, FramesActionData } from '@/pages/inspection/components/inspection-form/schema';
+import type { ActionData, FeedingActionData, TreatmentActionData, FramesActionData, NoteActionData } from '@/pages/inspection/components/inspection-form/schema';
 
 interface AddActionDialogProps {
   hiveId: string;
@@ -84,6 +84,13 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
           details = {
             type: 'FRAME',
             quantity: frameAction.frames,
+          };
+        } else if (action.type === 'NOTE') {
+          // Note: store content in notes field
+          const noteAction = action as NoteActionData;
+          details = {
+            type: 'NOTE',
+            content: noteAction.notes,
           };
         } else {
           details = {

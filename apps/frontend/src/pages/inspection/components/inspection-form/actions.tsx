@@ -1,4 +1,4 @@
-import { Droplet, Grid, Pill } from 'lucide-react';
+import { Droplet, Grid, Pill, StickyNote } from 'lucide-react';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
   FeedingActionType,
@@ -15,6 +15,11 @@ import {
   FramesForm,
   FramesView,
 } from '@/pages/inspection/components/inspection-form/actions/frames.tsx';
+import {
+  NoteActionType,
+  NoteForm,
+  NoteView,
+} from '@/pages/inspection/components/inspection-form/actions/note.tsx';
 import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { useFormContext } from 'react-hook-form';
@@ -24,6 +29,7 @@ const actionTypes = [
   { id: 'FEEDING', label: 'Feeding', Icon: Droplet },
   { id: 'TREATMENT', label: 'Treatment', Icon: Pill },
   { id: 'FRAME', label: 'Frames', Icon: Grid },
+  { id: 'NOTE', label: 'Note', Icon: StickyNote },
 ];
 
 export type OtherActionType = {
@@ -35,6 +41,7 @@ export type ActionType =
   | FeedingActionType
   | TreatmentActionType
   | FramesActionType
+  | NoteActionType
   | OtherActionType;
 
 export const ActionsSection: React.FC = () => {
@@ -84,6 +91,8 @@ export const ActionsSection: React.FC = () => {
         return <TreatmentForm onSave={handleSave} onRemove={handleRemove} />;
       case 'FRAME':
         return <FramesForm onSave={handleSave} onRemove={handleRemove} />;
+      case 'NOTE':
+        return <NoteForm onSave={handleSave} onRemove={handleRemove} />;
       default:
         return null;
     }
@@ -113,6 +122,15 @@ export const ActionsSection: React.FC = () => {
         return (
           <FramesView
             key="frames"
+            onSave={handleSave}
+            action={action}
+            onRemove={handleRemove}
+          />
+        );
+      case 'NOTE':
+        return (
+          <NoteView
+            key="note"
             onSave={handleSave}
             action={action}
             onRemove={handleRemove}
