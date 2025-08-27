@@ -46,7 +46,7 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
 
   return (
     <Card>
-      <CardHeader className={'flex justify-between flex-row'}>
+      <CardHeader className={'flex justify-between items-start flex-row'}>
         <div className="flex flex-col">
           <CardTitle>{hive.name}</CardTitle>
           <p className="text-xs text-gray-500 font-normal">
