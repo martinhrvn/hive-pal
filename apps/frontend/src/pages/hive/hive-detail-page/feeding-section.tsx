@@ -43,11 +43,9 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
 
   if (!actions || actions.length === 0) {
     return (
-      <Section title="Feeding">
-        <Card className="p-6 text-center text-muted-foreground">
-          No feeding records found for this hive
-        </Card>
-      </Section>
+      <Card className="p-6 text-center text-muted-foreground">
+        No feeding records found for this hive
+      </Card>
     );
   }
 
