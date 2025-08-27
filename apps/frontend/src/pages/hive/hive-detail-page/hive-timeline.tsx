@@ -1,13 +1,11 @@
 import { useState, useMemo } from 'react';
-import { format, formatDistanceToNow, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { format, formatDistanceToNow, subMonths } from 'date-fns';
 import {
   CalendarIcon,
   ActivityIcon,
   DropletsIcon,
-  EggIcon,
   ChevronDownIcon,
   FileTextIcon,
-  Clock,
   Package,
   Pill,
   Frame,
@@ -55,8 +53,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
   // Fetch inspections and actions
   const { data: inspections, isLoading: inspectionsLoading } = useInspections(
-    hiveId ? { hiveId } : undefined,
-    { enabled: !!hiveId }
+    hiveId ? { hiveId } : undefined
   );
 
   const { data: actions, isLoading: actionsLoading } = useActions(
@@ -203,7 +200,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
     }
   };
 
-  const renderTimelineEvent = (event: TimelineEvent, index: number, isLast: boolean) => {
+  const renderTimelineEvent = (event: TimelineEvent, _index: number, isLast: boolean) => {
     const isInspection = event.type === 'inspection';
     const inspection = isInspection ? event.data as InspectionResponse : null;
     const action = !isInspection ? event.data as ActionResponse : null;
