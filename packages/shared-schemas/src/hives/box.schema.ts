@@ -28,7 +28,7 @@ const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 export const boxSchema = z.object({
   id: z.string().uuid().optional(),
   position: z.number().int().min(0),
-  frameCount: z.number().int().min(1),
+  frameCount: z.number().int().min(0),
   hasExcluder: z.boolean(),
   type: boxTypeSchema,
   maxFrameCount: z.number().int().min(1).optional(),

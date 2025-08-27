@@ -258,6 +258,7 @@ export class HiveService {
         frameCount: box.frameCount,
         maxFrameCount: box.maxFrameCount,
         hasExcluder: box.hasExcluder,
+        color: box.color ?? undefined,
         type: box.type as BoxTypeEnum,
       })),
       hiveScore: score,
