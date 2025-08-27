@@ -49,20 +49,28 @@ export const HiveDetailPage = () => {
             </TabsList>
 
             <TabsContent value="overview">
-              {/* Queen Information */}
-              {/* Statistics from latest inspection */}
-              {hive && hive.hiveScore && (
-                <StatisticCards score={hive.hiveScore} />
-              )}
-              <QueenInformation
-                hiveId={hive?.id}
-                activeQueen={hive?.activeQueen}
-                onQueenUpdated={() => refetch()}
-              />
-              {/* Feeding section */}
-              {hive && <FeedingSection hiveId={hive.id} />}
-              {/* Hive timeline */}
-              <HiveTimeline hiveId={hiveId} />
+              <div className="space-y-6">
+                {/* Three main cards in responsive grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Scores Card */}
+                  {hive && hive.hiveScore && (
+                    <StatisticCards score={hive.hiveScore} />
+                  )}
+                  
+                  {/* Queen Information Card */}
+                  <QueenInformation
+                    hiveId={hive?.id}
+                    activeQueen={hive?.activeQueen}
+                    onQueenUpdated={() => refetch()}
+                  />
+                  
+                  {/* Feeding Card */}
+                  {hive && <FeedingSection hiveId={hive.id} />}
+                </div>
+                
+                {/* Hive timeline */}
+                <HiveTimeline hiveId={hiveId} />
+              </div>
             </TabsContent>
 
             <TabsContent value="actions">

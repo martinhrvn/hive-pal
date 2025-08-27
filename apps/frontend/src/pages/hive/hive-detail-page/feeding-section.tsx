@@ -2,8 +2,9 @@ import { useActions, useHive } from '@/api/hooks';
 import { Section } from '@/components/common/section';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Progress } from '@/components/ui/progress';
 import { calculateFeedingTotals } from '@/utils/feeding-calculations';
-import { Info } from 'lucide-react';
+import { Info, Target } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -54,108 +55,125 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
   const currentMonth = new Date().getMonth() + 1;
   const isAfterAugust = currentMonth >= 8;
 
-  return (
-    <Section title="Feeding">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Total Feeding Card */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Total Feeding
-            </h3>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-4 w-4 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>All-time feeding totals for this hive</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <div className="space-y-1">
-            <div className="text-2xl font-bold">
-              {totals.totalSugarKg.toFixed(2)} kg
-            </div>
-            <div className="text-xs text-muted-foreground">Total Sugar</div>
-            {totals.totalSyrupLiters > 0 && (
-              <div className="text-sm text-muted-foreground">
-                {totals.totalSyrupLiters.toFixed(1)} L syrup
-              </div>
-            )}
-          </div>
-        </Card>
+  // Calculate feeding progress based on hive settings
+  const targetAmount = hive?.settings?.autumnFeeding?.amountKg || 12;
+  const currentAmount = totals.autumnSugarKg;
+  const progressPercentage = Math.min(
+    (currentAmount / targetAmount) * 100,
+    100,
+  );
+  const remainingAmount = Math.max(targetAmount - currentAmount, 0);
 
-        {/* Current Year Feeding Card */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              {new Date().getFullYear()} Total
-            </h3>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-4 w-4 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Total feeding for the current year</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <div className="space-y-1">
-            <div className="text-2xl font-bold">
+  return (
+    <Card className="p-6">
+      <div className="space-y-8">
+        {/* Total and Autumn Feeding in 2 columns */}
+        <div className="grid grid-cols-2 gap-6">
+          {/* Current Year Feeding */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                {new Date().getFullYear()} Total
+              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total feeding for the current year</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="text-3xl font-bold">
               {totals.currentYearSugarKg.toFixed(2)} kg
             </div>
-            <div className="text-xs text-muted-foreground">Sugar this year</div>
             {totals.currentYearSyrupLiters > 0 && (
-              <div className="text-sm text-muted-foreground">
-                {totals.currentYearSyrupLiters.toFixed(1)} L syrup
+              <div className="text-xs text-muted-foreground">
+                {totals.currentYearSyrupLiters.toFixed(1)}L syrup
               </div>
             )}
           </div>
-        </Card>
 
-        {/* Autumn Feeding Card */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Autumn Feeding
-            </h3>
+          {/* Autumn Feeding */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                Autumn Feeding
+              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      {isAfterAugust
+                        ? 'Feeding since August this year'
+                        : 'Feeding from last August onwards'}
+                    </p>
+                    <p className="text-xs mt-1">
+                      Sugar calculations: 1:1 = 660g/L, 2:1 = 890g/L, 3:2 =
+                      750g/L
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="text-3xl font-bold">
+              {totals.autumnSugarKg.toFixed(2)} kg
+            </div>
+            {totals.autumnSyrupLiters > 0 && (
+              <div className="text-xs text-muted-foreground">
+                {totals.autumnSyrupLiters.toFixed(1)}L syrup
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Feeding Progress */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">Target Progress</div>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Info className="h-4 w-4 text-muted-foreground" />
+                  <Target className="h-4 w-4 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>
-                    {isAfterAugust
-                      ? 'Feeding since August this year'
-                      : 'Feeding from last August onwards'}
-                  </p>
+                  <p>Progress towards autumn feeding target</p>
                   <p className="text-xs mt-1">
-                    Sugar calculations: 1:1 = 660g/L, 2:1 = 890g/L, 3:2 = 750g/L
+                    Target: {targetAmount} kg sugar equivalent
                   </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="space-y-1">
-            <div className="text-2xl font-bold">
-              {totals.autumnSugarKg.toFixed(2)} kg
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Sugar since August
-            </div>
-            {totals.autumnSyrupLiters > 0 && (
-              <div className="text-sm text-muted-foreground">
-                {totals.autumnSyrupLiters.toFixed(1)} L syrup
-              </div>
-            )}
+          <div className="text-3xl font-bold">
+            {progressPercentage.toFixed(0)}%
           </div>
-        </Card>
+          <div className="text-sm text-muted-foreground">
+            {currentAmount.toFixed(2)} / {targetAmount} kg
+          </div>
+          <Progress
+            value={progressPercentage}
+            className="h-2"
+            color={
+              progressPercentage >= 100
+                ? 'bg-green-500'
+                : progressPercentage >= 75
+                  ? 'bg-blue-500'
+                  : 'bg-orange-500'
+            }
+          />
+          {remainingAmount > 0 && (
+            <div className="text-xs text-muted-foreground">
+              {remainingAmount.toFixed(2)} kg remaining
+            </div>
+          )}
+        </div>
       </div>
-    </Section>
+    </Card>
   );
 };

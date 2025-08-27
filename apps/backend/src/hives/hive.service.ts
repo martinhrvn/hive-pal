@@ -33,7 +33,7 @@ export class HiveService {
 
   async create(createHiveDto: CreateHive): Promise<CreateHiveResponse> {
     this.logger.log(`Creating new hive in apiary ${createHiveDto.apiaryId}`);
-    
+
     // Apply default settings if not provided
     const defaultSettings = {
       autumnFeeding: {
@@ -45,7 +45,7 @@ export class HiveService {
         frequencyDays: 7,
       },
     };
-    
+
     const hive = await this.prisma.hive.create({
       data: {
         ...createHiveDto,

@@ -45,6 +45,17 @@ export interface HiveSettings {
 }
 
 /**
+ * Check if current date is within the feeding window
+ */
+export function isWithinFeedingWindow(hiveSettings?: HiveSettings): boolean {
+  const currentMonth = new Date().getMonth() + 1; // 1-based month
+  const startMonth = hiveSettings?.autumnFeeding?.startMonth ?? 8;
+  const endMonth = hiveSettings?.autumnFeeding?.endMonth ?? 10;
+  
+  return currentMonth >= startMonth && currentMonth <= endMonth;
+}
+
+/**
  * Calculate sugar content from syrup feeding
  */
 export function calculateSugarFromSyrup(
