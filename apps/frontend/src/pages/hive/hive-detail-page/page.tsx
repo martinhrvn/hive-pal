@@ -5,7 +5,6 @@ import { StatisticCards } from './statistic-cards';
 import { BoxConfigurator } from './box-configurator';
 import { ActionSideBar } from '@/pages/hive/hive-detail-page/action-sidebar.tsx';
 import { QueenInformation } from '@/pages/hive/hive-detail-page/queen-information.tsx';
-import { ActionsList } from './actions/actions-list';
 import { FeedingSection } from './feeding-section';
 import { HiveTimeline } from './hive-timeline';
 import { HiveSettings } from './hive-settings';
@@ -43,7 +42,6 @@ export const HiveDetailPage = () => {
           <Tabs defaultValue="overview" className="mb-6">
             <TabsList className="mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="actions">Actions</TabsTrigger>
               <TabsTrigger value="boxes">Box Configurator</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
@@ -71,10 +69,6 @@ export const HiveDetailPage = () => {
                 {/* Hive timeline */}
                 <HiveTimeline hiveId={hiveId} />
               </div>
-            </TabsContent>
-
-            <TabsContent value="actions">
-              <ActionsList hiveId={hiveId as string} />
             </TabsContent>
 
             <TabsContent value="boxes">

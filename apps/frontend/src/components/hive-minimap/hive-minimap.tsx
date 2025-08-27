@@ -31,7 +31,7 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
   };
 
   const getBoxHeight = (variant?: BoxVariantEnum) => {
-    if (!variant) return 'h-3';
+    if (!variant) return 'h-10';
 
     const deepVariants = [
       BoxVariantEnum.LANGSTROTH_DEEP,
@@ -46,9 +46,9 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
       BoxVariantEnum.NATIONAL_SHALLOW,
     ];
 
-    if (deepVariants.includes(variant)) return 'h-5';
-    if (shallowVariants.includes(variant)) return 'h-3';
-    return 'h-4'; // Default for WARRE, TOP_BAR, CUSTOM
+    if (deepVariants.includes(variant)) return 'h-15';
+    if (shallowVariants.includes(variant)) return 'h-10';
+    return 'h-8'; // Default for WARRE, TOP_BAR, CUSTOM
   };
 
   const getBoxTypeLabel = (type: string) => {
@@ -74,9 +74,12 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
       {/* Status indicator */}
       <div className="relative">
         <div
-          className={cn('absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full z-10 border border-white', getStatusColor(hive.status))}
+          className={cn(
+            'absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full z-10 border border-white',
+            getStatusColor(hive.status),
+          )}
         />
-        
+
         {/* Mini hive visualization */}
         {sortedBoxes.length > 0 ? (
           <div className="flex flex-col items-center space-y-[2px]">
@@ -96,7 +99,7 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
                   style={{
                     backgroundColor: box.color || defaultColor,
                     borderColor: 'rgba(0, 0, 0, 0.3)',
-                    width: '85px'
+                    width: '85px',
                   }}
                 >
                   {/* Box type indicator */}
@@ -107,7 +110,7 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
                   </div>
 
                   {/* Frame count for larger boxes */}
-                  {height === 'h-5' && (
+                  {height === 'h-15' && (
                     <div className="absolute bottom-0.5 left-1 flex items-center gap-0.5">
                       <Package className="h-2 w-2 text-white/80" />
                       <span className="text-white/90 text-[9px]">
@@ -140,7 +143,7 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
           </div>
         )}
       </div>
-      
+
       {/* Hive name label */}
       <span className="text-xs font-medium text-center mt-1.5 max-w-[85px] truncate">
         {hive.name}
@@ -154,48 +157,49 @@ export const HiveMinimap = ({ apiaryId, className }: HiveMinimapProps) => {
   const { data: allHives = [] } = useHivesWithBoxes({ apiaryId });
 
   // Filter only positioned hives and organize by position
-  const { hivesGrid, minRow, minCol, maxRow, maxCol, hasHives } = useMemo(() => {
-    const grid: Record<string, HiveWithBoxesResponse> = {};
-    let minRowNum = Infinity;
-    let minColNum = Infinity;
-    let maxRowNum = -1;
-    let maxColNum = -1;
-    let hasPositionedHives = false;
+  const { hivesGrid, minRow, minCol, maxRow, maxCol, hasHives } =
+    useMemo(() => {
+      const grid: Record<string, HiveWithBoxesResponse> = {};
+      let minRowNum = Infinity;
+      let minColNum = Infinity;
+      let maxRowNum = -1;
+      let maxColNum = -1;
+      let hasPositionedHives = false;
 
-    allHives.forEach(hive => {
-      if (
-        hive.positionRow !== null &&
-        hive.positionRow !== undefined &&
-        hive.positionCol !== null &&
-        hive.positionCol !== undefined
-      ) {
-        const key = `${hive.positionRow}-${hive.positionCol}`;
-        grid[key] = hive;
-        minRowNum = Math.min(minRowNum, hive.positionRow);
-        minColNum = Math.min(minColNum, hive.positionCol);
-        maxRowNum = Math.max(maxRowNum, hive.positionRow);
-        maxColNum = Math.max(maxColNum, hive.positionCol);
-        hasPositionedHives = true;
+      allHives.forEach(hive => {
+        if (
+          hive.positionRow !== null &&
+          hive.positionRow !== undefined &&
+          hive.positionCol !== null &&
+          hive.positionCol !== undefined
+        ) {
+          const key = `${hive.positionRow}-${hive.positionCol}`;
+          grid[key] = hive;
+          minRowNum = Math.min(minRowNum, hive.positionRow);
+          minColNum = Math.min(minColNum, hive.positionCol);
+          maxRowNum = Math.max(maxRowNum, hive.positionRow);
+          maxColNum = Math.max(maxColNum, hive.positionCol);
+          hasPositionedHives = true;
+        }
+      });
+
+      // If no positioned hives, reset min values
+      if (!hasPositionedHives) {
+        minRowNum = 0;
+        minColNum = 0;
+        maxRowNum = 0;
+        maxColNum = 0;
       }
-    });
 
-    // If no positioned hives, reset min values
-    if (!hasPositionedHives) {
-      minRowNum = 0;
-      minColNum = 0;
-      maxRowNum = 0;
-      maxColNum = 0;
-    }
-
-    return {
-      hivesGrid: grid,
-      minRow: minRowNum,
-      minCol: minColNum,
-      maxRow: maxRowNum,
-      maxCol: maxColNum,
-      hasHives: hasPositionedHives,
-    };
-  }, [allHives]);
+      return {
+        hivesGrid: grid,
+        minRow: minRowNum,
+        minCol: minColNum,
+        maxRow: maxRowNum,
+        maxCol: maxColNum,
+        hasHives: hasPositionedHives,
+      };
+    }, [allHives]);
 
   const handleHiveClick = (hiveId: string) => {
     navigate(`/hives/${hiveId}`);

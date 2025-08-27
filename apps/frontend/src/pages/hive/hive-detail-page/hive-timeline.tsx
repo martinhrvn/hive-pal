@@ -32,6 +32,7 @@ import { useActions, useInspections, useCreateAction } from '@/api/hooks';
 import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
 import { cn } from '@/lib/utils';
+import { AddActionDialog } from './actions/add-action-dialog';
 
 type TimelineEvent = {
   id: string;
@@ -373,7 +374,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
       if (noteTextareaRef.current) {
         noteTextareaRef.current.style.height = 'auto';
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to add note');
     } finally {
       setIsSavingNote(false);
@@ -405,14 +406,17 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
           <span className="text-xs text-muted-foreground">
             {noteContent.length}/500 characters
           </span>
-          <Button
-            onClick={handleSaveNote}
-            disabled={!noteContent.trim() || isSavingNote}
-            size="sm"
-          >
-            <StickyNote className="mr-2 h-4 w-4" />
-            {isSavingNote ? 'Saving...' : 'Add Note'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleSaveNote}
+              disabled={!noteContent.trim() || isSavingNote}
+              size="sm"
+            >
+              <StickyNote className="mr-2 h-4 w-4" />
+              {isSavingNote ? 'Saving...' : 'Add Note'}
+            </Button>
+            {hiveId && <AddActionDialog hiveId={hiveId} />}
+          </div>
         </div>
       </div>
 

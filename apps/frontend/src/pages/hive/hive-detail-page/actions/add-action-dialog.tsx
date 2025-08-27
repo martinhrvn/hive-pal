@@ -122,7 +122,7 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button size="sm">
           <Plus className="mr-2 h-4 w-4" />
           Add Action
         </Button>
