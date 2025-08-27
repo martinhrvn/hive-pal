@@ -1,16 +1,16 @@
 {
   inputs =
     let
-      version = "1.8.1";
+      version = "1.8.2";
 system = "x86_64-linux";
 devenv_root = "/home/martin/proj/hive-pal";
-devenv_dotfile = ./.devenv;
-devenv_dotfile_string = ".devenv";
-container_name = null;
+devenv_dotfile = "/home/martin/proj/hive-pal/.devenv";
+devenv_dotfile_path = ./.devenv;
 devenv_tmpdir = "/run/user/1000";
 devenv_runtime = "/run/user/1000/devenv-8d03916";
 devenv_istesting = false;
 devenv_direnvrc_latest_version = 1;
+container_name = null;
 
         in {
         git-hooks.url = "github:cachix/git-hooks.nix";
@@ -18,26 +18,26 @@ devenv_direnvrc_latest_version = 1;
       pre-commit-hooks.follows = "git-hooks";
       nixpkgs.url = "github:cachix/devenv-nixpkgs/rolling";
       devenv.url = "github:cachix/devenv?dir=src/modules";
-      } // (if builtins.pathExists (devenv_dotfile + "/flake.json")
-      then builtins.fromJSON (builtins.readFile (devenv_dotfile +  "/flake.json"))
+      } // (if builtins.pathExists (devenv_dotfile_path + "/flake.json")
+      then builtins.fromJSON (builtins.readFile (devenv_dotfile_path +  "/flake.json"))
       else { });
 
       outputs = { nixpkgs, ... }@inputs:
         let
-          version = "1.8.1";
+          version = "1.8.2";
 system = "x86_64-linux";
 devenv_root = "/home/martin/proj/hive-pal";
-devenv_dotfile = ./.devenv;
-devenv_dotfile_string = ".devenv";
-container_name = null;
+devenv_dotfile = "/home/martin/proj/hive-pal/.devenv";
+devenv_dotfile_path = ./.devenv;
 devenv_tmpdir = "/run/user/1000";
 devenv_runtime = "/run/user/1000/devenv-8d03916";
 devenv_istesting = false;
 devenv_direnvrc_latest_version = 1;
+container_name = null;
 
             devenv =
-            if builtins.pathExists (devenv_dotfile + "/devenv.json")
-            then builtins.fromJSON (builtins.readFile (devenv_dotfile + "/devenv.json"))
+            if builtins.pathExists (devenv_dotfile_path + "/devenv.json")
+            then builtins.fromJSON (builtins.readFile (devenv_dotfile_path + "/devenv.json"))
             else { };
           getOverlays = inputName: inputAttrs:
             map
@@ -91,29 +91,33 @@ devenv_direnvrc_latest_version = 1;
               {
                 devenv.cliVersion = version;
                 devenv.root = devenv_root;
-                devenv.dotfile = devenv_root + "/" + devenv_dotfile_string;
+                devenv.dotfile = devenv_dotfile;
               }
-              (pkgs.lib.optionalAttrs (inputs.devenv.isTmpDir or false) {
-                devenv.tmpdir = devenv_tmpdir;
-                devenv.runtime = devenv_runtime;
-              })
-              (pkgs.lib.optionalAttrs (inputs.devenv.hasIsTesting or false) {
-                devenv.isTesting = devenv_istesting;
+              ({ options, ... }: {
+                config.devenv = lib.mkMerge [
+                  (pkgs.lib.optionalAttrs (builtins.hasAttr "tmpdir" options.devenv) {
+                    tmpdir = devenv_tmpdir;
+                  })
+                  (pkgs.lib.optionalAttrs (builtins.hasAttr "isTesting" options.devenv) {
+                    isTesting = devenv_istesting;
+                  })
+                  (pkgs.lib.optionalAttrs (builtins.hasAttr "runtime" options.devenv) {
+                    runtime = devenv_runtime;
+                  })
+                  (pkgs.lib.optionalAttrs (builtins.hasAttr "direnvrcLatestVersion" options.devenv) {
+                    direnvrcLatestVersion = devenv_direnvrc_latest_version;
+                  })
+                ];
               })
               (pkgs.lib.optionalAttrs (container_name != null) {
                 container.isBuilding = pkgs.lib.mkForce true;
                 containers.${container_name}.isBuilding = true;
               })
-              ({ options, ... }: {
-                config.devenv = pkgs.lib.optionalAttrs (builtins.hasAttr "direnvrcLatestVersion" options.devenv) {
-                  direnvrcLatestVersion = devenv_direnvrc_latest_version;
-                };
-              })
             ] ++ (map importModule (devenv.imports or [ ])) ++ [
               (if builtins.pathExists ./devenv.nix then ./devenv.nix else { })
               (devenv.devenv or { })
               (if builtins.pathExists ./devenv.local.nix then ./devenv.local.nix else { })
-              (if builtins.pathExists (devenv_dotfile + "/cli-options.nix") then import (devenv_dotfile + "/cli-options.nix") else { })
+              (if builtins.pathExists (devenv_dotfile_path + "/cli-options.nix") then import (devenv_dotfile_path + "/cli-options.nix") else { })
             ];
           };
           config = project.config;

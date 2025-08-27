@@ -1,21 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { HiveStatus } from '@/pages/hive/components';
-import { Section } from '@/components/common/section';
-import { InspectionTimeline } from '@/pages/inspection/components/inspection-timeline.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatisticCards } from './statistic-cards';
 import { BoxConfigurator } from './box-configurator';
 import { ActionSideBar } from '@/pages/hive/hive-detail-page/action-sidebar.tsx';
 import { QueenInformation } from '@/pages/hive/hive-detail-page/queen-information.tsx';
 import { ActionsList } from './actions/actions-list';
-import { useHive, useInspections } from '@/api/hooks';
+import { FeedingSection } from './feeding-section';
+import { HiveTimeline } from './hive-timeline';
+import { useHive } from '@/api/hooks';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
   const { data: hive, error, refetch } = useHive(hiveId as string);
-  const { data: inspections } = useInspections({
-    hiveId: hiveId,
-  });
   if (error) {
     return <div>Error</div>;
   }
@@ -60,10 +57,10 @@ export const HiveDetailPage = () => {
                 activeQueen={hive?.activeQueen}
                 onQueenUpdated={() => refetch()}
               />
-              {/* Inspections timeline */}
-              <Section title="Inspections">
-                <InspectionTimeline inspections={inspections ?? []} />
-              </Section>
+              {/* Feeding section */}
+              <FeedingSection hiveId={hive?.id} />
+              {/* Hive timeline */}
+              <HiveTimeline hiveId={hiveId} />
             </TabsContent>
 
             <TabsContent value="actions">

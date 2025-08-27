@@ -1,0 +1,127 @@
+import { ActionResponse } from 'shared-schemas';
+
+export interface SyrupConcentration {
+  ratio: string;
+  sugarPercentage: number;
+  sugarPerLiter: number; // in grams
+}
+
+export const SYRUP_CONCENTRATIONS: Record<string, SyrupConcentration> = {
+  '1:1': {
+    ratio: '1:1',
+    sugarPercentage: 66,
+    sugarPerLiter: 660,
+  },
+  '2:1': {
+    ratio: '2:1',
+    sugarPercentage: 89,
+    sugarPerLiter: 890,
+  },
+  '3:2': {
+    ratio: '3:2',
+    sugarPercentage: 75,
+    sugarPerLiter: 750,
+  },
+};
+
+export interface FeedingTotals {
+  totalSugarKg: number;
+  totalSyrupLiters: number;
+  currentYearSugarKg: number;
+  currentYearSyrupLiters: number;
+  autumnSugarKg: number;
+  autumnSyrupLiters: number;
+}
+
+/**
+ * Calculate sugar content from syrup feeding
+ */
+export function calculateSugarFromSyrup(
+  amountMl: number,
+  concentration: string,
+): number {
+  const syrupConcentration = SYRUP_CONCENTRATIONS[concentration];
+  if (!syrupConcentration) {
+    console.warn(`Unknown concentration: ${concentration}, defaulting to 1:1`);
+    return (amountMl / 1000) * SYRUP_CONCENTRATIONS['1:1'].sugarPerLiter;
+  }
+  
+  // Convert ml to liters and multiply by sugar per liter
+  return (amountMl / 1000) * syrupConcentration.sugarPerLiter;
+}
+
+/**
+ * Calculate feeding totals from actions
+ */
+export function calculateFeedingTotals(actions: ActionResponse[]): FeedingTotals {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1; // 1-based month
+  const isAfterAugust = currentMonth >= 8;
+  
+  let totalSugarGrams = 0;
+  let totalSyrupMl = 0;
+  let currentYearSugarGrams = 0;
+  let currentYearSyrupMl = 0;
+  let autumnSugarGrams = 0;
+  let autumnSyrupMl = 0;
+  
+  const feedingActions = actions.filter(
+    action => action.type === 'FEEDING' && action.details?.type === 'FEEDING'
+  );
+  
+  feedingActions.forEach(action => {
+    if (action.details?.type !== 'FEEDING') return;
+    
+    const actionDate = new Date(action.date);
+    const actionYear = actionDate.getFullYear();
+    const actionMonth = actionDate.getMonth() + 1;
+    
+    const details = action.details;
+    let sugarGrams = 0;
+    let syrupMl = 0;
+    
+    // Calculate based on feed type
+    if (details.feedType === 'SYRUP' || details.feedType === 'Syrup') {
+      // Convert amount to ml if needed (assuming ml unit for syrup)
+      const amountMl = details.unit === 'ml' ? details.amount : details.amount * 1000;
+      syrupMl = amountMl;
+      sugarGrams = calculateSugarFromSyrup(amountMl, details.concentration || '1:1');
+    } else if (details.feedType === 'CANDY' || details.feedType === 'Candy') {
+      // Candy is pure sugar (assuming grams)
+      sugarGrams = details.unit === 'g' ? details.amount : details.amount * 1000;
+    } else if (details.feedType === 'HONEY' || details.feedType === 'Honey') {
+      // Honey is approximately 80% sugar
+      const amountGrams = details.unit === 'g' ? details.amount : details.amount * 1000;
+      sugarGrams = amountGrams * 0.8;
+    }
+    
+    // Add to totals
+    totalSugarGrams += sugarGrams;
+    totalSyrupMl += syrupMl;
+    
+    // Add to current year totals
+    if (actionYear === currentYear) {
+      currentYearSugarGrams += sugarGrams;
+      currentYearSyrupMl += syrupMl;
+      
+      // Add to autumn totals (August onwards)
+      if (actionMonth >= 8) {
+        autumnSugarGrams += sugarGrams;
+        autumnSyrupMl += syrupMl;
+      }
+    } else if (actionYear === currentYear - 1 && actionMonth >= 8 && !isAfterAugust) {
+      // If we're before August this year, include last year's autumn feeding
+      autumnSugarGrams += sugarGrams;
+      autumnSyrupMl += syrupMl;
+    }
+  });
+  
+  return {
+    totalSugarKg: totalSugarGrams / 1000,
+    totalSyrupLiters: totalSyrupMl / 1000,
+    currentYearSugarKg: currentYearSugarGrams / 1000,
+    currentYearSyrupLiters: currentYearSyrupMl / 1000,
+    autumnSugarKg: autumnSugarGrams / 1000,
+    autumnSyrupLiters: autumnSyrupMl / 1000,
+  };
+}
