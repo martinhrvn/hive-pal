@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { HiveScore } from 'shared-schemas';
 import { InspectionCharts } from './inspection-charts';
 import { FeedingChart } from './feeding-chart';
-import { TreatmentChart } from './treatment-chart';
 import { HealthScoreChart } from './health-score-chart';
 import {
   Select,
@@ -25,13 +24,16 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
   hiveScore,
 }) => {
   const [period, setPeriod] = useState<ChartPeriod>('6months');
-  
+
   if (!hiveId) return null;
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Select value={period} onValueChange={(value) => setPeriod(value as ChartPeriod)}>
+        <Select
+          value={period}
+          onValueChange={value => setPeriod(value as ChartPeriod)}
+        >
           <SelectTrigger className="w-[180px]">
             <Calendar className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Select period" />
@@ -45,12 +47,11 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
           </SelectContent>
         </Select>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <InspectionCharts hiveId={hiveId} period={period} />
         <HealthScoreChart hiveScore={hiveScore} />
         <FeedingChart hiveId={hiveId} period={period} />
-        <TreatmentChart hiveId={hiveId} period={period} />
       </div>
     </div>
   );
@@ -58,5 +59,4 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
 
 export { InspectionCharts } from './inspection-charts';
 export { FeedingChart } from './feeding-chart';
-export { TreatmentChart } from './treatment-chart';
 export { HealthScoreChart } from './health-score-chart';
