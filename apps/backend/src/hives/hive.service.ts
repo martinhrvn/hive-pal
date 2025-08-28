@@ -70,6 +70,11 @@ export class HiveService {
 
     const includeConfig = {
       inspections: {
+        where: {
+          status: {
+            not: 'SCHEDULED',
+          },
+        },
         select: {
           date: true,
         },
@@ -230,13 +235,15 @@ export class HiveService {
     this.logger.debug(`Found hive: ${hive.name} (ID: ${hive.id})`);
 
     const activeQueen = hive.queens.length > 0 ? hive.queens[0] : null;
-    const latestInspection =
+    
+    // Find the latest completed inspection (exclude scheduled)
+    const latestCompletedInspection =
       hive.inspections && hive.inspections.length > 0
-        ? (hive.inspections[0] ?? null)
+        ? hive.inspections.find(inspection => inspection.status !== 'SCHEDULED') ?? null
         : null;
 
     const metrics = this.inspectionService.mapObservationsToDto(
-      latestInspection?.observations ?? [],
+      latestCompletedInspection?.observations ?? [],
     );
     const score = this.metricsService.calculateOveralScore(metrics);
 
@@ -250,7 +257,7 @@ export class HiveService {
         typeof hive.installationDate === 'string'
           ? hive.installationDate
           : hive.installationDate?.toISOString(),
-      lastInspectionDate: latestInspection?.date?.toISOString(),
+      lastInspectionDate: latestCompletedInspection?.date?.toISOString(),
       settings: (hive.settings as HiveSettings) || undefined,
       boxes: hive.boxes.map((box) => ({
         id: box.id,
