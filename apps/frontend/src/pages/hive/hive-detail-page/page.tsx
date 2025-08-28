@@ -8,6 +8,7 @@ import { QueenInformation } from '@/pages/hive/hive-detail-page/queen-informatio
 import { FeedingSection } from './feeding-section';
 import { HiveTimeline } from './hive-timeline';
 import { HiveSettings } from './hive-settings';
+import { HiveCharts } from './charts';
 import { useHive } from '@/api/hooks';
 
 export const HiveDetailPage = () => {
@@ -42,6 +43,7 @@ export const HiveDetailPage = () => {
           <Tabs defaultValue="overview" className="mb-6">
             <TabsList className="mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="boxes">Box Configurator</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
@@ -69,6 +71,10 @@ export const HiveDetailPage = () => {
                 {/* Hive timeline */}
                 <HiveTimeline hiveId={hiveId} />
               </div>
+            </TabsContent>
+
+            <TabsContent value="analytics">
+              <HiveCharts hiveId={hiveId} hiveScore={hive?.hiveScore} />
             </TabsContent>
 
             <TabsContent value="boxes">
