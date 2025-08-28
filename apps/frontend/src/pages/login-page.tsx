@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,13 +13,17 @@ const LoginPage = () => {
   const { t } = useTranslation('auth');
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isLoggedIn } = useAuth();
+
+  // Get the redirect path from location state, default to '/'
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const success = await login(username, password);
+      const success = await login(username, password, from);
       if (!success) {
         setError(t('login.invalidCredentials'));
       }
@@ -30,7 +34,7 @@ const LoginPage = () => {
   };
 
   if (isLoggedIn) {
-    navigate('/');
+    navigate(from);
   }
 
   return (

@@ -13,6 +13,7 @@ import {
 import { WeatherForecast } from '@/components/weather';
 import { AlertItem } from '@/components/alerts';
 import { useHive } from '@/api/hooks';
+import { QRCodeDialog } from './qr-code-dialog';
 
 type ActionSideBarProps = {
   hiveId?: string;
@@ -120,6 +121,16 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
                 <EditIcon className="h-4 w-4" />
                 <span>Edit Hive</span>
               </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              {hiveId && hive ? (
+                <QRCodeDialog hiveId={hiveId} hiveName={hive.name} />
+              ) : (
+                <SidebarMenuButton disabled tooltip="QR Code">
+                  <span>QR Code</span>
+                </SidebarMenuButton>
+              )}
             </SidebarMenuItem>
 
             <SidebarMenuItem>
