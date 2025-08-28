@@ -72,7 +72,7 @@ export class HiveService {
       inspections: {
         where: {
           status: {
-            not: 'SCHEDULED',
+            not: 'SCHEDULED' as const,
           },
         },
         select: {
@@ -82,7 +82,7 @@ export class HiveService {
           date: 'desc' as const,
         },
         take: 1,
-      },
+      } as const,
       queens: {
         where: {
           status: 'ACTIVE' as const,
