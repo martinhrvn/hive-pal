@@ -67,9 +67,11 @@ const EquipmentRow = ({
   perHive: number;
 }) => {
   const isOverridden = required !== recommended;
+  const surplus = total - required;
+  const hasSurplus = surplus > 0;
 
   return (
-    <div className="grid grid-cols-7 gap-4 items-center py-3">
+    <div className="grid grid-cols-5 gap-4 items-center py-3">
       <div className="font-medium">{label}</div>
       <div className="text-center">{inUse}</div>
       <div className="text-center">
@@ -83,7 +85,6 @@ const EquipmentRow = ({
           min="0"
         />
       </div>
-      <div className="text-center font-medium">{total}</div>
       <div className="text-center flex items-center justify-center gap-1">
         <Input
           type="number"
@@ -124,12 +125,25 @@ const EquipmentRow = ({
       <div className="text-center">
         {needed > 0 ? (
           <Badge variant="destructive">{needed}</Badge>
+        ) : hasSurplus ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="secondary" className="cursor-help">
+                  +{surplus}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Surplus: {surplus} extra</p>
+                <p className="text-xs text-muted-foreground">
+                  Total: {total} (In use: {inUse} + Extra: {extra})
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ) : (
           <Badge variant="outline">0</Badge>
         )}
-      </div>
-      <div className="text-center text-sm text-muted-foreground">
-        {total - required > 0 ? `+${total - required}` : '0'}
       </div>
     </div>
   );
@@ -374,14 +388,12 @@ export const EquipmentPlanningPage = () => {
             <CardContent>
               <div className="space-y-4">
                 {/* Table Header */}
-                <div className="grid grid-cols-7 gap-4 pb-3 border-b font-semibold text-sm">
+                <div className="grid grid-cols-5 gap-4 pb-3 border-b font-semibold text-sm">
                   <div>Equipment</div>
                   <div className="text-center">In Use</div>
                   <div className="text-center">Extra</div>
-                  <div className="text-center">Total</div>
                   <div className="text-center">Required</div>
-                  <div className="text-center">Needed</div>
-                  <div className="text-center">Surplus</div>
+                  <div className="text-center">Status</div>
                 </div>
 
                 {/* Equipment Rows */}
