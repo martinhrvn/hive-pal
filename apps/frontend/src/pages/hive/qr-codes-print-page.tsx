@@ -28,7 +28,7 @@ export function QRCodesPrintPage() {
   const [qrSize, setQrSize] = useState<'small' | 'medium' | 'large'>('large');
   const [layout, setLayout] = useState<'2x3' | '2x4' | '3x3'>('2x3');
   const [includeLogo, setIncludeLogo] = useState(true);
-  const [logoUrl, setLogoUrl] = useState('/favicon.ico'); // Default to favicon, can be customized
+  const logoUrl = '/favicon.ico'; // Default to favicon, can be customized
 
   const toggleHiveSelection = (hiveId: string) => {
     const newSelection = new Set(selectedHives);
@@ -187,7 +187,9 @@ export function QRCodesPrintPage() {
                     var qrSvg = qr.createSvgTag(${qrCodeSize / 256});
                     element.insertAdjacentHTML('afterbegin', qrSvg);
                     
-                    ${includeLogo ? `
+                    ${
+                      includeLogo
+                        ? `
                     // Add logo
                     var logo = document.getElementById('logo-${hive.id}');
                     if (logo) {
@@ -197,7 +199,9 @@ export function QRCodesPrintPage() {
                       logo.style.height = logoSize + 'px';
                       logo.style.display = 'block';
                     }
-                    ` : ''}
+                    `
+                        : ''
+                    }
                   }
                 })();
               `;
@@ -298,7 +302,10 @@ export function QRCodesPrintPage() {
                 checked={includeLogo}
                 onCheckedChange={setIncludeLogo}
               />
-              <Label htmlFor="include-logo" className="flex items-center gap-2 cursor-pointer">
+              <Label
+                htmlFor="include-logo"
+                className="flex items-center gap-2 cursor-pointer"
+              >
                 <ImageIcon className="h-4 w-4" />
                 Include Logo
               </Label>
@@ -373,11 +380,11 @@ export function QRCodesPrintPage() {
                           {includeLogo && (
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="bg-white p-0.5 rounded shadow-sm">
-                                <img 
-                                  src={logoUrl} 
-                                  alt="Logo" 
+                                <img
+                                  src={logoUrl}
+                                  alt="Logo"
                                   className="w-4 h-4"
-                                  onError={(e) => {
+                                  onError={e => {
                                     e.currentTarget.style.display = 'none';
                                   }}
                                 />
