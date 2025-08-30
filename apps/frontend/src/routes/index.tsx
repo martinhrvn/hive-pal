@@ -29,6 +29,7 @@ import { UserWizardPage } from '@/pages/onboarding';
 import { HarvestListPage } from '@/pages/harvest/harvest-list-page';
 import { HarvestDetailPage } from '@/pages/harvest/harvest-detail-page';
 import { ReleasesPage } from '@/pages/releases';
+import { EquipmentPlanningPage } from '@/pages/equipment';
 
 const router = createBrowserRouter([
   {
@@ -119,6 +120,10 @@ const router = createBrowserRouter([
       {
         path: '/releases',
         element: <ReleasesPage />,
+      },
+      {
+        path: '/equipment',
+        element: <EquipmentPlanningPage />,
       },
       {
         path: '/admin/users',

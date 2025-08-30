@@ -2,6 +2,7 @@ export * from './useActions';
 export * from './useAlerts';
 export * from './useApiaries';
 export * from './useAuth';
+export * from './useEquipment';
 export * from './useHarvests';
 export * from './useHives';
 export * from './useInspections';

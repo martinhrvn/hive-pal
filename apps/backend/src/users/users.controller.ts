@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Param,
   UseGuards,
@@ -17,7 +18,14 @@ import {
   Role,
 } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
-import { ResetPasswordDto, ChangePasswordDto, UserResponseDto } from './dto';
+import { 
+  ResetPasswordDto, 
+  ChangePasswordDto, 
+  UserResponseDto,
+  EquipmentSettingsDto,
+  InventoryDto,
+  EquipmentPlanDto 
+} from './dto';
 import {
   ApiTags,
   ApiOperation,
@@ -121,5 +129,81 @@ export class UsersController {
       req.user.id,
       changePasswordDto.newPassword,
     );
+  }
+
+  @Get('equipment-settings')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user equipment settings' })
+  @ApiResponse({
+    status: 200,
+    description: 'Equipment settings retrieved',
+    type: EquipmentSettingsDto,
+  })
+  async getEquipmentSettings(@Req() req: RequestWithUser): Promise<EquipmentSettingsDto> {
+    this.logger.log(`User ${req.user.id} requesting equipment settings`);
+    return this.usersService.getEquipmentSettings(req.user.id);
+  }
+
+  @Put('equipment-settings')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user equipment settings' })
+  @ApiResponse({
+    status: 200,
+    description: 'Equipment settings updated',
+    type: EquipmentSettingsDto,
+  })
+  async updateEquipmentSettings(
+    @Req() req: RequestWithUser,
+    @Body() settings: EquipmentSettingsDto,
+  ): Promise<EquipmentSettingsDto> {
+    this.logger.log(`User ${req.user.id} updating equipment settings`);
+    return this.usersService.updateEquipmentSettings(req.user.id, settings);
+  }
+
+  @Get('inventory')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user inventory' })
+  @ApiResponse({
+    status: 200,
+    description: 'Inventory retrieved',
+    type: InventoryDto,
+  })
+  async getInventory(@Req() req: RequestWithUser): Promise<InventoryDto> {
+    this.logger.log(`User ${req.user.id} requesting inventory`);
+    return this.usersService.getInventory(req.user.id);
+  }
+
+  @Put('inventory')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user inventory' })
+  @ApiResponse({
+    status: 200,
+    description: 'Inventory updated',
+    type: InventoryDto,
+  })
+  async updateInventory(
+    @Req() req: RequestWithUser,
+    @Body() inventory: InventoryDto,
+  ): Promise<InventoryDto> {
+    this.logger.log(`User ${req.user.id} updating inventory`);
+    return this.usersService.updateInventory(req.user.id, inventory);
+  }
+
+  @Get('equipment-plan')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get equipment planning calculations' })
+  @ApiResponse({
+    status: 200,
+    description: 'Equipment plan calculated',
+    type: EquipmentPlanDto,
+  })
+  async getEquipmentPlan(@Req() req: RequestWithUser): Promise<EquipmentPlanDto> {
+    this.logger.log(`User ${req.user.id} requesting equipment plan`);
+    return this.usersService.getEquipmentPlan(req.user.id);
   }
 }

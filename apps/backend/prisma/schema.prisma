@@ -8,15 +8,17 @@ datasource db {
 }
 
 model User {
-  id                     String   @id @default(uuid())
-  email                  String   @unique
+  id                     String                 @id @default(uuid())
+  email                  String                 @unique
   password               String
   name                   String?
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
   apiaries               Apiary[]
-  role                   Role     @default(USER)
-  passwordChangeRequired Boolean  @default(false)
+  role                   Role                   @default(USER)
+  passwordChangeRequired Boolean                @default(false)
+  equipmentSettings      UserEquipmentSettings?
+  inventory              UserInventory?
 }
 
 enum Role {
@@ -78,6 +80,7 @@ model Box {
   type          BoxType // BROOD, HONEY, etc.
   variant       BoxVariant? // LANGSTROTH_DEEP, LANGSTROTH_SHALLOW, etc.
   color         String? // Hex color code for visual representation
+  lastSanitized DateTime? // When this box position was last replaced with a sanitized box
 
   @@index([hiveId])
   @@index([hiveId, position]) // For looking up boxes by position in a hive
@@ -408,4 +411,63 @@ enum AlertStatus {
   DISMISSED   // User has dismissed the alert
   RESOLVED    // Issue has been resolved
   SUPERSEDED  // Alert replaced by newer alert with different priority
+}
+
+// User-specific equipment settings for seasonal planning
+model UserEquipmentSettings {
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Equipment types to track
+  trackDeepBoxes        Boolean @default(true)
+  trackShallowBoxes     Boolean @default(true)
+  trackBottoms          Boolean @default(true)
+  trackCovers           Boolean @default(true)
+  trackFrames           Boolean @default(true)
+  trackQueenExcluders   Boolean @default(true)
+  trackFeeders          Boolean @default(false)
+  
+  // Standard equipment ratios per hive
+  deepBoxesPerHive      Int     @default(1) // Number of deep boxes per hive
+  shallowBoxesPerHive   Int     @default(2) // Number of shallow/honey boxes per hive
+  framesPerHive         Int     @default(20) // Total frames per hive
+  bottomsPerHive        Int     @default(1) // Bottom boards per hive
+  coversPerHive         Int     @default(1) // Top covers per hive
+  queenExcludersPerHive Int     @default(1) // Queen excluders per hive
+  feedersPerHive        Int     @default(0) // Feeders per hive
+  
+  // Planning multiplier
+  targetMultiplier      Float   @default(1.5) // Target hives = current * multiplier
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// User inventory tracking for extra equipment
+model UserInventory {
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Extra equipment counts (not currently in active hives)
+  extraDeepBoxes        Int     @default(0)
+  extraShallowBoxes     Int     @default(0)
+  extraBottoms          Int     @default(0)
+  extraCovers           Int     @default(0)
+  extraFrames           Int     @default(0)
+  extraQueenExcluders   Int     @default(0)
+  extraFeeders          Int     @default(0)
+  
+  // Manual overrides for required equipment (null = use calculated value)
+  requiredDeepBoxesOverride      Int?
+  requiredShallowBoxesOverride   Int?
+  requiredBottomsOverride         Int?
+  requiredCoversOverride          Int?
+  requiredFramesOverride          Int?
+  requiredQueenExcludersOverride  Int?
+  requiredFeedersOverride         Int?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
