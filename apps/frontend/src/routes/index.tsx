@@ -8,6 +8,7 @@ import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
 import { CreateHivePage, HiveListPage } from '@/pages/hive';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
+import { QRCodesPrintPage } from '@/pages/hive/qr-codes-print-page';
 import {
   CreateInspectionPage,
   InspectionDetailPage,
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
       {
         path: '/hives/:id',
         element: <HiveDetailPage />,
+      },
+      {
+        path: '/hives/qr-codes/print',
+        element: <QRCodesPrintPage />,
       },
       {
         path: '/hives/:hiveId/inspections/create',

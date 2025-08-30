@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PlusCircle, RefreshCw, FileDown, Printer, Share2 } from 'lucide-react';
+import { PlusCircle, RefreshCw, FileDown, Printer, Share2, QrCode } from 'lucide-react';
 
 import {
   SidebarGroup,
@@ -82,6 +82,16 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
               >
                 <Printer className="h-4 w-4" />
                 <span>{t('hive:actions.print')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => navigate('/hives/qr-codes/print')}
+                tooltip="Print QR Codes"
+              >
+                <QrCode className="h-4 w-4" />
+                <span>Print QR Codes</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
