@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Box as PrismaBox } from '@prisma/client';
+import { HiveCreatedEvent, HiveUpdatedEvent } from '../events/hive.events';
 import {
   CreateHive,
   UpdateHive,
@@ -29,6 +31,7 @@ export class HiveService {
     private inspectionService: InspectionsService,
     private metricsService: MetricsService,
     private logger: CustomLoggerService,
+    private eventEmitter: EventEmitter2,
   ) {
     this.logger.setContext('HiveService');
   }
@@ -53,8 +56,23 @@ export class HiveService {
         ...createHiveDto,
         settings: createHiveDto.settings || defaultSettings,
       },
+      include: {
+        apiary: {
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
     this.logger.log(`Hive created with ID: ${hive.id}`);
+
+    // Emit event for new hive creation
+    const userId = hive.apiary?.userId || 'unknown';
+    this.eventEmitter.emit(
+      'hive.created',
+      new HiveCreatedEvent(hive.id, createHiveDto.apiaryId || '', userId),
+    );
+
     return {
       id: hive.id,
       status: hive.status as HiveStatus,
@@ -235,11 +253,13 @@ export class HiveService {
     this.logger.debug(`Found hive: ${hive.name} (ID: ${hive.id})`);
 
     const activeQueen = hive.queens.length > 0 ? hive.queens[0] : null;
-    
+
     // Find the latest completed inspection (exclude scheduled)
     const latestCompletedInspection =
       hive.inspections && hive.inspections.length > 0
-        ? hive.inspections.find(inspection => inspection.status !== 'SCHEDULED') ?? null
+        ? (hive.inspections.find(
+            (inspection) => inspection.status !== 'SCHEDULED',
+          ) ?? null)
         : null;
 
     const metrics = this.inspectionService.mapObservationsToDto(
@@ -352,6 +372,20 @@ export class HiveService {
       },
     });
     this.logger.log(`Hive with ID: ${id} updated successfully`);
+
+    // Determine update type
+    let updateType: 'status' | 'settings' | 'general' = 'general';
+    if (updateHiveDto.status) {
+      updateType = 'status';
+    } else if (updateHiveDto.settings) {
+      updateType = 'settings';
+    }
+
+    // Emit event for hive update
+    this.eventEmitter.emit(
+      'hive.updated',
+      new HiveUpdatedEvent(id, filter.apiaryId, filter.userId, updateType),
+    );
 
     return {
       id: updatedHive.id,
@@ -556,6 +590,12 @@ export class HiveService {
     }
 
     this.logger.log(`Successfully updated boxes for hive: ${id}`);
+
+    // Emit event for box update
+    this.eventEmitter.emit(
+      'hive.updated',
+      new HiveUpdatedEvent(id, filter.apiaryId, filter.userId, 'boxes'),
+    );
 
     return {
       id: updatedHive.id,

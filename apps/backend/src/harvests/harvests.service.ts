@@ -489,7 +489,8 @@ export class HarvestsService {
     // Calculate honey amount for each hive based on frame percentage
     for (const harvestHive of harvest.harvestHives) {
       const percentage = (harvestHive.framesTaken / totalFrames) * 100;
-      const honeyAmount = Math.round((harvest.totalWeight * percentage) / 10) / 10;
+      const honeyAmount =
+        Math.round((harvest.totalWeight * percentage) / 10) / 10;
 
       await tx.harvestHive.update({
         where: { id: harvestHive.id },

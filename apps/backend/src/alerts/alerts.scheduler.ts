@@ -43,6 +43,102 @@ export class AlertsScheduler {
   }
 
   /**
+   * Check a single hive for alerts (used by event handlers)
+   */
+  async checkSingleHive(hiveId: string): Promise<void> {
+    const startTime = new Date();
+    this.logger.log(`Checking alerts for single hive ${hiveId}`);
+
+    try {
+      // Get the hive with necessary data
+      const hive = await this.getHiveForChecking(hiveId);
+
+      if (!hive) {
+        this.logger.warn(`Hive ${hiveId} not found or not active`);
+        return;
+      }
+
+      const issuesFound = await this.checkHive(hive, startTime);
+
+      if (issuesFound > 0) {
+        this.logger.log(`Found ${issuesFound} issues for hive ${hiveId}`);
+      } else {
+        // If no issues found, resolve any active alerts for this hive
+        await this.resolveHiveAlerts(hiveId);
+      }
+    } catch (error) {
+      this.logger.error(`Failed to check alerts for hive ${hiveId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Resolve active alerts for a hive when no issues are found
+   */
+  private async resolveHiveAlerts(hiveId: string): Promise<void> {
+    const resolvedCount = await this.prisma.alert.updateMany({
+      where: {
+        hiveId,
+        status: 'ACTIVE',
+      },
+      data: {
+        status: 'RESOLVED',
+        updatedAt: new Date(),
+      },
+    });
+
+    if (resolvedCount.count > 0) {
+      this.logger.log(
+        `Resolved ${resolvedCount.count} active alerts for hive ${hiveId}`,
+      );
+    }
+  }
+
+  /**
+   * Get a single hive for checking
+   */
+  private async getHiveForChecking(
+    hiveId: string,
+  ): Promise<HiveContext | null> {
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id: hiveId,
+        status: 'ACTIVE',
+      },
+      include: {
+        inspections: {
+          select: {
+            date: true,
+          },
+          orderBy: {
+            date: 'desc',
+          },
+          take: 1,
+        },
+        apiary: {
+          select: {
+            id: true,
+            userId: true,
+          },
+        },
+      },
+    });
+
+    if (!hive) {
+      return null;
+    }
+
+    return {
+      hiveId: hive.id,
+      name: hive.name,
+      settings: hive.settings,
+      lastInspectionDate: hive.inspections[0]?.date || null,
+      status: hive.status,
+      apiaryId: hive.apiaryId || undefined,
+    };
+  }
+
+  /**
    * Manual trigger for alert checks (useful for testing)
    */
   async runAlertChecks(): Promise<void> {

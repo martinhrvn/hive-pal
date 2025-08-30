@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AlertsController } from './alerts.controller';
 import { AlertsService } from './alerts.service';
 import { AlertsScheduler } from './alerts.scheduler';
+import { AlertsEventHandler } from './alerts.event-handler';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionOverdueChecker } from './checkers';
@@ -11,6 +12,7 @@ import { InspectionOverdueChecker } from './checkers';
   providers: [
     AlertsService,
     AlertsScheduler,
+    AlertsEventHandler,
     PrismaService,
     CustomLoggerService,
     InspectionOverdueChecker,

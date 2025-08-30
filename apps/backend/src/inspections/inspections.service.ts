@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { Observation, Prisma } from '@prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
+import { InspectionCreatedEvent } from '../events/hive.events';
 import {
   CreateInspection,
   CreateInspectionResponse,
@@ -23,6 +25,7 @@ export class InspectionsService {
     private metricService: MetricsService,
     private actionsService: ActionsService,
     private logger: CustomLoggerService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(
@@ -107,6 +110,18 @@ export class InspectionsService {
         if (actions && actions.length > 0) {
           await this.actionsService.createActions(inspection.id, actions, tx);
         }
+
+        // Emit event for new inspection
+        this.eventEmitter.emit(
+          'inspection.created',
+          new InspectionCreatedEvent(
+            inspection.hiveId,
+            filter.apiaryId,
+            filter.userId,
+            inspection.id,
+            inspection.date,
+          ),
+        );
 
         return {
           date: inspection.date.toISOString(),

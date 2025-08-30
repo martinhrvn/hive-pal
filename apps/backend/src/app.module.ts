@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppService } from './app.service';
 import { HiveModule } from './hives/hive.module';
 import { InspectionsModule } from './inspections/inspections.module';
@@ -24,6 +25,7 @@ import { AlertsModule } from './alerts/alerts.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    EventEmitterModule.forRoot(),
     AuthModule,
     HiveModule,
     InspectionsModule,
