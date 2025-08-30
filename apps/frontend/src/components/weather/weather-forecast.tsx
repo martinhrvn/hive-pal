@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   useCurrentWeather, 
   useWeatherHourlyForecast, 
   useWeatherDailyForecast 
 } from '@/api/hooks/useWeather';
-import { Cloud, CloudRain, CloudSnow, Sun, CloudDrizzle, CloudFog } from 'lucide-react';
+import { Cloud, CloudRain, CloudSnow, Sun, CloudDrizzle, CloudFog, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { WeatherCondition } from 'shared-schemas';
 
 interface WeatherForecastProps {
@@ -16,24 +17,29 @@ interface WeatherForecastProps {
   showHourly?: boolean;
 }
 
-const getWeatherIcon = (condition: WeatherCondition) => {
-  const iconClass = "h-5 w-5";
+const getWeatherIcon = (condition: WeatherCondition, size: 'sm' | 'md' | 'lg' = 'md') => {
+  const sizeClass = {
+    sm: "h-4 w-4",
+    md: "h-5 w-5",
+    lg: "h-6 w-6"
+  }[size];
+  
   switch (condition) {
     case 'CLEAR':
-      return <Sun className={iconClass} />;
+      return <Sun className={sizeClass} />;
     case 'PARTLY_CLOUDY':
     case 'OVERCAST':
-      return <Cloud className={iconClass} />;
+      return <Cloud className={sizeClass} />;
     case 'RAIN':
-      return <CloudRain className={iconClass} />;
+      return <CloudRain className={sizeClass} />;
     case 'DRIZZLE':
-      return <CloudDrizzle className={iconClass} />;
+      return <CloudDrizzle className={sizeClass} />;
     case 'SNOW':
-      return <CloudSnow className={iconClass} />;
+      return <CloudSnow className={sizeClass} />;
     case 'FOG':
-      return <CloudFog className={iconClass} />;
+      return <CloudFog className={sizeClass} />;
     default:
-      return <Cloud className={iconClass} />;
+      return <Cloud className={sizeClass} />;
   }
 };
 
@@ -58,6 +64,8 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
   showHourly = true,
 }) => {
   const { t } = useTranslation('common');
+  const [showHourlyForecast, setShowHourlyForecast] = useState(false);
+  const [showDailyForecast, setShowDailyForecast] = useState(false);
   const { data: currentWeather, isLoading: loadingCurrent, error: currentError } = useCurrentWeather(
     apiaryId || '', 
     { enabled: !!apiaryId }
@@ -135,62 +143,73 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
       )}
 
       {showHourly && hourlyForecast && hourlyForecast.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold">{t('weather.nextHours')}</h3>
-          <div className="space-y-1">
-            {hourlyForecast.slice(0, compact ? 3 : 5).map((hour) => (
-              <div
-                key={hour.id}
-                className="flex items-center justify-between p-2 hover:bg-accent rounded-md transition-colors"
-              >
-                <div className="flex items-center gap-2 flex-1">
-                  {getWeatherIcon(hour.condition)}
-                  <span className="text-sm">
-                    {new Date(hour.timestamp).toLocaleTimeString('en-US', { 
-                      hour: 'numeric',
-                      hour12: true 
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <span className="font-medium">
-                    {Math.round(hour.temperature)}°
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {hour.humidity}%
-                  </span>
-                </div>
+        <Collapsible open={showHourlyForecast} onOpenChange={setShowHourlyForecast}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-accent rounded-md transition-colors">
+            <h3 className="text-sm font-semibold">{t('weather.nextHours')}</h3>
+            {showHourlyForecast ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 pt-2">
+            <div className="overflow-x-auto">
+              <div className="flex gap-2 pb-2">
+                {hourlyForecast.slice(0, 5).map((hour) => (
+                  <div
+                    key={hour.id}
+                    className="flex-none w-16 h-20 bg-accent rounded-lg p-2 flex flex-col items-center justify-between hover:bg-accent/80 transition-colors"
+                  >
+                    <div className="text-xs text-muted-foreground text-center leading-tight">
+                      {new Date(hour.timestamp).toLocaleTimeString('en-US', { 
+                        hour: 'numeric',
+                        hour12: false 
+                      }).replace(':00', '')}
+                    </div>
+                    <div className="flex-1 flex items-center">
+                      {getWeatherIcon(hour.condition, 'sm')}
+                    </div>
+                    <div className="text-xs font-medium text-center">
+                      {Math.round(hour.temperature)}°
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
 
       {dailyForecast && dailyForecast.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold">{t('weather.dayForecast')}</h3>
-          <div className="space-y-1">
-            {dailyForecast.slice(0, compact ? 3 : 7).map((day) => (
-              <div
-                key={day.id}
-                className="flex items-center justify-between p-2 hover:bg-accent rounded-md transition-colors"
-              >
-                <div className="flex items-center gap-2 flex-1">
-                  {getWeatherIcon(day.condition)}
-                  <span className="text-sm">{formatDate(day.date, t)}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <span className="text-muted-foreground">
-                    {Math.round(day.temperatureMin)}°
-                  </span>
-                  <span className="font-medium">
-                    {Math.round(day.temperatureMax)}°
-                  </span>
-                </div>
+        <Collapsible open={showDailyForecast} onOpenChange={setShowDailyForecast}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-accent rounded-md transition-colors">
+            <h3 className="text-sm font-semibold">{t('weather.dayForecast')}</h3>
+            {showDailyForecast ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 pt-2">
+            <div className="overflow-x-auto">
+              <div className="flex gap-2 pb-2">
+                {dailyForecast.slice(0, 7).map((day) => (
+                  <div
+                    key={day.id}
+                    className="flex-none w-16 h-24 bg-accent rounded-lg p-2 flex flex-col items-center justify-between hover:bg-accent/80 transition-colors"
+                  >
+                    <div className="text-xs text-muted-foreground text-center leading-tight">
+                      {formatDate(day.date, t).split(' ').slice(0, 1).join(' ')}
+                    </div>
+                    <div className="flex-1 flex items-center">
+                      {getWeatherIcon(day.condition, 'sm')}
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs font-medium">
+                        {Math.round(day.temperatureMax)}°
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {Math.round(day.temperatureMin)}°
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
     </div>
   );
