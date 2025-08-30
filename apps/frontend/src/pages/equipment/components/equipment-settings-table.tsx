@@ -36,7 +36,7 @@ import {
   Check,
   ArrowLeft
 } from 'lucide-react';
-import { useEquipment, EquipmentSettingsDto, CustomEquipmentTypeDto, CreateCustomEquipmentTypeDto } from '@/api/hooks/useEquipment';
+import { useEquipment, EquipmentSettingsDto, CreateCustomEquipmentTypeDto } from '@/api/hooks/useEquipment';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 
@@ -384,7 +384,7 @@ export const EquipmentSettingsTable = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                              <Switch checked={Boolean(field.value)} onCheckedChange={field.onChange} />
                             </FormControl>
                           </FormItem>
                         )}
@@ -402,6 +402,7 @@ export const EquipmentSettingsTable = () => {
                                 step={item.unit === 'kg' || item.unit === 'liters' ? '0.1' : '1'}
                                 className="w-20 text-center"
                                 {...field}
+                                value={String(field.value)}
                                 onChange={(e) => {
                                   const value = item.unit === 'kg' || item.unit === 'liters' 
                                     ? parseFloat(e.target.value) || 0

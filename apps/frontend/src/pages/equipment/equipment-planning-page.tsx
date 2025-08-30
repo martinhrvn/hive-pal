@@ -74,7 +74,7 @@ const EquipmentRow = ({
     <div className="grid grid-cols-5 gap-4 items-center py-3">
       <div className="font-medium">{label}</div>
       <div className="text-center">{inUse}</div>
-      <div className="text-center">
+      <div className="text-center flex justify-center">
         <Input
           type="number"
           value={extra}
@@ -163,9 +163,7 @@ const EquipmentActionSidebar = ({ onRefresh }: { onRefresh: () => void }) => (
           Refresh Data
         </Button>
         <Button variant="outline" className="w-full" asChild>
-          <Link to="/equipment/settings">
-            Equipment Settings
-          </Link>
+          <Link to="/equipment/settings">Equipment Settings</Link>
         </Button>
         <Separator />
         <div className="space-y-2 text-sm">
@@ -301,6 +299,37 @@ export const EquipmentPlanningPage = () => {
     setLocalInventory(updatedInventory);
   };
 
+  const handleConsumableExtraChange = (
+    type: 'sugar' | 'syrup',
+    value: number,
+  ) => {
+    const updatedInventory = {
+      ...inventoryData,
+      [`extra${type.charAt(0).toUpperCase() + type.slice(1)}${type === 'sugar' ? 'Kg' : 'Liters'}`]:
+        value,
+    } as InventoryDto;
+    setLocalInventory(updatedInventory);
+  };
+
+  const handleCustomEquipmentExtraChange = (
+    customId: string,
+    value: number,
+  ) => {
+    const customEquipment = inventoryData.customEquipment || {};
+    const updatedCustomEquipment = {
+      ...customEquipment,
+      [customId]: {
+        ...customEquipment[customId],
+        extra: value,
+      },
+    };
+    const updatedInventory = {
+      ...inventoryData,
+      customEquipment: updatedCustomEquipment,
+    } as InventoryDto;
+    setLocalInventory(updatedInventory);
+  };
+
   const handleRequiredChange = (key: keyof EquipmentCounts, value: number) => {
     const overrideKey =
       `required${key.charAt(0).toUpperCase() + key.slice(1)}Override` as keyof InventoryDto;
@@ -426,28 +455,6 @@ export const EquipmentPlanningPage = () => {
                     />
                   );
                 })}
-
-                {hasChanges && (
-                  <div className="flex justify-end pt-4 border-t">
-                    <div className="space-x-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setLocalInventory(null)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleSaveInventory}
-                        disabled={updateInventory.isPending}
-                      >
-                        {updateInventory.isPending && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Save Changes
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -478,15 +485,33 @@ export const EquipmentPlanningPage = () => {
                   {/* Sugar Row */}
                   {planData.consumables?.sugar && (
                     <div className="grid grid-cols-5 gap-4 items-center py-2 border-b last:border-0">
-                      <div className="font-medium">{planData.consumables.sugar.name}</div>
-                      <div className="text-center font-mono text-sm">
-                        {planData.consumables.sugar.extra} {planData.consumables.sugar.unit}
+                      <div className="font-medium">
+                        {planData.consumables.sugar.name}
+                      </div>
+                      <div className="text-center flex items-center justify-center">
+                        <Input
+                          type="number"
+                          step="0.1"
+                          value={inventoryData.extraSugarKg || 0}
+                          onChange={e =>
+                            handleConsumableExtraChange(
+                              'sugar',
+                              parseFloat(e.target.value) || 0,
+                            )
+                          }
+                          className="w-20 text-center font-mono text-sm"
+                        />
+                        <span className="text-xs text-muted-foreground ml-1">
+                          {planData.consumables.sugar.unit}
+                        </span>
                       </div>
                       <div className="text-center font-mono text-sm">
-                        {planData.consumables.sugar.total} {planData.consumables.sugar.unit}
+                        {planData.consumables.sugar.total}{' '}
+                        {planData.consumables.sugar.unit}
                       </div>
                       <div className="text-center font-mono text-sm">
-                        {planData.consumables.sugar.required} {planData.consumables.sugar.unit}
+                        {planData.consumables.sugar.required}{' '}
+                        {planData.consumables.sugar.unit}
                       </div>
                       <div className="text-center">
                         {planData.consumables.sugar.needed > 0 ? (
@@ -494,26 +519,48 @@ export const EquipmentPlanningPage = () => {
                             <Tooltip>
                               <TooltipTrigger>
                                 <Badge variant="destructive">
-                                  Need {planData.consumables.sugar.needed} {planData.consumables.sugar.unit}
+                                  Need {planData.consumables.sugar.needed}{' '}
+                                  {planData.consumables.sugar.unit}
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Recommended: {planData.consumables.sugar.recommended} {planData.consumables.sugar.unit}</p>
-                                <p>Per hive: {planData.consumables.sugar.perHive} {planData.consumables.sugar.unit}</p>
+                                <p>
+                                  Recommended:{' '}
+                                  {planData.consumables.sugar.recommended}{' '}
+                                  {planData.consumables.sugar.unit}
+                                </p>
+                                <p>
+                                  Per hive: {planData.consumables.sugar.perHive}{' '}
+                                  {planData.consumables.sugar.unit}
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
-                        ) : planData.consumables.sugar.total - planData.consumables.sugar.required > 0 ? (
+                        ) : planData.consumables.sugar.total -
+                            planData.consumables.sugar.required >
+                          0 ? (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger>
                                 <Badge variant="secondary">
-                                  +{planData.consumables.sugar.total - planData.consumables.sugar.required} {planData.consumables.sugar.unit}
+                                  +
+                                  {planData.consumables.sugar.total -
+                                    planData.consumables.sugar.required}{' '}
+                                  {planData.consumables.sugar.unit}
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Surplus: {planData.consumables.sugar.total - planData.consumables.sugar.required} {planData.consumables.sugar.unit}</p>
-                                <p>Recommended: {planData.consumables.sugar.recommended} {planData.consumables.sugar.unit}</p>
+                                <p>
+                                  Surplus:{' '}
+                                  {planData.consumables.sugar.total -
+                                    planData.consumables.sugar.required}{' '}
+                                  {planData.consumables.sugar.unit}
+                                </p>
+                                <p>
+                                  Recommended:{' '}
+                                  {planData.consumables.sugar.recommended}{' '}
+                                  {planData.consumables.sugar.unit}
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -527,15 +574,33 @@ export const EquipmentPlanningPage = () => {
                   {/* Syrup Row */}
                   {planData.consumables?.syrup && (
                     <div className="grid grid-cols-5 gap-4 items-center py-2 border-b last:border-0">
-                      <div className="font-medium">{planData.consumables.syrup.name}</div>
-                      <div className="text-center font-mono text-sm">
-                        {planData.consumables.syrup.extra} {planData.consumables.syrup.unit}
+                      <div className="font-medium">
+                        {planData.consumables.syrup.name}
+                      </div>
+                      <div className="text-center">
+                        <Input
+                          type="number"
+                          step="0.1"
+                          value={inventoryData.extraSyrupLiters || 0}
+                          onChange={e =>
+                            handleConsumableExtraChange(
+                              'syrup',
+                              parseFloat(e.target.value) || 0,
+                            )
+                          }
+                          className="w-20 text-center font-mono text-sm"
+                        />
+                        <span className="text-xs text-muted-foreground ml-1">
+                          {planData.consumables.syrup.unit}
+                        </span>
                       </div>
                       <div className="text-center font-mono text-sm">
-                        {planData.consumables.syrup.total} {planData.consumables.syrup.unit}
+                        {planData.consumables.syrup.total}{' '}
+                        {planData.consumables.syrup.unit}
                       </div>
                       <div className="text-center font-mono text-sm">
-                        {planData.consumables.syrup.required} {planData.consumables.syrup.unit}
+                        {planData.consumables.syrup.required}{' '}
+                        {planData.consumables.syrup.unit}
                       </div>
                       <div className="text-center">
                         {planData.consumables.syrup.needed > 0 ? (
@@ -543,26 +608,48 @@ export const EquipmentPlanningPage = () => {
                             <Tooltip>
                               <TooltipTrigger>
                                 <Badge variant="destructive">
-                                  Need {planData.consumables.syrup.needed} {planData.consumables.syrup.unit}
+                                  Need {planData.consumables.syrup.needed}{' '}
+                                  {planData.consumables.syrup.unit}
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Recommended: {planData.consumables.syrup.recommended} {planData.consumables.syrup.unit}</p>
-                                <p>Per hive: {planData.consumables.syrup.perHive} {planData.consumables.syrup.unit}</p>
+                                <p>
+                                  Recommended:{' '}
+                                  {planData.consumables.syrup.recommended}{' '}
+                                  {planData.consumables.syrup.unit}
+                                </p>
+                                <p>
+                                  Per hive: {planData.consumables.syrup.perHive}{' '}
+                                  {planData.consumables.syrup.unit}
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
-                        ) : planData.consumables.syrup.total - planData.consumables.syrup.required > 0 ? (
+                        ) : planData.consumables.syrup.total -
+                            planData.consumables.syrup.required >
+                          0 ? (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger>
                                 <Badge variant="secondary">
-                                  +{planData.consumables.syrup.total - planData.consumables.syrup.required} {planData.consumables.syrup.unit}
+                                  +
+                                  {planData.consumables.syrup.total -
+                                    planData.consumables.syrup.required}{' '}
+                                  {planData.consumables.syrup.unit}
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Surplus: {planData.consumables.syrup.total - planData.consumables.syrup.required} {planData.consumables.syrup.unit}</p>
-                                <p>Recommended: {planData.consumables.syrup.recommended} {planData.consumables.syrup.unit}</p>
+                                <p>
+                                  Surplus:{' '}
+                                  {planData.consumables.syrup.total -
+                                    planData.consumables.syrup.required}{' '}
+                                  {planData.consumables.syrup.unit}
+                                </p>
+                                <p>
+                                  Recommended:{' '}
+                                  {planData.consumables.syrup.recommended}{' '}
+                                  {planData.consumables.syrup.unit}
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -602,16 +689,36 @@ export const EquipmentPlanningPage = () => {
                   </div>
 
                   {/* Custom Equipment Rows */}
-                  {planData.customEquipment.map((item) => (
-                    <div key={item.id} className="grid grid-cols-6 gap-4 items-center py-2 border-b last:border-0">
+                  {planData.customEquipment.map(item => (
+                    <div
+                      key={item.id}
+                      className="grid grid-cols-6 gap-4 items-center py-2 border-b last:border-0"
+                    >
                       <div className="font-medium">{item.name}</div>
-                      <div className="text-center">
+                      <div className="text-center flex justify-center">
                         <Badge variant="outline" className="text-xs">
                           {item.category}
                         </Badge>
                       </div>
-                      <div className="text-center font-mono text-sm">
-                        {item.extra} {item.unit}
+                      <div className="text-center flex items-center justify-center">
+                        <Input
+                          type="number"
+                          step="0.1"
+                          value={
+                            inventoryData.customEquipment?.[item.id]?.extra ??
+                            item.extra
+                          }
+                          onChange={e =>
+                            handleCustomEquipmentExtraChange(
+                              item.id,
+                              parseFloat(e.target.value) || 0,
+                            )
+                          }
+                          className="w-20 text-center font-mono text-sm"
+                        />
+                        <span className="text-xs text-muted-foreground ml-1">
+                          {item.unit}
+                        </span>
                       </div>
                       <div className="text-center font-mono text-sm">
                         {item.total} {item.unit}
@@ -629,8 +736,12 @@ export const EquipmentPlanningPage = () => {
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Recommended: {item.recommended} {item.unit}</p>
-                                <p>Per hive: {item.perHive} {item.unit}</p>
+                                <p>
+                                  Recommended: {item.recommended} {item.unit}
+                                </p>
+                                <p>
+                                  Per hive: {item.perHive} {item.unit}
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -643,8 +754,13 @@ export const EquipmentPlanningPage = () => {
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Surplus: {item.total - item.required} {item.unit}</p>
-                                <p>Recommended: {item.recommended} {item.unit}</p>
+                                <p>
+                                  Surplus: {item.total - item.required}{' '}
+                                  {item.unit}
+                                </p>
+                                <p>
+                                  Recommended: {item.recommended} {item.unit}
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -659,11 +775,39 @@ export const EquipmentPlanningPage = () => {
             </Card>
           )}
 
+          {/* Save Changes Section */}
+          {hasChanges && (
+            <Card>
+              <CardContent className="py-4">
+                <div className="flex justify-center">
+                  <div className="space-x-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setLocalInventory(null)}
+                    >
+                      Cancel Changes
+                    </Button>
+                    <Button
+                      onClick={handleSaveInventory}
+                      disabled={updateInventory.isPending}
+                      size="lg"
+                    >
+                      {updateInventory.isPending && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Save All Changes
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Shopping List */}
           {(Object.values(planData.needed).some(count => count > 0) ||
-            (planData.consumables?.sugar?.needed > 0) ||
-            (planData.consumables?.syrup?.needed > 0) ||
-            (planData.customEquipment?.some(item => item.needed > 0))) && (
+            (planData.consumables?.sugar?.needed ?? 0) > 0 ||
+            (planData.consumables?.syrup?.needed ?? 0) > 0 ||
+            planData.customEquipment?.some(item => item.needed > 0)) && (
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -679,27 +823,46 @@ export const EquipmentPlanningPage = () => {
                         // Core equipment items
                         const equipmentItems = Object.entries(equipmentLabels)
                           .map(([key, label]) => {
-                            const needed = planData.needed[key as keyof EquipmentCounts];
+                            const needed =
+                              planData.needed[key as keyof EquipmentCounts];
                             return needed > 0 ? `${label}: ${needed}` : null;
                           })
                           .filter(Boolean);
 
                         // Consumables items
                         const consumableItems = [];
-                        if (planData.consumables?.sugar?.needed > 0) {
-                          consumableItems.push(`${planData.consumables.sugar.name}: ${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}`);
+                        if (
+                          planData.consumables?.sugar?.needed &&
+                          planData.consumables.sugar.needed > 0
+                        ) {
+                          consumableItems.push(
+                            `${planData.consumables.sugar.name}: ${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}`,
+                          );
                         }
-                        if (planData.consumables?.syrup?.needed > 0) {
-                          consumableItems.push(`${planData.consumables.syrup.name}: ${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}`);
+                        if (
+                          planData.consumables?.syrup?.needed &&
+                          planData.consumables.syrup.needed > 0
+                        ) {
+                          consumableItems.push(
+                            `${planData.consumables.syrup.name}: ${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}`,
+                          );
                         }
 
                         // Custom equipment items
-                        const customItems = planData.customEquipment
-                          ?.filter(item => item.needed > 0)
-                          ?.map(item => `${item.name}: ${item.needed} ${item.unit}`) || [];
+                        const customItems =
+                          planData.customEquipment
+                            ?.filter(item => item.needed > 0)
+                            ?.map(
+                              item =>
+                                `${item.name}: ${item.needed} ${item.unit}`,
+                            ) || [];
 
                         // Combine all items
-                        const allItems = [...equipmentItems, ...consumableItems, ...customItems];
+                        const allItems = [
+                          ...equipmentItems,
+                          ...consumableItems,
+                          ...customItems,
+                        ];
                         const shoppingList = allItems.join('\n');
 
                         const fullList = `Equipment Shopping List\n${new Date().toLocaleDateString()}\n\n${shoppingList}`;
@@ -718,7 +881,8 @@ export const EquipmentPlanningPage = () => {
                         // Core equipment items
                         const equipmentRows = Object.entries(equipmentLabels)
                           .map(([key, label]) => {
-                            const needed = planData.needed[key as keyof EquipmentCounts];
+                            const needed =
+                              planData.needed[key as keyof EquipmentCounts];
                             return needed > 0
                               ? `<tr><td style="padding: 8px; border: 1px solid #ddd;">${label}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${needed}</td></tr>`
                               : null;
@@ -727,20 +891,38 @@ export const EquipmentPlanningPage = () => {
 
                         // Consumables rows
                         const consumableRows = [];
-                        if (planData.consumables?.sugar?.needed > 0) {
-                          consumableRows.push(`<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.sugar.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}</td></tr>`);
+                        if (
+                          planData.consumables?.sugar?.needed &&
+                          planData.consumables.sugar.needed > 0
+                        ) {
+                          consumableRows.push(
+                            `<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.sugar.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}</td></tr>`,
+                          );
                         }
-                        if (planData.consumables?.syrup?.needed > 0) {
-                          consumableRows.push(`<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.syrup.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}</td></tr>`);
+                        if (
+                          planData.consumables?.syrup?.needed &&
+                          planData.consumables.syrup.needed > 0
+                        ) {
+                          consumableRows.push(
+                            `<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.syrup.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}</td></tr>`,
+                          );
                         }
 
                         // Custom equipment rows
-                        const customRows = planData.customEquipment
-                          ?.filter(item => item.needed > 0)
-                          ?.map(item => `<tr><td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.needed} ${item.unit}</td></tr>`) || [];
+                        const customRows =
+                          planData.customEquipment
+                            ?.filter(item => item.needed > 0)
+                            ?.map(
+                              item =>
+                                `<tr><td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.needed} ${item.unit}</td></tr>`,
+                            ) || [];
 
                         // Combine all rows
-                        const shoppingList = [...equipmentRows, ...consumableRows, ...customRows].join('');
+                        const shoppingList = [
+                          ...equipmentRows,
+                          ...consumableRows,
+                          ...customRows,
+                        ].join('');
 
                         const printWindow = window.open('', '_blank');
                         if (printWindow) {
@@ -792,7 +974,8 @@ export const EquipmentPlanningPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Core Equipment */}
                   {Object.entries(equipmentLabels).map(([key, label]) => {
-                    const needed = planData.needed[key as keyof EquipmentCounts];
+                    const needed =
+                      planData.needed[key as keyof EquipmentCounts];
                     return needed > 0 ? (
                       <div
                         key={key}
@@ -805,35 +988,41 @@ export const EquipmentPlanningPage = () => {
                   })}
 
                   {/* Consumables */}
-                  {planData.consumables?.sugar?.needed > 0 && (
-                    <div className="flex justify-between items-center p-3 bg-muted rounded">
-                      <span>{planData.consumables.sugar.name}</span>
-                      <Badge variant="secondary">
-                        {planData.consumables.sugar.needed} {planData.consumables.sugar.unit}
-                      </Badge>
-                    </div>
-                  )}
-                  {planData.consumables?.syrup?.needed > 0 && (
-                    <div className="flex justify-between items-center p-3 bg-muted rounded">
-                      <span>{planData.consumables.syrup.name}</span>
-                      <Badge variant="secondary">
-                        {planData.consumables.syrup.needed} {planData.consumables.syrup.unit}
-                      </Badge>
-                    </div>
-                  )}
+                  {planData.consumables?.sugar?.needed &&
+                    planData.consumables.sugar.needed > 0 && (
+                      <div className="flex justify-between items-center p-3 bg-muted rounded">
+                        <span>{planData.consumables.sugar.name}</span>
+                        <Badge variant="secondary">
+                          {planData.consumables.sugar.needed}{' '}
+                          {planData.consumables.sugar.unit}
+                        </Badge>
+                      </div>
+                    )}
+                  {planData.consumables?.syrup?.needed &&
+                    planData.consumables.syrup.needed > 0 && (
+                      <div className="flex justify-between items-center p-3 bg-muted rounded">
+                        <span>{planData.consumables.syrup.name}</span>
+                        <Badge variant="secondary">
+                          {planData.consumables.syrup.needed}{' '}
+                          {planData.consumables.syrup.unit}
+                        </Badge>
+                      </div>
+                    )}
 
                   {/* Custom Equipment */}
-                  {planData.customEquipment?.filter(item => item.needed > 0).map(item => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-center p-3 bg-muted rounded"
-                    >
-                      <span>{item.name}</span>
-                      <Badge variant="secondary">
-                        {item.needed} {item.unit}
-                      </Badge>
-                    </div>
-                  ))}
+                  {planData.customEquipment
+                    ?.filter(item => item.needed > 0)
+                    .map(item => (
+                      <div
+                        key={item.id}
+                        className="flex justify-between items-center p-3 bg-muted rounded"
+                      >
+                        <span>{item.name}</span>
+                        <Badge variant="secondary">
+                          {item.needed} {item.unit}
+                        </Badge>
+                      </div>
+                    ))}
                 </div>
               </CardContent>
             </Card>
