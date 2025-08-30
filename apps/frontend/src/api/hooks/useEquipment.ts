@@ -18,6 +18,11 @@ export interface EquipmentSettingsDto {
   queenExcludersPerHive: number;
   feedersPerHive: number;
   targetMultiplier: number;
+  // Consumables
+  trackSugar: boolean;
+  sugarPerHive: number;
+  trackSyrup: boolean;
+  syrupPerHive: number;
 }
 
 export interface InventoryDto {
@@ -36,6 +41,13 @@ export interface InventoryDto {
   requiredFramesOverride?: number | null;
   requiredQueenExcludersOverride?: number | null;
   requiredFeedersOverride?: number | null;
+  // Built-in consumables
+  extraSugarKg?: number;
+  requiredSugarKgOverride?: number | null;
+  extraSyrupLiters?: number;
+  requiredSyrupLitersOverride?: number | null;
+  // Custom equipment as JSON
+  customEquipment?: any;
 }
 
 export interface EquipmentCounts {
@@ -48,6 +60,41 @@ export interface EquipmentCounts {
   feeders: number;
 }
 
+export interface ConsumableItem {
+  name: string;
+  unit: string;
+  inUse: number;
+  extra: number;
+  total: number;
+  required: number;
+  recommended: number;
+  needed: number;
+  perHive: number;
+}
+
+export interface CustomEquipmentItem extends ConsumableItem {
+  id: string;
+  category: string;
+}
+
+export interface CustomEquipmentTypeDto {
+  id: string;
+  name: string;
+  unit: string;
+  category: string;
+  perHiveRatio?: number | null;
+  isActive: boolean;
+  displayOrder: number;
+}
+
+export interface CreateCustomEquipmentTypeDto {
+  name: string;
+  unit: string;
+  category: string;
+  perHiveRatio?: number | null;
+  displayOrder?: number;
+}
+
 export interface EquipmentPlanDto {
   currentHives: number;
   targetHives: number;
@@ -58,6 +105,11 @@ export interface EquipmentPlanDto {
   recommended: EquipmentCounts;
   needed: EquipmentCounts;
   hasOverrides: boolean;
+  consumables: {
+    sugar?: ConsumableItem;
+    syrup?: ConsumableItem;
+  };
+  customEquipment: CustomEquipmentItem[];
 }
 
 // Query keys
@@ -66,6 +118,7 @@ const EQUIPMENT_KEYS = {
   settings: () => [...EQUIPMENT_KEYS.all, 'settings'] as const,
   inventory: () => [...EQUIPMENT_KEYS.all, 'inventory'] as const,
   plan: () => [...EQUIPMENT_KEYS.all, 'plan'] as const,
+  customTypes: () => [...EQUIPMENT_KEYS.all, 'customTypes'] as const,
 };
 
 // Equipment settings hooks
@@ -137,6 +190,88 @@ export const useEquipmentPlan = () => {
   });
 };
 
+// Custom equipment hooks
+export const useCustomEquipmentTypes = () => {
+  return useQuery<CustomEquipmentTypeDto[]>({
+    queryKey: EQUIPMENT_KEYS.customTypes(),
+    queryFn: async () => {
+      const response = await apiClient.get<CustomEquipmentTypeDto[]>('/api/users/custom-equipment-types');
+      return response.data;
+    },
+  });
+};
+
+export const useCreateCustomEquipmentType = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<CustomEquipmentTypeDto, Error, CreateCustomEquipmentTypeDto>({
+    mutationFn: async (data) => {
+      const response = await apiClient.post<CustomEquipmentTypeDto>(
+        '/api/users/custom-equipment-types',
+        data
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.customTypes() });
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.plan() });
+    },
+  });
+};
+
+export const useUpdateCustomEquipmentType = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<CustomEquipmentTypeDto, Error, { id: string; data: Partial<CreateCustomEquipmentTypeDto> }>({
+    mutationFn: async ({ id, data }) => {
+      const response = await apiClient.put<CustomEquipmentTypeDto>(
+        `/api/users/custom-equipment-types/${id}`,
+        data
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.customTypes() });
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.plan() });
+    },
+  });
+};
+
+export const useDeleteCustomEquipmentType = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<{ success: boolean }, Error, string>({
+    mutationFn: async (id) => {
+      const response = await apiClient.delete<{ success: boolean }>(
+        `/api/users/custom-equipment-types/${id}`
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.customTypes() });
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.plan() });
+    },
+  });
+};
+
+export const useToggleCustomEquipmentType = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<CustomEquipmentTypeDto, Error, { id: string; isActive: boolean }>({
+    mutationFn: async ({ id, isActive }) => {
+      const response = await apiClient.put<CustomEquipmentTypeDto>(
+        `/api/users/custom-equipment-types/${id}/toggle`,
+        { isActive }
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.customTypes() });
+      queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.plan() });
+    },
+  });
+};
+
 // Combined hook for convenience
 export const useEquipment = () => {
   return {
@@ -145,5 +280,10 @@ export const useEquipment = () => {
     inventory: useInventory(),
     updateInventory: useUpdateInventory(),
     plan: useEquipmentPlan(),
+    customTypes: useCustomEquipmentTypes(),
+    createCustomType: useCreateCustomEquipmentType(),
+    updateCustomType: useUpdateCustomEquipmentType(),
+    deleteCustomType: useDeleteCustomEquipmentType(),
+    toggleCustomType: useToggleCustomEquipmentType(),
   };
 };

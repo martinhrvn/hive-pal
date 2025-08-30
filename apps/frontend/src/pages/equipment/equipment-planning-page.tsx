@@ -25,7 +25,7 @@ import {
   Copy,
   Printer,
 } from 'lucide-react';
-import { EquipmentSettingsDialog } from './components/equipment-settings-dialog';
+import { Link } from 'react-router-dom';
 
 const equipmentLabels = {
   deepBoxes: 'Deep Boxes',
@@ -162,11 +162,11 @@ const EquipmentActionSidebar = ({ onRefresh }: { onRefresh: () => void }) => (
         <Button onClick={onRefresh} className="w-full">
           Refresh Data
         </Button>
-        <EquipmentSettingsDialog>
-          <Button variant="outline" className="w-full">
+        <Button variant="outline" className="w-full" asChild>
+          <Link to="/equipment/settings">
             Equipment Settings
-          </Button>
-        </EquipmentSettingsDialog>
+          </Link>
+        </Button>
         <Separator />
         <div className="space-y-2 text-sm">
           <p>
@@ -452,8 +452,218 @@ export const EquipmentPlanningPage = () => {
             </CardContent>
           </Card>
 
+          {/* Consumables Section */}
+          {(planData.consumables?.sugar || planData.consumables?.syrup) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5" />
+                  Consumables
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Track consumable supplies like sugar and syrup
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Consumables Table Header */}
+                  <div className="grid grid-cols-5 gap-4 pb-3 border-b font-semibold text-sm">
+                    <div>Consumable</div>
+                    <div className="text-center">Extra</div>
+                    <div className="text-center">Total</div>
+                    <div className="text-center">Required</div>
+                    <div className="text-center">Status</div>
+                  </div>
+
+                  {/* Sugar Row */}
+                  {planData.consumables?.sugar && (
+                    <div className="grid grid-cols-5 gap-4 items-center py-2 border-b last:border-0">
+                      <div className="font-medium">{planData.consumables.sugar.name}</div>
+                      <div className="text-center font-mono text-sm">
+                        {planData.consumables.sugar.extra} {planData.consumables.sugar.unit}
+                      </div>
+                      <div className="text-center font-mono text-sm">
+                        {planData.consumables.sugar.total} {planData.consumables.sugar.unit}
+                      </div>
+                      <div className="text-center font-mono text-sm">
+                        {planData.consumables.sugar.required} {planData.consumables.sugar.unit}
+                      </div>
+                      <div className="text-center">
+                        {planData.consumables.sugar.needed > 0 ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Badge variant="destructive">
+                                  Need {planData.consumables.sugar.needed} {planData.consumables.sugar.unit}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Recommended: {planData.consumables.sugar.recommended} {planData.consumables.sugar.unit}</p>
+                                <p>Per hive: {planData.consumables.sugar.perHive} {planData.consumables.sugar.unit}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : planData.consumables.sugar.total - planData.consumables.sugar.required > 0 ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Badge variant="secondary">
+                                  +{planData.consumables.sugar.total - planData.consumables.sugar.required} {planData.consumables.sugar.unit}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Surplus: {planData.consumables.sugar.total - planData.consumables.sugar.required} {planData.consumables.sugar.unit}</p>
+                                <p>Recommended: {planData.consumables.sugar.recommended} {planData.consumables.sugar.unit}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          <Badge variant="secondary">Perfect</Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Syrup Row */}
+                  {planData.consumables?.syrup && (
+                    <div className="grid grid-cols-5 gap-4 items-center py-2 border-b last:border-0">
+                      <div className="font-medium">{planData.consumables.syrup.name}</div>
+                      <div className="text-center font-mono text-sm">
+                        {planData.consumables.syrup.extra} {planData.consumables.syrup.unit}
+                      </div>
+                      <div className="text-center font-mono text-sm">
+                        {planData.consumables.syrup.total} {planData.consumables.syrup.unit}
+                      </div>
+                      <div className="text-center font-mono text-sm">
+                        {planData.consumables.syrup.required} {planData.consumables.syrup.unit}
+                      </div>
+                      <div className="text-center">
+                        {planData.consumables.syrup.needed > 0 ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Badge variant="destructive">
+                                  Need {planData.consumables.syrup.needed} {planData.consumables.syrup.unit}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Recommended: {planData.consumables.syrup.recommended} {planData.consumables.syrup.unit}</p>
+                                <p>Per hive: {planData.consumables.syrup.perHive} {planData.consumables.syrup.unit}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : planData.consumables.syrup.total - planData.consumables.syrup.required > 0 ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Badge variant="secondary">
+                                  +{planData.consumables.syrup.total - planData.consumables.syrup.required} {planData.consumables.syrup.unit}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Surplus: {planData.consumables.syrup.total - planData.consumables.syrup.required} {planData.consumables.syrup.unit}</p>
+                                <p>Recommended: {planData.consumables.syrup.recommended} {planData.consumables.syrup.unit}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          <Badge variant="secondary">Perfect</Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Custom Equipment Section */}
+          {planData.customEquipment && planData.customEquipment.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Wrench className="h-5 w-5" />
+                  Custom Equipment
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Track your custom equipment types and supplies
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Custom Equipment Table Header */}
+                  <div className="grid grid-cols-6 gap-4 pb-3 border-b font-semibold text-sm">
+                    <div>Equipment</div>
+                    <div className="text-center">Category</div>
+                    <div className="text-center">Extra</div>
+                    <div className="text-center">Total</div>
+                    <div className="text-center">Required</div>
+                    <div className="text-center">Status</div>
+                  </div>
+
+                  {/* Custom Equipment Rows */}
+                  {planData.customEquipment.map((item) => (
+                    <div key={item.id} className="grid grid-cols-6 gap-4 items-center py-2 border-b last:border-0">
+                      <div className="font-medium">{item.name}</div>
+                      <div className="text-center">
+                        <Badge variant="outline" className="text-xs">
+                          {item.category}
+                        </Badge>
+                      </div>
+                      <div className="text-center font-mono text-sm">
+                        {item.extra} {item.unit}
+                      </div>
+                      <div className="text-center font-mono text-sm">
+                        {item.total} {item.unit}
+                      </div>
+                      <div className="text-center font-mono text-sm">
+                        {item.required} {item.unit}
+                      </div>
+                      <div className="text-center">
+                        {item.needed > 0 ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Badge variant="destructive">
+                                  Need {item.needed} {item.unit}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Recommended: {item.recommended} {item.unit}</p>
+                                <p>Per hive: {item.perHive} {item.unit}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : item.total - item.required > 0 ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Badge variant="secondary">
+                                  +{item.total - item.required} {item.unit}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Surplus: {item.total - item.required} {item.unit}</p>
+                                <p>Recommended: {item.recommended} {item.unit}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          <Badge variant="secondary">Perfect</Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Shopping List */}
-          {Object.values(planData.needed).some(count => count > 0) && (
+          {(Object.values(planData.needed).some(count => count > 0) ||
+            (planData.consumables?.sugar?.needed > 0) ||
+            (planData.consumables?.syrup?.needed > 0) ||
+            (planData.customEquipment?.some(item => item.needed > 0))) && (
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -466,14 +676,31 @@ export const EquipmentPlanningPage = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const shoppingList = Object.entries(equipmentLabels)
+                        // Core equipment items
+                        const equipmentItems = Object.entries(equipmentLabels)
                           .map(([key, label]) => {
-                            const needed =
-                              planData.needed[key as keyof EquipmentCounts];
+                            const needed = planData.needed[key as keyof EquipmentCounts];
                             return needed > 0 ? `${label}: ${needed}` : null;
                           })
-                          .filter(Boolean)
-                          .join('\n');
+                          .filter(Boolean);
+
+                        // Consumables items
+                        const consumableItems = [];
+                        if (planData.consumables?.sugar?.needed > 0) {
+                          consumableItems.push(`${planData.consumables.sugar.name}: ${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}`);
+                        }
+                        if (planData.consumables?.syrup?.needed > 0) {
+                          consumableItems.push(`${planData.consumables.syrup.name}: ${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}`);
+                        }
+
+                        // Custom equipment items
+                        const customItems = planData.customEquipment
+                          ?.filter(item => item.needed > 0)
+                          ?.map(item => `${item.name}: ${item.needed} ${item.unit}`) || [];
+
+                        // Combine all items
+                        const allItems = [...equipmentItems, ...consumableItems, ...customItems];
+                        const shoppingList = allItems.join('\n');
 
                         const fullList = `Equipment Shopping List\n${new Date().toLocaleDateString()}\n\n${shoppingList}`;
 
@@ -488,16 +715,32 @@ export const EquipmentPlanningPage = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const shoppingList = Object.entries(equipmentLabels)
+                        // Core equipment items
+                        const equipmentRows = Object.entries(equipmentLabels)
                           .map(([key, label]) => {
-                            const needed =
-                              planData.needed[key as keyof EquipmentCounts];
+                            const needed = planData.needed[key as keyof EquipmentCounts];
                             return needed > 0
                               ? `<tr><td style="padding: 8px; border: 1px solid #ddd;">${label}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${needed}</td></tr>`
                               : null;
                           })
-                          .filter(Boolean)
-                          .join('');
+                          .filter(Boolean);
+
+                        // Consumables rows
+                        const consumableRows = [];
+                        if (planData.consumables?.sugar?.needed > 0) {
+                          consumableRows.push(`<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.sugar.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}</td></tr>`);
+                        }
+                        if (planData.consumables?.syrup?.needed > 0) {
+                          consumableRows.push(`<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.syrup.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}</td></tr>`);
+                        }
+
+                        // Custom equipment rows
+                        const customRows = planData.customEquipment
+                          ?.filter(item => item.needed > 0)
+                          ?.map(item => `<tr><td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.needed} ${item.unit}</td></tr>`) || [];
+
+                        // Combine all rows
+                        const shoppingList = [...equipmentRows, ...consumableRows, ...customRows].join('');
 
                         const printWindow = window.open('', '_blank');
                         if (printWindow) {
@@ -547,9 +790,9 @@ export const EquipmentPlanningPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Core Equipment */}
                   {Object.entries(equipmentLabels).map(([key, label]) => {
-                    const needed =
-                      planData.needed[key as keyof EquipmentCounts];
+                    const needed = planData.needed[key as keyof EquipmentCounts];
                     return needed > 0 ? (
                       <div
                         key={key}
@@ -560,6 +803,37 @@ export const EquipmentPlanningPage = () => {
                       </div>
                     ) : null;
                   })}
+
+                  {/* Consumables */}
+                  {planData.consumables?.sugar?.needed > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-muted rounded">
+                      <span>{planData.consumables.sugar.name}</span>
+                      <Badge variant="secondary">
+                        {planData.consumables.sugar.needed} {planData.consumables.sugar.unit}
+                      </Badge>
+                    </div>
+                  )}
+                  {planData.consumables?.syrup?.needed > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-muted rounded">
+                      <span>{planData.consumables.syrup.name}</span>
+                      <Badge variant="secondary">
+                        {planData.consumables.syrup.needed} {planData.consumables.syrup.unit}
+                      </Badge>
+                    </div>
+                  )}
+
+                  {/* Custom Equipment */}
+                  {planData.customEquipment?.filter(item => item.needed > 0).map(item => (
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center p-3 bg-muted rounded"
+                    >
+                      <span>{item.name}</span>
+                      <Badge variant="secondary">
+                        {item.needed} {item.unit}
+                      </Badge>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>

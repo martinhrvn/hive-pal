@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Body,
   Param,
   UseGuards,
@@ -24,7 +25,9 @@ import {
   UserResponseDto,
   EquipmentSettingsDto,
   InventoryDto,
-  EquipmentPlanDto 
+  EquipmentPlanDto,
+  CustomEquipmentTypeDto,
+  CreateCustomEquipmentTypeDto
 } from './dto';
 import {
   ApiTags,
@@ -205,5 +208,89 @@ export class UsersController {
   async getEquipmentPlan(@Req() req: RequestWithUser): Promise<EquipmentPlanDto> {
     this.logger.log(`User ${req.user.id} requesting equipment plan`);
     return this.usersService.getEquipmentPlan(req.user.id);
+  }
+
+  @Get('custom-equipment-types')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user custom equipment types' })
+  @ApiResponse({
+    status: 200,
+    description: 'Custom equipment types retrieved',
+    type: [CustomEquipmentTypeDto],
+  })
+  async getCustomEquipmentTypes(@Req() req: RequestWithUser): Promise<CustomEquipmentTypeDto[]> {
+    this.logger.log(`User ${req.user.id} requesting custom equipment types`);
+    return this.usersService.getCustomEquipmentTypes(req.user.id);
+  }
+
+  @Post('custom-equipment-types')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create custom equipment type' })
+  @ApiResponse({
+    status: 201,
+    description: 'Custom equipment type created',
+    type: CustomEquipmentTypeDto,
+  })
+  async createCustomEquipmentType(
+    @Req() req: RequestWithUser,
+    @Body() data: CreateCustomEquipmentTypeDto,
+  ): Promise<CustomEquipmentTypeDto> {
+    this.logger.log(`User ${req.user.id} creating custom equipment type: ${data.name}`);
+    return this.usersService.createCustomEquipmentType(req.user.id, data);
+  }
+
+  @Put('custom-equipment-types/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update custom equipment type' })
+  @ApiResponse({
+    status: 200,
+    description: 'Custom equipment type updated',
+    type: CustomEquipmentTypeDto,
+  })
+  async updateCustomEquipmentType(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() data: Partial<CreateCustomEquipmentTypeDto>,
+  ): Promise<CustomEquipmentTypeDto> {
+    this.logger.log(`User ${req.user.id} updating custom equipment type: ${id}`);
+    return this.usersService.updateCustomEquipmentType(req.user.id, id, data);
+  }
+
+  @Delete('custom-equipment-types/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete custom equipment type' })
+  @ApiResponse({
+    status: 200,
+    description: 'Custom equipment type deleted',
+  })
+  async deleteCustomEquipmentType(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+  ): Promise<{ success: boolean }> {
+    this.logger.log(`User ${req.user.id} deleting custom equipment type: ${id}`);
+    await this.usersService.deleteCustomEquipmentType(req.user.id, id);
+    return { success: true };
+  }
+
+  @Put('custom-equipment-types/:id/toggle')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Toggle custom equipment type active status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Custom equipment type toggled',
+    type: CustomEquipmentTypeDto,
+  })
+  async toggleCustomEquipmentType(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() data: { isActive: boolean },
+  ): Promise<CustomEquipmentTypeDto> {
+    this.logger.log(`User ${req.user.id} toggling custom equipment type: ${id} to ${data.isActive}`);
+    return this.usersService.toggleCustomEquipmentType(req.user.id, id, data.isActive);
   }
 }

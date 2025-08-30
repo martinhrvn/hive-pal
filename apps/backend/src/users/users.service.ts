@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User, BoxType, HiveStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
-import { EquipmentSettingsDto, InventoryDto, EquipmentPlanDto, EquipmentCounts } from './dto';
+import { EquipmentSettingsDto, InventoryDto, EquipmentPlanDto, EquipmentCounts, ConsumableItem, CustomEquipmentItem, CustomEquipmentTypeDto, CreateCustomEquipmentTypeDto } from './dto';
 
 type PartialUser = Omit<User, 'password'>;
 
@@ -223,6 +223,75 @@ export class UsersService {
       feeders: Math.max(0, required.feeders - total.feeders),
     };
 
+    // Calculate consumables
+    const consumables: any = {};
+    
+    if (settings.trackSugar) {
+      const sugarRecommended = targetHives * settings.sugarPerHive;
+      const sugarRequired = inventory.requiredSugarKgOverride ?? sugarRecommended;
+      const sugarExtra = inventory.extraSugarKg || 0;
+      
+      consumables.sugar = {
+        name: 'Sugar',
+        unit: 'kg',
+        inUse: 0, // Consumables don't have "in use"
+        extra: sugarExtra,
+        total: sugarExtra,
+        required: sugarRequired,
+        recommended: sugarRecommended,
+        needed: Math.max(0, sugarRequired - sugarExtra),
+        perHive: settings.sugarPerHive,
+      };
+    }
+    
+    if (settings.trackSyrup) {
+      const syrupRecommended = targetHives * settings.syrupPerHive;
+      const syrupRequired = inventory.requiredSyrupLitersOverride ?? syrupRecommended;
+      const syrupExtra = inventory.extraSyrupLiters || 0;
+      
+      consumables.syrup = {
+        name: 'Syrup',
+        unit: 'liters',
+        inUse: 0,
+        extra: syrupExtra,
+        total: syrupExtra,
+        required: syrupRequired,
+        recommended: syrupRecommended,
+        needed: Math.max(0, syrupRequired - syrupExtra),
+        perHive: settings.syrupPerHive,
+      };
+    }
+
+    // Get custom equipment types and calculate
+    const customEquipmentTypes = await this.prismaService.customEquipmentType.findMany({
+      where: { userId, isActive: true },
+      orderBy: { displayOrder: 'asc' },
+    });
+
+    const customEquipment: CustomEquipmentItem[] = [];
+    const customData = inventory.customEquipment as any || {};
+
+    for (const customType of customEquipmentTypes) {
+      const itemData = customData[customType.id] || { extra: 0, requiredOverride: null };
+      const recommended = customType.perHiveRatio ? targetHives * customType.perHiveRatio : 0;
+      const required = itemData.requiredOverride ?? recommended;
+      const extra = itemData.extra || 0;
+
+      customEquipment.push({
+        id: customType.id,
+        name: customType.name,
+        unit: customType.unit,
+        category: customType.category,
+        inUse: 0, // Custom equipment typically doesn't track "in use"
+        extra,
+        total: extra,
+        required,
+        recommended,
+        needed: Math.max(0, required - extra),
+        perHive: customType.perHiveRatio || 0,
+      });
+    }
+
     return {
       currentHives,
       targetHives,
@@ -233,6 +302,8 @@ export class UsersService {
       recommended,
       needed,
       hasOverrides,
+      consumables,
+      customEquipment,
     };
   }
 
@@ -288,6 +359,11 @@ export class UsersService {
       queenExcludersPerHive: settings.queenExcludersPerHive,
       feedersPerHive: settings.feedersPerHive,
       targetMultiplier: settings.targetMultiplier,
+      // Consumables
+      trackSugar: settings.trackSugar,
+      sugarPerHive: settings.sugarPerHive,
+      trackSyrup: settings.trackSyrup,
+      syrupPerHive: settings.syrupPerHive,
     };
   }
 
@@ -307,6 +383,116 @@ export class UsersService {
       requiredFramesOverride: inventory.requiredFramesOverride,
       requiredQueenExcludersOverride: inventory.requiredQueenExcludersOverride,
       requiredFeedersOverride: inventory.requiredFeedersOverride,
+      // Consumables
+      extraSugarKg: inventory.extraSugarKg || 0,
+      requiredSugarKgOverride: inventory.requiredSugarKgOverride,
+      extraSyrupLiters: inventory.extraSyrupLiters || 0,
+      requiredSyrupLitersOverride: inventory.requiredSyrupLitersOverride,
+      // Custom equipment
+      customEquipment: inventory.customEquipment,
+    };
+  }
+
+  // Custom equipment management methods
+  async getCustomEquipmentTypes(userId: string): Promise<CustomEquipmentTypeDto[]> {
+    const customTypes = await this.prismaService.customEquipmentType.findMany({
+      where: { userId },
+      orderBy: { displayOrder: 'asc' },
+    });
+
+    return customTypes.map(type => ({
+      id: type.id,
+      name: type.name,
+      unit: type.unit,
+      category: type.category,
+      perHiveRatio: type.perHiveRatio,
+      isActive: type.isActive,
+      displayOrder: type.displayOrder,
+    }));
+  }
+
+  async createCustomEquipmentType(userId: string, data: CreateCustomEquipmentTypeDto): Promise<CustomEquipmentTypeDto> {
+    const customType = await this.prismaService.customEquipmentType.create({
+      data: {
+        userId,
+        name: data.name,
+        unit: data.unit,
+        category: data.category || 'custom',
+        perHiveRatio: data.perHiveRatio,
+        displayOrder: data.displayOrder || 999,
+      },
+    });
+
+    return {
+      id: customType.id,
+      name: customType.name,
+      unit: customType.unit,
+      category: customType.category,
+      perHiveRatio: customType.perHiveRatio,
+      isActive: customType.isActive,
+      displayOrder: customType.displayOrder,
+    };
+  }
+
+  async updateCustomEquipmentType(userId: string, id: string, data: Partial<CreateCustomEquipmentTypeDto>): Promise<CustomEquipmentTypeDto> {
+    const customType = await this.prismaService.customEquipmentType.updateMany({
+      where: { id, userId }, // Ensure user owns this custom type
+      data: {
+        name: data.name,
+        unit: data.unit,
+        category: data.category,
+        perHiveRatio: data.perHiveRatio,
+        displayOrder: data.displayOrder,
+      },
+    });
+
+    const updatedType = await this.prismaService.customEquipmentType.findFirst({
+      where: { id, userId },
+    });
+
+    if (!updatedType) {
+      throw new NotFoundException('Custom equipment type not found');
+    }
+
+    return {
+      id: updatedType.id,
+      name: updatedType.name,
+      unit: updatedType.unit,
+      category: updatedType.category,
+      perHiveRatio: updatedType.perHiveRatio,
+      isActive: updatedType.isActive,
+      displayOrder: updatedType.displayOrder,
+    };
+  }
+
+  async deleteCustomEquipmentType(userId: string, id: string): Promise<void> {
+    await this.prismaService.customEquipmentType.deleteMany({
+      where: { id, userId }, // Ensure user owns this custom type
+    });
+  }
+
+  async toggleCustomEquipmentType(userId: string, id: string, isActive: boolean): Promise<CustomEquipmentTypeDto> {
+    await this.prismaService.customEquipmentType.updateMany({
+      where: { id, userId },
+      data: { isActive },
+    });
+
+    const updatedType = await this.prismaService.customEquipmentType.findFirst({
+      where: { id, userId },
+    });
+
+    if (!updatedType) {
+      throw new NotFoundException('Custom equipment type not found');
+    }
+
+    return {
+      id: updatedType.id,
+      name: updatedType.name,
+      unit: updatedType.unit,
+      category: updatedType.category,
+      perHiveRatio: updatedType.perHiveRatio,
+      isActive: updatedType.isActive,
+      displayOrder: updatedType.displayOrder,
     };
   }
 }

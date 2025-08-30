@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNumber, Min, IsOptional } from 'class-validator';
+import { IsBoolean, IsInt, IsNumber, Min, IsOptional, IsString } from 'class-validator';
 
 export class EquipmentCounts {
   @ApiProperty({ description: 'Deep boxes count' })
@@ -98,6 +98,24 @@ export class EquipmentSettingsDto {
   @IsNumber()
   @Min(1)
   targetMultiplier: number;
+
+  @ApiProperty({ description: 'Track sugar consumption', default: true })
+  @IsBoolean()
+  trackSugar: boolean;
+
+  @ApiProperty({ description: 'Sugar per hive in kg', default: 12.0 })
+  @IsNumber()
+  @Min(0)
+  sugarPerHive: number;
+
+  @ApiProperty({ description: 'Track syrup consumption', default: false })
+  @IsBoolean()
+  trackSyrup: boolean;
+
+  @ApiProperty({ description: 'Syrup per hive in liters', default: 0.0 })
+  @IsNumber()
+  @Min(0)
+  syrupPerHive: number;
 }
 
 export class InventoryDto {
@@ -178,6 +196,122 @@ export class InventoryDto {
   @Min(0)
   @IsOptional()
   requiredFeedersOverride?: number | null;
+
+  // Built-in consumables
+  @ApiProperty({ description: 'Extra sugar in kg', default: 0 })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  extraSugarKg?: number;
+
+  @ApiProperty({ description: 'Override for required sugar in kg', required: false })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  requiredSugarKgOverride?: number | null;
+
+  @ApiProperty({ description: 'Extra syrup in liters', default: 0 })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  extraSyrupLiters?: number;
+
+  @ApiProperty({ description: 'Override for required syrup in liters', required: false })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  requiredSyrupLitersOverride?: number | null;
+
+  // Custom equipment as JSON
+  @ApiProperty({ description: 'Custom equipment data as JSON', required: false })
+  @IsOptional()
+  customEquipment?: any;
+}
+
+export class CustomEquipmentTypeDto {
+  @ApiProperty({ description: 'Custom equipment type ID' })
+  id: string;
+
+  @ApiProperty({ description: 'Equipment name' })
+  name: string;
+
+  @ApiProperty({ description: 'Unit of measurement' })
+  unit: string;
+
+  @ApiProperty({ description: 'Equipment category' })
+  category: string;
+
+  @ApiProperty({ description: 'Amount per hive for calculations', required: false })
+  perHiveRatio?: number | null;
+
+  @ApiProperty({ description: 'Whether this equipment is active/tracked' })
+  isActive: boolean;
+
+  @ApiProperty({ description: 'Display order' })
+  displayOrder: number;
+}
+
+export class CreateCustomEquipmentTypeDto {
+  @ApiProperty({ description: 'Equipment name' })
+  @IsString()
+  name: string;
+
+  @ApiProperty({ description: 'Unit of measurement' })
+  @IsString()
+  unit: string;
+
+  @ApiProperty({ description: 'Equipment category', default: 'custom' })
+  @IsString()
+  category: string;
+
+  @ApiProperty({ description: 'Amount per hive for calculations', required: false })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  perHiveRatio?: number | null;
+
+  @ApiProperty({ description: 'Display order', default: 999 })
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  displayOrder?: number;
+}
+
+export class ConsumableItem {
+  @ApiProperty({ description: 'Item name' })
+  name: string;
+
+  @ApiProperty({ description: 'Unit of measurement' })
+  unit: string;
+
+  @ApiProperty({ description: 'Amount in use (always 0 for consumables)' })
+  inUse: number;
+
+  @ApiProperty({ description: 'Extra inventory amount' })
+  extra: number;
+
+  @ApiProperty({ description: 'Total available' })
+  total: number;
+
+  @ApiProperty({ description: 'Required amount' })
+  required: number;
+
+  @ApiProperty({ description: 'Recommended amount based on calculations' })
+  recommended: number;
+
+  @ApiProperty({ description: 'Amount needed' })
+  needed: number;
+
+  @ApiProperty({ description: 'Per hive ratio' })
+  perHive: number;
+}
+
+export class CustomEquipmentItem extends ConsumableItem {
+  @ApiProperty({ description: 'Custom equipment type ID' })
+  id: string;
+
+  @ApiProperty({ description: 'Category' })
+  category: string;
 }
 
 export class EquipmentPlanDto {
@@ -207,4 +341,13 @@ export class EquipmentPlanDto {
 
   @ApiProperty({ description: 'Whether any overrides are active' })
   hasOverrides: boolean;
+
+  @ApiProperty({ description: 'Consumables (sugar, syrup, etc.)' })
+  consumables: {
+    sugar?: ConsumableItem;
+    syrup?: ConsumableItem;
+  };
+
+  @ApiProperty({ description: 'Custom equipment items', type: [CustomEquipmentItem] })
+  customEquipment: CustomEquipmentItem[];
 }

@@ -19,6 +19,7 @@ model User {
   passwordChangeRequired Boolean                @default(false)
   equipmentSettings      UserEquipmentSettings?
   inventory              UserInventory?
+  customEquipmentTypes   CustomEquipmentType[]
 }
 
 enum Role {
@@ -440,6 +441,12 @@ model UserEquipmentSettings {
   // Planning multiplier
   targetMultiplier      Float   @default(1.5) // Target hives = current * multiplier
   
+  // Consumables tracking
+  trackSugar            Boolean @default(true)
+  sugarPerHive          Float   @default(12.0)  // kg per hive
+  trackSyrup            Boolean @default(false)
+  syrupPerHive          Float   @default(0.0)   // liters per hive
+  
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }
@@ -468,6 +475,34 @@ model UserInventory {
   requiredQueenExcludersOverride  Int?
   requiredFeedersOverride         Int?
   
+  // Built-in consumables
+  extraSugarKg                    Float?  @default(0)
+  requiredSugarKgOverride         Float?
+  extraSyrupLiters                Float?  @default(0)
+  requiredSyrupLitersOverride     Float?
+  
+  // JSON field for custom equipment {itemId: {extra: 10, requiredOverride: 15}}
+  customEquipment                 Json?
+  
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+}
+
+// Custom equipment types defined by users
+model CustomEquipmentType {
+  id               String  @id @default(uuid())
+  userId           String
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  unit             String  // "pieces", "kg", "liters", "sheets", "meters", etc.
+  category         String  // "consumables", "seasonal", "tools", "custom"
+  perHiveRatio     Float?  // Optional: amount per hive for calculations
+  isActive         Boolean @default(true)
+  displayOrder     Int     @default(999)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@unique([userId, name])
+  @@index([userId])
 }
