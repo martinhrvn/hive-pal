@@ -4,13 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useState, useMemo } from 'react';
 import { EquipmentCounts, InventoryDto } from '@/api/hooks/useEquipment';
-import { Loader2, Package, Target, ShoppingCart, Wrench, Info, RotateCcw, Copy, Printer } from 'lucide-react';
+import {
+  Loader2,
+  Package,
+  Target,
+  ShoppingCart,
+  Wrench,
+  Info,
+  RotateCcw,
+  Copy,
+  Printer,
+} from 'lucide-react';
 import { EquipmentSettingsDialog } from './components/equipment-settings-dialog';
 
 const equipmentLabels = {
@@ -23,12 +37,12 @@ const equipmentLabels = {
   feeders: 'Feeders',
 };
 
-const EquipmentRow = ({ 
-  label, 
-  inUse, 
-  extra, 
-  total, 
-  required, 
+const EquipmentRow = ({
+  label,
+  inUse,
+  extra,
+  total,
+  required,
   recommended,
   needed,
   onExtraChange,
@@ -53,67 +67,71 @@ const EquipmentRow = ({
   perHive: number;
 }) => {
   const isOverridden = required !== recommended;
-  
+
   return (
-  <div className="grid grid-cols-7 gap-4 items-center py-3">
-    <div className="font-medium">{label}</div>
-    <div className="text-center">{inUse}</div>
-    <div className="text-center">
-      <Input
-        type="number"
-        value={extra}
-        onChange={(e) => onExtraChange(equipmentKey, parseInt(e.target.value) || 0)}
-        className="w-20 text-center"
-        min="0"
-      />
-    </div>
-    <div className="text-center font-medium">{total}</div>
-    <div className="text-center flex items-center justify-center gap-1">
-      <Input
-        type="number"
-        value={required}
-        onChange={(e) => onRequiredChange(equipmentKey, parseInt(e.target.value) || 0)}
-        className={cn(
-          "w-20 text-center",
-          isOverridden && "text-blue-600 font-medium"
+    <div className="grid grid-cols-7 gap-4 items-center py-3">
+      <div className="font-medium">{label}</div>
+      <div className="text-center">{inUse}</div>
+      <div className="text-center">
+        <Input
+          type="number"
+          value={extra}
+          onChange={e =>
+            onExtraChange(equipmentKey, parseInt(e.target.value) || 0)
+          }
+          className="w-20 text-center"
+          min="0"
+        />
+      </div>
+      <div className="text-center font-medium">{total}</div>
+      <div className="text-center flex items-center justify-center gap-1">
+        <Input
+          type="number"
+          value={required}
+          onChange={e =>
+            onRequiredChange(equipmentKey, parseInt(e.target.value) || 0)
+          }
+          className={cn(
+            'w-20 text-center',
+            isOverridden && 'text-blue-600 font-medium',
+          )}
+          min="0"
+        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Recommended: {recommended}</p>
+              <p className="text-xs text-muted-foreground">
+                Based on {targetHives} hives × {perHive} per hive
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        {isOverridden && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-6 w-6"
+            onClick={() => onResetRequired(equipmentKey)}
+          >
+            <RotateCcw className="h-3 w-3" />
+          </Button>
         )}
-        min="0"
-      />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Info className="h-3 w-3 text-muted-foreground" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Recommended: {recommended}</p>
-            <p className="text-xs text-muted-foreground">
-              Based on {targetHives} hives × {perHive} per hive
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      {isOverridden && (
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-6 w-6"
-          onClick={() => onResetRequired(equipmentKey)}
-        >
-          <RotateCcw className="h-3 w-3" />
-        </Button>
-      )}
+      </div>
+      <div className="text-center">
+        {needed > 0 ? (
+          <Badge variant="destructive">{needed}</Badge>
+        ) : (
+          <Badge variant="outline">0</Badge>
+        )}
+      </div>
+      <div className="text-center text-sm text-muted-foreground">
+        {total - required > 0 ? `+${total - required}` : '0'}
+      </div>
     </div>
-    <div className="text-center">
-      {needed > 0 ? (
-        <Badge variant="destructive">{needed}</Badge>
-      ) : (
-        <Badge variant="outline">0</Badge>
-      )}
-    </div>
-    <div className="text-center text-sm text-muted-foreground">
-      {total - required > 0 ? `+${total - required}` : '0'}
-    </div>
-  </div>
   );
 };
 
@@ -137,7 +155,9 @@ const EquipmentActionSidebar = ({ onRefresh }: { onRefresh: () => void }) => (
         </EquipmentSettingsDialog>
         <Separator />
         <div className="space-y-2 text-sm">
-          <p><strong>Target Calculation:</strong></p>
+          <p>
+            <strong>Target Calculation:</strong>
+          </p>
           <p>Target Hives = Current × 1.5</p>
           <p>This ensures 50% buffer for splits and expansion.</p>
         </div>
@@ -148,23 +168,35 @@ const EquipmentActionSidebar = ({ onRefresh }: { onRefresh: () => void }) => (
 
 export const EquipmentPlanningPage = () => {
   const { plan, inventory, updateInventory, settings } = useEquipment();
-  const [localInventory, setLocalInventory] = useState<InventoryDto | null>(null);
+  const [localInventory, setLocalInventory] = useState<InventoryDto | null>(
+    null,
+  );
 
   // Calculate local plan data with overrides applied
   const localPlanData = useMemo(() => {
     if (!plan.data || !inventory.data) return null;
-    
+
     const inventoryData = localInventory || inventory.data;
-    
+
     // Apply overrides to required values
     const required: EquipmentCounts = {
-      deepBoxes: inventoryData.requiredDeepBoxesOverride ?? plan.data.recommended.deepBoxes,
-      shallowBoxes: inventoryData.requiredShallowBoxesOverride ?? plan.data.recommended.shallowBoxes,
-      bottoms: inventoryData.requiredBottomsOverride ?? plan.data.recommended.bottoms,
-      covers: inventoryData.requiredCoversOverride ?? plan.data.recommended.covers,
-      frames: inventoryData.requiredFramesOverride ?? plan.data.recommended.frames,
-      queenExcluders: inventoryData.requiredQueenExcludersOverride ?? plan.data.recommended.queenExcluders,
-      feeders: inventoryData.requiredFeedersOverride ?? plan.data.recommended.feeders,
+      deepBoxes:
+        inventoryData.requiredDeepBoxesOverride ??
+        plan.data.recommended.deepBoxes,
+      shallowBoxes:
+        inventoryData.requiredShallowBoxesOverride ??
+        plan.data.recommended.shallowBoxes,
+      bottoms:
+        inventoryData.requiredBottomsOverride ?? plan.data.recommended.bottoms,
+      covers:
+        inventoryData.requiredCoversOverride ?? plan.data.recommended.covers,
+      frames:
+        inventoryData.requiredFramesOverride ?? plan.data.recommended.frames,
+      queenExcluders:
+        inventoryData.requiredQueenExcludersOverride ??
+        plan.data.recommended.queenExcluders,
+      feeders:
+        inventoryData.requiredFeedersOverride ?? plan.data.recommended.feeders,
     };
 
     // Recalculate extra values
@@ -196,7 +228,10 @@ export const EquipmentPlanningPage = () => {
       bottoms: Math.max(0, required.bottoms - total.bottoms),
       covers: Math.max(0, required.covers - total.covers),
       frames: Math.max(0, required.frames - total.frames),
-      queenExcluders: Math.max(0, required.queenExcluders - total.queenExcluders),
+      queenExcluders: Math.max(
+        0,
+        required.queenExcluders - total.queenExcluders,
+      ),
       feeders: Math.max(0, required.feeders - total.feeders),
     };
 
@@ -222,7 +257,13 @@ export const EquipmentPlanningPage = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <p className="text-red-600">Error loading equipment data</p>
-          <Button onClick={() => { plan.refetch(); inventory.refetch(); }} className="mt-2">
+          <Button
+            onClick={() => {
+              plan.refetch();
+              inventory.refetch();
+            }}
+            className="mt-2"
+          >
             Try Again
           </Button>
         </div>
@@ -242,27 +283,29 @@ export const EquipmentPlanningPage = () => {
       ...inventoryData,
       [`extra${key.charAt(0).toUpperCase() + key.slice(1)}`]: value,
     } as InventoryDto;
-    
+
     setLocalInventory(updatedInventory);
   };
 
   const handleRequiredChange = (key: keyof EquipmentCounts, value: number) => {
-    const overrideKey = `required${key.charAt(0).toUpperCase() + key.slice(1)}Override` as keyof InventoryDto;
+    const overrideKey =
+      `required${key.charAt(0).toUpperCase() + key.slice(1)}Override` as keyof InventoryDto;
     const updatedInventory = {
       ...inventoryData,
       [overrideKey]: value,
     } as InventoryDto;
-    
+
     setLocalInventory(updatedInventory);
   };
 
   const handleResetRequired = (key: keyof EquipmentCounts) => {
-    const overrideKey = `required${key.charAt(0).toUpperCase() + key.slice(1)}Override` as keyof InventoryDto;
+    const overrideKey =
+      `required${key.charAt(0).toUpperCase() + key.slice(1)}Override` as keyof InventoryDto;
     const updatedInventory = {
       ...inventoryData,
       [overrideKey]: null,
     } as InventoryDto;
-    
+
     setLocalInventory(updatedInventory);
   };
 
@@ -293,7 +336,7 @@ export const EquipmentPlanningPage = () => {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="flex items-center p-6">
                 <Target className="h-8 w-8 text-green-600 mr-4" />
@@ -303,13 +346,16 @@ export const EquipmentPlanningPage = () => {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="flex items-center p-6">
                 <ShoppingCart className="h-8 w-8 text-orange-600 mr-4" />
                 <div>
                   <p className="text-2xl font-bold">
-                    {Object.values(planData.needed).reduce((sum, count) => sum + count, 0)}
+                    {Object.values(planData.needed).reduce(
+                      (sum, count) => sum + count,
+                      0,
+                    )}
                   </p>
                   <p className="text-sm text-muted-foreground">Items Needed</p>
                 </div>
@@ -341,15 +387,20 @@ export const EquipmentPlanningPage = () => {
                 {/* Equipment Rows */}
                 {Object.entries(equipmentLabels).map(([key, label]) => {
                   const equipmentKey = key as keyof EquipmentCounts;
-                  const perHiveKey = `${equipmentKey}PerHive` as keyof typeof settings.data;
-                  const perHive = settings.data?.[perHiveKey] as number || 0;
-                  
+                  const perHiveKey =
+                    `${equipmentKey}PerHive` as keyof typeof settings.data;
+                  const perHive = settings.data?.[perHiveKey] || 0;
+
                   return (
                     <EquipmentRow
                       key={key}
                       label={label}
                       inUse={planData.inUse[equipmentKey]}
-                      extra={inventoryData[`extra${equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1)}` as keyof InventoryDto] as number}
+                      extra={
+                        inventoryData[
+                          `extra${equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1)}` as keyof InventoryDto
+                        ] as number
+                      }
                       total={planData.total[equipmentKey]}
                       required={planData.required[equipmentKey]}
                       recommended={planData.recommended[equipmentKey]}
@@ -367,13 +418,13 @@ export const EquipmentPlanningPage = () => {
                 {hasChanges && (
                   <div className="flex justify-end pt-4 border-t">
                     <div className="space-x-2">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => setLocalInventory(null)}
                       >
                         Cancel
                       </Button>
-                      <Button 
+                      <Button
                         onClick={handleSaveInventory}
                         disabled={updateInventory.isPending}
                       >
@@ -405,14 +456,15 @@ export const EquipmentPlanningPage = () => {
                       onClick={() => {
                         const shoppingList = Object.entries(equipmentLabels)
                           .map(([key, label]) => {
-                            const needed = planData.needed[key as keyof EquipmentCounts];
+                            const needed =
+                              planData.needed[key as keyof EquipmentCounts];
                             return needed > 0 ? `${label}: ${needed}` : null;
                           })
                           .filter(Boolean)
                           .join('\n');
-                        
+
                         const fullList = `Equipment Shopping List\n${new Date().toLocaleDateString()}\n\n${shoppingList}`;
-                        
+
                         navigator.clipboard.writeText(fullList);
                         // You could add a toast notification here
                       }}
@@ -426,12 +478,15 @@ export const EquipmentPlanningPage = () => {
                       onClick={() => {
                         const shoppingList = Object.entries(equipmentLabels)
                           .map(([key, label]) => {
-                            const needed = planData.needed[key as keyof EquipmentCounts];
-                            return needed > 0 ? `<tr><td style="padding: 8px; border: 1px solid #ddd;">${label}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${needed}</td></tr>` : null;
+                            const needed =
+                              planData.needed[key as keyof EquipmentCounts];
+                            return needed > 0
+                              ? `<tr><td style="padding: 8px; border: 1px solid #ddd;">${label}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${needed}</td></tr>`
+                              : null;
                           })
                           .filter(Boolean)
                           .join('');
-                        
+
                         const printWindow = window.open('', '_blank');
                         if (printWindow) {
                           printWindow.document.write(`
@@ -481,9 +536,13 @@ export const EquipmentPlanningPage = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {Object.entries(equipmentLabels).map(([key, label]) => {
-                    const needed = planData.needed[key as keyof EquipmentCounts];
+                    const needed =
+                      planData.needed[key as keyof EquipmentCounts];
                     return needed > 0 ? (
-                      <div key={key} className="flex justify-between items-center p-3 bg-muted rounded">
+                      <div
+                        key={key}
+                        className="flex justify-between items-center p-3 bg-muted rounded"
+                      >
                         <span>{label}</span>
                         <Badge variant="secondary">{needed}</Badge>
                       </div>
@@ -495,9 +554,14 @@ export const EquipmentPlanningPage = () => {
           )}
         </div>
       </MainContent>
-      
+
       <Sidebar>
-        <EquipmentActionSidebar onRefresh={() => { plan.refetch(); inventory.refetch(); }} />
+        <EquipmentActionSidebar
+          onRefresh={() => {
+            plan.refetch();
+            inventory.refetch();
+          }}
+        />
       </Sidebar>
     </Page>
   );
