@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PrinterIcon, QrCodeIcon } from 'lucide-react';
+import { PrinterIcon, QrCodeIcon, ImageIcon } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import {
   Select,
@@ -20,12 +20,15 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 
 export function QRCodesPrintPage() {
   const { data: hives, isLoading } = useHives();
   const [selectedHives, setSelectedHives] = useState<Set<string>>(new Set());
   const [qrSize, setQrSize] = useState<'small' | 'medium' | 'large'>('large');
   const [layout, setLayout] = useState<'2x3' | '2x4' | '3x3'>('2x3');
+  const [includeLogo, setIncludeLogo] = useState(true);
+  const [logoUrl, setLogoUrl] = useState('/favicon.ico'); // Default to favicon, can be customized
 
   const toggleHiveSelection = (hiveId: string) => {
     const newSelection = new Set(selectedHives);
@@ -116,6 +119,17 @@ export function QRCodesPrintPage() {
         .qr-code-wrapper {
           padding: 10px;
           background: white;
+          position: relative;
+        }
+        .qr-logo {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 8px;
+          border-radius: 8px;
+          box-shadow: 0 0 0 4px white;
         }
         .hive-name {
           margin-top: 10px;
@@ -136,7 +150,9 @@ export function QRCodesPrintPage() {
         .map(hive => {
           return `
           <div class="qr-item">
-            <div class="qr-code-wrapper" id="qr-${hive.id}"></div>
+            <div class="qr-code-wrapper" id="qr-${hive.id}">
+              ${includeLogo ? `<img class="qr-logo" id="logo-${hive.id}" style="display:none;" />` : ''}
+            </div>
             <div class="hive-name">${hive.name}</div>
           </div>
         `;
@@ -168,7 +184,20 @@ export function QRCodesPrintPage() {
                   qr.make();
                   var element = document.getElementById('qr-${hive.id}');
                   if (element) {
-                    element.innerHTML = qr.createSvgTag(${qrCodeSize / 256});
+                    var qrSvg = qr.createSvgTag(${qrCodeSize / 256});
+                    element.insertAdjacentHTML('afterbegin', qrSvg);
+                    
+                    ${includeLogo ? `
+                    // Add logo
+                    var logo = document.getElementById('logo-${hive.id}');
+                    if (logo) {
+                      logo.src = '${logoUrl}';
+                      var logoSize = ${qrCodeSize} * 0.2; // Logo is 20% of QR code size
+                      logo.style.width = logoSize + 'px';
+                      logo.style.height = logoSize + 'px';
+                      logo.style.display = 'block';
+                    }
+                    ` : ''}
                   }
                 })();
               `;
@@ -176,8 +205,10 @@ export function QRCodesPrintPage() {
               .join('\n')}
             
             window.onload = function() {
-              window.print();
-              window.close();
+              setTimeout(function() {
+                window.print();
+                window.close();
+              }, 500); // Small delay to ensure logos load
             };
           </script>
         </body>
@@ -260,6 +291,18 @@ export function QRCodesPrintPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="flex items-center space-x-2 min-w-[200px]">
+              <Switch
+                id="include-logo"
+                checked={includeLogo}
+                onCheckedChange={setIncludeLogo}
+              />
+              <Label htmlFor="include-logo" className="flex items-center gap-2 cursor-pointer">
+                <ImageIcon className="h-4 w-4" />
+                Include Logo
+              </Label>
+            </div>
           </div>
 
           {/* Selection Controls */}
@@ -319,13 +362,29 @@ export function QRCodesPrintPage() {
                         key={hiveId}
                         className="flex flex-col items-center p-2 bg-white rounded border"
                       >
-                        <QRCode
-                          value={hiveUrl}
-                          size={80}
-                          level="H"
-                          bgColor="#ffffff"
-                          fgColor="#000000"
-                        />
+                        <div className="relative">
+                          <QRCode
+                            value={hiveUrl}
+                            size={80}
+                            level="H"
+                            bgColor="#ffffff"
+                            fgColor="#000000"
+                          />
+                          {includeLogo && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="bg-white p-0.5 rounded shadow-sm">
+                                <img 
+                                  src={logoUrl} 
+                                  alt="Logo" 
+                                  className="w-4 h-4"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
                         <div className="text-xs mt-1 text-center max-w-[80px] truncate">
                           {hive.name}
                         </div>
