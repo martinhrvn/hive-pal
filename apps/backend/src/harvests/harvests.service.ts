@@ -118,7 +118,9 @@ export class HarvestsService {
             ? new Date(updateHarvestDto.date)
             : undefined,
           notes: updateHarvestDto.notes,
-          totalWeight: updateHarvestDto.totalWeight,
+          totalWeight: updateHarvestDto.totalWeight
+            ? Math.round(updateHarvestDto.totalWeight * 10) / 10
+            : undefined,
         },
       });
 
@@ -194,7 +196,7 @@ export class HarvestsService {
       await tx.harvest.update({
         where: { id: harvestId },
         data: {
-          totalWeight: setWeightDto.totalWeight,
+          totalWeight: Math.round(setWeightDto.totalWeight * 10) / 10,
           status: HarvestStatus.IN_PROGRESS,
         },
       });
@@ -261,7 +263,7 @@ export class HarvestsService {
               type: ActionType.HARVEST,
               date: harvest.date,
               notes: `Harvested ${harvestHive.honeyAmount.toFixed(
-                2,
+                1,
               )} kg of honey (${harvestHive.framesTaken} frames)`,
             },
           });
@@ -487,12 +489,12 @@ export class HarvestsService {
     // Calculate honey amount for each hive based on frame percentage
     for (const harvestHive of harvest.harvestHives) {
       const percentage = (harvestHive.framesTaken / totalFrames) * 100;
-      const honeyAmount = (harvest.totalWeight * percentage) / 100;
+      const honeyAmount = Math.round((harvest.totalWeight * percentage) / 10) / 10;
 
       await tx.harvestHive.update({
         where: { id: harvestHive.id },
         data: {
-          honeyPercentage: percentage,
+          honeyPercentage: Math.round(percentage * 10) / 10,
           honeyAmount,
         },
       });
