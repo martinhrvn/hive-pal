@@ -127,9 +127,10 @@ export function QRCodesPrintPage() {
           left: 50%;
           transform: translate(-50%, -50%);
           background: white;
-          padding: 8px;
-          border-radius: 8px;
-          box-shadow: 0 0 0 4px white;
+          padding: 4px;
+          border-radius: 4px;
+          box-shadow: 0 0 0 2px white;
+          z-index: 10;
         }
         .hive-name {
           margin-top: 10px;
@@ -185,22 +186,26 @@ export function QRCodesPrintPage() {
                   var element = document.getElementById('qr-${hive.id}');
                   if (element) {
                     var qrSvg = qr.createSvgTag(${qrCodeSize / 256});
-                    element.insertAdjacentHTML('afterbegin', qrSvg);
-                    
                     ${
                       includeLogo
                         ? `
-                    // Add logo
-                    var logo = document.getElementById('logo-${hive.id}');
+                    // Insert QR code first, then configure logo
+                    var logo = element.querySelector('.qr-logo');
+                    element.insertAdjacentHTML('afterbegin', qrSvg);
+                    
                     if (logo) {
                       logo.src = '${logoUrl}';
-                      var logoSize = ${qrCodeSize} * 0.2; // Logo is 20% of QR code size
+                      var logoSize = Math.min(${qrCodeSize} * 0.15, 48); // Logo is 15% of QR code size, max 48px
                       logo.style.width = logoSize + 'px';
                       logo.style.height = logoSize + 'px';
                       logo.style.display = 'block';
+                      logo.style.objectFit = 'contain';
                     }
                     `
-                        : ''
+                        : `
+                    // No logo, just insert QR code
+                    element.innerHTML = qrSvg;
+                    `
                     }
                   }
                 })();
