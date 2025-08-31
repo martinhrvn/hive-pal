@@ -33,6 +33,27 @@ export class WeatherController {
     return this.weatherService.getDailyForecast(apiaryId);
   }
 
+  @Get('date/:apiaryId')
+  @ApiOperation({ 
+    summary: 'Get weather for a specific date, preferring midday readings' 
+  })
+  @ApiQuery({
+    name: 'date',
+    required: true,
+    type: String,
+    description: 'ISO date string (YYYY-MM-DD)',
+  })
+  async getWeatherForDate(
+    @Param('apiaryId') apiaryId: string,
+    @Query('date') date: string,
+  ) {
+    const weather = await this.weatherService.getWeatherForDate(apiaryId, date);
+    if (!weather) {
+      return null;
+    }
+    return weather;
+  }
+
   @Get('history/:apiaryId')
   @ApiOperation({ summary: 'Get weather history for an apiary' })
   @ApiQuery({

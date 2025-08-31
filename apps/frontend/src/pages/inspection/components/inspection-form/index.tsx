@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils.ts';
-import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { InspectionFormData, inspectionSchema } from './schema';
@@ -37,8 +36,13 @@ import {
   useHiveOptions,
   useInspection,
   useUpsertInspection,
+  useHive,
+  useWeatherForDate,
 } from '@/api/hooks';
 import { ActionType, InspectionStatus } from 'shared-schemas';
+import { mapWeatherConditionToForm } from '@/utils/weather-mapping';
+import { useEffect } from 'react';
+import { format } from 'date-fns';
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -102,6 +106,39 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     },
   });
 
+  // Watch for changes in hive selection and date to auto-populate weather
+  const selectedHiveId = form.watch('hiveId');
+  const selectedDate = form.watch('date');
+
+  // Get hive details to access apiaryId
+  const { data: selectedHive } = useHive(selectedHiveId || '', {
+    enabled: !!selectedHiveId,
+  });
+
+  // Format date for API call
+  const dateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
+  const isDateInFuture = selectedDate && selectedDate > new Date();
+
+  // Fetch weather for the selected date
+  const { data: weatherData } = useWeatherForDate(
+    selectedHive?.apiaryId || '',
+    dateString,
+    {
+      enabled: !!selectedHive?.apiaryId && !!dateString && !isDateInFuture,
+    },
+  );
+
+  // Auto-populate weather when data is available
+  useEffect(() => {
+    if (weatherData && !isDateInFuture && selectedHive?.apiaryId) {
+      // Always update both temperature and weather conditions from weather data
+      form.setValue('temperature', Math.round(weatherData.temperature));
+
+      const mappedCondition = mapWeatherConditionToForm(weatherData.condition);
+      form.setValue('weatherConditions', mappedCondition);
+    }
+  }, [weatherData, form, isDateInFuture, selectedHive?.apiaryId]);
+
   const onSubmit = useUpsertInspection(inspectionId);
   // Handler for regular save button
   const handleSave = form.handleSubmit(data => {
@@ -120,7 +157,9 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const isCompleted = inspection?.status === InspectionStatus.COMPLETED;
   return (
     <div className={'max-w-4xl ml-4'}>
-      <h1 className={'text-lg font-bold'}>{isEdit ? 'Edit inspection' : 'New inspection'}</h1>
+      <h1 className={'text-lg font-bold'}>
+        {isEdit ? 'Edit inspection' : 'New inspection'}
+      </h1>
       <Separator className="my-2" />
       <Form {...form}>
         <form onSubmit={e => e.preventDefault()} className="space-y-6">

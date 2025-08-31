@@ -382,6 +382,55 @@ export class WeatherService {
   }
 
   /**
+   * Get weather data for a specific date, preferring midday readings
+   * Returns the best available weather record for the given date
+   */
+  async getWeatherForDate(apiaryId: string, date: string) {
+    // Parse date and create date range for the entire day
+    const targetDate = new Date(date);
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Get all weather records for that date
+    const weatherRecords = await this.prisma.weather.findMany({
+      where: {
+        apiaryId,
+        timestamp: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      orderBy: { timestamp: 'asc' },
+    });
+
+    if (weatherRecords.length === 0) {
+      return null;
+    }
+
+    // Select the best hour - prefer noon (12:00), fallback to closest hour
+    const bestRecord = weatherRecords.reduce((best, current) => {
+      const currentHour = new Date(current.timestamp).getHours();
+      const bestHour = new Date(best.timestamp).getHours();
+      
+      const currentDistance = Math.abs(currentHour - 12);
+      const bestDistance = Math.abs(bestHour - 12);
+      
+      // Prefer closer to noon
+      if (currentDistance < bestDistance) return current;
+      
+      // If same distance from noon, prefer earlier time
+      if (currentDistance === bestDistance && currentHour < bestHour) return current;
+      
+      return best;
+    });
+
+    return bestRecord;
+  }
+
+  /**
    * Clean up old weather data and forecasts
    */
   async cleanupOldWeatherData(): Promise<void> {

@@ -99,6 +99,25 @@ export const useWeatherHistory = (
   });
 };
 
+// Get weather for a specific date (preferring midday readings)
+export const useWeatherForDate = (
+  apiaryId: string,
+  date: string,
+  queryOptions?: Partial<UseQueryOptions<WeatherResponse | null>>,
+) => {
+  return useQuery<WeatherResponse | null>({
+    queryKey: [...WEATHER_KEYS.history(), apiaryId, 'date', date],
+    queryFn: async () => {
+      const response = await apiClient.get<WeatherResponse | null>(
+        `/api/weather/date/${apiaryId}?date=${date}`,
+      );
+      return response.data;
+    },
+    enabled: !!apiaryId && !!date,
+    ...queryOptions,
+  });
+};
+
 // Legacy hook for backward compatibility
 export const useWeatherForecast = (
   apiaryId: string,
