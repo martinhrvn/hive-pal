@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
-import { EquipmentItemWithCalculations, EquipmentPlan } from 'shared-schemas';
+import { EquipmentItemWithCalculations, EquipmentPlan, UpdateEquipmentItem, CreateEquipmentItem } from 'shared-schemas';
 import { Loader2, Package, Target, ShoppingCart, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
@@ -142,11 +142,14 @@ const SaveChangesSection = ({
 };
 
 export const EquipmentPlanningPage = () => {
-  const { plan, items, updateItem, multiplier, updateMultiplier } = useEquipmentNew();
+  const { plan, items, updateItem, deleteItem, createItem, multiplier, updateMultiplier } = useEquipmentNew();
   const [localItems, setLocalItems] = useState<EquipmentItemWithCalculations[]>(
     [],
   );
   const [localMultiplier, setLocalMultiplier] = useState<number>(1.5);
+  const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
+  const [deletingItems, setDeletingItems] = useState<Set<string>>(new Set());
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   // Sync multiplier from API when loaded
   useEffect(() => {
@@ -244,6 +247,47 @@ export const EquipmentPlanningPage = () => {
     updateMultiplier.mutate({ targetMultiplier: value });
   };
 
+  const handleUpdateItem = async (itemId: string, data: UpdateEquipmentItem) => {
+    setUpdatingItems(prev => new Set([...prev, itemId]));
+    try {
+      await updateItem.mutateAsync({ itemId, data });
+      // Remove from local items since changes are now saved
+      setLocalItems(prev => prev.filter(item => item.itemId !== itemId));
+    } finally {
+      setUpdatingItems(prev => {
+        const next = new Set(prev);
+        next.delete(itemId);
+        return next;
+      });
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    setDeletingItems(prev => new Set([...prev, itemId]));
+    try {
+      await deleteItem.mutateAsync(itemId);
+      // Remove from local items if it exists there
+      setLocalItems(prev => prev.filter(item => item.itemId !== itemId));
+    } finally {
+      setDeletingItems(prev => {
+        const next = new Set(prev);
+        next.delete(itemId);
+        return next;
+      });
+    }
+  };
+
+  const handleCreateItem = async (data: CreateEquipmentItem) => {
+    setIsCreating(true);
+    try {
+      await createItem.mutateAsync(data);
+      // Refresh the plan data to get the new item with calculations
+      plan.refetch();
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   const hasChanges = localItems.length > 0;
 
   return (
@@ -268,6 +312,12 @@ export const EquipmentPlanningPage = () => {
                 onPerHiveChange={handlePerHiveChange}
                 onNeededChange={handleNeededChange}
                 onResetNeeded={handleResetNeeded}
+                onUpdate={handleUpdateItem}
+                onDelete={handleDeleteItem}
+                onCreate={handleCreateItem}
+                updatingItems={updatingItems}
+                deletingItems={deletingItems}
+                isCreating={isCreating}
               />
             </CardContent>
           </Card>
