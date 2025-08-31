@@ -1,5 +1,6 @@
 import { ChevronRight, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Collapsible,
@@ -32,14 +33,13 @@ export function NavMain({
   }[];
 }) {
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
   return (
     <SidebarGroup>
       <SidebarMenuItem>
-        <SidebarMenuButton asChild>
-          <a href="/" className="flex items-center">
-            <DashboardIcon />
-            <span>{t('navigation.dashboard')}</span>
-          </a>
+        <SidebarMenuButton onClick={() => navigate('/')} className="flex items-center cursor-pointer">
+          <DashboardIcon />
+          <span>{t('navigation.dashboard')}</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenu>
@@ -48,11 +48,9 @@ export function NavMain({
           if (!item.items || item.items.length === 0) {
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url} className="flex items-center">
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </a>
+                <SidebarMenuButton onClick={() => navigate(item.url)} className="flex items-center cursor-pointer">
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
@@ -78,10 +76,8 @@ export function NavMain({
                   <SidebarMenuSub>
                     {item.items?.map(subItem => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild>
-                          <a href={subItem.url}>
-                            <span>{subItem.title}</span>
-                          </a>
+                        <SidebarMenuSubButton onClick={() => navigate(subItem.url)} className="cursor-pointer">
+                          <span>{subItem.title}</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     ))}
