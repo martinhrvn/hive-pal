@@ -81,46 +81,22 @@ const getNavData = (t: (key: string) => string) => ({
       url: '/harvests',
       icon: Droplets,
       isActive: true,
-      items: [
-        {
-          title: t('navigation.allHarvests'),
-          url: '/harvests',
-        },
-      ],
     },
     {
       title: 'Actions',
-      url: '/actions',
+      url: '/actions/bulk',
       icon: ClipboardList,
       isActive: true,
-      items: [
-        {
-          title: 'Bulk Actions',
-          url: '/actions/bulk',
-        },
-      ],
     },
     {
       title: 'Equipment',
       url: '/equipment',
       icon: Package,
-      items: [
-        {
-          title: 'Planning',
-          url: '/equipment',
-        },
-      ],
     },
     {
       title: t('navigation.settings'),
       url: '/settings',
       icon: Settings2,
-      items: [
-        {
-          title: t('navigation.general'),
-          url: '/settings',
-        },
-      ],
     },
   ],
 });
