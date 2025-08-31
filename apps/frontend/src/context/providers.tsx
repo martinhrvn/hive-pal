@@ -2,6 +2,7 @@ import { Fragment, PropsWithChildren } from 'react';
 import { AuthProvider } from '@/context/auth-context';
 import { ThemeProvider } from './theme-provider';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import axios from 'axios';
 import { getEnvVariable } from '@/api/client.ts';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
@@ -20,6 +21,7 @@ export const Providers: React.FC<PropsWithChildren> = ({ children }) => {
         <AuthProvider>
           <ThemeProvider defaultTheme="light">{children}</ThemeProvider>
         </AuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </SidebarProviderComponent>
   );

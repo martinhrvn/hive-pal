@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, X } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -12,10 +13,12 @@ import {
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
 import { useHive, useInspection } from '@/api/hooks';
+import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 
 export const InspectionDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { setInspectionContext, setHiveContext } = useBreadcrumbStore();
 
   const {
     data: inspection,
@@ -25,7 +28,29 @@ export const InspectionDetailPage = () => {
     enabled: !!id,
   });
 
-  const { data: hive } = useHive(inspection?.hiveId ?? '');
+  const { data: hive } = useHive(inspection?.hiveId ?? '', {
+    enabled: !!inspection?.hiveId,
+  });
+
+  // Set breadcrumb context when data is loaded
+  useEffect(() => {
+    if (inspection && hive) {
+      setInspectionContext({
+        id: inspection.id,
+        date: inspection.date,
+        hiveId: inspection.hiveId,
+      });
+      setHiveContext({
+        id: hive.id,
+        name: hive.name,
+      });
+    }
+    
+    // Clear context on unmount
+    return () => {
+      setInspectionContext(undefined);
+    };
+  }, [inspection, hive, setInspectionContext, setHiveContext]);
 
   if (isLoading) {
     return <div>Loading inspection...</div>;

@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { format, parseISO } from 'date-fns';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,7 +10,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Home } from 'lucide-react';
-import { useHive } from '@/api/hooks';
+import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 
 interface BreadcrumbItem {
   label: string;
@@ -19,15 +20,11 @@ interface BreadcrumbItem {
 
 export const Breadcrumbs = () => {
   const location = useLocation();
-  const params = useParams();
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
-
-  // For retrieving hive name when on a hive detail page
-  const hiveId = params.id || params.hiveId;
-  const { data: hive } = useHive(hiveId as string);
+  const { context } = useBreadcrumbStore();
 
   useEffect(() => {
-    const generateBreadcrumbs = async () => {
+    const generateBreadcrumbs = () => {
       const pathSegments = location.pathname
         .split('/')
         .filter(segment => segment);
@@ -51,25 +48,6 @@ export const Breadcrumbs = () => {
         const segment = pathSegments[i];
         currentPath += `/${segment}`;
 
-        // Skip dynamic segments or handle them specially
-        if (segment === 'create') {
-          breadcrumbItems.push({
-            label: 'Create',
-            path: currentPath,
-            isCurrentPage: i === pathSegments.length - 1,
-          });
-          continue;
-        }
-
-        if (segment === 'edit') {
-          breadcrumbItems.push({
-            label: 'Edit',
-            path: currentPath,
-            isCurrentPage: i === pathSegments.length - 1,
-          });
-          continue;
-        }
-
         // Handle hives section
         if (segment === 'hives') {
           breadcrumbItems.push({
@@ -82,10 +60,28 @@ export const Breadcrumbs = () => {
 
         // Handle inspections section
         if (segment === 'inspections') {
+          // Check if we're on an inspection detail page and have hive context
+          if (context.hive && context.inspection) {
+            // Insert hives breadcrumb if not already there
+            if (!breadcrumbItems.some(item => item.path === '/hives')) {
+              breadcrumbItems.push({
+                label: 'Hives',
+                path: '/hives',
+                isCurrentPage: false,
+              });
+            }
+            // Add hive breadcrumb
+            breadcrumbItems.push({
+              label: context.hive.name,
+              path: `/hives/${context.hive.id}`,
+              isCurrentPage: false,
+            });
+          }
+          
           breadcrumbItems.push({
             label: 'Inspections',
             path: '/inspections',
-            isCurrentPage: i === pathSegments.length - 1,
+            isCurrentPage: i === pathSegments.length - 1 && !context.inspection,
           });
           continue;
         }
@@ -100,18 +96,91 @@ export const Breadcrumbs = () => {
           continue;
         }
 
-        // Handle ID segments - use the hive to get the name
-        if (segment === hiveId && hive) {
+        // Handle harvests section
+        if (segment === 'harvests') {
           breadcrumbItems.push({
-            label: hive.name,
+            label: 'Harvests',
+            path: '/harvests',
+            isCurrentPage: i === pathSegments.length - 1,
+          });
+          continue;
+        }
+
+        // Handle create
+        if (segment === 'create') {
+          breadcrumbItems.push({
+            label: 'Create',
             path: currentPath,
             isCurrentPage: i === pathSegments.length - 1,
           });
           continue;
         }
 
-        // If it's an ID but we don't have specific data for it
+        // Handle edit
+        if (segment === 'edit') {
+          breadcrumbItems.push({
+            label: 'Edit',
+            path: currentPath,
+            isCurrentPage: i === pathSegments.length - 1,
+          });
+          continue;
+        }
+
+        // Handle schedule
+        if (segment === 'schedule') {
+          breadcrumbItems.push({
+            label: 'Schedule',
+            path: currentPath,
+            isCurrentPage: i === pathSegments.length - 1,
+          });
+          continue;
+        }
+
+        // Handle specific entity IDs using context
         if (segment.match(/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/i)) {
+          // Check if this is a hive ID from context
+          if (context.hive && segment === context.hive.id) {
+            breadcrumbItems.push({
+              label: context.hive.name,
+              path: currentPath,
+              isCurrentPage: i === pathSegments.length - 1,
+            });
+            continue;
+          }
+
+          // Check if this is an inspection ID from context
+          if (context.inspection && segment === context.inspection.id) {
+            const inspectionDate = format(parseISO(context.inspection.date), 'MMM d, yyyy');
+            breadcrumbItems.push({
+              label: `Inspection from ${inspectionDate}`,
+              path: currentPath,
+              isCurrentPage: i === pathSegments.length - 1,
+            });
+            continue;
+          }
+
+          // Check if this is a queen ID from context
+          if (context.queen && segment === context.queen.id) {
+            breadcrumbItems.push({
+              label: context.queen.name || 'Queen',
+              path: currentPath,
+              isCurrentPage: i === pathSegments.length - 1,
+            });
+            continue;
+          }
+
+          // Check if this is a harvest ID from context
+          if (context.harvest && segment === context.harvest.id) {
+            const harvestDate = format(parseISO(context.harvest.date), 'MMM d, yyyy');
+            breadcrumbItems.push({
+              label: `Harvest from ${harvestDate}`,
+              path: currentPath,
+              isCurrentPage: i === pathSegments.length - 1,
+            });
+            continue;
+          }
+
+          // If we don't have context for this ID, show generic "Details"
           breadcrumbItems.push({
             label: 'Details',
             path: currentPath,
@@ -125,7 +194,7 @@ export const Breadcrumbs = () => {
     };
 
     generateBreadcrumbs();
-  }, [location, hive, hiveId]);
+  }, [location, context]);
 
   // Don't render breadcrumbs on the homepage
   if (location.pathname === '/') {

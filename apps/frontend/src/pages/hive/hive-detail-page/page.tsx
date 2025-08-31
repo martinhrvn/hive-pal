@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { HiveStatus } from '@/pages/hive/components';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,10 +11,31 @@ import { HiveTimeline } from './hive-timeline';
 import { HiveSettings } from './hive-settings';
 import { HiveCharts } from './charts';
 import { useHive } from '@/api/hooks';
+import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
   const { data: hive, error, refetch } = useHive(hiveId as string);
+  const { setHiveContext, clearContext } = useBreadcrumbStore();
+
+  // Set breadcrumb context when hive data is loaded
+  useEffect(() => {
+    if (hive) {
+      setHiveContext({
+        id: hive.id,
+        name: hive.name,
+      });
+      // Clear any child contexts when navigating to a hive
+      clearContext('inspection');
+      clearContext('queen');
+      clearContext('harvest');
+    }
+    
+    // Clear hive context on unmount
+    return () => {
+      setHiveContext(undefined);
+    };
+  }, [hive, setHiveContext, clearContext]);
   if (error) {
     return <div>Error</div>;
   }

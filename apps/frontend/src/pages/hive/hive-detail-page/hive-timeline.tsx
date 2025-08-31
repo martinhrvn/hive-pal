@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
-import { format, formatDistanceToNow, subMonths } from 'date-fns';
+import { format, formatDistanceToNow, subMonths, isPast, parseISO } from 'date-fns';
 import {
   CalendarIcon,
   ActivityIcon,
@@ -15,6 +15,7 @@ import {
   Filter,
   X,
   StickyNote,
+  AlertCircle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -175,10 +176,22 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
         });
     }
 
-    // Sort by date (newest first)
-    return events.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
+    // Sort events: overdue inspections first, then by date (newest first)
+    return events.sort((a, b) => {
+      const aIsOverdue = a.type === 'inspection' && 
+        (a.data as InspectionResponse).status === InspectionStatus.SCHEDULED && 
+        isPast(parseISO(a.date));
+      const bIsOverdue = b.type === 'inspection' && 
+        (b.data as InspectionResponse).status === InspectionStatus.SCHEDULED && 
+        isPast(parseISO(b.date));
+      
+      // If one is overdue and the other isn't, overdue comes first
+      if (aIsOverdue && !bIsOverdue) return -1;
+      if (!aIsOverdue && bIsOverdue) return 1;
+      
+      // Otherwise sort by date (newest first)
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
   }, [inspections, actions, eventTypeFilter, dateRangeFilter]);
 
   const displayedEvents = showAll
@@ -268,6 +281,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
     const isScheduled = inspection?.status === InspectionStatus.SCHEDULED;
     const isCancelled = inspection?.status === InspectionStatus.CANCELLED;
+    const isOverdue = isScheduled && isPast(parseISO(event.date));
 
     return (
       <div key={event.id} className="flex gap-4 pb-8 relative">
@@ -277,7 +291,8 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
             className={cn(
               'w-3 h-3 rounded-full border-2 bg-background z-10',
               isInspection ? 'border-blue-500' : 'border-gray-400',
-              isScheduled && 'border-amber-500',
+              isScheduled && !isOverdue && 'border-amber-500',
+              isOverdue && 'border-red-500',
               isCancelled && 'border-gray-300',
             )}
           >
@@ -300,13 +315,28 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
           {/* Inspection content */}
           {isInspection && inspection && (
             <div
-              className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 -ml-2 transition-colors"
+              className={cn(
+                "cursor-pointer rounded-lg p-2 -ml-2 transition-colors",
+                isOverdue ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"
+              )}
               onClick={() => navigate(`/inspections/${inspection.id}`)}
             >
               <div className="flex items-center gap-2 mb-1">
-                <CalendarIcon className="h-4 w-4 text-blue-500" />
+                {isOverdue ? (
+                  <AlertCircle className="h-4 w-4 text-red-500" />
+                ) : (
+                  <CalendarIcon className="h-4 w-4 text-blue-500" />
+                )}
                 <span className="font-medium text-sm">Inspection</span>
-                {isScheduled && (
+                {isOverdue && (
+                  <Badge
+                    variant="destructive"
+                    className="text-xs"
+                  >
+                    Overdue
+                  </Badge>
+                )}
+                {isScheduled && !isOverdue && (
                   <Badge
                     variant="outline"
                     className="text-amber-600 border-amber-600 text-xs"
