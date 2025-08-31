@@ -2,7 +2,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Info, RotateCcw, Edit2, Save, X, Trash2, Plus } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Tooltip,
   TooltipContent,
@@ -10,7 +16,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { EquipmentItemWithCalculations, EquipmentCategory, UpdateEquipmentItem, CreateEquipmentItem } from 'shared-schemas';
+import {
+  EquipmentItemWithCalculations,
+  EquipmentCategory,
+  UpdateEquipmentItem,
+  CreateEquipmentItem,
+} from 'shared-schemas';
 import { useState } from 'react';
 import {
   Dialog,
@@ -35,9 +46,6 @@ interface EquipmentRowProps {
 
 export const EquipmentRow = ({
   item,
-  onExtraChange: _onExtraChange,
-  onPerHiveChange: _onPerHiveChange,
-  onNeededChange: _onNeededChange,
   onResetNeeded,
   onUpdate,
   onDelete,
@@ -67,7 +75,7 @@ export const EquipmentRow = ({
 
   const handleSave = async () => {
     if (!onUpdate) return;
-    
+
     try {
       await onUpdate(editData);
       setIsEditing(false);
@@ -90,7 +98,7 @@ export const EquipmentRow = ({
 
   const handleDelete = async () => {
     if (!onDelete) return;
-    
+
     try {
       await onDelete();
       setShowDeleteDialog(false);
@@ -110,14 +118,16 @@ export const EquipmentRow = ({
     neededOverride,
     perHive,
     unit,
-    enabled
+    enabled,
   } = item;
-  
-  const displayName = name || itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+
+  const displayName =
+    name ||
+    itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
   const isOverridden = neededOverride !== null;
   const hasSurplus = toPurchase < 0;
   const needsToPurchase = toPurchase > 0;
-  
+
   if (!enabled) return null;
 
   if (isEditing) {
@@ -127,7 +137,9 @@ export const EquipmentRow = ({
           {item.isCustom ? (
             <Input
               value={editData.name || ''}
-              onChange={e => setEditData(prev => ({ ...prev, name: e.target.value }))}
+              onChange={e =>
+                setEditData(prev => ({ ...prev, name: e.target.value }))
+              }
               className="text-sm font-medium"
               placeholder="Equipment name"
             />
@@ -137,7 +149,9 @@ export const EquipmentRow = ({
           {item.isCustom ? (
             <Input
               value={editData.unit || ''}
-              onChange={e => setEditData(prev => ({ ...prev, unit: e.target.value }))}
+              onChange={e =>
+                setEditData(prev => ({ ...prev, unit: e.target.value }))
+              }
               className="text-xs"
               placeholder="Unit"
             />
@@ -150,7 +164,12 @@ export const EquipmentRow = ({
           <Input
             type="number"
             value={editData.perHive}
-            onChange={e => setEditData(prev => ({ ...prev, perHive: parseFloat(e.target.value) || 0 }))}
+            onChange={e =>
+              setEditData(prev => ({
+                ...prev,
+                perHive: parseFloat(e.target.value) || 0,
+              }))
+            }
             className="w-20 text-center"
             min="0"
             step="0.1"
@@ -160,7 +179,12 @@ export const EquipmentRow = ({
           <Input
             type="number"
             value={editData.extra}
-            onChange={e => setEditData(prev => ({ ...prev, extra: parseInt(e.target.value) || 0 }))}
+            onChange={e =>
+              setEditData(prev => ({
+                ...prev,
+                extra: parseInt(e.target.value) || 0,
+              }))
+            }
             className="w-20 text-center"
             min="0"
           />
@@ -169,7 +193,12 @@ export const EquipmentRow = ({
           <Input
             type="number"
             value={editData.neededOverride ?? needed}
-            onChange={e => setEditData(prev => ({ ...prev, neededOverride: parseInt(e.target.value) || 0 }))}
+            onChange={e =>
+              setEditData(prev => ({
+                ...prev,
+                neededOverride: parseInt(e.target.value) || 0,
+              }))
+            }
             className={cn(
               'w-20 text-center',
               isOverridden && 'text-blue-600 font-medium',
@@ -251,9 +280,7 @@ export const EquipmentRow = ({
       <div className="text-center">{perHive}</div>
       <div className="text-center">{extra}</div>
       <div className="text-center flex items-center justify-center gap-1">
-        <span className={cn(
-          isOverridden && 'text-blue-600 font-medium',
-        )}>
+        <span className={cn(isOverridden && 'text-blue-600 font-medium')}>
           {needed}
         </span>
         <TooltipProvider>
@@ -332,14 +359,22 @@ export const EquipmentRow = ({
                 <DialogHeader>
                   <DialogTitle>Delete Equipment Item</DialogTitle>
                   <DialogDescription>
-                    Are you sure you want to delete "{displayName}"? This action cannot be undone.
+                    Are you sure you want to delete "{displayName}"? This action
+                    cannot be undone.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowDeleteDialog(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleDelete} variant="destructive" disabled={isDeleting}>
+                  <Button
+                    onClick={handleDelete}
+                    variant="destructive"
+                    disabled={isDeleting}
+                  >
                     {isDeleting ? 'Deleting...' : 'Delete'}
                   </Button>
                 </DialogFooter>
@@ -411,8 +446,10 @@ export const EquipmentTable = ({
     }
 
     // Create itemId from name if not provided
-    const itemId = newItemData.itemId?.trim() || newItemData.name.toLowerCase().replace(/\s+/g, '_');
-    
+    const itemId =
+      newItemData.itemId?.trim() ||
+      newItemData.name.toLowerCase().replace(/\s+/g, '_');
+
     try {
       await onCreate({
         ...newItemData,
@@ -430,14 +467,17 @@ export const EquipmentTable = ({
   };
 
   // Group items by category for better organization
-  const categorizedItems = items.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<EquipmentCategory, EquipmentItemWithCalculations[]>);
-  
+  const categorizedItems = items.reduce(
+    (acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    },
+    {} as Record<EquipmentCategory, EquipmentItemWithCalculations[]>,
+  );
+
   const categoryOrder = [
     EquipmentCategory.BOXES,
     EquipmentCategory.HIVE_PARTS,
@@ -449,7 +489,7 @@ export const EquipmentTable = ({
     EquipmentCategory.EXTRACTION,
     EquipmentCategory.CUSTOM,
   ];
-  
+
   return (
     <div className="space-y-6">
       {/* Add Equipment Button */}
@@ -475,7 +515,9 @@ export const EquipmentTable = ({
               <label className="text-xs font-medium">Equipment Name</label>
               <Input
                 value={newItemData.name}
-                onChange={e => setNewItemData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={e =>
+                  setNewItemData(prev => ({ ...prev, name: e.target.value }))
+                }
                 placeholder="e.g., Custom Smoker"
                 className="text-sm"
               />
@@ -489,7 +531,12 @@ export const EquipmentTable = ({
               <Input
                 type="number"
                 value={newItemData.perHive}
-                onChange={e => setNewItemData(prev => ({ ...prev, perHive: parseFloat(e.target.value) || 0 }))}
+                onChange={e =>
+                  setNewItemData(prev => ({
+                    ...prev,
+                    perHive: parseFloat(e.target.value) || 0,
+                  }))
+                }
                 className="w-20 text-center"
                 min="0"
                 step="0.1"
@@ -500,7 +547,12 @@ export const EquipmentTable = ({
               <Input
                 type="number"
                 value={newItemData.extra}
-                onChange={e => setNewItemData(prev => ({ ...prev, extra: parseInt(e.target.value) || 0 }))}
+                onChange={e =>
+                  setNewItemData(prev => ({
+                    ...prev,
+                    extra: parseInt(e.target.value) || 0,
+                  }))
+                }
                 className="w-20 text-center"
                 min="0"
               />
@@ -509,7 +561,9 @@ export const EquipmentTable = ({
               <label className="text-xs font-medium">Unit</label>
               <Input
                 value={newItemData.unit}
-                onChange={e => setNewItemData(prev => ({ ...prev, unit: e.target.value }))}
+                onChange={e =>
+                  setNewItemData(prev => ({ ...prev, unit: e.target.value }))
+                }
                 placeholder="pieces"
                 className="text-center"
               />
@@ -518,7 +572,7 @@ export const EquipmentTable = ({
               <label className="text-xs font-medium">Category</label>
               <Select
                 value={newItemData.category}
-                onValueChange={(value: EquipmentCategory) => 
+                onValueChange={(value: EquipmentCategory) =>
                   setNewItemData(prev => ({ ...prev, category: value }))
                 }
               >
@@ -527,7 +581,11 @@ export const EquipmentTable = ({
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(EquipmentCategory).map(category => (
-                    <SelectItem key={category} value={category} className="text-xs">
+                    <SelectItem
+                      key={category}
+                      value={category}
+                      className="text-xs"
+                    >
                       {category.toLowerCase().replace('_', ' ')}
                     </SelectItem>
                   ))}
@@ -575,7 +633,7 @@ export const EquipmentTable = ({
       {categoryOrder.map(category => {
         const categoryItems = categorizedItems[category];
         if (!categoryItems || categoryItems.length === 0) return null;
-        
+
         return (
           <div key={category} className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground capitalize">
@@ -587,11 +645,13 @@ export const EquipmentTable = ({
                 <EquipmentRow
                   key={item.itemId}
                   item={item}
-                  onExtraChange={(value) => onExtraChange(item.itemId, value)}
-                  onPerHiveChange={(value) => onPerHiveChange(item.itemId, value)}
-                  onNeededChange={(value) => onNeededChange(item.itemId, value)}
+                  onExtraChange={value => onExtraChange(item.itemId, value)}
+                  onPerHiveChange={value => onPerHiveChange(item.itemId, value)}
+                  onNeededChange={value => onNeededChange(item.itemId, value)}
                   onResetNeeded={() => onResetNeeded(item.itemId)}
-                  onUpdate={onUpdate ? (data) => onUpdate(item.itemId, data) : undefined}
+                  onUpdate={
+                    onUpdate ? data => onUpdate(item.itemId, data) : undefined
+                  }
                   onDelete={onDelete ? () => onDelete(item.itemId) : undefined}
                   isUpdating={updatingItems.has(item.itemId)}
                   isDeleting={deletingItems.has(item.itemId)}

@@ -21,6 +21,7 @@ import { ActionsModule } from './actions/actions.module';
 import { WeatherModule } from './weather/weather.module';
 import { HarvestsModule } from './harvests/harvests.module';
 import { AlertsModule } from './alerts/alerts.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AlertsModule } from './alerts/alerts.module';
     WeatherModule,
     HarvestsModule,
     AlertsModule,
+    CalendarModule,
   ],
   controllers: [AppController],
   providers: [

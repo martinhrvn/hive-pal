@@ -164,6 +164,15 @@ export class InspectionsService {
 
     const whereClause: Prisma.InspectionWhereInput = {
       hiveId: filter.hiveId ?? undefined,
+      // Add date filtering
+      ...(filter.startDate || filter.endDate
+        ? {
+            date: {
+              ...(filter.startDate && { gte: new Date(filter.startDate) }),
+              ...(filter.endDate && { lte: new Date(filter.endDate) }),
+            },
+          }
+        : {}),
     };
 
     // Add apiary filter if provided

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { HomeIcon, PieChart, Settings2, MapPin, Droplets, Package, ClipboardList } from 'lucide-react';
+import { HomeIcon, PieChart, Settings2, MapPin, Droplets, Package, ClipboardList, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { NavMain } from '@/components/nav-main';
@@ -69,6 +69,12 @@ const getNavData = (t: (key: string) => string) => ({
           url: '/inspections/list/upcoming',
         },
       ],
+    },
+    {
+      title: 'Calendar',
+      url: '/calendar',
+      icon: Calendar,
+      isActive: true,
     },
     {
       title: t('navigation.harvests'),
