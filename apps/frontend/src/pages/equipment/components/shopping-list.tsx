@@ -2,104 +2,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Copy, Printer } from 'lucide-react';
-import { EquipmentCounts } from '@/api/hooks/useEquipment';
+import { EquipmentItemWithCalculations } from 'shared-schemas';
 
 interface ShoppingListProps {
-  equipmentLabels: Record<string, string>;
-  planData: {
-    needed: EquipmentCounts;
-    consumables?: {
-      sugar?: { name: string; needed: number; unit: string };
-      syrup?: { name: string; needed: number; unit: string };
-    };
-    customEquipment?: Array<{
-      id: string;
-      name: string;
-      needed: number;
-      unit: string;
-    }>;
-  };
+  items: EquipmentItemWithCalculations[];
 }
 
-export const ShoppingList = ({ equipmentLabels, planData }: ShoppingListProps) => {
-  const hasNeededItems = 
-    Object.values(planData.needed).some(count => count > 0) ||
-    (planData.consumables?.sugar?.needed ?? 0) > 0 ||
-    (planData.consumables?.syrup?.needed ?? 0) > 0 ||
-    planData.customEquipment?.some(item => item.needed > 0);
+export const ShoppingList = ({ items }: ShoppingListProps) => {
+  const neededItems = items.filter(item => item.enabled && (item.toPurchase || 0) > 0);
+  const hasNeededItems = neededItems.length > 0;
 
   if (!hasNeededItems) {
     return null;
   }
 
   const handleCopy = () => {
-    // Core equipment items
-    const equipmentItems = Object.entries(equipmentLabels)
-      .map(([key, label]) => {
-        const needed = planData.needed[key as keyof EquipmentCounts];
-        return needed > 0 ? `${label}: ${needed}` : null;
-      })
-      .filter(Boolean);
-
-    // Consumables items
-    const consumableItems = [];
-    if (planData.consumables?.sugar?.needed && planData.consumables.sugar.needed > 0) {
-      consumableItems.push(
-        `${planData.consumables.sugar.name}: ${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}`,
-      );
-    }
-    if (planData.consumables?.syrup?.needed && planData.consumables.syrup.needed > 0) {
-      consumableItems.push(
-        `${planData.consumables.syrup.name}: ${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}`,
-      );
-    }
-
-    // Custom equipment items
-    const customItems = planData.customEquipment
-      ?.filter(item => item.needed > 0)
-      ?.map(item => `${item.name}: ${item.needed} ${item.unit}`) || [];
-
-    // Combine all items
-    const allItems = [...equipmentItems, ...consumableItems, ...customItems];
-    const shoppingList = allItems.join('\n');
+    const shoppingItems = neededItems.map(item => {
+      const name = item.name || item.itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      return `${name}: ${item.toPurchase} ${item.unit}`;
+    });
+    
+    const shoppingList = shoppingItems.join('\n');
     const fullList = `Equipment Shopping List\n${new Date().toLocaleDateString()}\n\n${shoppingList}`;
 
     navigator.clipboard.writeText(fullList);
   };
 
   const handlePrint = () => {
-    // Core equipment items
-    const equipmentRows = Object.entries(equipmentLabels)
-      .map(([key, label]) => {
-        const needed = planData.needed[key as keyof EquipmentCounts];
-        return needed > 0
-          ? `<tr><td style="padding: 8px; border: 1px solid #ddd;">${label}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${needed}</td></tr>`
-          : null;
-      })
-      .filter(Boolean);
-
-    // Consumables rows
-    const consumableRows = [];
-    if (planData.consumables?.sugar?.needed && planData.consumables.sugar.needed > 0) {
-      consumableRows.push(
-        `<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.sugar.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.sugar.needed} ${planData.consumables.sugar.unit}</td></tr>`,
-      );
-    }
-    if (planData.consumables?.syrup?.needed && planData.consumables.syrup.needed > 0) {
-      consumableRows.push(
-        `<tr><td style="padding: 8px; border: 1px solid #ddd;">${planData.consumables.syrup.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${planData.consumables.syrup.needed} ${planData.consumables.syrup.unit}</td></tr>`,
-      );
-    }
-
-    // Custom equipment rows
-    const customRows = planData.customEquipment
-      ?.filter(item => item.needed > 0)
-      ?.map(item =>
-        `<tr><td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.needed} ${item.unit}</td></tr>`,
-      ) || [];
-
-    // Combine all rows
-    const shoppingList = [...equipmentRows, ...consumableRows, ...customRows].join('');
+    const shoppingRows = neededItems.map(item => {
+      const name = item.name || item.itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      return `<tr><td style="padding: 8px; border: 1px solid #ddd;">${name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.toPurchase} ${item.unit}</td></tr>`;
+    });
+    
+    const shoppingList = shoppingRows.join('');
 
     const printWindow = window.open('', '_blank');
     if (printWindow) {
@@ -163,52 +98,20 @@ export const ShoppingList = ({ equipmentLabels, planData }: ShoppingListProps) =
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Core Equipment */}
-          {Object.entries(equipmentLabels).map(([key, label]) => {
-            const needed = planData.needed[key as keyof EquipmentCounts];
-            return needed > 0 ? (
+          {neededItems.map(item => {
+            const name = item.name || item.itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            return (
               <div
-                key={key}
+                key={item.itemId}
                 className="flex justify-between items-center p-3 bg-muted rounded"
               >
-                <span>{label}</span>
-                <Badge variant="secondary">{needed}</Badge>
-              </div>
-            ) : null;
-          })}
-
-          {/* Consumables */}
-          {planData.consumables?.sugar?.needed && planData.consumables.sugar.needed > 0 && (
-            <div className="flex justify-between items-center p-3 bg-muted rounded">
-              <span>{planData.consumables.sugar.name}</span>
-              <Badge variant="secondary">
-                {planData.consumables.sugar.needed} {planData.consumables.sugar.unit}
-              </Badge>
-            </div>
-          )}
-          {planData.consumables?.syrup?.needed && planData.consumables.syrup.needed > 0 && (
-            <div className="flex justify-between items-center p-3 bg-muted rounded">
-              <span>{planData.consumables.syrup.name}</span>
-              <Badge variant="secondary">
-                {planData.consumables.syrup.needed} {planData.consumables.syrup.unit}
-              </Badge>
-            </div>
-          )}
-
-          {/* Custom Equipment */}
-          {planData.customEquipment
-            ?.filter(item => item.needed > 0)
-            .map(item => (
-              <div
-                key={item.id}
-                className="flex justify-between items-center p-3 bg-muted rounded"
-              >
-                <span>{item.name}</span>
+                <span>{name}</span>
                 <Badge variant="secondary">
-                  {item.needed} {item.unit}
+                  {item.toPurchase} {item.unit}
                 </Badge>
               </div>
-            ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>

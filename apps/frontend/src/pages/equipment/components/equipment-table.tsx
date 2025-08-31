@@ -9,45 +9,62 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { EquipmentCounts } from '@/api/hooks/useEquipment';
+import { EquipmentItemWithCalculations, EquipmentCategory } from 'shared-schemas';
 
 interface EquipmentRowProps {
-  label: string;
-  inUse: number;
-  extra: number;
-  total: number;
-  required: number;
-  recommended: number;
-  needed: number;
+  item: EquipmentItemWithCalculations;
   onExtraChange: (value: number) => void;
-  onRequiredChange: (value: number) => void;
-  onResetRequired: () => void;
-  targetHives: number;
-  perHive: number;
+  onPerHiveChange: (value: number) => void;
+  onNeededChange: (value: number) => void;
+  onResetNeeded: () => void;
 }
 
 export const EquipmentRow = ({
-  label,
-  inUse,
-  extra,
-  total,
-  required,
-  recommended,
-  needed,
+  item,
   onExtraChange,
-  onRequiredChange,
-  onResetRequired,
-  targetHives,
-  perHive,
+  onPerHiveChange,
+  onNeededChange,
+  onResetNeeded,
 }: EquipmentRowProps) => {
-  const isOverridden = required !== recommended;
-  const surplus = total - required;
-  const hasSurplus = surplus > 0;
+  const {
+    name,
+    itemId,
+    inUse = 0,
+    extra = 0,
+    total = 0,
+    needed = 0,
+    recommended = 0,
+    toPurchase = 0,
+    neededOverride,
+    perHive,
+    unit,
+    enabled
+  } = item;
+  
+  const displayName = name || itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+  const isOverridden = neededOverride !== null;
+  const hasSurplus = toPurchase < 0;
+  const needsToPurchase = toPurchase > 0;
+  
+  if (!enabled) return null;
 
   return (
-    <div className="grid grid-cols-5 gap-4 items-center py-3">
-      <div className="font-medium">{label}</div>
+    <div className="grid grid-cols-6 gap-4 items-center py-3">
+      <div className="font-medium flex items-center gap-2">
+        {displayName}
+        <span className="text-xs text-muted-foreground">({unit})</span>
+      </div>
       <div className="text-center">{inUse}</div>
+      <div className="text-center flex justify-center">
+        <Input
+          type="number"
+          value={perHive}
+          onChange={e => onPerHiveChange(parseFloat(e.target.value) || 0)}
+          className="w-20 text-center"
+          min="0"
+          step="0.1"
+        />
+      </div>
       <div className="text-center flex justify-center">
         <Input
           type="number"
@@ -60,8 +77,8 @@ export const EquipmentRow = ({
       <div className="text-center flex items-center justify-center gap-1">
         <Input
           type="number"
-          value={required}
-          onChange={e => onRequiredChange(parseInt(e.target.value) || 0)}
+          value={needed}
+          onChange={e => onNeededChange(parseInt(e.target.value) || 0)}
           className={cn(
             'w-20 text-center',
             isOverridden && 'text-blue-600 font-medium',
@@ -76,7 +93,7 @@ export const EquipmentRow = ({
             <TooltipContent>
               <p>Recommended: {recommended}</p>
               <p className="text-xs text-muted-foreground">
-                Based on {targetHives} hives × {perHive} per hive
+                Based on {perHive} per hive
               </p>
             </TooltipContent>
           </Tooltip>
@@ -86,25 +103,25 @@ export const EquipmentRow = ({
             size="icon"
             variant="ghost"
             className="h-6 w-6"
-            onClick={onResetRequired}
+            onClick={onResetNeeded}
           >
             <RotateCcw className="h-3 w-3" />
           </Button>
         )}
       </div>
       <div className="text-center">
-        {needed > 0 ? (
-          <Badge variant="destructive">{needed}</Badge>
+        {needsToPurchase ? (
+          <Badge variant="destructive">Need {toPurchase}</Badge>
         ) : hasSurplus ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Badge variant="secondary" className="cursor-help">
-                  +{surplus}
+                  +{Math.abs(toPurchase)} surplus
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Surplus: {surplus} extra</p>
+                <p>Surplus: {Math.abs(toPurchase)} extra</p>
                 <p className="text-xs text-muted-foreground">
                   Total: {total} (In use: {inUse} + Extra: {extra})
                 </p>
@@ -112,7 +129,7 @@ export const EquipmentRow = ({
             </Tooltip>
           </TooltipProvider>
         ) : (
-          <Badge variant="outline">0</Badge>
+          <Badge variant="outline">Exact</Badge>
         )}
       </div>
     </div>
@@ -120,57 +137,75 @@ export const EquipmentRow = ({
 };
 
 interface EquipmentTableProps {
-  equipmentLabels: Record<string, string>;
-  planData: any;
-  inventoryData: any;
-  settings: any;
-  onExtraChange: (key: keyof EquipmentCounts, value: number) => void;
-  onRequiredChange: (key: keyof EquipmentCounts, value: number) => void;
-  onResetRequired: (key: keyof EquipmentCounts) => void;
+  items: EquipmentItemWithCalculations[];
+  onExtraChange: (itemId: string, value: number) => void;
+  onPerHiveChange: (itemId: string, value: number) => void;
+  onNeededChange: (itemId: string, value: number) => void;
+  onResetNeeded: (itemId: string) => void;
 }
 
 export const EquipmentTable = ({
-  equipmentLabels,
-  planData,
-  inventoryData,
-  settings,
+  items,
   onExtraChange,
-  onRequiredChange,
-  onResetRequired,
+  onPerHiveChange,
+  onNeededChange,
+  onResetNeeded,
 }: EquipmentTableProps) => {
+  // Group items by category for better organization
+  const categorizedItems = items.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = [];
+    }
+    acc[item.category].push(item);
+    return acc;
+  }, {} as Record<EquipmentCategory, EquipmentItemWithCalculations[]>);
+  
+  const categoryOrder = [
+    EquipmentCategory.BOXES,
+    EquipmentCategory.HIVE_PARTS,
+    EquipmentCategory.FRAMES,
+    EquipmentCategory.FEEDING,
+    EquipmentCategory.CONSUMABLES,
+    EquipmentCategory.TOOLS,
+    EquipmentCategory.PROTECTIVE,
+    EquipmentCategory.EXTRACTION,
+    EquipmentCategory.CUSTOM,
+  ];
+  
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Table Header */}
-      <div className="grid grid-cols-5 gap-4 pb-3 border-b font-semibold text-sm">
+      <div className="grid grid-cols-6 gap-4 pb-3 border-b font-semibold text-sm">
         <div>Equipment</div>
         <div className="text-center">In Use</div>
+        <div className="text-center">Per Hive</div>
         <div className="text-center">Extra</div>
-        <div className="text-center">Required</div>
+        <div className="text-center">Needed</div>
         <div className="text-center">Status</div>
       </div>
 
-      {/* Equipment Rows */}
-      {Object.entries(equipmentLabels).map(([key, label]) => {
-        const equipmentKey = key as keyof EquipmentCounts;
-        const perHiveKey = `${equipmentKey}PerHive` as keyof typeof settings.data;
-        const perHive = settings.data?.[perHiveKey] || 0;
-
+      {categoryOrder.map(category => {
+        const categoryItems = categorizedItems[category];
+        if (!categoryItems || categoryItems.length === 0) return null;
+        
         return (
-          <EquipmentRow
-            key={key}
-            label={label}
-            inUse={planData.inUse[equipmentKey]}
-            extra={inventoryData[`extra${equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1)}`] as number}
-            total={planData.total[equipmentKey]}
-            required={planData.required[equipmentKey]}
-            recommended={planData.recommended[equipmentKey]}
-            needed={planData.needed[equipmentKey]}
-            onExtraChange={(value) => onExtraChange(equipmentKey, value)}
-            onRequiredChange={(value) => onRequiredChange(equipmentKey, value)}
-            onResetRequired={() => onResetRequired(equipmentKey)}
-            targetHives={planData.targetHives}
-            perHive={perHive}
-          />
+          <div key={category} className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground capitalize">
+              {category.toLowerCase().replace('_', ' ')}
+            </h3>
+            {categoryItems
+              .sort((a, b) => a.displayOrder - b.displayOrder)
+              .map(item => (
+                <EquipmentRow
+                  key={item.itemId}
+                  item={item}
+                  onExtraChange={(value) => onExtraChange(item.itemId, value)}
+                  onPerHiveChange={(value) => onPerHiveChange(item.itemId, value)}
+                  onNeededChange={(value) => onNeededChange(item.itemId, value)}
+                  onResetNeeded={() => onResetNeeded(item.itemId)}
+                />
+              ))}
+          </div>
         );
       })}
     </div>

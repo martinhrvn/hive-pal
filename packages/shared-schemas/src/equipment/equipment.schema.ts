@@ -20,9 +20,9 @@ export const equipmentItemSchema = z.object({
 export const equipmentItemWithCalculationsSchema = equipmentItemSchema.extend({
   inUse: z.number().min(0).optional(),
   total: z.number().min(0).optional(),
-  required: z.number().min(0).optional(),
-  recommended: z.number().min(0).optional(),
-  needed: z.number().min(0).optional(),
+  needed: z.number().min(0).optional(), // What you need for target hives (neededOverride or perHive * targetHives)
+  recommended: z.number().min(0).optional(), // Always perHive * targetHives
+  toPurchase: z.number().optional(), // Positive = need to buy, negative = surplus
 });
 
 // Equipment multiplier schema

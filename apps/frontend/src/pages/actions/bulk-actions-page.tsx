@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { CalendarIcon, ChevronRight, Plus, Trash2 } from 'lucide-react';
+import { CalendarIcon, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,10 +24,10 @@ import {
 import { cn } from '@/lib/utils';
 import { useHives } from '@/api/hooks/useHives';
 import { useCreateAction } from '@/api/hooks/useActions';
-import { CreateStandaloneAction } from 'shared-schemas';
+import { CreateStandaloneAction, ActionType } from 'shared-schemas';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
-type ActionType = 'FEEDING' | 'TREATMENT' | 'FRAME' | 'NOTE';
+// ActionType is now imported from shared-schemas
 
 interface BulkActionValue {
   type: ActionType;

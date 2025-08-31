@@ -15,6 +15,7 @@ import {
   CreateEquipmentItem as CreateEquipmentItemDto,
   UpdateEquipmentItem as UpdateEquipmentItemDto,
   EquipmentCategory,
+  BoxVariantEnum,
 } from 'shared-schemas';
 
 // Type definitions for nested Prisma relations
@@ -226,34 +227,23 @@ export class EquipmentService {
           itemInUse = inUse.queenExcluders;
         }
 
-        // Calculate recommended based on target hives
-        let recommended = targetHives * item.perHive;
+        // Calculate recommended (always perHive * targetHives)
+        const recommended = targetHives * item.perHive;
 
-        // Special calculation for frames based on boxes
-        if (item.itemId === 'FRAMES') {
-          const deepBoxItem = items.find((i) => i.itemId === 'DEEP_BOX');
-          const shallowBoxItem = items.find((i) => i.itemId === 'SHALLOW_BOX');
-          const deepBoxesNeeded = targetHives * (deepBoxItem?.perHive || 1);
-          const shallowBoxesNeeded =
-            targetHives * (shallowBoxItem?.perHive || 2);
-          // Assume 10 frames per deep box, 10 frames per shallow box
-          recommended = deepBoxesNeeded * 10 + shallowBoxesNeeded * 10;
-        }
+        // Calculate needed (use override if set, otherwise use recommended)
+        const needed = item.neededOverride ?? recommended;
 
-        // Use override if set, otherwise use recommended
-        const required = item.neededOverride ?? recommended;
-
-        // Calculate total and needed
+        // Calculate total available and how much to purchase
         const total = itemInUse + item.extra;
-        const needed = Math.max(0, required - total);
+        const toPurchase = needed - total;
 
         return {
           ...item,
           inUse: itemInUse,
           total,
-          required,
-          recommended,
           needed,
+          recommended,
+          toPurchase,
         };
       },
     );
@@ -288,9 +278,18 @@ export class EquipmentService {
     apiaries.forEach((apiary) => {
       apiary.hives.forEach((hive) => {
         hive.boxes.forEach((box) => {
-          if (box.type === BoxType.BROOD) {
+          if (
+            box.variant === BoxVariantEnum.B_DEEP ||
+            box.variant === BoxVariantEnum.LANGSTROTH_DEEP ||
+            box.variant === BoxVariantEnum.WARRE ||
+            box.variant === BoxVariantEnum.NATIONAL_DEEP
+          ) {
             deepBoxes++;
-          } else if (box.type === BoxType.HONEY) {
+          } else if (
+            box.variant === BoxVariantEnum.B_SHALLOW ||
+            box.variant === BoxVariantEnum.LANGSTROTH_SHALLOW ||
+            box.variant === BoxVariantEnum.NATIONAL_SHALLOW
+          ) {
             shallowBoxes++;
           }
           frames += box.frameCount;
