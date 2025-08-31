@@ -19,6 +19,7 @@ model User {
   passwordChangeRequired Boolean                @default(false)
   equipmentItems         EquipmentItem[]
   equipmentMultiplier    EquipmentMultiplier?
+  preferences            Json?                  // JSON field for user preferences
 }
 
 enum Role {

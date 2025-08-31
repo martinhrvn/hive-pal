@@ -32,6 +32,7 @@ import { ReleasesPage } from '@/pages/releases';
 import { EquipmentPlanningPage, EquipmentSettingsPage } from '@/pages/equipment';
 import { BulkActionsPage } from '@/pages/actions/bulk-actions-page';
 import { CalendarPage } from '@/pages/calendar';
+import { UserSettingsPage } from '@/pages/settings';
 
 const router = createBrowserRouter([
   {
@@ -138,6 +139,10 @@ const router = createBrowserRouter([
       {
         path: '/calendar',
         element: <CalendarPage />,
+      },
+      {
+        path: '/settings',
+        element: <UserSettingsPage />,
       },
       {
         path: '/admin/users',

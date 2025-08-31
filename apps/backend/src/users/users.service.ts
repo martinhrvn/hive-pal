@@ -11,6 +11,8 @@ import {
   CustomEquipmentItem,
   CustomEquipmentTypeDto,
   CreateCustomEquipmentTypeDto,
+  UserPreferencesDto,
+  UpdateUserInfoDto,
 } from './dto';
 
 type PartialUser = Omit<User, 'password'>;
@@ -88,6 +90,60 @@ export class UsersService {
       data: {
         password: hashedPassword,
         passwordChangeRequired: false,
+      },
+    });
+
+    // Exclude the password field from the response
+    const { password: _pw, ...userData } = updatedUser;
+    return userData;
+  }
+
+  async getUserPreferences(userId: string): Promise<UserPreferencesDto | null> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: { preferences: true },
+    });
+
+    if (!user || !user.preferences) {
+      return null;
+    }
+
+    return user.preferences as UserPreferencesDto;
+  }
+
+  async updateUserPreferences(
+    userId: string,
+    preferences: UserPreferencesDto,
+  ): Promise<UserPreferencesDto> {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const updatedUser = await this.prismaService.user.update({
+      where: { id: userId },
+      data: { preferences: preferences as any },
+    });
+
+    return updatedUser.preferences as UserPreferencesDto;
+  }
+
+  async updateUserInfo(
+    userId: string,
+    updateData: UpdateUserInfoDto,
+  ): Promise<PartialUser> {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const updatedUser = await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        ...(updateData.name && { name: updateData.name }),
+        ...(updateData.email && { email: updateData.email }),
       },
     });
 

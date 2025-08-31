@@ -20,7 +20,7 @@ import {
 } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
-import { ResetPasswordDto, ChangePasswordDto, UserResponseDto } from './dto';
+import { ResetPasswordDto, ChangePasswordDto, UserResponseDto, UserPreferencesDto, UpdateUserInfoDto } from './dto';
 import {
   EquipmentItemWithCalculations,
   EquipmentMultiplier,
@@ -260,5 +260,76 @@ export class UsersController {
   async getEquipmentPlan(@Req() req: RequestWithUser): Promise<EquipmentPlan> {
     this.logger.log(`User ${req.user.id} requesting equipment plan`);
     return this.equipmentService.getEquipmentPlan(req.user.id);
+  }
+
+  @Get('preferences')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user preferences' })
+  @ApiResponse({
+    status: 200,
+    description: 'User preferences retrieved',
+    type: UserPreferencesDto,
+  })
+  async getUserPreferences(
+    @Req() req: RequestWithUser,
+  ): Promise<UserPreferencesDto | null> {
+    this.logger.log(`User ${req.user.id} requesting preferences`);
+    return this.usersService.getUserPreferences(req.user.id);
+  }
+
+  @Put('preferences')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user preferences' })
+  @ApiResponse({
+    status: 200,
+    description: 'User preferences updated',
+    type: UserPreferencesDto,
+  })
+  async updateUserPreferences(
+    @Req() req: RequestWithUser,
+    @Body() preferences: UserPreferencesDto,
+  ): Promise<UserPreferencesDto> {
+    this.logger.log(`User ${req.user.id} updating preferences`);
+    return this.usersService.updateUserPreferences(req.user.id, preferences);
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user profile information' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile retrieved',
+    type: UserResponseDto,
+  })
+  @SerializeOptions({ type: UserResponseDto })
+  async getUserProfile(@Req() req: RequestWithUser): Promise<UserResponseDto> {
+    this.logger.log(`User ${req.user.id} requesting profile`);
+    const user = await this.usersService.findById(req.user.id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { password: _, ...userProfile } = user;
+    return userProfile;
+  }
+
+  @Put('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user profile information' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile updated',
+    type: UserResponseDto,
+  })
+  @SerializeOptions({ type: UserResponseDto })
+  async updateUserProfile(
+    @Req() req: RequestWithUser,
+    @Body() updateData: UpdateUserInfoDto,
+  ): Promise<UserResponseDto> {
+    this.logger.log(`User ${req.user.id} updating profile`);
+    return this.usersService.updateUserInfo(req.user.id, updateData);
   }
 }
