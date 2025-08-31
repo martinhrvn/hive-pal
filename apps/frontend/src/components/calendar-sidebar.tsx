@@ -3,6 +3,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCalendar } from '@/api/hooks/useCalendar';
+import { useOverdueInspections } from '@/api/hooks/useInspections';
+import { useHives } from '@/api/hooks/useHives';
 import { InspectionResponse } from 'shared-schemas';
 import { format, isBefore, isSameDay, startOfDay } from 'date-fns';
 import { Calendar as CalendarIcon, Clock, AlertTriangle, ExternalLink } from 'lucide-react';
@@ -21,6 +23,23 @@ export const CalendarSidebar = () => {
     startDate: monthStart,
     endDate: monthEnd,
   });
+
+  // Fetch overdue inspections
+  const { data: overdueInspections } = useOverdueInspections();
+
+  // Fetch all hives to create a lookup map for hive names
+  const { data: hives } = useHives();
+  
+  // Create a lookup map for hive ID to hive name
+  const hiveNameMap = hives?.reduce((acc, hive) => {
+    acc[hive.id] = hive.name;
+    return acc;
+  }, {} as Record<string, string>) || {};
+
+  // Helper function to get hive display name
+  const getHiveName = (hiveId: string) => {
+    return hiveNameMap[hiveId] || `Hive ${hiveId}`;
+  };
 
   // Get dates that have events for calendar marking
   const datesWithInspections = monthEvents?.filter(event => event.inspections.length > 0).map(event => new Date(event.date)) || [];
@@ -175,7 +194,7 @@ export const CalendarSidebar = () => {
                           to={`/hives/${inspection.hiveId}`}
                           className="font-medium hover:underline truncate flex items-center gap-1"
                         >
-                          Hive {inspection.hiveId}
+                          {getHiveName(inspection.hiveId)}
                           <ExternalLink className="h-2 w-2" />
                         </Link>
                         <Badge variant="outline" className="text-xs">
@@ -205,7 +224,7 @@ export const CalendarSidebar = () => {
                           to={`/hives/${action.hiveId}`}
                           className="font-medium hover:underline truncate flex items-center gap-1"
                         >
-                          Hive {action.hiveId}
+                          {getHiveName(action.hiveId)}
                           <ExternalLink className="h-2 w-2" />
                         </Link>
                         <Badge variant="outline" className="text-xs">
@@ -221,6 +240,59 @@ export const CalendarSidebar = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Overdue Inspections Section */}
+          {overdueInspections && overdueInspections.length > 0 && (
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <h4 className="text-sm font-medium text-red-600">
+                  Overdue Inspections ({overdueInspections.length})
+                </h4>
+              </div>
+              
+              <div className="space-y-2 max-h-32 overflow-y-auto">
+                {overdueInspections.map((inspection) => (
+                  <div
+                    key={`overdue-${inspection.id}`}
+                    className="p-2 rounded border bg-red-50 text-red-900 border-red-200 text-xs"
+                  >
+                    <div className="flex items-start gap-1">
+                      <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1">
+                          <Link 
+                            to={`/hives/${inspection.hiveId}`}
+                            className="font-medium hover:underline truncate flex items-center gap-1"
+                          >
+                            {getHiveName(inspection.hiveId)}
+                            <ExternalLink className="h-2 w-2" />
+                          </Link>
+                          <Badge variant="outline" className="text-xs">
+                            {format(new Date(inspection.date), 'MMM d')}
+                          </Badge>
+                        </div>
+                        {inspection.notes && (
+                          <p className="text-xs mt-1 opacity-90 truncate">
+                            {inspection.notes}
+                          </p>
+                        )}
+                        <div className="mt-1">
+                          <Link 
+                            to={`/inspections/${inspection.id}`}
+                            className="text-xs text-red-700 hover:text-red-900 hover:underline flex items-center gap-1"
+                          >
+                            View Inspection
+                            <ExternalLink className="h-2 w-2" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           </div>
