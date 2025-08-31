@@ -19,16 +19,15 @@ import {
   Role,
 } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
-import { 
-  ResetPasswordDto, 
-  ChangePasswordDto, 
-  UserResponseDto,
-  EquipmentSettingsDto,
-  InventoryDto,
-  EquipmentPlanDto,
-  CustomEquipmentTypeDto,
-  CreateCustomEquipmentTypeDto
-} from './dto';
+import { EquipmentService } from './equipment.service';
+import { ResetPasswordDto, ChangePasswordDto, UserResponseDto } from './dto';
+import {
+  EquipmentItemWithCalculations,
+  EquipmentMultiplier,
+  EquipmentPlan,
+  CreateEquipmentItem,
+  UpdateEquipmentItem,
+} from 'shared-schemas';
 import {
   ApiTags,
   ApiOperation,
@@ -44,6 +43,7 @@ import { CustomLoggerService } from '../logger/logger.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
+    private readonly equipmentService: EquipmentService,
     private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('UsersController');
@@ -134,163 +134,131 @@ export class UsersController {
     );
   }
 
-  @Get('equipment-settings')
+  // Equipment endpoints using new structure
+  @Get('equipment/items')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get user equipment settings' })
+  @ApiOperation({ summary: 'Get all equipment items for user' })
   @ApiResponse({
     status: 200,
-    description: 'Equipment settings retrieved',
-    type: EquipmentSettingsDto,
+    description: 'Equipment items retrieved',
   })
-  async getEquipmentSettings(@Req() req: RequestWithUser): Promise<EquipmentSettingsDto> {
-    this.logger.log(`User ${req.user.id} requesting equipment settings`);
-    return this.usersService.getEquipmentSettings(req.user.id);
-  }
-
-  @Put('equipment-settings')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update user equipment settings' })
-  @ApiResponse({
-    status: 200,
-    description: 'Equipment settings updated',
-    type: EquipmentSettingsDto,
-  })
-  async updateEquipmentSettings(
+  async getEquipmentItems(
     @Req() req: RequestWithUser,
-    @Body() settings: EquipmentSettingsDto,
-  ): Promise<EquipmentSettingsDto> {
-    this.logger.log(`User ${req.user.id} updating equipment settings`);
-    return this.usersService.updateEquipmentSettings(req.user.id, settings);
+  ): Promise<EquipmentItemWithCalculations[]> {
+    this.logger.log(`User ${req.user.id} requesting equipment items`);
+    return this.equipmentService.getEquipmentItems(req.user.id);
   }
 
-  @Get('inventory')
+  @Get('equipment/items/:itemId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get user inventory' })
+  @ApiOperation({ summary: 'Get specific equipment item' })
   @ApiResponse({
     status: 200,
-    description: 'Inventory retrieved',
-    type: InventoryDto,
+    description: 'Equipment item retrieved',
   })
-  async getInventory(@Req() req: RequestWithUser): Promise<InventoryDto> {
-    this.logger.log(`User ${req.user.id} requesting inventory`);
-    return this.usersService.getInventory(req.user.id);
-  }
-
-  @Put('inventory')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update user inventory' })
-  @ApiResponse({
-    status: 200,
-    description: 'Inventory updated',
-    type: InventoryDto,
-  })
-  async updateInventory(
+  async getEquipmentItem(
     @Req() req: RequestWithUser,
-    @Body() inventory: InventoryDto,
-  ): Promise<InventoryDto> {
-    this.logger.log(`User ${req.user.id} updating inventory`);
-    return this.usersService.updateInventory(req.user.id, inventory);
+    @Param('itemId') itemId: string,
+  ): Promise<EquipmentItemWithCalculations> {
+    this.logger.log(`User ${req.user.id} requesting equipment item ${itemId}`);
+    return this.equipmentService.getEquipmentItem(req.user.id, itemId);
   }
 
-  @Get('equipment-plan')
+  @Put('equipment/items/:itemId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get equipment planning calculations' })
+  @ApiOperation({ summary: 'Update equipment item' })
   @ApiResponse({
     status: 200,
-    description: 'Equipment plan calculated',
-    type: EquipmentPlanDto,
+    description: 'Equipment item updated',
   })
-  async getEquipmentPlan(@Req() req: RequestWithUser): Promise<EquipmentPlanDto> {
-    this.logger.log(`User ${req.user.id} requesting equipment plan`);
-    return this.usersService.getEquipmentPlan(req.user.id);
+  async updateEquipmentItem(
+    @Req() req: RequestWithUser,
+    @Param('itemId') itemId: string,
+    @Body() data: UpdateEquipmentItem,
+  ): Promise<EquipmentItemWithCalculations> {
+    this.logger.log(`User ${req.user.id} updating equipment item ${itemId}`);
+    return this.equipmentService.updateEquipmentItem(req.user.id, itemId, data);
   }
 
-  @Get('custom-equipment-types')
+  @Post('equipment/items')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get user custom equipment types' })
-  @ApiResponse({
-    status: 200,
-    description: 'Custom equipment types retrieved',
-    type: [CustomEquipmentTypeDto],
-  })
-  async getCustomEquipmentTypes(@Req() req: RequestWithUser): Promise<CustomEquipmentTypeDto[]> {
-    this.logger.log(`User ${req.user.id} requesting custom equipment types`);
-    return this.usersService.getCustomEquipmentTypes(req.user.id);
-  }
-
-  @Post('custom-equipment-types')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create custom equipment type' })
+  @ApiOperation({ summary: 'Create custom equipment item' })
   @ApiResponse({
     status: 201,
-    description: 'Custom equipment type created',
-    type: CustomEquipmentTypeDto,
+    description: 'Equipment item created',
   })
-  async createCustomEquipmentType(
+  async createEquipmentItem(
     @Req() req: RequestWithUser,
-    @Body() data: CreateCustomEquipmentTypeDto,
-  ): Promise<CustomEquipmentTypeDto> {
-    this.logger.log(`User ${req.user.id} creating custom equipment type: ${data.name}`);
-    return this.usersService.createCustomEquipmentType(req.user.id, data);
+    @Body() data: CreateEquipmentItem,
+  ): Promise<EquipmentItemWithCalculations> {
+    this.logger.log(`User ${req.user.id} creating custom equipment item`);
+    return this.equipmentService.createEquipmentItem(req.user.id, data);
   }
 
-  @Put('custom-equipment-types/:id')
+  @Delete('equipment/items/:itemId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update custom equipment type' })
+  @ApiOperation({ summary: 'Delete custom equipment item' })
   @ApiResponse({
-    status: 200,
-    description: 'Custom equipment type updated',
-    type: CustomEquipmentTypeDto,
+    status: 204,
+    description: 'Equipment item deleted',
   })
-  async updateCustomEquipmentType(
+  async deleteEquipmentItem(
     @Req() req: RequestWithUser,
-    @Param('id') id: string,
-    @Body() data: Partial<CreateCustomEquipmentTypeDto>,
-  ): Promise<CustomEquipmentTypeDto> {
-    this.logger.log(`User ${req.user.id} updating custom equipment type: ${id}`);
-    return this.usersService.updateCustomEquipmentType(req.user.id, id, data);
+    @Param('itemId') itemId: string,
+  ): Promise<void> {
+    this.logger.log(`User ${req.user.id} deleting equipment item ${itemId}`);
+    return this.equipmentService.deleteEquipmentItem(req.user.id, itemId);
   }
 
-  @Delete('custom-equipment-types/:id')
+  @Get('equipment/multiplier')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete custom equipment type' })
+  @ApiOperation({ summary: 'Get equipment multiplier' })
   @ApiResponse({
     status: 200,
-    description: 'Custom equipment type deleted',
+    description: 'Equipment multiplier retrieved',
   })
-  async deleteCustomEquipmentType(
+  async getEquipmentMultiplier(
     @Req() req: RequestWithUser,
-    @Param('id') id: string,
-  ): Promise<{ success: boolean }> {
-    this.logger.log(`User ${req.user.id} deleting custom equipment type: ${id}`);
-    await this.usersService.deleteCustomEquipmentType(req.user.id, id);
-    return { success: true };
+  ): Promise<EquipmentMultiplier> {
+    this.logger.log(`User ${req.user.id} requesting equipment multiplier`);
+    return this.equipmentService.getEquipmentMultiplier(req.user.id);
   }
 
-  @Put('custom-equipment-types/:id/toggle')
+  @Put('equipment/multiplier')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Toggle custom equipment type active status' })
+  @ApiOperation({ summary: 'Update equipment multiplier' })
   @ApiResponse({
     status: 200,
-    description: 'Custom equipment type toggled',
-    type: CustomEquipmentTypeDto,
+    description: 'Equipment multiplier updated',
   })
-  async toggleCustomEquipmentType(
+  async updateEquipmentMultiplier(
     @Req() req: RequestWithUser,
-    @Param('id') id: string,
-    @Body() data: { isActive: boolean },
-  ): Promise<CustomEquipmentTypeDto> {
-    this.logger.log(`User ${req.user.id} toggling custom equipment type: ${id} to ${data.isActive}`);
-    return this.usersService.toggleCustomEquipmentType(req.user.id, id, data.isActive);
+    @Body() data: EquipmentMultiplier,
+  ): Promise<EquipmentMultiplier> {
+    this.logger.log(`User ${req.user.id} updating equipment multiplier`);
+    return this.equipmentService.updateEquipmentMultiplier(
+      req.user.id,
+      data.targetMultiplier,
+    );
+  }
+
+  @Get('equipment/plan')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get equipment plan with calculations' })
+  @ApiResponse({
+    status: 200,
+    description: 'Equipment plan retrieved',
+  })
+  async getEquipmentPlan(@Req() req: RequestWithUser): Promise<EquipmentPlan> {
+    this.logger.log(`User ${req.user.id} requesting equipment plan`);
+    return this.equipmentService.getEquipmentPlan(req.user.id);
   }
 }

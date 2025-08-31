@@ -47,7 +47,10 @@ export interface InventoryDto {
   extraSyrupLiters?: number;
   requiredSyrupLitersOverride?: number | null;
   // Custom equipment as JSON
-  customEquipment?: any;
+  customEquipment?: Record<
+    string,
+    { required: number; extra: number; requiredOverride?: number | null }
+  >;
 }
 
 export interface EquipmentCounts {
@@ -126,7 +129,9 @@ export const useEquipmentSettings = () => {
   return useQuery<EquipmentSettingsDto>({
     queryKey: EQUIPMENT_KEYS.settings(),
     queryFn: async () => {
-      const response = await apiClient.get<EquipmentSettingsDto>('/api/users/equipment-settings');
+      const response = await apiClient.get<EquipmentSettingsDto>(
+        '/api/users/equipment-settings',
+      );
       return response.data;
     },
   });
@@ -136,14 +141,14 @@ export const useUpdateEquipmentSettings = () => {
   const queryClient = useQueryClient();
 
   return useMutation<EquipmentSettingsDto, Error, EquipmentSettingsDto>({
-    mutationFn: async (settings) => {
+    mutationFn: async settings => {
       const response = await apiClient.put<EquipmentSettingsDto>(
         '/api/users/equipment-settings',
-        settings
+        settings,
       );
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(EQUIPMENT_KEYS.settings(), data);
       queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.plan() });
     },
@@ -155,7 +160,9 @@ export const useInventory = () => {
   return useQuery<InventoryDto>({
     queryKey: EQUIPMENT_KEYS.inventory(),
     queryFn: async () => {
-      const response = await apiClient.get<InventoryDto>('/api/users/inventory');
+      const response = await apiClient.get<InventoryDto>(
+        '/api/users/inventory',
+      );
       return response.data;
     },
   });
@@ -165,14 +172,14 @@ export const useUpdateInventory = () => {
   const queryClient = useQueryClient();
 
   return useMutation<InventoryDto, Error, InventoryDto>({
-    mutationFn: async (inventory) => {
+    mutationFn: async inventory => {
       const response = await apiClient.put<InventoryDto>(
         '/api/users/inventory',
-        inventory
+        inventory,
       );
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(EQUIPMENT_KEYS.inventory(), data);
       queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEYS.plan() });
     },
@@ -184,7 +191,9 @@ export const useEquipmentPlan = () => {
   return useQuery<EquipmentPlanDto>({
     queryKey: EQUIPMENT_KEYS.plan(),
     queryFn: async () => {
-      const response = await apiClient.get<EquipmentPlanDto>('/api/users/equipment-plan');
+      const response = await apiClient.get<EquipmentPlanDto>(
+        '/api/users/equipment-plan',
+      );
       return response.data;
     },
   });
@@ -195,7 +204,9 @@ export const useCustomEquipmentTypes = () => {
   return useQuery<CustomEquipmentTypeDto[]>({
     queryKey: EQUIPMENT_KEYS.customTypes(),
     queryFn: async () => {
-      const response = await apiClient.get<CustomEquipmentTypeDto[]>('/api/users/custom-equipment-types');
+      const response = await apiClient.get<CustomEquipmentTypeDto[]>(
+        '/api/users/custom-equipment-types',
+      );
       return response.data;
     },
   });
@@ -204,11 +215,15 @@ export const useCustomEquipmentTypes = () => {
 export const useCreateCustomEquipmentType = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<CustomEquipmentTypeDto, Error, CreateCustomEquipmentTypeDto>({
-    mutationFn: async (data) => {
+  return useMutation<
+    CustomEquipmentTypeDto,
+    Error,
+    CreateCustomEquipmentTypeDto
+  >({
+    mutationFn: async data => {
       const response = await apiClient.post<CustomEquipmentTypeDto>(
         '/api/users/custom-equipment-types',
-        data
+        data,
       );
       return response.data;
     },
@@ -222,11 +237,15 @@ export const useCreateCustomEquipmentType = () => {
 export const useUpdateCustomEquipmentType = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<CustomEquipmentTypeDto, Error, { id: string; data: Partial<CreateCustomEquipmentTypeDto> }>({
+  return useMutation<
+    CustomEquipmentTypeDto,
+    Error,
+    { id: string; data: Partial<CreateCustomEquipmentTypeDto> }
+  >({
     mutationFn: async ({ id, data }) => {
       const response = await apiClient.put<CustomEquipmentTypeDto>(
         `/api/users/custom-equipment-types/${id}`,
-        data
+        data,
       );
       return response.data;
     },
@@ -241,9 +260,9 @@ export const useDeleteCustomEquipmentType = () => {
   const queryClient = useQueryClient();
 
   return useMutation<{ success: boolean }, Error, string>({
-    mutationFn: async (id) => {
+    mutationFn: async id => {
       const response = await apiClient.delete<{ success: boolean }>(
-        `/api/users/custom-equipment-types/${id}`
+        `/api/users/custom-equipment-types/${id}`,
       );
       return response.data;
     },
@@ -257,11 +276,15 @@ export const useDeleteCustomEquipmentType = () => {
 export const useToggleCustomEquipmentType = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<CustomEquipmentTypeDto, Error, { id: string; isActive: boolean }>({
+  return useMutation<
+    CustomEquipmentTypeDto,
+    Error,
+    { id: string; isActive: boolean }
+  >({
     mutationFn: async ({ id, isActive }) => {
       const response = await apiClient.put<CustomEquipmentTypeDto>(
         `/api/users/custom-equipment-types/${id}/toggle`,
-        { isActive }
+        { isActive },
       );
       return response.data;
     },

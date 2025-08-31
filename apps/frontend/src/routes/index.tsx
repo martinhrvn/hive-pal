@@ -30,6 +30,7 @@ import { HarvestListPage } from '@/pages/harvest/harvest-list-page';
 import { HarvestDetailPage } from '@/pages/harvest/harvest-detail-page';
 import { ReleasesPage } from '@/pages/releases';
 import { EquipmentPlanningPage, EquipmentSettingsPage } from '@/pages/equipment';
+import { BulkActionsPage } from '@/pages/actions/bulk-actions-page';
 
 const router = createBrowserRouter([
   {
@@ -128,6 +129,10 @@ const router = createBrowserRouter([
       {
         path: '/equipment/settings',
         element: <EquipmentSettingsPage />,
+      },
+      {
+        path: '/actions/bulk',
+        element: <BulkActionsPage />,
       },
       {
         path: '/admin/users',

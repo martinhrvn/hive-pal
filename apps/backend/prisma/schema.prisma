@@ -17,9 +17,8 @@ model User {
   apiaries               Apiary[]
   role                   Role                   @default(USER)
   passwordChangeRequired Boolean                @default(false)
-  equipmentSettings      UserEquipmentSettings?
-  inventory              UserInventory?
-  customEquipmentTypes   CustomEquipmentType[]
+  equipmentItems         EquipmentItem[]
+  equipmentMultiplier    EquipmentMultiplier?
 }
 
 enum Role {
@@ -414,95 +413,49 @@ enum AlertStatus {
   SUPERSEDED  // Alert replaced by newer alert with different priority
 }
 
-// User-specific equipment settings for seasonal planning
-model UserEquipmentSettings {
-  id                    String  @id @default(uuid())
-  userId                String  @unique
-  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+// Equipment item configuration for each user
+model EquipmentItem {
+  id                String              @id @default(uuid())
+  userId            String
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId            String              // e.g., "DEEP_BOX", "SHALLOW_BOX", "FRAMES", "SUGAR", custom IDs
+  name              String?             // Display name (optional for custom items)
+  enabled           Boolean             @default(true)
+  perHive           Float               @default(0) // Amount per hive (for standard calculations)
+  extra             Float               @default(0) // Extra inventory on hand
+  neededOverride    Float?              // Manual override for needed amount (null = use calculation)
+  category          EquipmentCategory
+  unit              String              @default("pieces") // "pieces", "kg", "liters", etc.
+  isCustom          Boolean             @default(false) // Whether this is a custom item
+  displayOrder      Int                 @default(999)
   
-  // Equipment types to track
-  trackDeepBoxes        Boolean @default(true)
-  trackShallowBoxes     Boolean @default(true)
-  trackBottoms          Boolean @default(true)
-  trackCovers           Boolean @default(true)
-  trackFrames           Boolean @default(true)
-  trackQueenExcluders   Boolean @default(true)
-  trackFeeders          Boolean @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
   
-  // Standard equipment ratios per hive
-  deepBoxesPerHive      Int     @default(1) // Number of deep boxes per hive
-  shallowBoxesPerHive   Int     @default(2) // Number of shallow/honey boxes per hive
-  framesPerHive         Int     @default(20) // Total frames per hive
-  bottomsPerHive        Int     @default(1) // Bottom boards per hive
-  coversPerHive         Int     @default(1) // Top covers per hive
-  queenExcludersPerHive Int     @default(1) // Queen excluders per hive
-  feedersPerHive        Int     @default(0) // Feeders per hive
-  
-  // Planning multiplier
-  targetMultiplier      Float   @default(1.5) // Target hives = current * multiplier
-  
-  // Consumables tracking
-  trackSugar            Boolean @default(true)
-  sugarPerHive          Float   @default(12.0)  // kg per hive
-  trackSyrup            Boolean @default(false)
-  syrupPerHive          Float   @default(0.0)   // liters per hive
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-}
-
-// User inventory tracking for extra equipment
-model UserInventory {
-  id                    String  @id @default(uuid())
-  userId                String  @unique
-  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Extra equipment counts (not currently in active hives)
-  extraDeepBoxes        Int     @default(0)
-  extraShallowBoxes     Int     @default(0)
-  extraBottoms          Int     @default(0)
-  extraCovers           Int     @default(0)
-  extraFrames           Int     @default(0)
-  extraQueenExcluders   Int     @default(0)
-  extraFeeders          Int     @default(0)
-  
-  // Manual overrides for required equipment (null = use calculated value)
-  requiredDeepBoxesOverride      Int?
-  requiredShallowBoxesOverride   Int?
-  requiredBottomsOverride         Int?
-  requiredCoversOverride          Int?
-  requiredFramesOverride          Int?
-  requiredQueenExcludersOverride  Int?
-  requiredFeedersOverride         Int?
-  
-  // Built-in consumables
-  extraSugarKg                    Float?  @default(0)
-  requiredSugarKgOverride         Float?
-  extraSyrupLiters                Float?  @default(0)
-  requiredSyrupLitersOverride     Float?
-  
-  // JSON field for custom equipment {itemId: {extra: 10, requiredOverride: 15}}
-  customEquipment                 Json?
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-}
-
-// Custom equipment types defined by users
-model CustomEquipmentType {
-  id               String  @id @default(uuid())
-  userId           String
-  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name             String
-  unit             String  // "pieces", "kg", "liters", "sheets", "meters", etc.
-  category         String  // "consumables", "seasonal", "tools", "custom"
-  perHiveRatio     Float?  // Optional: amount per hive for calculations
-  isActive         Boolean @default(true)
-  displayOrder     Int     @default(999)
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  
-  @@unique([userId, name])
+  @@unique([userId, itemId])
   @@index([userId])
+  @@index([userId, category])
+}
+
+// Planning multiplier for equipment calculations
+model EquipmentMultiplier {
+  id                String              @id @default(uuid())
+  userId            String              @unique
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetMultiplier  Float               @default(1.5) // Target hives = current * multiplier
+  
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+enum EquipmentCategory {
+  BOXES           // Deep boxes, shallow boxes
+  HIVE_PARTS      // Bottoms, covers, excluders
+  FRAMES          // All frame types
+  FEEDING         // Feeders, sugar, syrup
+  CONSUMABLES     // Treatment, foundation, etc.
+  TOOLS           // Hive tools, smokers, etc.
+  PROTECTIVE      // Suits, gloves, veils
+  EXTRACTION      // Extractors, uncapping tools
+  CUSTOM          // User-defined categories
 }
