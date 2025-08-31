@@ -19,7 +19,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 
 interface EquipmentRowProps {
@@ -36,9 +35,9 @@ interface EquipmentRowProps {
 
 export const EquipmentRow = ({
   item,
-  onExtraChange,
-  onPerHiveChange,
-  onNeededChange,
+  onExtraChange: _onExtraChange,
+  onPerHiveChange: _onPerHiveChange,
+  onNeededChange: _onNeededChange,
   onResetNeeded,
   onUpdate,
   onDelete,

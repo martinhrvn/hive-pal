@@ -7,6 +7,28 @@ import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionCreatedEvent } from '../events/hive.events';
+import { InspectionStatusUpdaterService } from './inspection-status-updater.service';
+
+type InspectionWithIncludes = Prisma.InspectionGetPayload<{
+  include: {
+    observations: true;
+    notes: true;
+    actions: {
+      include: {
+        feedingAction: true;
+        treatmentAction: true;
+        frameAction: true;
+        harvestAction: true;
+        boxConfigurationAction: true;
+      };
+    };
+    hive: {
+      select: {
+        name: true;
+      };
+    };
+  };
+}>;
 import {
   CreateInspection,
   CreateInspectionResponse,
@@ -26,6 +48,7 @@ export class InspectionsService {
     private actionsService: ActionsService,
     private logger: CustomLoggerService,
     private eventEmitter: EventEmitter2,
+    private inspectionStatusUpdater: InspectionStatusUpdaterService,
   ) {}
 
   async create(
@@ -136,6 +159,9 @@ export class InspectionsService {
   async findAll(
     filter: InspectionFilter & Partial<ApiaryUserFilter>,
   ): Promise<InspectionResponse[]> {
+    // Update any overdue inspection statuses before fetching
+    await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
+
     const whereClause: Prisma.InspectionWhereInput = {
       hiveId: filter.hiveId ?? undefined,
     };
@@ -395,6 +421,136 @@ export class InspectionsService {
       });
 
       return `Inspection #${id} has been successfully removed`;
+    });
+  }
+
+  async findOverdueInspections(
+    filter: Partial<ApiaryUserFilter>,
+  ): Promise<InspectionResponse[]> {
+    // Update any overdue inspection statuses before fetching
+    await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
+
+    const whereClause: Prisma.InspectionWhereInput = {
+      status: InspectionStatus.OVERDUE,
+    };
+
+    // Add apiary filter if provided
+    if (filter.apiaryId && filter.userId) {
+      whereClause.hive = {
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      };
+    }
+
+    const inspections = await this.prisma.inspection.findMany({
+      where: whereClause,
+      orderBy: {
+        date: 'asc', // Oldest overdue first
+      },
+      include: {
+        observations: true,
+        notes: true,
+        actions: {
+          include: {
+            feedingAction: true,
+            treatmentAction: true,
+            frameAction: true,
+            harvestAction: true,
+            boxConfigurationAction: true,
+          },
+        },
+        hive: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return this.mapInspectionsToDto(inspections);
+  }
+
+  async findDueTodayInspections(
+    filter: Partial<ApiaryUserFilter>,
+  ): Promise<InspectionResponse[]> {
+    // Update any overdue inspection statuses before fetching
+    await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const whereClause: Prisma.InspectionWhereInput = {
+      status: InspectionStatus.SCHEDULED,
+      date: {
+        gte: today,
+        lt: tomorrow,
+      },
+    };
+
+    // Add apiary filter if provided
+    if (filter.apiaryId && filter.userId) {
+      whereClause.hive = {
+        apiary: {
+          id: filter.apiaryId,
+          userId: filter.userId,
+        },
+      };
+    }
+
+    const inspections = await this.prisma.inspection.findMany({
+      where: whereClause,
+      orderBy: {
+        date: 'asc',
+      },
+      include: {
+        observations: true,
+        notes: true,
+        actions: {
+          include: {
+            feedingAction: true,
+            treatmentAction: true,
+            frameAction: true,
+            harvestAction: true,
+            boxConfigurationAction: true,
+          },
+        },
+        hive: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return this.mapInspectionsToDto(inspections);
+  }
+
+  private mapInspectionsToDto(inspections: InspectionWithIncludes[]): InspectionResponse[] {
+    return inspections.map((inspection): InspectionResponse => {
+      const metrics = this.mapObservationsToDto(inspection.observations);
+      const score = this.metricService.calculateOveralScore(metrics);
+
+      // Transform actions to DTOs - with explicit casting of the type
+      const actions = inspection.actions.map((action) =>
+        this.actionsService.mapPrismaToDto(action),
+      );
+
+      return {
+        id: inspection.id,
+        hiveId: inspection.hiveId,
+        date: inspection.date.toISOString(),
+        temperature: inspection.temperature ?? null,
+        weatherConditions: inspection.weatherConditions ?? null,
+        notes: inspection.notes?.[0]?.text ?? null,
+        observations: metrics,
+        status: inspection.status as InspectionStatus,
+        score,
+        actions,
+      };
     });
   }
 

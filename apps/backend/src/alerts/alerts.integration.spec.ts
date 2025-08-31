@@ -6,7 +6,10 @@ import { AlertsService } from './alerts.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionOverdueChecker } from './checkers';
-import { HiveUpdatedEvent, InspectionCreatedEvent } from '../events/hive.events';
+import {
+  HiveUpdatedEvent,
+  InspectionCreatedEvent,
+} from '../events/hive.events';
 
 describe('Alerts Event System Integration', () => {
   let eventEmitter: EventEmitter2;
@@ -79,11 +82,16 @@ describe('Alerts Event System Integration', () => {
       const checkSingleHiveSpy = jest.spyOn(alertsScheduler, 'checkSingleHive');
 
       // Emit hive updated event
-      const event = new HiveUpdatedEvent('test-hive-id', 'apiary-id', 'user-id', 'status');
+      const event = new HiveUpdatedEvent(
+        'test-hive-id',
+        'apiary-id',
+        'user-id',
+        'status',
+      );
       await eventEmitter.emitAsync('hive.updated', event);
 
       // Wait a bit for async event handling
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify that checkSingleHive was called
       expect(checkSingleHiveSpy).toHaveBeenCalledWith('test-hive-id');
@@ -121,7 +129,7 @@ describe('Alerts Event System Integration', () => {
       await eventEmitter.emitAsync('inspection.created', event);
 
       // Wait a bit for async event handling
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify that inspection alerts were cleared
       expect(mockPrismaService.alert.updateMany).toHaveBeenCalledWith({
@@ -142,7 +150,9 @@ describe('Alerts Event System Integration', () => {
     it('should handle non-existent hive gracefully', async () => {
       mockPrismaService.hive.findFirst.mockResolvedValue(null);
 
-      await expect(alertsScheduler.checkSingleHive('non-existent-hive')).resolves.not.toThrow();
+      await expect(
+        alertsScheduler.checkSingleHive('non-existent-hive'),
+      ).resolves.not.toThrow();
 
       expect(mockLoggerService.warn).toHaveBeenCalledWith(
         'Hive non-existent-hive not found or not active',

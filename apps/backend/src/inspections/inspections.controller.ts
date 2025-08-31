@@ -110,4 +110,26 @@ export class InspectionsController {
       userId: req.user.id,
     });
   }
+
+  @Get('status/overdue')
+  async findOverdue(
+    @Req() req: RequestWithApiary,
+  ): Promise<InspectionResponse[]> {
+    this.logger.log(`Finding overdue inspections for apiary ${req.apiaryId}`);
+    return this.inspectionsService.findOverdueInspections({
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
+  }
+
+  @Get('status/due-today')
+  async findDueToday(
+    @Req() req: RequestWithApiary,
+  ): Promise<InspectionResponse[]> {
+    this.logger.log(`Finding due today inspections for apiary ${req.apiaryId}`);
+    return this.inspectionsService.findDueTodayInspections({
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
+  }
 }

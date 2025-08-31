@@ -128,5 +128,12 @@
     "cloudy": "Cloudy",
     "overcast": "Overcast",
     "rain": "Rain"
+  },
+  "dashboard": {
+    "title": "Inspection Status",
+    "overdue": "Overdue",
+    "dueToday": "Due Today",
+    "overdueCount": "{{count}} inspection{{count, plural, one {} other{s}}} overdue",
+    "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} due today"
   }
 }

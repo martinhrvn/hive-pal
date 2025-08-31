@@ -43,6 +43,28 @@ export const useInspections = (filters?: InspectionFilter) => {
   });
 };
 
+// Get overdue inspections
+export const useOverdueInspections = () => {
+  return useQuery<InspectionResponse[]>({
+    queryKey: ['inspections', 'overdue'],
+    queryFn: async () => {
+      const response = await apiClient.get<InspectionResponse[]>('/api/inspections/status/overdue');
+      return response.data;
+    },
+  });
+};
+
+// Get inspections due today
+export const useDueTodayInspections = () => {
+  return useQuery<InspectionResponse[]>({
+    queryKey: ['inspections', 'due-today'],
+    queryFn: async () => {
+      const response = await apiClient.get<InspectionResponse[]>('/api/inspections/status/due-today');
+      return response.data;
+    },
+  });
+};
+
 // Get a single inspection by ID
 export const useInspection = (id: string, options = {}) => {
   return useQuery<InspectionResponse>({

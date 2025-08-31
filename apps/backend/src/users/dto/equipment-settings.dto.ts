@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNumber, Min, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsNumber,
+  Min,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class EquipmentCounts {
   @ApiProperty({ description: 'Deep boxes count' })
@@ -155,19 +162,28 @@ export class InventoryDto {
   extraFeeders: number;
 
   // Manual overrides for required equipment
-  @ApiProperty({ description: 'Override for required deep boxes', required: false })
+  @ApiProperty({
+    description: 'Override for required deep boxes',
+    required: false,
+  })
   @IsInt()
   @Min(0)
   @IsOptional()
   requiredDeepBoxesOverride?: number | null;
 
-  @ApiProperty({ description: 'Override for required shallow boxes', required: false })
+  @ApiProperty({
+    description: 'Override for required shallow boxes',
+    required: false,
+  })
   @IsInt()
   @Min(0)
   @IsOptional()
   requiredShallowBoxesOverride?: number | null;
 
-  @ApiProperty({ description: 'Override for required bottoms', required: false })
+  @ApiProperty({
+    description: 'Override for required bottoms',
+    required: false,
+  })
   @IsInt()
   @Min(0)
   @IsOptional()
@@ -185,13 +201,19 @@ export class InventoryDto {
   @IsOptional()
   requiredFramesOverride?: number | null;
 
-  @ApiProperty({ description: 'Override for required queen excluders', required: false })
+  @ApiProperty({
+    description: 'Override for required queen excluders',
+    required: false,
+  })
   @IsInt()
   @Min(0)
   @IsOptional()
   requiredQueenExcludersOverride?: number | null;
 
-  @ApiProperty({ description: 'Override for required feeders', required: false })
+  @ApiProperty({
+    description: 'Override for required feeders',
+    required: false,
+  })
   @IsInt()
   @Min(0)
   @IsOptional()
@@ -204,7 +226,10 @@ export class InventoryDto {
   @IsOptional()
   extraSugarKg?: number;
 
-  @ApiProperty({ description: 'Override for required sugar in kg', required: false })
+  @ApiProperty({
+    description: 'Override for required sugar in kg',
+    required: false,
+  })
   @IsNumber()
   @Min(0)
   @IsOptional()
@@ -216,14 +241,20 @@ export class InventoryDto {
   @IsOptional()
   extraSyrupLiters?: number;
 
-  @ApiProperty({ description: 'Override for required syrup in liters', required: false })
+  @ApiProperty({
+    description: 'Override for required syrup in liters',
+    required: false,
+  })
   @IsNumber()
   @Min(0)
   @IsOptional()
   requiredSyrupLitersOverride?: number | null;
 
   // Custom equipment as JSON
-  @ApiProperty({ description: 'Custom equipment data as JSON', required: false })
+  @ApiProperty({
+    description: 'Custom equipment data as JSON',
+    required: false,
+  })
   @IsOptional()
   customEquipment?: any;
 }
@@ -241,7 +272,10 @@ export class CustomEquipmentTypeDto {
   @ApiProperty({ description: 'Equipment category' })
   category: string;
 
-  @ApiProperty({ description: 'Amount per hive for calculations', required: false })
+  @ApiProperty({
+    description: 'Amount per hive for calculations',
+    required: false,
+  })
   perHiveRatio?: number | null;
 
   @ApiProperty({ description: 'Whether this equipment is active/tracked' })
@@ -264,7 +298,10 @@ export class CreateCustomEquipmentTypeDto {
   @IsString()
   category: string;
 
-  @ApiProperty({ description: 'Amount per hive for calculations', required: false })
+  @ApiProperty({
+    description: 'Amount per hive for calculations',
+    required: false,
+  })
   @IsNumber()
   @Min(0)
   @IsOptional()
@@ -330,7 +367,9 @@ export class EquipmentPlanDto {
   @ApiProperty({ description: 'Total current equipment' })
   total: EquipmentCounts;
 
-  @ApiProperty({ description: 'Required equipment for target hives (with overrides applied)' })
+  @ApiProperty({
+    description: 'Required equipment for target hives (with overrides applied)',
+  })
   required: EquipmentCounts;
 
   @ApiProperty({ description: 'Recommended equipment based on calculations' })
@@ -348,6 +387,9 @@ export class EquipmentPlanDto {
     syrup?: ConsumableItem;
   };
 
-  @ApiProperty({ description: 'Custom equipment items', type: [CustomEquipmentItem] })
+  @ApiProperty({
+    description: 'Custom equipment items',
+    type: [CustomEquipmentItem],
+  })
   customEquipment: CustomEquipmentItem[];
 }
