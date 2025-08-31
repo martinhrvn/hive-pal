@@ -4,21 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
-import { EquipmentItemWithCalculations, EquipmentPlan, UpdateEquipmentItem, CreateEquipmentItem } from 'shared-schemas';
+import {
+  EquipmentItemWithCalculations,
+  EquipmentPlan,
+  UpdateEquipmentItem,
+  CreateEquipmentItem,
+} from 'shared-schemas';
 import { Loader2, Package, Target, ShoppingCart, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { EquipmentTable } from './components/equipment-table';
 import { ShoppingList } from './components/shopping-list';
 
+const StatsCards = ({ planData }: { planData: EquipmentPlan }) => {
+  const totalNeeded = planData.items.reduce(
+    (sum, item) =>
+      sum + (item.toPurchase && item.toPurchase > 0 ? item.toPurchase : 0),
+    0,
+  );
 
-const StatsCards = ({
-  planData,
-}: {
-  planData: EquipmentPlan;
-}) => {
-  const totalNeeded = planData.items.reduce((sum, item) => sum + (item.toPurchase && item.toPurchase > 0 ? item.toPurchase : 0), 0);
-  
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card>
@@ -45,9 +49,7 @@ const StatsCards = ({
         <CardContent className="flex items-center p-6">
           <ShoppingCart className="h-8 w-8 text-orange-600 mr-4" />
           <div>
-            <p className="text-2xl font-bold">
-              {totalNeeded}
-            </p>
+            <p className="text-2xl font-bold">{totalNeeded}</p>
             <p className="text-sm text-muted-foreground">Items Needed</p>
           </div>
         </CardContent>
@@ -56,12 +58,12 @@ const StatsCards = ({
   );
 };
 
-const EquipmentActionSidebar = ({ 
-  onRefresh, 
-  multiplier, 
-  onMultiplierChange, 
-  isUpdatingMultiplier 
-}: { 
+const EquipmentActionSidebar = ({
+  onRefresh,
+  multiplier,
+  onMultiplierChange,
+  isUpdatingMultiplier,
+}: {
   onRefresh: () => void;
   multiplier: number;
   onMultiplierChange: (value: number) => void;
@@ -90,7 +92,9 @@ const EquipmentActionSidebar = ({
               <Input
                 type="number"
                 value={multiplier}
-                onChange={(e) => onMultiplierChange(parseFloat(e.target.value) || 1)}
+                onChange={e =>
+                  onMultiplierChange(parseFloat(e.target.value) || 1)
+                }
                 min="0.1"
                 max="10"
                 step="0.1"
@@ -142,7 +146,15 @@ const SaveChangesSection = ({
 };
 
 export const EquipmentPlanningPage = () => {
-  const { plan, items, updateItem, deleteItem, createItem, multiplier, updateMultiplier } = useEquipmentNew();
+  const {
+    plan,
+    items,
+    updateItem,
+    deleteItem,
+    createItem,
+    multiplier,
+    updateMultiplier,
+  } = useEquipmentNew();
   const [localItems, setLocalItems] = useState<EquipmentItemWithCalculations[]>(
     [],
   );
@@ -160,12 +172,15 @@ export const EquipmentPlanningPage = () => {
 
   // Use plan.data.items as they contain the calculations (inUse, total, required, etc.)
   // If we have local changes, merge them with the plan data
-  const displayItems = localItems.length > 0 
-    ? plan.data?.items.map(planItem => {
-        const localItem = localItems.find(local => local.itemId === planItem.itemId);
-        return localItem ? { ...planItem, ...localItem } : planItem;
-      }) || []
-    : (plan.data?.items || []);
+  const displayItems =
+    localItems.length > 0
+      ? plan.data?.items.map(planItem => {
+          const localItem = localItems.find(
+            local => local.itemId === planItem.itemId,
+          );
+          return localItem ? { ...planItem, ...localItem } : planItem;
+        }) || []
+      : plan.data?.items || [];
 
   if (plan.isLoading || items.isLoading || multiplier.isLoading) {
     return (
@@ -200,14 +215,14 @@ export const EquipmentPlanningPage = () => {
 
   const handleExtraChange = (itemId: string, value: number) => {
     const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, extra: value } : item
+      item.itemId === itemId ? { ...item, extra: value } : item,
     );
     setLocalItems(updatedItems);
   };
 
   const handlePerHiveChange = (itemId: string, value: number) => {
     const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, perHive: value } : item
+      item.itemId === itemId ? { ...item, perHive: value } : item,
     );
     setLocalItems(updatedItems);
   };
@@ -216,14 +231,14 @@ export const EquipmentPlanningPage = () => {
 
   const handleNeededChange = (itemId: string, value: number) => {
     const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, neededOverride: value } : item
+      item.itemId === itemId ? { ...item, neededOverride: value } : item,
     );
     setLocalItems(updatedItems);
   };
 
   const handleResetNeeded = (itemId: string) => {
     const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, neededOverride: null } : item
+      item.itemId === itemId ? { ...item, neededOverride: null } : item,
     );
     setLocalItems(updatedItems);
   };
@@ -247,7 +262,10 @@ export const EquipmentPlanningPage = () => {
     updateMultiplier.mutate({ targetMultiplier: value });
   };
 
-  const handleUpdateItem = async (itemId: string, data: UpdateEquipmentItem) => {
+  const handleUpdateItem = async (
+    itemId: string,
+    data: UpdateEquipmentItem,
+  ) => {
     setUpdatingItems(prev => new Set([...prev, itemId]));
     try {
       await updateItem.mutateAsync({ itemId, data });
@@ -331,7 +349,6 @@ export const EquipmentPlanningPage = () => {
           />
 
           {/* Shopping List */}
-          <ShoppingList items={displayItems} />
         </div>
       </MainContent>
 
@@ -346,6 +363,7 @@ export const EquipmentPlanningPage = () => {
           onMultiplierChange={handleMultiplierChange}
           isUpdatingMultiplier={updateMultiplier.isPending}
         />
+        <ShoppingList items={displayItems} />
       </Sidebar>
     </Page>
   );
