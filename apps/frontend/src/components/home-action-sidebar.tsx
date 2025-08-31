@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { WeatherForecast } from '@/components/weather';
+import { CalendarSidebar } from '@/components/calendar-sidebar';
 import { useApiary } from '@/hooks/use-apiary';
 
 interface HomeActionSidebarProps {
@@ -35,6 +36,8 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
 
   return (
     <div className="space-y-4">
+      <CalendarSidebar />
+      
       {activeApiaryId && (
         <div className="border rounded-md">
           <SidebarGroup>
