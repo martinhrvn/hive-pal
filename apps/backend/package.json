@@ -11,7 +11,7 @@
     "start": "nest start",
     "db:up": "docker compose up -d",
     "db:up:test": "docker compose -f docker-compose-testdb.yml up -d",
-    "dev": "pnpm db:up && nest start --watch",
+    "dev": "pnpm db:up && dotenvx run -f .env -- nest start --watch",
     "seed": "ts-node prisma/seed.ts",
     "prisma:generate": "prisma generate",
     "start:debug": "nest start --debug --watch",

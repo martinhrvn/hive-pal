@@ -23,14 +23,13 @@ import { HarvestsModule } from './harvests/harvests.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { FeedbackModule } from './feedback/feedback.module';
-import { SentryModule } from './sentry/sentry.module';
-import { TestSentryModule } from './test-sentry/test-sentry.module';
+import { SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
-    SentryModule,
     AuthModule,
     HiveModule,
     InspectionsModule,
@@ -46,7 +45,6 @@ import { TestSentryModule } from './test-sentry/test-sentry.module';
     AlertsModule,
     CalendarModule,
     FeedbackModule,
-    ...(process.env.NODE_ENV === 'development' ? [TestSentryModule] : []),
   ],
   controllers: [AppController],
   providers: [

@@ -6,7 +6,10 @@ interface ErrorBoundaryProps {
   children: ReactNode;
 }
 
-function ErrorFallback({ error, resetError }: { error: Error; resetError: () => void }) {
+function ErrorFallback({ error, resetError }: { error: unknown; resetError: () => void }) {
+  const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+  const errorStack = error instanceof Error ? error.stack : '';
+  
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="max-w-md text-center">
@@ -18,8 +21,8 @@ function ErrorFallback({ error, resetError }: { error: Error; resetError: () => 
           <details className="mb-6 text-left">
             <summary className="cursor-pointer font-semibold">Error Details</summary>
             <pre className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs">
-              {error.message}
-              {error.stack}
+              {errorMessage}
+              {errorStack}
             </pre>
           </details>
         )}
@@ -37,7 +40,7 @@ function ErrorFallback({ error, resetError }: { error: Error; resetError: () => 
 export const ErrorBoundary = Sentry.withErrorBoundary(
   ({ children }: ErrorBoundaryProps) => <>{children}</>,
   {
-    fallback: ErrorFallback,
+    fallback: ({ error, resetError }) => <ErrorFallback error={error} resetError={resetError} />,
     showDialog: false,
   }
 );

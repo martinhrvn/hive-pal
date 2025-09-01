@@ -1,11 +1,9 @@
+import './instrument';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { setup } from './setup';
 import { CustomLoggerService } from './logger/logger.service';
-import { initSentry } from './sentry/sentry.setup';
-
-initSentry();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

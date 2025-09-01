@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CustomLoggerService } from './logger/logger.service';
+import { SentryExceptionCaptured } from '@sentry/nestjs';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -14,6 +15,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     this.logger.setContext('Exception');
   }
 
+  @SentryExceptionCaptured()
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
