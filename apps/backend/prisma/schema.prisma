@@ -20,6 +20,7 @@ model User {
   equipmentItems         EquipmentItem[]
   equipmentMultiplier    EquipmentMultiplier?
   preferences            Json?                  // JSON field for user preferences
+  feedbacks              Feedback[]
 }
 
 enum Role {
@@ -459,4 +460,35 @@ enum EquipmentCategory {
   PROTECTIVE      // Suits, gloves, veils
   EXTRACTION      // Extractors, uncapping tools
   CUSTOM          // User-defined categories
+}
+
+// Feedback system for user suggestions, bug reports, etc.
+model Feedback {
+  id          String         @id @default(uuid())
+  userId      String?        // Optional - allows anonymous feedback
+  user        User?          @relation(fields: [userId], references: [id])
+  email       String?        // Optional email for contact
+  type        FeedbackType   // BUG, SUGGESTION, OTHER
+  subject     String
+  message     String         @db.Text
+  status      FeedbackStatus @default(NEW)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum FeedbackType {
+  BUG
+  SUGGESTION
+  OTHER
+}
+
+enum FeedbackStatus {
+  NEW
+  REVIEWED
+  RESOLVED
 }

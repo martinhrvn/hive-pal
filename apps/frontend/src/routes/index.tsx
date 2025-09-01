@@ -33,6 +33,7 @@ import { EquipmentPlanningPage, EquipmentSettingsPage } from '@/pages/equipment'
 import { BulkActionsPage } from '@/pages/actions/bulk-actions-page';
 import { CalendarPage } from '@/pages/calendar';
 import { UserSettingsPage } from '@/pages/settings';
+import { FeedbackPage } from '@/pages/feedback';
 
 const router = createBrowserRouter([
   {
@@ -143,6 +144,10 @@ const router = createBrowserRouter([
       {
         path: '/settings',
         element: <UserSettingsPage />,
+      },
+      {
+        path: '/feedback',
+        element: <FeedbackPage />,
       },
       {
         path: '/admin/users',

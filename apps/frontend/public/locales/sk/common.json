@@ -113,5 +113,26 @@
     "nextHours": "Najbližších 5 hodín",
     "dayForecast": "7-dňová predpoveď",
     "weatherForecast": "Predpoveď počasia"
+  },
+  "feedback": {
+    "title": "Poslať spätnú väzbu",
+    "description": "Vážime si vašu spätnú väzbu! Pomôžte nám zlepšiť HivePal zdieľaním vašich myšlienok, hlásením chýb alebo navrhovaním nových funkcií.",
+    "sendFeedback": "Poslať spätnú väzbu",
+    "type": "Typ spätnej väzby",
+    "selectType": "Vyberte typ spätnej väzby",
+    "typeBug": "Hlásenie chyby",
+    "typeSuggestion": "Návrh funkcie",
+    "typeOther": "Iné",
+    "subject": "Predmet",
+    "subjectPlaceholder": "Stručný popis vašej spätnej väzby",
+    "message": "Správa",
+    "messagePlaceholder": "Prosím, poskytnite podrobné informácie o vašej spätnej väzbe...",
+    "email": "E-mail (voliteľné)",
+    "emailPlaceholder": "vas@email.com",
+    "emailDescription": "Zadajte váš e-mail, ak chcete dostať odpoveď",
+    "submit": "Odoslať spätnú väzbu",
+    "thankYou": "Ďakujeme!",
+    "submittedMessage": "Vaša spätná väzba bola úspešne odoslaná. Vážime si váš názor a čoskoro ho preskúmame.",
+    "submitAnother": "Odoslať ďalšiu spätnú väzbu"
   }
 }

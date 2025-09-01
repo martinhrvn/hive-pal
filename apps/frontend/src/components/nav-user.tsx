@@ -1,7 +1,8 @@
 'use client';
 
-import { Bell, ChevronsUpDown, LogOut, Languages } from 'lucide-react';
+import { Bell, ChevronsUpDown, LogOut, Languages, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -33,6 +34,7 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const { data: user, isLoading } = useUserProfile();
   const { t, i18n } = useTranslation('common');
+  const navigate = useNavigate();
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode);
@@ -105,6 +107,11 @@ export function NavUser() {
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate('/feedback')}>
+              <MessageSquare />
+              {t('feedback.sendFeedback')}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut />

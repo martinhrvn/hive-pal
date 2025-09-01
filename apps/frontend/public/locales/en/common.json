@@ -148,5 +148,26 @@
     "changePassword": "Change your account password",
     "saveSettings": "Save Settings",
     "preferencesUpdated": "Your preferences have been updated successfully."
+  },
+  "feedback": {
+    "title": "Send Feedback",
+    "description": "We value your feedback! Help us improve HivePal by sharing your thoughts, reporting bugs, or suggesting new features.",
+    "sendFeedback": "Send Feedback",
+    "type": "Feedback Type",
+    "selectType": "Select feedback type",
+    "typeBug": "Bug Report",
+    "typeSuggestion": "Feature Suggestion",
+    "typeOther": "Other",
+    "subject": "Subject",
+    "subjectPlaceholder": "Brief summary of your feedback",
+    "message": "Message",
+    "messagePlaceholder": "Please provide detailed information about your feedback...",
+    "email": "Email (Optional)",
+    "emailPlaceholder": "your@email.com",
+    "emailDescription": "Provide your email if you'd like to receive a response",
+    "submit": "Submit Feedback",
+    "thankYou": "Thank You!",
+    "submittedMessage": "Your feedback has been submitted successfully. We appreciate your input and will review it soon.",
+    "submitAnother": "Submit Another Feedback"
   }
 }
