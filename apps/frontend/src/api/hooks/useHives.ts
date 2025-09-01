@@ -127,7 +127,7 @@ export const useCreateHive = (callbacks?: { onSuccess: () => void }) => {
         queryKey: HIVES_KEYS.lists(),
       });
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/hives', 'POST');
     },
   });
@@ -197,7 +197,13 @@ export const useUpdateHiveBoxes = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, boxes }: { id: string; boxes: UpdateHiveBoxes['boxes'] }) => {
+    mutationFn: async ({
+      id,
+      boxes,
+    }: {
+      id: string;
+      boxes: UpdateHiveBoxes['boxes'];
+    }) => {
       const response = await apiClient.put<UpdateHiveResponse>(
         `/api/hives/${id}/boxes`,
         { boxes },
