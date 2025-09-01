@@ -1,12 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  EquipmentItem,
-  BoxType,
-  HiveStatus,
-  Apiary,
-  Hive,
-  Box,
-} from '@prisma/client';
+import { EquipmentItem, HiveStatus, Apiary, Hive, Box } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   EquipmentItemWithCalculations,

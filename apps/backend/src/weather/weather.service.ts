@@ -390,7 +390,7 @@ export class WeatherService {
     const targetDate = new Date(date);
     const startOfDay = new Date(targetDate);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(targetDate);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -414,16 +414,17 @@ export class WeatherService {
     const bestRecord = weatherRecords.reduce((best, current) => {
       const currentHour = new Date(current.timestamp).getHours();
       const bestHour = new Date(best.timestamp).getHours();
-      
+
       const currentDistance = Math.abs(currentHour - 12);
       const bestDistance = Math.abs(bestHour - 12);
-      
+
       // Prefer closer to noon
       if (currentDistance < bestDistance) return current;
-      
+
       // If same distance from noon, prefer earlier time
-      if (currentDistance === bestDistance && currentHour < bestHour) return current;
-      
+      if (currentDistance === bestDistance && currentHour < bestHour)
+        return current;
+
       return best;
     });
 

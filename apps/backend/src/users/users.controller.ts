@@ -10,7 +10,6 @@ import {
   UnauthorizedException,
   NotFoundException,
   Req,
-  SerializeOptions,
 } from '@nestjs/common';
 import {
   JwtAuthGuard,
@@ -22,15 +21,10 @@ import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
 import {
   ResetPassword,
-  ChangePassword, 
+  ChangePassword,
   UserResponse,
   UserPreferences,
   UpdateUserInfo,
-  ResetPasswordDto,
-  ChangePasswordDto,
-  UserResponseDto,
-  UserPreferencesDto,
-  UpdateUserInfoDto,
   EquipmentItemWithCalculations,
   EquipmentMultiplier,
   EquipmentPlan,
@@ -38,7 +32,6 @@ import {
   UpdateEquipmentItem,
   resetPasswordSchema,
   changePasswordSchema,
-  userResponseSchema,
   userPreferencesSchema,
   updateUserInfoSchema,
 } from 'shared-schemas';
@@ -69,12 +62,6 @@ export class UsersController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users (admin only)' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of all users',
-    type: [UserResponseDto],
-  })
-  @SerializeOptions({ type: UserResponseDto })
   async findAll(): Promise<UserResponse[]> {
     this.logger.log('Admin requesting list of all users');
     return this.usersService.findAll();
@@ -85,15 +72,10 @@ export class UsersController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Reset a user's password (admin only)" })
-  @ApiResponse({
-    status: 200,
-    description: 'Password reset successful',
-    type: UserResponseDto,
-  })
-  @SerializeOptions({ type: UserResponseDto })
   async resetPassword(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(resetPasswordSchema)) resetPasswordDto: ResetPassword,
+    @Body(new ZodValidationPipe(resetPasswordSchema))
+    resetPasswordDto: ResetPassword,
     @Req() req: RequestWithUser,
   ): Promise<UserResponse> {
     this.logger.log(
@@ -106,15 +88,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Change own password' })
-  @ApiResponse({
-    status: 200,
-    description: 'Password changed successfully',
-    type: UserResponseDto,
-  })
-  @SerializeOptions({ type: UserResponseDto })
   async changePassword(
     @Req() req: RequestWithUser,
-    @Body(new ZodValidationPipe(changePasswordSchema)) changePasswordDto: ChangePassword,
+    @Body(new ZodValidationPipe(changePasswordSchema))
+    changePasswordDto: ChangePassword,
   ): Promise<UserResponse> {
     this.logger.log(`User ${req.user.id} changing their password`);
 
@@ -281,11 +258,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user preferences' })
-  @ApiResponse({
-    status: 200,
-    description: 'User preferences retrieved',
-    type: UserPreferencesDto,
-  })
   async getUserPreferences(
     @Req() req: RequestWithUser,
   ): Promise<UserPreferences | null> {
@@ -297,14 +269,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user preferences' })
-  @ApiResponse({
-    status: 200,
-    description: 'User preferences updated',
-    type: UserPreferencesDto,
-  })
   async updateUserPreferences(
     @Req() req: RequestWithUser,
-    @Body(new ZodValidationPipe(userPreferencesSchema)) preferences: UserPreferences,
+    @Body(new ZodValidationPipe(userPreferencesSchema))
+    preferences: UserPreferences,
   ): Promise<UserPreferences> {
     this.logger.log(`User ${req.user.id} updating preferences`);
     return this.usersService.updateUserPreferences(req.user.id, preferences);
@@ -314,12 +282,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user profile information' })
-  @ApiResponse({
-    status: 200,
-    description: 'User profile retrieved',
-    type: UserResponseDto,
-  })
-  @SerializeOptions({ type: UserResponseDto })
   async getUserProfile(@Req() req: RequestWithUser): Promise<UserResponse> {
     this.logger.log(`User ${req.user.id} requesting profile`);
     const user = await this.usersService.findById(req.user.id);
@@ -334,15 +296,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user profile information' })
-  @ApiResponse({
-    status: 200,
-    description: 'User profile updated',
-    type: UserResponseDto,
-  })
-  @SerializeOptions({ type: UserResponseDto })
   async updateUserProfile(
     @Req() req: RequestWithUser,
-    @Body(new ZodValidationPipe(updateUserInfoSchema)) updateData: UpdateUserInfo,
+    @Body(new ZodValidationPipe(updateUserInfoSchema))
+    updateData: UpdateUserInfo,
   ): Promise<UserResponse> {
     this.logger.log(`User ${req.user.id} updating profile`);
     return this.usersService.updateUserInfo(req.user.id, updateData);

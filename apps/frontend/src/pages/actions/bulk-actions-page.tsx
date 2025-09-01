@@ -154,7 +154,7 @@ export const BulkActionsPage = () => {
 
     try {
       let successCount = 0;
-      let failedActions: string[] = [];
+      const failedActions: string[] = [];
 
       for (const staged of stagedActions) {
         try {

@@ -34,8 +34,8 @@ export class WeatherController {
   }
 
   @Get('date/:apiaryId')
-  @ApiOperation({ 
-    summary: 'Get weather for a specific date, preferring midday readings' 
+  @ApiOperation({
+    summary: 'Get weather for a specific date, preferring midday readings',
   })
   @ApiQuery({
     name: 'date',

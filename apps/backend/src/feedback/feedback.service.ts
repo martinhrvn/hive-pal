@@ -44,11 +44,11 @@ export class FeedbackService {
 
   async findAll(options: FindAllOptions) {
     const where: Prisma.FeedbackWhereInput = {};
-    
+
     if (options.type) {
       where.type = options.type;
     }
-    
+
     if (options.status) {
       where.status = options.status;
     }

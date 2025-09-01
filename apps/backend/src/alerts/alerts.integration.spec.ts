@@ -13,9 +13,9 @@ import {
 
 describe('Alerts Event System Integration', () => {
   let eventEmitter: EventEmitter2;
-  let alertsEventHandler: AlertsEventHandler;
+  let _alertsEventHandler: AlertsEventHandler;
   let alertsScheduler: AlertsScheduler;
-  let prismaService: PrismaService;
+  let _prismaService: PrismaService;
 
   const mockPrismaService = {
     hive: {
@@ -55,9 +55,9 @@ describe('Alerts Event System Integration', () => {
     }).compile();
 
     eventEmitter = module.get<EventEmitter2>(EventEmitter2);
-    alertsEventHandler = module.get<AlertsEventHandler>(AlertsEventHandler);
+    _alertsEventHandler = module.get<AlertsEventHandler>(AlertsEventHandler);
     alertsScheduler = module.get<AlertsScheduler>(AlertsScheduler);
-    prismaService = module.get<PrismaService>(PrismaService);
+    _prismaService = module.get<PrismaService>(PrismaService);
 
     // Clear all mocks before each test
     jest.clearAllMocks();
@@ -140,7 +140,7 @@ describe('Alerts Event System Integration', () => {
         },
         data: {
           status: 'RESOLVED',
-          updatedAt: expect.any(Date),
+          updatedAt: expect.any(Date) as Date,
         },
       });
     });
@@ -183,7 +183,7 @@ describe('Alerts Event System Integration', () => {
         },
         data: {
           status: 'RESOLVED',
-          updatedAt: expect.any(Date),
+          updatedAt: expect.any(Date) as Date,
         },
       });
     });

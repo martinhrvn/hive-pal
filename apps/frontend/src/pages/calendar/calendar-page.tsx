@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -100,21 +100,21 @@ export const CalendarPage = () => {
   const datesWithActions = monthEvents?.filter(event => event.standaloneActions.length > 0).map(event => new Date(event.date)) || [];
   const datesWithBoth = monthEvents?.filter(event => event.inspections.length > 0 && event.standaloneActions.length > 0).map(event => new Date(event.date)) || [];
 
-  const handlePreviousWeek = () => {
+  const handlePreviousWeek = useCallback(() => {
     setSelectedDate(subWeeks(selectedDate, 1));
-  };
+  }, [selectedDate]);
 
-  const handleNextWeek = () => {
+  const handleNextWeek = useCallback(() => {
     setSelectedDate(addWeeks(selectedDate, 1));
-  };
+  }, [selectedDate]);
 
-  const handlePreviousDay = () => {
+  const handlePreviousDay = useCallback(() => {
     setSelectedDate(subDays(selectedDate, 1));
-  };
+  }, [selectedDate]);
 
-  const handleNextDay = () => {
+  const handleNextDay = useCallback(() => {
     setSelectedDate(addDays(selectedDate, 1));
-  };
+  }, [selectedDate]);
 
   // Add keyboard navigation
   useEffect(() => {
@@ -150,7 +150,7 @@ export const CalendarPage = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedDate]);
+  }, [selectedDate, handlePreviousDay, handleNextDay, handlePreviousWeek, handleNextWeek]);
 
   return (
     <Page>

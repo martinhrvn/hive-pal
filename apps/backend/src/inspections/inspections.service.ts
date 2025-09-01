@@ -538,7 +538,9 @@ export class InspectionsService {
     return this.mapInspectionsToDto(inspections);
   }
 
-  private mapInspectionsToDto(inspections: InspectionWithIncludes[]): InspectionResponse[] {
+  private mapInspectionsToDto(
+    inspections: InspectionWithIncludes[],
+  ): InspectionResponse[] {
     return inspections.map((inspection): InspectionResponse => {
       const metrics = this.mapObservationsToDto(inspection.observations);
       const score = this.metricService.calculateOveralScore(metrics);

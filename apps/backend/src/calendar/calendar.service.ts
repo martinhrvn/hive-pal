@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { 
-  InspectionResponse, 
+import {
+  InspectionResponse,
   ActionResponse,
   InspectionStatus,
   CalendarFilter,
   CalendarEvent,
-  CalendarResponse
+  CalendarResponse,
 } from 'shared-schemas';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { ActionsService } from '../actions/actions.service';
@@ -43,14 +42,15 @@ export class CalendarService {
     };
 
     // Add date filtering
-    const dateFilter = filter.startDate || filter.endDate
-      ? {
-          date: {
-            ...(filter.startDate && { gte: new Date(filter.startDate) }),
-            ...(filter.endDate && { lte: new Date(filter.endDate) }),
-          },
-        }
-      : {};
+    const dateFilter =
+      filter.startDate || filter.endDate
+        ? {
+            date: {
+              ...(filter.startDate && { gte: new Date(filter.startDate) }),
+              ...(filter.endDate && { lte: new Date(filter.endDate) }),
+            },
+          }
+        : {};
 
     // Fetch inspections and standalone actions in parallel for better performance
     const [inspections, standaloneActions] = await Promise.all([
@@ -114,32 +114,34 @@ export class CalendarService {
     ]);
 
     // Transform inspections to DTOs
-    const inspectionResponses: InspectionResponse[] = inspections.map((inspection) => {
-      const metrics = this.mapObservationsToDto(inspection.observations);
-      const score = this.metricService.calculateOveralScore(metrics);
-      
-      // Transform actions to DTOs
-      const actions = inspection.actions.map((action) =>
-        this.actionsService.mapPrismaToDto(action),
-      );
+    const inspectionResponses: InspectionResponse[] = inspections.map(
+      (inspection): InspectionResponse => {
+        const metrics = this.mapObservationsToDto(inspection.observations);
+        const score = this.metricService.calculateOveralScore(metrics);
 
-      return {
-        id: inspection.id,
-        hiveId: inspection.hiveId,
-        date: inspection.date.toISOString(),
-        temperature: inspection.temperature ?? null,
-        weatherConditions: inspection.weatherConditions ?? null,
-        notes: inspection.notes?.[0]?.text ?? null,
-        observations: metrics,
-        status: inspection.status as InspectionStatus,
-        score,
-        actions,
-      };
-    });
+        // Transform actions to DTOs
+        const actions = inspection.actions.map((action) =>
+          this.actionsService.mapPrismaToDto(action),
+        );
+
+        return {
+          id: inspection.id,
+          hiveId: inspection.hiveId,
+          date: inspection.date.toISOString(),
+          temperature: inspection.temperature ?? null,
+          weatherConditions: inspection.weatherConditions ?? null,
+          notes: inspection.notes?.[0]?.text ?? null,
+          observations: metrics,
+          status: inspection.status as InspectionStatus,
+          score,
+          actions,
+        };
+      },
+    );
 
     // Transform standalone actions to DTOs
-    const standaloneActionResponses: ActionResponse[] = standaloneActions.map((action) =>
-      this.actionsService.mapPrismaToDto(action),
+    const standaloneActionResponses: ActionResponse[] = standaloneActions.map(
+      (action) => this.actionsService.mapPrismaToDto(action),
     );
 
     // Group events by date
@@ -148,7 +150,7 @@ export class CalendarService {
     // Process inspections
     inspectionResponses.forEach((inspection) => {
       const dateKey = inspection.date.split('T')[0]; // Get date part only
-      
+
       if (!eventsByDate.has(dateKey)) {
         eventsByDate.set(dateKey, {
           date: dateKey,
@@ -156,14 +158,14 @@ export class CalendarService {
           standaloneActions: [],
         });
       }
-      
+
       eventsByDate.get(dateKey)!.inspections.push(inspection);
     });
 
     // Process standalone actions
     standaloneActionResponses.forEach((action) => {
       const dateKey = action.date.split('T')[0]; // Get date part only
-      
+
       if (!eventsByDate.has(dateKey)) {
         eventsByDate.set(dateKey, {
           date: dateKey,
@@ -171,35 +173,50 @@ export class CalendarService {
           standaloneActions: [],
         });
       }
-      
+
       eventsByDate.get(dateKey)!.standaloneActions.push(action);
     });
 
     // Convert map to array and sort by date (most recent first)
-    return Array.from(eventsByDate.values()).sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
+    return Array.from(eventsByDate.values()).sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
   }
 
   // Helper method to map observations (copied from inspections service)
-  private mapObservationsToDto(observations: any[]) {
-    const observationMap = observations.reduce((acc, obs) => {
-      acc[obs.type] = obs.numericValue;
-      return acc;
-    }, {});
+  private mapObservationsToDto(
+    observations: {
+      type: string;
+      numericValue: number | null;
+      booleanValue: boolean | null;
+    }[],
+  ) {
+    const observationMap = observations.reduce(
+      (acc, obs) => {
+        acc[obs.type] = {
+          numericValue: obs.numericValue,
+          booleanValue: obs.booleanValue,
+        };
+        return acc;
+      },
+      {} as Record<
+        string,
+        { numericValue: number | null; booleanValue: boolean | null }
+      >,
+    );
 
     return {
-      strength: observationMap.strength ?? null,
-      uncappedBrood: observationMap.uncapped_brood ?? null,
-      cappedBrood: observationMap.capped_brood ?? null,
-      honeyStores: observationMap.honey_stores ?? null,
-      pollenStores: observationMap.pollen_stores ?? null,
-      queenCells: observationMap.queen_cells ?? null,
-      swarmCells: observationMap.swarm_cells ?? null,
-      supersedureCells: observationMap.supersedure_cells ?? null,
-      queenSeen: observationMap.queen_seen ?? null,
-      eggs: observationMap.eggs ?? null,
-      larvae: observationMap.larvae ?? null,
+      strength: observationMap.strength.numericValue ?? null,
+      uncappedBrood: observationMap.uncapped_brood.numericValue ?? null,
+      cappedBrood: observationMap.capped_brood.numericValue ?? null,
+      honeyStores: observationMap.honey_stores.numericValue ?? null,
+      pollenStores: observationMap.pollen_stores.numericValue ?? null,
+      queenCells: observationMap.queen_cells.numericValue ?? null,
+      swarmCells: observationMap.swarm_cells.booleanValue ?? null,
+      supersedureCells: observationMap.supersedure_cells.booleanValue ?? null,
+      queenSeen: observationMap.queen_seen.booleanValue ?? null,
+      eggs: observationMap.eggs.numericValue ?? null,
+      larvae: observationMap.larvae.numericValue ?? null,
     };
   }
 }

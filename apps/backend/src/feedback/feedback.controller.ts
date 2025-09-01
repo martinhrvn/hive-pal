@@ -71,8 +71,8 @@ export class FeedbackController {
     return this.feedbackService.findAll({
       type: query.type as FeedbackType,
       status: query.status as FeedbackStatus,
-      limit: (query.limit ?? 50) as number,
-      offset: (query.offset ?? 0) as number,
+      limit: query.limit ?? 50,
+      offset: query.offset ?? 0,
     });
   }
 

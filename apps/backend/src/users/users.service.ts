@@ -1,19 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User, BoxType, HiveStatus } from '@prisma/client';
+import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  EquipmentSettings,
-  Inventory,
-  UserEquipmentPlan,
-  EquipmentCounts,
-  ConsumableItem,
-  CustomEquipmentItem,
-  CustomEquipmentType,
-  CreateCustomEquipmentType,
-  UserPreferences,
-  UpdateUserInfo,
-} from 'shared-schemas';
+import { UserPreferences, UpdateUserInfo } from 'shared-schemas';
 
 type PartialUser = Omit<User, 'password'>;
 
@@ -123,7 +112,7 @@ export class UsersService {
 
     const updatedUser = await this.prismaService.user.update({
       where: { id: userId },
-      data: { preferences: preferences as any },
+      data: { preferences: preferences as object },
     });
 
     return updatedUser.preferences as UserPreferences;
