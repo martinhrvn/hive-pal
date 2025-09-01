@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, 
   Calendar, 
-  ClipboardPlus, 
-  Home, 
-  Droplets, 
-  Crown,
+  ClipboardPlus,
   X 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -24,41 +21,22 @@ interface FABAction {
 export const FloatingActionButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-  const params = useParams();
 
   const getContextualActions = (): FABAction[] => {
     const actions: FABAction[] = [];
-    const isHiveDetail = location.pathname.includes('/hives/') && params.hiveId;
     
-    // Hive-specific actions when on hive detail page
-    if (isHiveDetail) {
-      actions.push({
+    // Always show these three main actions
+    actions.push(
+      {
         id: 'add-inspection',
         label: 'Add Inspection',
         icon: <ClipboardPlus className="h-4 w-4" />,
         onClick: () => {
-          navigate(`/hives/${params.hiveId}/inspections/create`);
+          navigate('/inspections/create');
           setIsOpen(false);
         },
         color: 'bg-blue-600 hover:bg-blue-700',
-      });
-
-      actions.push({
-        id: 'add-action',
-        label: 'Add Action',
-        icon: <Plus className="h-4 w-4" />,
-        onClick: () => {
-          // For now, navigate to hive detail page where actions can be added
-          navigate(`/hives/${params.hiveId}`);
-          setIsOpen(false);
-        },
-        color: 'bg-green-600 hover:bg-green-700',
-      });
-    }
-
-    // Global actions available everywhere
-    actions.push(
+      },
       {
         id: 'schedule-inspection',
         label: 'Schedule Inspection',
@@ -70,34 +48,14 @@ export const FloatingActionButton = () => {
         color: 'bg-purple-600 hover:bg-purple-700',
       },
       {
-        id: 'add-hive',
-        label: 'Add Hive',
-        icon: <Home className="h-4 w-4" />,
+        id: 'add-actions',
+        label: 'Add Actions',
+        icon: <Plus className="h-4 w-4" />,
         onClick: () => {
-          navigate('/hives/create');
+          navigate('/actions/bulk');
           setIsOpen(false);
         },
-        color: 'bg-orange-600 hover:bg-orange-700',
-      },
-      {
-        id: 'add-harvest',
-        label: 'Add Harvest',
-        icon: <Droplets className="h-4 w-4" />,
-        onClick: () => {
-          navigate('/harvests');
-          setIsOpen(false);
-        },
-        color: 'bg-amber-600 hover:bg-amber-700',
-      },
-      {
-        id: 'add-queen',
-        label: 'Add Queen',
-        icon: <Crown className="h-4 w-4" />,
-        onClick: () => {
-          navigate('/queens/create');
-          setIsOpen(false);
-        },
-        color: 'bg-pink-600 hover:bg-pink-700',
+        color: 'bg-green-600 hover:bg-green-700',
       }
     );
 
