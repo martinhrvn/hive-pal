@@ -4,7 +4,7 @@ import { ThemeProvider } from './theme-provider';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import axios from 'axios';
-import { getEnvVariable } from '@/api/client.ts';
+import { getEnvVariable } from '@/utils/get-env.ts';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
 
 const queryClient = new QueryClient();
