@@ -9,7 +9,7 @@ import { useApiary } from '@/hooks/use-apiary';
 export const HomePage = () => {
   const { data, isLoading, refetch } = useHives();
   const { activeApiaryId } = useApiary();
-  
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
