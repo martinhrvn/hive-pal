@@ -2,13 +2,16 @@ import './App.css';
 import { AppRouter } from '@/routes';
 import { Providers } from '@/context/providers.tsx';
 import { Toaster } from 'sonner';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 function App() {
   return (
-    <Providers>
-      <AppRouter />
-      <Toaster />
-    </Providers>
+    <ErrorBoundary>
+      <Providers>
+        <AppRouter />
+        <Toaster />
+      </Providers>
+    </ErrorBoundary>
   );
 }
 
