@@ -3,6 +3,7 @@ import { apiClient, getApiUrl } from '../client';
 import { CreateApiary, UpdateApiary, ApiaryResponse } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
 import type { UseQueryOptions } from '@tanstack/react-query';
+import { logApiError } from '../errorLogger';
 
 // Query keys
 const APIARIES_KEYS = {
@@ -20,8 +21,13 @@ export const useApiaries = (
   return useQuery<ApiaryResponse[]>({
     queryKey: APIARIES_KEYS.list(),
     queryFn: async () => {
-      const response = await apiClient.get<ApiaryResponse[]>('/api/apiaries');
-      return response.data;
+      try {
+        const response = await apiClient.get<ApiaryResponse[]>('/api/apiaries');
+        return response.data;
+      } catch (error) {
+        logApiError(error, '/api/apiaries', 'GET');
+        throw error;
+      }
     },
     ...queryOptions,
   });
@@ -40,10 +46,15 @@ export const useApiary = (id: string, options = {}) => {
   return useQuery<ApiaryResponse>({
     queryKey: APIARIES_KEYS.detail(id),
     queryFn: async () => {
-      const response = await apiClient.get<ApiaryResponse>(
-        `/api/apiaries/${id}`,
-      );
-      return response.data;
+      try {
+        const response = await apiClient.get<ApiaryResponse>(
+          `/api/apiaries/${id}`,
+        );
+        return response.data;
+      } catch (error) {
+        logApiError(error, `/api/apiaries/${id}`, 'GET');
+        throw error;
+      }
     },
     enabled: !!id,
     ...options,
@@ -68,6 +79,9 @@ export const useCreateApiary = (callbacks?: { onSuccess: () => void }) => {
       await queryClient.invalidateQueries({
         queryKey: APIARIES_KEYS.lists(),
       });
+    },
+    onError: (error) => {
+      logApiError(error, '/api/apiaries', 'POST');
     },
   });
 };
@@ -94,6 +108,9 @@ export const useUpdateApiary = () => {
         queryKey: APIARIES_KEYS.lists(),
       });
     },
+    onError: (error, variables) => {
+      logApiError(error, `/api/apiaries/${variables.id}`, 'PATCH');
+    },
   });
 };
 
@@ -113,7 +130,9 @@ export const useDeleteApiary = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to delete apiary with id ${id}`);
+        const error = new Error(`Failed to delete apiary with id ${id}`);
+        logApiError(error, `/api/apiaries/${id}`, 'DELETE');
+        throw error;
       }
 
       return id;

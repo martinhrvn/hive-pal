@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, getApiUrl } from '../client';
+import { logApiError } from '../errorLogger';
 import {
   CreateHive,
   CreateHiveResponse,
@@ -36,15 +37,20 @@ export const useHives = (
     ...queryOptions,
     queryKey: HIVES_KEYS.list(filters),
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (filters?.apiaryId) params.append('apiaryId', filters.apiaryId);
-      if (filters?.status) params.append('status', filters.status);
-      if (filters?.includeInactive !== undefined)
-        params.append('includeInactive', filters.includeInactive.toString());
+      try {
+        const params = new URLSearchParams();
+        if (filters?.apiaryId) params.append('apiaryId', filters.apiaryId);
+        if (filters?.status) params.append('status', filters.status);
+        if (filters?.includeInactive !== undefined)
+          params.append('includeInactive', filters.includeInactive.toString());
 
-      const url = `/api/hives${params.toString() ? `?${params.toString()}` : ''}`;
-      const response = await apiClient.get<HiveResponse[]>(url);
-      return response.data;
+        const url = `/api/hives${params.toString() ? `?${params.toString()}` : ''}`;
+        const response = await apiClient.get<HiveResponse[]>(url);
+        return response.data;
+      } catch (error) {
+        logApiError(error, '/api/hives', 'GET');
+        throw error;
+      }
     },
     ...queryOptions,
   });
@@ -87,10 +93,15 @@ export const useHive = (id: string, options = {}) => {
   return useQuery<HiveDetailResponse>({
     queryKey: HIVES_KEYS.detail(id),
     queryFn: async () => {
-      const response = await apiClient.get<HiveDetailResponse>(
-        `/api/hives/${id}`,
-      );
-      return response.data;
+      try {
+        const response = await apiClient.get<HiveDetailResponse>(
+          `/api/hives/${id}`,
+        );
+        return response.data;
+      } catch (error) {
+        logApiError(error, `/api/hives/${id}`, 'GET');
+        throw error;
+      }
     },
     enabled: !!id,
     ...options,
@@ -115,6 +126,9 @@ export const useCreateHive = (callbacks?: { onSuccess: () => void }) => {
       await queryClient.invalidateQueries({
         queryKey: HIVES_KEYS.lists(),
       });
+    },
+    onError: (error) => {
+      logApiError(error, '/api/hives', 'POST');
     },
   });
 };
@@ -142,6 +156,9 @@ export const useUpdateHive = () => {
         queryKey: HIVES_KEYS.lists(),
       });
     },
+    onError: (error, variables) => {
+      logApiError(error, `/api/hives/${variables.id}`, 'PATCH');
+    },
   });
 };
 
@@ -161,7 +178,9 @@ export const useDeleteHive = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to delete hive with id ${id}`);
+        const error = new Error(`Failed to delete hive with id ${id}`);
+        logApiError(error, `/api/hives/${id}`, 'DELETE');
+        throw error;
       }
 
       return id;
@@ -190,6 +209,9 @@ export const useUpdateHiveBoxes = () => {
       await queryClient.invalidateQueries({
         queryKey: HIVES_KEYS.detail(variables.id),
       });
+    },
+    onError: (error, variables) => {
+      logApiError(error, `/api/hives/${variables.id}/boxes`, 'PUT');
     },
   });
 };
