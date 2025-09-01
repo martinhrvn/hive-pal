@@ -1,35 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { toast } from 'sonner';
-
-interface FeedbackData {
-  email?: string;
-  type: 'BUG' | 'SUGGESTION' | 'OTHER';
-  subject: string;
-  message: string;
-}
-
-interface Feedback {
-  id: string;
-  userId?: string;
-  email?: string;
-  type: string;
-  subject: string;
-  message: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
+import { CreateFeedbackDto, Feedback } from 'shared-schemas';
 
 // Submit new feedback
 export const useSubmitFeedback = () => {
   return useMutation({
-    mutationFn: async (data: FeedbackData) => {
+    mutationFn: async (data: CreateFeedbackDto) => {
       const response = await apiClient.post('/api/feedback', data);
       return response.data;
     },

@@ -39,23 +39,7 @@ import {
 import { format } from 'date-fns';
 import { Eye, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-
-interface Feedback {
-  id: string;
-  userId?: string;
-  email?: string;
-  type: string;
-  subject: string;
-  message: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
+import { Feedback } from 'shared-schemas';
 
 interface FeedbackResponse {
   feedbacks: Feedback[];

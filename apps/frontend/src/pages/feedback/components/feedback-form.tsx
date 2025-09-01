@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import {
   Form,
   FormControl,
@@ -24,15 +23,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { Loader2, CheckCircle } from 'lucide-react';
+import { createFeedbackSchema, CreateFeedbackDto, FeedbackType } from 'shared-schemas';
 
-const feedbackSchema = z.object({
-  email: z.string().email().optional().or(z.literal('')),
-  type: z.enum(['BUG', 'SUGGESTION', 'OTHER']),
-  subject: z.string().min(3, 'Subject must be at least 3 characters'),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
-});
-
-export type FeedbackFormData = z.infer<typeof feedbackSchema>;
+export type FeedbackFormData = CreateFeedbackDto;
 
 interface FeedbackFormProps {
   onSubmit: (data: FeedbackFormData) => Promise<void>;
@@ -44,10 +37,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, isLoading 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm<FeedbackFormData>({
-    resolver: zodResolver(feedbackSchema),
+    resolver: zodResolver(createFeedbackSchema),
     defaultValues: {
       email: '',
-      type: 'SUGGESTION',
+      type: FeedbackType.SUGGESTION,
       subject: '',
       message: '',
     },
@@ -108,9 +101,9 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, isLoading 
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="BUG">{t('feedback.typeBug')}</SelectItem>
-                      <SelectItem value="SUGGESTION">{t('feedback.typeSuggestion')}</SelectItem>
-                      <SelectItem value="OTHER">{t('feedback.typeOther')}</SelectItem>
+                      <SelectItem value={FeedbackType.BUG}>{t('feedback.typeBug')}</SelectItem>
+                      <SelectItem value={FeedbackType.SUGGESTION}>{t('feedback.typeSuggestion')}</SelectItem>
+                      <SelectItem value={FeedbackType.OTHER}>{t('feedback.typeOther')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

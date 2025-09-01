@@ -11,3 +11,4 @@ export * from './harvests';
 export * from './alerts';
 export * from './equipment';
 export * from './users';
+export * from './feedback';

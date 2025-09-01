@@ -16,10 +16,25 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { FeedbackService } from './feedback.service';
-import { CreateFeedbackDto, UpdateFeedbackStatusDto } from './dto';
-import { JwtAuthGuard, RolesGuard, Roles, Role } from '../auth/guards/jwt-auth.guard';
+import {
+  CreateFeedbackDto,
+  feedbackFiltersSchema,
+  UpdateFeedbackStatusDto,
+} from 'shared-schemas';
+import {
+  JwtAuthGuard,
+  RolesGuard,
+  Roles,
+  Role,
+} from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
-import { FeedbackType, FeedbackStatus } from '@prisma/client';
+import {
+  createFeedbackSchema,
+  updateFeedbackStatusSchema,
+  FeedbackFilters,
+} from 'shared-schemas';
+import { ZodValidation } from '../common';
+import { FeedbackStatus, FeedbackType } from '@prisma/client';
 
 @ApiTags('feedback')
 @Controller('feedback')
@@ -32,8 +47,10 @@ export class FeedbackController {
     status: 201,
     description: 'Feedback submitted successfully',
   })
+  @ZodValidation(createFeedbackSchema)
   async createFeedback(
-    @Body() createFeedbackDto: CreateFeedbackDto,
+    @Body()
+    createFeedbackDto: CreateFeedbackDto,
     @Req() req: RequestWithUser,
   ) {
     // Check if user is authenticated (optional)
@@ -49,17 +66,13 @@ export class FeedbackController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all feedback (admin only)' })
-  async getAllFeedback(
-    @Query('type') type?: FeedbackType,
-    @Query('status') status?: FeedbackStatus,
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
-  ) {
+  @ZodValidation(feedbackFiltersSchema)
+  async getAllFeedback(@Query() query: FeedbackFilters) {
     return this.feedbackService.findAll({
-      type,
-      status,
-      limit: limit ? parseInt(limit, 10) : 50,
-      offset: offset ? parseInt(offset, 10) : 0,
+      type: query.type as FeedbackType,
+      status: query.status as FeedbackStatus,
+      limit: (query.limit ?? 50) as number,
+      offset: (query.offset ?? 0) as number,
     });
   }
 
@@ -76,9 +89,11 @@ export class FeedbackController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update feedback status (admin only)' })
+  @ZodValidation(updateFeedbackStatusSchema)
   async updateFeedbackStatus(
     @Param('id') id: string,
-    @Body() updateStatusDto: UpdateFeedbackStatusDto,
+    @Body()
+    updateStatusDto: UpdateFeedbackStatusDto,
   ) {
     return this.feedbackService.updateStatus(id, updateStatusDto.status);
   }
