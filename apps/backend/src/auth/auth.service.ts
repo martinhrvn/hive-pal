@@ -25,7 +25,10 @@ export class AuthService {
   async validateUser(
     email: string,
     password: string,
-  ): Promise<Omit<PrismaUser, 'password' | 'createdAt' | 'updatedAt'> | null> {
+  ): Promise<Omit<
+    PrismaUser,
+    'password' | 'createdAt' | 'updatedAt' | 'preferences'
+  > | null> {
     if (
       email === process.env.ADMIN_EMAIL &&
       (await bcrypt.compare(password, process.env.ADMIN_PASSWORD || ''))

@@ -32,8 +32,8 @@ export const UserSettingsPage = () => {
   });
 
   const handleSaveSettings = () => {
-    toast.success('Settings saved', {
-      description: 'Your preferences have been updated successfully.',
+    toast.success(t('messages.changesSaved'), {
+      description: t('settings.preferencesUpdated'),
     });
   };
 
@@ -45,8 +45,8 @@ export const UserSettingsPage = () => {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and application preferences</p>
+        <h1 className="text-3xl font-bold">{t('navigation.settings')}</h1>
+        <p className="text-muted-foreground">{t('settings.managePreferences')}</p>
       </div>
 
       <div className="space-y-6">
@@ -55,16 +55,16 @@ export const UserSettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
-              General Settings
+              {t('settings.generalSettings')}
             </CardTitle>
             <CardDescription>
-              Configure your language and regional preferences
+              {t('settings.configureLanguageRegional')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
+                <Label htmlFor="language">{t('actions.language')}</Label>
                 <Select value={settings.language} onValueChange={handleLanguageChange}>
                   <SelectTrigger id="language">
                     <SelectValue />
@@ -79,7 +79,7 @@ export const UserSettingsPage = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="dateFormat">Date Format</Label>
+                <Label htmlFor="dateFormat">{t('settings.dateFormat')}</Label>
                 <Select value={settings.dateFormat} onValueChange={(value) => setSettings({ ...settings, dateFormat: value })}>
                   <SelectTrigger id="dateFormat">
                     <SelectValue />
@@ -94,14 +94,14 @@ export const UserSettingsPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="units">Units of Measurement</Label>
+              <Label htmlFor="units">{t('settings.unitsOfMeasurement')}</Label>
               <Select value={settings.units} onValueChange={(value) => setSettings({ ...settings, units: value })}>
                 <SelectTrigger id="units">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="metric">Metric (kg, km, °C)</SelectItem>
-                  <SelectItem value="imperial">Imperial (lbs, miles, °F)</SelectItem>
+                  <SelectItem value="metric">{t('settings.metric')}</SelectItem>
+                  <SelectItem value="imperial">{t('settings.imperial')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -113,23 +113,23 @@ export const UserSettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Palette className="h-5 w-5" />
-              Display Preferences
+              {t('settings.displayPreferences')}
             </CardTitle>
             <CardDescription>
-              Customize the appearance of the application
+              {t('settings.customizeAppearance')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="theme">Theme</Label>
+              <Label htmlFor="theme">{t('settings.theme')}</Label>
               <Select value={settings.theme} onValueChange={(value) => setSettings({ ...settings, theme: value })}>
                 <SelectTrigger id="theme">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="light">{t('settings.light')}</SelectItem>
+                  <SelectItem value="dark">{t('settings.dark')}</SelectItem>
+                  <SelectItem value="system">{t('settings.system')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -141,17 +141,17 @@ export const UserSettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              Notification Preferences
+              {t('settings.notificationPreferences')}
             </CardTitle>
             <CardDescription>
-              Choose how you want to be notified about important events
+              {t('settings.chooseNotificationMethod')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email-notifications">Email Notifications</Label>
-                <p className="text-sm text-muted-foreground">Receive updates via email</p>
+                <Label htmlFor="email-notifications">{t('settings.emailNotifications')}</Label>
+                <p className="text-sm text-muted-foreground">{t('settings.receiveEmailUpdates')}</p>
               </div>
               <Switch
                 id="email-notifications"
@@ -164,8 +164,8 @@ export const UserSettingsPage = () => {
             
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="push-notifications">Push Notifications</Label>
-                <p className="text-sm text-muted-foreground">Receive browser push notifications</p>
+                <Label htmlFor="push-notifications">{t('settings.pushNotifications')}</Label>
+                <p className="text-sm text-muted-foreground">{t('settings.receiveBrowserNotifications')}</p>
               </div>
               <Switch
                 id="push-notifications"
@@ -178,8 +178,8 @@ export const UserSettingsPage = () => {
             
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="inspection-reminders">Inspection Reminders</Label>
-                <p className="text-sm text-muted-foreground">Get notified about upcoming inspections</p>
+                <Label htmlFor="inspection-reminders">{t('settings.inspectionReminders')}</Label>
+                <p className="text-sm text-muted-foreground">{t('settings.upcomingInspectionsNotify')}</p>
               </div>
               <Switch
                 id="inspection-reminders"
@@ -192,8 +192,8 @@ export const UserSettingsPage = () => {
             
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="harvest-reminders">Harvest Reminders</Label>
-                <p className="text-sm text-muted-foreground">Get notified about harvest schedules</p>
+                <Label htmlFor="harvest-reminders">{t('settings.harvestReminders')}</Label>
+                <p className="text-sm text-muted-foreground">{t('settings.harvestSchedulesNotify')}</p>
               </div>
               <Switch
                 id="harvest-reminders"
@@ -209,32 +209,32 @@ export const UserSettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5" />
-              Account Settings
+              {t('settings.accountSettings')}
             </CardTitle>
             <CardDescription>
-              Manage your account information
+              {t('settings.manageAccountInfo')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t('settings.name')}</Label>
                 <Input
                   id="name"
                   value={userInfo.name}
                   onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
-                  placeholder="Enter your name"
+                  placeholder={t('settings.enterName')}
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('settings.email')}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={userInfo.email}
                   onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
-                  placeholder="Enter your email"
+                  placeholder={t('settings.enterEmail')}
                 />
               </div>
             </div>
@@ -243,11 +243,11 @@ export const UserSettingsPage = () => {
             
             <div className="flex justify-between items-center">
               <div>
-                <p className="font-medium">Password</p>
-                <p className="text-sm text-muted-foreground">Change your account password</p>
+                <p className="font-medium">{t('settings.password')}</p>
+                <p className="text-sm text-muted-foreground">{t('settings.changePassword')}</p>
               </div>
               <Button variant="outline" onClick={() => navigate('/account/change-password')}>
-                Change Password
+                {t('settings.changePassword')}
               </Button>
             </div>
           </CardContent>
@@ -257,7 +257,7 @@ export const UserSettingsPage = () => {
         <div className="flex justify-end">
           <Button onClick={handleSaveSettings} size="lg" className="gap-2">
             <Save className="h-4 w-4" />
-            Save Settings
+            {t('settings.saveSettings')}
           </Button>
         </div>
       </div>
