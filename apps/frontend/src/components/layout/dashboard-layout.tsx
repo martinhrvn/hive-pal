@@ -6,6 +6,7 @@ import { Breadcrumbs } from '../breadcrumbs';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar.tsx';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
+import { FloatingActionButton } from '../common/floating-action-button';
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ const DashboardLayout = () => {
         <main className="flex-1 overflow-y-auto p-4">
           <Outlet />
         </main>
+        <FloatingActionButton />
       </SidebarInset>
     </>
   );
