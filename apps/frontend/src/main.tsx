@@ -8,7 +8,6 @@ import App from './App.tsx';
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.VITE_SENTRY_ENVIRONMENT || 'development',
-  allowUrls: [/hive-pal.coolify.hrvn.eu/, /hive-pal.hrvn.eu/, /localhost/],
 });
 
 createRoot(document.getElementById('root')!).render(
