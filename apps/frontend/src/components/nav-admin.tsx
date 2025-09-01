@@ -62,6 +62,32 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           </svg>
           {!collapsed && <span>{t('navigation.users')}</span>}
         </Link>
+        <Link
+          to="/admin/feedback"
+          className={cn(
+            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            {
+              'justify-center': collapsed,
+              'bg-accent': isActive('/admin/feedback'),
+            },
+          )}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn('h-4 w-4', {
+              'mr-2': !collapsed,
+            })}
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          {!collapsed && <span>{t('navigation.feedback')}</span>}
+        </Link>
       </div>
     </div>
   );

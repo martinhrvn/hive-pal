@@ -72,7 +72,7 @@ export const useAllFeedback = (filters?: {
       const response = await apiClient.get(`/api/feedback?${params.toString()}`);
       return response.data;
     },
-    enabled: false, // Only fetch when explicitly enabled (admin view)
+    enabled: !!filters, // Only fetch when filters are provided
   });
 };
 

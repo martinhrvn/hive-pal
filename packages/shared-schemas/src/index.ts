@@ -10,3 +10,4 @@ export * from './weather';
 export * from './harvests';
 export * from './alerts';
 export * from './equipment';
+export * from './users';
