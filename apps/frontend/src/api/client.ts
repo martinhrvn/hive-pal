@@ -1,20 +1,6 @@
 import axios from 'axios';
 import { APIARY_SELECTION, TOKEN_KEY } from '@/context/auth-context';
-
-export const getEnvVariable = (key: string): string => {
-  if (
-    window.ENV &&
-    window.ENV[key] !== undefined &&
-    !window.ENV[key].startsWith('$')
-  ) {
-    console.log('Getting env variable from window', key, window.ENV[key]);
-    return window.ENV[key];
-  }
-
-  const variable = import.meta.env[key] || '';
-  console.log('Getting env variable from meta', key, variable);
-  return variable;
-};
+import { getEnvVariable } from '@/utils/get-env';
 
 export const getApiUrl = (url: string) => {
   return `${getEnvVariable('VITE_API_URL') ?? 'http://localhost:3000'}${url}`;
