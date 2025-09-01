@@ -20,13 +20,27 @@ import {
 } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
-import { ResetPasswordDto, ChangePasswordDto, UserResponseDto, UserPreferencesDto, UpdateUserInfoDto } from './dto';
 import {
+  ResetPassword,
+  ChangePassword, 
+  UserResponse,
+  UserPreferences,
+  UpdateUserInfo,
+  ResetPasswordDto,
+  ChangePasswordDto,
+  UserResponseDto,
+  UserPreferencesDto,
+  UpdateUserInfoDto,
   EquipmentItemWithCalculations,
   EquipmentMultiplier,
   EquipmentPlan,
   CreateEquipmentItem,
   UpdateEquipmentItem,
+  resetPasswordSchema,
+  changePasswordSchema,
+  userResponseSchema,
+  userPreferencesSchema,
+  updateUserInfoSchema,
 } from 'shared-schemas';
 import {
   ApiTags,
@@ -37,6 +51,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
 import { CustomLoggerService } from '../logger/logger.service';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @ApiTags('users')
 @Controller('users')
@@ -60,7 +75,7 @@ export class UsersController {
     type: [UserResponseDto],
   })
   @SerializeOptions({ type: UserResponseDto })
-  async findAll(): Promise<UserResponseDto[]> {
+  async findAll(): Promise<UserResponse[]> {
     this.logger.log('Admin requesting list of all users');
     return this.usersService.findAll();
   }
@@ -78,9 +93,9 @@ export class UsersController {
   @SerializeOptions({ type: UserResponseDto })
   async resetPassword(
     @Param('id') id: string,
-    @Body() resetPasswordDto: ResetPasswordDto,
+    @Body(new ZodValidationPipe(resetPasswordSchema)) resetPasswordDto: ResetPassword,
     @Req() req: RequestWithUser,
-  ): Promise<UserResponseDto> {
+  ): Promise<UserResponse> {
     this.logger.log(
       `Admin user ${req.user.id} resetting password for user ${id}`,
     );
@@ -99,8 +114,8 @@ export class UsersController {
   @SerializeOptions({ type: UserResponseDto })
   async changePassword(
     @Req() req: RequestWithUser,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ): Promise<UserResponseDto> {
+    @Body(new ZodValidationPipe(changePasswordSchema)) changePasswordDto: ChangePassword,
+  ): Promise<UserResponse> {
     this.logger.log(`User ${req.user.id} changing their password`);
 
     const user = await this.usersService.findById(req.user.id);
@@ -273,7 +288,7 @@ export class UsersController {
   })
   async getUserPreferences(
     @Req() req: RequestWithUser,
-  ): Promise<UserPreferencesDto | null> {
+  ): Promise<UserPreferences | null> {
     this.logger.log(`User ${req.user.id} requesting preferences`);
     return this.usersService.getUserPreferences(req.user.id);
   }
@@ -289,8 +304,8 @@ export class UsersController {
   })
   async updateUserPreferences(
     @Req() req: RequestWithUser,
-    @Body() preferences: UserPreferencesDto,
-  ): Promise<UserPreferencesDto> {
+    @Body(new ZodValidationPipe(userPreferencesSchema)) preferences: UserPreferences,
+  ): Promise<UserPreferences> {
     this.logger.log(`User ${req.user.id} updating preferences`);
     return this.usersService.updateUserPreferences(req.user.id, preferences);
   }
@@ -305,7 +320,7 @@ export class UsersController {
     type: UserResponseDto,
   })
   @SerializeOptions({ type: UserResponseDto })
-  async getUserProfile(@Req() req: RequestWithUser): Promise<UserResponseDto> {
+  async getUserProfile(@Req() req: RequestWithUser): Promise<UserResponse> {
     this.logger.log(`User ${req.user.id} requesting profile`);
     const user = await this.usersService.findById(req.user.id);
     if (!user) {
@@ -327,8 +342,8 @@ export class UsersController {
   @SerializeOptions({ type: UserResponseDto })
   async updateUserProfile(
     @Req() req: RequestWithUser,
-    @Body() updateData: UpdateUserInfoDto,
-  ): Promise<UserResponseDto> {
+    @Body(new ZodValidationPipe(updateUserInfoSchema)) updateData: UpdateUserInfo,
+  ): Promise<UserResponse> {
     this.logger.log(`User ${req.user.id} updating profile`);
     return this.usersService.updateUserInfo(req.user.id, updateData);
   }

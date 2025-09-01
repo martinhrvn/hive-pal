@@ -3,17 +3,17 @@ import { User, BoxType, HiveStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  EquipmentSettingsDto,
-  InventoryDto,
-  EquipmentPlanDto,
+  EquipmentSettings,
+  Inventory,
+  UserEquipmentPlan,
   EquipmentCounts,
   ConsumableItem,
   CustomEquipmentItem,
-  CustomEquipmentTypeDto,
-  CreateCustomEquipmentTypeDto,
-  UserPreferencesDto,
-  UpdateUserInfoDto,
-} from './dto';
+  CustomEquipmentType,
+  CreateCustomEquipmentType,
+  UserPreferences,
+  UpdateUserInfo,
+} from 'shared-schemas';
 
 type PartialUser = Omit<User, 'password'>;
 
@@ -98,7 +98,7 @@ export class UsersService {
     return userData;
   }
 
-  async getUserPreferences(userId: string): Promise<UserPreferencesDto | null> {
+  async getUserPreferences(userId: string): Promise<UserPreferences | null> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
       select: { preferences: true },
@@ -108,13 +108,13 @@ export class UsersService {
       return null;
     }
 
-    return user.preferences as UserPreferencesDto;
+    return user.preferences as UserPreferences;
   }
 
   async updateUserPreferences(
     userId: string,
-    preferences: UserPreferencesDto,
-  ): Promise<UserPreferencesDto> {
+    preferences: UserPreferences,
+  ): Promise<UserPreferences> {
     const user = await this.findById(userId);
 
     if (!user) {
@@ -126,12 +126,12 @@ export class UsersService {
       data: { preferences: preferences as any },
     });
 
-    return updatedUser.preferences as UserPreferencesDto;
+    return updatedUser.preferences as UserPreferences;
   }
 
   async updateUserInfo(
     userId: string,
-    updateData: UpdateUserInfoDto,
+    updateData: UpdateUserInfo,
   ): Promise<PartialUser> {
     const user = await this.findById(userId);
 
