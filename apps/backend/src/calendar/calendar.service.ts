@@ -7,6 +7,7 @@ import {
   CalendarFilter,
   CalendarEvent,
   CalendarResponse,
+  ObservationSchemaType,
 } from 'shared-schemas';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { ActionsService } from '../actions/actions.service';
@@ -190,7 +191,7 @@ export class CalendarService {
       numericValue: number | null;
       booleanValue: boolean | null;
     }[],
-  ) {
+  ): ObservationSchemaType {
     const observationMap = observations.reduce(
       (acc, obs) => {
         acc[obs.type] = {
@@ -206,17 +207,15 @@ export class CalendarService {
     );
 
     return {
-      strength: observationMap.strength.numericValue ?? null,
-      uncappedBrood: observationMap.uncapped_brood.numericValue ?? null,
-      cappedBrood: observationMap.capped_brood.numericValue ?? null,
-      honeyStores: observationMap.honey_stores.numericValue ?? null,
-      pollenStores: observationMap.pollen_stores.numericValue ?? null,
-      queenCells: observationMap.queen_cells.numericValue ?? null,
-      swarmCells: observationMap.swarm_cells.booleanValue ?? null,
-      supersedureCells: observationMap.supersedure_cells.booleanValue ?? null,
-      queenSeen: observationMap.queen_seen.booleanValue ?? null,
-      eggs: observationMap.eggs.numericValue ?? null,
-      larvae: observationMap.larvae.numericValue ?? null,
+      strength: observationMap.strength?.numericValue ?? null,
+      uncappedBrood: observationMap.uncapped_brood?.numericValue ?? null,
+      cappedBrood: observationMap.capped_brood?.numericValue ?? null,
+      honeyStores: observationMap.honey_stores?.numericValue ?? null,
+      pollenStores: observationMap.pollen_stores?.numericValue ?? null,
+      queenCells: observationMap.queen_cells?.numericValue ?? null,
+      swarmCells: observationMap.swarm_cells?.booleanValue ?? null,
+      supersedureCells: observationMap.supersedure_cells?.booleanValue ?? null,
+      queenSeen: observationMap.queen_seen?.booleanValue ?? null,
     };
   }
 }
