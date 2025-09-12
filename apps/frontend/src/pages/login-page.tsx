@@ -38,19 +38,27 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-center text-2xl font-semibold  mb-2">
-          Beekeeping Manager
-        </h1>
-        <h2 className="text-center text-lg mb-8">{t('login.title')}</h2>
-      </div>
+    <div className="min-h-screen w-full flex flex-col justify-center relative overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero2.jpg')]"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-900/80 via-black/70 to-amber-900/80"></div>
+      
+      {/* Content */}
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md px-4">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <div className="text-5xl">🐝</div>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Hive Pal
+          </h1>
+          <h2 className="text-lg text-amber-200">{t('login.title')}</h2>
+        </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="backdrop-blur-md bg-white/10 py-8 px-4 shadow-2xl rounded-xl sm:px-10 border border-white/20">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="email">{t('login.email')}</Label>
+              <Label htmlFor="email" className="text-white/90">{t('login.email')}</Label>
               <div className="mt-1">
                 <Input
                   id="email"
@@ -60,16 +68,17 @@ const LoginPage = () => {
                   value={username}
                   onChange={e => setUsername(e.target.value)}
                   placeholder={t('login.email')}
+                  className="bg-white/90 border-white/30 placeholder:text-gray-500"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">{t('login.password')}</Label>
+                <Label htmlFor="password" className="text-white/90">{t('login.password')}</Label>
                 <Link 
                   to="/forgot-password" 
-                  className="text-sm text-blue-600 hover:text-blue-500"
+                  className="text-sm text-amber-300 hover:text-amber-200"
                 >
                   {t('login.forgotPassword')}
                 </Link>
@@ -82,27 +91,28 @@ const LoginPage = () => {
                   required
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  className="bg-white/90 border-white/30 placeholder:text-gray-500"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="text-red-500 text-sm">
+              <div className="text-red-300 text-sm bg-red-900/30 rounded p-2">
                 {error}
               </div>
             )}
 
             <div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg">
                 {t('login.submit')}
               </Button>
             </div>
           </form>
 
           <div className="mt-6 text-center">
-            <p>
+            <p className="text-white/80">
               {t('login.noAccount')}{' '}
-              <Link to="/register" className="text-blue-600 hover:underline">
+              <Link to="/register" className="text-amber-300 hover:text-amber-200 underline">
                 {t('login.signUp')}
               </Link>
             </p>
