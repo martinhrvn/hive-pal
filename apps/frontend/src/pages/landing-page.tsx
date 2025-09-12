@@ -27,36 +27,38 @@ export function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center">
+      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero3.jpg')]"></div>
-        <div className="absolute inset-0 bg-black opacity-25"></div>3
-        <div className="relative z-10 text-center px-4">
-          <h2 className="text-4xl sm:text-6xl font-bold mb-6 text-white">
-            Your Digital
-            <span className="text-amber-400"> Beekeeping </span>
-            Companion
-          </h2>
-          <p className="text-xl mb-8 max-w-3xl mx-auto text-white shadow-lg">
-            Manage your apiaries, track hive health, schedule inspections, and
-            monitor harvests all in one comprehensive beekeeping management
-            platform.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              asChild
-              className="bg-amber-500 hover:bg-amber-600 text-white"
-            >
-              <Link to="/register">Start Managing Your Hives</Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              asChild
-              className="border-white text-amber-800 hover:bg-white hover:text-black"
-            >
-              <Link to="/login">Sign In to Your Account</Link>
-            </Button>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/50 to-black/20"></div>
+        <div className="relative z-10 text-center px-4 py-8 max-w-5xl mx-auto">
+          <div className="backdrop-blur-sm bg-black/20 rounded-2xl p-8 shadow-2xl">
+            <h2 className="text-4xl sm:text-6xl font-bold mb-6 text-white drop-shadow-lg">
+              Your Digital
+              <span className="text-amber-400"> Beekeeping </span>
+              Companion
+            </h2>
+            <p className="text-xl mb-8 max-w-3xl mx-auto text-white/95 drop-shadow-md">
+              Manage your apiaries, track hive health, schedule inspections, and
+              monitor harvests all in one comprehensive beekeeping management
+              platform.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                asChild
+                className="bg-amber-500 hover:bg-amber-600 text-white shadow-lg"
+              >
+                <Link to="/register">Start Managing Your Hives</Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="border-white bg-white/10 text-white hover:bg-white hover:text-black backdrop-blur-sm"
+              >
+                <Link to="/login">Sign In to Your Account</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
