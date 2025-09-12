@@ -29,7 +29,7 @@ export function LandingPage() {
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero3.jpg')]"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/50 to-black/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/20"></div>
         <div className="relative z-10 text-center px-4 py-8 max-w-5xl mx-auto">
           <div className="backdrop-blur-sm bg-black/20 rounded-2xl p-8 shadow-2xl">
             <h2 className="text-4xl sm:text-6xl font-bold mb-6 text-white drop-shadow-lg">
