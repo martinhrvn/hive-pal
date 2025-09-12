@@ -31,18 +31,12 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero3.jpg')]"></div>
         <div className="absolute inset-0 bg-black opacity-25"></div>3
         <div className="relative z-10 text-center px-4">
-          <h2
-            className="text-4xl sm:text-6xl font-bold mb-6 text-white"
-            style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
-          >
+          <h2 className="text-4xl sm:text-6xl font-bold mb-6 text-white">
             Your Digital
             <span className="text-amber-400"> Beekeeping </span>
             Companion
           </h2>
-          <p
-            className="text-xl mb-8 max-w-3xl mx-auto text-white shadow-xl"
-            style={{ textShadow: '1px 1px 3px rgba(0, 0, 0, 0.5)' }}
-          >
+          <p className="text-xl mb-8 max-w-3xl mx-auto text-white shadow-lg">
             Manage your apiaries, track hive health, schedule inspections, and
             monitor harvests all in one comprehensive beekeeping management
             platform.
@@ -51,7 +45,7 @@ export function LandingPage() {
             <Button
               size="lg"
               asChild
-              className="bg-amber-500 hover:bg-amber-600"
+              className="bg-amber-500 hover:bg-amber-600 text-white"
             >
               <Link to="/register">Start Managing Your Hives</Link>
             </Button>
