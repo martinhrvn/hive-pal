@@ -4,6 +4,11 @@
   "tasks": {
     "db:up:test": {
     },
+    "build": {
+      "dependsOn": ["^build", "prisma:generate"],
+      "outputs": ["dist/**"],
+      "cache": true
+    },
     "prisma:generate": {
       "inputs": ["prisma/schema.prisma"],
       "outputs": ["node_modules/@prisma/client"],
