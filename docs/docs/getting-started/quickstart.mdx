@@ -1,0 +1,218 @@
+---
+sidebar_position: 1
+title: Quick Start Wizard
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Quick Start Wizard
+
+Welcome to Hive-Pal! This interactive guide will help you get up and running in minutes. Follow these steps to set up your beekeeping management system.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+- Docker and Docker Compose installed (for Docker setup)
+- Node.js 18+ and PostgreSQL (for manual setup)
+- A modern web browser
+
+## Step 1: Choose Your Installation Method
+
+<Tabs>
+  <TabItem value="docker" label="Docker (Recommended)" default>
+
+### Docker Installation
+
+The fastest way to get started with Hive-Pal.
+
+```bash
+# Clone the repository
+git clone https://github.com/martinhrvn/hive-pal.git
+cd hive-pal
+
+# Copy environment files
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
+
+# Start the application
+docker-compose up -d
+```
+
+:::tip
+Docker Compose will automatically:
+- Set up PostgreSQL database
+- Run database migrations
+- Start the backend API
+- Start the frontend application
+:::
+
+  </TabItem>
+  <TabItem value="manual" label="Manual Installation">
+
+### Manual Installation
+
+For advanced users who want more control over the setup.
+
+```bash
+# Clone the repository
+git clone https://github.com/martinhrvn/hive-pal.git
+cd hive-pal
+
+# Install dependencies
+pnpm install
+
+# Set up environment files
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
+
+# Configure your database in apps/backend/.env
+# DATABASE_URL="postgresql://user:password@localhost:5432/hivepal"
+
+# Run database migrations
+cd apps/backend
+pnpm prisma migrate dev
+
+# Start the application
+cd ../..
+pnpm dev
+```
+
+  </TabItem>
+</Tabs>
+
+## Step 2: Access the Application
+
+Once the installation is complete:
+
+1. Open your browser and navigate to `http://localhost:5173`
+2. You should see the Hive-Pal landing page
+
+:::note
+- Frontend runs on port **5173**
+- Backend API runs on port **3000**
+- API documentation available at `http://localhost:3000/api-docs`
+:::
+
+## Step 3: Create Your Account
+
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <div style={{padding: '1rem', background: '#f0f0f0', borderRadius: '8px'}}>
+    [Video: Account Registration Process - Coming Soon]
+  </div>
+</div>
+
+1. Click **"Get Started"** on the landing page
+2. Choose **"Sign Up"** to create a new account
+3. Enter your details:
+   - Email address
+   - Password (minimum 8 characters)
+   - Confirm password
+4. Click **"Create Account"**
+
+## Step 4: Initial Setup Wizard
+
+After logging in for the first time, you'll be guided through the initial setup:
+
+### 4.1 Create Your First Apiary
+
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <div style={{padding: '1rem', background: '#f0f0f0', borderRadius: '8px'}}>
+    [Video: Creating Your First Apiary - Coming Soon]
+  </div>
+</div>
+
+1. Click the **"+"** button (FAB) in the bottom right
+2. Select **"New Apiary"**
+3. Fill in the apiary details:
+   - **Name**: Give your apiary a memorable name
+   - **Location**: Enter the address or coordinates
+   - **Notes**: Add any relevant information about the location
+4. Click **"Save"**
+
+### 4.2 Add Your First Hive
+
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <div style={{padding: '1rem', background: '#f0f0f0', borderRadius: '8px'}}>
+    [Video: Adding Your First Hive - Coming Soon]
+  </div>
+</div>
+
+1. Navigate to your apiary
+2. Click the **"+"** button
+3. Select **"New Hive"**
+4. Enter hive information:
+   - **Name/Number**: Unique identifier for the hive
+   - **Type**: Select hive type (Langstroth, Top Bar, etc.)
+   - **Number of boxes**: Current configuration
+   - **Status**: Active, Inactive, etc.
+5. Click **"Save"**
+
+### 4.3 Record Your First Inspection
+
+1. Select a hive from your apiary
+2. Click **"New Inspection"**
+3. Fill in the inspection details:
+   - Date and time
+   - Weather conditions
+   - Colony strength
+   - Queen status
+   - Observations
+4. Click **"Save Inspection"**
+
+## Step 5: Explore Key Features
+
+### Quick Actions Menu (FAB)
+
+The floating action button (FAB) in the bottom right provides quick access to:
+- Create new apiaries
+- Add hives
+- Record inspections
+- Schedule tasks
+- Add harvest records
+
+### Dashboard Overview
+
+Your dashboard displays:
+- Recent inspections
+- Upcoming scheduled tasks
+- Weather forecast for your apiaries
+- Quick statistics
+
+### Mobile Usage
+
+Hive-Pal is fully responsive and works great on mobile devices:
+- Record inspections in the field
+- Quick access to hive history
+- Offline capability (data syncs when reconnected)
+
+## What's Next?
+
+Now that you're set up, explore these features:
+
+- [**Apiary Management**](../user-guide/apiaries) - Organize multiple locations
+- [**Hive Management**](../user-guide/hives) - Track individual colonies
+- [**Inspection Records**](../user-guide/inspections) - Document colony health
+- [**Queen Management**](../user-guide/queens) - Track queen lineage
+- [**Calendar View**](../user-guide/calendar) - Schedule and plan activities
+- [**Weather Integration**](../user-guide/weather) - Monitor conditions
+
+## Need Help?
+
+- Check our [Troubleshooting Guide](../troubleshooting)
+- Visit the [GitHub repository](https://github.com/martinhrvn/hive-pal) for updates
+- Report issues or request features through [GitHub Issues](https://github.com/martinhrvn/hive-pal/issues)
+
+## Video Tutorial
+
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <div style={{padding: '2rem', background: '#f0f0f0', borderRadius: '8px'}}>
+    [Complete Video Walkthrough - Coming Soon]
+  </div>
+</div>
+
+---
+
+:::success Congratulations!
+You've successfully set up Hive-Pal and are ready to manage your apiaries digitally. Happy beekeeping! 🐝
+:::

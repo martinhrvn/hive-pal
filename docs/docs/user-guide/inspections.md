@@ -1,66 +1,102 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
+title: Inspections
 ---
 
 # Inspection Management
 
-Regular hive inspections are essential for successful beekeeping. Hive-Pal makes it easy to record detailed observations during each inspection.
+Record and track hive inspections to monitor colony health and development.
 
-## Creating an Inspection
+## Video Tutorial
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <div style={{padding: '1rem', background: '#f0f0f0', borderRadius: '8px'}}>
+    [Video: Recording Inspections - Coming Soon]
+  </div>
+</div>
 
-To record a new inspection:
+## Adding an Inspection
 
-1. Navigate to a hive's detail page
-2. Click the "Add Inspection" button
-3. Fill in the inspection details:
-   - **Date**: When the inspection was performed
-   - **Weather conditions**: Temperature and general conditions
-   - **Observations**: What you observed (see below)
-   - **Notes**: Any additional comments or action items
+### Quick Entry
+- Use FAB button for fast access
+- Mobile-optimized forms
+- Voice-to-text support
 
-## Recording Observations
+### Detailed Inspection
+- Complete observation forms
+- Photo documentation
+- Weather conditions
+- Colony metrics
 
-Hive-Pal allows you to record various observations during an inspection:
+## Scheduling Inspections
 
-- **Queen Sighting**: Whether you saw the queen
-- **Eggs Present**: Indicates recent queen activity
-- **Larvae Present**: Health of the brood cycle
-- **Capped Brood**: Indicates ongoing reproduction
-- **Queen Cells**: Potential swarming or supersedure
-- **Disease Signs**: Any indications of disease
-- **Varroa Mites**: Presence and level of mites
-- **Honey Stores**: Amount of honey in the hive
-- **Temperament**: Behavior of the colony
-- **Population**: Size of the colony
+### Regular Schedule
+- Set inspection intervals
+- Seasonal adjustments
+- Automatic reminders
 
-Each observation can be rated to indicate the severity or quantity.
+### Calendar Integration
+- View upcoming inspections
+- Drag to reschedule
+- Batch scheduling
 
-## Inspection Timeline
+## Bulk Actions
 
-On the hive details page, you can view a chronological timeline of all inspections, making it easy to track changes over time.
+### Multiple Hive Inspections
+- Select multiple hives
+- Common observations
+- Individual notes
+- Time-saving workflow
 
-## Inspection Analysis
+### Templates
+- Create inspection templates
+- Reuse common patterns
+- Seasonal checklists
 
-Hive-Pal helps you analyze inspection data by:
+## Inspection Data
 
-- Showing trends over time for key metrics
-- Highlighting potential issues based on observation patterns
-- Providing a historical record of colony development
+### Key Observations
+- Queen status
+- Brood pattern
+- Colony strength
+- Disease/pest indicators
+- Temperament
+- Resources (honey, pollen)
 
-## Adding Inspection Notes
+### Photos & Notes
+- Attach multiple photos
+- Voice recordings
+- Detailed text notes
+- Drawing annotations
 
-For each inspection, you can add detailed notes about:
+## Analysis & Reports
 
-- Actions taken during the inspection
-- Treatments applied
-- Future actions needed
-- Changes to hive configuration
+### Trends
+- Colony development over time
+- Seasonal patterns
+- Performance metrics
+
+### Export Options
+- PDF inspection reports
+- CSV data export
+- Share with team
+
+## Mobile Features
+
+### Offline Mode
+- Work without connection
+- Auto-sync when online
+- Conflict resolution
+
+### Field Optimizations
+- Large buttons
+- Quick photo capture
+- Voice notes
+- GPS tagging
 
 ## Best Practices
 
-- **Regular schedule**: Establish a regular inspection schedule
-- **Consistency**: Record the same core observations for each inspection
-- **Detail level**: Be specific in your observations (e.g., "3 queen cells on frame 5")
-- **Weather impact**: Note weather conditions that might affect bee behavior
-- **Action items**: Use notes to record what needs to be done at the next inspection
-- **Photos**: Consider taking photos during inspections to document issues
+- Regular inspection schedule
+- Consistent data entry
+- Photo documentation
+- Immediate recording
+- Review trends regularly
