@@ -20,7 +20,7 @@ import {
 import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
 import {
-  ResetPassword,
+  AdminResetPassword,
   ChangePassword,
   UserResponse,
   UserPreferences,
@@ -30,7 +30,7 @@ import {
   EquipmentPlan,
   CreateEquipmentItem,
   UpdateEquipmentItem,
-  resetPasswordSchema,
+  adminResetPasswordSchema,
   changePasswordSchema,
   userPreferencesSchema,
   updateUserInfoSchema,
@@ -74,8 +74,8 @@ export class UsersController {
   @ApiOperation({ summary: "Reset a user's password (admin only)" })
   async resetPassword(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(resetPasswordSchema))
-    resetPasswordDto: ResetPassword,
+    @Body(new ZodValidationPipe(adminResetPasswordSchema))
+    resetPasswordDto: AdminResetPassword,
     @Req() req: RequestWithUser,
   ): Promise<UserResponse> {
     this.logger.log(

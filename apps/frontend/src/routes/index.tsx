@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from '@/pages/login-page.tsx';
 import RegisterPage from '@/pages/register-page.tsx';
+import ForgotPasswordPage from '@/pages/forgot-password-page.tsx';
+import ResetPasswordPage from '@/pages/reset-password-page.tsx';
 import { ProtectedRoute } from './protected-route.tsx';
 import { AdminProtectedRoute } from './admin-protected-route.tsx';
 import { NotFoundPage } from '@/pages/not-found-page.tsx';
@@ -174,6 +176,14 @@ const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterPage />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
   },
   {
     path: '/account/change-password',

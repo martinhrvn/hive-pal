@@ -21,6 +21,7 @@ model User {
   equipmentMultiplier    EquipmentMultiplier?
   preferences            Json?                  // JSON field for user preferences
   feedbacks              Feedback[]
+  passwordResetTokens    PasswordResetToken[]
 }
 
 enum Role {
@@ -491,4 +492,21 @@ enum FeedbackStatus {
   NEW
   REVIEWED
   RESOLVED
+}
+
+// Password reset tokens for secure password recovery
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique // Unique token for password reset
+  email     String   // Email address for the reset request
+  userId    String?  // Optional link to user (for registered users)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime // Token expiration time
+  used      Boolean  @default(false) // Whether the token has been used
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([email])
+  @@index([expiresAt])
+  @@index([email, used, expiresAt]) // Composite index for efficient token validation
 }

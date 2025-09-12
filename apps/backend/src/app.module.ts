@@ -23,6 +23,7 @@ import { HarvestsModule } from './harvests/harvests.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { MailModule } from './mail/mail.module';
 import { SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
@@ -45,6 +46,7 @@ import { SentryModule } from '@sentry/nestjs/setup';
     AlertsModule,
     CalendarModule,
     FeedbackModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [

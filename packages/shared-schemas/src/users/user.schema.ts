@@ -17,8 +17,8 @@ export const changePasswordSchema = z.object({
   newPassword: z.string().min(6, 'New password must be at least 6 characters'),
 });
 
-// Reset password schema
-export const resetPasswordSchema = z.object({
+// Admin reset password schema
+export const adminResetPasswordSchema = z.object({
   tempPassword: z.string().min(6, 'Temporary password must be at least 6 characters'),
 });
 
@@ -56,7 +56,7 @@ export declare class ChangePasswordDto {
   newPassword: string;
 }
 
-export declare class ResetPasswordDto {
+export declare class AdminResetPasswordDto {
   tempPassword: string;
 }
 
@@ -79,6 +79,6 @@ export declare class UpdateUserInfoDto {
 // Type exports
 export type UserResponse = z.infer<typeof userResponseSchema>;
 export type ChangePassword = z.infer<typeof changePasswordSchema>;
-export type ResetPassword = z.infer<typeof resetPasswordSchema>;
+export type AdminResetPassword = z.infer<typeof adminResetPasswordSchema>;
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 export type UpdateUserInfo = z.infer<typeof updateUserInfoSchema>;

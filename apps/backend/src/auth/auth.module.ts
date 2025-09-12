@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { jwtConstants } from './constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LoggerModule } from '../logger/logger.module';
       signOptions: { expiresIn: '7d' },
     }),
     LoggerModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, PrismaService],

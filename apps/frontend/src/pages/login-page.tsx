@@ -65,7 +65,15 @@ const LoginPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="password">{t('login.password')}</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">{t('login.password')}</Label>
+                <Link 
+                  to="/forgot-password" 
+                  className="text-sm text-blue-600 hover:text-blue-500"
+                >
+                  {t('login.forgotPassword')}
+                </Link>
+              </div>
               <div className="mt-1">
                 <Input
                   id="password"
