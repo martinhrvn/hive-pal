@@ -8,7 +8,6 @@ import { AdminProtectedRoute } from './admin-protected-route.tsx';
 import { NotFoundPage } from '@/pages/not-found-page.tsx';
 import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
-import { LandingPage } from '@/pages/landing-page.tsx';
 import { CreateHivePage, HiveListPage } from '@/pages/hive';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
 import { QRCodesPrintPage } from '@/pages/hive/qr-codes-print-page';
@@ -32,7 +31,10 @@ import { UserWizardPage } from '@/pages/onboarding';
 import { HarvestListPage } from '@/pages/harvest/harvest-list-page';
 import { HarvestDetailPage } from '@/pages/harvest/harvest-detail-page';
 import { ReleasesPage } from '@/pages/releases';
-import { EquipmentPlanningPage, EquipmentSettingsPage } from '@/pages/equipment';
+import {
+  EquipmentPlanningPage,
+  EquipmentSettingsPage,
+} from '@/pages/equipment';
 import { BulkActionsPage } from '@/pages/actions/bulk-actions-page';
 import { CalendarPage } from '@/pages/calendar';
 import { UserSettingsPage } from '@/pages/settings';

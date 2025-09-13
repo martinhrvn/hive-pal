@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { apiClient } from '@/api/client';
 import { ResetPassword } from 'shared-schemas';
+import { AxiosError } from 'axios';
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
-  
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -50,14 +51,16 @@ const ResetPasswordPage = () => {
       const data: ResetPassword = { token, password };
       await apiClient.post('/auth/reset-password', data);
       setIsSuccess(true);
-      
+
       // Redirect to login after 3 seconds
       setTimeout(() => {
         navigate('/login');
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Reset password error:', err);
-      setError(err?.response?.data?.message || t('resetPassword.error'));
+      if (err instanceof AxiosError) {
+        setError(err?.response?.data?.message || t('resetPassword.error'));
+      } else setError(t('resetPassword.error'));
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +73,9 @@ const ResetPasswordPage = () => {
           <h1 className="text-center text-2xl font-semibold mb-2">
             Beekeeping Manager
           </h1>
-          <h2 className="text-center text-lg mb-8">{t('resetPassword.success')}</h2>
+          <h2 className="text-center text-lg mb-8">
+            {t('resetPassword.success')}
+          </h2>
         </div>
 
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -111,7 +116,9 @@ const ResetPasswordPage = () => {
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="password">{t('resetPassword.newPasswordLabel')}</Label>
+              <Label htmlFor="password">
+                {t('resetPassword.newPasswordLabel')}
+              </Label>
               <div className="mt-1">
                 <Input
                   id="password"
@@ -120,7 +127,7 @@ const ResetPasswordPage = () => {
                   autoComplete="new-password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   placeholder={t('resetPassword.newPasswordPlaceholder')}
                   disabled={!token || isLoading}
                 />
@@ -128,7 +135,9 @@ const ResetPasswordPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="confirmPassword">{t('resetPassword.confirmPasswordLabel')}</Label>
+              <Label htmlFor="confirmPassword">
+                {t('resetPassword.confirmPasswordLabel')}
+              </Label>
               <div className="mt-1">
                 <Input
                   id="confirmPassword"
@@ -137,7 +146,7 @@ const ResetPasswordPage = () => {
                   autoComplete="new-password"
                   required
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={e => setConfirmPassword(e.target.value)}
                   placeholder={t('resetPassword.confirmPasswordPlaceholder')}
                   disabled={!token || isLoading}
                 />
@@ -154,7 +163,9 @@ const ResetPasswordPage = () => {
                 className="w-full"
                 disabled={!token || isLoading}
               >
-                {isLoading ? t('common.loading') : t('resetPassword.resetButton')}
+                {isLoading
+                  ? t('common.loading')
+                  : t('resetPassword.resetButton')}
               </Button>
             </div>
 
