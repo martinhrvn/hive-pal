@@ -5,83 +5,59 @@ title: FAB Quick Actions
 
 # Floating Action Button (FAB)
 
-Quick access to common actions from any screen.
+Quick access to common beekeeping actions from any screen.
 
-## Video Tutorial
-<div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <div style={{padding: '1rem', background: '#f0f0f0', borderRadius: '8px'}}>
-    [Video: Using the FAB - Coming Soon]
-  </div>
-</div>
+## Overview
 
-## FAB Location
+The Floating Action Button (FAB) appears in the bottom-right corner of your screen, providing instant access to frequently used actions without navigating through menus.
+
+## Available Actions
+
+The FAB provides three primary quick actions:
+
+### 1. Add Inspection
+- **Icon**: Clipboard with plus
+- **Color**: Blue
+- **Function**: Navigate directly to the inspection creation form
+- **Use when**: Recording a new hive inspection
+
+### 2. Schedule Inspection  
+- **Icon**: Calendar
+- **Color**: Purple
+- **Function**: Open the inspection scheduling interface
+- **Use when**: Planning future inspections
+
+### 3. Add Actions
+- **Icon**: Plus sign
+- **Color**: Green
+- **Function**: Access bulk actions page
+- **Use when**: Recording treatments, feeding, or other management actions across multiple hives
+
+## How to Use
 
 ### Desktop
-- Bottom right corner
-- Always visible
-- Hover for tooltip
+1. Look for the floating button in the bottom-right corner
+2. Click to expand the action menu
+3. Hover over actions to see labels
+4. Click your desired action
 
 ### Mobile
-- Bottom center
-- Thumb-friendly position
-- Swipe up for more options
+1. Find the FAB at the bottom-right of your screen
+2. Tap to expand available actions
+3. Actions appear with labels for easy selection
+4. Tap outside the menu to close
 
-## Quick Actions
+## Interface Behavior
 
-### Primary Actions
-- New Inspection
-- Add Hive
-- Create Task
-- Quick Note
-
-### Secondary Menu
-- New Apiary
-- Add Queen
-- Record Harvest
-- Schedule Event
-
-## Context Awareness
-
-### Smart Suggestions
-- Location-based actions
-- Time-sensitive tasks
-- Recent activities
-- Frequently used
-
-### Customization
-- Reorder actions
-- Add/remove items
-- Set default action
-- Color themes
-
-## Bulk Operations
-
-### Multi-Select Mode
-- Select multiple items
-- Bulk actions appear
-- Quick processing
-
-### Templates
-- Save action sets
-- Quick apply
-- Share with team
-
-## Mobile Optimizations
-
-### Gestures
-- Long press options
-- Swipe actions
-- Drag to reposition
-
-### Voice Commands
-- "Add inspection"
-- "Create new hive"
-- "Schedule task"
+- **Single tap/click**: Expands the menu showing all three actions
+- **Animation**: Actions slide up with a smooth animation
+- **Labels**: Action names appear next to icons on desktop
+- **Backdrop**: Mobile shows a semi-transparent backdrop when open
+- **Close**: Click/tap the X or outside the menu to close
 
 ## Best Practices
 
-- Customize for your workflow
-- Use for frequent tasks
-- Learn keyboard shortcuts
-- Keep actions organized
-- Review usage patterns
+- **Quick recording**: Use the FAB immediately after hive visits for quick inspection entry
+- **Bulk operations**: Use "Add Actions" when applying the same treatment to multiple hives
+- **Schedule ahead**: Use scheduling for planning your inspection rounds
+- **Mobile field use**: The FAB is optimized for one-handed operation in the field

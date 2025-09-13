@@ -1,4 +1,4 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
@@ -7,10 +7,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Getting Started',
-      items: [
-        'getting-started/quickstart',
-        'getting-started/first-steps',
-      ],
+      items: ['getting-started/quickstart'],
     },
     {
       type: 'category',
@@ -24,7 +21,6 @@ const sidebars: SidebarsConfig = {
         'user-guide/harvest',
         'user-guide/equipment',
         'user-guide/weather',
-        'user-guide/calendar',
         'user-guide/fab-actions',
         'user-guide/feedback',
       ],

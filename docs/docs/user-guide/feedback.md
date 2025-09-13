@@ -5,96 +5,39 @@ title: Sending Feedback
 
 # Sending Feedback
 
-Help improve Hive-Pal by sharing your feedback and suggestions.
+Share your feedback and help improve Hive-Pal.
 
-## Video Tutorial
-<div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <div style={{padding: '1rem', background: '#f0f0f0', borderRadius: '8px'}}>
-    [Video: How to Send Feedback - Coming Soon]
-  </div>
-</div>
+## How to Send Feedback
 
-## In-App Feedback
+Access the feedback feature through the main menu or settings to quickly submit suggestions, report issues, or share your experience.
 
-### Quick Feedback
-- Click feedback button
-- Rate your experience
-- Add optional comment
-- Submit instantly
+![Feedback Interface](/img/screenshots/feedback/submit_feedback.gif)
 
-### Detailed Reports
-- Describe issue/suggestion
-- Attach screenshots
-- Include system info
-- Priority level
+### Quick Steps
+1. Click the **Feedback** button in the app menu
+2. Select feedback type (bug report, feature request, or general feedback)
+3. Write your message with specific details
+4. Optionally attach screenshots for clarity
+5. Submit your feedback
 
 ## Feedback Types
 
-### Bug Reports
-- Describe the problem
-- Steps to reproduce
-- Expected behavior
-- Actual behavior
-- Screenshots/videos
+- **Bug Reports**: Describe issues with steps to reproduce
+- **Feature Requests**: Suggest new features or improvements
+- **General Feedback**: Share your experience or suggestions
 
-### Feature Requests
-- Describe the feature
-- Use case explanation
-- Priority for you
-- Potential alternatives
+## Tips for Good Feedback
 
-### General Feedback
-- User experience
-- Performance issues
-- Documentation gaps
-- Training needs
-
-## GitHub Integration
-
-### Issues
-- Create GitHub issue
-- Track progress
-- Community discussion
-- Vote on features
-
-### Discussions
-- Join conversations
-- Share best practices
-- Help other users
-- Suggest improvements
-
-## Contact Methods
-
-### Direct Support
-- Email: support@hive-pal.com
-- Response time: 24-48 hours
-- Priority support available
-
-### Community
-- Discord server
-- Facebook group
-- Reddit community
-- Local user groups
+- Be specific about what happened or what you'd like to see
+- Include relevant details like hive/apiary names if applicable
+- Attach screenshots when reporting visual issues
+- Mention the steps that led to an issue
 
 ## What Happens Next
 
-### Process
-1. Feedback received
-2. Team review
-3. Prioritization
-4. Development/fix
-5. Release notification
+Your feedback is reviewed by the development team and prioritized based on impact and feasibility. You'll receive updates through the app when your feedback is addressed in new releases.
 
-### Updates
-- Email notifications
-- In-app changelog
-- Release notes
-- Feature announcements
+## Related Features
 
-## Best Practices
-
-- Be specific and detailed
-- Include examples
-- Suggest solutions
-- Be constructive
-- Follow up if needed
+- [FAB Actions](./fab-actions) - Quick access to common tasks
+- [Overview](./overview) - Understanding the dashboard
