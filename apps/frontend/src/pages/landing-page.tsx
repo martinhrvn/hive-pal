@@ -19,6 +19,15 @@ export function LandingPage() {
               </span>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
+              <a
+                href="https://docs.hivepal.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 flex items-center gap-1 text-sm font-medium"
+              >
+                <BookOpen className="h-4 w-4" />
+                Documentation
+              </a>
               <Link
                 to="/releases"
                 className="text-gray-600 hover:text-gray-900 text-sm font-medium"
@@ -542,6 +551,14 @@ export function LandingPage() {
             </p>
 
             <div className="flex justify-center space-x-6 mb-8">
+              <a
+                href="https://docs.hivepal.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                Documentation
+              </a>
               <Link
                 to="/releases"
                 className="text-gray-400 hover:text-white text-sm"
@@ -556,14 +573,6 @@ export function LandingPage() {
               >
                 <Github className="h-4 w-4" />
                 GitHub
-              </a>
-              <a
-                href="https://github.com/martinhrvn/hive-pal/wiki"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white text-sm"
-              >
-                Documentation
               </a>
               <a
                 href="https://github.com/martinhrvn/hive-pal/issues"
