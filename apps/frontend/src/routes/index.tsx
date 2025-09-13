@@ -8,6 +8,7 @@ import { AdminProtectedRoute } from './admin-protected-route.tsx';
 import { NotFoundPage } from '@/pages/not-found-page.tsx';
 import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
+import { LandingPage } from '@/pages/landing-page.tsx';
 import { CreateHivePage, HiveListPage } from '@/pages/hive';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
 import { QRCodesPrintPage } from '@/pages/hive/qr-codes-print-page';
@@ -124,10 +125,6 @@ const router = createBrowserRouter([
         element: <HarvestDetailPage />,
       },
       {
-        path: '/releases',
-        element: <ReleasesPage />,
-      },
-      {
         path: '/equipment',
         element: <EquipmentPlanningPage />,
       },
@@ -196,6 +193,10 @@ const router = createBrowserRouter([
         <UserWizardPage />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/releases',
+    element: <ReleasesPage />,
   },
   {
     path: '*',

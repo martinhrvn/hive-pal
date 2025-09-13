@@ -26,8 +26,8 @@ A modern beekeeping management application designed for both mobile and desktop 
 
 ```bash
 # Pull the latest images
-docker pull ghcr.io/yourusername/hive-pal-frontend:latest
-docker pull ghcr.io/yourusername/hive-pal-backend:latest
+docker pull ghcr.io/martinhrvn/hive-pal-frontend:latest
+docker pull ghcr.io/martinhrvn/hive-pal-backend:latest
 
 # Start the application
 docker-compose up -d
@@ -50,7 +50,7 @@ See `.env.example` for additional configuration options.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/hive-pal.git
+git clone https://github.com/martinhrvn/hive-pal.git
 
 # Install dependencies
 cd hive-pal
