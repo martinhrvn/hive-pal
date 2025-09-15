@@ -7,5 +7,7 @@ export * from './inspection-header';
 export * from './notes-card';
 export * from './observations-card';
 export * from './actions-card';
+export * from './weather-card';
+export * from './inspection-status-card';
 export * from './scheduled-inspection-card';
 export * from './reschedule-dialog';

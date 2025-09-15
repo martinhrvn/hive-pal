@@ -7,8 +7,10 @@ import {
   ActionsCard,
   InspectionDetailSidebar,
   InspectionHeader,
+  InspectionStatusCard,
   NotesCard,
   ObservationsCard,
+  WeatherCard,
 } from './components';
 import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
@@ -98,18 +100,25 @@ export const InspectionDetailPage = () => {
             hiveName={hive.name}
           />
 
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* First column */}
-            <div className="space-y-6">
-              <ObservationsCard observations={inspection.observations} />
-              <NotesCard notes={inspection.notes} />
+          <div className="mt-6 space-y-6">
+            {/* Top row: Score, Weather, and Status cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hive && <StatisticCards score={hive.hiveScore} />}
+              <WeatherCard 
+                temperature={inspection.temperature} 
+                weatherConditions={inspection.weatherConditions} 
+              />
+              <InspectionStatusCard
+                inspectionId={inspection.id}
+                status={inspection.status}
+                inspectionDate={inspection.date}
+              />
             </div>
 
-            {/* Second column */}
-            <div className="space-y-6">
-              <ActionsCard actions={inspection.actions ?? []} />
-              {hive && <StatisticCards score={hive.hiveScore} />}
-            </div>
+            {/* Full-width sections */}
+            <ObservationsCard observations={inspection.observations} />
+            <ActionsCard actions={inspection.actions ?? []} />
+            <NotesCard notes={inspection.notes} />
           </div>
         </div>
       </MainContent>

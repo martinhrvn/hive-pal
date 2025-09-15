@@ -27,35 +27,31 @@ export const ObservationsCard = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <ObservationNumberRatingView
-              rating={observations.strength}
-              label={'Strength'}
-            />
-            <ObservationNumberRatingView
-              rating={observations.uncappedBrood}
-              label={'Uncapped Brood'}
-            />
-            <ObservationNumberRatingView
-              rating={observations.cappedBrood}
-              label={'Capped Brood'}
-            />
-          </div>
-          <div className="space-y-6">
-            <ObservationNumberRatingView
-              rating={observations.honeyStores}
-              label={'Honey Stores'}
-            />
-            <ObservationNumberRatingView
-              rating={observations.pollenStores}
-              label={'Pollen Stores'}
-            />
-            <ObservationNumberRatingView
-              rating={observations.queenCells}
-              label={'Queen cells'}
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ObservationNumberRatingView
+            rating={observations.strength}
+            label={'Strength'}
+          />
+          <ObservationNumberRatingView
+            rating={observations.uncappedBrood}
+            label={'Uncapped Brood'}
+          />
+          <ObservationNumberRatingView
+            rating={observations.cappedBrood}
+            label={'Capped Brood'}
+          />
+          <ObservationNumberRatingView
+            rating={observations.honeyStores}
+            label={'Honey Stores'}
+          />
+          <ObservationNumberRatingView
+            rating={observations.pollenStores}
+            label={'Pollen Stores'}
+          />
+          <ObservationNumberRatingView
+            rating={observations.queenCells}
+            label={'Queen cells'}
+          />
         </div>
       </CardContent>
     </Card>

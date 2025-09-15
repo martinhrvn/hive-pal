@@ -9,7 +9,7 @@ export const NotesCard = ({ notes }: NotesCardProps) => {
   if (!notes) return null;
 
   return (
-    <Card className="mt-6">
+    <Card>
       <CardHeader>
         <CardTitle>
           <div className="flex items-center gap-2">
