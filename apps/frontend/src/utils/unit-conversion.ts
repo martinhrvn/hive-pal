@@ -139,21 +139,42 @@ export function formatVolume(
   preference: UnitPreference = 'metric',
 ): VolumeUnit {
   if (preference === 'imperial') {
-    // Convert to gallons (US)
-    const gallons = volumeLiters * 0.264172;
-    if (gallons < 1) {
-      // Show in quarts for smaller volumes
+    // Convert to fluid ounces first for smaller volumes
+    const fluidOunces = volumeLiters * 33.814;
+    
+    if (fluidOunces < 32) {
+      // Show in fluid ounces for very small volumes
+      return {
+        value: Math.round(fluidOunces * 10) / 10,
+        unit: 'fl oz',
+        label: `${Math.round(fluidOunces * 10) / 10} fl oz`,
+      };
+    } else if (fluidOunces < 128) {
+      // Show in quarts for medium volumes (32-127 fl oz)
       const quarts = volumeLiters * 1.05669;
       return {
         value: Math.round(quarts * 100) / 100,
         unit: 'qt',
         label: `${Math.round(quarts * 100) / 100} qt`,
       };
+    } else {
+      // Show in gallons for larger volumes (≥128 fl oz)
+      const gallons = volumeLiters * 0.264172;
+      return {
+        value: Math.round(gallons * 100) / 100,
+        unit: 'gal',
+        label: `${Math.round(gallons * 100) / 100} gal`,
+      };
     }
+  }
+
+  // Metric: show in ml for small volumes, L for larger
+  if (volumeLiters < 1) {
+    const milliliters = volumeLiters * 1000;
     return {
-      value: Math.round(gallons * 100) / 100,
-      unit: 'gal',
-      label: `${Math.round(gallons * 100) / 100} gal`,
+      value: Math.round(milliliters),
+      unit: 'ml',
+      label: `${Math.round(milliliters)} ml`,
     };
   }
 
@@ -191,6 +212,26 @@ export function getTemperatureUnit(
  */
 export function getVolumeUnit(preference: UnitPreference = 'metric'): string {
   return preference === 'imperial' ? 'gal' : 'L';
+}
+
+/**
+ * Get the appropriate volume unit for a specific volume amount
+ * @param volumeLiters - Volume in liters
+ * @param preference - User's unit preference
+ * @returns Volume unit string
+ */
+export function getVolumeUnitForAmount(
+  volumeLiters: number,
+  preference: UnitPreference = 'metric',
+): string {
+  if (preference === 'imperial') {
+    const fluidOunces = volumeLiters * 33.814;
+    if (fluidOunces < 32) return 'fl oz';
+    if (fluidOunces < 128) return 'qt';
+    return 'gal';
+  }
+  
+  return volumeLiters < 1 ? 'ml' : 'L';
 }
 
 /**
@@ -242,7 +283,62 @@ export function parseVolume(
       return value / 0.264172; // Convert gallons to liters
     } else if (unit === 'qt') {
       return value / 1.05669; // Convert quarts to liters
+    } else if (unit === 'fl oz') {
+      return value / 33.814; // Convert fluid ounces to liters
     }
   }
+  if (unit === 'ml') {
+    return value / 1000; // Convert milliliters to liters
+  }
   return value; // Already in liters
+}
+
+/**
+ * Convert a volume value from one unit to another
+ * @param value - The volume value
+ * @param fromUnit - The current unit
+ * @param toUnit - The target unit
+ * @returns Converted volume value
+ */
+export function convertVolumeUnit(
+  value: number,
+  fromUnit: string,
+  toUnit: string,
+): number {
+  // First convert to liters as the base unit
+  let liters = value;
+  
+  switch (fromUnit.toLowerCase()) {
+    case 'ml':
+      liters = value / 1000;
+      break;
+    case 'l':
+      liters = value;
+      break;
+    case 'fl oz':
+      liters = value / 33.814;
+      break;
+    case 'qt':
+      liters = value / 1.05669;
+      break;
+    case 'gal':
+      liters = value / 0.264172;
+      break;
+  }
+  
+  // Then convert from liters to target unit
+  switch (toUnit.toLowerCase()) {
+    case 'ml':
+      return liters * 1000;
+    case 'l':
+      return liters;
+    case 'fl oz':
+      return liters * 33.814;
+    case 'qt':
+      return liters * 1.05669;
+    case 'gal':
+      return liters * 0.264172;
+    default:
+      return liters;
+  }
 }

@@ -6,11 +6,12 @@ import { AuthModule } from '../auth/auth.module';
 import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { LoggerModule } from '../logger/logger.module';
-import { ActionsService } from '../actions/actions.service';
+import { ActionsModule } from '../actions/actions.module';
+import { UsersModule } from '../users/users.module';
 import { InspectionStatusUpdaterService } from '../inspections/inspection-status-updater.service';
 
 @Module({
-  imports: [AuthModule, LoggerModule],
+  imports: [AuthModule, LoggerModule, ActionsModule, UsersModule],
   controllers: [HiveController],
   providers: [
     HiveService,
@@ -18,7 +19,6 @@ import { InspectionStatusUpdaterService } from '../inspections/inspection-status
     MetricsService,
     InspectionsService,
     InspectionStatusUpdaterService,
-    ActionsService,
   ],
 })
 export class HiveModule {}

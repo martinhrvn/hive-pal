@@ -5,17 +5,17 @@ import { InspectionStatusUpdaterService } from './inspection-status-updater.serv
 import { PrismaService } from '../prisma/prisma.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { LoggerModule } from '../logger/logger.module';
-import { ActionsService } from '../actions/actions.service';
+import { ActionsModule } from '../actions/actions.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [LoggerModule],
+  imports: [LoggerModule, ActionsModule, UsersModule],
   controllers: [InspectionsController],
   providers: [
     InspectionsService,
     InspectionStatusUpdaterService,
     PrismaService,
     MetricsService,
-    ActionsService,
   ],
 })
 export class InspectionsModule {}
