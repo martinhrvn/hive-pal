@@ -23,6 +23,7 @@ import {
   CollapsibleContent,
 } from '@/components/ui/collapsible';
 import { WeatherCondition } from 'shared-schemas';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 
 interface WeatherForecastProps {
   apiaryId: string | undefined;
@@ -83,6 +84,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
   showHourly = true,
 }) => {
   const { t } = useTranslation('common');
+  const { formatSpeed, formatTemperature } = useUnitFormat();
   const [showHourlyForecast, setShowHourlyForecast] = useState(false);
   const [showDailyForecast, setShowDailyForecast] = useState(false);
   const {
@@ -151,11 +153,11 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
               {getWeatherIcon(currentWeather.condition)}
               <div>
                 <div className="font-semibold text-lg">
-                  {Math.round(currentWeather.temperature)}°C
+                  {formatTemperature(currentWeather.temperature).label}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {t('weather.feelsLike', {
-                    temperature: Math.round(currentWeather.feelsLike),
+                    temperature: formatTemperature(currentWeather.feelsLike).value,
                   })}
                 </div>
               </div>
@@ -165,7 +167,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                 {t('weather.humidity')}: {currentWeather.humidity}%
               </div>
               <div>
-                {t('weather.wind')}: {Math.round(currentWeather.windSpeed)} km/h
+                {t('weather.wind')}: {formatSpeed(currentWeather.windSpeed).label}
               </div>
             </div>
           </div>
@@ -205,7 +207,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                       {getWeatherIcon(hour.condition, 'sm')}
                     </div>
                     <div className="text-xs font-medium text-center">
-                      {Math.round(hour.temperature)}°
+                      {formatTemperature(hour.temperature).value.toFixed(0)}°
                     </div>
                   </div>
                 ))}
@@ -246,10 +248,10 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                     </div>
                     <div className="text-center">
                       <div className="text-xs font-medium">
-                        {Math.round(day.temperatureMax)}°
+                        {formatTemperature(day.temperatureMax).value.toFixed(0)}°
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {Math.round(day.temperatureMin)}°
+                        {formatTemperature(day.temperatureMin).value.toFixed(0)}°
                       </div>
                     </div>
                   </div>

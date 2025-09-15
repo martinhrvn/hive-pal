@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
+import { useUnitFormat } from '@/hooks/use-unit-format';
+import { getVolumeUnitForAmount, parseVolume, parseWeight } from '@/utils/unit-conversion';
 
 export type FeedType = 'SYRUP' | 'HONEY' | 'CANDY';
 
@@ -42,6 +44,8 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
   action,
   onSave,
 }) => {
+  const { unitPreference, formatVolume, formatWeight, getVolumeUnitForAmount } = useUnitFormat();
+  
   const [quantity, setQuantity] = useState<number | null>(
     action?.quantity ?? 100,
   );
@@ -54,14 +58,18 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
 
   const showConcentration = feedType === 'SYRUP';
+  
+  // Get display units based on user preference and feed type
   const units = useMemo(() => {
-    switch (feedType) {
-      case 'SYRUP':
-        return 'ml';
-      default:
-        return 'g';
+    if (feedType === 'SYRUP') {
+      // For syrup (volume), use user's preferred volume unit
+      const volumeInLiters = (quantity || 100) / 1000; // Convert ml to liters for unit calculation
+      return getVolumeUnitForAmount(volumeInLiters, unitPreference);
+    } else {
+      // For honey/candy (weight), use user's preferred weight unit
+      return unitPreference === 'imperial' ? 'oz' : 'g';
     }
-  }, [feedType]);
+  }, [feedType, quantity, unitPreference, getVolumeUnitForAmount]);
   return (
     <div
       className={'grid grid-cols-1 md:grid-cols-2 gap-4 mt-5'}
@@ -151,12 +159,31 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
         {feedType && quantity && (
           <Button
             onClick={() => {
+              // Convert user input to metric units for API submission
+              let apiQuantity = quantity;
+              let apiUnit = units;
+              
+              if (feedType === 'SYRUP') {
+                // For syrup (volume), convert to ml (metric)
+                if (unitPreference === 'imperial') {
+                  const volumeInLiters = parseVolume(quantity, units, unitPreference);
+                  apiQuantity = volumeInLiters * 1000; // Convert to ml
+                  apiUnit = 'ml';
+                }
+              } else {
+                // For honey/candy (weight), convert to grams (metric)  
+                if (unitPreference === 'imperial' && units === 'oz') {
+                  apiQuantity = parseWeight(quantity, unitPreference) * 1000; // Convert to grams
+                  apiUnit = 'g';
+                }
+              }
+              
               onSave({
                 type: 'FEEDING',
                 feedType: feedType,
-                quantity,
+                quantity: apiQuantity,
                 concentration,
-                unit: units,
+                unit: apiUnit,
                 notes: notes.trim() || undefined,
               });
             }}
@@ -175,10 +202,24 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
   onRemove,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const { unitPreference, formatVolume, formatWeight } = useUnitFormat();
 
   if (!action) {
     return null;
   }
+  
+  // Convert stored metric values to user's preferred units for display
+  const getDisplayValue = () => {
+    if (action.feedType === 'SYRUP') {
+      // Convert ml to user's preferred volume unit
+      const volumeInLiters = action.quantity / 1000;
+      return formatVolume(volumeInLiters).label;
+    } else {
+      // Convert grams to user's preferred weight unit
+      const weightInKg = action.quantity / 1000;
+      return formatWeight(weightInKg).label;
+    }
+  };
   return isEditing ? (
     <FeedingForm
       action={action}
@@ -198,8 +239,7 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
         <div className={'flex gap-5 text-sm'}>
           <Badge>{action.feedType}</Badge>
           <span>
-            {action.quantity}
-            {action.unit}
+            {getDisplayValue()}
           </span>
           <span>{action.concentration}</span>
         </div>

@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
+import { useUnitFormat } from '@/hooks/use-unit-format';
+import { getVolumeUnitForAmount, parseVolume } from '@/utils/unit-conversion';
 
 type TreatmentType = 'OXALIC_ACID' | 'FORMIC_ACID' | 'THYMOL' | 'OTHER';
 
@@ -40,13 +42,17 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
   action,
   onSave,
 }) => {
+  const { unitPreference, getVolumeUnitForAmount } = useUnitFormat();
+  
   const [amount, setAmount] = useState<number | null>(action?.amount ?? 10);
   const [treatmentType, setTreatmentType] = useState<string>(
     action?.treatmentType ?? 'OXALIC_ACID',
   );
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
 
-  const unit = 'ml';
+  // Get display unit based on user preference and amount
+  const volumeInLiters = (amount || 10) / 1000; // Convert ml to liters for unit calculation
+  const unit = getVolumeUnitForAmount(volumeInLiters, unitPreference);
 
   return (
     <div
@@ -105,11 +111,20 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
         {treatmentType && amount && (
           <Button
             onClick={() => {
+              // Convert user input to metric (ml) for API submission
+              let apiAmount = amount;
+              let apiUnit = 'ml';
+              
+              if (unitPreference === 'imperial') {
+                const volumeInLiters = parseVolume(amount, unit, unitPreference);
+                apiAmount = volumeInLiters * 1000; // Convert to ml
+              }
+              
               onSave({
                 type: 'TREATMENT',
                 treatmentType: treatmentType as TreatmentType,
-                amount,
-                unit,
+                amount: apiAmount,
+                unit: apiUnit,
                 notes: notes.trim() || undefined,
               });
             }}
@@ -128,6 +143,7 @@ export const TreatmentView: React.FC<TreatmentActionProps> = ({
   onRemove,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const { formatVolume } = useUnitFormat();
 
   if (!action) {
     return null;
@@ -136,6 +152,12 @@ export const TreatmentView: React.FC<TreatmentActionProps> = ({
   const treatmentLabel = TREATMENT_TYPES.find(
     t => t.id === action.treatmentType,
   )?.label;
+  
+  // Convert stored ml to user's preferred volume unit for display
+  const getDisplayValue = () => {
+    const volumeInLiters = action.amount / 1000;
+    return formatVolume(volumeInLiters).label;
+  };
 
   return isEditing ? (
     <TreatmentForm
@@ -156,8 +178,7 @@ export const TreatmentView: React.FC<TreatmentActionProps> = ({
         <div className={'flex gap-5 text-sm'}>
           <Badge>{treatmentLabel}</Badge>
           <span>
-            {action.amount}
-            {action.unit}
+            {getDisplayValue()}
           </span>
         </div>
         {action.notes && (

@@ -26,7 +26,7 @@ export const frameActionDetailsSchema = z.object({
 export const harvestActionDetailsSchema = z.object({
   type: z.literal(ActionType.HARVEST),
   amount: z.number().min(0),
-  unit: z.string().default('kg'),
+  unit: z.string(),
 });
 
 export const boxConfigurationActionDetailsSchema = z.object({

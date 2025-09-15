@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ActionType } from 'shared-schemas';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 
 interface FeedingSectionProps {
   hiveId: string;
@@ -25,6 +26,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
     },
   );
   const { data: hive } = useHive(hiveId);
+  const { formatWeight, formatVolume } = useUnitFormat();
 
   if (!hiveId || isLoading) {
     return (
@@ -85,11 +87,11 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
               </TooltipProvider>
             </div>
             <div className="text-3xl font-bold">
-              {totals.currentYearSugarKg.toFixed(2)} kg
+              {formatWeight(totals.currentYearSugarKg).label}
             </div>
             {totals.currentYearSyrupLiters > 0 && (
               <div className="text-xs text-muted-foreground">
-                {totals.currentYearSyrupLiters.toFixed(1)}L syrup
+                {formatVolume(totals.currentYearSyrupLiters).label} syrup
               </div>
             )}
           </div>
@@ -120,11 +122,11 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
               </TooltipProvider>
             </div>
             <div className="text-3xl font-bold">
-              {totals.autumnSugarKg.toFixed(2)} kg
+              {formatWeight(totals.autumnSugarKg).label}
             </div>
             {totals.autumnSyrupLiters > 0 && (
               <div className="text-xs text-muted-foreground">
-                {totals.autumnSyrupLiters.toFixed(1)}L syrup
+                {formatVolume(totals.autumnSyrupLiters).label} syrup
               </div>
             )}
           </div>
@@ -142,7 +144,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
                 <TooltipContent>
                   <p>Progress towards autumn feeding target</p>
                   <p className="text-xs mt-1">
-                    Target: {targetAmount} kg sugar equivalent
+                    Target: {formatWeight(targetAmount).label} sugar equivalent
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -152,7 +154,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
             {progressPercentage.toFixed(0)}%
           </div>
           <div className="text-sm text-muted-foreground">
-            {currentAmount.toFixed(2)} / {targetAmount} kg
+            {formatWeight(currentAmount).label} / {formatWeight(targetAmount).label}
           </div>
           <Progress
             value={progressPercentage}
@@ -167,7 +169,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
           />
           {remainingAmount > 0 && (
             <div className="text-xs text-muted-foreground">
-              {remainingAmount.toFixed(2)} kg remaining
+              {formatWeight(remainingAmount).label} remaining
             </div>
           )}
         </div>
