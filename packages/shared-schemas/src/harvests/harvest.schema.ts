@@ -6,6 +6,7 @@ export const harvestHiveSchema = z.object({
   hiveId: z.string().uuid(),
   framesTaken: z.number().int().min(1),
   honeyAmount: z.number().min(0).optional(),
+  honeyAmountUnit: z.string().default('kg').optional(),
   honeyPercentage: z.number().min(0).max(100).optional(),
 });
 
@@ -21,12 +22,14 @@ export const updateHarvestSchema = z.object({
   date: z.string().datetime().optional(),
   notes: z.string().optional(),
   totalWeight: z.number().min(0).optional(),
+  totalWeightUnit: z.string().default('kg').optional(),
   harvestHives: z.array(harvestHiveSchema).optional(),
 });
 
 // Set Harvest Weight schema
 export const setHarvestWeightSchema = z.object({
   totalWeight: z.number().min(0),
+  totalWeightUnit: z.string().default('kg').optional(),
 });
 
 // Harvest Response schema
@@ -36,6 +39,7 @@ export const harvestResponseSchema = z.object({
   date: z.string(),
   status: z.nativeEnum(HarvestStatus),
   totalWeight: z.number().optional(),
+  totalWeightUnit: z.string().optional(),
   notes: z.string().optional(),
   harvestHives: z.array(
     z.object({
@@ -44,6 +48,7 @@ export const harvestResponseSchema = z.object({
       hiveName: z.string(),
       framesTaken: z.number(),
       honeyAmount: z.number().optional(),
+      honeyAmountUnit: z.string().optional(),
       honeyPercentage: z.number().optional(),
     })
   ),
@@ -58,6 +63,7 @@ export const harvestListResponseSchema = z.object({
   date: z.string(),
   status: z.nativeEnum(HarvestStatus),
   totalWeight: z.number().optional(),
+  totalWeightUnit: z.string().optional(),
   hiveCount: z.number(),
   totalFrames: z.number(),
   createdAt: z.string(),

@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { HarvestStatus } from 'shared-schemas';
 import { useApiary } from '@/hooks/use-apiary';
 import { Droplets, Calendar, Droplet, Package2 } from 'lucide-react';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 
 export const HarvestListPage = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export const HarvestListPage = () => {
   const { data: harvests = [], isLoading } = useHarvests({
     apiaryId: activeApiaryId || undefined,
   });
+  const { getWeightUnit } = useUnitFormat();
 
   const getStatusColor = (status: HarvestStatus) => {
     switch (status) {
@@ -102,7 +104,7 @@ export const HarvestListPage = () => {
             <Droplet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalHoney.toFixed(1)} kg</div>
+            <div className="text-2xl font-bold">{totalHoney.toFixed(1)} {getWeightUnit()}</div>
             <p className="text-xs text-muted-foreground">
               From completed harvests
             </p>
@@ -116,7 +118,7 @@ export const HarvestListPage = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {averageHoney.toFixed(1)} kg
+              {averageHoney.toFixed(1)} {getWeightUnit()}
             </div>
             <p className="text-xs text-muted-foreground">Per harvest</p>
           </CardContent>
@@ -137,7 +139,7 @@ export const HarvestListPage = () => {
             </div>
             <p className="text-xs text-muted-foreground">
               {harvests.length > 0 && harvests[0].totalWeight
-                ? `${harvests[0].totalWeight} kg`
+                ? `${harvests[0].totalWeight} ${harvests[0].totalWeightUnit || getWeightUnit()}`
                 : 'No data'}
             </p>
           </CardContent>
@@ -167,7 +169,7 @@ export const HarvestListPage = () => {
                   <TableHead>Status</TableHead>
                   <TableHead>Hives</TableHead>
                   <TableHead>Frames</TableHead>
-                  <TableHead>Honey (kg)</TableHead>
+                  <TableHead>Honey ({getWeightUnit()})</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -195,7 +197,7 @@ export const HarvestListPage = () => {
                     <TableCell>{harvest.totalFrames}</TableCell>
                     <TableCell>
                       {harvest.totalWeight
-                        ? harvest.totalWeight.toFixed(1)
+                        ? `${harvest.totalWeight.toFixed(1)} ${harvest.totalWeightUnit || getWeightUnit()}`
                         : '-'}
                     </TableCell>
                     <TableCell>

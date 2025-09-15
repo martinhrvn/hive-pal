@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ActionsService } from '../actions/actions.service';
+import { UsersService } from '../users/users.service';
 import {
   CreateHarvest,
   UpdateHarvest,
@@ -15,6 +16,7 @@ import {
   HarvestFilter,
   HarvestStatus,
   ActionType,
+  UserPreferences,
 } from 'shared-schemas';
 import { Prisma } from '@prisma/client';
 
@@ -23,6 +25,7 @@ export class HarvestsService {
   constructor(
     private prisma: PrismaService,
     private actionsService: ActionsService,
+    private usersService: UsersService,
   ) {}
 
   async create(
@@ -108,6 +111,11 @@ export class HarvestsService {
       );
     }
 
+    // Get user preferences to determine unit
+    const preferences = await this.usersService.getUserPreferences(userId);
+    const weightUnit = updateHarvestDto.totalWeightUnit || 
+      (preferences?.units === 'imperial' ? 'lb' : 'kg');
+
     // Update harvest
     const updatedHarvest = await this.prisma.$transaction(async (tx) => {
       // Update main harvest fields
@@ -121,6 +129,7 @@ export class HarvestsService {
           totalWeight: updateHarvestDto.totalWeight
             ? Math.round(updateHarvestDto.totalWeight * 10) / 10
             : undefined,
+          totalWeightUnit: updateHarvestDto.totalWeight ? weightUnit : undefined,
         },
       });
 
@@ -143,7 +152,7 @@ export class HarvestsService {
 
       // If total weight is set, calculate distribution
       if (updateHarvestDto.totalWeight) {
-        await this.calculateHoneyDistribution(harvestId, tx);
+        await this.calculateHoneyDistribution(harvestId, weightUnit, tx);
       }
 
       return await tx.harvest.findUnique({
@@ -190,6 +199,11 @@ export class HarvestsService {
       );
     }
 
+    // Get user preferences to determine unit
+    const preferences = await this.usersService.getUserPreferences(userId);
+    const weightUnit = setWeightDto.totalWeightUnit || 
+      (preferences?.units === 'imperial' ? 'lb' : 'kg');
+
     // Update weight and calculate distribution
     const updatedHarvest = await this.prisma.$transaction(async (tx) => {
       // Update harvest weight and status
@@ -197,12 +211,13 @@ export class HarvestsService {
         where: { id: harvestId },
         data: {
           totalWeight: Math.round(setWeightDto.totalWeight * 10) / 10,
+          totalWeightUnit: weightUnit,
           status: HarvestStatus.IN_PROGRESS,
         },
       });
 
-      // Calculate honey distribution
-      await this.calculateHoneyDistribution(harvestId, tx);
+      // Calculate honey distribution (using the same unit)
+      await this.calculateHoneyDistribution(harvestId, weightUnit, tx);
 
       return await tx.harvest.findUnique({
         where: { id: harvestId },
@@ -264,7 +279,7 @@ export class HarvestsService {
               date: harvest.date,
               notes: `Harvested ${harvestHive.honeyAmount.toFixed(
                 1,
-              )} kg of honey (${harvestHive.framesTaken} frames)`,
+              )} ${harvestHive.honeyAmountUnit || 'kg'} of honey (${harvestHive.framesTaken} frames)`,
             },
           });
 
@@ -272,7 +287,7 @@ export class HarvestsService {
             data: {
               actionId: action.id,
               amount: harvestHive.honeyAmount,
-              unit: 'kg',
+              unit: harvestHive.honeyAmountUnit || 'kg',
             },
           });
         }
@@ -429,6 +444,7 @@ export class HarvestsService {
       date: harvest.date.toISOString(),
       status: harvest.status as HarvestStatus,
       totalWeight: harvest.totalWeight ?? undefined,
+      totalWeightUnit: harvest.totalWeightUnit ?? undefined,
       hiveCount: harvest.harvestHives.length,
       totalFrames: harvest.harvestHives.reduce(
         (sum, hh) => sum + hh.framesTaken,
@@ -464,6 +480,7 @@ export class HarvestsService {
 
   private async calculateHoneyDistribution(
     harvestId: string,
+    unit: string,
     tx: Prisma.TransactionClient,
   ): Promise<void> {
     const harvest = await tx.harvest.findUnique({
@@ -497,6 +514,7 @@ export class HarvestsService {
         data: {
           honeyPercentage: Math.round(percentage * 10) / 10,
           honeyAmount,
+          honeyAmountUnit: unit,
         },
       });
     }
@@ -519,6 +537,7 @@ export class HarvestsService {
       date: harvest.date.toISOString(),
       status: harvest.status as HarvestStatus,
       totalWeight: harvest.totalWeight ?? undefined,
+      totalWeightUnit: harvest.totalWeightUnit ?? undefined,
       notes: harvest.notes ?? undefined,
       harvestHives: harvest.harvestHives.map((hh) => ({
         id: hh.id,
@@ -526,6 +545,7 @@ export class HarvestsService {
         hiveName: hh.hive.name,
         framesTaken: hh.framesTaken,
         honeyAmount: hh.honeyAmount ?? undefined,
+        honeyAmountUnit: hh.honeyAmountUnit ?? undefined,
         honeyPercentage: hh.honeyPercentage ?? undefined,
       })),
       createdAt: harvest.createdAt.toISOString(),

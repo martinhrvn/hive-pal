@@ -37,6 +37,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 
 export const HarvestDetailPage = () => {
   const { harvestId } = useParams<{ harvestId: string }>();
@@ -52,6 +53,7 @@ export const HarvestDetailPage = () => {
   const finalizeHarvest = useFinalizeHarvest();
   const reopenHarvest = useReopenHarvest();
   const deleteHarvest = useDeleteHarvest();
+  const { getWeightUnit, parseWeight } = useUnitFormat();
 
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
@@ -76,7 +78,10 @@ export const HarvestDetailPage = () => {
     try {
       await setHarvestWeight.mutateAsync({
         harvestId: harvest.id,
-        data: { totalWeight: weightValue },
+        data: { 
+          totalWeight: parseWeight(weightValue),
+          totalWeightUnit: getWeightUnit(),
+        },
       });
       toast.success('Weight set successfully');
       setIsEditingWeight(false);
@@ -247,7 +252,7 @@ export const HarvestDetailPage = () => {
                     placeholder="0.0"
                     className="w-24"
                   />
-                  <span className="flex items-center">kg</span>
+                  <span className="flex items-center">{getWeightUnit()}</span>
                   <Button
                     size="sm"
                     onClick={handleSetWeight}
@@ -269,7 +274,7 @@ export const HarvestDetailPage = () => {
               ) : (
                 <p className="font-medium">
                   {harvest.totalWeight
-                    ? `${harvest.totalWeight} kg`
+                    ? `${harvest.totalWeight} ${harvest.totalWeightUnit || 'kg'}`
                     : 'Not set'}
                 </p>
               )}
@@ -342,7 +347,7 @@ export const HarvestDetailPage = () => {
                 {hh.honeyAmount && (
                   <div className="text-right">
                     <p className="font-medium">
-                      {hh.honeyAmount.toFixed(2)} kg
+                      {hh.honeyAmount.toFixed(2)} {hh.honeyAmountUnit || 'kg'}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {hh.honeyPercentage?.toFixed(1)}%

@@ -231,17 +231,18 @@ model BoxConfigurationAction {
 
 // Harvest tracking
 model Harvest {
-  id            String         @id @default(uuid())
-  apiaryId      String
-  apiary        Apiary         @relation(fields: [apiaryId], references: [id])
-  date          DateTime
-  status        HarvestStatus  @default(DRAFT)
-  totalWeight   Float?         // kg of honey extracted
-  notes         String?
-  harvestHives  HarvestHive[]
-  actions       Action[]       // Actions created when harvest is finalized
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id              String         @id @default(uuid())
+  apiaryId        String
+  apiary          Apiary         @relation(fields: [apiaryId], references: [id])
+  date            DateTime
+  status          HarvestStatus  @default(DRAFT)
+  totalWeight     Float?         // amount of honey extracted
+  totalWeightUnit String         @default("kg") // Unit for totalWeight
+  notes           String?
+  harvestHives    HarvestHive[]
+  actions         Action[]       // Actions created when harvest is finalized
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   @@index([apiaryId])
   @@index([date])
@@ -249,14 +250,15 @@ model Harvest {
 }
 
 model HarvestHive {
-  id              String   @id @default(uuid())
-  harvestId       String
-  harvest         Harvest  @relation(fields: [harvestId], references: [id], onDelete: Cascade)
-  hiveId          String
-  hive            Hive     @relation(fields: [hiveId], references: [id])
-  framesTaken     Int      // Number of frames harvested from this hive
-  honeyAmount     Float?   // Calculated kg after weight entry
-  honeyPercentage Float?   // Percentage of total harvest
+  id               String   @id @default(uuid())
+  harvestId        String
+  harvest          Harvest  @relation(fields: [harvestId], references: [id], onDelete: Cascade)
+  hiveId           String
+  hive             Hive     @relation(fields: [hiveId], references: [id])
+  framesTaken      Int      // Number of frames harvested from this hive
+  honeyAmount      Float?   // Calculated amount after weight entry
+  honeyAmountUnit  String   @default("kg") // Unit for honeyAmount
+  honeyPercentage  Float?   // Percentage of total harvest
 
   @@unique([harvestId, hiveId]) // Prevent duplicate hive entries in same harvest
   @@index([harvestId])

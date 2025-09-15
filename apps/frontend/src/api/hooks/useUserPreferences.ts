@@ -3,6 +3,7 @@ import { apiClient } from '../client';
 import { UserPreferences } from 'shared-schemas';
 import { logApiError } from '../errorLogger';
 import { TOKEN_KEY } from '@/context/auth-context/auth-provider';
+import { AxiosError } from 'axios';
 
 // Query keys
 const USER_PREFERENCES_KEYS = {
@@ -14,8 +15,9 @@ const USER_PREFERENCES_KEYS = {
 export const useUserPreferences = () => {
   // Check if user is logged in by checking for token in localStorage
   // This avoids circular dependency with AuthContext
-  const hasToken = typeof window !== 'undefined' && !!localStorage.getItem(TOKEN_KEY);
-  
+  const hasToken =
+    typeof window !== 'undefined' && !!localStorage.getItem(TOKEN_KEY);
+
   return useQuery<UserPreferences | null>({
     queryKey: USER_PREFERENCES_KEYS.preferences(),
     queryFn: async () => {
@@ -25,13 +27,15 @@ export const useUserPreferences = () => {
         );
         return response.data;
       } catch (error) {
-        // If preferences don't exist yet, return null instead of throwing
-        if (error.response?.status === 404) {
-          return null;
-        }
-        // If unauthorized (401), just return null - user is not logged in
-        if (error.response?.status === 401) {
-          return null;
+        if (error instanceof AxiosError) {
+          // If preferences don't exist yet, return null instead of throwing
+          if (error.response?.status === 404) {
+            return null;
+          }
+          // If unauthorized (401), just return null - user is not logged in
+          if (error.response?.status === 401) {
+            return null;
+          }
         }
         // Log other errors
         logApiError(error, '/api/users/preferences', 'GET');
