@@ -482,9 +482,9 @@ export function LandingPage() {
 
                 <div className="bg-amber-50 rounded-lg p-4 mb-6">
                   <p className="text-sm text-amber-900">
-                    <strong>Currently free for early adopters!</strong> Future
-                    pricing will start at $9/month with a lifetime 50% discount
-                    for early adopters.
+                    <strong>Currently free for early adopters!</strong> Sign up 
+                    now to lock in special pricing when we launch our premium plans. 
+                    Early adopters will receive lifetime benefits.
                   </p>
                 </div>
 
