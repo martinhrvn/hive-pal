@@ -105,7 +105,11 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           >
             {t('common:actions.cancel')}
           </Button>
-          <Button disabled={isLoading} type={'submit'}>
+          <Button 
+            disabled={isLoading} 
+            type={'submit'}
+            data-umami-event="Apiary Create"
+          >
             {t('apiary:create.title')}
           </Button>
         </div>

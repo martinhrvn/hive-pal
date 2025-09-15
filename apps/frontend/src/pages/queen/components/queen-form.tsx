@@ -442,7 +442,12 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                 >
                   {t('common:actions.cancel')}
                 </Button>
-                <Button type="submit">{t('queen:create.button')}</Button>
+                <Button 
+                  type="submit"
+                  data-umami-event="Queen Create"
+                >
+                  {t('queen:create.button')}
+                </Button>
               </div>
             </form>
           </Form>

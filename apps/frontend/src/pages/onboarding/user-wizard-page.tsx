@@ -150,7 +150,11 @@ export const UserWizardPage = () => {
         <CardFooter className="flex justify-between">
           {step === 0 && (
             <div className="w-full">
-              <Button onClick={handleStart} className="w-full">
+              <Button 
+                onClick={handleStart} 
+                className="w-full"
+                data-umami-event="Onboarding Start"
+              >
                 {t('welcome.action')}
               </Button>
             </div>
@@ -158,7 +162,11 @@ export const UserWizardPage = () => {
 
           {step === 3 && (
             <div className="w-full">
-              <Button onClick={handleFinish} className="w-full">
+              <Button 
+                onClick={handleFinish} 
+                className="w-full"
+                data-umami-event="Onboarding Complete"
+              >
                 {t('complete.action')}
               </Button>
             </div>

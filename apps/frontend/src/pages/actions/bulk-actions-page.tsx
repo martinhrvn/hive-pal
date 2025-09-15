@@ -488,6 +488,9 @@ export const BulkActionsPage = () => {
                 onClick={handleAddToQueue}
                 disabled={selectedHives.length === 0 || currentActions.length === 0}
                 className="w-full"
+                data-umami-event="Bulk Action Queue"
+                data-umami-event-hives={selectedHives.length.toString()}
+                data-umami-event-actions={currentActions.length.toString()}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Add to Queue ({selectedHives.length} hive{selectedHives.length !== 1 ? 's' : ''} × {currentActions.length} action{currentActions.length !== 1 ? 's' : ''})
@@ -570,6 +573,8 @@ export const BulkActionsPage = () => {
           <Button
             onClick={handleSubmitActions}
             disabled={createAction.isPending}
+            data-umami-event="Bulk Action Submit"
+            data-umami-event-count={stagedActions.length.toString()}
           >
             {createAction.isPending ? 'Submitting...' : `Submit ${stagedActions.length} Action(s)`}
           </Button>

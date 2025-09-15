@@ -348,7 +348,11 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           </CollapsibleContent>
         </Collapsible>
 
-        <Button disabled={isLoading} type="submit">
+        <Button 
+          disabled={isLoading} 
+          type="submit"
+          data-umami-event="Hive Create"
+        >
           {t('hive:form.submit')}
         </Button>
       </form>

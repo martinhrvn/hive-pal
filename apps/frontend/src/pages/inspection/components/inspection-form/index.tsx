@@ -263,6 +263,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   type="submit"
                   className="w-full"
                   variant={'default'}
+                  data-umami-event="Inspection Complete"
                 >
                   Complete Inspection
                 </Button>
@@ -273,6 +274,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     variant={'outline'}
                     type="submit"
                     className="w-full"
+                    data-umami-event="Inspection Save"
                   >
                     Save
                   </Button>
@@ -281,6 +283,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     type="submit"
                     className="w-full"
                     variant={'default'}
+                    data-umami-event="Inspection Complete"
                   >
                     Save and complete
                   </Button>
@@ -288,7 +291,12 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               )}
             </>
           ) : (
-            <Button onClick={handleSave} type="submit" className="w-full">
+            <Button 
+              onClick={handleSave} 
+              type="submit" 
+              className="w-full"
+              data-umami-event="Inspection Create"
+            >
               Save
             </Button>
           )}

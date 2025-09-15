@@ -103,7 +103,11 @@ const LoginPage = () => {
             )}
 
             <div>
-              <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg">
+              <Button 
+                type="submit" 
+                className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg"
+                data-umami-event="Login"
+              >
                 {t('login.submit')}
               </Button>
             </div>

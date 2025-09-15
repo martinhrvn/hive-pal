@@ -166,7 +166,10 @@ export const HarvestDetailPage = () => {
           )}
           {harvest.status === HarvestStatus.IN_PROGRESS &&
             harvest.totalWeight && (
-              <Button onClick={handleFinalize}>
+              <Button 
+                onClick={handleFinalize}
+                data-umami-event="Harvest Finalize"
+              >
                 <Check className="mr-2 h-4 w-4" />
                 Finalize
               </Button>
@@ -245,7 +248,11 @@ export const HarvestDetailPage = () => {
                     className="w-24"
                   />
                   <span className="flex items-center">kg</span>
-                  <Button size="sm" onClick={handleSetWeight}>
+                  <Button 
+                    size="sm" 
+                    onClick={handleSetWeight}
+                    data-umami-event="Harvest Weight Set"
+                  >
                     Save
                   </Button>
                   <Button
