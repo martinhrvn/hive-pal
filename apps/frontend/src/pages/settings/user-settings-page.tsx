@@ -1,23 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
-import { Globe, Bell, Palette, User, Save } from 'lucide-react';
+import { Globe, Bell, Palette, User, Save, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePreferences } from '@/api/hooks/useUserPreferences';
+import { useTheme } from '@/context/use-theme';
+import { UserPreferences } from 'shared-schemas';
 
 export const UserSettingsPage = () => {
   const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
-  
-  const [settings, setSettings] = useState({
+  const { preferences, updatePreferences } = usePreferences();
+  const { theme, setTheme } = useTheme();
+
+  const [settings, setSettings] = useState<Omit<UserPreferences, 'theme'>>({
     language: i18n.language || 'en',
-    theme: 'light',
     dateFormat: 'MM/DD/YYYY',
     units: 'metric',
     emailNotifications: true,
@@ -26,15 +41,36 @@ export const UserSettingsPage = () => {
     harvestReminders: true,
   });
 
-  const [userInfo, setUserInfo] = useState({
-    name: '',
-    email: '',
-  });
+  // Load preferences from API when available
+  useEffect(() => {
+    if (preferences.data) {
+      setSettings({
+        language: preferences.data.language || i18n.language || 'en',
+        dateFormat: preferences.data.dateFormat || 'MM/DD/YYYY',
+        units: preferences.data.units || 'metric',
+        emailNotifications: preferences.data.emailNotifications ?? true,
+        pushNotifications: preferences.data.pushNotifications ?? false,
+        inspectionReminders: preferences.data.inspectionReminders ?? true,
+        harvestReminders: preferences.data.harvestReminders ?? true,
+      });
+    }
+  }, [preferences.data, i18n.language]);
 
-  const handleSaveSettings = () => {
-    toast.success(t('messages.changesSaved'), {
-      description: t('settings.preferencesUpdated'),
-    });
+  const handleSaveSettings = async () => {
+    try {
+      // Include theme from context with other settings
+      await updatePreferences.mutateAsync({
+        ...settings,
+        theme,
+      });
+      toast.success(t('messages.changesSaved'), {
+        description: t('settings.preferencesUpdated'),
+      });
+    } catch {
+      toast.error(t('messages.errorOccurred'), {
+        description: t('settings.failedToSavePreferences'),
+      });
+    }
   };
 
   const handleLanguageChange = (value: string) => {
@@ -42,11 +78,30 @@ export const UserSettingsPage = () => {
     i18n.changeLanguage(value);
   };
 
+  // Show loading state while fetching preferences
+  if (preferences.isLoading) {
+    return (
+      <div className="container mx-auto p-6 max-w-4xl">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold">{t('navigation.settings')}</h1>
+          <p className="text-muted-foreground">
+            {t('settings.managePreferences')}
+          </p>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">{t('navigation.settings')}</h1>
-        <p className="text-muted-foreground">{t('settings.managePreferences')}</p>
+        <p className="text-muted-foreground">
+          {t('settings.managePreferences')}
+        </p>
       </div>
 
       <div className="space-y-6">
@@ -65,7 +120,10 @@ export const UserSettingsPage = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="language">{t('actions.language')}</Label>
-                <Select value={settings.language} onValueChange={handleLanguageChange}>
+                <Select
+                  value={settings.language}
+                  onValueChange={handleLanguageChange}
+                >
                   <SelectTrigger id="language">
                     <SelectValue />
                   </SelectTrigger>
@@ -77,10 +135,15 @@ export const UserSettingsPage = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="dateFormat">{t('settings.dateFormat')}</Label>
-                <Select value={settings.dateFormat} onValueChange={(value) => setSettings({ ...settings, dateFormat: value })}>
+                <Select
+                  value={settings.dateFormat}
+                  onValueChange={value =>
+                    setSettings({ ...settings, dateFormat: value })
+                  }
+                >
                   <SelectTrigger id="dateFormat">
                     <SelectValue />
                   </SelectTrigger>
@@ -95,13 +158,20 @@ export const UserSettingsPage = () => {
 
             <div className="space-y-2">
               <Label htmlFor="units">{t('settings.unitsOfMeasurement')}</Label>
-              <Select value={settings.units} onValueChange={(value) => setSettings({ ...settings, units: value })}>
+              <Select
+                value={settings.units}
+                onValueChange={value =>
+                  setSettings({ ...settings, units: value })
+                }
+              >
                 <SelectTrigger id="units">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="metric">{t('settings.metric')}</SelectItem>
-                  <SelectItem value="imperial">{t('settings.imperial')}</SelectItem>
+                  <SelectItem value="imperial">
+                    {t('settings.imperial')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -122,7 +192,7 @@ export const UserSettingsPage = () => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="theme">{t('settings.theme')}</Label>
-              <Select value={settings.theme} onValueChange={(value) => setSettings({ ...settings, theme: value })}>
+              <Select value={theme} onValueChange={setTheme}>
                 <SelectTrigger id="theme">
                   <SelectValue />
                 </SelectTrigger>
@@ -150,55 +220,79 @@ export const UserSettingsPage = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email-notifications">{t('settings.emailNotifications')}</Label>
-                <p className="text-sm text-muted-foreground">{t('settings.receiveEmailUpdates')}</p>
+                <Label htmlFor="email-notifications">
+                  {t('settings.emailNotifications')}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.receiveEmailUpdates')}
+                </p>
               </div>
               <Switch
                 id="email-notifications"
                 checked={settings.emailNotifications}
-                onCheckedChange={(checked) => setSettings({ ...settings, emailNotifications: checked })}
+                onCheckedChange={checked =>
+                  setSettings({ ...settings, emailNotifications: checked })
+                }
               />
             </div>
-            
+
             <Separator />
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="push-notifications">{t('settings.pushNotifications')}</Label>
-                <p className="text-sm text-muted-foreground">{t('settings.receiveBrowserNotifications')}</p>
+                <Label htmlFor="push-notifications">
+                  {t('settings.pushNotifications')}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.receiveBrowserNotifications')}
+                </p>
               </div>
               <Switch
                 id="push-notifications"
                 checked={settings.pushNotifications}
-                onCheckedChange={(checked) => setSettings({ ...settings, pushNotifications: checked })}
+                onCheckedChange={checked =>
+                  setSettings({ ...settings, pushNotifications: checked })
+                }
               />
             </div>
-            
+
             <Separator />
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="inspection-reminders">{t('settings.inspectionReminders')}</Label>
-                <p className="text-sm text-muted-foreground">{t('settings.upcomingInspectionsNotify')}</p>
+                <Label htmlFor="inspection-reminders">
+                  {t('settings.inspectionReminders')}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.upcomingInspectionsNotify')}
+                </p>
               </div>
               <Switch
                 id="inspection-reminders"
                 checked={settings.inspectionReminders}
-                onCheckedChange={(checked) => setSettings({ ...settings, inspectionReminders: checked })}
+                onCheckedChange={checked =>
+                  setSettings({ ...settings, inspectionReminders: checked })
+                }
               />
             </div>
-            
+
             <Separator />
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="harvest-reminders">{t('settings.harvestReminders')}</Label>
-                <p className="text-sm text-muted-foreground">{t('settings.harvestSchedulesNotify')}</p>
+                <Label htmlFor="harvest-reminders">
+                  {t('settings.harvestReminders')}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.harvestSchedulesNotify')}
+                </p>
               </div>
               <Switch
                 id="harvest-reminders"
                 checked={settings.harvestReminders}
-                onCheckedChange={(checked) => setSettings({ ...settings, harvestReminders: checked })}
+                onCheckedChange={checked =>
+                  setSettings({ ...settings, harvestReminders: checked })
+                }
               />
             </div>
           </CardContent>
@@ -211,42 +305,20 @@ export const UserSettingsPage = () => {
               <User className="h-5 w-5" />
               {t('settings.accountSettings')}
             </CardTitle>
-            <CardDescription>
-              {t('settings.manageAccountInfo')}
-            </CardDescription>
+            <CardDescription>{t('settings.manageAccountInfo')}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">{t('settings.name')}</Label>
-                <Input
-                  id="name"
-                  value={userInfo.name}
-                  onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
-                  placeholder={t('settings.enterName')}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email">{t('settings.email')}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={userInfo.email}
-                  onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
-                  placeholder={t('settings.enterEmail')}
-                />
-              </div>
-            </div>
-            
-            <Separator />
-            
+          <CardContent>
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium">{t('settings.password')}</p>
-                <p className="text-sm text-muted-foreground">{t('settings.changePassword')}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.changePassword')}
+                </p>
               </div>
-              <Button variant="outline" onClick={() => navigate('/account/change-password')}>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/account/change-password')}
+              >
                 {t('settings.changePassword')}
               </Button>
             </div>
@@ -255,9 +327,20 @@ export const UserSettingsPage = () => {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button onClick={handleSaveSettings} size="lg" className="gap-2">
-            <Save className="h-4 w-4" />
-            {t('settings.saveSettings')}
+          <Button
+            onClick={handleSaveSettings}
+            size="lg"
+            className="gap-2"
+            disabled={updatePreferences.isPending || preferences.isLoading}
+          >
+            {updatePreferences.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            {updatePreferences.isPending
+              ? t('settings.saving')
+              : t('settings.saveSettings')}
           </Button>
         </div>
       </div>

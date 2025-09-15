@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { HomeIcon, PieChart, Settings2, MapPin, Droplets, Package, ClipboardList, Calendar } from 'lucide-react';
+import {
+  HomeIcon,
+  PieChart,
+  Settings2,
+  MapPin,
+  Droplets,
+  Package,
+  ClipboardList,
+  Calendar,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { NavMain } from '@/components/nav-main';
@@ -104,7 +113,7 @@ const getNavData = (t: (key: string) => string) => ({
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation('common');
   const data = getNavData(t);
-  
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

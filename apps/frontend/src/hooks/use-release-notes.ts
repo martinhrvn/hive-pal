@@ -88,16 +88,18 @@ export const useReleaseNotesStore = create<ReleaseNotesState>((set, get) => ({
 
     // Find the highest dismissed version
     const dismissedVersions = dismissedReleases.map(d => d.version);
-    
+
     if (dismissedVersions.length === 0) {
       // No versions dismissed, show the latest release
       return releaseNotes[0];
     }
 
     // Find the highest dismissed version
-    const highestDismissedVersion = dismissedVersions.reduce((highest, current) => {
-      return compareVersions(current, highest) > 0 ? current : highest;
-    });
+    const highestDismissedVersion = dismissedVersions.reduce(
+      (highest, current) => {
+        return compareVersions(current, highest) > 0 ? current : highest;
+      },
+    );
 
     // Only show releases that are newer than the highest dismissed version
     const newerReleases = releaseNotes.filter(release => {

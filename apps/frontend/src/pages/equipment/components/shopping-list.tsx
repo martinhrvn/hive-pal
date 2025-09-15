@@ -9,7 +9,9 @@ interface ShoppingListProps {
 }
 
 export const ShoppingList = ({ items }: ShoppingListProps) => {
-  const neededItems = items.filter(item => item.enabled && (item.toPurchase || 0) > 0);
+  const neededItems = items.filter(
+    item => item.enabled && (item.toPurchase || 0) > 0,
+  );
   const hasNeededItems = neededItems.length > 0;
 
   if (!hasNeededItems) {
@@ -18,10 +20,14 @@ export const ShoppingList = ({ items }: ShoppingListProps) => {
 
   const handleCopy = () => {
     const shoppingItems = neededItems.map(item => {
-      const name = item.name || item.itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      const name =
+        item.name ||
+        item.itemId
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase());
       return `${name}: ${item.toPurchase} ${item.unit}`;
     });
-    
+
     const shoppingList = shoppingItems.join('\n');
     const fullList = `Equipment Shopping List\n${new Date().toLocaleDateString()}\n\n${shoppingList}`;
 
@@ -30,10 +36,14 @@ export const ShoppingList = ({ items }: ShoppingListProps) => {
 
   const handlePrint = () => {
     const shoppingRows = neededItems.map(item => {
-      const name = item.name || item.itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      const name =
+        item.name ||
+        item.itemId
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase());
       return `<tr><td style="padding: 8px; border: 1px solid #ddd;">${name}</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.toPurchase} ${item.unit}</td></tr>`;
     });
-    
+
     const shoppingList = shoppingRows.join('');
 
     const printWindow = window.open('', '_blank');
@@ -99,7 +109,11 @@ export const ShoppingList = ({ items }: ShoppingListProps) => {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {neededItems.map(item => {
-            const name = item.name || item.itemId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            const name =
+              item.name ||
+              item.itemId
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, str => str.toUpperCase());
             return (
               <div
                 key={item.itemId}

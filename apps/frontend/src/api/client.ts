@@ -73,13 +73,22 @@ apiClient.interceptors.request.use(config => {
   return config;
 });
 
+// List of public routes that don't require authentication
+const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password', '/'];
+
 apiClient.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      // Unauthorized, clear token and redirect to login
-      localStorage.removeItem(TOKEN_KEY);
-      window.location.href = '/login';
+      const currentPath = window.location.pathname;
+      
+      // Only redirect to login if we're not already on a public page
+      // This prevents redirect loops when fetching user preferences on public pages
+      if (!PUBLIC_ROUTES.some(route => currentPath.startsWith(route))) {
+        // Unauthorized, clear token and redirect to login
+        localStorage.removeItem(TOKEN_KEY);
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   },

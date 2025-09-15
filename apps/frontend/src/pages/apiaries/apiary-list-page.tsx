@@ -67,14 +67,18 @@ export const ApiaryListPage = () => {
                 <TableHead>{t('apiary:fields.location')}</TableHead>
                 <TableHead>{t('apiary:fields.coordinates')}</TableHead>
                 <TableHead>{t('apiary:fields.hivesCount')}</TableHead>
-                <TableHead className="text-right">{t('common:actions.actions', { defaultValue: 'Actions' })}</TableHead>
+                <TableHead className="text-right">
+                  {t('common:actions.actions', { defaultValue: 'Actions' })}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {apiaries.map(apiary => (
                 <TableRow key={apiary.id}>
                   <TableCell className="font-medium">{apiary.name}</TableCell>
-                  <TableCell>{apiary.location || t('apiary:fields.noLocation')}</TableCell>
+                  <TableCell>
+                    {apiary.location || t('apiary:fields.noLocation')}
+                  </TableCell>
                   <TableCell>
                     {apiary.latitude && apiary.longitude
                       ? `${apiary.latitude.toFixed(6)}, ${apiary.longitude.toFixed(6)}`
@@ -88,7 +92,8 @@ export const ApiaryListPage = () => {
                       onClick={() => navigate(`/apiaries/${apiary.id}`)}
                       className="flex items-center"
                     >
-                      {t('apiary:actions.details')} <ChevronRight className="ml-1 h-4 w-4" />
+                      {t('apiary:actions.details')}{' '}
+                      <ChevronRight className="ml-1 h-4 w-4" />
                     </Button>
                   </TableCell>
                 </TableRow>

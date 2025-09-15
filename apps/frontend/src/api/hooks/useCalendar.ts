@@ -1,9 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import { 
-  CalendarFilter,
-  CalendarResponse
-} from 'shared-schemas';
+import { CalendarFilter, CalendarResponse } from 'shared-schemas';
 
 export type { CalendarEvent } from 'shared-schemas';
 

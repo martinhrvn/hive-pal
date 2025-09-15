@@ -25,7 +25,7 @@ export const useReleaseNotesNotification = () => {
     hasShownNotification.current = true;
 
     toast.custom(
-      (t) => (
+      t => (
         <NewReleaseToast
           version={latestRelease.version}
           onDismiss={() => {
@@ -40,9 +40,15 @@ export const useReleaseNotesNotification = () => {
       {
         duration: 10000, // Auto-dismiss after 10 seconds
         position: 'top-right',
-      }
+      },
     );
-  }, [isLoading, isLoaded, getLatestUndismissedRelease, dismissRelease, navigate]);
+  }, [
+    isLoading,
+    isLoaded,
+    getLatestUndismissedRelease,
+    dismissRelease,
+    navigate,
+  ]);
 
   useEffect(() => {
     loadReleaseNotes();

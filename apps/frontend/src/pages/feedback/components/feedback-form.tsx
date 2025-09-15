@@ -20,10 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { useState } from 'react';
 import { Loader2, CheckCircle } from 'lucide-react';
-import { createFeedbackSchema, CreateFeedbackDto, FeedbackType } from 'shared-schemas';
+import {
+  createFeedbackSchema,
+  CreateFeedbackDto,
+  FeedbackType,
+} from 'shared-schemas';
 
 export type FeedbackFormData = CreateFeedbackDto;
 
@@ -32,7 +42,10 @@ interface FeedbackFormProps {
   isLoading?: boolean;
 }
 
-export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, isLoading }) => {
+export const FeedbackForm: React.FC<FeedbackFormProps> = ({
+  onSubmit,
+  isLoading,
+}) => {
   const { t } = useTranslation(['common']);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -81,29 +94,39 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, isLoading 
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>{t('feedback.title')}</CardTitle>
-        <CardDescription>
-          {t('feedback.description')}
-        </CardDescription>
+        <CardDescription>{t('feedback.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             <FormField
               control={form.control}
               name="type"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('feedback.type')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('feedback.selectType')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={FeedbackType.BUG}>{t('feedback.typeBug')}</SelectItem>
-                      <SelectItem value={FeedbackType.SUGGESTION}>{t('feedback.typeSuggestion')}</SelectItem>
-                      <SelectItem value={FeedbackType.OTHER}>{t('feedback.typeOther')}</SelectItem>
+                      <SelectItem value={FeedbackType.BUG}>
+                        {t('feedback.typeBug')}
+                      </SelectItem>
+                      <SelectItem value={FeedbackType.SUGGESTION}>
+                        {t('feedback.typeSuggestion')}
+                      </SelectItem>
+                      <SelectItem value={FeedbackType.OTHER}>
+                        {t('feedback.typeOther')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -118,9 +141,9 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, isLoading 
                 <FormItem>
                   <FormLabel>{t('feedback.subject')}</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={t('feedback.subjectPlaceholder')} 
-                      {...field} 
+                    <Input
+                      placeholder={t('feedback.subjectPlaceholder')}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -153,10 +176,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, isLoading 
                 <FormItem>
                   <FormLabel>{t('feedback.email')}</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       type="email"
-                      placeholder={t('feedback.emailPlaceholder')} 
-                      {...field} 
+                      placeholder={t('feedback.emailPlaceholder')}
+                      {...field}
                     />
                   </FormControl>
                   <FormDescription>

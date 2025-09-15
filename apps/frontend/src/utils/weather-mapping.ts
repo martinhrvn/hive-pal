@@ -3,7 +3,9 @@ import type { WeatherCondition } from 'shared-schemas';
 /**
  * Maps weather condition from API format to inspection form format
  */
-export function mapWeatherConditionToForm(apiCondition: WeatherCondition): string {
+export function mapWeatherConditionToForm(
+  apiCondition: WeatherCondition,
+): string {
   switch (apiCondition) {
     case 'CLEAR':
       return 'sunny';

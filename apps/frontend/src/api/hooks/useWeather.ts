@@ -1,19 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import { WeatherResponse, WeatherHourlyForecastResponse, WeatherForecastResponse } from 'shared-schemas';
+import {
+  WeatherResponse,
+  WeatherHourlyForecastResponse,
+  WeatherForecastResponse,
+} from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
 // Query keys
 const WEATHER_KEYS = {
   all: ['weather'] as const,
   current: () => [...WEATHER_KEYS.all, 'current'] as const,
-  currentByApiary: (apiaryId: string) => [...WEATHER_KEYS.current(), apiaryId] as const,
+  currentByApiary: (apiaryId: string) =>
+    [...WEATHER_KEYS.current(), apiaryId] as const,
   hourlyForecast: () => [...WEATHER_KEYS.all, 'hourly-forecast'] as const,
-  hourlyForecastByApiary: (apiaryId: string) => [...WEATHER_KEYS.hourlyForecast(), apiaryId] as const,
+  hourlyForecastByApiary: (apiaryId: string) =>
+    [...WEATHER_KEYS.hourlyForecast(), apiaryId] as const,
   dailyForecast: () => [...WEATHER_KEYS.all, 'daily-forecast'] as const,
-  dailyForecastByApiary: (apiaryId: string) => [...WEATHER_KEYS.dailyForecast(), apiaryId] as const,
+  dailyForecastByApiary: (apiaryId: string) =>
+    [...WEATHER_KEYS.dailyForecast(), apiaryId] as const,
   history: () => [...WEATHER_KEYS.all, 'history'] as const,
-  historyByApiary: (apiaryId: string, params?: { startDate?: string; endDate?: string; limit?: number }) => [...WEATHER_KEYS.history(), apiaryId, params] as const,
+  historyByApiary: (
+    apiaryId: string,
+    params?: { startDate?: string; endDate?: string; limit?: number },
+  ) => [...WEATHER_KEYS.history(), apiaryId, params] as const,
 };
 
 // Get current weather for an apiary
@@ -88,7 +98,9 @@ export const useWeatherHistory = (
       if (params?.endDate) searchParams.append('endDate', params.endDate);
       if (params?.limit) searchParams.append('limit', params.limit.toString());
 
-      const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+      const queryString = searchParams.toString()
+        ? `?${searchParams.toString()}`
+        : '';
       const response = await apiClient.get<WeatherResponse[]>(
         `/api/weather/history/${apiaryId}${queryString}`,
       );

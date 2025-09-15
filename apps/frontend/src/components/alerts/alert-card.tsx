@@ -35,11 +35,11 @@ const severityConfig = {
   },
 };
 
-export function AlertCard({ 
-  alert, 
-  showActions = true, 
-  compact = false, 
-  className 
+export function AlertCard({
+  alert,
+  showActions = true,
+  compact = false,
+  className,
 }: AlertCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const dismissAlert = useDismissAlert();
@@ -82,20 +82,24 @@ export function AlertCard({
       <CardContent className={cn('p-4', compact && 'p-3')}>
         <div className="flex items-start gap-3">
           <Icon className={cn('h-5 w-5 mt-0.5 flex-shrink-0', config.color)} />
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
-                <p className={cn(
-                  'font-medium leading-tight',
-                  compact ? 'text-sm' : 'text-base'
-                )}>
+                <p
+                  className={cn(
+                    'font-medium leading-tight',
+                    compact ? 'text-sm' : 'text-base',
+                  )}
+                >
                   {alert.message}
                 </p>
-                
+
                 {!compact && (
                   <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="capitalize">{alert.severity.toLowerCase()}</span>
+                    <span className="capitalize">
+                      {alert.severity.toLowerCase()}
+                    </span>
                     <span>•</span>
                     <span>{timeAgo}</span>
                     {alert.type && (

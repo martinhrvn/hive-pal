@@ -81,7 +81,7 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
             Last: {new Date(hive.lastInspectionDate).toLocaleDateString()}
           </p>
         )}
-        
+
         {/* Alerts with popover */}
         <AlertsPopover alerts={hive.alerts || []} />
       </div>

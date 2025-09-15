@@ -47,16 +47,14 @@ const RegisterPage = () => {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero.jpg')]"></div>
       <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-black/70 to-green-900/80"></div>
-      
+
       {/* Content */}
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md px-4">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <div className="text-5xl">🐝</div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Hive Pal
-          </h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Hive Pal</h1>
           <h2 className="text-lg text-green-200">{t('register.title')}</h2>
         </div>
 
@@ -65,11 +63,13 @@ const RegisterPage = () => {
             {error}
           </div>
         )}
-        
+
         <div className="backdrop-blur-md bg-white/10 py-8 px-4 shadow-2xl rounded-xl sm:px-10 border border-white/20">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="email" className="text-white/90">{t('register.email')}</Label>
+              <Label htmlFor="email" className="text-white/90">
+                {t('register.email')}
+              </Label>
               <div className="mt-1">
                 <Input
                   id="email"
@@ -85,7 +85,9 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="name" className="text-white/90">{t('register.displayName')}</Label>
+              <Label htmlFor="name" className="text-white/90">
+                {t('register.displayName')}
+              </Label>
               <div className="mt-1">
                 <Input
                   id="name"
@@ -100,7 +102,9 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-white/90">{t('register.password')}</Label>
+              <Label htmlFor="password" className="text-white/90">
+                {t('register.password')}
+              </Label>
               <div className="mt-1">
                 <Input
                   id="password"
@@ -115,7 +119,9 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="confirmPassword" className="text-white/90">{t('register.confirmPassword')}</Label>
+              <Label htmlFor="confirmPassword" className="text-white/90">
+                {t('register.confirmPassword')}
+              </Label>
               <div className="mt-1">
                 <Input
                   id="confirmPassword"
@@ -130,8 +136,8 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg"
                 data-umami-event="Register"
               >
@@ -143,7 +149,10 @@ const RegisterPage = () => {
           <div className="mt-6 text-center">
             <p className="text-white/80">
               {t('register.hasAccount')}{' '}
-              <Link to="/login" className="text-green-300 hover:text-green-200 underline">
+              <Link
+                to="/login"
+                className="text-green-300 hover:text-green-200 underline"
+              >
                 {t('register.signIn')}
               </Link>
             </p>

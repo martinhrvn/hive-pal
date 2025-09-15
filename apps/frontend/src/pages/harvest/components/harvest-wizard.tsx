@@ -38,7 +38,9 @@ export const HarvestWizard = () => {
   const { activeApiaryId } = useApiary();
   const navigate = useNavigate();
   const createHarvest = useCreateHarvest();
-  const { data: hives = [] } = useHives({ apiaryId: activeApiaryId || undefined });
+  const { data: hives = [] } = useHives({
+    apiaryId: activeApiaryId || undefined,
+  });
 
   const handleHiveToggle = (hiveId: string, checked: boolean) => {
     const newSelectedHives = new Map(selectedHives);

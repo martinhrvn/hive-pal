@@ -24,10 +24,10 @@ export const adminResetPasswordSchema = z.object({
 
 // User preferences schema
 export const userPreferencesSchema = z.object({
-  language: z.string().optional(),
-  theme: z.string().optional(),
-  dateFormat: z.string().optional(),
-  units: z.string().optional(),
+  language: z.enum(['en', 'es', 'fr', 'de']).optional(),
+  theme: z.enum(['light', 'dark', 'system']).optional(),
+  dateFormat: z.enum(['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']).optional(),
+  units: z.enum(['metric', 'imperial']).optional(),
   emailNotifications: z.boolean().optional(),
   pushNotifications: z.boolean().optional(),
   inspectionReminders: z.boolean().optional(),
@@ -61,10 +61,10 @@ export declare class AdminResetPasswordDto {
 }
 
 export declare class UserPreferencesDto {
-  language?: string;
-  theme?: string;
-  dateFormat?: string;
-  units?: string;
+  language?: 'en' | 'es' | 'fr' | 'de';
+  theme?: 'light' | 'dark' | 'system';
+  dateFormat?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
+  units?: 'metric' | 'imperial';
   emailNotifications?: boolean;
   pushNotifications?: boolean;
   inspectionReminders?: boolean;

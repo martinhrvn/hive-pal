@@ -77,7 +77,7 @@ export const Breadcrumbs = () => {
               isCurrentPage: false,
             });
           }
-          
+
           breadcrumbItems.push({
             label: 'Inspections',
             path: '/inspections',
@@ -150,7 +150,10 @@ export const Breadcrumbs = () => {
 
           // Check if this is an inspection ID from context
           if (context.inspection && segment === context.inspection.id) {
-            const inspectionDate = format(parseISO(context.inspection.date), 'MMM d, yyyy');
+            const inspectionDate = format(
+              parseISO(context.inspection.date),
+              'MMM d, yyyy',
+            );
             breadcrumbItems.push({
               label: `Inspection from ${inspectionDate}`,
               path: currentPath,
@@ -171,7 +174,10 @@ export const Breadcrumbs = () => {
 
           // Check if this is a harvest ID from context
           if (context.harvest && segment === context.harvest.id) {
-            const harvestDate = format(parseISO(context.harvest.date), 'MMM d, yyyy');
+            const harvestDate = format(
+              parseISO(context.harvest.date),
+              'MMM d, yyyy',
+            );
             breadcrumbItems.push({
               label: `Harvest from ${harvestDate}`,
               path: currentPath,

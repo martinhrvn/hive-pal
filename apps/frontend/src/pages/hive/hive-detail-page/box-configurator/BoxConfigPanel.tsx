@@ -2,7 +2,13 @@ import { Box, BoxTypeEnum, BoxVariantEnum } from 'shared-schemas';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -27,8 +33,8 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
   const handleMaxFrameCountChange = (value: string) => {
     const num = parseInt(value, 10);
     if (!isNaN(num) && num >= 0) {
-      onUpdate({ 
-        ...box, 
+      onUpdate({
+        ...box,
         maxFrameCount: num,
         frameCount: Math.min(box.frameCount, num),
       });
@@ -72,13 +78,23 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
               <SelectValue placeholder="Select box type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={BoxVariantEnum.LANGSTROTH_DEEP}>Langstroth Deep</SelectItem>
-              <SelectItem value={BoxVariantEnum.LANGSTROTH_SHALLOW}>Langstroth Shallow</SelectItem>
+              <SelectItem value={BoxVariantEnum.LANGSTROTH_DEEP}>
+                Langstroth Deep
+              </SelectItem>
+              <SelectItem value={BoxVariantEnum.LANGSTROTH_SHALLOW}>
+                Langstroth Shallow
+              </SelectItem>
               <SelectItem value={BoxVariantEnum.B_DEEP}>B Deep</SelectItem>
-              <SelectItem value={BoxVariantEnum.B_SHALLOW}>B Shallow</SelectItem>
+              <SelectItem value={BoxVariantEnum.B_SHALLOW}>
+                B Shallow
+              </SelectItem>
               <SelectItem value={BoxVariantEnum.DADANT}>Dadant</SelectItem>
-              <SelectItem value={BoxVariantEnum.NATIONAL_DEEP}>National Deep</SelectItem>
-              <SelectItem value={BoxVariantEnum.NATIONAL_SHALLOW}>National Shallow</SelectItem>
+              <SelectItem value={BoxVariantEnum.NATIONAL_DEEP}>
+                National Deep
+              </SelectItem>
+              <SelectItem value={BoxVariantEnum.NATIONAL_SHALLOW}>
+                National Shallow
+              </SelectItem>
               <SelectItem value={BoxVariantEnum.WARRE}>Warré</SelectItem>
               <SelectItem value={BoxVariantEnum.TOP_BAR}>Top Bar</SelectItem>
               <SelectItem value={BoxVariantEnum.CUSTOM}>Custom</SelectItem>
@@ -110,7 +126,7 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
             min="0"
             max="20"
             value={box.maxFrameCount || 10}
-            onChange={(e) => handleMaxFrameCountChange(e.target.value)}
+            onChange={e => handleMaxFrameCountChange(e.target.value)}
           />
         </div>
 
@@ -122,13 +138,13 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
               id="box-color"
               type="color"
               value={box.color || '#CD853F'}
-              onChange={(e) => handleColorChange(e.target.value)}
+              onChange={e => handleColorChange(e.target.value)}
               className="h-10 w-20"
             />
             <Input
               type="text"
               value={box.color || '#CD853F'}
-              onChange={(e) => handleColorChange(e.target.value)}
+              onChange={e => handleColorChange(e.target.value)}
               placeholder="#CD853F"
               className="flex-1"
             />
@@ -175,7 +191,7 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
               '#6b7280', // gray-500
               '#a16207', // yellow-700
               '#92400e', // amber-700
-            ].map((color) => (
+            ].map(color => (
               <button
                 key={color}
                 className="w-10 h-10 rounded border-2 border-gray-300 hover:border-gray-500 transition-colors"

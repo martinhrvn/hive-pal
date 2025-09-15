@@ -30,7 +30,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select.tsx';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { useApiary } from '@/hooks/use-apiary';
 import React, { useEffect, useState } from 'react';
 import { useCreateHive } from '@/api/hooks';
@@ -42,16 +46,22 @@ const hiveSchema = z.object({
   apiaryId: z.string(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   installationDate: z.date(),
-  settings: z.object({
-    autumnFeeding: z.object({
-      startMonth: z.number().int().min(1).max(12).default(8),
-      endMonth: z.number().int().min(1).max(12).default(10),
-      amountKg: z.number().positive().default(12),
-    }).optional(),
-    inspection: z.object({
-      frequencyDays: z.number().int().positive().default(7),
-    }).optional(),
-  }).optional(),
+  settings: z
+    .object({
+      autumnFeeding: z
+        .object({
+          startMonth: z.number().int().min(1).max(12).default(8),
+          endMonth: z.number().int().min(1).max(12).default(10),
+          amountKg: z.number().positive().default(12),
+        })
+        .optional(),
+      inspection: z
+        .object({
+          frequencyDays: z.number().int().positive().default(7),
+        })
+        .optional(),
+    })
+    .optional(),
 });
 
 export type HiveFormData = z.infer<typeof hiveSchema>;
@@ -137,7 +147,10 @@ export const HiveForm: React.FC<HiveFormProps> = ({
             <FormItem>
               <FormLabel>{t('hive:fields.label')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('hive:form.hivePlaceholder')} {...field} />
+                <Input
+                  placeholder={t('hive:form.hivePlaceholder')}
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />
@@ -180,7 +193,10 @@ export const HiveForm: React.FC<HiveFormProps> = ({
             <FormItem>
               <FormLabel>{t('hive:fields.notes')}</FormLabel>
               <FormControl>
-                <Textarea placeholder={t('hive:form.notesPlaceholder')} {...field} />
+                <Textarea
+                  placeholder={t('hive:form.notesPlaceholder')}
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />
@@ -238,14 +254,18 @@ export const HiveForm: React.FC<HiveFormProps> = ({
               className="w-full justify-between"
             >
               Advanced Settings
-              {isAdvancedOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {isAdvancedOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-4 pt-4">
             <div className="text-sm text-muted-foreground mb-2">
               Configure feeding and inspection preferences for this hive
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -255,7 +275,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                     <FormLabel>Autumn Feeding Start</FormLabel>
                     <FormControl>
                       <Select
-                        onValueChange={(value) => field.onChange(Number(value))}
+                        onValueChange={value => field.onChange(Number(value))}
                         value={field.value?.toString()}
                       >
                         <SelectTrigger>
@@ -263,7 +283,10 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                         </SelectTrigger>
                         <SelectContent>
                           {monthOptions.map(month => (
-                            <SelectItem key={month.value} value={month.value.toString()}>
+                            <SelectItem
+                              key={month.value}
+                              value={month.value.toString()}
+                            >
                               {month.label}
                             </SelectItem>
                           ))}
@@ -283,7 +306,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                     <FormLabel>Autumn Feeding End</FormLabel>
                     <FormControl>
                       <Select
-                        onValueChange={(value) => field.onChange(Number(value))}
+                        onValueChange={value => field.onChange(Number(value))}
                         value={field.value?.toString()}
                       >
                         <SelectTrigger>
@@ -291,7 +314,10 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                         </SelectTrigger>
                         <SelectContent>
                           {monthOptions.map(month => (
-                            <SelectItem key={month.value} value={month.value.toString()}>
+                            <SelectItem
+                              key={month.value}
+                              value={month.value.toString()}
+                            >
                               {month.label}
                             </SelectItem>
                           ))}
@@ -316,7 +342,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                         min="0"
                         placeholder="12"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        onChange={e =>
+                          field.onChange(Number(e.target.value) || 0)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -337,7 +365,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                         max="365"
                         placeholder="7"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value) || 7)}
+                        onChange={e =>
+                          field.onChange(Number(e.target.value) || 7)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -348,8 +378,8 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           </CollapsibleContent>
         </Collapsible>
 
-        <Button 
-          disabled={isLoading} 
+        <Button
+          disabled={isLoading}
           type="submit"
           data-umami-event="Hive Create"
         >

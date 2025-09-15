@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -6,10 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { PrinterIcon, QrCodeIcon } from "lucide-react";
-import QRCode from "react-qr-code";
-import { useRef } from "react";
+} from '@/components/ui/dialog';
+import { PrinterIcon, QrCodeIcon } from 'lucide-react';
+import QRCode from 'react-qr-code';
+import { useRef } from 'react';
 
 interface QRCodeDialogProps {
   hiveId: string;
@@ -18,7 +18,7 @@ interface QRCodeDialogProps {
 
 export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
   const qrCodeRef = useRef<HTMLDivElement>(null);
-  
+
   // Construct the full URL for the hive detail page
   const hiveUrl = `${window.location.origin}/hives/${hiveId}`;
 
@@ -26,7 +26,7 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
     const printContent = qrCodeRef.current;
     if (!printContent) return;
 
-    const printWindow = window.open("", "_blank");
+    const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
     const styles = `
@@ -91,7 +91,7 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
 
     printWindow.document.write(htmlContent);
     printWindow.document.close();
-    
+
     // Wait for content to render before printing
     printWindow.onload = () => {
       printWindow.focus();
@@ -116,10 +116,7 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center space-y-4 py-4">
-          <div 
-            ref={qrCodeRef}
-            className="bg-white p-4 rounded-lg border"
-          >
+          <div ref={qrCodeRef} className="bg-white p-4 rounded-lg border">
             <QRCode
               value={hiveUrl}
               size={256}
@@ -131,11 +128,7 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
           <div className="text-sm text-muted-foreground text-center break-all max-w-full px-4">
             {hiveUrl}
           </div>
-          <Button
-            onClick={handlePrint}
-            className="w-full"
-            variant="default"
-          >
+          <Button onClick={handlePrint} className="w-full" variant="default">
             <PrinterIcon className="mr-2 h-4 w-4" />
             Print QR Code
           </Button>

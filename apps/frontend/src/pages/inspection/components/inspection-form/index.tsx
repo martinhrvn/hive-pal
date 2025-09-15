@@ -291,9 +291,9 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               )}
             </>
           ) : (
-            <Button 
-              onClick={handleSave} 
-              type="submit" 
+            <Button
+              onClick={handleSave}
+              type="submit"
               className="w-full"
               data-umami-event="Inspection Create"
             >

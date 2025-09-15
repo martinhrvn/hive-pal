@@ -2,14 +2,19 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Clock } from 'lucide-react';
-import { useOverdueInspections, useDueTodayInspections } from '@/api/hooks/useInspections';
+import {
+  useOverdueInspections,
+  useDueTodayInspections,
+} from '@/api/hooks/useInspections';
 
 export const InspectionStatusSummary: React.FC = () => {
   const { t } = useTranslation(['inspection', 'common']);
   const navigate = useNavigate();
-  
-  const { data: overdueInspections, isLoading: overdueLoading } = useOverdueInspections();
-  const { data: dueTodayInspections, isLoading: dueTodayLoading } = useDueTodayInspections();
+
+  const { data: overdueInspections, isLoading: overdueLoading } =
+    useOverdueInspections();
+  const { data: dueTodayInspections, isLoading: dueTodayLoading } =
+    useDueTodayInspections();
 
   const isLoading = overdueLoading || dueTodayLoading;
   const overdueCount = overdueInspections?.length ?? 0;
@@ -25,7 +30,10 @@ export const InspectionStatusSummary: React.FC = () => {
   };
 
   const handleViewDueToday = () => {
-    navigate('/inspections?status=SCHEDULED&date=' + new Date().toISOString().split('T')[0]);
+    navigate(
+      '/inspections?status=SCHEDULED&date=' +
+        new Date().toISOString().split('T')[0],
+    );
   };
 
   if (isLoading) {
@@ -40,7 +48,7 @@ export const InspectionStatusSummary: React.FC = () => {
     <div className="mb-4">
       <div className="space-y-2">
         {overdueCount > 0 && (
-          <div 
+          <div
             className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 cursor-pointer"
             onClick={handleViewOverdue}
           >
@@ -50,9 +58,9 @@ export const InspectionStatusSummary: React.FC = () => {
             </span>
           </div>
         )}
-        
+
         {dueTodayCount > 0 && (
-          <div 
+          <div
             className="flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700 cursor-pointer"
             onClick={handleViewDueToday}
           >

@@ -37,9 +37,15 @@ export const ApiaryDetailPage = () => {
 
         <Tabs defaultValue="overview" className="mb-6">
           <TabsList className="mb-4">
-            <TabsTrigger value="overview">{t('apiary:detail.tabs.overview')}</TabsTrigger>
-            <TabsTrigger value="hives">{t('apiary:detail.tabs.hives')}</TabsTrigger>
-            <TabsTrigger value="location">{t('apiary:detail.tabs.location')}</TabsTrigger>
+            <TabsTrigger value="overview">
+              {t('apiary:detail.tabs.overview')}
+            </TabsTrigger>
+            <TabsTrigger value="hives">
+              {t('apiary:detail.tabs.hives')}
+            </TabsTrigger>
+            <TabsTrigger value="location">
+              {t('apiary:detail.tabs.location')}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -51,20 +57,28 @@ export const ApiaryDetailPage = () => {
                 <CardContent>
                   <div className="space-y-2">
                     <div>
-                      <span className="font-medium">{t('apiary:fields.name')}:</span> {apiary.name}
+                      <span className="font-medium">
+                        {t('apiary:fields.name')}:
+                      </span>{' '}
+                      {apiary.name}
                     </div>
                     <div>
-                      <span className="font-medium">{t('apiary:fields.location')}:</span>{' '}
+                      <span className="font-medium">
+                        {t('apiary:fields.location')}:
+                      </span>{' '}
                       {apiary.location || t('apiary:fields.notSpecified')}
                     </div>
                     <div>
-                      <span className="font-medium">{t('apiary:fields.coordinates')}:</span>{' '}
+                      <span className="font-medium">
+                        {t('apiary:fields.coordinates')}:
+                      </span>{' '}
                       {apiary.latitude && apiary.longitude
                         ? `${apiary.latitude.toFixed(6)}, ${apiary.longitude.toFixed(6)}`
                         : t('apiary:fields.notSpecified')}
                     </div>
                     <div>
-                      <span className="font-medium">{t('hive:plural')}:</span> {0}
+                      <span className="font-medium">{t('hive:plural')}:</span>{' '}
+                      {0}
                     </div>
                   </div>
                 </CardContent>

@@ -51,7 +51,7 @@ export function isWithinFeedingWindow(hiveSettings?: HiveSettings): boolean {
   const currentMonth = new Date().getMonth() + 1; // 1-based month
   const startMonth = hiveSettings?.autumnFeeding?.startMonth ?? 8;
   const endMonth = hiveSettings?.autumnFeeding?.endMonth ?? 10;
-  
+
   return currentMonth >= startMonth && currentMonth <= endMonth;
 }
 
@@ -67,7 +67,7 @@ export function calculateSugarFromSyrup(
     console.warn(`Unknown concentration: ${concentration}, defaulting to 1:1`);
     return (amountMl / 1000) * SYRUP_CONCENTRATIONS['1:1'].sugarPerLiter;
   }
-  
+
   // Convert ml to liters and multiply by sugar per liter
   return (amountMl / 1000) * syrupConcentration.sugarPerLiter;
 }
@@ -75,73 +75,87 @@ export function calculateSugarFromSyrup(
 /**
  * Calculate feeding totals from actions
  */
-export function calculateFeedingTotals(actions: ActionResponse[], hiveSettings?: HiveSettings): FeedingTotals {
+export function calculateFeedingTotals(
+  actions: ActionResponse[],
+  hiveSettings?: HiveSettings,
+): FeedingTotals {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1; // 1-based month
-  
+
   // Use hive settings for autumn feeding window, with fallback to defaults
   const autumnStartMonth = hiveSettings?.autumnFeeding?.startMonth ?? 8;
   const autumnEndMonth = hiveSettings?.autumnFeeding?.endMonth ?? 10;
   const isAfterAutumnStart = currentMonth >= autumnStartMonth;
-  
+
   let totalSugarGrams = 0;
   let totalSyrupMl = 0;
   let currentYearSugarGrams = 0;
   let currentYearSyrupMl = 0;
   let autumnSugarGrams = 0;
   let autumnSyrupMl = 0;
-  
+
   const feedingActions = actions.filter(
-    action => action.type === 'FEEDING' && action.details?.type === 'FEEDING'
+    action => action.type === 'FEEDING' && action.details?.type === 'FEEDING',
   );
-  
+
   feedingActions.forEach(action => {
     if (action.details?.type !== 'FEEDING') return;
-    
+
     const actionDate = new Date(action.date);
     const actionYear = actionDate.getFullYear();
     const actionMonth = actionDate.getMonth() + 1;
-    
+
     const details = action.details;
     let sugarGrams = 0;
     let syrupMl = 0;
-    
+
     // Calculate based on feed type
     if (details.feedType === 'SYRUP' || details.feedType === 'Syrup') {
       // Convert amount to ml if needed (assuming ml unit for syrup)
-      const amountMl = details.unit === 'ml' ? details.amount : details.amount * 1000;
+      const amountMl =
+        details.unit === 'ml' ? details.amount : details.amount * 1000;
       syrupMl = amountMl;
-      sugarGrams = calculateSugarFromSyrup(amountMl, details.concentration || '1:1');
+      sugarGrams = calculateSugarFromSyrup(
+        amountMl,
+        details.concentration || '1:1',
+      );
     } else if (details.feedType === 'CANDY' || details.feedType === 'Candy') {
       // Candy is pure sugar (assuming grams)
-      sugarGrams = details.unit === 'g' ? details.amount : details.amount * 1000;
+      sugarGrams =
+        details.unit === 'g' ? details.amount : details.amount * 1000;
     } else if (details.feedType === 'HONEY' || details.feedType === 'Honey') {
       // Honey is approximately 80% sugar
-      const amountGrams = details.unit === 'g' ? details.amount : details.amount * 1000;
+      const amountGrams =
+        details.unit === 'g' ? details.amount : details.amount * 1000;
       sugarGrams = amountGrams * 0.8;
     }
-    
+
     // Add to totals
     totalSugarGrams += sugarGrams;
     totalSyrupMl += syrupMl;
-    
+
     // Add to current year totals
     if (actionYear === currentYear) {
       currentYearSugarGrams += sugarGrams;
       currentYearSyrupMl += syrupMl;
-      
+
       // Add to autumn totals (within autumn feeding window)
       if (actionMonth >= autumnStartMonth && actionMonth <= autumnEndMonth) {
         autumnSugarGrams += sugarGrams;
         autumnSyrupMl += syrupMl;
       }
-    } else if (actionYear === currentYear - 1 && actionMonth >= autumnStartMonth && actionMonth <= autumnEndMonth && !isAfterAutumnStart) {
+    } else if (
+      actionYear === currentYear - 1 &&
+      actionMonth >= autumnStartMonth &&
+      actionMonth <= autumnEndMonth &&
+      !isAfterAutumnStart
+    ) {
       // If we're before autumn start this year, include last year's autumn feeding
       autumnSugarGrams += sugarGrams;
       autumnSyrupMl += syrupMl;
     }
   });
-  
+
   return {
     totalSugarKg: totalSugarGrams / 1000,
     totalSyrupLiters: totalSyrupMl / 1000,

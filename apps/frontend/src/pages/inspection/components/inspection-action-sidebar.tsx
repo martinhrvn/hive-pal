@@ -46,7 +46,9 @@ export const InspectionActionSidebar: React.FC<
     <div className="border rounded-md">
       <div className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>{t('inspection:sidebar.actions')}</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {t('inspection:sidebar.actions')}
+          </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -119,7 +121,9 @@ export const InspectionActionSidebar: React.FC<
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>{t('inspection:actions.dataOptions')}</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {t('inspection:actions.dataOptions')}
+          </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton

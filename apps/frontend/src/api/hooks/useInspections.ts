@@ -48,7 +48,9 @@ export const useOverdueInspections = () => {
   return useQuery<InspectionResponse[]>({
     queryKey: ['inspections', 'overdue'],
     queryFn: async () => {
-      const response = await apiClient.get<InspectionResponse[]>('/api/inspections/status/overdue');
+      const response = await apiClient.get<InspectionResponse[]>(
+        '/api/inspections/status/overdue',
+      );
       return response.data;
     },
   });
@@ -59,7 +61,9 @@ export const useDueTodayInspections = () => {
   return useQuery<InspectionResponse[]>({
     queryKey: ['inspections', 'due-today'],
     queryFn: async () => {
-      const response = await apiClient.get<InspectionResponse[]>('/api/inspections/status/due-today');
+      const response = await apiClient.get<InspectionResponse[]>(
+        '/api/inspections/status/due-today',
+      );
       return response.data;
     },
   });

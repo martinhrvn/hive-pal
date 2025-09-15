@@ -30,7 +30,7 @@ export const UserWizardPage = () => {
     t('steps.welcome'),
     t('steps.createApiary'),
     t('steps.addHive'),
-    t('steps.complete')
+    t('steps.complete'),
   ];
 
   const apiaryMutation = useCreateApiary();
@@ -75,9 +75,7 @@ export const UserWizardPage = () => {
       <Card className="w-full max-w-3xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">{t('title')}</CardTitle>
-          <CardDescription>
-            {t('subtitle')}
-          </CardDescription>
+          <CardDescription>{t('subtitle')}</CardDescription>
           <div className="mt-6">
             <Stepper steps={steps} currentStep={step} />
           </div>
@@ -119,9 +117,7 @@ export const UserWizardPage = () => {
 
           {step === 2 && apiary && (
             <div className="py-4">
-              <h3 className="text-xl font-semibold mb-4">
-                {t('hive.title')}
-              </h3>
+              <h3 className="text-xl font-semibold mb-4">{t('hive.title')}</h3>
               <p className="mb-6 text-muted-foreground">
                 {t('hive.description', { apiaryName: apiary.name })}
               </p>
@@ -139,7 +135,9 @@ export const UserWizardPage = () => {
                   <CheckIcon className="h-12 w-12 text-green-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-4">{t('complete.title')}</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                {t('complete.title')}
+              </h3>
               <p className="mb-6 text-muted-foreground max-w-lg mx-auto">
                 {t('complete.description')}
               </p>
@@ -150,8 +148,8 @@ export const UserWizardPage = () => {
         <CardFooter className="flex justify-between">
           {step === 0 && (
             <div className="w-full">
-              <Button 
-                onClick={handleStart} 
+              <Button
+                onClick={handleStart}
                 className="w-full"
                 data-umami-event="Onboarding Start"
               >
@@ -162,8 +160,8 @@ export const UserWizardPage = () => {
 
           {step === 3 && (
             <div className="w-full">
-              <Button 
-                onClick={handleFinish} 
+              <Button
+                onClick={handleFinish}
                 className="w-full"
                 data-umami-event="Onboarding Complete"
               >

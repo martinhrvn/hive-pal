@@ -80,7 +80,7 @@ export const useCreateApiary = (callbacks?: { onSuccess: () => void }) => {
         queryKey: APIARIES_KEYS.lists(),
       });
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/apiaries', 'POST');
     },
   });

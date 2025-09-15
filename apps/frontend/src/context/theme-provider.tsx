@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Theme, ThemeProviderContext } from './theme-context';
+import { usePreferences } from '@/api/hooks/useUserPreferences';
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -13,9 +14,17 @@ export function ThemeProvider({
   storageKey = 'vite-ui-theme',
   ...props
 }: ThemeProviderProps) {
+  const { preferences, updatePreferences } = usePreferences();
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
+
+  // Update theme when user preferences are loaded
+  useEffect(() => {
+    if (preferences.data?.theme) {
+      setTheme(preferences.data.theme as Theme);
+    }
+  }, [preferences.data?.theme]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -37,9 +46,18 @@ export function ThemeProvider({
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    setTheme: (newTheme: Theme) => {
+      // Always update localStorage as fallback
+      localStorage.setItem(storageKey, newTheme);
+      setTheme(newTheme);
+
+      // If user is logged in and preferences are available, update via API
+      if (preferences.data) {
+        updatePreferences.mutate({
+          ...preferences.data,
+          theme: newTheme,
+        });
+      }
     },
   };
 
@@ -49,4 +67,3 @@ export function ThemeProvider({
     </ThemeProviderContext.Provider>
   );
 }
-

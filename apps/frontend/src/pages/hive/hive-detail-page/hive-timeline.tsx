@@ -1,5 +1,11 @@
 import { useState, useMemo, useRef } from 'react';
-import { format, formatDistanceToNow, subMonths, isPast, parseISO } from 'date-fns';
+import {
+  format,
+  formatDistanceToNow,
+  subMonths,
+  isPast,
+  parseISO,
+} from 'date-fns';
 import {
   CalendarIcon,
   ActivityIcon,
@@ -178,17 +184,19 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
     // Sort events: overdue inspections first, then by date (newest first)
     return events.sort((a, b) => {
-      const aIsOverdue = a.type === 'inspection' && 
-        (a.data as InspectionResponse).status === InspectionStatus.SCHEDULED && 
+      const aIsOverdue =
+        a.type === 'inspection' &&
+        (a.data as InspectionResponse).status === InspectionStatus.SCHEDULED &&
         isPast(parseISO(a.date));
-      const bIsOverdue = b.type === 'inspection' && 
-        (b.data as InspectionResponse).status === InspectionStatus.SCHEDULED && 
+      const bIsOverdue =
+        b.type === 'inspection' &&
+        (b.data as InspectionResponse).status === InspectionStatus.SCHEDULED &&
         isPast(parseISO(b.date));
-      
+
       // If one is overdue and the other isn't, overdue comes first
       if (aIsOverdue && !bIsOverdue) return -1;
       if (!aIsOverdue && bIsOverdue) return 1;
-      
+
       // Otherwise sort by date (newest first)
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
@@ -316,8 +324,8 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
           {isInspection && inspection && (
             <div
               className={cn(
-                "cursor-pointer rounded-lg p-2 -ml-2 transition-colors",
-                isOverdue ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"
+                'cursor-pointer rounded-lg p-2 -ml-2 transition-colors',
+                isOverdue ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50',
               )}
               onClick={() => navigate(`/inspections/${inspection.id}`)}
             >
@@ -329,10 +337,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
                 )}
                 <span className="font-medium text-sm">Inspection</span>
                 {isOverdue && (
-                  <Badge
-                    variant="destructive"
-                    className="text-xs"
-                  >
+                  <Badge variant="destructive" className="text-xs">
                     Overdue
                   </Badge>
                 )}

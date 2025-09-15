@@ -30,7 +30,7 @@ export const HiveDetailPage = () => {
       clearContext('queen');
       clearContext('harvest');
     }
-    
+
     // Clear hive context on unmount
     return () => {
       setHiveContext(undefined);
@@ -78,18 +78,18 @@ export const HiveDetailPage = () => {
                   {hive && hive.hiveScore && (
                     <StatisticCards score={hive.hiveScore} />
                   )}
-                  
+
                   {/* Queen Information Card */}
                   <QueenInformation
                     hiveId={hive?.id}
                     activeQueen={hive?.activeQueen}
                     onQueenUpdated={() => refetch()}
                   />
-                  
+
                   {/* Feeding Card */}
                   {hive && <FeedingSection hiveId={hive.id} />}
                 </div>
-                
+
                 {/* Hive timeline */}
                 <HiveTimeline hiveId={hiveId} />
               </div>

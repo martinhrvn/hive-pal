@@ -79,14 +79,24 @@ export const HiveListPage = () => {
                 <SelectValue placeholder={t('hive:list.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">{t('hive:list.allStatuses')}</SelectItem>
-                <SelectItem value={HiveStatusEnum.ACTIVE}>{t('hive:status.active')}</SelectItem>
+                <SelectItem value="ALL">
+                  {t('hive:list.allStatuses')}
+                </SelectItem>
+                <SelectItem value={HiveStatusEnum.ACTIVE}>
+                  {t('hive:status.active')}
+                </SelectItem>
                 <SelectItem value={HiveStatusEnum.INACTIVE}>
                   {t('hive:status.inactive')}
                 </SelectItem>
-                <SelectItem value={HiveStatusEnum.DEAD}>{t('hive:status.dead')}</SelectItem>
-                <SelectItem value={HiveStatusEnum.SOLD}>{t('hive:status.sold')}</SelectItem>
-                <SelectItem value={HiveStatusEnum.UNKNOWN}>{t('hive:status.unknown')}</SelectItem>
+                <SelectItem value={HiveStatusEnum.DEAD}>
+                  {t('hive:status.dead')}
+                </SelectItem>
+                <SelectItem value={HiveStatusEnum.SOLD}>
+                  {t('hive:status.sold')}
+                </SelectItem>
+                <SelectItem value={HiveStatusEnum.UNKNOWN}>
+                  {t('hive:status.unknown')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -97,10 +107,15 @@ export const HiveListPage = () => {
             <TableCaption>
               {statusFilter === 'ALL'
                 ? t('hive:list.caption')
-                : t(hives.length === 1 ? 'hive:list.captionFiltered' : 'hive:list.captionFilteredPlural', { 
-                    count: hives.length, 
-                    status: statusFilter.toLowerCase() 
-                  })}
+                : t(
+                    hives.length === 1
+                      ? 'hive:list.captionFiltered'
+                      : 'hive:list.captionFilteredPlural',
+                    {
+                      count: hives.length,
+                      status: statusFilter.toLowerCase(),
+                    },
+                  )}
             </TableCaption>
             <TableHeader>
               <TableRow>
@@ -109,7 +124,9 @@ export const HiveListPage = () => {
                 <TableHead>{t('hive:fields.installationDate')}</TableHead>
                 <TableHead>{t('hive:fields.lastInspection')}</TableHead>
                 <TableHead>{t('hive:fields.notes')}</TableHead>
-                <TableHead className="text-right">{t('common:actions.actions')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common:actions.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -123,7 +140,8 @@ export const HiveListPage = () => {
                     {hive.installationDate ?? t('hive:fields.notSpecified')}
                   </TableCell>
                   <TableCell>
-                    {hive.lastInspectionDate ?? t('hive:fields.noInspectionYet')}
+                    {hive.lastInspectionDate ??
+                      t('hive:fields.noInspectionYet')}
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate">
                     {hive.notes ?? t('hive:fields.noNotes')}
@@ -135,7 +153,8 @@ export const HiveListPage = () => {
                       onClick={() => navigate(`/hives/${hive.id}`)}
                       className="flex items-center"
                     >
-                      {t('hive:actions.details')} <ChevronRight className="ml-1 h-4 w-4" />
+                      {t('hive:actions.details')}{' '}
+                      <ChevronRight className="ml-1 h-4 w-4" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -146,11 +165,16 @@ export const HiveListPage = () => {
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <p className="text-muted-foreground mb-4">
               {searchTerm && statusFilter !== 'ALL'
-                ? t('hive:list.noHivesMatchingBoth', { status: statusFilter.toLowerCase(), searchTerm })
+                ? t('hive:list.noHivesMatchingBoth', {
+                    status: statusFilter.toLowerCase(),
+                    searchTerm,
+                  })
                 : searchTerm
                   ? t('hive:list.noHivesMatchingSearch', { searchTerm })
                   : statusFilter !== 'ALL'
-                    ? t('hive:list.noHivesWithStatus', { status: statusFilter.toLowerCase() })
+                    ? t('hive:list.noHivesWithStatus', {
+                        status: statusFilter.toLowerCase(),
+                      })
                     : t('hive:list.noHives')}
             </p>
             <Button

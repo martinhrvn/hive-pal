@@ -42,23 +42,23 @@ const LoginPage = () => {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero2.jpg')]"></div>
       <div className="absolute inset-0 bg-gradient-to-br from-amber-900/80 via-black/70 to-amber-900/80"></div>
-      
+
       {/* Content */}
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md px-4">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <div className="text-5xl">🐝</div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Hive Pal
-          </h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Hive Pal</h1>
           <h2 className="text-lg text-amber-200">{t('login.title')}</h2>
         </div>
 
         <div className="backdrop-blur-md bg-white/10 py-8 px-4 shadow-2xl rounded-xl sm:px-10 border border-white/20">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="email" className="text-white/90">{t('login.email')}</Label>
+              <Label htmlFor="email" className="text-white/90">
+                {t('login.email')}
+              </Label>
               <div className="mt-1">
                 <Input
                   id="email"
@@ -75,9 +75,11 @@ const LoginPage = () => {
 
             <div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-white/90">{t('login.password')}</Label>
-                <Link 
-                  to="/forgot-password" 
+                <Label htmlFor="password" className="text-white/90">
+                  {t('login.password')}
+                </Label>
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-amber-300 hover:text-amber-200"
                 >
                   {t('login.forgotPassword')}
@@ -103,8 +105,8 @@ const LoginPage = () => {
             )}
 
             <div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg"
                 data-umami-event="Login"
               >
@@ -116,7 +118,10 @@ const LoginPage = () => {
           <div className="mt-6 text-center">
             <p className="text-white/80">
               {t('login.noAccount')}{' '}
-              <Link to="/register" className="text-amber-300 hover:text-amber-200 underline">
+              <Link
+                to="/register"
+                className="text-amber-300 hover:text-amber-200 underline"
+              >
                 {t('login.signUp')}
               </Link>
             </p>

@@ -10,21 +10,30 @@ i18n
   .init({
     fallbackLng: 'en',
     debug: false,
-    
+
     interpolation: {
       escapeValue: false,
     },
-    
+
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
-    
+
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
     },
-    
-    ns: ['common', 'auth', 'hive', 'inspection', 'apiary', 'queen', 'admin', 'onboarding'],
+
+    ns: [
+      'common',
+      'auth',
+      'hive',
+      'inspection',
+      'apiary',
+      'queen',
+      'admin',
+      'onboarding',
+    ],
     defaultNS: 'common',
   });
 

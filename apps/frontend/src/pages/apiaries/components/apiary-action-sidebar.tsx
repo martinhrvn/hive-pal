@@ -25,7 +25,9 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
     <div className="border rounded-md">
       <div className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>{t('common:actions.actions', { defaultValue: 'Actions' })}</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {t('common:actions.actions', { defaultValue: 'Actions' })}
+          </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -50,7 +52,9 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
         </SidebarGroup>
 
         <SidebarGroup className="mt-4">
-          <SidebarGroupLabel>{t('apiary:actions.dataOptions')}</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {t('apiary:actions.dataOptions')}
+          </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton

@@ -45,7 +45,7 @@ export const InspectionDetailPage = () => {
         name: hive.name,
       });
     }
-    
+
     // Clear context on unmount
     return () => {
       setInspectionContext(undefined);

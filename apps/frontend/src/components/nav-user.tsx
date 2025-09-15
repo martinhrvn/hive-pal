@@ -1,6 +1,12 @@
 'use client';
 
-import { Bell, ChevronsUpDown, LogOut, Languages, MessageSquare } from 'lucide-react';
+import {
+  Bell,
+  ChevronsUpDown,
+  LogOut,
+  Languages,
+  MessageSquare,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -40,7 +46,7 @@ export function NavUser() {
     i18n.changeLanguage(languageCode);
     localStorage.setItem('language', languageCode);
   };
-  
+
   if (isLoading || !user) {
     return null;
   }
@@ -94,11 +100,13 @@ export function NavUser() {
                   {t('actions.language')}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  {LANGUAGES.map((language) => (
+                  {LANGUAGES.map(language => (
                     <DropdownMenuItem
                       key={language.code}
                       onClick={() => handleLanguageChange(language.code)}
-                      className={i18n.language === language.code ? 'bg-accent' : ''}
+                      className={
+                        i18n.language === language.code ? 'bg-accent' : ''
+                      }
                     >
                       <span className="mr-2">{language.flag}</span>
                       {language.name}

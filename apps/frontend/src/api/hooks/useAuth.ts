@@ -26,7 +26,7 @@ export const useLogin = () => {
       // Update user data in cache
       queryClient.setQueryData(AUTH_KEYS.user(), data.user);
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/auth/login', 'POST');
     },
   });
@@ -48,7 +48,7 @@ export const useRegister = () => {
       // Update user data in cache
       queryClient.setQueryData(AUTH_KEYS.user(), data.user);
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/auth/register', 'POST');
     },
   });
@@ -67,7 +67,7 @@ export const useChangePassword = () => {
       );
       return response.data;
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/auth/change-password', 'POST');
     },
   });
@@ -83,7 +83,7 @@ export const useResetPassword = () => {
       );
       return response.data;
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/auth/reset-password', 'POST');
     },
   });

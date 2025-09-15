@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, addDays, isSameDay, startOfDay } from 'date-fns';
-import { 
-  Calendar, 
+import {
+  Calendar,
   CalendarPlus,
   Cloud,
   CloudRain,
@@ -10,7 +10,7 @@ import {
   Sun,
   CloudDrizzle,
   CloudFog,
-  Home
+  Home,
 } from 'lucide-react';
 import {
   Dialog,
@@ -72,14 +72,12 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
 
   const { data: hives } = useHives();
   const hive = hives?.find(h => h.id === inspection.hiveId);
-  
+
   // Get weather for the hive's apiary
-  const { data: weatherForecast, isLoading: weatherLoading } = useWeatherDailyForecast(
-    hive?.apiaryId || '', 
-    {
+  const { data: weatherForecast, isLoading: weatherLoading } =
+    useWeatherDailyForecast(hive?.apiaryId || '', {
       enabled: !!hive?.apiaryId && open,
-    }
-  );
+    });
 
   const getNextNDays = (numDays: number) => {
     const days = [];
@@ -149,7 +147,8 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
                     const forecastDate = startOfDay(new Date(f.date));
                     return isSameDay(forecastDate, dayStart);
                   });
-                  const isSelected = selectedDate && isSameDay(day, selectedDate);
+                  const isSelected =
+                    selectedDate && isSameDay(day, selectedDate);
                   const isTodayCard = index === 0;
                   const hasWeatherData = !!forecast;
                   const isBeyondForecast = index >= 7;
@@ -161,8 +160,8 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
                         'cursor-pointer transition-all hover:shadow-md',
                         isSelected && 'ring-2 ring-primary',
                         isTodayCard && 'border-primary',
-                        !hasWeatherData && 
-                          isBeyondForecast && 
+                        !hasWeatherData &&
+                          isBeyondForecast &&
                           'border-dashed border-muted-foreground/50',
                       )}
                       onClick={() => handleDateSelect(day)}
@@ -204,7 +203,9 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
                           <div className="text-xs text-muted-foreground">
                             {isBeyondForecast
                               ? t('inspection:dialogs.reschedule.noForecast')
-                              : t('inspection:dialogs.reschedule.noWeatherData')}
+                              : t(
+                                  'inspection:dialogs.reschedule.noWeatherData',
+                                )}
                           </div>
                         )}
                       </CardContent>
@@ -242,7 +243,7 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
                 <Calendar className="h-4 w-4" />
                 <span className="text-sm font-medium">
                   {t('inspection:dialogs.reschedule.newDate', {
-                    date: format(selectedDate, 'EEEE, MMMM d, yyyy')
+                    date: format(selectedDate, 'EEEE, MMMM d, yyyy'),
                   })}
                 </span>
               </div>
@@ -260,10 +261,7 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
           <Button variant="outline" onClick={handleCancel}>
             {t('inspection:dialogs.reschedule.cancel')}
           </Button>
-          <Button 
-            onClick={handleReschedule}
-            disabled={!selectedDate}
-          >
+          <Button onClick={handleReschedule} disabled={!selectedDate}>
             {t('inspection:dialogs.reschedule.reschedule')}
           </Button>
         </DialogFooter>

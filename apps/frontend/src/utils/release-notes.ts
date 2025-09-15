@@ -6,14 +6,17 @@ const releaseNotesModules = import.meta.glob('/src/releases/*.md', {
   import: 'default',
 }) as Record<string, () => Promise<string>>;
 
-export const parseMarkdownContent = (content: string): { title: string; releaseDate: string; htmlContent: string } => {
+export const parseMarkdownContent = (
+  content: string,
+): { title: string; releaseDate: string; htmlContent: string } => {
   const lines = content.split('\n');
   const titleLine = lines.find(line => line.startsWith('# '));
   const releaseDateLine = lines.find(line => line.startsWith('**Released:**'));
-  
+
   const title = titleLine?.replace('# ', '').trim() || '';
-  const releaseDate = releaseDateLine?.replace('**Released:**', '').trim() || '';
-  
+  const releaseDate =
+    releaseDateLine?.replace('**Released:**', '').trim() || '';
+
   // Simple markdown to HTML conversion for basic formatting
   const htmlContent = content
     .replace(/^# (.+)$/gm, '<h1>$1</h1>')
@@ -60,7 +63,7 @@ export const loadAllReleaseNotes = async (): Promise<ParsedReleaseNote[]> => {
   return releaseNotes.sort((a, b) => {
     const aVersion = a.version.split('.').map(Number);
     const bVersion = b.version.split('.').map(Number);
-    
+
     for (let i = 0; i < Math.max(aVersion.length, bVersion.length); i++) {
       const aPart = aVersion[i] || 0;
       const bPart = bVersion[i] || 0;
@@ -75,7 +78,7 @@ export const loadAllReleaseNotes = async (): Promise<ParsedReleaseNote[]> => {
 export const compareVersions = (version1: string, version2: string): number => {
   const v1Parts = version1.split('.').map(Number);
   const v2Parts = version2.split('.').map(Number);
-  
+
   for (let i = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
     const v1Part = v1Parts[i] || 0;
     const v2Part = v2Parts[i] || 0;
@@ -88,7 +91,7 @@ export const compareVersions = (version1: string, version2: string): number => {
 
 export const getLatestVersion = (versions: string[]): string => {
   if (versions.length === 0) return '';
-  
+
   return versions.reduce((latest, current) => {
     return compareVersions(current, latest) > 0 ? current : latest;
   });

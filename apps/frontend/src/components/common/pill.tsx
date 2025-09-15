@@ -4,7 +4,6 @@ import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { pillVariants } from './pill-variants';
 
-
 export interface PillProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof pillVariants> {

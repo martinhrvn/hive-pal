@@ -1,10 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import {
-  AlertResponse,
-  AlertFilter,
-  UpdateAlert,
-} from 'shared-schemas';
+import { AlertResponse, AlertFilter, UpdateAlert } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
 // Query keys
@@ -32,7 +28,10 @@ export const useAlerts = (
       if (filters?.severity) params.append('severity', filters.severity);
       if (filters?.status) params.append('status', filters.status);
       if (filters?.includeSuperseded !== undefined)
-        params.append('includeSuperseded', filters.includeSuperseded.toString());
+        params.append(
+          'includeSuperseded',
+          filters.includeSuperseded.toString(),
+        );
 
       const url = `/api/alerts${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await apiClient.get<AlertResponse[]>(url);

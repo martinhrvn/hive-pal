@@ -82,7 +82,9 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                               field.onChange(fullValue);
                               setHoveredValue(null);
                             }}
-                            aria-label={t('observations.rateAs', { value: fullValue })}
+                            aria-label={t('observations.rateAs', {
+                              value: fullValue,
+                            })}
                           >
                             {hoveredValue === fullValue && hoveredValue}
                           </button>

@@ -18,7 +18,9 @@ const LANGUAGES = [
   { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
 ];
 
-export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) => {
+export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
+  compact = false,
+}) => {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (languageCode: string) => {
@@ -39,7 +41,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {LANGUAGES.map((language) => (
+          {LANGUAGES.map(language => (
             <SelectItem key={language.code} value={language.code}>
               <div className="flex items-center gap-2">
                 <span>{language.flag}</span>
@@ -63,7 +65,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {LANGUAGES.map((language) => (
+        {LANGUAGES.map(language => (
           <SelectItem key={language.code} value={language.code}>
             <div className="flex items-center gap-2">
               <span>{language.flag}</span>

@@ -103,8 +103,8 @@ export const BoxItem = ({
     >
       {/* Type badge in upper right */}
       <div className="absolute top-2 right-2">
-        <Badge 
-          variant="secondary" 
+        <Badge
+          variant="secondary"
           className={cn('font-semibold border', getBoxTypeBadgeClass(box.type))}
         >
           {getBoxTypeLabel(box.type)}

@@ -48,18 +48,18 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
 
   // Separate scheduled and completed inspections
   const scheduledInspections = inspections.filter(
-    inspection => inspection.status === InspectionStatus.SCHEDULED
+    inspection => inspection.status === InspectionStatus.SCHEDULED,
   );
-  
+
   const completedInspections = inspections.filter(
-    inspection => inspection.status !== InspectionStatus.SCHEDULED
+    inspection => inspection.status !== InspectionStatus.SCHEDULED,
   );
 
   // Sort inspections by date
   const sortedScheduled = [...scheduledInspections].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(), // Earliest first for scheduled
   );
-  
+
   const sortedCompleted = [...completedInspections].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(), // Newest first for completed
   );
@@ -70,7 +70,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
   const displayedInspections = showAll
     ? sortedInspections
     : sortedInspections.slice(0, MAX_DISPLAYED);
-  
+
   const getHiveName = (hiveId: string) => {
     const hive = hives?.find(h => h.id === hiveId);
     return hive ? hive.name : 'Unknown Hive';
@@ -147,12 +147,14 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
               <span>Scheduled Inspections</span>
             </div>
           )}
-          
+
           {displayedInspections.map((inspection, index) => {
-            const prevInspection = index > 0 ? displayedInspections[index - 1] : null;
-            const showDivider = prevInspection?.status === InspectionStatus.SCHEDULED && 
-                               inspection.status !== InspectionStatus.SCHEDULED;
-            
+            const prevInspection =
+              index > 0 ? displayedInspections[index - 1] : null;
+            const showDivider =
+              prevInspection?.status === InspectionStatus.SCHEDULED &&
+              inspection.status !== InspectionStatus.SCHEDULED;
+
             return (
               <div key={inspection.id}>
                 {/* Show divider between scheduled and completed inspections */}
@@ -162,7 +164,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                     <span>Completed Inspections</span>
                   </div>
                 )}
-                
+
                 {(() => {
                   // Use ScheduledInspectionCard for scheduled inspections
                   if (inspection.status === InspectionStatus.SCHEDULED) {
@@ -174,22 +176,29 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                       />
                     );
                   }
-                  
+
                   // Regular card for completed inspections
                   return (
                     <Card className="overflow-hidden">
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">
-                            <CalendarIcon size={16} className="text-muted-foreground" />
+                            <CalendarIcon
+                              size={16}
+                              className="text-muted-foreground"
+                            />
                             <span className="font-medium">
                               {formatDate(inspection.date)}
                             </span>
                             <span className="text-xs text-muted-foreground">
                               {formatTime(inspection.date)}
                             </span>
-                            {inspection.status === InspectionStatus.CANCELLED && (
-                              <Badge variant="outline" className="text-gray-600 border-gray-600">
+                            {inspection.status ===
+                              InspectionStatus.CANCELLED && (
+                              <Badge
+                                variant="outline"
+                                className="text-gray-600 border-gray-600"
+                              >
                                 Cancelled
                               </Badge>
                             )}
@@ -206,12 +215,23 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40">
-                              <DropdownMenuItem onClick={() => navigate(`/inspections/${inspection.id}`)}>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  navigate(`/inspections/${inspection.id}`)
+                                }
+                              >
                                 <Eye className="h-4 w-4 mr-2" />
                                 View details
                               </DropdownMenuItem>
-                              {inspection.status !== InspectionStatus.CANCELLED && (
-                                <DropdownMenuItem onClick={() => navigate(`/inspections/${inspection.id}/edit`)}>
+                              {inspection.status !==
+                                InspectionStatus.CANCELLED && (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    navigate(
+                                      `/inspections/${inspection.id}/edit`,
+                                    )
+                                  }
+                                >
                                   <Edit className="h-4 w-4 mr-2" />
                                   Edit
                                 </DropdownMenuItem>
@@ -223,7 +243,10 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         {/* Key metrics */}
                         <div className="grid grid-cols-3 gap-4 mb-3">
                           <div className="flex items-center gap-2">
-                            <ActivityIcon size={16} className="text-muted-foreground" />
+                            <ActivityIcon
+                              size={16}
+                              className="text-muted-foreground"
+                            />
                             <span className="text-sm">Strength:</span>
                             <span
                               className={`font-semibold ${getStrengthColor(inspection.observations?.strength ?? null)}`}
@@ -233,7 +256,10 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <DropletsIcon size={16} className="text-muted-foreground" />
+                            <DropletsIcon
+                              size={16}
+                              className="text-muted-foreground"
+                            />
                             <span className="text-sm">Honey:</span>
                             <span
                               className={`font-semibold ${getHoneyColor(inspection.observations?.honeyStores ?? null)}`}
@@ -243,7 +269,10 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <EggIcon size={16} className="text-muted-foreground" />
+                            <EggIcon
+                              size={16}
+                              className="text-muted-foreground"
+                            />
                             <span className="text-sm">Brood:</span>
                             <span
                               className={`font-semibold ${getBroodColor(calculateBroodScore(inspection) as number | null)}`}
@@ -254,10 +283,13 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         </div>
 
                         {/* Weather if available */}
-                        {(inspection.temperature || inspection.weatherConditions) && (
+                        {(inspection.temperature ||
+                          inspection.weatherConditions) && (
                           <div className="text-sm text-muted-foreground mb-2">
                             Weather:{' '}
-                            {inspection.temperature ? `${inspection.temperature}°` : ''}
+                            {inspection.temperature
+                              ? `${inspection.temperature}°`
+                              : ''}
                             {inspection.weatherConditions
                               ? inspection.temperature
                                 ? `, ${inspection.weatherConditions}`
@@ -269,7 +301,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         {/* Queen seen indicator */}
                         {inspection.observations?.queenSeen !== null && (
                           <div className="mt-2 text-sm">
-                            <span className="text-muted-foreground">Queen: </span>
+                            <span className="text-muted-foreground">
+                              Queen:{' '}
+                            </span>
                             <span
                               className={
                                 inspection.observations?.queenSeen
@@ -277,7 +311,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                                   : 'text-amber-500'
                               }
                             >
-                              {inspection.observations?.queenSeen ? 'Seen' : 'Not seen'}
+                              {inspection.observations?.queenSeen
+                                ? 'Seen'
+                                : 'Not seen'}
                             </span>
                           </div>
                         )}
@@ -285,7 +321,10 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         {/* Notes indicator */}
                         {inspection.notes && (
                           <div className="mt-2 text-sm flex items-center gap-1">
-                            <FileTextIcon size={14} className="text-muted-foreground" />
+                            <FileTextIcon
+                              size={14}
+                              className="text-muted-foreground"
+                            />
                             <span className="text-muted-foreground">
                               Notes available
                             </span>
@@ -293,8 +332,8 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         )}
                       </div>
                     </Card>
-                );
-              })()}
+                  );
+                })()}
               </div>
             );
           })}

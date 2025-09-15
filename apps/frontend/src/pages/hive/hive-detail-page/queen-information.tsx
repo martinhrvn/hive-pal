@@ -99,8 +99,12 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2 text-sm">
                 <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                <span>{t('fields.installedOn', { date: 'January 15, 2025' })}</span>
-                <span className="text-muted-foreground">({t('fields.via', { source: 'Package' })})</span>
+                <span>
+                  {t('fields.installedOn', { date: 'January 15, 2025' })}
+                </span>
+                <span className="text-muted-foreground">
+                  ({t('fields.via', { source: 'Package' })})
+                </span>
               </div>
 
               <div className="flex items-center gap-3"></div>
@@ -108,7 +112,9 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
           </div>
         ) : (
           <div className="text-center py-2">
-            <p className="text-muted-foreground mb-4">{t('information.noActiveQueen')}</p>
+            <p className="text-muted-foreground mb-4">
+              {t('information.noActiveQueen')}
+            </p>
             <Link
               to={`/hives/${hiveId}/queens/create`}
               className={buttonVariants({

@@ -37,7 +37,10 @@ export function NavMain({
   return (
     <SidebarGroup>
       <SidebarMenuItem>
-        <SidebarMenuButton onClick={() => navigate('/')} className="flex items-center cursor-pointer">
+        <SidebarMenuButton
+          onClick={() => navigate('/')}
+          className="flex items-center cursor-pointer"
+        >
           <DashboardIcon />
           <span>{t('navigation.dashboard')}</span>
         </SidebarMenuButton>
@@ -48,7 +51,10 @@ export function NavMain({
           if (!item.items || item.items.length === 0) {
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton onClick={() => navigate(item.url)} className="flex items-center cursor-pointer">
+                <SidebarMenuButton
+                  onClick={() => navigate(item.url)}
+                  className="flex items-center cursor-pointer"
+                >
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </SidebarMenuButton>
@@ -76,7 +82,10 @@ export function NavMain({
                   <SidebarMenuSub>
                     {item.items?.map(subItem => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton onClick={() => navigate(subItem.url)} className="cursor-pointer">
+                        <SidebarMenuSubButton
+                          onClick={() => navigate(subItem.url)}
+                          className="cursor-pointer"
+                        >
                           <span>{subItem.title}</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>

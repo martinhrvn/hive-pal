@@ -170,7 +170,9 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                           defaultValue={field.value}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder={t('queen:form.selectHive')} />
+                            <SelectValue
+                              placeholder={t('queen:form.selectHive')}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             {hiveOptions?.map(option => (
@@ -258,7 +260,9 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder={t('queen:form.selectColor')} />
+                            <SelectValue
+                              placeholder={t('queen:form.selectColor')}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             {colorOptions.map(option => (
@@ -328,13 +332,23 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                         defaultValue={field.value}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t('queen:form.selectStatus')} />
+                          <SelectValue
+                            placeholder={t('queen:form.selectStatus')}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ACTIVE">{t('queen:status.active')}</SelectItem>
-                          <SelectItem value="REPLACED">{t('queen:status.replaced')}</SelectItem>
-                          <SelectItem value="DEAD">{t('queen:status.dead')}</SelectItem>
-                          <SelectItem value="UNKNOWN">{t('queen:status.unknown')}</SelectItem>
+                          <SelectItem value="ACTIVE">
+                            {t('queen:status.active')}
+                          </SelectItem>
+                          <SelectItem value="REPLACED">
+                            {t('queen:status.replaced')}
+                          </SelectItem>
+                          <SelectItem value="DEAD">
+                            {t('queen:status.dead')}
+                          </SelectItem>
+                          <SelectItem value="UNKNOWN">
+                            {t('queen:status.unknown')}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -348,7 +362,9 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                   name="installedAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>{t('queen:fields.installationDate')}</FormLabel>
+                      <FormLabel>
+                        {t('queen:fields.installationDate')}
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -442,10 +458,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                 >
                   {t('common:actions.cancel')}
                 </Button>
-                <Button 
-                  type="submit"
-                  data-umami-event="Queen Create"
-                >
+                <Button type="submit" data-umami-event="Queen Create">
                   {t('queen:create.button')}
                 </Button>
               </div>

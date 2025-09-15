@@ -34,17 +34,13 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
   hiveId,
   period,
 }) => {
-  const inspectionData = useInspectionChartData(
-    hiveId,
-    period,
-    (inspection) => ({
-      date: format(parseISO(inspection.date), 'MMM dd'),
-      overallScore: inspection.score?.overallScore || 0,
-      populationScore: inspection.score?.populationScore || 0,
-      storesScore: inspection.score?.storesScore || 0,
-      queenScore: inspection.score?.queenScore || 0,
-    })
-  );
+  const inspectionData = useInspectionChartData(hiveId, period, inspection => ({
+    date: format(parseISO(inspection.date), 'MMM dd'),
+    overallScore: inspection.score?.overallScore || 0,
+    populationScore: inspection.score?.populationScore || 0,
+    storesScore: inspection.score?.storesScore || 0,
+    queenScore: inspection.score?.queenScore || 0,
+  }));
 
   if (!hiveId || inspectionData.length === 0) {
     return (

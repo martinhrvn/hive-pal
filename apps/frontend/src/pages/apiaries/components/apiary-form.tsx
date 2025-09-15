@@ -70,7 +70,10 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
             <FormItem>
               <FormLabel>{t('apiary:fields.name')}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder={t('apiary:form.namePlaceholder')} />
+                <Input
+                  {...field}
+                  placeholder={t('apiary:form.namePlaceholder')}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -84,7 +87,10 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
             <FormItem>
               <FormLabel>{t('apiary:fields.location')}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder={t('apiary:form.locationPlaceholder')} />
+                <Input
+                  {...field}
+                  placeholder={t('apiary:form.locationPlaceholder')}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,8 +111,8 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           >
             {t('common:actions.cancel')}
           </Button>
-          <Button 
-            disabled={isLoading} 
+          <Button
+            disabled={isLoading}
             type={'submit'}
             data-umami-event="Apiary Create"
           >

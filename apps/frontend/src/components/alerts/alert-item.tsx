@@ -30,10 +30,10 @@ const severityConfig = {
   },
 };
 
-export function AlertItem({ 
-  alert, 
-  showActions = true, 
-  className 
+export function AlertItem({
+  alert,
+  showActions = true,
+  className,
 }: AlertItemProps) {
   const [isLoading, setIsLoading] = useState(false);
   const dismissAlert = useDismissAlert();
@@ -73,14 +73,12 @@ export function AlertItem({
       )}
     >
       <Icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', config.color)} />
-      
+
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium leading-tight text-foreground">
           {alert.message}
         </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          {timeAgo}
-        </p>
+        <p className="text-xs text-muted-foreground mt-1">{timeAgo}</p>
       </div>
 
       {showActions && (

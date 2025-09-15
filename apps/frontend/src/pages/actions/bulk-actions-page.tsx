@@ -26,11 +26,29 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions';
-import { FeedingForm, type FeedingActionType } from '@/pages/inspection/components/inspection-form/actions/feeding';
-import { TreatmentForm, type TreatmentActionType } from '@/pages/inspection/components/inspection-form/actions/treatment';
-import { FramesForm, type FramesActionType } from '@/pages/inspection/components/inspection-form/actions/frames';
-import { NoteForm, type NoteActionType } from '@/pages/inspection/components/inspection-form/actions/note';
-import type { ActionData, FeedingActionData, TreatmentActionData, FramesActionData, NoteActionData } from '@/pages/inspection/components/inspection-form/schema';
+import {
+  FeedingForm,
+  type FeedingActionType,
+} from '@/pages/inspection/components/inspection-form/actions/feeding';
+import {
+  TreatmentForm,
+  type TreatmentActionType,
+} from '@/pages/inspection/components/inspection-form/actions/treatment';
+import {
+  FramesForm,
+  type FramesActionType,
+} from '@/pages/inspection/components/inspection-form/actions/frames';
+import {
+  NoteForm,
+  type NoteActionType,
+} from '@/pages/inspection/components/inspection-form/actions/note';
+import type {
+  ActionData,
+  FeedingActionData,
+  TreatmentActionData,
+  FramesActionData,
+  NoteActionData,
+} from '@/pages/inspection/components/inspection-form/schema';
 
 interface StagedAction {
   id: string;
@@ -50,7 +68,7 @@ export const BulkActionsPage = () => {
   const [stagedActions, setStagedActions] = useState<StagedAction[]>([]);
   const [editingAction, setEditingAction] = useState<StagedAction | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  
+
   const editMethods = useForm({
     defaultValues: {
       actions: [] as ActionData[],
@@ -91,7 +109,7 @@ export const BulkActionsPage = () => {
 
     // Create staged actions for selected hives
     const newStagedActions: StagedAction[] = [];
-    
+
     selectedHives.forEach(hiveId => {
       const hive = hives.find(h => h.id === hiveId);
       actions.forEach(action => {
@@ -106,12 +124,12 @@ export const BulkActionsPage = () => {
     });
 
     setStagedActions([...stagedActions, ...newStagedActions]);
-    
+
     // Reset form but keep date
     const currentDate = values.date;
     methods.reset({ date: currentDate, actions: [] });
     setSelectedHives([]);
-    
+
     toast.success(`Added ${newStagedActions.length} action(s) to the queue`);
   };
 
@@ -128,19 +146,19 @@ export const BulkActionsPage = () => {
 
   const handleSaveEdit = () => {
     if (!editingAction) return;
-    
+
     const editedActions = editMethods.getValues('actions');
     if (editedActions.length > 0) {
       const updatedAction = {
         ...editingAction,
         action: editedActions[0],
       };
-      
-      setStagedActions(stagedActions.map(a => 
-        a.id === editingAction.id ? updatedAction : a
-      ));
+
+      setStagedActions(
+        stagedActions.map(a => (a.id === editingAction.id ? updatedAction : a)),
+      );
     }
-    
+
     setEditingAction(null);
     setShowEditDialog(false);
     toast.success('Action updated');
@@ -219,9 +237,13 @@ export const BulkActionsPage = () => {
         toast.success(`Successfully created ${successCount} action(s)`);
         setStagedActions([]);
       } else {
-        toast.error(`Created ${successCount} actions. Failed: ${failedActions.join(', ')}`);
+        toast.error(
+          `Created ${successCount} actions. Failed: ${failedActions.join(', ')}`,
+        );
         // Remove successful actions
-        setStagedActions(stagedActions.filter(a => failedActions.includes(a.hiveName)));
+        setStagedActions(
+          stagedActions.filter(a => failedActions.includes(a.hiveName)),
+        );
       }
     } catch {
       toast.error('Failed to submit actions. Please try again.');
@@ -230,7 +252,7 @@ export const BulkActionsPage = () => {
 
   const formatActionDetails = (action: ActionData) => {
     const details = [];
-    
+
     switch (action.type) {
       case 'FEEDING': {
         const feeding = action as FeedingActionData;
@@ -255,11 +277,13 @@ export const BulkActionsPage = () => {
       case 'NOTE': {
         const note = action as NoteActionData;
         const content = note.notes || '';
-        details.push(content.substring(0, 50) + (content.length > 50 ? '...' : ''));
+        details.push(
+          content.substring(0, 50) + (content.length > 50 ? '...' : ''),
+        );
         break;
       }
     }
-    
+
     return details.filter(Boolean).join(' - ');
   };
 
@@ -267,7 +291,7 @@ export const BulkActionsPage = () => {
     if (!editingAction) return null;
 
     const action = editingAction.action;
-    
+
     const handleEditRemove = () => {
       // Not needed for edit dialog
     };
@@ -283,7 +307,7 @@ export const BulkActionsPage = () => {
           concentration: feedingData.concentration,
           notes: feedingData.notes,
         };
-        
+
         const handleFeedingSave = (updatedAction: FeedingActionType) => {
           const convertedAction: FeedingActionData = {
             type: ActionType.FEEDING,
@@ -295,7 +319,7 @@ export const BulkActionsPage = () => {
           };
           editMethods.setValue('actions', [convertedAction]);
         };
-        
+
         return (
           <FeedingForm
             action={feedingAction}
@@ -313,7 +337,7 @@ export const BulkActionsPage = () => {
           unit: treatmentData.unit,
           notes: treatmentData.notes,
         };
-        
+
         const handleTreatmentSave = (updatedAction: TreatmentActionType) => {
           const convertedAction: TreatmentActionData = {
             type: ActionType.TREATMENT,
@@ -324,7 +348,7 @@ export const BulkActionsPage = () => {
           };
           editMethods.setValue('actions', [convertedAction]);
         };
-        
+
         return (
           <TreatmentForm
             action={treatmentAction}
@@ -340,7 +364,7 @@ export const BulkActionsPage = () => {
           frames: frameData.frames,
           notes: frameData.notes,
         };
-        
+
         const handleFrameSave = (updatedAction: FramesActionType) => {
           const convertedAction: FramesActionData = {
             type: ActionType.FRAME,
@@ -349,7 +373,7 @@ export const BulkActionsPage = () => {
           };
           editMethods.setValue('actions', [convertedAction]);
         };
-        
+
         return (
           <FramesForm
             action={frameAction}
@@ -362,7 +386,7 @@ export const BulkActionsPage = () => {
         const noteData = action as NoteActionData;
         // Pre-populate the form with existing note content
         editMethods.setValue('actions', [noteData]);
-        
+
         const handleNoteSave = (updatedAction: NoteActionType) => {
           const convertedAction: NoteActionData = {
             type: ActionType.NOTE,
@@ -370,13 +394,8 @@ export const BulkActionsPage = () => {
           };
           editMethods.setValue('actions', [convertedAction]);
         };
-        
-        return (
-          <NoteForm
-            onSave={handleNoteSave}
-            onRemove={handleEditRemove}
-          />
-        );
+
+        return <NoteForm onSave={handleNoteSave} onRemove={handleEditRemove} />;
       }
       default:
         return null;
@@ -404,7 +423,7 @@ export const BulkActionsPage = () => {
         {/* Action Builder */}
         <div className="space-y-6">
           <FormProvider {...methods}>
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form onSubmit={e => e.preventDefault()}>
               {/* Date Selection */}
               <Card className="mb-6">
                 <CardHeader>
@@ -432,7 +451,9 @@ export const BulkActionsPage = () => {
                       <Calendar
                         mode="single"
                         selected={methods.watch('date')}
-                        onSelect={(date) => date && methods.setValue('date', date)}
+                        onSelect={date =>
+                          date && methods.setValue('date', date)
+                        }
                         initialFocus
                       />
                     </PopoverContent>
@@ -447,12 +468,15 @@ export const BulkActionsPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {hives.map((hive) => (
-                      <div key={hive.id} className="flex items-center space-x-2">
+                    {hives.map(hive => (
+                      <div
+                        key={hive.id}
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           id={hive.id}
                           checked={selectedHives.includes(hive.id)}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={checked =>
                             handleHiveSelection(hive.id, checked as boolean)
                           }
                         />
@@ -486,14 +510,19 @@ export const BulkActionsPage = () => {
               {/* Add to Queue Button */}
               <Button
                 onClick={handleAddToQueue}
-                disabled={selectedHives.length === 0 || currentActions.length === 0}
+                disabled={
+                  selectedHives.length === 0 || currentActions.length === 0
+                }
                 className="w-full"
                 data-umami-event="Bulk Action Queue"
                 data-umami-event-hives={selectedHives.length.toString()}
                 data-umami-event-actions={currentActions.length.toString()}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add to Queue ({selectedHives.length} hive{selectedHives.length !== 1 ? 's' : ''} × {currentActions.length} action{currentActions.length !== 1 ? 's' : ''})
+                Add to Queue ({selectedHives.length} hive
+                {selectedHives.length !== 1 ? 's' : ''} ×{' '}
+                {currentActions.length} action
+                {currentActions.length !== 1 ? 's' : ''})
               </Button>
             </form>
           </FormProvider>
@@ -508,11 +537,12 @@ export const BulkActionsPage = () => {
             <CardContent>
               {stagedActions.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  No actions staged yet. Build your actions on the left and add them to the queue.
+                  No actions staged yet. Build your actions on the left and add
+                  them to the queue.
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                  {stagedActions.map((staged) => (
+                  {stagedActions.map(staged => (
                     <div
                       key={staged.id}
                       className="flex items-start justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
@@ -564,10 +594,7 @@ export const BulkActionsPage = () => {
       {/* Submit Actions */}
       {stagedActions.length > 0 && (
         <div className="flex justify-end gap-4">
-          <Button
-            variant="outline"
-            onClick={() => setStagedActions([])}
-          >
+          <Button variant="outline" onClick={() => setStagedActions([])}>
             Clear All
           </Button>
           <Button
@@ -576,7 +603,9 @@ export const BulkActionsPage = () => {
             data-umami-event="Bulk Action Submit"
             data-umami-event-count={stagedActions.length.toString()}
           >
-            {createAction.isPending ? 'Submitting...' : `Submit ${stagedActions.length} Action(s)`}
+            {createAction.isPending
+              ? 'Submitting...'
+              : `Submit ${stagedActions.length} Action(s)`}
           </Button>
         </div>
       )}
@@ -589,7 +618,7 @@ export const BulkActionsPage = () => {
           </DialogHeader>
           {editingAction && (
             <FormProvider {...editMethods}>
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form onSubmit={e => e.preventDefault()}>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-4">
                     <div>
@@ -602,14 +631,15 @@ export const BulkActionsPage = () => {
                     </div>
                     <div>
                       <Label>Date</Label>
-                      <Input value={format(editingAction.date, 'PPP')} disabled />
+                      <Input
+                        value={format(editingAction.date, 'PPP')}
+                        disabled
+                      />
                     </div>
                   </div>
-                  
-                  <div className="mt-6">
-                    {renderEditForm()}
-                  </div>
-                  
+
+                  <div className="mt-6">{renderEditForm()}</div>
+
                   <div className="flex justify-end gap-2 mt-6">
                     <Button
                       type="button"

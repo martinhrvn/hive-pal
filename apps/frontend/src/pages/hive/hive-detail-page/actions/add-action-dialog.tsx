@@ -21,7 +21,13 @@ import { useCreateAction } from '@/api/hooks/useActions';
 import { CreateStandaloneAction } from 'shared-schemas';
 import { toast } from 'sonner';
 import { useForm, FormProvider } from 'react-hook-form';
-import type { ActionData, FeedingActionData, TreatmentActionData, FramesActionData, NoteActionData } from '@/pages/inspection/components/inspection-form/schema';
+import type {
+  ActionData,
+  FeedingActionData,
+  TreatmentActionData,
+  FramesActionData,
+  NoteActionData,
+} from '@/pages/inspection/components/inspection-form/schema';
 
 interface AddActionDialogProps {
   hiveId: string;

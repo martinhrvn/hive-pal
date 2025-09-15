@@ -27,10 +27,12 @@ export const EquipmentSettingsPage = () => {
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">
-            Equipment settings have been simplified and integrated into the main equipment planning page.
+            Equipment settings have been simplified and integrated into the main
+            equipment planning page.
           </p>
           <p>
-            You can now manage all equipment settings directly from the equipment planning interface.
+            You can now manage all equipment settings directly from the
+            equipment planning interface.
           </p>
           <div className="pt-4">
             <Button onClick={() => navigate('/equipment')} className="w-full">

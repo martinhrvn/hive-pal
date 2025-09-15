@@ -9,7 +9,7 @@ export const EditInspectionPage = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const fromScheduled = searchParams.get('from') === 'scheduled';
-  
+
   const { data: inspection } = useInspection(id || '', {
     enabled: !!id && fromScheduled,
   });
@@ -24,11 +24,15 @@ export const EditInspectionPage = () => {
               <Calendar className="h-4 w-4" />
               <span>
                 Completing scheduled inspection from{' '}
-                {format(parseISO(inspection.date as string), 'EEEE, MMMM d, yyyy')}
+                {format(
+                  parseISO(inspection.date as string),
+                  'EEEE, MMMM d, yyyy',
+                )}
               </span>
             </div>
             <p className="text-sm mt-1 opacity-80">
-              This inspection will be marked as completed when you save your changes.
+              This inspection will be marked as completed when you save your
+              changes.
             </p>
           </AlertDescription>
         </Alert>

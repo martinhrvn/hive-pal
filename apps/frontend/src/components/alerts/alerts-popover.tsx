@@ -38,8 +38,8 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
 
   // Get the highest priority alert for display
   const severityOrder: AlertSeverity[] = ['HIGH', 'MEDIUM', 'LOW'];
-  const highestSeverity = severityOrder.find(severity => 
-    alerts.some(alert => alert.severity === severity)
+  const highestSeverity = severityOrder.find(severity =>
+    alerts.some(alert => alert.severity === severity),
   );
 
   if (!highestSeverity) {
@@ -66,7 +66,7 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
           </span>
         </div>
       </PopoverTrigger>
-      
+
       <PopoverContent className="w-80 p-0" align="start">
         <div className="p-3">
           <div className="flex items-center gap-2 mb-3">
@@ -75,14 +75,10 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
               {alertCount} Active {alertCount === 1 ? 'Alert' : 'Alerts'}
             </h4>
           </div>
-          
+
           <div className="space-y-1 max-h-80 overflow-y-auto">
-            {alerts.map((alert) => (
-              <AlertItem 
-                key={alert.id} 
-                alert={alert} 
-                showActions={false}
-              />
+            {alerts.map(alert => (
+              <AlertItem key={alert.id} alert={alert} showActions={false} />
             ))}
           </div>
         </div>

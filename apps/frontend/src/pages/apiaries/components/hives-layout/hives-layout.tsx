@@ -18,7 +18,9 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
   const { t } = useTranslation('hive');
   const { data: allHives = [], refetch } = useHivesWithBoxes({ apiaryId });
   const updateHiveMutation = useUpdateHive();
-  const [draggedHive, setDraggedHive] = useState<HiveWithBoxesResponse | null>(null);
+  const [draggedHive, setDraggedHive] = useState<HiveWithBoxesResponse | null>(
+    null,
+  );
 
   // Organize hives by position
   const { hivesGrid, unpositionedHives, maxRow, maxCol } = useMemo(() => {
@@ -83,11 +85,7 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
     return { rows, cols };
   }, [maxRow, maxCol, hivesGrid]);
 
-  const handleDropHive = async (
-    hiveId: string,
-    row: number,
-    col: number,
-  ) => {
+  const handleDropHive = async (hiveId: string, row: number, col: number) => {
     try {
       await updateHiveMutation.mutateAsync({
         id: hiveId,
@@ -192,7 +190,7 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
 
       {/* Grid layout */}
       <div className="overflow-auto max-h-[600px]">
-        <div 
+        <div
           className="grid gap-2 w-fit"
           style={{
             gridTemplateColumns: `repeat(${gridDimensions.cols}, minmax(120px, 1fr))`,
@@ -200,8 +198,8 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
         >
           {Array.from({ length: gridDimensions.rows }, (_, row) =>
             Array.from({ length: gridDimensions.cols }, (_, col) =>
-              renderGridCell(row, col)
-            )
+              renderGridCell(row, col),
+            ),
           )}
         </div>
       </div>
