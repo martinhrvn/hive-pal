@@ -42,7 +42,7 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
   action,
   onSave,
 }) => {
-  const { unitPreference, getVolumeUnitForAmount } = useUnitFormat();
+  const { unitPreference } = useUnitFormat();
   
   const [amount, setAmount] = useState<number | null>(action?.amount ?? 10);
   const [treatmentType, setTreatmentType] = useState<string>(
