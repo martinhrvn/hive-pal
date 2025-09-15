@@ -136,8 +136,8 @@ export const CalendarSidebar = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-col md:flex-row md:gap-4">
-          <div className="md:w-1/2">
+        <div className="flex flex-col gap-4">
+          <div>
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -184,7 +184,7 @@ export const CalendarSidebar = () => {
           </div>
 
           {/* Events for selected date */}
-          <div className="md:w-1/2 mt-4 md:mt-0 md:border-l md:pl-4 border-t md:border-t-0 pt-4 md:pt-0">
+          <div className="border-t pt-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-medium">
                 {format(selectedDate, 'MMM d')}
