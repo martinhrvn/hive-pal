@@ -176,51 +176,48 @@ export const ObservationsSection: React.FC = () => {
             label={t('observations.uncappedBrood')}
           />
 
-          {/* Brood Pattern Dropdown */}
-          <FormField
-            control={control}
-            name="observations.broodPattern"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  {t('observations.broodPattern')}
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value || undefined}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t('observations.selectBroodPattern')}
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="solid">
-                      {t('observations.broodPatternOptions.solid')}
-                    </SelectItem>
-                    <SelectItem value="spotty">
-                      {t('observations.broodPatternOptions.spotty')}
-                    </SelectItem>
-                    <SelectItem value="scattered">
-                      {t('observations.broodPatternOptions.scattered')}
-                    </SelectItem>
-                    <SelectItem value="patchy">
-                      {t('observations.broodPatternOptions.patchy')}
-                    </SelectItem>
-                    <SelectItem value="excellent">
-                      {t('observations.broodPatternOptions.excellent')}
-                    </SelectItem>
-                    <SelectItem value="poor">
-                      {t('observations.broodPatternOptions.poor')}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Brood Pattern Badges (Single Select) */}
+          <div className="mt-4">
+            <FormField
+              control={control}
+              name="observations.broodPattern"
+              render={({ field }) => {
+                const currentValue = field.value;
+                const broodPatternOptions = [
+                  'solid', 'spotty', 'scattered', 'patchy', 'excellent', 'poor'
+                ];
+                
+                const selectPattern = (value: string) => {
+                  // If clicking the same value, deselect it
+                  field.onChange(currentValue === value ? null : value);
+                };
+                
+                return (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      {t('observations.broodPattern')}
+                    </FormLabel>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {broodPatternOptions.map(option => (
+                        <div
+                          key={option}
+                          className={`cursor-pointer p-2 rounded-md border text-center text-sm transition-colors ${
+                            currentValue === option
+                              ? 'bg-green-100 border-green-300 text-green-800'
+                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                          }`}
+                          onClick={() => selectPattern(option)}
+                        >
+                          {t(`observations.broodPatternOptions.${option}`)}
+                        </div>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
 
           <ObservationItem
             key={'honeyStores'}
