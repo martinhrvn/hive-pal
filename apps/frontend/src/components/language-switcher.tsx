@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Languages } from 'lucide-react';
+import { normalizeLanguageCode } from '@/utils/language-utils';
 
 interface LanguageSwitcherProps {
   compact?: boolean;
@@ -15,7 +16,9 @@ interface LanguageSwitcherProps {
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
 ];
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
@@ -24,17 +27,19 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   const { i18n } = useTranslation();
 
   const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
-    localStorage.setItem('language', languageCode);
+    const normalizedCode = normalizeLanguageCode(languageCode);
+    i18n.changeLanguage(normalizedCode);
+    localStorage.setItem('language', normalizedCode);
   };
 
   const getCurrentLanguage = () => {
-    return LANGUAGES.find(lang => lang.code === i18n.language) || LANGUAGES[0];
+    const normalizedLang = normalizeLanguageCode(i18n.language);
+    return LANGUAGES.find(lang => lang.code === normalizedLang) || LANGUAGES[0];
   };
 
   if (compact) {
     return (
-      <Select value={i18n.language} onValueChange={handleLanguageChange}>
+      <Select value={normalizeLanguageCode(i18n.language)} onValueChange={handleLanguageChange}>
         <SelectTrigger className="w-12 h-8 border-none shadow-none">
           <SelectValue>
             <Languages className="h-4 w-4" />
@@ -55,7 +60,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   }
 
   return (
-    <Select value={i18n.language} onValueChange={handleLanguageChange}>
+    <Select value={normalizeLanguageCode(i18n.language)} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-40">
         <SelectValue>
           <div className="flex items-center gap-2">

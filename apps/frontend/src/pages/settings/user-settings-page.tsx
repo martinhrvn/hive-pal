@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { usePreferences } from '@/api/hooks/useUserPreferences';
 import { useTheme } from '@/context/use-theme';
 import { UserPreferences } from 'shared-schemas';
+import { normalizeLanguageCode } from '@/utils/language-utils';
 
 export const UserSettingsPage = () => {
   const { t, i18n } = useTranslation('common');
@@ -32,7 +33,7 @@ export const UserSettingsPage = () => {
   const { theme, setTheme } = useTheme();
 
   const [settings, setSettings] = useState<Omit<UserPreferences, 'theme'>>({
-    language: i18n.language || 'en',
+    language: normalizeLanguageCode(i18n.language || 'en'),
     dateFormat: 'MM/DD/YYYY',
     units: 'metric',
     emailNotifications: true,
@@ -45,7 +46,7 @@ export const UserSettingsPage = () => {
   useEffect(() => {
     if (preferences.data) {
       setSettings({
-        language: preferences.data.language || i18n.language || 'en',
+        language: normalizeLanguageCode(preferences.data.language || i18n.language || 'en'),
         dateFormat: preferences.data.dateFormat || 'MM/DD/YYYY',
         units: preferences.data.units || 'metric',
         emailNotifications: preferences.data.emailNotifications ?? true,
@@ -74,8 +75,9 @@ export const UserSettingsPage = () => {
   };
 
   const handleLanguageChange = (value: string) => {
-    setSettings({ ...settings, language: value });
-    i18n.changeLanguage(value);
+    const normalizedValue = normalizeLanguageCode(value);
+    setSettings({ ...settings, language: normalizedValue });
+    i18n.changeLanguage(normalizedValue);
   };
 
   // Show loading state while fetching preferences
