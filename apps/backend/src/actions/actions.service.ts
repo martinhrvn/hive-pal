@@ -39,7 +39,7 @@ export class ActionsService {
   ): { value: number; unit: string } {
     if (userPreference === 'imperial') {
       const fluidOunces = volumeLiters * 33.814;
-      
+
       if (fluidOunces < 32) {
         return {
           value: Math.round(fluidOunces * 10) / 10,
@@ -289,13 +289,17 @@ export class ActionsService {
     let userPreferences: UserPreferences | null = null;
     if (filter.userId) {
       try {
-        userPreferences = await this.usersService.getUserPreferences(filter.userId);
+        userPreferences = await this.usersService.getUserPreferences(
+          filter.userId,
+        );
       } catch {
         // If we can't get preferences, use defaults
       }
     }
 
-    return actions.map((action) => this.mapPrismaToDto(action, userPreferences));
+    return actions.map((action) =>
+      this.mapPrismaToDto(action, userPreferences),
+    );
   }
 
   /**
@@ -427,28 +431,35 @@ export class ActionsService {
       date: prismaAction.date.toISOString(),
       notes: prismaAction.notes || undefined,
     };
-    
+
     const unitPreference = userPreferences?.units || 'metric';
     switch (prismaAction.type) {
-      case ActionType.FEEDING:
+      case ActionType.FEEDING: {
         if (!prismaAction.feedingAction) {
           throw new Error('Feeding action details missing');
         }
-        
+
         // Convert volume units for feeding actions
         let convertedAmount = prismaAction.feedingAction.amount;
         let convertedUnit = prismaAction.feedingAction.unit;
-        
+
         // Assume stored values are in metric units (L/ml)
-        if (prismaAction.feedingAction.unit === 'L' || prismaAction.feedingAction.unit === 'ml') {
-          const volumeInLiters = prismaAction.feedingAction.unit === 'ml' 
-            ? prismaAction.feedingAction.amount / 1000 
-            : prismaAction.feedingAction.amount;
-          const converted = this.convertVolumeForUser(volumeInLiters, unitPreference);
+        if (
+          prismaAction.feedingAction.unit === 'L' ||
+          prismaAction.feedingAction.unit === 'ml'
+        ) {
+          const volumeInLiters =
+            prismaAction.feedingAction.unit === 'ml'
+              ? prismaAction.feedingAction.amount / 1000
+              : prismaAction.feedingAction.amount;
+          const converted = this.convertVolumeForUser(
+            volumeInLiters,
+            unitPreference,
+          );
           convertedAmount = converted.value;
           convertedUnit = converted.unit;
         }
-        
+
         return {
           ...base,
           type: ActionType.FEEDING,
@@ -461,32 +472,47 @@ export class ActionsService {
               prismaAction.feedingAction.concentration || undefined,
           },
         };
+      }
 
-      case ActionType.TREATMENT:
+      case ActionType.TREATMENT: {
         if (!prismaAction.treatmentAction) {
           throw new Error('Treatment action details missing');
         }
-        
+
         // Convert units for treatments if they use volume or weight
         let convertedQuantity = prismaAction.treatmentAction.quantity;
         let convertedTreatmentUnit = prismaAction.treatmentAction.unit;
-        
-        if (prismaAction.treatmentAction.unit === 'L' || prismaAction.treatmentAction.unit === 'ml') {
-          const volumeInLiters = prismaAction.treatmentAction.unit === 'ml' 
-            ? prismaAction.treatmentAction.quantity / 1000 
-            : prismaAction.treatmentAction.quantity;
-          const converted = this.convertVolumeForUser(volumeInLiters, unitPreference);
+
+        if (
+          prismaAction.treatmentAction.unit === 'L' ||
+          prismaAction.treatmentAction.unit === 'ml'
+        ) {
+          const volumeInLiters =
+            prismaAction.treatmentAction.unit === 'ml'
+              ? prismaAction.treatmentAction.quantity / 1000
+              : prismaAction.treatmentAction.quantity;
+          const converted = this.convertVolumeForUser(
+            volumeInLiters,
+            unitPreference,
+          );
           convertedQuantity = converted.value;
           convertedTreatmentUnit = converted.unit;
-        } else if (prismaAction.treatmentAction.unit === 'kg' || prismaAction.treatmentAction.unit === 'g') {
-          const weightInKg = prismaAction.treatmentAction.unit === 'g' 
-            ? prismaAction.treatmentAction.quantity / 1000 
-            : prismaAction.treatmentAction.quantity;
-          const converted = this.convertWeightForUser(weightInKg, unitPreference);
+        } else if (
+          prismaAction.treatmentAction.unit === 'kg' ||
+          prismaAction.treatmentAction.unit === 'g'
+        ) {
+          const weightInKg =
+            prismaAction.treatmentAction.unit === 'g'
+              ? prismaAction.treatmentAction.quantity / 1000
+              : prismaAction.treatmentAction.quantity;
+          const converted = this.convertWeightForUser(
+            weightInKg,
+            unitPreference,
+          );
           convertedQuantity = converted.value;
           convertedTreatmentUnit = converted.unit;
         }
-        
+
         return {
           ...base,
           type: ActionType.TREATMENT,
@@ -498,6 +524,7 @@ export class ActionsService {
             duration: prismaAction.treatmentAction.duration ?? undefined,
           },
         };
+      }
 
       case ActionType.FRAME:
         if (!prismaAction.frameAction) {
@@ -512,24 +539,31 @@ export class ActionsService {
           },
         };
 
-      case ActionType.HARVEST:
+      case ActionType.HARVEST: {
         if (!prismaAction.harvestAction) {
           throw new Error('Harvest action details missing');
         }
-        
+
         // Convert weight units for harvest actions
         let convertedHarvestAmount = prismaAction.harvestAction.amount;
         let convertedHarvestUnit = prismaAction.harvestAction.unit;
-        
-        if (prismaAction.harvestAction.unit === 'kg' || prismaAction.harvestAction.unit === 'lb') {
-          const weightInKg = prismaAction.harvestAction.unit === 'lb' 
-            ? prismaAction.harvestAction.amount / 2.20462 
-            : prismaAction.harvestAction.amount;
-          const converted = this.convertWeightForUser(weightInKg, unitPreference);
+
+        if (
+          prismaAction.harvestAction.unit === 'kg' ||
+          prismaAction.harvestAction.unit === 'lb'
+        ) {
+          const weightInKg =
+            prismaAction.harvestAction.unit === 'lb'
+              ? prismaAction.harvestAction.amount / 2.20462
+              : prismaAction.harvestAction.amount;
+          const converted = this.convertWeightForUser(
+            weightInKg,
+            unitPreference,
+          );
           convertedHarvestAmount = converted.value;
           convertedHarvestUnit = converted.unit;
         }
-        
+
         return {
           ...base,
           type: ActionType.HARVEST,
@@ -539,6 +573,7 @@ export class ActionsService {
             unit: convertedHarvestUnit,
           },
         };
+      }
 
       case ActionType.NOTE:
         return {

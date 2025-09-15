@@ -57,7 +57,42 @@
     "swarmCells": "Swarm cells",
     "supersedureCells": "Supersedure cells",
     "clearRating": "Clear rating",
-    "rateAs": "Rate as {{value}}"
+    "rateAs": "Rate as {{value}}",
+    "broodPattern": "Brood Pattern",
+    "selectBroodPattern": "Select brood pattern",
+    "broodPatternOptions": {
+      "solid": "Solid",
+      "spotty": "Spotty", 
+      "scattered": "Scattered",
+      "patchy": "Patchy",
+      "excellent": "Excellent",
+      "poor": "Poor"
+    },
+    "additionalObservations": "Additional Observations",
+    "additional": {
+      "calm": "Calm",
+      "defensive": "Defensive",
+      "aggressive": "Aggressive",
+      "nervous": "Nervous",
+      "varroa_present": "Varroa Mites Present",
+      "small_hive_beetle": "Small Hive Beetle",
+      "wax_moths": "Wax Moths",
+      "ants_present": "Ants Present",
+      "healthy": "Healthy",
+      "active": "Active",
+      "sluggish": "Sluggish",
+      "thriving": "Thriving"
+    },
+    "reminderObservations": "Reminders",
+    "reminder": {
+      "honey_bound": "Honey Bound",
+      "overcrowded": "Overcrowded",
+      "needs_super": "Needs Super",
+      "queen_issues": "Queen Issues",
+      "requires_treatment": "Requires Treatment",
+      "low_stores": "Low Stores",
+      "prepare_for_winter": "Prepare for Winter"
+    }
   },
   "actions": {
     "details": "Details",

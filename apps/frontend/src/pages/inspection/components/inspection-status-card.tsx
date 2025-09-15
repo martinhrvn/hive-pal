@@ -57,41 +57,48 @@ type InspectionStatusCardProps = {
   inspectionDate: string;
 };
 
-export const InspectionStatusCard = ({ 
-  inspectionId, 
-  status, 
-  inspectionDate 
+export const InspectionStatusCard = ({
+  inspectionId,
+  status,
 }: InspectionStatusCardProps) => {
   const queryClient = useQueryClient();
   const { mutate: updateInspection, isPending } = useUpdateInspection();
-  
+
   const statusConfig = getStatusConfig(status);
-  const showActions = status === InspectionStatus.SCHEDULED || status === InspectionStatus.OVERDUE;
+  const showActions =
+    status === InspectionStatus.SCHEDULED ||
+    status === InspectionStatus.OVERDUE;
 
   const handleComplete = () => {
-    updateInspection({
-      id: inspectionId,
-      data: {
-        status: InspectionStatus.COMPLETED,
-      }
-    }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['inspections'] });
-      }
-    });
+    updateInspection(
+      {
+        id: inspectionId,
+        data: {
+          status: InspectionStatus.COMPLETED,
+        },
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['inspections'] });
+        },
+      },
+    );
   };
 
   const handleCancel = () => {
-    updateInspection({
-      id: inspectionId,
-      data: {
-        status: InspectionStatus.CANCELLED,
-      }
-    }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['inspections'] });
-      }
-    });
+    updateInspection(
+      {
+        id: inspectionId,
+        data: {
+          status: InspectionStatus.CANCELLED,
+        },
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['inspections'] });
+        },
+      },
+    );
   };
 
   return (
@@ -108,7 +115,7 @@ export const InspectionStatusCard = ({
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">Current Status</div>
-            <Badge 
+            <Badge
               variant={statusConfig.badgeVariant}
               className={`${statusConfig.bgColor} ${statusConfig.color} text-lg px-3 py-1`}
             >

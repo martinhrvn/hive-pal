@@ -16,7 +16,6 @@ import {
   HarvestFilter,
   HarvestStatus,
   ActionType,
-  UserPreferences,
 } from 'shared-schemas';
 import { Prisma } from '@prisma/client';
 
@@ -113,7 +112,8 @@ export class HarvestsService {
 
     // Get user preferences to determine unit
     const preferences = await this.usersService.getUserPreferences(userId);
-    const weightUnit = updateHarvestDto.totalWeightUnit || 
+    const weightUnit =
+      updateHarvestDto.totalWeightUnit ||
       (preferences?.units === 'imperial' ? 'lb' : 'kg');
 
     // Update harvest
@@ -129,7 +129,9 @@ export class HarvestsService {
           totalWeight: updateHarvestDto.totalWeight
             ? Math.round(updateHarvestDto.totalWeight * 10) / 10
             : undefined,
-          totalWeightUnit: updateHarvestDto.totalWeight ? weightUnit : undefined,
+          totalWeightUnit: updateHarvestDto.totalWeight
+            ? weightUnit
+            : undefined,
         },
       });
 
@@ -201,7 +203,8 @@ export class HarvestsService {
 
     // Get user preferences to determine unit
     const preferences = await this.usersService.getUserPreferences(userId);
-    const weightUnit = setWeightDto.totalWeightUnit || 
+    const weightUnit =
+      setWeightDto.totalWeightUnit ||
       (preferences?.units === 'imperial' ? 'lb' : 'kg');
 
     // Update weight and calculate distribution

@@ -9,6 +9,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { InspectionFormData } from './schema';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
@@ -168,6 +175,53 @@ export const ObservationsSection: React.FC = () => {
             name={'observations.uncappedBrood'}
             label={t('observations.uncappedBrood')}
           />
+
+          {/* Brood Pattern Dropdown */}
+          <FormField
+            control={control}
+            name="observations.broodPattern"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">
+                  {t('observations.broodPattern')}
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t('observations.selectBroodPattern')}
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="solid">
+                      {t('observations.broodPatternOptions.solid')}
+                    </SelectItem>
+                    <SelectItem value="spotty">
+                      {t('observations.broodPatternOptions.spotty')}
+                    </SelectItem>
+                    <SelectItem value="scattered">
+                      {t('observations.broodPatternOptions.scattered')}
+                    </SelectItem>
+                    <SelectItem value="patchy">
+                      {t('observations.broodPatternOptions.patchy')}
+                    </SelectItem>
+                    <SelectItem value="excellent">
+                      {t('observations.broodPatternOptions.excellent')}
+                    </SelectItem>
+                    <SelectItem value="poor">
+                      {t('observations.broodPatternOptions.poor')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <ObservationItem
             key={'honeyStores'}
             name={'observations.honeyStores'}
@@ -220,6 +274,113 @@ export const ObservationsSection: React.FC = () => {
               />
             </div>
           )}
+
+          {/* Additional Observations (Badges/Tags) */}
+          <div className="mt-6">
+            <h4 className="text-md font-medium mb-3">
+              {t('observations.additionalObservations')}
+            </h4>
+            <FormField
+              control={control}
+              name="observations.additionalObservations"
+              render={({ field }) => {
+                const currentValues: string[] = field.value || [];
+                const availableOptions = [
+                  'calm',
+                  'defensive',
+                  'aggressive',
+                  'nervous',
+                  'varroa_present',
+                  'small_hive_beetle',
+                  'wax_moths',
+                  'ants_present',
+                  'healthy',
+                  'active',
+                  'sluggish',
+                  'thriving',
+                ];
+
+                const toggleObservation = (value: string) => {
+                  const updated = currentValues.includes(value)
+                    ? currentValues.filter(v => v !== value)
+                    : [...currentValues, value];
+                  field.onChange(updated);
+                };
+
+                return (
+                  <FormItem>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {availableOptions.map(option => (
+                        <div
+                          key={option}
+                          className={`cursor-pointer p-2 rounded-md border text-center text-sm transition-colors ${
+                            currentValues.includes(option)
+                              ? 'bg-blue-100 border-blue-300 text-blue-800'
+                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                          }`}
+                          onClick={() => toggleObservation(option)}
+                        >
+                          {t(`observations.additional.${option}`)}
+                        </div>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
+
+          {/* Reminder Observations */}
+          <div className="mt-6">
+            <h4 className="text-md font-medium mb-3">
+              {t('observations.reminderObservations')}
+            </h4>
+            <FormField
+              control={control}
+              name="observations.reminderObservations"
+              render={({ field }) => {
+                const currentValues = field.value || [];
+                const availableOptions = [
+                  'honey_bound',
+                  'overcrowded',
+                  'needs_super',
+                  'queen_issues',
+                  'requires_treatment',
+                  'low_stores',
+                  'prepare_for_winter',
+                ];
+
+                const toggleObservation = (value: string) => {
+                  const updated = currentValues.includes(value)
+                    ? currentValues.filter(v => v !== value)
+                    : [...currentValues, value];
+                  field.onChange(updated);
+                };
+
+                return (
+                  <FormItem>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      {availableOptions.map(option => (
+                        <div
+                          key={option}
+                          className={`cursor-pointer p-2 rounded-md border text-center text-sm transition-colors ${
+                            currentValues.includes(option)
+                              ? 'bg-amber-100 border-amber-300 text-amber-800'
+                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                          }`}
+                          onClick={() => toggleObservation(option)}
+                        >
+                          {t(`observations.reminder.${option}`)}
+                        </div>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

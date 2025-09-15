@@ -38,6 +38,9 @@ import {
   ObservationSchemaType,
   UpdateInspection,
   UpdateInspectionResponse,
+  BroodPatternType,
+  AdditionalObservationType,
+  ReminderObservationType,
 } from 'shared-schemas';
 
 @Injectable()
@@ -114,6 +117,24 @@ export class InspectionsService {
                   booleanValue: observations?.supersedureCells,
                 },
                 { type: 'queen_seen', booleanValue: observations?.queenSeen },
+
+                // New observation types
+                {
+                  type: 'brood_pattern',
+                  textValue: observations?.broodPattern,
+                },
+
+                // Additional observations (badges/tags)
+                ...(observations?.additionalObservations?.map((obs) => ({
+                  type: `additional_${obs}`,
+                  booleanValue: true,
+                })) || []),
+
+                // Reminder observations
+                ...(observations?.reminderObservations?.map((obs) => ({
+                  type: `reminder_${obs}`,
+                  booleanValue: true,
+                })) || []),
               ],
             },
           },
@@ -351,7 +372,6 @@ export class InspectionsService {
         // Prepare update data - only include observations if they were provided
         const updateData: Prisma.InspectionUpdateInput = {
           ...inspectionData,
-          hiveId: inspection.hiveId,
           status: status ?? inspection.status,
         };
 
@@ -383,6 +403,21 @@ export class InspectionsService {
                 booleanValue: observations?.supersedureCells,
               },
               { type: 'queen_seen', booleanValue: observations?.queenSeen },
+
+              // New observation types
+              { type: 'brood_pattern', textValue: observations?.broodPattern },
+
+              // Additional observations (badges/tags)
+              ...(observations?.additionalObservations?.map((obs) => ({
+                type: `additional_${obs}`,
+                booleanValue: true,
+              })) || []),
+
+              // Reminder observations
+              ...(observations?.reminderObservations?.map((obs) => ({
+                type: `reminder_${obs}`,
+                booleanValue: true,
+              })) || []),
             ],
           };
         }
@@ -583,6 +618,22 @@ export class InspectionsService {
       }),
       {},
     );
+
+    // Extract additional observations (badges/tags)
+    const additionalObservations = observations
+      .filter((obs) => obs.type.startsWith('additional_') && obs.booleanValue)
+      .map(
+        (obs) =>
+          obs.type.replace('additional_', '') as AdditionalObservationType,
+      );
+
+    // Extract reminder observations
+    const reminderObservations = observations
+      .filter((obs) => obs.type.startsWith('reminder_') && obs.booleanValue)
+      .map(
+        (obs) => obs.type.replace('reminder_', '') as ReminderObservationType,
+      );
+
     return {
       strength: observationsByType.strength?.numericValue ?? null,
       uncappedBrood: observationsByType.uncapped_brood?.numericValue ?? null,
@@ -594,6 +645,15 @@ export class InspectionsService {
       supersedureCells:
         observationsByType.supersedure_cells?.booleanValue ?? null,
       queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
+
+      // New observation types
+      broodPattern:
+        (observationsByType.brood_pattern?.textValue as BroodPatternType) ??
+        null,
+      additionalObservations:
+        additionalObservations.length > 0 ? additionalObservations : undefined,
+      reminderObservations:
+        reminderObservations.length > 0 ? reminderObservations : undefined,
     };
   }
 }

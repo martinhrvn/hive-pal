@@ -113,7 +113,7 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
             onClick={() => {
               // Convert user input to metric (ml) for API submission
               let apiAmount = amount;
-              let apiUnit = 'ml';
+              const apiUnit = 'ml';
               
               if (unitPreference === 'imperial') {
                 const volumeInLiters = parseVolume(amount, unit, unitPreference);

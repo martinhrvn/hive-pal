@@ -57,7 +57,42 @@
     "swarmCells": "Rojové matečníky",
     "supersedureCells": "Tichá výmena matky",
     "clearRating": "Vymazať hodnotenie",
-    "rateAs": "Ohodnotiť ako {{value}}"
+    "rateAs": "Ohodnotiť ako {{value}}",
+    "broodPattern": "Vzor plodu",
+    "selectBroodPattern": "Vybrať vzor plodu",
+    "broodPatternOptions": {
+      "solid": "Súvislý",
+      "spotty": "Bodkovaný",
+      "scattered": "Roztrúsený",
+      "patchy": "Nerovnomerný",
+      "excellent": "Výborný",
+      "poor": "Slabý"
+    },
+    "additionalObservations": "Dodatočné pozorovania",
+    "additional": {
+      "calm": "Pokojné",
+      "defensive": "Obrané",
+      "aggressive": "Agresívne",
+      "nervous": "Nervózne",
+      "varroa_present": "Prítomnosť roztoča Varroa",
+      "small_hive_beetle": "Malý úľový chrobák",
+      "wax_moths": "Vosková moľa",
+      "ants_present": "Prítomnosť mravcov",
+      "healthy": "Zdravé",
+      "active": "Aktívne",
+      "sluggish": "Pomalé",
+      "thriving": "Prosperujúce"
+    },
+    "reminderObservations": "Pripomienky",
+    "reminder": {
+      "honey_bound": "Medovo viazané",
+      "overcrowded": "Preplnené",
+      "needs_super": "Potrebuje nadstavbu",
+      "queen_issues": "Problémy s matkou",
+      "requires_treatment": "Vyžaduje ošetrenie",
+      "low_stores": "Nízke zásoby",
+      "prepare_for_winter": "Príprava na zimu"
+    }
   },
   "actions": {
     "details": "Podrobnosti",
