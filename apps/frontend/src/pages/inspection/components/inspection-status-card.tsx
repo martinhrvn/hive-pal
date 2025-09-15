@@ -73,7 +73,6 @@ export const InspectionStatusCard = ({
       id: inspectionId,
       data: {
         status: InspectionStatus.COMPLETED,
-        date: new Date().toISOString(),
       }
     }, {
       onSuccess: () => {

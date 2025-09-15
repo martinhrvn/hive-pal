@@ -311,11 +311,14 @@ export class InspectionsService {
 
     return this.prisma.$transaction(
       async (tx): Promise<UpdateInspectionResponse> => {
-        await tx.observation.deleteMany({
-          where: {
-            inspectionId: id,
-          },
-        });
+        // Handle observations update only if provided
+        if (observations !== undefined) {
+          await tx.observation.deleteMany({
+            where: {
+              inspectionId: id,
+            },
+          });
+        }
 
         // Handle notes update
         if (notes !== undefined) {
@@ -345,41 +348,48 @@ export class InspectionsService {
         // Determine status based on explicit input or date-based default
         const status = updateInspectionDto.status;
 
+        // Prepare update data - only include observations if they were provided
+        const updateData: Prisma.InspectionUpdateInput = {
+          ...inspectionData,
+          hiveId: inspection.hiveId,
+          status: status ?? inspection.status,
+        };
+
+        // Only add observations to update if they were provided
+        if (observations !== undefined) {
+          updateData.observations = {
+            create: [
+              { type: 'strength', numericValue: observations?.strength },
+              {
+                type: 'capped_brood',
+                numericValue: observations?.cappedBrood,
+              },
+              {
+                type: 'uncapped_brood',
+                numericValue: observations?.uncappedBrood,
+              },
+              {
+                type: 'honey_stores',
+                numericValue: observations?.honeyStores,
+              },
+              {
+                type: 'pollen_stores',
+                numericValue: observations?.pollenStores,
+              },
+              { type: 'queen_cells', numericValue: observations?.queenCells },
+              { type: 'swarm_cells', booleanValue: observations?.swarmCells },
+              {
+                type: 'supersedure_cells',
+                booleanValue: observations?.supersedureCells,
+              },
+              { type: 'queen_seen', booleanValue: observations?.queenSeen },
+            ],
+          };
+        }
+
         const updated = await tx.inspection.update({
           where: { id },
-          data: {
-            ...inspectionData,
-            hiveId: inspection.hiveId,
-            status: status ?? inspection.status,
-            observations: {
-              create: [
-                { type: 'strength', numericValue: observations?.strength },
-                {
-                  type: 'capped_brood',
-                  numericValue: observations?.cappedBrood,
-                },
-                {
-                  type: 'uncapped_brood',
-                  numericValue: observations?.uncappedBrood,
-                },
-                {
-                  type: 'honey_stores',
-                  numericValue: observations?.honeyStores,
-                },
-                {
-                  type: 'pollen_stores',
-                  numericValue: observations?.pollenStores,
-                },
-                { type: 'queen_cells', numericValue: observations?.queenCells },
-                { type: 'swarm_cells', booleanValue: observations?.swarmCells },
-                {
-                  type: 'supersedure_cells',
-                  booleanValue: observations?.supersedureCells,
-                },
-                { type: 'queen_seen', booleanValue: observations?.queenSeen },
-              ],
-            },
-          },
+          data: updateData,
         });
         return {
           date: updated.date.toISOString(),
