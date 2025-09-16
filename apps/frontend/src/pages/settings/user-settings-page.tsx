@@ -130,10 +130,18 @@ export const UserSettingsPage = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Español</SelectItem>
-                    <SelectItem value="fr">Français</SelectItem>
-                    <SelectItem value="de">Deutsch</SelectItem>
+                    <SelectItem value="en">
+                      <div className="flex items-center gap-2">
+                        <span>🇺🇸</span>
+                        <span>English</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="sk">
+                      <div className="flex items-center gap-2">
+                        <span>🇸🇰</span>
+                        <span>Slovenčina</span>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

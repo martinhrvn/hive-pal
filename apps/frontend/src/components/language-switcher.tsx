@@ -16,9 +16,7 @@ interface LanguageSwitcherProps {
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
 ];
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({

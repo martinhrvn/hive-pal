@@ -19,12 +19,14 @@ export const changePasswordSchema = z.object({
 
 // Admin reset password schema
 export const adminResetPasswordSchema = z.object({
-  tempPassword: z.string().min(6, 'Temporary password must be at least 6 characters'),
+  tempPassword: z
+    .string()
+    .min(6, 'Temporary password must be at least 6 characters'),
 });
 
 // User preferences schema
 export const userPreferencesSchema = z.object({
-  language: z.enum(['en', 'es', 'fr', 'de']).optional(),
+  language: z.enum(['en', 'sk']).optional(),
   theme: z.enum(['light', 'dark', 'system']).optional(),
   dateFormat: z.enum(['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']).optional(),
   units: z.enum(['metric', 'imperial']).optional(),
@@ -60,17 +62,6 @@ export declare class AdminResetPasswordDto {
   tempPassword: string;
 }
 
-export declare class UserPreferencesDto {
-  language?: 'en' | 'es' | 'fr' | 'de';
-  theme?: 'light' | 'dark' | 'system';
-  dateFormat?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
-  units?: 'metric' | 'imperial';
-  emailNotifications?: boolean;
-  pushNotifications?: boolean;
-  inspectionReminders?: boolean;
-  harvestReminders?: boolean;
-}
-
 export declare class UpdateUserInfoDto {
   name?: string;
   email?: string;
@@ -82,3 +73,5 @@ export type ChangePassword = z.infer<typeof changePasswordSchema>;
 export type AdminResetPassword = z.infer<typeof adminResetPasswordSchema>;
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 export type UpdateUserInfo = z.infer<typeof updateUserInfoSchema>;
+
+export type UserPreferencesDto = z.infer<typeof userPreferencesSchema>;

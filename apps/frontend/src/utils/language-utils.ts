@@ -1,4 +1,4 @@
-type SupportedLanguage = 'en' | 'es' | 'fr' | 'de';
+type SupportedLanguage = 'en' | 'sk';
 
 // Mapping from locale codes to supported language codes
 const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
@@ -9,40 +9,9 @@ const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
   'en-CA': 'en',
   'en-AU': 'en',
   
-  // Spanish variants
-  'es': 'es',
-  'es-ES': 'es',
-  'es-MX': 'es',
-  'es-AR': 'es',
-  'es-CO': 'es',
-  'es-PE': 'es',
-  'es-VE': 'es',
-  'es-CL': 'es',
-  'es-EC': 'es',
-  'es-UY': 'es',
-  'es-PY': 'es',
-  'es-BO': 'es',
-  'es-CR': 'es',
-  'es-PA': 'es',
-  'es-GT': 'es',
-  'es-HN': 'es',
-  'es-SV': 'es',
-  'es-NI': 'es',
-  'es-DO': 'es',
-  'es-PR': 'es',
-  
-  // French variants
-  'fr': 'fr',
-  'fr-FR': 'fr',
-  'fr-CA': 'fr',
-  'fr-BE': 'fr',
-  'fr-CH': 'fr',
-  
-  // German variants
-  'de': 'de',
-  'de-DE': 'de',
-  'de-AT': 'de',
-  'de-CH': 'de',
+  // Slovak variants
+  'sk': 'sk',
+  'sk-SK': 'sk',
 };
 
 /**
@@ -50,7 +19,7 @@ const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
  * Falls back to 'en' if the language is not supported.
  * 
  * @param languageCode - The language or locale code to normalize (e.g., 'en-US', 'es-ES')
- * @returns A supported language code ('en' | 'es' | 'fr' | 'de')
+ * @returns A supported language code ('en' | 'sk')
  */
 export function normalizeLanguageCode(languageCode: string): SupportedLanguage {
   // Convert to lowercase for case-insensitive matching
@@ -75,7 +44,7 @@ export function normalizeLanguageCode(languageCode: string): SupportedLanguage {
  * Gets the list of supported language codes
  */
 export function getSupportedLanguages(): SupportedLanguage[] {
-  return ['en', 'es', 'fr', 'de'];
+  return ['en', 'sk'];
 }
 
 /**
