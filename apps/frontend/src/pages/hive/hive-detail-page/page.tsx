@@ -43,7 +43,7 @@ export const HiveDetailPage = () => {
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        <div className="md:col-span-9">
+        <div className="col-span-8 xl:col-span-9">
           {/* Hive header card */}
           <div className="rounded-lg shadow p-4 mb-4">
             <div className="flex justify-between items-center mb-2">
@@ -71,9 +71,9 @@ export const HiveDetailPage = () => {
             </TabsList>
 
             <TabsContent value="overview">
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Three main cards in responsive grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* Scores Card */}
                   {hive && hive.hiveScore && (
                     <StatisticCards score={hive.hiveScore} />
@@ -110,7 +110,7 @@ export const HiveDetailPage = () => {
         </div>
 
         {/* Action Sidebar */}
-        <div className="md:col-span-3">
+        <div className="col-span-4 xl:col-span-3">
           <ActionSideBar hiveId={hive?.id} onRefreshData={refetch} />
         </div>
       </div>

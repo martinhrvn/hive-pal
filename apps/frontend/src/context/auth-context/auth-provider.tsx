@@ -112,6 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = useCallback(() => {
     setToken(null);
+    localStorage.removeItem(APIARY_SELECTION);
     window.location.href = '/login';
   }, []);
 

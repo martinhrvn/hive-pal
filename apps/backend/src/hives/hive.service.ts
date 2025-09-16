@@ -51,31 +51,57 @@ export class HiveService {
       },
     };
 
-    const hive = await this.prisma.hive.create({
-      data: {
-        ...createHiveDto,
-        settings: createHiveDto.settings || defaultSettings,
-      },
-      include: {
-        apiary: {
-          select: {
-            userId: true,
+    // Extract boxes from DTO if provided
+    const { boxes, ...hiveData } = createHiveDto;
+
+    // Create hive with boxes in a transaction if boxes are provided
+    const result = await this.prisma.$transaction(async (prisma) => {
+      const hive = await prisma.hive.create({
+        data: {
+          ...hiveData,
+          settings: createHiveDto.settings || defaultSettings,
+        },
+        include: {
+          apiary: {
+            select: {
+              userId: true,
+            },
           },
         },
-      },
+      });
+
+      // Create boxes if provided
+      if (boxes && boxes.length > 0) {
+        await prisma.box.createMany({
+          data: boxes.map((box) => ({
+            hiveId: hive.id,
+            position: box.position,
+            frameCount: box.frameCount,
+            maxFrameCount: box.maxFrameCount || 10,
+            hasExcluder: box.hasExcluder,
+            type: box.type,
+            variant: box.variant,
+            color: box.color,
+          })),
+        });
+        this.logger.log(`Created ${boxes.length} boxes for hive ${hive.id}`);
+      }
+
+      return hive;
     });
-    this.logger.log(`Hive created with ID: ${hive.id}`);
+
+    this.logger.log(`Hive created with ID: ${result.id}`);
 
     // Emit event for new hive creation
-    const userId = hive.apiary?.userId || 'unknown';
+    const userId = result.apiary?.userId || 'unknown';
     this.eventEmitter.emit(
       'hive.created',
-      new HiveCreatedEvent(hive.id, createHiveDto.apiaryId || '', userId),
+      new HiveCreatedEvent(result.id, createHiveDto.apiaryId || '', userId),
     );
 
     return {
-      id: hive.id,
-      status: hive.status as HiveStatus,
+      id: result.id,
+      status: result.status as HiveStatus,
     };
   }
 
@@ -342,10 +368,13 @@ export class HiveService {
       );
     }
 
+    // Extract boxes from updateHiveDto to avoid Prisma type errors
+    const { boxes: _, ...hiveUpdateData } = updateHiveDto;
+
     const updatedHive = await this.prisma.hive.update({
       where: { id },
       data: {
-        ...updateHiveDto,
+        ...hiveUpdateData,
         installationDate: updateHiveDto.installationDate
           ? new Date(updateHiveDto.installationDate)
           : null,

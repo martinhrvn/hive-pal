@@ -194,9 +194,13 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
             ].map(color => (
               <button
                 key={color}
+                type="button"
                 className="w-10 h-10 rounded border-2 border-gray-300 hover:border-gray-500 transition-colors"
                 style={{ backgroundColor: color }}
-                onClick={() => handleColorChange(color)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleColorChange(color);
+                }}
                 title={color}
               />
             ))}

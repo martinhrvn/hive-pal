@@ -26,6 +26,7 @@ export const createHiveSchema = z.object({
   positionRow: z.number().int().min(0).optional(),
   positionCol: z.number().int().min(0).optional(),
   settings: hiveSettingsSchema,
+  boxes: z.array(boxSchema).optional(),
 });
 
 export const createHiveResponseSchema = z.object({

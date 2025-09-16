@@ -36,9 +36,11 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { useApiary } from '@/hooks/use-apiary';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useCreateHive } from '@/api/hooks';
-import type { HiveStatus as HiveStatusEnum } from 'shared-schemas';
+import type { HiveStatus as HiveStatusEnum, Box } from 'shared-schemas';
+import { BoxBuilder, BoxBuilderRef } from '../hive-detail-page/box-configurator/BoxBuilder';
+import { BoxTypeEnum, BoxVariantEnum } from 'shared-schemas';
 
 const hiveSchema = z.object({
   name: z.string(),
@@ -62,6 +64,7 @@ const hiveSchema = z.object({
         .optional(),
     })
     .optional(),
+  boxes: z.array(z.any()).optional(),
 });
 
 export type HiveFormData = z.infer<typeof hiveSchema>;
@@ -82,6 +85,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     onSuccess: () => navigate('/'),
   });
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [isBoxConfigOpen, setIsBoxConfigOpen] = useState(false);
+  const [configureBoxes, setConfigureBoxes] = useState(false);
+  const boxBuilderRef = useRef<BoxBuilderRef>(null);
   const apiaryOptions = apiaries?.map(apiary => ({
     value: apiary.id,
     label: `${apiary.name}${apiary.location ? ` (${apiary.location})` : ''}`,
@@ -120,11 +126,20 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   });
 
   const onSubmit = (data: HiveFormData) => {
+    const boxes = configureBoxes ? boxBuilderRef.current?.getBoxes() : undefined;
+    const finalData = {
+      ...data,
+      boxes: boxes?.map(box => ({
+        ...box,
+        id: box.id?.startsWith('temp-') ? undefined : box.id,
+      })),
+    };
+    
     if (onSubmitOverride) {
-      return onSubmitOverride(data);
+      return onSubmitOverride(finalData);
     } else {
       mutate({
-        ...data,
+        ...finalData,
         status: data.status as HiveStatusEnum,
         installationDate: data.installationDate.toISOString(),
       });
@@ -374,6 +389,73 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                   </FormItem>
                 )}
               />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={isBoxConfigOpen} onOpenChange={setIsBoxConfigOpen}>
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="outline"
+              type="button"
+              className="w-full justify-between"
+            >
+              Box Configuration
+              {isBoxConfigOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 pt-4">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="configure-boxes"
+                  checked={configureBoxes}
+                  onChange={(e) => {
+                    setConfigureBoxes(e.target.checked);
+                    if (e.target.checked && boxBuilderRef.current?.getBoxes().length === 0) {
+                      // Set default box configuration
+                      boxBuilderRef.current?.setBoxes([{
+                        id: `temp-${Date.now()}`,
+                        position: 0,
+                        frameCount: 10,
+                        maxFrameCount: 10,
+                        hasExcluder: false,
+                        type: BoxTypeEnum.BROOD,
+                        variant: BoxVariantEnum.LANGSTROTH_DEEP,
+                        color: '#3b82f6',
+                      }]);
+                    }
+                  }}
+                  className="h-4 w-4"
+                />
+                <label htmlFor="configure-boxes" className="text-sm font-medium">
+                  Configure initial box setup
+                </label>
+              </div>
+              
+              {configureBoxes && (
+                <BoxBuilder
+                  ref={boxBuilderRef}
+                  simplified={true}
+                  initialBoxes={[
+                    {
+                      id: `temp-${Date.now()}`,
+                      position: 0,
+                      frameCount: 10,
+                      maxFrameCount: 10,
+                      hasExcluder: false,
+                      type: BoxTypeEnum.BROOD,
+                      variant: BoxVariantEnum.LANGSTROTH_DEEP,
+                      color: '#3b82f6',
+                    }
+                  ]}
+                />
+              )}
             </div>
           </CollapsibleContent>
         </Collapsible>

@@ -31,9 +31,9 @@ export const ObservationsCard = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Numeric Observations */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ObservationNumberRatingView
               rating={observations.strength}
               label={'Strength'}
