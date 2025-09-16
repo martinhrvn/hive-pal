@@ -143,6 +143,7 @@ it('should create an inspection with observations', async () => {
     queenCells: 0,
     swarmCells: false,
     supersedureCells: false,
+    broodPattern: null,
   });
 
   // Verify scoring was calculated
