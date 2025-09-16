@@ -46,7 +46,9 @@ export const UserSettingsPage = () => {
   useEffect(() => {
     if (preferences.data) {
       setSettings({
-        language: normalizeLanguageCode(preferences.data.language || i18n.language || 'en'),
+        language: normalizeLanguageCode(
+          preferences.data.language || i18n.language || 'en',
+        ),
         dateFormat: preferences.data.dateFormat || 'MM/DD/YYYY',
         units: preferences.data.units || 'metric',
         emailNotifications: preferences.data.emailNotifications ?? true,
@@ -150,7 +152,7 @@ export const UserSettingsPage = () => {
                 <Label htmlFor="dateFormat">{t('settings.dateFormat')}</Label>
                 <Select
                   value={settings.dateFormat}
-                  onValueChange={value =>
+                  onValueChange={(value: UserPreferences['dateFormat']) =>
                     setSettings({ ...settings, dateFormat: value })
                   }
                 >
@@ -170,7 +172,7 @@ export const UserSettingsPage = () => {
               <Label htmlFor="units">{t('settings.unitsOfMeasurement')}</Label>
               <Select
                 value={settings.units}
-                onValueChange={value =>
+                onValueChange={(value: 'metric' | 'imperial') =>
                   setSettings({ ...settings, units: value })
                 }
               >
