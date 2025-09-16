@@ -53,6 +53,9 @@ export class FeedbackService {
       where.status = options.status;
     }
 
+    const limit = Number(options.limit);
+    const offset = Number(options.offset);
+
     const [feedbacks, total] = await Promise.all([
       this.prisma.feedback.findMany({
         where,
@@ -68,8 +71,8 @@ export class FeedbackService {
         orderBy: {
           createdAt: 'desc',
         },
-        take: options.limit,
-        skip: options.offset,
+        take: limit || 50,
+        skip: offset || 0,
       }),
       this.prisma.feedback.count({ where }),
     ]);
