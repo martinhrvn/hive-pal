@@ -96,6 +96,7 @@ export const ApiaryDetailPage = () => {
                           lat: apiary.latitude,
                           lng: apiary.longitude,
                         }}
+                        readOnly
                       />
                     </div>
                   </CardContent>
@@ -117,6 +118,7 @@ export const ApiaryDetailPage = () => {
                       lat: apiary.latitude,
                       lng: apiary.longitude,
                     }}
+                    readOnly
                   />
                 </div>
               ) : (
