@@ -9,13 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { InspectionFormData } from './schema';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
@@ -184,14 +177,19 @@ export const ObservationsSection: React.FC = () => {
               render={({ field }) => {
                 const currentValue = field.value;
                 const broodPatternOptions = [
-                  'solid', 'spotty', 'scattered', 'patchy', 'excellent', 'poor'
+                  'solid',
+                  'spotty',
+                  'scattered',
+                  'patchy',
+                  'excellent',
+                  'poor',
                 ];
-                
+
                 const selectPattern = (value: string) => {
                   // If clicking the same value, deselect it
                   field.onChange(currentValue === value ? null : value);
                 };
-                
+
                 return (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
