@@ -38,8 +38,15 @@ import {
 import { useApiary } from '@/hooks/use-apiary';
 import React, { useEffect, useState, useRef } from 'react';
 import { useCreateHive } from '@/api/hooks';
-import type { HiveStatus as HiveStatusEnum, Box } from 'shared-schemas';
-import { BoxBuilder, BoxBuilderRef } from '../hive-detail-page/box-configurator/BoxBuilder';
+import {
+  boxSchema,
+  hiveSettingsSchema,
+  HiveStatus as HiveStatusEnum,
+} from 'shared-schemas';
+import {
+  BoxBuilder,
+  BoxBuilderRef,
+} from '../hive-detail-page/box-configurator/BoxBuilder';
 import { BoxTypeEnum, BoxVariantEnum } from 'shared-schemas';
 
 const hiveSchema = z.object({
@@ -48,23 +55,8 @@ const hiveSchema = z.object({
   apiaryId: z.string(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   installationDate: z.date(),
-  settings: z
-    .object({
-      autumnFeeding: z
-        .object({
-          startMonth: z.number().int().min(1).max(12).default(8),
-          endMonth: z.number().int().min(1).max(12).default(10),
-          amountKg: z.number().positive().default(12),
-        })
-        .optional(),
-      inspection: z
-        .object({
-          frequencyDays: z.number().int().positive().default(7),
-        })
-        .optional(),
-    })
-    .optional(),
-  boxes: z.array(z.any()).optional(),
+  settings: hiveSettingsSchema,
+  boxes: boxSchema,
 });
 
 export type HiveFormData = z.infer<typeof hiveSchema>;
@@ -126,7 +118,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   });
 
   const onSubmit = (data: HiveFormData) => {
-    const boxes = configureBoxes ? boxBuilderRef.current?.getBoxes() : undefined;
+    const boxes = configureBoxes
+      ? boxBuilderRef.current?.getBoxes()
+      : undefined;
     const finalData = {
       ...data,
       boxes: boxes?.map(box => ({
@@ -134,7 +128,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
         id: box.id?.startsWith('temp-') ? undefined : box.id,
       })),
     };
-    
+
     if (onSubmitOverride) {
       return onSubmitOverride(finalData);
     } else {
@@ -415,29 +409,37 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                   type="checkbox"
                   id="configure-boxes"
                   checked={configureBoxes}
-                  onChange={(e) => {
+                  onChange={e => {
                     setConfigureBoxes(e.target.checked);
-                    if (e.target.checked && boxBuilderRef.current?.getBoxes().length === 0) {
+                    if (
+                      e.target.checked &&
+                      boxBuilderRef.current?.getBoxes().length === 0
+                    ) {
                       // Set default box configuration
-                      boxBuilderRef.current?.setBoxes([{
-                        id: `temp-${Date.now()}`,
-                        position: 0,
-                        frameCount: 10,
-                        maxFrameCount: 10,
-                        hasExcluder: false,
-                        type: BoxTypeEnum.BROOD,
-                        variant: BoxVariantEnum.LANGSTROTH_DEEP,
-                        color: '#3b82f6',
-                      }]);
+                      boxBuilderRef.current?.setBoxes([
+                        {
+                          id: `temp-${Date.now()}`,
+                          position: 0,
+                          frameCount: 10,
+                          maxFrameCount: 10,
+                          hasExcluder: false,
+                          type: BoxTypeEnum.BROOD,
+                          variant: BoxVariantEnum.LANGSTROTH_DEEP,
+                          color: '#3b82f6',
+                        },
+                      ]);
                     }
                   }}
                   className="h-4 w-4"
                 />
-                <label htmlFor="configure-boxes" className="text-sm font-medium">
+                <label
+                  htmlFor="configure-boxes"
+                  className="text-sm font-medium"
+                >
                   Configure initial box setup
                 </label>
               </div>
-              
+
               {configureBoxes && (
                 <BoxBuilder
                   ref={boxBuilderRef}
@@ -452,7 +454,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                       type: BoxTypeEnum.BROOD,
                       variant: BoxVariantEnum.LANGSTROTH_DEEP,
                       color: '#3b82f6',
-                    }
+                    },
                   ]}
                 />
               )}

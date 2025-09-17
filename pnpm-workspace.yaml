@@ -3,7 +3,7 @@ packages:
   - packages/*
   - docs
 catalog:
-  typescript: 5.6.x
+  typescript: 5.7.x
 catalogs:
   zod:
     zod: latest
@@ -11,5 +11,5 @@ catalogs:
     prisma: latest
     '@prisma/client': latest
   typescript:
-    typescript: 5.8.X
+    typescript: 5.7.X
 
