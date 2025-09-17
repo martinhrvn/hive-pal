@@ -95,7 +95,8 @@ export class FeedingsSectionPageObject {
     await expect(
       this.page.getByTestId(TEST_SELECTORS.FEEDING_VIEW),
     ).toBeVisible();
-    await expect(this.assertInViewMode(`${quantity}${unit}`)).toBeVisible();
+    console.log(quantity);
+    await expect(this.assertInViewMode(`${quantity} ${unit}`)).toBeVisible();
     await expect(this.assertInViewMode(feedType)).toBeVisible();
 
     if (concentration) {

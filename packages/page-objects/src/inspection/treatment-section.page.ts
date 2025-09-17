@@ -3,7 +3,7 @@ import { TEST_SELECTORS } from '../utils/test-selectors';
 
 export class TreatmentSectionPageObject {
   readonly page: Page;
-  
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -60,7 +60,7 @@ export class TreatmentSectionPageObject {
     await expect(
       this.page.getByTestId(TEST_SELECTORS.TREATMENT_VIEW),
     ).toBeVisible();
-    await expect(this.assertInViewMode(`${amount}${unit}`)).toBeVisible();
+    await expect(this.assertInViewMode(`${amount} ${unit}`)).toBeVisible();
     await expect(this.assertInViewMode(treatmentType)).toBeVisible();
   }
 }

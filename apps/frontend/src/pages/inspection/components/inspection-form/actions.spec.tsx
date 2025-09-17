@@ -54,7 +54,7 @@ test.describe('Feeding', () => {
 
     await feedingSection.fillFeedingForm('Honey', '500');
 
-    await feedingSection.verifyFeedingView('500', 'Honey', 'g');
+    await feedingSection.verifyFeedingView('0.5', 'Honey', 'kg');
 
     await expect(actionsSection.getAction('Feeding')).not.toBeVisible();
   });
@@ -69,7 +69,7 @@ test.describe('Feeding', () => {
     await actionsSection.selectAction('Feeding');
 
     await feedingSection.fillFeedingForm('Candy', '450');
-    await feedingSection.verifyFeedingView('450', 'Candy', 'g');
+    await feedingSection.verifyFeedingView('0.45', 'Candy', 'kg');
 
     await expect(actionsSection.getAction('Feeding')).not.toBeVisible();
   });
@@ -81,14 +81,14 @@ test.describe('Feeding', () => {
     await actionsSection.selectAction('Feeding');
 
     await feedingSection.fillFeedingForm('Honey', '500');
-    await feedingSection.verifyFeedingView('500', 'Honey', 'g');
+    await feedingSection.verifyFeedingView('0.5', 'Honey', 'kg');
 
     await feedingSection.getEditButton().click();
     await expect(page.getByTestId(TEST_SELECTORS.FEEDING_FORM)).toBeVisible();
     await feedingSection.getQuentityField().fill('600');
     await feedingSection.getSaveButton().click();
 
-    await feedingSection.verifyFeedingView('600', 'Honey', 'g');
+    await feedingSection.verifyFeedingView('0.6', 'Honey', 'kg');
   });
 
   test('Remove should work', async ({ page, mount }) => {
@@ -98,7 +98,7 @@ test.describe('Feeding', () => {
     await actionsSection.selectAction('Feeding');
 
     await feedingSection.fillFeedingForm('Honey', '500');
-    await feedingSection.verifyFeedingView('500', 'Honey', 'g');
+    await feedingSection.verifyFeedingView('0.5', 'Honey', 'kg');
 
     await feedingSection.getRemoveButton().click();
     await expect(
