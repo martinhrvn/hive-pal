@@ -45,35 +45,62 @@ export const StatisticCards = ({ score }: { score: HiveScore }) => {
     </div>
   );
 
+  // Mobile compact view
+  const MobileScoreItem = ({
+    label,
+    value,
+  }: {
+    label: string;
+    value: number | null | undefined;
+  }) => (
+    <div className="flex items-baseline gap-1">
+      <span className="text-xs text-muted-foreground">{label}:</span>
+      <span className={`text-sm font-semibold ${getScoreColor(value)}`}>
+        {value?.toFixed(1) ?? '—'}
+      </span>
+    </div>
+  );
+
   return (
-    <Card className="p-6">
-      <div className="h-full grid grid-cols-2 items-center justify-center">
-        <ScoreItem
-          title="Overall Score"
-          value={score.overallScore}
-          icon={<BarChart className="text-muted-foreground/60" />}
-          emphasized
-        />
+    <Card className="p-3 sm:p-6">
+      {/* Mobile view - single line */}
+      <div className="sm:hidden flex items-center justify-between flex-wrap gap-2">
+        <MobileScoreItem label="Overall" value={score.overallScore} />
+        <MobileScoreItem label="Pop" value={strength} />
+        <MobileScoreItem label="Stores" value={honeyStores} />
+        <MobileScoreItem label="Queen" value={queenScore} />
+      </div>
 
-        <ScoreItem
-          title="Population"
-          value={strength}
-          icon={<BeeIcon className="text-muted-foreground/60" />}
-          emphasized
-        />
-        <ScoreItem
-          title="Stores"
-          value={honeyStores}
-          icon={<IconJarLogoIcon className="text-muted-foreground/60" />}
-          emphasized
-        />
+      {/* Desktop view - 2x2 grid */}
+      <div className="hidden sm:block">
+        <div className="h-full grid grid-cols-2 items-center justify-center">
+          <ScoreItem
+            title="Overall Score"
+            value={score.overallScore}
+            icon={<BarChart className="text-muted-foreground/60" />}
+            emphasized
+          />
 
-        <ScoreItem
-          title="Queen Score"
-          value={queenScore}
-          icon={<CrownIcon className="text-muted-foreground/60" />}
-          emphasized
-        />
+          <ScoreItem
+            title="Population"
+            value={strength}
+            icon={<BeeIcon className="text-muted-foreground/60" />}
+            emphasized
+          />
+          <ScoreItem
+            title="Stores"
+            value={honeyStores}
+            icon={<IconJarLogoIcon className="text-muted-foreground/60" />}
+            emphasized
+          />
+
+          <ScoreItem
+            title="Queen Score"
+            value={queenScore}
+            icon={<CrownIcon className="text-muted-foreground/60" />}
+            emphasized
+          />
+        </div>
       </div>
     </Card>
   );

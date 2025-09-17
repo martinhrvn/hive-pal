@@ -44,11 +44,8 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
   }
 
   if (!actions || actions.length === 0) {
-    return (
-      <Card className="p-6 text-center text-muted-foreground">
-        No feeding records found for this hive
-      </Card>
-    );
+    // Don't show the card at all if no feeding records
+    return null;
   }
 
   const totals = calculateFeedingTotals(actions, hive?.settings);
@@ -65,8 +62,45 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
   const remainingAmount = Math.max(targetAmount - currentAmount, 0);
 
   return (
-    <Card className="p-6">
-      <div className="space-y-8">
+    <Card className="p-3 sm:p-6">
+      {/* Mobile compact view */}
+      <div className="sm:hidden space-y-2">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div>
+              <span className="text-xs text-muted-foreground">Year:</span>
+              <span className="text-sm font-semibold ml-1">
+                {formatWeight(totals.currentYearSugarKg).label}
+              </span>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Autumn:</span>
+              <span className="text-sm font-semibold ml-1">
+                {formatWeight(totals.autumnSugarKg).label}
+              </span>
+            </div>
+          </div>
+          <span className={`text-sm font-bold ${progressPercentage >= 100 ? 'text-green-600' : progressPercentage >= 75 ? 'text-blue-600' : 'text-orange-600'}`}>
+            {progressPercentage.toFixed(0)}%
+          </span>
+        </div>
+        {progressPercentage < 100 && (
+          <Progress
+            value={progressPercentage}
+            className="h-1.5"
+            color={
+              progressPercentage >= 100
+                ? 'bg-green-500'
+                : progressPercentage >= 75
+                  ? 'bg-blue-500'
+                  : 'bg-orange-500'
+            }
+          />
+        )}
+      </div>
+
+      {/* Desktop view */}
+      <div className="hidden sm:block space-y-8">
         {/* Total and Autumn Feeding in 2 columns */}
         <div className="grid grid-cols-2 gap-6">
           {/* Current Year Feeding */}

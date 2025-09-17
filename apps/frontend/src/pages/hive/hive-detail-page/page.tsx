@@ -41,13 +41,15 @@ export const HiveDetailPage = () => {
   }
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        <div className="col-span-8 xl:col-span-9">
+    <div className="p-2 sm:p-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+        <div className="lg:col-span-8 xl:col-span-9">
           {/* Hive header card */}
-          <div className="rounded-lg shadow p-4 mb-4">
+          <div className="rounded-lg shadow p-3 sm:p-4 mb-4">
             <div className="flex justify-between items-center mb-2">
-              <h1 className="text-2xl font-semibold">{hive?.name}</h1>
+              <h1 className="text-xl sm:text-2xl font-semibold">
+                {hive?.name}
+              </h1>
               <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">
                 <HiveStatus status={hive?.status} />
               </span>
@@ -62,18 +64,26 @@ export const HiveDetailPage = () => {
           </div>
 
           {/* Tabs for different sections */}
-          <Tabs defaultValue="overview" className="mb-6">
-            <TabsList className="mb-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="boxes">Box Configurator</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+          <Tabs defaultValue="overview" className="mb-4 sm:mb-6">
+            <TabsList className="mb-3 sm:mb-4 flex-wrap h-auto">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="text-xs sm:text-sm">
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="boxes" className="text-xs sm:text-sm">
+                Boxes
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs sm:text-sm">
+                Settings
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {/* Three main cards in responsive grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                   {/* Scores Card */}
                   {hive && hive.hiveScore && (
                     <StatisticCards score={hive.hiveScore} />
@@ -109,8 +119,8 @@ export const HiveDetailPage = () => {
           </Tabs>
         </div>
 
-        {/* Action Sidebar */}
-        <div className="col-span-4 xl:col-span-3">
+        {/* Action Sidebar - Hidden on mobile, visible on larger screens */}
+        <div className="lg:col-span-4 xl:col-span-3">
           <ActionSideBar hiveId={hive?.id} onRefreshData={refetch} />
         </div>
       </div>
