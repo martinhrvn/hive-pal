@@ -58,6 +58,9 @@ export function passwordResetTemplate(data: PasswordResetTemplateData): {
                 text-align: center;
                 margin: 20px 0;
             }
+            a.button {
+                color: white;
+            }
             .button:hover {
                 background-color: #1d4ed8;
             }
