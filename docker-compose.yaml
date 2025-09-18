@@ -13,6 +13,14 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       DATABASE_URL: ${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper}
       PROMETHEUS_API_KEY: ${PROMETHEUS_API_KEY:-prometheus-secret-token}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_REJECT_UNAUTHORIZED: ${SMTP_REJECT_UNAUTHORIZED}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      FROM_EMAIL: noreply@hivepal.app
+      FRONTEND_URL: ${FRONTEND_URL:-https://preview.hivepal.app}
     depends_on:
       - postgres
   frontend:
