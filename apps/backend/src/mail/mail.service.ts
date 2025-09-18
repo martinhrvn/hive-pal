@@ -1,33 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Resend } from 'resend';
 import { passwordResetTemplate } from './templates/password-reset.template';
+import { MailConfigService } from './mail-config.service';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private readonly resend: Resend | null;
-  private readonly fromEmail: string;
-  private readonly emailEnabled: boolean;
 
-  constructor() {
-    const apiKey = process.env.RESEND_API_KEY;
-    this.emailEnabled = !!apiKey;
-
-    if (this.emailEnabled) {
-      this.resend = new Resend(apiKey);
-      this.logger.log('Email service initialized with Resend');
-    } else {
-      this.resend = null;
-      this.logger.warn(
-        'RESEND_API_KEY not provided - email functionality disabled',
-      );
-    }
-
-    this.fromEmail = process.env.FROM_EMAIL || 'noreply@hivepal.com';
-  }
+  constructor(private readonly mailConfig: MailConfigService) {}
 
   async sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
-    if (!this.emailEnabled || !this.resend) {
+    const provider = this.mailConfig.getProvider();
+    
+    if (!provider) {
       this.logger.log(
         `Email sending disabled - would have sent password reset email to ${email}`,
       );
@@ -43,25 +27,35 @@ export class MailService {
         appName: 'Hive Pal',
       });
 
-      const { data, error } = await this.resend.emails.send({
-        from: this.fromEmail,
+      const result = await provider.sendEmail({
+        from: this.mailConfig.getFromEmail(),
         to: [email],
         subject,
         html,
       });
 
-      if (error) {
-        this.logger.error('Failed to send password reset email', error);
+      if (!result.success) {
+        this.logger.error(
+          `Failed to send password reset email via ${provider.getName()}:`,
+          result.error,
+        );
         return false;
       }
 
       this.logger.log(
-        `Password reset email sent to ${email} with ID: ${data?.id}`,
+        `Password reset email sent to ${email} via ${provider.getName()} with ID: ${result.id}`,
       );
       return true;
     } catch (error) {
       this.logger.error('Error sending password reset email:', error);
       return false;
     }
+  }
+
+  /**
+   * Get the current mail configuration status
+   */
+  getMailStatus() {
+    return this.mailConfig.getProviderStatus();
   }
 }
