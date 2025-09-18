@@ -49,7 +49,7 @@ const ResetPasswordPage = () => {
 
     try {
       const data: ResetPassword = { token, password };
-      await apiClient.post('/auth/reset-password', data);
+      await apiClient.post('/api/auth/reset-password', data);
       setIsSuccess(true);
 
       // Redirect to login after 3 seconds

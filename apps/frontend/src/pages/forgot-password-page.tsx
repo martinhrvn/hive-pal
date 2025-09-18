@@ -22,7 +22,7 @@ const ForgotPasswordPage = () => {
 
     try {
       const data: ForgotPassword = { email };
-      await apiClient.post('/auth/forgot-password', data);
+      await apiClient.post('/api/auth/forgot-password', data);
       setIsSubmitted(true);
     } catch (err: unknown) {
       console.error('Forgot password error:', err);
