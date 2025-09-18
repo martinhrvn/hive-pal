@@ -17,6 +17,8 @@ interface AuthContextType {
     email: string,
     password: string,
     name?: string,
+    privacyPolicyConsent?: boolean,
+    newsletterConsent?: boolean,
   ) => Promise<boolean>;
   logout: () => void;
   isLoggedIn: boolean;

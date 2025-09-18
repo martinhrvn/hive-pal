@@ -5,12 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { PublicFooter } from '@/components/layout/public-footer';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [privacyPolicyConsent, setPrivacyPolicyConsent] = useState(false);
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [error, setError] = useState('');
   const { t } = useTranslation('auth');
 
@@ -25,8 +29,19 @@ const RegisterPage = () => {
       return;
     }
 
+    if (!privacyPolicyConsent) {
+      setError(t('register.consent.privacyRequired'));
+      return;
+    }
+
     try {
-      const success = await register(email, password, name || undefined);
+      const success = await register(
+        email,
+        password,
+        name || undefined,
+        privacyPolicyConsent,
+        newsletterConsent,
+      );
       if (success) {
         navigate('/login');
       } else {
@@ -135,6 +150,47 @@ const RegisterPage = () => {
               </div>
             </div>
 
+            {/* GDPR Consent Checkboxes */}
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="privacy-consent"
+                  checked={privacyPolicyConsent}
+                  onCheckedChange={(checked) => setPrivacyPolicyConsent(checked as boolean)}
+                  className="mt-1"
+                />
+                <Label
+                  htmlFor="privacy-consent"
+                  className="text-white/90 text-sm leading-relaxed cursor-pointer"
+                >
+                  {t('register.consent.privacyPolicy')}{' '}
+                  <Link
+                    to="/privacy-policy"
+                    target="_blank"
+                    className="text-green-300 hover:text-green-200 underline"
+                  >
+                    {t('register.consent.privacyPolicyLink')}
+                  </Link>
+                  {' *'}
+                </Label>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="newsletter-consent"
+                  checked={newsletterConsent}
+                  onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
+                  className="mt-1"
+                />
+                <Label
+                  htmlFor="newsletter-consent"
+                  className="text-white/90 text-sm leading-relaxed cursor-pointer"
+                >
+                  {t('register.consent.newsletter')}
+                </Label>
+              </div>
+            </div>
+
             <div>
               <Button
                 type="submit"
@@ -159,6 +215,7 @@ const RegisterPage = () => {
           </div>
         </div>
       </div>
+      <PublicFooter />
     </div>
   );
 };

@@ -1,0 +1,45 @@
+{
+  "title": "Ochrana osobných údajov",
+  "back": "Späť",
+  "intro": "Nachádzate sa na webovej stránke hivepal.app, ktorej prevádzkovateľom je HRVN s.r.o.",
+  "operator": "Záleží nám na ochrane vašich osobných údajov a na vašej bezpečnosti. Na ochranu vášho súkromia pri spracovaní osobných údajov myslíme pri všetkých našich obchodných procesoch. Osobné údaje, ktoré sú získavané počas návštevy našich webových stránok, spracovávame v súlade so Zákonom č. 122/2013 Z. z. O ochrane osobných údajov. Prevádzkovateľ webu je evidovaný na Úrade pre ochranu osobných údajov.",
+  "rightToInformation": {
+    "title": "Právo na informácie",
+    "content": "Na požiadanie vám podľa možností obratom a písomne oznámime, či a aké osobné údaje máme o vás zaznamenané. Ak by aj napriek našim snahám o správnosť údajov a aktuálnosť boli zaznamenané nesprávne či neaktuálne informácie, neváhajte nás kontaktovať, na požiadanie ich opravíme. Ak máte otázky týkajúce sa spracovania vašich osobných údajov, kontaktujte nás na info@hivepal.app, kde sme vám k dispozícii aj v prípade podnetov alebo sťažností."
+  },
+  "security": {
+    "title": "Bezpečnosť",
+    "content": "HRVN s.r.o. prijíma technické a organizačné bezpečnostné opatrenia s cieľom chrániť evidované osobné údaje proti manipulácii, strate, zničeniu a zásahu nepovolaných osôb a tieto opatrenia priebežne aktualizuje."
+  },
+  "dataProtection": {
+    "title": "Kódex ochrany údajov",
+    "content": "Pri návšteve našich webových stránok zaznamenávame informácie o webovej stránke, z ktorej nás navštívite, informácie o častiach našej webstránky, ktoré navštívite a tiež dátum, čas a dĺžku návštevy. Tieto informácie sú zhromaždené v službe Google Analytics. Pri návšteve našej webstránky nezaznamenávame vaše osobné údaje. Osobné údaje sa zaznamenajú len vtedy, keď nám ich poskytnete z vlastnej vôle, prostredníctvom kontaktného formulára alebo registrácie, na konkrétny účel."
+  },
+  "dataUsage": {
+    "title": "Použitie a postúpenie osobných údajov",
+    "content": "HRVN s.r.o. používa vaše osobné údaje na účely technickej správy webových stránok, administratívu a na komunikáciu s vami na základe otázok zaslaných prostredníctvom formulára.",
+    "marketing": "Osobné údaje sú používané na konkrétne marketingové účely vždy len v prípade vysloveného súhlasu so spracovaním osobných údajov na konkrétny marketingový účel vo zvolenej periodicite (napríklad zaslanie newslettra raz mesačne, zaslanie informácie o novinkách a aktualizáciách).",
+    "authorities": "Postúpenie osobných údajov orgánom verejnej správy nasleduje len v rámci záväzných právnych predpisov."
+  },
+  "newsletter": {
+    "title": "Newsletter a marketingová komunikácia",
+    "content": "Ak ste sa prihlásili na odber nášho newslettra, používame váš e-mail na zasielanie pravidelných informácií o novinkách, aktualizáciách produktu a včelárskych tipoch. Táto komunikácia je založená výlučne na vašom výslovenom súhlase.",
+    "unsubscribe": "V prípade komunikácie na konkrétny marketingový účel sa z odberu e-mailov môžete kedykoľvek odhlásiť pomocou odhlasovacieho odkazu uvedeného v pätičke každého takéhoto e-mailu, alebo v nastaveniach vášho účtu."
+  },
+  "cookies": {
+    "title": "Cookies",
+    "content": "HRVN s.r.o. a webstránka hivepal.app používa cookies na to, aby sme mohli sledovať preferencie návštevníkov a podľa toho optimálne vylepšovať naše webové stránky. Cookies sú malé súbory, ktoré sa uložia na váš pevný disk. Tieto cookies neobsahujú žiadne osobné údaje a slúžia len na zlepšenie používateľskej skúsenosti."
+  },
+  "consent": {
+    "title": "Súhlas so spracovaním osobných údajov",
+    "content": "HRVN s.r.o. sa zaväzuje plne rešpektovať dôverný charakter vašich osobných a firemných dát, ktoré sú zabezpečené proti neautorizovanému prístupu a chránené proti zneužitiu. Údaje, ktoré sú získané prostredníctvom registračného formulára používame výlučne na poskytovanie našich služieb a komunikáciu s vami. Vaše osobné a kontaktné údaje nie sú poskytované tretím stranám bez vášho súhlasu."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "content": "Pre akékoľvek otázky týkajúce sa ochrany osobných údajov nás kontaktujte na:"
+  },
+  "footer": {
+    "company": "HRVN s.r.o.",
+    "lastUpdated": "Naposledy aktualizované"
+  }
+}

@@ -41,6 +41,7 @@ i18n
       'queen',
       'admin',
       'onboarding',
+      'privacy',
     ],
     defaultNS: 'common',
   });

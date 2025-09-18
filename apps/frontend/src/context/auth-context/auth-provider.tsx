@@ -86,11 +86,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { mutateAsync } = useRegister();
 
   const register = useCallback(
-    async (email: string, password: string, name?: string) => {
+    async (
+      email: string,
+      password: string,
+      name?: string,
+      privacyPolicyConsent?: boolean,
+      newsletterConsent?: boolean,
+    ) => {
       return mutateAsync({
         email,
         password,
         ...(name && { name }),
+        privacyPolicyConsent: privacyPolicyConsent || false,
+        newsletterConsent: newsletterConsent || false,
       })
         .then(data => {
           if (data.access_token) {

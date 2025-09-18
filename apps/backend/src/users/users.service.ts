@@ -22,7 +22,15 @@ export class UsersService {
     });
   }
 
-  async create(data: { email: string; password: string; name?: string }) {
+  async create(data: { 
+    email: string; 
+    password: string; 
+    name?: string;
+    privacyPolicyConsent?: boolean;
+    privacyConsentTimestamp?: Date;
+    newsletterConsent?: boolean;
+    newsletterConsentTimestamp?: Date | null;
+  }) {
     return this.prismaService.user.create({ data });
   }
 

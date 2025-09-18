@@ -22,10 +22,10 @@ export class MailConfigService {
     private readonly smtpProvider: SmtpProvider,
   ) {
     this.fromEmail = process.env.FROM_EMAIL || 'noreply@hivepal.com';
-    
+
     // Determine which provider to use
     const forcedProvider = process.env.MAIL_PROVIDER?.toLowerCase();
-    
+
     if (forcedProvider === 'resend' && this.resendProvider.isConfigured()) {
       this.selectedProvider = this.resendProvider;
       this.providerType = MailProviderType.RESEND;
@@ -51,7 +51,7 @@ export class MailConfigService {
 
     this.emailEnabled = this.selectedProvider !== null;
 
-    if (this.emailEnabled) {
+    if (this.emailEnabled && this.selectedProvider) {
       this.logger.log(
         `Email service initialized with provider: ${this.selectedProvider.getName()}`,
       );

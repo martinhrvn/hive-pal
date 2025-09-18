@@ -22,6 +22,12 @@ model User {
   preferences            Json?                  // JSON field for user preferences
   feedbacks              Feedback[]
   passwordResetTokens    PasswordResetToken[]
+  
+  // GDPR consent fields
+  privacyPolicyConsent   Boolean                @default(false)
+  privacyConsentTimestamp DateTime?
+  newsletterConsent      Boolean                @default(false)
+  newsletterConsentTimestamp DateTime?
 }
 
 enum Role {

@@ -1,12 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { MailProvider, EmailOptions, EmailResult } from './mail-provider.interface';
+import {
+  MailProvider,
+  EmailOptions,
+  EmailResult,
+} from './mail-provider.interface';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 @Injectable()
 export class SmtpProvider implements MailProvider {
   private readonly logger = new Logger(SmtpProvider.name);
-  private transporter: nodemailer.Transporter | null = null;
-  private readonly isConfigured: boolean;
+  private transporter: nodemailer.Transporter<
+    SMTPTransport.SentMessageInfo,
+    SMTPTransport.Options
+  > | null = null;
+  private readonly configured: boolean;
 
   constructor() {
     const host = process.env.SMTP_HOST;
@@ -15,11 +23,11 @@ export class SmtpProvider implements MailProvider {
     const user = process.env.SMTP_USER;
     const pass = process.env.SMTP_PASS;
 
-    this.isConfigured = !!(host && user && pass);
+    this.configured = !!(host && user && pass);
 
-    if (this.isConfigured) {
+    if (this.configured) {
       try {
-        this.transporter = nodemailer.createTransporter({
+        this.transporter = nodemailer.createTransport({
           host,
           port,
           secure,
@@ -28,12 +36,13 @@ export class SmtpProvider implements MailProvider {
             pass,
           },
           tls: {
-            rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED !== 'false',
+            rejectUnauthorized:
+              process.env.SMTP_REJECT_UNAUTHORIZED !== 'false',
           },
         });
 
         this.logger.log(`SMTP provider initialized with host: ${host}:${port}`);
-        
+
         // Verify connection configuration
         this.verifyConnection();
       } catch (error) {
@@ -88,7 +97,7 @@ export class SmtpProvider implements MailProvider {
   }
 
   isConfigured(): boolean {
-    return this.isConfigured && this.transporter !== null;
+    return this.configured && this.transporter !== null;
   }
 
   getName(): string {

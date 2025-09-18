@@ -43,6 +43,10 @@ export class AuthService {
         name: 'Admin',
         role: 'ADMIN',
         passwordChangeRequired: false,
+        privacyPolicyConsent: true,
+        privacyConsentTimestamp: null,
+        newsletterConsent: false,
+        newsletterConsentTimestamp: null,
       };
     }
 
@@ -84,7 +88,14 @@ export class AuthService {
     email: string,
     password: string,
     name?: string,
+    privacyPolicyConsent: boolean = false,
+    newsletterConsent: boolean = false,
   ): Promise<AuthResponse> {
+    // Validate GDPR consent
+    if (!privacyPolicyConsent) {
+      throw new UnauthorizedException('Privacy policy consent is required');
+    }
+
     // Check if user exists
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
@@ -95,10 +106,15 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
+    const now = new Date();
     const newUser = await this.usersService.create({
       email,
       password: hashedPassword,
       name,
+      privacyPolicyConsent,
+      privacyConsentTimestamp: now,
+      newsletterConsent,
+      newsletterConsentTimestamp: newsletterConsent ? now : null,
     });
 
     // Remove password from response

@@ -39,6 +39,7 @@ import { BulkActionsPage } from '@/pages/actions/bulk-actions-page';
 import { CalendarPage } from '@/pages/calendar';
 import { UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
+import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
 
 const router = createBrowserRouter([
   {
@@ -199,6 +200,10 @@ const router = createBrowserRouter([
   {
     path: '/releases',
     element: <ReleasesPage />,
+  },
+  {
+    path: '/privacy-policy',
+    element: <PrivacyPolicyPage />,
   },
   {
     path: '*',

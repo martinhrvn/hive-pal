@@ -9,6 +9,8 @@ export const loginSchema = z.object({
 // Register schema
 export const registerSchema = loginSchema.extend({
   name: z.string().optional(),
+  privacyPolicyConsent: z.boolean(),
+  newsletterConsent: z.boolean().optional(),
 });
 
 // User DTO schema
