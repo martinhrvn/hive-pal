@@ -13,7 +13,7 @@ import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 import { useUnitFormat } from '@/hooks/use-unit-format';
-import { getVolumeUnitForAmount, parseVolume } from '@/utils/unit-conversion';
+import { parseVolume } from '@/utils/unit-conversion';
 
 type TreatmentType = 'OXALIC_ACID' | 'FORMIC_ACID' | 'THYMOL' | 'OTHER';
 
@@ -50,9 +50,8 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
   );
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
 
-  // Get display unit based on user preference and amount
-  const volumeInLiters = (amount || 10) / 1000; // Convert ml to liters for unit calculation
-  const unit = getVolumeUnitForAmount(volumeInLiters, unitPreference);
+  // Use fixed units to avoid confusion when values change
+  const unit = unitPreference === 'imperial' ? 'fl oz' : 'ml';
 
   return (
     <div
@@ -114,12 +113,13 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
               // Convert user input to metric (ml) for API submission
               let apiAmount = amount;
               const apiUnit = 'ml';
-              
+
               if (unitPreference === 'imperial') {
-                const volumeInLiters = parseVolume(amount, unit, unitPreference);
+                // Convert fl oz to ml
+                const volumeInLiters = parseVolume(amount, 'fl oz', unitPreference);
                 apiAmount = volumeInLiters * 1000; // Convert to ml
               }
-              
+
               onSave({
                 type: 'TREATMENT',
                 treatmentType: treatmentType as TreatmentType,

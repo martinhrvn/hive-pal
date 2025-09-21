@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Pill } from '@/components/common';
 import NumericInputField from '@/components/common/numeric-input-field.tsx';
 import { Button } from '@/components/ui/button';
@@ -15,9 +15,7 @@ import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import {
-  getVolumeUnitForAmount,
   parseVolume,
-  parseWeight,
 } from '@/utils/unit-conversion';
 
 export type FeedType = 'SYRUP' | 'HONEY' | 'CANDY';
@@ -64,16 +62,10 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
   const showConcentration = feedType === 'SYRUP';
 
   // Get display units based on user preference and feed type
-  const units = useMemo(() => {
-    if (feedType === 'SYRUP') {
-      // For syrup (volume), use user's preferred volume unit
-      const volumeInLiters = (quantity || 100) / 1000; // Convert ml to liters for unit calculation
-      return getVolumeUnitForAmount(volumeInLiters, unitPreference);
-    } else {
-      // For honey/candy (weight), use user's preferred weight unit
-      return unitPreference === 'imperial' ? 'oz' : 'g';
-    }
-  }, [feedType, quantity, unitPreference]);
+  // Using fixed units to avoid confusion when values change
+  const units = feedType === 'SYRUP'
+    ? (unitPreference === 'imperial' ? 'fl oz' : 'ml')
+    : (unitPreference === 'imperial' ? 'oz' : 'g');
   return (
     <div
       className={'grid grid-cols-1 md:grid-cols-2 gap-4 mt-5'}
@@ -165,25 +157,27 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
             onClick={() => {
               // Convert user input to metric units for API submission
               let apiQuantity = quantity;
-              let apiUnit = units;
+              let apiUnit = 'ml'; // Default to ml for volume
 
               if (feedType === 'SYRUP') {
                 // For syrup (volume), convert to ml (metric)
                 if (unitPreference === 'imperial') {
+                  // Convert fl oz to ml
                   const volumeInLiters = parseVolume(
                     quantity,
-                    units,
+                    'fl oz',
                     unitPreference,
                   );
                   apiQuantity = volumeInLiters * 1000; // Convert to ml
-                  apiUnit = 'ml';
                 }
+                apiUnit = 'ml';
               } else {
                 // For honey/candy (weight), convert to grams (metric)
-                if (unitPreference === 'imperial' && units === 'oz') {
-                  apiQuantity = parseWeight(quantity, unitPreference) * 1000; // Convert to grams
-                  apiUnit = 'g';
+                if (unitPreference === 'imperial') {
+                  // Convert oz to grams (1 oz = 28.3495 g)
+                  apiQuantity = quantity * 28.3495;
                 }
+                apiUnit = 'g';
               }
 
               onSave({

@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Resend } from 'resend';
-import { MailProvider, EmailOptions, EmailResult } from './mail-provider.interface';
+import {
+  MailProvider,
+  EmailOptions,
+  EmailResult,
+} from './mail-provider.interface';
 
 @Injectable()
 export class ResendProvider implements MailProvider {
@@ -10,7 +14,7 @@ export class ResendProvider implements MailProvider {
 
   constructor() {
     this.apiKey = process.env.RESEND_API_KEY;
-    
+
     if (this.apiKey) {
       this.resend = new Resend(this.apiKey);
       this.logger.log('Resend provider initialized');

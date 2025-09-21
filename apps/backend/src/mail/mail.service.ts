@@ -10,7 +10,7 @@ export class MailService {
 
   async sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
     const provider = this.mailConfig.getProvider();
-    
+
     if (!provider) {
       this.logger.log(
         `Email sending disabled - would have sent password reset email to ${email}`,

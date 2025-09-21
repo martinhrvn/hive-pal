@@ -22,9 +22,9 @@ export class UsersService {
     });
   }
 
-  async create(data: { 
-    email: string; 
-    password: string; 
+  async create(data: {
+    email: string;
+    password: string;
     name?: string;
     privacyPolicyConsent?: boolean;
     privacyConsentTimestamp?: Date;
