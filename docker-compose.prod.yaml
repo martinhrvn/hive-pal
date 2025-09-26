@@ -1,45 +1,63 @@
-
 services:
   backend:
-    image: ghcr.io/martinhrvn/hive-pal-backend:latest
+    image: 'ghcr.io/martinhrvn/hive-pal-backend:latest'
     environment:
       NODE_ENV: production
-      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
-      JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: ${DATABASE_URL}
+      ADMIN_EMAIL: '${ADMIN_EMAIL:-admin@example.com}'
+      ADMIN_PASSWORD: '${ADMIN_PASSWORD:-password}'
+      DATABASE_URL: '${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper}'
+      SENTRY_DSN: '${SENTRY_DNS}'
+      SENTRY_ENVIRONMENT: '${SENTRY_ENVIRONMENT}'
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_REJECT_UNAUTHORIZED: ${SMTP_REJECT_UNAUTHORIZED}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      FROM_EMAIL: noreply@hivepal.app
+      FRONTEND_URL: ${FRONTEND_URL:-https://hivepal.app}
     depends_on:
       - postgres
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test:
+        - CMD
+        - wget
+        - 'http://localhost:3000/api/health'
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 10s
   frontend:
-    image: ghcr.io/martinhrvn/hive-pal-frontend:latest
+    image: 'ghcr.io/martinhrvn/hive-pal-frontend:latest'
     depends_on:
       - backend
-    environment:
-      VITE_API_URL: ${API_URL}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://frontend:9000/'
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 10s
+    environment:
+      VITE_API_URL: '${API_URL}'
+      VITE_SENTRY_DSN: '${VITE_SENTRY_DSN}'
+      VITE_SENTRY_ENVIRONMENT: '${VITE_SENTRY_ENVIRONMENT}'
   postgres:
-    image: postgres:17
+    image: 'postgres:14'
+    container_name: hive-pal-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: beekeeper
     volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
+      - '/data/hive-pal-data/postgres:/var/lib/postgresql/data'
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d beekeeper" ]
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U postgres -d beekeeper'
       interval: 10s
       timeout: 5s
       retries: 5
-volumes:
-    postgres_data_prod:
