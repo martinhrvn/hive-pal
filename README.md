@@ -48,9 +48,26 @@ docker-compose -f docker-compose.prod.yaml down -v
 ```
 
 The application will be available at:
-- Frontend: http://localhost (configure with reverse proxy)
-- Backend API: http://localhost:3000
-- API Documentation: http://localhost:3000/api-docs
+- Frontend: Port needs to be exposed via docker-compose override or reverse proxy
+- Backend API: Port 3000 (internal to Docker network)
+- API Documentation: http://localhost:3000/api-docs (if port 3000 is exposed)
+
+### Port Configuration
+
+The default `docker-compose.prod.yaml` doesn't expose ports directly for security. To access the services:
+
+**Option 1: Add port mappings** (create `docker-compose.override.yaml`):
+```yaml
+services:
+  frontend:
+    ports:
+      - "80:9000"     # Expose frontend on port 80
+  backend:
+    ports:
+      - "3000:3000"   # Expose backend API on port 3000
+```
+
+**Option 2: Use a reverse proxy** (recommended for production) - Configure nginx/Caddy to proxy requests to the Docker services.
 
 ### Environment Variables
 
@@ -129,19 +146,39 @@ pnpm dev
 ```
 /apps
   /frontend - React frontend application
-  /backend - Node.js backend application
+  /backend - NestJS API server
+  /e2e - End-to-end tests with Playwright
 /packages
-  /api-client - Generated API client from Swagger
+  /shared-schemas - Shared Zod validation schemas
+  /page-objects - Page objects for E2E testing
 ```
 
 ## Technology Stack
 
-- **Frontend**: React with Tailwind CSS
-- **Backend**: Node.js with Express
-- **Database**: PostgreSQL with Prisma ORM
-- **Package Management**: PNPM
-- **API Client**: Auto-generated from Swagger
-- **Containerization**: Docker
+### Frontend
+- **Framework**: React 19 with TypeScript
+- **Styling**: Tailwind CSS v4
+- **UI Components**: shadcn/ui
+- **State Management**: Zustand + React Query (TanStack Query)
+- **Routing**: React Router
+- **Build Tool**: Vite
+- **Form Handling**: React Hook Form with Zod validation
+
+### Backend
+- **Framework**: NestJS with TypeScript
+- **Database**: PostgreSQL 14
+- **ORM**: Prisma
+- **Authentication**: JWT with refresh tokens
+- **API Documentation**: Swagger/OpenAPI
+- **Logging**: Winston with Loki integration
+- **Monitoring**: Prometheus metrics, health checks
+
+### DevOps & Tooling
+- **Package Management**: PNPM with workspaces
+- **Build System**: Turborepo for monorepo management
+- **Containerization**: Docker with multi-stage builds
+- **Testing**: Jest, Playwright, Testcontainers
+- **CI/CD**: GitHub Actions
 
 ## License
 
