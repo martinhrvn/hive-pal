@@ -34,19 +34,34 @@ import {
   X,
 } from 'lucide-react';
 import { format, addDays, isSameDay, startOfDay } from 'date-fns';
-import { useHives, useCreateInspection } from '@/api/hooks';
+import { useHives, useCreateInspection, useCreateBatchInspection } from '@/api/hooks';
 import { useWeatherDailyForecast } from '@/api/hooks/useWeather';
 import { WeatherCondition, InspectionStatus } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 
 const scheduleSchema = z.object({
   hiveIds: z.array(z.string()).min(1, 'Please select at least one hive'),
   date: z.date(),
   notes: z.string().optional(),
-});
+  createAsBatch: z.boolean().optional(),
+  batchName: z.string().optional(),
+}).refine(
+  (data) => {
+    // If createAsBatch is true, batchName must be provided
+    if (data.createAsBatch && (!data.batchName || data.batchName.trim() === '')) {
+      return false;
+    }
+    return true;
+  },
+  {
+    message: 'Batch name is required when creating a batch inspection',
+    path: ['batchName'],
+  }
+);
 
 type ScheduleFormData = z.infer<typeof scheduleSchema>;
 
@@ -79,6 +94,7 @@ export const ScheduleInspectionPage = () => {
   const { data: hives } = useHives();
   const navigate = useNavigate();
   const { mutate: createInspection } = useCreateInspection();
+  const { mutate: createBatchInspection } = useCreateBatchInspection();
 
   // Get weather for the first selected apiary (assuming hives in same apiary have same weather)
   const primaryApiaryId = selectedApiaryIds[0];
@@ -92,58 +108,93 @@ export const ScheduleInspectionPage = () => {
     defaultValues: {
       hiveIds: [],
       notes: '',
+      createAsBatch: false,
+      batchName: '',
     },
   });
 
+  const createAsBatch = form.watch('createAsBatch');
+
   const handleSchedule = form.handleSubmit(async data => {
-    const { hiveIds, date, notes } = data;
-    let successCount = 0;
-    let errorCount = 0;
+    const { hiveIds, date, notes, createAsBatch, batchName } = data;
 
-    // Create an inspection for each selected hive
-    for (const hiveId of hiveIds) {
-      try {
-        await new Promise<void>((resolve, reject) => {
-          createInspection(
-            {
-              hiveId,
-              date: date.toISOString(),
-              notes,
-              status: InspectionStatus.SCHEDULED,
-              actions: [],
-            },
-            {
-              onSuccess: () => {
-                successCount++;
-                resolve();
+    // Get the apiary ID from the first selected hive
+    const firstHive = hives?.find(h => h.id === hiveIds[0]);
+    const apiaryId = firstHive?.apiaryId;
+
+    if (!apiaryId) {
+      alert('Unable to determine apiary for selected hives');
+      return;
+    }
+
+    if (createAsBatch && batchName) {
+      // Create batch inspection
+      createBatchInspection(
+        {
+          name: batchName,
+          apiaryId,
+          hiveIds,
+        },
+        {
+          onSuccess: (batch) => {
+            alert(`Successfully created batch inspection: ${batchName}`);
+            navigate(`/batch-inspections/${batch.id}`);
+          },
+          onError: (error) => {
+            console.error('Failed to create batch inspection:', error);
+            alert('Failed to create batch inspection');
+          },
+        },
+      );
+    } else {
+      // Create individual inspections
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const hiveId of hiveIds) {
+        try {
+          await new Promise<void>((resolve, reject) => {
+            createInspection(
+              {
+                hiveId,
+                date: date.toISOString(),
+                notes,
+                status: InspectionStatus.SCHEDULED,
+                actions: [],
               },
-              onError: error => {
-                errorCount++;
-                console.error(
-                  `Failed to create inspection for hive ${hiveId}:`,
-                  error,
-                );
-                reject(error);
+              {
+                onSuccess: () => {
+                  successCount++;
+                  resolve();
+                },
+                onError: error => {
+                  errorCount++;
+                  console.error(
+                    `Failed to create inspection for hive ${hiveId}:`,
+                    error,
+                  );
+                  reject(error);
+                },
               },
-            },
-          );
-        });
-      } catch {
-        // Error already counted and logged
+            );
+          });
+        } catch {
+          // Error already counted and logged
+        }
       }
-    }
 
-    if (successCount > 0) {
-      alert(
-        `Successfully scheduled ${successCount} inspection${successCount > 1 ? 's' : ''}`,
-      );
-      navigate('/inspections/list/upcoming');
-    }
+      if (successCount > 0) {
+        alert(
+          `Successfully scheduled ${successCount} inspection${successCount > 1 ? 's' : ''}`,
+        );
+        navigate('/inspections/list/upcoming');
+      }
 
-    if (errorCount > 0) {
-      alert(
-        `Failed to schedule ${errorCount} inspection${errorCount > 1 ? 's' : ''}`,
-      );
+      if (errorCount > 0) {
+        alert(
+          `Failed to schedule ${errorCount} inspection${errorCount > 1 ? 's' : ''}`,
+        );
+      }
     }
   });
 
@@ -457,40 +508,90 @@ export const ScheduleInspectionPage = () => {
                   </div>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Notes (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Add any notes for this scheduled inspection..."
-                          className="min-h-[100px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="mb-4">
+                  <FormField
+                    control={form.control}
+                    name="createAsBatch"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            Create as Batch Inspection
+                          </FormLabel>
+                          <p className="text-sm text-muted-foreground">
+                            Perform inspections sequentially with a guided workflow
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {createAsBatch && (
+                  <FormField
+                    control={form.control}
+                    name="batchName"
+                    render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel>Batch Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Spring 2025 Inspection"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {!createAsBatch && (
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Notes (Optional)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Add any notes for this scheduled inspection..."
+                            className="min-h-[100px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
                     <Calendar className="h-4 w-4" />
                     <span className="text-sm font-medium">
-                      This inspection will be scheduled for a future date
+                      {createAsBatch
+                        ? 'This batch will be created and ready to start'
+                        : 'This inspection will be scheduled for a future date'}
                     </span>
                   </div>
                   <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                    You can add details and complete the inspection on the
-                    scheduled date.
+                    {createAsBatch
+                      ? 'You can begin the batch inspection immediately or start it later.'
+                      : 'You can add details and complete the inspection on the scheduled date.'}
                   </p>
                 </div>
 
                 <Button type="submit" className="w-full mt-6">
-                  Schedule {selectedHiveIds.length} Inspection
-                  {selectedHiveIds.length !== 1 ? 's' : ''}
+                  {createAsBatch
+                    ? `Create Batch Inspection`
+                    : `Schedule ${selectedHiveIds.length} Inspection${selectedHiveIds.length !== 1 ? 's' : ''}`}
                 </Button>
               </CardContent>
             </Card>

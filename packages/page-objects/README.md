@@ -6,7 +6,7 @@ Shared page objects for component and E2E tests in Hive-Pal.
 
 ```typescript
 // In your test file
-import { LoginPage, SignupPage, ActionsSectionPageObject } from '@hive-pal/page-objects';
+import { LoginPage, SignupPage, ActionsSectionPageObject } from 'page-objects';
 
 // Create a new page object
 const loginPage = new LoginPage(page);

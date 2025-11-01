@@ -70,6 +70,10 @@ const getNavData = (t: (key: string) => string) => ({
           url: '/inspections/schedule',
         },
         {
+          title: 'Batch Inspections',
+          url: '/batch-inspections',
+        },
+        {
           title: t('navigation.recent'),
           url: '/inspections/list/recent',
         },

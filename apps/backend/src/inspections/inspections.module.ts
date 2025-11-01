@@ -17,5 +17,6 @@ import { UsersModule } from '../users/users.module';
     PrismaService,
     MetricsService,
   ],
+  exports: [InspectionsService],
 })
 export class InspectionsModule {}

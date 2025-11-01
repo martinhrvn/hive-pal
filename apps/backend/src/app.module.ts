@@ -6,6 +6,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppService } from './app.service';
 import { HiveModule } from './hives/hive.module';
 import { InspectionsModule } from './inspections/inspections.module';
+import { BatchInspectionsModule } from './batch-inspections/batch-inspections.module';
 import { QueensModule } from './queens/queens.module';
 import { MetricsService } from './metrics/metrics.service';
 import { UsersModule } from './users/users.module';
@@ -34,6 +35,7 @@ import { SentryModule } from '@sentry/nestjs/setup';
     AuthModule,
     HiveModule,
     InspectionsModule,
+    BatchInspectionsModule,
     QueensModule,
     UsersModule,
     ApiariesModule,

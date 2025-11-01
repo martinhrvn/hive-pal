@@ -49,6 +49,7 @@ model Apiary {
   weather               Weather[]
   weatherHourlyForecasts WeatherHourlyForecast[]
   weatherForecasts      WeatherForecast[]
+  batchInspections      BatchInspection[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -71,6 +72,7 @@ model Hive {
   actions          Action[]
   harvestHives     HarvestHive[]
   alerts           Alert[]
+  batchInspectionHives BatchInspectionHive[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -122,6 +124,7 @@ model Inspection {
   observations      Observation[]
   actions           Action[]
   status            InspectionStatus @default(COMPLETED)
+  batchInspectionHive BatchInspectionHive?
 
   // Create index for quick lookup by hiveId - used in authorization checks
   @@index([hiveId])
@@ -517,4 +520,55 @@ model PasswordResetToken {
   @@index([email])
   @@index([expiresAt])
   @@index([email, used, expiresAt]) // Composite index for efficient token validation
+}
+
+// Batch inspection management
+model BatchInspection {
+  id          String                 @id @default(uuid())
+  name        String                 // e.g., "Spring 2025 Inspection"
+  apiaryId    String
+  apiary      Apiary                 @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  status      BatchInspectionStatus  @default(DRAFT)
+  startedAt   DateTime?              // When batch inspection was started
+  completedAt DateTime?              // When batch inspection was completed
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  hives       BatchInspectionHive[]
+
+  @@index([apiaryId])
+  @@index([status])
+  @@index([apiaryId, status])
+}
+
+// Individual hive entries within a batch inspection
+model BatchInspectionHive {
+  id                 String           @id @default(uuid())
+  batchInspectionId  String
+  batchInspection    BatchInspection  @relation(fields: [batchInspectionId], references: [id], onDelete: Cascade)
+  hiveId             String
+  hive               Hive             @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  order              Int              // Position in inspection queue (0-based)
+  status             BatchHiveStatus  @default(PENDING)
+  inspectionId       String?          @unique
+  inspection         Inspection?      @relation(fields: [inspectionId], references: [id])
+  completedAt        DateTime?        // When this hive's inspection was completed
+  skippedCount       Int              @default(0) // Number of times this hive was skipped
+
+  @@unique([batchInspectionId, hiveId]) // Can't add same hive twice to a batch
+  @@index([batchInspectionId])
+  @@index([batchInspectionId, order])
+  @@index([batchInspectionId, status])
+}
+
+enum BatchInspectionStatus {
+  DRAFT        // Initial state - hives can be added/removed/reordered
+  IN_PROGRESS  // Batch inspection is active
+  COMPLETED    // All hives inspected
+  CANCELLED    // Batch cancelled
+}
+
+enum BatchHiveStatus {
+  PENDING    // Not yet inspected
+  COMPLETED  // Inspection completed
+  CANCELLED  // Hive removed from batch
 }

@@ -47,11 +47,21 @@ import { format } from 'date-fns';
 type InspectionFormProps = {
   hiveId?: string;
   inspectionId?: string;
+  mode?: 'standalone' | 'batch';
+  onSubmitSuccess?: (data: InspectionFormData) => void;
+  onCancel?: () => void;
+  submitButtonText?: React.ReactNode;
+  showCancelButton?: boolean;
 };
 
 export const InspectionForm: React.FC<InspectionFormProps> = ({
   hiveId,
   inspectionId,
+  mode = 'standalone',
+  onSubmitSuccess,
+  onCancel,
+  submitButtonText,
+  showCancelButton = false,
 }) => {
   const [searchParams] = useSearchParams();
   const fromScheduled = searchParams.get('from') === 'scheduled';
@@ -140,17 +150,27 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   }, [weatherData, form, isDateInFuture, selectedHive?.apiaryId]);
 
   const onSubmit = useUpsertInspection(inspectionId);
+
   // Handler for regular save button
   const handleSave = form.handleSubmit(data => {
-    // If coming from scheduled inspection, automatically mark as completed
-    const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
-    onSubmit(data, status);
+    if (mode === 'batch' && onSubmitSuccess) {
+      // In batch mode, call the custom success handler
+      onSubmitSuccess(data);
+    } else {
+      // If coming from scheduled inspection, automatically mark as completed
+      const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
+      onSubmit(data, status);
+    }
   });
 
   // Handler for save and complete button
-  const handleSaveAndComplete = form.handleSubmit(data =>
-    onSubmit(data, InspectionStatus.COMPLETED),
-  );
+  const handleSaveAndComplete = form.handleSubmit(data => {
+    if (mode === 'batch' && onSubmitSuccess) {
+      onSubmitSuccess(data);
+    } else {
+      onSubmit(data, InspectionStatus.COMPLETED);
+    }
+  });
   const date = form.watch('date');
   const isInFuture = date && date > new Date();
   const isEdit = Boolean(inspectionId);
@@ -173,6 +193,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value ?? hiveId}
+                    disabled={mode === 'batch'}
                   >
                     <SelectTrigger className={'w-full'}>
                       <SelectValue placeholder={'Select a hive'} />
@@ -192,56 +213,58 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="date"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Inspection date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={'outline'}
-                        className={cn(
-                          'w-full pl-3 text-left font-normal',
-                          !field.value && 'text-muted-foreground',
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, 'PPP')
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                {isInFuture && (
-                  <div className={'p-4 rounded'}>
-                    <strong className={'text-blue-500'}>
-                      This inspection is scheduled for the future
-                    </strong>
-                    <p className={'text-blue-500'}>
-                      You are scheduling an inspection for a future date.
-                    </p>
-                  </div>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {mode !== 'batch' && (
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Inspection date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground',
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {isInFuture && (
+                    <div className={'p-4 rounded'}>
+                      <strong className={'text-blue-500'}>
+                        This inspection is scheduled for the future
+                      </strong>
+                      <p className={'text-blue-500'}>
+                        You are scheduling an inspection for a future date.
+                      </p>
+                    </div>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
-          {!isInFuture && (
+          {(mode !== 'batch' ? !isInFuture : true) && (
             <>
               <hr className={'border-t border-border'} />
               <WeatherSection />
@@ -255,7 +278,28 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             </>
           )}
 
-          {isEdit && !isCompleted ? (
+          {mode === 'batch' ? (
+            <div className="flex gap-2">
+              {showCancelButton && onCancel && (
+                <Button
+                  onClick={onCancel}
+                  variant="outline"
+                  type="button"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              )}
+              <Button
+                onClick={handleSave}
+                type="submit"
+                className="flex-1"
+                data-umami-event="Batch Inspection Save and Next"
+              >
+                {submitButtonText || 'Save and Next'}
+              </Button>
+            </div>
+          ) : isEdit && !isCompleted ? (
             <>
               {fromScheduled ? (
                 <Button

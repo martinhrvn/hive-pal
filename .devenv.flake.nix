@@ -1,7 +1,7 @@
 {
   inputs =
     let
-      version = "1.9.0";
+      version = "1.10.0";
 system = "x86_64-linux";
 devenv_root = "/home/martin/proj/hive-pal";
 devenv_dotfile = "/home/martin/proj/hive-pal/.devenv";
@@ -12,8 +12,9 @@ devenv_istesting = false;
 devenv_direnvrc_latest_version = 1;
 container_name = null;
 active_profiles = [ ];
-hostname = "donnie";
+hostname = "severus";
 username = "martin";
+git_root = "/home/martin/proj/hive-pal";
 
         in {
         git-hooks.url = "github:cachix/git-hooks.nix";
@@ -27,7 +28,7 @@ username = "martin";
 
       outputs = { nixpkgs, ... }@inputs:
         let
-          version = "1.9.0";
+          version = "1.10.0";
 system = "x86_64-linux";
 devenv_root = "/home/martin/proj/hive-pal";
 devenv_dotfile = "/home/martin/proj/hive-pal/.devenv";
@@ -38,8 +39,9 @@ devenv_istesting = false;
 devenv_direnvrc_latest_version = 1;
 container_name = null;
 active_profiles = [ ];
-hostname = "donnie";
+hostname = "severus";
 username = "martin";
+git_root = "/home/martin/proj/hive-pal";
 
             devenv =
             if builtins.pathExists (devenv_dotfile_path + "/devenv.json")
@@ -80,7 +82,13 @@ username = "martin";
                 then ./. + (builtins.substring 1 255 path)
                 else ./. + (builtins.substring 1 255 path) + "/devenv.nix"
                 else if lib.hasPrefix "../" path
-                then throw "devenv: ../ is not supported for imports"
+                then
+                # For parent directory paths, concatenate with /.
+                # ./. refers to the directory containing this file (project root)
+                # So ./. + "/../shared" = <project-root>/../shared
+                  if lib.hasSuffix ".nix" path
+                  then ./. + "/${path}"
+                  else ./. + "/${path}/devenv.nix"
                 else
                   let
                     paths = lib.splitString "/" path;
@@ -104,13 +112,13 @@ username = "martin";
                     _module.args.pkgs = pkgs.appendOverlays (config.overlays or [ ]);
                   })
                   (inputs.devenv.modules + /top-level.nix)
-                  {
-                    devenv.cliVersion = version;
-                    devenv.root = devenv_root;
-                    devenv.dotfile = devenv_dotfile;
-                  }
                   ({ options, ... }: {
                     config.devenv = lib.mkMerge [
+                      {
+                        cliVersion = version;
+                        root = devenv_root;
+                        dotfile = devenv_dotfile;
+                      }
                       (pkgs.lib.optionalAttrs (builtins.hasAttr "tmpdir" options.devenv) {
                         tmpdir = devenv_tmpdir;
                       })
@@ -122,6 +130,13 @@ username = "martin";
                       })
                       (pkgs.lib.optionalAttrs (builtins.hasAttr "direnvrcLatestVersion" options.devenv) {
                         direnvrcLatestVersion = devenv_direnvrc_latest_version;
+                      })
+                    ];
+                  })
+                  ({ options, ... }: {
+                    config = lib.mkMerge [
+                      (pkgs.lib.optionalAttrs (builtins.hasAttr "git" options) {
+                        git.root = git_root;
                       })
                     ];
                   })
@@ -199,23 +214,91 @@ username = "martin";
                         profilePriority = (lib.modules.defaultOverridePriority - 1) - index;
                         profileConfig = getProfileConfig profileName;
 
+                        # Check if an option type needs explicit override to resolve conflicts
+                        # Only apply overrides to LEAF values (scalars), not collection types that can merge
+                        typeNeedsOverride = type:
+                          if type == null then false
+                          else
+                            let
+                              typeName = type.name or type._type or "";
+
+                              # True leaf types that need priority resolution when they conflict
+                              isLeafType = builtins.elem typeName [
+                                "str"
+                                "int"
+                                "bool"
+                                "enum"
+                                "path"
+                                "package"
+                                "float"
+                                "anything"
+                              ];
+                            in
+                            if isLeafType then true
+                            else if typeName == "nullOr" then
+                            # For nullOr, check the wrapped type recursively
+                              let
+                                innerType = type.elemType or
+                                  (if type ? nestedTypes && type.nestedTypes ? elemType
+                                  then type.nestedTypes.elemType
+                                  else null);
+                              in
+                              if innerType != null then typeNeedsOverride innerType else false
+                            else
+                            # Everything else (collections, submodules, etc.) should merge naturally
+                              false;
+
+                        # Check if a config path needs explicit override
+                        pathNeedsOverride = optionPath:
+                          let
+                            # Try direct option first
+                            directOption = lib.attrByPath optionPath null baseProject.options;
+                          in
+                          if directOption != null && lib.isOption directOption then
+                            typeNeedsOverride directOption.type
+                          else if optionPath != [ ] then
+                          # Check parent for freeform type
+                            let
+                              parentPath = lib.init optionPath;
+                              parentOption = lib.attrByPath parentPath null baseProject.options;
+                            in
+                            if parentOption != null && lib.isOption parentOption then
+                              let
+                                # Look for freeform type:
+                                # 1. Standard location: type.freeformType (primary)
+                                # 2. Nested location: type.nestedTypes.freeformType (evaluated form)
+                                freeformType = parentOption.type.freeformType or
+                                  parentOption.type.nestedTypes.freeformType or
+                                    null;
+                                elementType =
+                                  if freeformType ? elemType then freeformType.elemType
+                                  else if freeformType ? nestedTypes && freeformType.nestedTypes ? elemType then freeformType.nestedTypes.elemType
+                                  else freeformType;
+                              in
+                              typeNeedsOverride elementType
+                            else false
+                          else false;
+
                         # Support overriding both plain attrset modules and functions
                         applyModuleOverride = config:
                           if builtins.isFunction config
                           then
                             let
-                              wrapper = args: applyOverrideRecursive (config args);
+                              wrapper = args: applyOverrideRecursive (config args) [ ];
                             in
                             lib.mirrorFunctionArgs config wrapper
-                          else applyOverrideRecursive config;
+                          else applyOverrideRecursive config [ ];
 
-                        # Apply overrides recursively
-                        applyOverrideRecursive = config:
-                          if lib.isAttrs config && config ? _type
-                          then config  # Don't override values with existing type metadata
-                          else if lib.isAttrs config
-                          then lib.mapAttrs (_: applyOverrideRecursive) config
-                          else lib.mkOverride profilePriority config;
+                        # Apply overrides recursively based on option types
+                        applyOverrideRecursive = config: optionPath:
+                          if lib.isAttrs config && config ? _type then
+                            config  # Don't touch values with existing type metadata
+                          else if lib.isAttrs config then
+                            lib.mapAttrs (name: value: applyOverrideRecursive value (optionPath ++ [ name ])) config
+                          else if pathNeedsOverride optionPath then
+                            lib.mkOverride profilePriority config
+                          else
+                            config;
 
                         # Apply priority overrides recursively to the deferredModule imports structure
                         prioritizedConfig = (
@@ -281,7 +364,7 @@ username = "martin";
                   options;
             in
             {
-              inherit config options build;
+              inherit config options build project;
               shell = config.shell;
               packages = {
                 optionsJSON = options.optionsJSON;
@@ -304,7 +387,7 @@ username = "martin";
           # Per-system devenv configurations
           devenv = {
             # Default devenv for the current system
-            inherit (currentSystemDevenv) config options build shell packages;
+            inherit (currentSystemDevenv) config options build shell packages project;
             # Per-system devenv configurations
             inherit perSystem;
           };

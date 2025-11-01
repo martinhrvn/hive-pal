@@ -2,6 +2,7 @@
 export * from './actions';
 export * from './calendar';
 export * from './inspections';
+export * from './batch-inspections';
 export * from './hives';
 export * from './apiaries';
 export * from './queens';

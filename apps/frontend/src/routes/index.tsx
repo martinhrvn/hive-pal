@@ -18,6 +18,11 @@ import {
   InspectionListPage,
   ScheduleInspectionPage,
 } from '@/pages/inspection';
+import {
+  BatchListPage,
+  BatchDetailPage,
+  BatchInspectionPage,
+} from '@/pages/batch-inspection';
 import { CreateQueenPage } from '@/pages/queen';
 import { UserManagementPage, FeedbackManagementPage } from '@/pages/admin';
 import { ChangePasswordPage } from '@/pages/account';
@@ -110,6 +115,18 @@ const router = createBrowserRouter([
       {
         path: '/inspections/:id',
         element: <InspectionDetailPage />,
+      },
+      {
+        path: '/batch-inspections',
+        element: <BatchListPage />,
+      },
+      {
+        path: '/batch-inspections/:id',
+        element: <BatchDetailPage />,
+      },
+      {
+        path: '/batch-inspections/:id/inspect',
+        element: <BatchInspectionPage />,
       },
       {
         path: '/queens/create',
