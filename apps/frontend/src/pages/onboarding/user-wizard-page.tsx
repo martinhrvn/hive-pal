@@ -20,11 +20,13 @@ import { ApiaryResponse, HiveStatus } from 'shared-schemas';
 // Import CheckIcon for success step
 import { CheckIcon } from 'lucide-react';
 import { useCreateApiary, useCreateHive } from '@/api/hooks';
+import { useApiaryStore } from '@/hooks/use-apiary';
 
 export const UserWizardPage = () => {
   const [step, setStep] = useState(0);
   const [apiary, setApiary] = useState<ApiaryResponse | null>(null);
   const { t } = useTranslation('onboarding');
+  const { setActiveApiaryId } = useApiaryStore();
 
   const steps = [
     t('steps.welcome'),
@@ -40,6 +42,8 @@ export const UserWizardPage = () => {
     try {
       const result = await apiaryMutation.mutateAsync({ ...data });
       setApiary(result);
+      // Set the newly created apiary as active so the x-apiary-id header is available for subsequent API calls
+      setActiveApiaryId(result.id);
       setStep(2);
     } catch (error) {
       console.error('Error creating apiary:', error);
