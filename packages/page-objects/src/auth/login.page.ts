@@ -22,7 +22,7 @@ export class LoginPage {
         this.newPassword = page.getByRole('textbox', { name: 'New Password', exact: true });
         this.confirmNewPassword = page.getByRole('textbox', { name: 'Confirm New Password' });
         this.changePasswordButton = page.getByRole('button', { name: 'Change Password' });
-        this.registerLink = page.getByRole('link', { name: 'Register' });
+        this.registerLink = page.getByRole('link', { name: 'Sign Up' });
     }
 
     async goToLogInPage() {

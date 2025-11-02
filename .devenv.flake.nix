@@ -12,7 +12,7 @@ devenv_istesting = false;
 devenv_direnvrc_latest_version = 1;
 container_name = null;
 active_profiles = [ ];
-hostname = "severus";
+hostname = "donnie";
 username = "martin";
 git_root = "/home/martin/proj/hive-pal";
 
@@ -39,7 +39,7 @@ devenv_istesting = false;
 devenv_direnvrc_latest_version = 1;
 container_name = null;
 active_profiles = [ ];
-hostname = "severus";
+hostname = "donnie";
 username = "martin";
 git_root = "/home/martin/proj/hive-pal";
 

@@ -15,7 +15,7 @@ export class HiveFormPage {
     this.nameInput = page.getByLabel('Label');
     this.apiarySelect = page.getByRole('combobox', { name: 'Apiary' });
     this.notesTextarea = page.getByLabel('notes');
-    this.installationDateButton = page.getByRole('button',  { name: 'Installation date' });
+    this.installationDateButton = page.getByRole('button', { name: 'Installation date' });
     this.calendar = page.locator('.rdp-month');
     this.submitButton = page.getByRole('button', { name: 'Submit' });
   }
@@ -49,7 +49,7 @@ export class HiveFormPage {
     await this.openCalendar();
     // Format date to match the expected format in the calendar
     const day = date.getDate();
-    await this.page.getByRole('gridcell', { name: day.toString() }).click();
+    await this.page.getByRole('gridcell', { name: day.toString(), exact: true }).first().click();
   }
 
   /**

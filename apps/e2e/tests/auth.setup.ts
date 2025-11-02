@@ -19,7 +19,7 @@ setup('authenticate as user', async ({ page, isMobile }) => {
   const email = `test-${Date.now()}@example.com`;
   const password = generateRandomString();
 
-  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('link', { name: 'Sign Up' }).click();
   await page.getByLabel('email').fill(email);
   await page
     .getByRole('textbox', { name: 'Password', exact: true })
@@ -28,6 +28,7 @@ setup('authenticate as user', async ({ page, isMobile }) => {
   await page
     .getByRole('textbox', { name: 'Display Name' })
     .fill('Peter Parker');
+  await page.getByRole('checkbox', { name: 'I agree to the Privacy Policy' }).click();
   await page.getByRole('button', { name: /register/i }).click();
 
   await expect(page.getByText('Welcome to Hive-Pal!')).toBeVisible();
