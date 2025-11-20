@@ -9,6 +9,17 @@ on:
     types: [ created, released, published ]
   push:
     branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Docker image tag (e.g., v1.0.0, latest, custom-tag)'
+        required: true
+        type: string
+      ref:
+        description: 'Git ref to checkout (branch, tag, or commit SHA)'
+        required: false
+        default: 'main'
+        type: string
 
 jobs:
   build:
@@ -25,6 +36,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
