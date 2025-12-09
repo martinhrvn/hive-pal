@@ -37,8 +37,6 @@ in {
 
   processes = { dev.exec = "pnpm dev"; };
 
-  tasks = { e2e.exec = "turbo test:e2e"; };
-
   enterShell = ''
     echo "Node.js $(node --version) and PNPM $(pnpm --version) environment activated"
   '';
