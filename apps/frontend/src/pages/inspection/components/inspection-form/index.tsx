@@ -40,7 +40,6 @@ import {
   useCreateInspection,
   useUpdateInspection,
 } from '@/api/hooks';
-import { useUploadInspectionAudio } from '@/api/hooks/useInspectionAudio';
 import { ActionType, InspectionStatus } from 'shared-schemas';
 import { mapWeatherConditionToForm } from '@/utils/weather-mapping';
 import { useEffect, useState } from 'react';

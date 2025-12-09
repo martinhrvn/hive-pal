@@ -174,51 +174,26 @@ export async function uploadPendingRecordings(
 
   for (const recording of pendingRecordings) {
     try {
-      // Get upload URL
+      const formData = new FormData();
+      formData.append('file', recording.blob, recording.fileName);
+      formData.append('fileName', recording.fileName);
+      formData.append('duration', recording.duration.toString());
+
       const response = await fetch(
-        `/api/inspections/${inspectionId}/audio/upload-url`,
+        `/api/inspections/${inspectionId}/audio`,
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
             'x-apiary-id': localStorage.getItem('apiary-selection') || '',
           },
-          body: JSON.stringify({
-            fileName: recording.fileName,
-            mimeType: recording.blob.type,
-            fileSize: recording.blob.size,
-          }),
+          body: formData,
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to get upload URL');
+        throw new Error('Failed to upload audio');
       }
-
-      const { uploadUrl, audioId } = await response.json();
-
-      // Upload to S3
-      await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': recording.blob.type,
-        },
-        body: recording.blob,
-      });
-
-      // Confirm upload
-      await fetch(`/api/inspections/${inspectionId}/audio/${audioId}/confirm`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'x-apiary-id': localStorage.getItem('apiary-selection') || '',
-        },
-        body: JSON.stringify({
-          duration: recording.duration,
-        }),
-      });
 
       completed++;
       onProgress?.(completed, total);
