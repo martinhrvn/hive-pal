@@ -18,7 +18,15 @@ interface HiveComparisonTableProps {
   isLoading: boolean;
 }
 
-type SortField = 'hiveName' | 'honey' | 'sugar' | 'healthScore' | 'lastInspection';
+type SortField =
+  | 'hiveName'
+  | 'honey'
+  | 'sugar'
+  | 'overallScore'
+  | 'populationScore'
+  | 'storesScore'
+  | 'queenScore'
+  | 'lastInspection';
 type SortDirection = 'asc' | 'desc';
 
 const getHealthScoreColor = (score: number | null): string => {
@@ -38,6 +46,11 @@ const formatDate = (dateString: string | null): string => {
   }).format(date);
 };
 
+const formatScore = (score: number | null): string => {
+  if (score === null) return '-';
+  return score.toFixed(1);
+};
+
 export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
   statistics,
   isLoading,
@@ -50,7 +63,7 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('reports.tabs.comparison')}</CardTitle>
+          <CardTitle>{t('reports.hiveComparison')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
@@ -61,11 +74,11 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
     );
   }
 
-  if (!statistics || !statistics.honeyProduction.byHive.length) {
+  if (!statistics || !statistics.healthScores.byHive.length) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('reports.tabs.comparison')}</CardTitle>
+          <CardTitle>{t('reports.hiveComparison')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
@@ -81,26 +94,29 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection('desc'); // Default to desc for scores (highest first)
     }
   };
 
   // Combine data from different sources by hive
-  const combinedData = statistics.honeyProduction.byHive.map((honeyData) => {
-    const feedingData = statistics.feedingTotals.byHive.find(
-      (f) => f.hiveId === honeyData.hiveId
+  const combinedData = statistics.healthScores.byHive.map((healthData) => {
+    const honeyData = statistics.honeyProduction.byHive.find(
+      (h) => h.hiveId === healthData.hiveId
     );
-    const healthData = statistics.healthScores.byHive.find(
-      (h) => h.hiveId === honeyData.hiveId
+    const feedingData = statistics.feedingTotals.byHive.find(
+      (f) => f.hiveId === healthData.hiveId
     );
 
     return {
-      hiveId: honeyData.hiveId,
-      hiveName: honeyData.hiveName,
-      honey: honeyData.amount,
+      hiveId: healthData.hiveId,
+      hiveName: healthData.hiveName,
+      honey: honeyData?.amount || 0,
       sugar: feedingData?.sugarKg || 0,
-      healthScore: healthData?.overallScore || null,
-      lastInspectionDate: healthData?.lastInspectionDate || null,
+      overallScore: healthData.overallScore,
+      populationScore: healthData.populationScore,
+      storesScore: healthData.storesScore,
+      queenScore: healthData.queenScore,
+      lastInspectionDate: healthData.lastInspectionDate,
     };
   });
 
@@ -122,9 +138,21 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
         aValue = a.sugar;
         bValue = b.sugar;
         break;
-      case 'healthScore':
-        aValue = a.healthScore ?? -1;
-        bValue = b.healthScore ?? -1;
+      case 'overallScore':
+        aValue = a.overallScore ?? -1;
+        bValue = b.overallScore ?? -1;
+        break;
+      case 'populationScore':
+        aValue = a.populationScore ?? -1;
+        bValue = b.populationScore ?? -1;
+        break;
+      case 'storesScore':
+        aValue = a.storesScore ?? -1;
+        bValue = b.storesScore ?? -1;
+        break;
+      case 'queenScore':
+        aValue = a.queenScore ?? -1;
+        bValue = b.queenScore ?? -1;
         break;
       case 'lastInspection':
         aValue = a.lastInspectionDate ? new Date(a.lastInspectionDate).getTime() : 0;
@@ -152,19 +180,21 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
   const SortableHeader = ({
     field,
     children,
+    className,
   }: {
     field: SortField;
     children: React.ReactNode;
+    className?: string;
   }) => (
-    <TableHead>
+    <TableHead className={className}>
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-2 hover:text-foreground transition-colors"
+        className="flex items-center gap-1 hover:text-foreground transition-colors"
       >
         {children}
         <ArrowUpDown
           className={cn(
-            'h-4 w-4',
+            'h-3 w-3',
             sortField === field ? 'opacity-100' : 'opacity-30'
           )}
         />
@@ -175,46 +205,69 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('reports.tabs.comparison')}</CardTitle>
+        <CardTitle>{t('reports.hiveComparison')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <SortableHeader field="hiveName">Hive Name</SortableHeader>
-              <SortableHeader field="honey">
-                Honey ({statistics.honeyProduction.unit})
-              </SortableHeader>
-              <SortableHeader field="sugar">Sugar Fed (kg)</SortableHeader>
-              <SortableHeader field="healthScore">Health Score</SortableHeader>
-              <SortableHeader field="lastInspection">
-                Last Inspection
-              </SortableHeader>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedData.map((row) => (
-              <TableRow key={row.hiveId}>
-                <TableCell className="font-medium">{row.hiveName}</TableCell>
-                <TableCell>{row.honey.toFixed(1)}</TableCell>
-                <TableCell>{row.sugar.toFixed(1)}</TableCell>
-                <TableCell>
-                  <span
-                    className={cn(
-                      'font-medium',
-                      getHealthScoreColor(row.healthScore)
-                    )}
-                  >
-                    {row.healthScore !== null
-                      ? row.healthScore.toFixed(1)
-                      : '-'}
-                  </span>
-                </TableCell>
-                <TableCell>{formatDate(row.lastInspectionDate)}</TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <SortableHeader field="hiveName">{t('reports.table.hiveName')}</SortableHeader>
+                <SortableHeader field="honey" className="text-right">
+                  {t('reports.table.honey')}
+                </SortableHeader>
+                <SortableHeader field="sugar" className="text-right">
+                  {t('reports.table.sugarFed')}
+                </SortableHeader>
+                <SortableHeader field="overallScore" className="text-right">
+                  {t('reports.table.overall')}
+                </SortableHeader>
+                <SortableHeader field="populationScore" className="text-right">
+                  {t('reports.table.population')}
+                </SortableHeader>
+                <SortableHeader field="storesScore" className="text-right">
+                  {t('reports.table.stores')}
+                </SortableHeader>
+                <SortableHeader field="queenScore" className="text-right">
+                  {t('reports.table.queen')}
+                </SortableHeader>
+                <SortableHeader field="lastInspection">
+                  {t('reports.table.lastInspection')}
+                </SortableHeader>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {sortedData.map((row) => (
+                <TableRow key={row.hiveId}>
+                  <TableCell className="font-medium">{row.hiveName}</TableCell>
+                  <TableCell className="text-right">{row.honey.toFixed(1)} kg</TableCell>
+                  <TableCell className="text-right">{row.sugar.toFixed(1)} kg</TableCell>
+                  <TableCell className="text-right">
+                    <span className={cn('font-medium', getHealthScoreColor(row.overallScore))}>
+                      {formatScore(row.overallScore)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className={cn('font-medium', getHealthScoreColor(row.populationScore))}>
+                      {formatScore(row.populationScore)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className={cn('font-medium', getHealthScoreColor(row.storesScore))}>
+                      {formatScore(row.storesScore)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className={cn('font-medium', getHealthScoreColor(row.queenScore))}>
+                      {formatScore(row.queenScore)}
+                    </span>
+                  </TableCell>
+                  <TableCell>{formatDate(row.lastInspectionDate)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );

@@ -142,12 +142,41 @@
     "selectApiary": "Vyberte včelnicu na zobrazenie reportov",
     "tabs": {
       "overview": "Prehľad",
-      "comparison": "Porovnanie úľov",
+      "charts": "Grafy",
       "trends": "Trendy"
     },
     "honeyProduction": "Produkcia medu",
     "feedingTotals": "Celkové prikrmovanie",
     "healthScores": "Zdravotné skóre",
+    "hiveComparison": "Porovnanie úľov",
+    "table": {
+      "hiveName": "Úľ",
+      "honey": "Med",
+      "sugarFed": "Cukor",
+      "overall": "Celkové",
+      "population": "Populácia",
+      "stores": "Zásoby",
+      "queen": "Matka",
+      "lastInspection": "Posledná prehliadka"
+    },
+    "periods": {
+      "1month": "1 mesiac",
+      "3months": "3 mesiace",
+      "6months": "6 mesiacov",
+      "ytd": "Od začiatku roka",
+      "1year": "1 rok",
+      "all": "Všetko"
+    },
+    "filters": {
+      "period": "Obdobie"
+    },
+    "export": {
+      "title": "Export",
+      "csv": "Exportovať CSV",
+      "pdf": "Exportovať PDF",
+      "success": "Report bol úspešne exportovaný",
+      "error": "Nepodarilo sa exportovať report"
+    },
     "widget": {
       "title": "Štatistiky včelnice",
       "viewReports": "Zobraziť reporty",

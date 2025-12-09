@@ -116,10 +116,13 @@ export const ReportsPage = () => {
           <Tabs defaultValue="overview">
             <TabsList>
               <TabsTrigger value="overview">{t('reports.tabs.overview')}</TabsTrigger>
-              <TabsTrigger value="comparison">{t('reports.tabs.comparison')}</TabsTrigger>
+              <TabsTrigger value="charts">{t('reports.tabs.charts')}</TabsTrigger>
               <TabsTrigger value="trends">{t('reports.tabs.trends')}</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-6 pt-4">
+              <HiveComparisonTable statistics={statistics} isLoading={isLoading} />
+            </TabsContent>
+            <TabsContent value="charts" className="space-y-6 pt-4">
               <HoneyProductionChart
                 data={statistics?.honeyProduction.byHive}
                 isLoading={isLoading}
@@ -128,9 +131,6 @@ export const ReportsPage = () => {
                 data={statistics?.feedingTotals.byHive}
                 isLoading={isLoading}
               />
-            </TabsContent>
-            <TabsContent value="comparison" className="pt-4">
-              <HiveComparisonTable statistics={statistics} isLoading={isLoading} />
             </TabsContent>
             <TabsContent value="trends" className="space-y-6 pt-4">
               <HealthTrendChart data={trends?.healthTrends} isLoading={isTrendsLoading} />

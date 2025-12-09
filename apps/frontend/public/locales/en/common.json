@@ -177,12 +177,23 @@
     "selectApiary": "Select an apiary to view reports",
     "tabs": {
       "overview": "Overview",
-      "comparison": "Hive Comparison",
+      "charts": "Charts",
       "trends": "Trends"
     },
     "honeyProduction": "Honey Production",
     "feedingTotals": "Feeding Totals",
     "healthScores": "Health Scores",
+    "hiveComparison": "Hive Comparison",
+    "table": {
+      "hiveName": "Hive",
+      "honey": "Honey",
+      "sugarFed": "Sugar Fed",
+      "overall": "Overall",
+      "population": "Population",
+      "stores": "Stores",
+      "queen": "Queen",
+      "lastInspection": "Last Inspection"
+    },
     "periods": {
       "1month": "1 Month",
       "3months": "3 Months",
