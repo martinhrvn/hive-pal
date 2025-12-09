@@ -3,6 +3,7 @@ import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout
 import { HomeActionSidebar } from '@/components/home-action-sidebar';
 import { HiveMinimap } from '@/components/hive-minimap';
 import { InspectionStatusSummary } from '@/components/inspection-status-summary';
+import { ReportsSummaryWidget } from '@/components/reports-summary-widget';
 import { useHives } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
 
@@ -19,6 +20,7 @@ export const HomePage = () => {
       <MainContent>
         <div className="space-y-6">
           <InspectionStatusSummary />
+          <ReportsSummaryWidget />
           {activeApiaryId && (
             <HiveMinimap apiaryId={activeApiaryId} className="mb-6" />
           )}

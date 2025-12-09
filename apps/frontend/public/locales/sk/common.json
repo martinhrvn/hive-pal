@@ -20,7 +20,8 @@
     "upcoming": "Nadchádzajúce",
     "general": "Všeobecné",
     "harvests": "Zbery",
-    "allHarvests": "Všetky zbery"
+    "allHarvests": "Všetky zbery",
+    "reports": "Reporty"
   },
   "actions": {
     "save": "Uložiť",
@@ -135,5 +136,22 @@
     "thankYou": "Ďakujeme!",
     "submittedMessage": "Vaša spätná väzba bola úspešne odoslaná. Vážime si váš názor a čoskoro ho preskúmame.",
     "submitAnother": "Odoslať ďalšiu spätnú väzbu"
+  },
+  "reports": {
+    "title": "Reporty",
+    "selectApiary": "Vyberte včelnicu na zobrazenie reportov",
+    "tabs": {
+      "overview": "Prehľad",
+      "comparison": "Porovnanie úľov",
+      "trends": "Trendy"
+    },
+    "honeyProduction": "Produkcia medu",
+    "feedingTotals": "Celkové prikrmovanie",
+    "healthScores": "Zdravotné skóre",
+    "widget": {
+      "title": "Štatistiky včelnice",
+      "viewReports": "Zobraziť reporty",
+      "noApiary": "Vyberte včelnicu na zobrazenie štatistík"
+    }
   }
 }

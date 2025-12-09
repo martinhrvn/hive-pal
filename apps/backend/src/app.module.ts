@@ -25,6 +25,7 @@ import { CalendarModule } from './calendar/calendar.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { MailModule } from './mail/mail.module';
 import { SentryModule } from '@sentry/nestjs/setup';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { SentryModule } from '@sentry/nestjs/setup';
     CalendarModule,
     FeedbackModule,
     MailModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [

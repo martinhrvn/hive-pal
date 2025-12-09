@@ -8,6 +8,7 @@ import {
   Package,
   ClipboardList,
   Calendar,
+  BarChart3,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -89,6 +90,12 @@ const getNavData = (t: (key: string) => string) => ({
       title: t('navigation.harvests'),
       url: '/harvests',
       icon: Droplets,
+      isActive: true,
+    },
+    {
+      title: t('navigation.reports'),
+      url: '/reports',
+      icon: BarChart3,
       isActive: true,
     },
     {

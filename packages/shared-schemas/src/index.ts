@@ -12,3 +12,4 @@ export * from './alerts';
 export * from './equipment';
 export * from './users';
 export * from './feedback';
+export * from './reports';

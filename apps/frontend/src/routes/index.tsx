@@ -40,6 +40,7 @@ import { CalendarPage } from '@/pages/calendar';
 import { UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
+import { ReportsPage } from '@/pages/reports';
 
 const router = createBrowserRouter([
   {
@@ -142,6 +143,10 @@ const router = createBrowserRouter([
       {
         path: '/calendar',
         element: <CalendarPage />,
+      },
+      {
+        path: '/reports',
+        element: <ReportsPage />,
       },
       {
         path: '/settings',
