@@ -101,8 +101,7 @@ export const useUploadInspectionAudio = (inspectionId: string) => {
 
       const response = await apiClient.post<AudioResponse>(
         `/api/inspections/${inspectionId}/audio`,
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        formData
       );
       return response.data;
     },
