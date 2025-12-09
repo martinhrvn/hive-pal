@@ -1,8 +1,8 @@
 name: E2E Tests - Preview Environment
 
 on:
-  push:
-    branches: [ main ]
+  repository_dispatch:
+    types: [preview-deployed]  # Triggered by Coolify webhook after deployment
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
@@ -14,13 +14,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Wait for deployment to complete
-        run: |
-          echo "⏳ Waiting 5 minutes for Coolify deployment to complete..."
-          echo "Started at: $(date)"
-          sleep 300
-          echo "Finished waiting at: $(date)"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
