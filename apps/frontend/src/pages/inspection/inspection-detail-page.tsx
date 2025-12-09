@@ -12,7 +12,7 @@ import {
   ObservationsCard,
   WeatherCard,
 } from './components';
-import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
+import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
 import { useHive, useInspection } from '@/api/hooks';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
