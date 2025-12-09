@@ -21,6 +21,13 @@ services:
       SMTP_USER: ${SMTP_USER}
       FROM_EMAIL: noreply@hivepal.app
       FRONTEND_URL: ${FRONTEND_URL:-https://preview.hivepal.app}
+      # S3 Storage (for audio recordings)
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      AUDIO_MAX_FILE_SIZE: ${AUDIO_MAX_FILE_SIZE:-52428800}
     depends_on:
       - postgres
   frontend:
