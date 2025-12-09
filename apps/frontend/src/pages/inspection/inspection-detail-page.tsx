@@ -12,6 +12,7 @@ import {
   ObservationsCard,
   WeatherCard,
 } from './components';
+import { AudioCard } from './components/audio-card';
 import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
 import { useHive, useInspection } from '@/api/hooks';
@@ -119,6 +120,7 @@ export const InspectionDetailPage = () => {
             <ObservationsCard observations={inspection.observations} />
             <ActionsCard actions={inspection.actions ?? []} />
             <NotesCard notes={inspection.notes} />
+            <AudioCard inspectionId={inspection.id} />
           </div>
         </div>
       </MainContent>

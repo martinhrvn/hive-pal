@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Form,
   FormControl,
@@ -35,14 +35,24 @@ import { FeedType } from './actions/feeding';
 import {
   useHiveOptions,
   useInspection,
-  useUpsertInspection,
   useHive,
   useWeatherForDate,
+  useCreateInspection,
+  useUpdateInspection,
 } from '@/api/hooks';
+import { useUploadInspectionAudio } from '@/api/hooks/useInspectionAudio';
 import { ActionType, InspectionStatus } from 'shared-schemas';
 import { mapWeatherConditionToForm } from '@/utils/weather-mapping';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
+import { AudioSection, uploadPendingRecordings } from './audio-section';
+
+interface PendingRecording {
+  id: string;
+  blob: Blob;
+  duration: number;
+  fileName: string;
+}
 
 type InspectionFormProps = {
   hiveId?: string;
@@ -56,6 +66,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const [searchParams] = useSearchParams();
   const fromScheduled = searchParams.get('from') === 'scheduled';
   const { data: hives } = useHiveOptions();
+  const [pendingRecordings, setPendingRecordings] = useState<PendingRecording[]>([]);
 
   // Use our new custom hooks
   const { data: inspection } = useInspection(inspectionId as string, {
@@ -139,17 +150,104 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     }
   }, [weatherData, form, isDateInFuture, selectedHive?.apiaryId]);
 
-  const onSubmit = useUpsertInspection(inspectionId);
+  const navigate = useNavigate();
+  const createInspection = useCreateInspection();
+  const updateInspection = useUpdateInspection();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Transform form data to API format
+  const transformFormData = (data: InspectionFormData, status?: InspectionStatus) => {
+    const transformedActions = data.actions
+      ?.map((action) => {
+        switch (action.type) {
+          case 'FEEDING':
+            return {
+              type: action.type,
+              notes: action.notes,
+              details: {
+                type: action.type,
+                feedType: action.feedType,
+                amount: action.quantity,
+                unit: action.unit,
+                concentration: action.concentration,
+              },
+            };
+          case 'TREATMENT':
+            return {
+              type: action.type,
+              notes: action.notes,
+              details: {
+                type: action.type,
+                product: action.treatmentType,
+                quantity: action.amount,
+                unit: action.unit,
+              },
+            };
+          case 'FRAME':
+            return {
+              type: ActionType.FRAME,
+              notes: action.notes,
+              details: {
+                type: ActionType.FRAME,
+                quantity: action.frames,
+              },
+            };
+          default:
+            return null;
+        }
+      })
+      .filter(Boolean);
+
+    return {
+      ...data,
+      date: data.date.toISOString(),
+      status: status || data.status,
+      actions: transformedActions,
+    };
+  };
+
+  // Handler for submission
+  const handleSubmit = async (data: InspectionFormData, status?: InspectionStatus) => {
+    setIsSubmitting(true);
+    try {
+      const formattedData = transformFormData(data, status);
+      let resultId: string;
+
+      if (!inspectionId) {
+        // Create new inspection
+        const result = await createInspection.mutateAsync(formattedData);
+        resultId = result.id;
+
+        // Upload pending audio recordings
+        if (pendingRecordings.length > 0) {
+          await uploadPendingRecordings(resultId, pendingRecordings);
+        }
+      } else {
+        // Update existing inspection
+        const result = await updateInspection.mutateAsync({
+          id: inspectionId,
+          data: { ...formattedData, id: inspectionId },
+        });
+        resultId = result.id;
+      }
+
+      navigate(`/inspections/${resultId}`);
+    } catch (error) {
+      console.error('Failed to save inspection:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Handler for regular save button
   const handleSave = form.handleSubmit(data => {
-    // If coming from scheduled inspection, automatically mark as completed
     const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
-    onSubmit(data, status);
+    handleSubmit(data, status);
   });
 
   // Handler for save and complete button
   const handleSaveAndComplete = form.handleSubmit(data =>
-    onSubmit(data, InspectionStatus.COMPLETED),
+    handleSubmit(data, InspectionStatus.COMPLETED),
   );
   const date = form.watch('date');
   const isInFuture = date && date > new Date();
@@ -252,6 +350,12 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               <ActionsSection />
               <hr className={'border-t border-border'} />
               <NotesSection />
+              <hr className={'border-t border-border'} />
+              <AudioSection
+                inspectionId={inspectionId}
+                pendingRecordings={pendingRecordings}
+                onPendingRecordingsChange={setPendingRecordings}
+              />
             </>
           )}
 
@@ -263,9 +367,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   type="submit"
                   className="w-full"
                   variant={'default'}
+                  disabled={isSubmitting}
                   data-umami-event="Inspection Complete"
                 >
-                  Complete Inspection
+                  {isSubmitting ? 'Saving...' : 'Complete Inspection'}
                 </Button>
               ) : (
                 <>
@@ -274,18 +379,20 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     variant={'outline'}
                     type="submit"
                     className="w-full"
+                    disabled={isSubmitting}
                     data-umami-event="Inspection Save"
                   >
-                    Save
+                    {isSubmitting ? 'Saving...' : 'Save'}
                   </Button>
                   <Button
                     onClick={handleSaveAndComplete}
                     type="submit"
                     className="w-full"
                     variant={'default'}
+                    disabled={isSubmitting}
                     data-umami-event="Inspection Complete"
                   >
-                    Save and complete
+                    {isSubmitting ? 'Saving...' : 'Save and complete'}
                   </Button>
                 </>
               )}
@@ -295,9 +402,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               onClick={handleSave}
               type="submit"
               className="w-full"
+              disabled={isSubmitting}
               data-umami-event="Inspection Create"
             >
-              Save
+              {isSubmitting ? 'Saving...' : 'Save'}
             </Button>
           )}
         </form>

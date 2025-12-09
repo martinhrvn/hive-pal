@@ -1,5 +1,6 @@
 // Export all schema modules
 export * from './actions';
+export * from './audio';
 export * from './calendar';
 export * from './inspections';
 export * from './hives';

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { Observation, Prisma } from '@prisma/client';
@@ -8,6 +8,7 @@ import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionCreatedEvent } from '../events/hive.events';
 import { InspectionStatusUpdaterService } from './inspection-status-updater.service';
+import { InspectionAudioService } from '../inspection-audio/inspection-audio.service';
 
 type InspectionWithIncludes = Prisma.InspectionGetPayload<{
   include: {
@@ -52,6 +53,8 @@ export class InspectionsService {
     private logger: CustomLoggerService,
     private eventEmitter: EventEmitter2,
     private inspectionStatusUpdater: InspectionStatusUpdaterService,
+    @Inject(forwardRef(() => InspectionAudioService))
+    private audioService: InspectionAudioService,
   ) {}
 
   async create(
@@ -456,6 +459,9 @@ export class InspectionsService {
       );
     }
 
+    // Delete audio files from S3 before transaction (outside DB transaction)
+    await this.audioService.deleteAllForInspection(id);
+
     return this.prisma.$transaction(async (tx) => {
       // Delete related actions first
       await this.actionsService.deleteActions(id, tx);
@@ -468,6 +474,8 @@ export class InspectionsService {
       await tx.inspectionNote.deleteMany({
         where: { inspectionId: id },
       });
+
+      // Audio records will be deleted by cascade
 
       // Delete the inspection
       await tx.inspection.delete({
