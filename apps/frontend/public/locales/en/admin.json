@@ -57,6 +57,8 @@
     "apiaryBreakdown": {
       "title": "Apiary Breakdown",
       "name": "Apiary Name",
+      "location": "Location",
+      "coordinates": "Coordinates",
       "hives": "Hives",
       "inspections": "Inspections",
       "lastInspection": "Last Inspection",

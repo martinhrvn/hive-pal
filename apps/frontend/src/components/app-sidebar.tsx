@@ -9,6 +9,7 @@ import {
   ClipboardList,
   Calendar,
   BarChart3,
+  MessageSquare,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -113,6 +114,11 @@ const getNavData = (t: (key: string) => string) => ({
       title: t('navigation.settings'),
       url: '/settings',
       icon: Settings2,
+    },
+    {
+      title: t('feedback.sendFeedback'),
+      url: '/feedback',
+      icon: MessageSquare,
     },
   ],
 });

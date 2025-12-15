@@ -305,6 +305,9 @@ export class UsersStatsService {
       apiaryBreakdown.push({
         apiaryId: apiary.id,
         apiaryName: apiary.name,
+        apiaryLocation: apiary.location,
+        latitude: apiary.latitude,
+        longitude: apiary.longitude,
         hivesCount: hiveIds.length,
         inspectionsCount,
         lastInspectionDate: apiaryLastInspection

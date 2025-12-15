@@ -57,6 +57,8 @@
     "apiaryBreakdown": {
       "title": "Prehľad včelníc",
       "name": "Názov včelnice",
+      "location": "Lokalita",
+      "coordinates": "Súradnice",
       "hives": "Úle",
       "inspections": "Prehliadky",
       "lastInspection": "Posledná prehliadka",

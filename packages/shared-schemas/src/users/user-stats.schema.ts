@@ -24,6 +24,9 @@ export const actionBreakdownSchema = z.object({
 export const apiaryBreakdownSchema = z.object({
   apiaryId: z.string(),
   apiaryName: z.string(),
+  apiaryLocation: z.string().nullable(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
   hivesCount: z.number(),
   inspectionsCount: z.number(),
   lastInspectionDate: z.string().nullable(),

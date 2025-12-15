@@ -196,6 +196,8 @@ const UserDetailPage: React.FC = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t('userDetail.apiaryBreakdown.name')}</TableHead>
+                  <TableHead>{t('userDetail.apiaryBreakdown.location')}</TableHead>
+                  <TableHead>{t('userDetail.apiaryBreakdown.coordinates')}</TableHead>
                   <TableHead className="text-center">
                     {t('userDetail.apiaryBreakdown.hives')}
                   </TableHead>
@@ -212,6 +214,14 @@ const UserDetailPage: React.FC = () => {
                   <TableRow key={apiary.apiaryId}>
                     <TableCell className="font-medium">
                       {apiary.apiaryName}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {apiary.apiaryLocation || t('status.dash')}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground font-mono text-xs">
+                      {apiary.latitude && apiary.longitude
+                        ? `${apiary.latitude.toFixed(4)}, ${apiary.longitude.toFixed(4)}`
+                        : t('status.dash')}
                     </TableCell>
                     <TableCell className="text-center">
                       {apiary.hivesCount}
