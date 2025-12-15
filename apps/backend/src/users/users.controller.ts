@@ -19,6 +19,7 @@ import {
 } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
+import { UsersStatsService } from './users-stats.service';
 import {
   AdminResetPassword,
   ChangePassword,
@@ -34,6 +35,8 @@ import {
   changePasswordSchema,
   userPreferencesSchema,
   updateUserInfoSchema,
+  UserWithStatsResponse,
+  UserDetailedStats,
 } from 'shared-schemas';
 import {
   ApiTags,
@@ -52,6 +55,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly equipmentService: EquipmentService,
+    private readonly usersStatsService: UsersStatsService,
     private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('UsersController');
@@ -61,10 +65,36 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all users (admin only)' })
-  async findAll(): Promise<UserResponse[]> {
-    this.logger.log('Admin requesting list of all users');
-    return this.usersService.findAll();
+  @ApiOperation({ summary: 'Get all users with stats (admin only)' })
+  async findAll(): Promise<UserWithStatsResponse[]> {
+    this.logger.log('Admin requesting list of all users with stats');
+    const users = await this.usersService.findAll();
+    const userIds = users.map((u) => u.id);
+    const statsMap = await this.usersStatsService.getUsersSummaryStats(userIds);
+
+    return users.map((user) => ({
+      ...user,
+      stats: statsMap.get(user.id) || {
+        apiariesCount: 0,
+        hivesCount: 0,
+        inspectionsCount: 0,
+        lastActivityDate: null,
+      },
+    }));
+  }
+
+  @Get(':id/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get detailed user statistics (admin only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'User statistics retrieved',
+  })
+  async getUserStats(@Param('id') id: string): Promise<UserDetailedStats> {
+    this.logger.log(`Admin requesting detailed stats for user ${id}`);
+    return this.usersStatsService.getUserDetailedStats(id);
   }
 
   @Post(':id/reset-password')

@@ -19,7 +19,7 @@ import {
   ScheduleInspectionPage,
 } from '@/pages/inspection';
 import { CreateQueenPage } from '@/pages/queen';
-import { UserManagementPage, FeedbackManagementPage } from '@/pages/admin';
+import { UserManagementPage, UserDetailPage, FeedbackManagementPage } from '@/pages/admin';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 import {
@@ -161,6 +161,14 @@ const router = createBrowserRouter([
         element: (
           <AdminProtectedRoute>
             <UserManagementPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/users/:id',
+        element: (
+          <AdminProtectedRoute>
+            <UserDetailPage />
           </AdminProtectedRoute>
         ),
       },
