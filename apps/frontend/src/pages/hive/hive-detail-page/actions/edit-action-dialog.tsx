@@ -171,11 +171,11 @@ export const EditActionDialog = ({
         linkText: 'Edit inspection instead',
       };
     }
-    if (action.type === ActionType.HARVEST) {
+    if (action.type === ActionType.HARVEST || action.harvestId) {
       return {
         message: 'This action is linked to a harvest. Editing it here will cause it to be out of sync with the harvest record.',
-        linkTo: '/harvests',
-        linkText: 'Go to harvests',
+        linkTo: action.harvestId ? `/harvests/${action.harvestId}` : '/harvests',
+        linkText: 'Go to harvest',
       };
     }
     return null;

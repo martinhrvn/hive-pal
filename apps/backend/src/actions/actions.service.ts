@@ -629,6 +629,7 @@ export class ActionsService {
       id: prismaAction.id,
       hiveId: prismaAction.hiveId,
       inspectionId: prismaAction.inspectionId,
+      harvestId: prismaAction.harvestId,
       date: prismaAction.date.toISOString(),
       notes: prismaAction.notes || undefined,
     };

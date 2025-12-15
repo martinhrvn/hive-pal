@@ -24,6 +24,7 @@ export const actionResponseSchema = createActionSchema.extend({
   id: z.string().uuid(),
   hiveId: z.string().uuid().nullable(),
   inspectionId: z.string().uuid().nullable(),
+  harvestId: z.string().uuid().nullable(),
   date: z.string().datetime(),
 });
 

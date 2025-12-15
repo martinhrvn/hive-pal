@@ -248,11 +248,11 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
         linkText: 'Edit inspection instead',
       };
     }
-    if (action.type === ActionType.HARVEST) {
+    if (action.type === ActionType.HARVEST || action.harvestId) {
       return {
         message: 'This action is linked to a harvest. Modifying it here will cause it to be out of sync with the harvest record.',
-        linkTo: '/harvests',
-        linkText: 'Go to harvests',
+        linkTo: action.harvestId ? `/harvests/${action.harvestId}` : '/harvests',
+        linkText: 'Go to harvest',
       };
     }
     return null;
@@ -440,7 +440,13 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
           {/* Action content */}
           {action && (
-            <div className="flex items-start gap-2 group">
+            <div
+              className={cn(
+                "flex items-start gap-2 group",
+                action.harvestId && "cursor-pointer rounded-lg p-2 -ml-2 -mt-2 hover:bg-gray-50"
+              )}
+              onClick={action.harvestId ? () => navigate(`/harvests/${action.harvestId}`) : undefined}
+            >
               <div className="mt-0.5">{getActionIcon(action)}</div>
               <div className="flex-1">
                 <div className="text-sm">{getActionLabel(action)}</div>
@@ -450,8 +456,8 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
-                {action.type !== ActionType.HARVEST && (
+              {!action.harvestId && (
+                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -463,19 +469,19 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-destructive hover:text-destructive"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDeletingAction(action);
-                  }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-destructive hover:text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeletingAction(action);
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
