@@ -44,7 +44,11 @@ export type ActionType =
   | NoteActionType
   | OtherActionType;
 
-export const ActionsSection: React.FC = () => {
+interface ActionsSectionProps {
+  editMode?: boolean;
+}
+
+export const ActionsSection: React.FC<ActionsSectionProps> = ({ editMode = false }) => {
   const { setValue, getValues, watch, formState } =
     useFormContext<InspectionFormData>();
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -141,28 +145,30 @@ export const ActionsSection: React.FC = () => {
 
   return (
     <div>
-      <h3 className={'text-lg my-4 font-medium'}>Actions</h3>
-      <div
-        data-test={TEST_SELECTORS.ACTION_BUTTONS}
-        className="flex flex-wrap gap-2"
-      >
-        {actionTypes.map(({ id, label, Icon }) => {
-          if (formActions.some(a => a.type === id)) return null;
-          return (
-            <Button
-              size={'sm'}
-              onClick={e => {
-                e.preventDefault();
-                setSelectedAction(id);
-              }}
-              key={id}
-            >
-              <Icon size={16} />
-              {label}
-            </Button>
-          );
-        })}
-      </div>
+      <h3 className={'text-lg my-4 font-medium'}>{editMode ? 'Action' : 'Actions'}</h3>
+      {!editMode && (
+        <div
+          data-test={TEST_SELECTORS.ACTION_BUTTONS}
+          className="flex flex-wrap gap-2"
+        >
+          {actionTypes.map(({ id, label, Icon }) => {
+            if (formActions.some(a => a.type === id)) return null;
+            return (
+              <Button
+                size={'sm'}
+                onClick={e => {
+                  e.preventDefault();
+                  setSelectedAction(id);
+                }}
+                key={id}
+              >
+                <Icon size={16} />
+                {label}
+              </Button>
+            );
+          })}
+        </div>
+      )}
 
       {renderActionForm && <div>{renderActionForm}</div>}
       {formState.errors.actions && (

@@ -9,6 +9,7 @@ import {
   ActionType,
   CreateAction,
   CreateStandaloneAction,
+  UpdateAction,
   UserPreferences,
 } from 'shared-schemas';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
@@ -417,6 +418,206 @@ export class ActionsService {
     }
 
     return this.mapPrismaToDto(result, userPreferences);
+  }
+
+  /**
+   * Updates an existing action
+   * @param actionId The ID of the action to update
+   * @param updateActionDto The action data to update
+   * @param apiaryId The apiary ID for authorization
+   * @param userId The user ID for authorization
+   * @returns The updated action
+   */
+  async updateAction(
+    actionId: string,
+    updateActionDto: UpdateAction,
+    apiaryId: string,
+    userId: string,
+  ): Promise<ActionResponse> {
+    // Verify the action exists and belongs to the user's apiary
+    const existingAction = await this.prisma.action.findFirst({
+      where: {
+        id: actionId,
+        hive: {
+          apiary: {
+            id: apiaryId,
+            userId: userId,
+          },
+        },
+      },
+      include: {
+        feedingAction: true,
+        treatmentAction: true,
+        frameAction: true,
+        harvestAction: true,
+        boxConfigurationAction: true,
+      },
+    });
+
+    if (!existingAction) {
+      throw new ForbiddenException('Action not found or access denied');
+    }
+
+    const { type, notes, details, date } = updateActionDto;
+
+    // Use transaction to update action and related details
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Update the base action
+      const updatedAction = await tx.action.update({
+        where: { id: actionId },
+        data: {
+          ...(type && { type }),
+          ...(notes !== undefined && { notes }),
+          ...(date && { date: new Date(date) }),
+        },
+      });
+
+      // Handle type-specific details
+      const newType = type || existingAction.type;
+
+      // If type changed or details provided, delete old details and create new ones
+      if (type && type !== existingAction.type) {
+        // Delete old type-specific details
+        await this.deleteActionDetails(actionId, tx);
+      }
+
+      // Update or create type-specific details if provided
+      if (details) {
+        // Delete existing details for the current type (to replace them)
+        await this.deleteActionDetails(actionId, tx);
+
+        // Create new details
+        if (details.type === ActionType.FEEDING) {
+          await tx.feedingAction.create({
+            data: {
+              actionId,
+              feedType: details.feedType,
+              amount: details.amount,
+              unit: details.unit,
+              concentration: details.concentration,
+            },
+          });
+        } else if (details.type === ActionType.FRAME) {
+          await tx.frameAction.create({
+            data: {
+              actionId,
+              quantity: details.quantity,
+            },
+          });
+        } else if (details.type === ActionType.TREATMENT) {
+          await tx.treatmentAction.create({
+            data: {
+              actionId,
+              product: details.product,
+              quantity: details.quantity,
+              unit: details.unit,
+              duration: details.duration,
+            },
+          });
+        } else if (details.type === ActionType.BOX_CONFIGURATION) {
+          await tx.boxConfigurationAction.create({
+            data: {
+              actionId,
+              boxesAdded: details.boxesAdded,
+              boxesRemoved: details.boxesRemoved,
+              framesAdded: details.framesAdded,
+              framesRemoved: details.framesRemoved,
+              totalBoxes: details.totalBoxes,
+              totalFrames: details.totalFrames,
+            },
+          });
+        } else if (details.type === ActionType.HARVEST) {
+          await tx.harvestAction.create({
+            data: {
+              actionId,
+              amount: details.amount,
+              unit: details.unit,
+            },
+          });
+        }
+        // NOTE type doesn't need additional details, content is in notes
+      }
+
+      // Fetch the complete updated action with relations
+      return await tx.action.findUnique({
+        where: { id: actionId },
+        include: {
+          feedingAction: true,
+          treatmentAction: true,
+          frameAction: true,
+          harvestAction: true,
+          boxConfigurationAction: true,
+        },
+      });
+    });
+
+    if (!result) {
+      throw new Error('Failed to update action');
+    }
+
+    // Get user preferences for the response
+    let userPreferences: UserPreferences | null = null;
+    try {
+      userPreferences = await this.usersService.getUserPreferences(userId);
+    } catch {
+      // If we can't get preferences, use defaults
+    }
+
+    return this.mapPrismaToDto(result, userPreferences);
+  }
+
+  /**
+   * Deletes an existing action
+   * @param actionId The ID of the action to delete
+   * @param apiaryId The apiary ID for authorization
+   * @param userId The user ID for authorization
+   */
+  async deleteAction(
+    actionId: string,
+    apiaryId: string,
+    userId: string,
+  ): Promise<void> {
+    // Verify the action exists and belongs to the user's apiary
+    const existingAction = await this.prisma.action.findFirst({
+      where: {
+        id: actionId,
+        hive: {
+          apiary: {
+            id: apiaryId,
+            userId: userId,
+          },
+        },
+      },
+    });
+
+    if (!existingAction) {
+      throw new ForbiddenException('Action not found or access denied');
+    }
+
+    // Delete action and related details in transaction
+    await this.prisma.$transaction(async (tx) => {
+      // Delete type-specific details
+      await this.deleteActionDetails(actionId, tx);
+
+      // Delete the action
+      await tx.action.delete({
+        where: { id: actionId },
+      });
+    });
+  }
+
+  /**
+   * Helper to delete type-specific action details
+   */
+  private async deleteActionDetails(
+    actionId: string,
+    tx: Prisma.TransactionClient,
+  ): Promise<void> {
+    await tx.feedingAction.deleteMany({ where: { actionId } });
+    await tx.treatmentAction.deleteMany({ where: { actionId } });
+    await tx.frameAction.deleteMany({ where: { actionId } });
+    await tx.harvestAction.deleteMany({ where: { actionId } });
+    await tx.boxConfigurationAction.deleteMany({ where: { actionId } });
   }
 
   // Prisma-to-Domain Transformation Function

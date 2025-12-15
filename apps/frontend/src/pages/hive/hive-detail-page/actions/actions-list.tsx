@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useActions } from '@/api/hooks';
+import { useActions, useDeleteAction } from '@/api/hooks';
 import {
   Select,
   SelectContent,
@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/table';
 import { ActionResponse, ActionType } from 'shared-schemas';
 import { Input } from '@/components/ui/input';
-import { Calendar, ExternalLink } from 'lucide-react';
+import { Calendar, ExternalLink, Pencil, Trash2, AlertTriangle } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -29,6 +29,18 @@ import { Badge } from '@/components/ui/badge';
 import { format, parseISO, isValid } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { AddActionDialog } from './add-action-dialog';
+import { EditActionDialog } from './edit-action-dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 export const ActionsList = ({ hiveId }: { hiveId: string }) => {
   const [selectedType, setSelectedType] = useState<ActionType | 'all'>('all');
@@ -39,6 +51,10 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
     startDate: undefined,
     endDate: undefined,
   });
+  const [editingAction, setEditingAction] = useState<ActionResponse | null>(null);
+  const [deletingAction, setDeletingAction] = useState<ActionResponse | null>(null);
+
+  const deleteAction = useDeleteAction();
 
   const { data: actions, isLoading } = useActions({
     hiveId,
@@ -68,6 +84,35 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
       case ActionType.OTHER:
       default:
         return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getActionWarning = (action: ActionResponse): { message: string; linkTo?: string; linkText?: string } | null => {
+    if (action.inspectionId) {
+      return {
+        message: 'This action is part of an inspection. Modifying it here will cause it to be out of sync with the inspection record.',
+        linkTo: `/inspections/${action.inspectionId}`,
+        linkText: 'Edit inspection instead',
+      };
+    }
+    if (action.type === ActionType.HARVEST) {
+      return {
+        message: 'This action is linked to a harvest. Modifying it here will cause it to be out of sync with the harvest record.',
+        linkTo: '/harvests',
+        linkText: 'Go to harvests',
+      };
+    }
+    return null;
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingAction) return;
+    try {
+      await deleteAction.mutateAsync(deletingAction.id);
+      toast.success('Action deleted');
+      setDeletingAction(null);
+    } catch {
+      toast.error('Failed to delete action');
     }
   };
 
@@ -261,6 +306,7 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
                   <TableHead>Details</TableHead>
                   <TableHead>Notes</TableHead>
                   <TableHead className="text-right">Date</TableHead>
+                  <TableHead className="w-[80px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -291,6 +337,28 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
                         <span>{formatDate(action.date)}</span>
                       )}
                     </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        {action.type !== ActionType.HARVEST && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setEditingAction(action)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive hover:text-destructive"
+                          onClick={() => setDeletingAction(action)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -313,6 +381,58 @@ export const ActionsList = ({ hiveId }: { hiveId: string }) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Action Dialog */}
+      {editingAction && (
+        <EditActionDialog
+          action={editingAction}
+          open={!!editingAction}
+          onOpenChange={(open) => !open && setEditingAction(null)}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deletingAction} onOpenChange={(open) => !open && setDeletingAction(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Action?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete this action.
+            </DialogDescription>
+          </DialogHeader>
+          {deletingAction && (() => {
+            const warning = getActionWarning(deletingAction);
+            return warning ? (
+              <Alert className="border-amber-200 bg-amber-50">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800">
+                  {warning.message}
+                  {warning.linkTo && (
+                    <>
+                      {' '}
+                      <Link to={warning.linkTo} className="underline font-medium hover:text-amber-900">
+                        {warning.linkText}
+                      </Link>
+                    </>
+                  )}
+                </AlertDescription>
+              </Alert>
+            ) : null;
+          })()}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={deleteAction.isPending}
+            >
+              {deleteAction.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

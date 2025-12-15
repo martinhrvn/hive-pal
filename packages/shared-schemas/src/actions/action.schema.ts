@@ -35,9 +35,15 @@ export const actionFilterSchema = z.object({
   endDate: z.string().datetime().optional(),
 });
 
+// Update schema for actions (partial, hiveId cannot be changed)
+export const updateActionSchema = createStandaloneActionSchema
+  .partial()
+  .omit({ hiveId: true });
+
 export type CreateAction = z.infer<typeof createActionSchema>;
 export type CreateStandaloneAction = z.infer<
   typeof createStandaloneActionSchema
 >;
+export type UpdateAction = z.infer<typeof updateActionSchema>;
 export type ActionResponse = z.infer<typeof actionResponseSchema>;
 export type ActionFilter = z.infer<typeof actionFilterSchema>;
