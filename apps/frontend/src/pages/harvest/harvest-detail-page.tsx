@@ -198,32 +198,39 @@ export const HarvestDetailPage = () => {
                 Finalize
               </Button>
             )}
-          {harvest.status === HarvestStatus.DRAFT && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="destructive" size="icon">
-                  <Trash2 className="h-4 w-4" />
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="destructive" size="icon">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Harvest?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  the harvest.
+                </DialogDescription>
+              </DialogHeader>
+              {harvest.status === HarvestStatus.COMPLETED && (
+                <Alert className="border-amber-200 bg-amber-50">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <AlertDescription className="text-amber-800">
+                    This harvest has been finalized. Deleting it will also remove
+                    all associated harvest actions from the hive timelines.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button variant="destructive" onClick={handleDelete}>
+                  Delete
                 </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Delete Harvest?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    the harvest.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button variant="destructive" onClick={handleDelete}>
-                    Delete
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
