@@ -66,22 +66,15 @@ export class ReportsService {
       },
       include: {
         inspections: {
-          where: startDate
-            ? {
-                date: {
-                  gte: startDate,
-                  lte: endDate,
-                },
-              }
-            : {
-                date: {
-                  lte: endDate,
-                },
-              },
+          where: {
+            status: 'COMPLETED',
+            ...(startDate
+              ? { date: { gte: startDate, lte: endDate } }
+              : { date: { lte: endDate } }),
+          },
           orderBy: {
             date: 'desc',
           },
-          take: 1,
           include: {
             observations: true,
           },
@@ -147,16 +140,11 @@ export class ReportsService {
     });
 
     for (const hive of hives) {
-      const latestInspection = hive.inspections[0];
-      let overallScore: number | null = null;
-      let populationScore: number | null = null;
-      let storesScore: number | null = null;
-      let queenScore: number | null = null;
-
-      // Count inspections for this hive
+      // Count completed inspections for this hive
       const hiveInspectionCount = await this.prisma.inspection.count({
         where: {
           hiveId: hive.id,
+          status: 'COMPLETED',
           ...(startDate
             ? { date: { gte: startDate, lte: endDate } }
             : { date: { lte: endDate } }),
@@ -164,33 +152,69 @@ export class ReportsService {
       });
       totalInspections += hiveInspectionCount;
 
-      if (latestInspection && latestInspection.observations.length > 0) {
-        const observationMap = this.convertObservationsToMap(
-          latestInspection.observations,
-        );
-        const scores = this.metricsService.calculateOveralScore(observationMap);
+      // Calculate scores from ALL completed inspections for this hive
+      let hiveOverallSum = 0,
+        hivePopulationSum = 0,
+        hiveStoresSum = 0,
+        hiveQueenSum = 0;
+      let hiveOverallCount = 0,
+        hivePopulationCount = 0,
+        hiveStoresCount = 0,
+        hiveQueenCount = 0;
 
-        overallScore = scores.overallScore;
-        populationScore = scores.populationScore;
-        storesScore = scores.storesScore;
-        queenScore = scores.queenScore;
+      for (const inspection of hive.inspections) {
+        if (inspection.observations.length > 0) {
+          const observationMap = this.convertObservationsToMap(
+            inspection.observations,
+          );
+          const scores =
+            this.metricsService.calculateOveralScore(observationMap);
 
-        if (overallScore !== null) {
-          totalOverall += overallScore;
-          countOverall++;
+          if (scores.overallScore !== null) {
+            hiveOverallSum += scores.overallScore;
+            hiveOverallCount++;
+          }
+          if (scores.populationScore !== null) {
+            hivePopulationSum += scores.populationScore;
+            hivePopulationCount++;
+          }
+          if (scores.storesScore !== null) {
+            hiveStoresSum += scores.storesScore;
+            hiveStoresCount++;
+          }
+          if (scores.queenScore !== null) {
+            hiveQueenSum += scores.queenScore;
+            hiveQueenCount++;
+          }
         }
-        if (populationScore !== null) {
-          totalPopulation += populationScore;
-          countPopulation++;
-        }
-        if (storesScore !== null) {
-          totalStores += storesScore;
-          countStores++;
-        }
-        if (queenScore !== null) {
-          totalQueen += queenScore;
-          countQueen++;
-        }
+      }
+
+      // Per-hive averages
+      const overallScore =
+        hiveOverallCount > 0 ? hiveOverallSum / hiveOverallCount : null;
+      const populationScore =
+        hivePopulationCount > 0 ? hivePopulationSum / hivePopulationCount : null;
+      const storesScore =
+        hiveStoresCount > 0 ? hiveStoresSum / hiveStoresCount : null;
+      const queenScore =
+        hiveQueenCount > 0 ? hiveQueenSum / hiveQueenCount : null;
+
+      // Add to apiary totals (one per hive)
+      if (overallScore !== null) {
+        totalOverall += overallScore;
+        countOverall++;
+      }
+      if (populationScore !== null) {
+        totalPopulation += populationScore;
+        countPopulation++;
+      }
+      if (storesScore !== null) {
+        totalStores += storesScore;
+        countStores++;
+      }
+      if (queenScore !== null) {
+        totalQueen += queenScore;
+        countQueen++;
       }
 
       healthByHive.push({
@@ -206,9 +230,7 @@ export class ReportsService {
           storesScore !== null ? Math.round(storesScore * 100) / 100 : null,
         queenScore:
           queenScore !== null ? Math.round(queenScore * 100) / 100 : null,
-        lastInspectionDate: latestInspection
-          ? latestInspection.date.toISOString()
-          : null,
+        lastInspectionDate: hive.inspections[0]?.date.toISOString() ?? null,
       });
     }
 

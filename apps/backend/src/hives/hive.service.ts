@@ -251,9 +251,13 @@ export class HiveService {
           },
         },
         inspections: {
+          where: {
+            status: 'COMPLETED',
+          },
           orderBy: {
             date: 'desc',
           },
+          take: 1,
           include: {
             observations: true,
             actions: true,
@@ -280,13 +284,8 @@ export class HiveService {
 
     const activeQueen = hive.queens.length > 0 ? hive.queens[0] : null;
 
-    // Find the latest completed inspection (exclude scheduled)
-    const latestCompletedInspection =
-      hive.inspections && hive.inspections.length > 0
-        ? (hive.inspections.find(
-            (inspection) => inspection.status !== 'SCHEDULED',
-          ) ?? null)
-        : null;
+    // Get the latest completed inspection (filtered at query level)
+    const latestCompletedInspection = hive.inspections[0] ?? null;
 
     const metrics = this.inspectionService.mapObservationsToDto(
       latestCompletedInspection?.observations ?? [],
