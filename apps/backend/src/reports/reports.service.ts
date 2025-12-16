@@ -431,10 +431,12 @@ export class ReportsService {
       },
       select: {
         id: true,
+        name: true,
       },
     });
 
     const hiveIds = hives.map((h) => h.id);
+    const hiveMap = new Map(hives.map((h) => [h.id, h.name]));
 
     // Get all harvests in the date range
     const harvests = await this.prisma.harvest.findMany({
@@ -496,12 +498,13 @@ export class ReportsService {
       },
     });
 
-    // Get all inspections in the date range
+    // Get all completed inspections in the date range
     const inspections = await this.prisma.inspection.findMany({
       where: {
         hiveId: {
           in: hiveIds,
         },
+        status: 'COMPLETED',
         ...(startDate
           ? {
               date: {
@@ -517,6 +520,12 @@ export class ReportsService {
       },
       include: {
         observations: true,
+        hive: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: {
         date: 'asc',
@@ -612,6 +621,98 @@ export class ReportsService {
         sugarKg: Math.round(point.sugarKg * 100) / 100,
       }));
 
+    // Calculate per-hive health trends
+    // Group inspections by hive AND month
+    const hiveInspectionsByMonth = new Map<
+      string,
+      Map<string, (typeof inspections)[number][]>
+    >();
+    for (const inspection of inspections) {
+      const monthKey = this.getMonthKey(inspection.date);
+      if (!hiveInspectionsByMonth.has(inspection.hiveId)) {
+        hiveInspectionsByMonth.set(inspection.hiveId, new Map());
+      }
+      const hiveMonths = hiveInspectionsByMonth.get(inspection.hiveId)!;
+      if (!hiveMonths.has(monthKey)) {
+        hiveMonths.set(monthKey, []);
+      }
+      hiveMonths.get(monthKey)!.push(inspection);
+    }
+
+    // Calculate per-hive trends
+    const hiveHealthTrends = hives.map((hive) => {
+      const monthsMap = hiveInspectionsByMonth.get(hive.id) || new Map();
+      const dataPoints = Array.from(monthsMap.entries())
+        .map(([, monthInspections]) => {
+          // Calculate average scores for this hive for this month
+          let overallSum = 0,
+            populationSum = 0,
+            storesSum = 0,
+            queenSum = 0;
+          let overallCount = 0,
+            populationCount = 0,
+            storesCount = 0,
+            queenCount = 0;
+
+          for (const inspection of monthInspections) {
+            if (inspection.observations.length > 0) {
+              const observationMap = this.convertObservationsToMap(
+                inspection.observations,
+              );
+              const scores =
+                this.metricsService.calculateOveralScore(observationMap);
+
+              if (scores.overallScore !== null) {
+                overallSum += scores.overallScore;
+                overallCount++;
+              }
+              if (scores.populationScore !== null) {
+                populationSum += scores.populationScore;
+                populationCount++;
+              }
+              if (scores.storesScore !== null) {
+                storesSum += scores.storesScore;
+                storesCount++;
+              }
+              if (scores.queenScore !== null) {
+                queenSum += scores.queenScore;
+                queenCount++;
+              }
+            }
+          }
+
+          // Use the first day of the month for consistent date representation
+          const firstInspection = monthInspections[0];
+          const monthDate = new Date(firstInspection.date);
+          monthDate.setDate(1);
+
+          return {
+            date: monthDate.toISOString(),
+            overallScore:
+              overallCount > 0
+                ? Math.round((overallSum / overallCount) * 100) / 100
+                : null,
+            populationScore:
+              populationCount > 0
+                ? Math.round((populationSum / populationCount) * 100) / 100
+                : null,
+            storesScore:
+              storesCount > 0
+                ? Math.round((storesSum / storesCount) * 100) / 100
+                : null,
+            queenScore:
+              queenCount > 0
+                ? Math.round((queenSum / queenCount) * 100) / 100
+                : null,
+          };
+        })
+        .sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+        );
+
+      return { hiveId: hive.id, hiveName: hive.name, dataPoints };
+    });
+
     return {
       apiaryId: apiary.id,
       apiaryName: apiary.name,
@@ -621,6 +722,7 @@ export class ReportsService {
         endDate: endDate.toISOString(),
       },
       trends,
+      hiveHealthTrends,
     };
   }
 
@@ -778,16 +880,17 @@ export class ReportsService {
     }
 
     // Map observation types to the format expected by MetricsService
+    // Note: observations are stored with snake_case types in the database
     return {
       strength: (map.strength as number | null) ?? null,
-      cappedBrood: (map.cappedBrood as number | null) ?? null,
-      uncappedBrood: (map.uncappedBrood as number | null) ?? null,
-      honeyStores: (map.honeyStores as number | null) ?? null,
-      pollenStores: (map.pollenStores as number | null) ?? null,
-      queenCells: (map.queenCells as number | null) ?? null,
-      swarmCells: (map.swarmCells as boolean | null) ?? null,
-      supersedureCells: (map.supersedureCells as boolean | null) ?? null,
-      queenSeen: (map.queenSeen as boolean | null) ?? null,
+      cappedBrood: (map.capped_brood as number | null) ?? null,
+      uncappedBrood: (map.uncapped_brood as number | null) ?? null,
+      honeyStores: (map.honey_stores as number | null) ?? null,
+      pollenStores: (map.pollen_stores as number | null) ?? null,
+      queenCells: (map.queen_cells as number | null) ?? null,
+      swarmCells: (map.swarm_cells as boolean | null) ?? null,
+      supersedureCells: (map.supersedure_cells as boolean | null) ?? null,
+      queenSeen: (map.queen_seen as boolean | null) ?? null,
     };
   }
 

@@ -71,6 +71,20 @@ export interface TrendDataPoint {
   inspectionCount: number;
 }
 
+export interface HiveScorePoint {
+  date: string;
+  overallScore: number | null;
+  populationScore: number | null;
+  storesScore: number | null;
+  queenScore: number | null;
+}
+
+export interface HiveHealthTrend {
+  hiveId: string;
+  hiveName: string;
+  dataPoints: HiveScorePoint[];
+}
+
 export interface ApiaryTrendsDto {
   apiaryId: string;
   apiaryName: string;
@@ -80,4 +94,5 @@ export interface ApiaryTrendsDto {
     endDate: string;
   };
   trends: TrendDataPoint[];
+  hiveHealthTrends: HiveHealthTrend[];
 }

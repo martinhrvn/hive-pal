@@ -189,7 +189,10 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
     <TableHead className={className}>
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-1 hover:text-foreground transition-colors"
+        className={cn(
+          'flex items-center gap-1 hover:text-foreground transition-colors',
+          className?.includes('text-right') && 'ml-auto'
+        )}
       >
         {children}
         <ArrowUpDown

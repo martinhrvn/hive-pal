@@ -12,6 +12,7 @@ import { HoneyProductionChart } from './components/charts/honey-production-chart
 import { FeedingTotalsChart } from './components/charts/feeding-totals-chart';
 import { HealthTrendChart } from './components/charts/health-trend-chart';
 import { FeedingTrendChart } from './components/charts/feeding-trend-chart';
+import { HiveScoreTrendChart } from './components/charts/hive-score-trend-chart';
 import { HiveComparisonTable } from './components/tables/hive-comparison-table';
 import { ReportPeriod } from 'shared-schemas';
 import { apiClient } from '@/api/client';
@@ -133,6 +134,12 @@ export const ReportsPage = () => {
               />
             </TabsContent>
             <TabsContent value="trends" className="space-y-6 pt-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="text-lg font-semibold mb-4">{t('reports.charts.hiveScoreTrends')}</h3>
+                  <HiveScoreTrendChart data={trends?.hiveHealthTrends} isLoading={isTrendsLoading} />
+                </CardContent>
+              </Card>
               <HealthTrendChart data={trends?.healthTrends} isLoading={isTrendsLoading} />
               <FeedingTrendChart data={trends?.feedingTrends} isLoading={isTrendsLoading} />
             </TabsContent>

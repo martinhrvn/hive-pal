@@ -194,6 +194,9 @@
       "queen": "Queen",
       "lastInspection": "Last Inspection"
     },
+    "charts": {
+      "hiveScoreTrends": "Hive Score Trends"
+    },
     "periods": {
       "1month": "1 Month",
       "3months": "3 Months",

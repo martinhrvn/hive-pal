@@ -159,6 +159,9 @@
       "queen": "Matka",
       "lastInspection": "Posledná prehliadka"
     },
+    "charts": {
+      "hiveScoreTrends": "Trendy skóre úľov"
+    },
     "periods": {
       "1month": "1 mesiac",
       "3months": "3 mesiace",

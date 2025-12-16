@@ -86,6 +86,22 @@ export const harvestTrendPointSchema = z.object({
   unit: z.string(),
 });
 
+// Per-hive score at a point in time
+export const hiveScorePointSchema = z.object({
+  date: z.string(),
+  overallScore: z.number().nullable(),
+  populationScore: z.number().nullable(),
+  storesScore: z.number().nullable(),
+  queenScore: z.number().nullable(),
+});
+
+// Per-hive health trend data
+export const hiveHealthTrendSchema = z.object({
+  hiveId: z.string().uuid(),
+  hiveName: z.string(),
+  dataPoints: z.array(hiveScorePointSchema),
+});
+
 export const trendDataSchema = z.object({
   apiaryId: z.string().uuid(),
   period: z.object({
@@ -95,6 +111,7 @@ export const trendDataSchema = z.object({
   healthTrends: z.array(healthTrendPointSchema),
   feedingTrends: z.array(feedingTrendPointSchema),
   harvestTrends: z.array(harvestTrendPointSchema),
+  hiveHealthTrends: z.array(hiveHealthTrendSchema),
 });
 
 export type TrendData = z.infer<typeof trendDataSchema>;
@@ -106,3 +123,5 @@ export type HiveHealth = z.infer<typeof hiveHealthSchema>;
 export type HealthTrendPoint = z.infer<typeof healthTrendPointSchema>;
 export type FeedingTrendPoint = z.infer<typeof feedingTrendPointSchema>;
 export type HarvestTrendPoint = z.infer<typeof harvestTrendPointSchema>;
+export type HiveScorePoint = z.infer<typeof hiveScorePointSchema>;
+export type HiveHealthTrend = z.infer<typeof hiveHealthTrendSchema>;
