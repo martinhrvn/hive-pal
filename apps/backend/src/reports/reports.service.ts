@@ -13,6 +13,7 @@ import {
   HiveStatus,
   ObservationSchemaType,
 } from 'shared-schemas';
+import PDFDocument from 'pdfkit';
 
 interface SyrupConcentration {
   sugarPerLiter: number;
@@ -880,49 +881,78 @@ export class ReportsService {
 
     const stats = await this.getApiaryStatistics(apiaryId, userId, period);
 
-    // For now, create a simple text-based PDF using a minimal approach
-    // In a production environment, you'd want to use a proper PDF library like pdfkit
-    // This is a placeholder that returns a simple text representation
+    return new Promise((resolve, reject) => {
+      const doc = new PDFDocument({ margin: 50 });
+      const chunks: Buffer[] = [];
 
-    const textContent = `
-APIARY REPORT
-=============
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+      doc.on('error', reject);
 
-Apiary: ${stats.apiaryName}
-Period: ${period}
-Date Range: ${stats.period.startDate || 'All time'} to ${stats.period.endDate}
+      // Title
+      doc.fontSize(24).text('Apiary Report', { align: 'center' });
+      doc.moveDown();
 
-SUMMARY
--------
-Total Hives: ${stats.summary.totalHives}
-Active Hives: ${stats.summary.activeHives}
-Total Inspections: ${stats.summary.totalInspections}
-Total Harvests: ${stats.summary.totalHarvests}
-Total Honey: ${stats.honeyProduction.totalAmount} kg
-Total Sugar Fed: ${stats.feedingTotals.totalSugarKg} kg
-Average Health Score: ${stats.healthScores.averageOverall ?? 'N/A'}
+      // Apiary info
+      doc.fontSize(16).text(stats.apiaryName, { align: 'center' });
+      doc.fontSize(10).text(`Period: ${period}`, { align: 'center' });
+      const startDateFormatted = stats.period.startDate
+        ? new Date(stats.period.startDate).toLocaleDateString()
+        : 'All time';
+      const endDateFormatted = new Date(
+        stats.period.endDate,
+      ).toLocaleDateString();
+      doc.text(`Date Range: ${startDateFormatted} to ${endDateFormatted}`, {
+        align: 'center',
+      });
+      doc.moveDown(2);
 
-HIVE DETAILS
-------------
-${stats.healthScores.byHive
-  .map((hive) => {
-    const honeyData = stats.honeyProduction.byHive.find(
-      (h) => h.hiveId === hive.hiveId,
-    );
-    const feedingData = stats.feedingTotals.byHive.find(
-      (f) => f.hiveId === hive.hiveId,
-    );
-    return `${hive.hiveName}
-  Honey: ${honeyData?.amount ?? 0} kg
-  Sugar Fed: ${feedingData?.sugarKg ?? 0} kg
-  Health Score: ${hive.overallScore ?? 'N/A'}
-  Last Inspection: ${hive.lastInspectionDate ?? 'N/A'}`;
-  })
-  .join('\n\n')}
-`;
+      // Summary section
+      doc.fontSize(14).text('Summary', { underline: true });
+      doc.moveDown(0.5);
+      doc.fontSize(10);
+      doc.text(`Total Hives: ${stats.summary.totalHives}`);
+      doc.text(`Active Hives: ${stats.summary.activeHives}`);
+      doc.text(`Total Inspections: ${stats.summary.totalInspections}`);
+      doc.text(`Total Harvests: ${stats.summary.totalHarvests}`);
+      doc.text(`Total Honey: ${stats.honeyProduction.totalAmount} kg`);
+      doc.text(`Total Sugar Fed: ${stats.feedingTotals.totalSugarKg} kg`);
+      doc.text(
+        `Average Health Score: ${stats.healthScores.averageOverall ?? 'N/A'}`,
+      );
+      doc.moveDown(2);
 
-    // Return as buffer (this is a simple text file, not a real PDF)
-    // In production, you would use pdfkit or similar to generate a proper PDF
-    return Buffer.from(textContent, 'utf-8');
+      // Hive details section
+      doc.fontSize(14).text('Hive Details', { underline: true });
+      doc.moveDown(0.5);
+
+      for (const hive of stats.healthScores.byHive) {
+        const honeyData = stats.honeyProduction.byHive.find(
+          (h) => h.hiveId === hive.hiveId,
+        );
+        const feedingData = stats.feedingTotals.byHive.find(
+          (f) => f.hiveId === hive.hiveId,
+        );
+
+        doc.fontSize(12).text(hive.hiveName, { underline: true });
+        doc.fontSize(10);
+        doc.text(`  Honey: ${honeyData?.amount ?? 0} kg`);
+        doc.text(`  Sugar Fed: ${feedingData?.sugarKg ?? 0} kg`);
+        doc.text(`  Health Score: ${hive.overallScore ?? 'N/A'}`);
+        const lastInspection = hive.lastInspectionDate
+          ? new Date(hive.lastInspectionDate).toLocaleDateString()
+          : 'N/A';
+        doc.text(`  Last Inspection: ${lastInspection}`);
+        doc.moveDown(0.5);
+      }
+
+      // Footer
+      doc.moveDown(2);
+      doc.fontSize(8).text(`Generated on ${new Date().toLocaleString()}`, {
+        align: 'center',
+      });
+
+      doc.end();
+    });
   }
 }
