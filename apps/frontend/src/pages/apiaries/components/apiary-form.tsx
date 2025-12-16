@@ -105,9 +105,10 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
         />
         <div className="flex justify-end">
           <Button
+            type="button"
             variant="outline"
             className="mr-2"
-            onClick={() => navigate('/')}
+            onClick={() => (window.location.href = '/')}
           >
             {t('common:actions.cancel')}
           </Button>
