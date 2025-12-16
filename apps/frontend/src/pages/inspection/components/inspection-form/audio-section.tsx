@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Mic, Loader2 } from 'lucide-react';
+import { Mic, Loader2, Info } from 'lucide-react';
 import { AudioRecorder, AudioRecordingsList } from '@/components/audio';
 import {
   useInspectionAudio,
@@ -151,6 +151,14 @@ export function AudioSection({
           onDelete={handleDelete}
           deletingId={deletingId}
         />
+      )}
+
+      {/* Warning for pending recordings on new inspection */}
+      {isNewInspection && pendingRecordings.length > 0 && (
+        <div className="flex items-start gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+          <Info className="mt-0.5 size-4 shrink-0" />
+          <span>Audio recordings will be uploaded when you save the inspection.</span>
+        </div>
       )}
 
       {/* Recorder */}
