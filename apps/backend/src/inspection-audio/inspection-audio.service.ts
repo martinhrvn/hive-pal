@@ -255,7 +255,7 @@ export class InspectionAudioService {
           message: 'Failed to delete audio from storage',
           audioId,
           storageKey: audio.storageKey,
-          error,
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }
@@ -291,7 +291,7 @@ export class InspectionAudioService {
         this.logger.warn({
           message: 'Failed to delete audio files from storage',
           inspectionId,
-          error,
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }

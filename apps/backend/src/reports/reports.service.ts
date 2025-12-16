@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -8,7 +8,11 @@ import {
   ReportPeriod,
   TrendDataPoint,
 } from './dto/apiary-statistics.dto';
-import { HarvestStatus, HiveStatus } from 'shared-schemas';
+import {
+  HarvestStatus,
+  HiveStatus,
+  ObservationSchemaType,
+} from 'shared-schemas';
 
 interface SyrupConcentration {
   sugarPerLiter: number;
@@ -35,7 +39,9 @@ export class ReportsService {
     userId: string,
     period: ReportPeriod = ReportPeriod.ALL,
   ): Promise<ApiaryStatisticsDto> {
-    this.logger.log(`Getting statistics for apiary ${apiaryId}, period: ${period}`);
+    this.logger.log(
+      `Getting statistics for apiary ${apiaryId}, period: ${period}`,
+    );
 
     // Verify apiary ownership
     const apiary = await this.prisma.apiary.findFirst({
@@ -84,14 +90,27 @@ export class ReportsService {
 
     const hiveIds = hives.map((h) => h.id);
     const totalHives = hives.length;
-    const activeHives = hives.filter((h) => h.status === HiveStatus.ACTIVE).length;
+    const activeHives = hives.filter(
+      (h) => h.status === HiveStatus.ACTIVE,
+    ).length;
 
     // Calculate honey harvested per hive
-    const honeyByHive = await this.calculateHoneyByHive(apiaryId, hiveIds, startDate, endDate, hives);
+    const honeyByHive = await this.calculateHoneyByHive(
+      apiaryId,
+      hiveIds,
+      startDate,
+      endDate,
+      hives,
+    );
     const totalHoneyKg = honeyByHive.reduce((sum, h) => sum + h.amount, 0);
 
     // Calculate sugar fed per hive
-    const feedingByHive = await this.calculateFeedingByHive(hiveIds, startDate, endDate, hives);
+    const feedingByHive = await this.calculateFeedingByHive(
+      hiveIds,
+      startDate,
+      endDate,
+      hives,
+    );
     const totalSugarKg = feedingByHive.reduce((sum, f) => sum + f.sugarKg, 0);
 
     // Calculate health scores per hive
@@ -105,8 +124,14 @@ export class ReportsService {
       lastInspectionDate: string | null;
     }> = [];
 
-    let totalOverall = 0, totalPopulation = 0, totalStores = 0, totalQueen = 0;
-    let countOverall = 0, countPopulation = 0, countStores = 0, countQueen = 0;
+    let totalOverall = 0,
+      totalPopulation = 0,
+      totalStores = 0,
+      totalQueen = 0;
+    let countOverall = 0,
+      countPopulation = 0,
+      countStores = 0,
+      countQueen = 0;
 
     // Count total inspections and harvests
     let totalInspections = 0;
@@ -114,7 +139,9 @@ export class ReportsService {
       where: {
         apiaryId,
         status: HarvestStatus.COMPLETED,
-        ...(startDate ? { date: { gte: startDate, lte: endDate } } : { date: { lte: endDate } }),
+        ...(startDate
+          ? { date: { gte: startDate, lte: endDate } }
+          : { date: { lte: endDate } }),
       },
     });
 
@@ -129,13 +156,17 @@ export class ReportsService {
       const hiveInspectionCount = await this.prisma.inspection.count({
         where: {
           hiveId: hive.id,
-          ...(startDate ? { date: { gte: startDate, lte: endDate } } : { date: { lte: endDate } }),
+          ...(startDate
+            ? { date: { gte: startDate, lte: endDate } }
+            : { date: { lte: endDate } }),
         },
       });
       totalInspections += hiveInspectionCount;
 
       if (latestInspection && latestInspection.observations.length > 0) {
-        const observationMap = this.convertObservationsToMap(latestInspection.observations);
+        const observationMap = this.convertObservationsToMap(
+          latestInspection.observations,
+        );
         const scores = this.metricsService.calculateOveralScore(observationMap);
 
         overallScore = scores.overallScore;
@@ -143,20 +174,40 @@ export class ReportsService {
         storesScore = scores.storesScore;
         queenScore = scores.queenScore;
 
-        if (overallScore !== null) { totalOverall += overallScore; countOverall++; }
-        if (populationScore !== null) { totalPopulation += populationScore; countPopulation++; }
-        if (storesScore !== null) { totalStores += storesScore; countStores++; }
-        if (queenScore !== null) { totalQueen += queenScore; countQueen++; }
+        if (overallScore !== null) {
+          totalOverall += overallScore;
+          countOverall++;
+        }
+        if (populationScore !== null) {
+          totalPopulation += populationScore;
+          countPopulation++;
+        }
+        if (storesScore !== null) {
+          totalStores += storesScore;
+          countStores++;
+        }
+        if (queenScore !== null) {
+          totalQueen += queenScore;
+          countQueen++;
+        }
       }
 
       healthByHive.push({
         hiveId: hive.id,
         hiveName: hive.name,
-        overallScore: overallScore !== null ? Math.round(overallScore * 100) / 100 : null,
-        populationScore: populationScore !== null ? Math.round(populationScore * 100) / 100 : null,
-        storesScore: storesScore !== null ? Math.round(storesScore * 100) / 100 : null,
-        queenScore: queenScore !== null ? Math.round(queenScore * 100) / 100 : null,
-        lastInspectionDate: latestInspection ? latestInspection.date.toISOString() : null,
+        overallScore:
+          overallScore !== null ? Math.round(overallScore * 100) / 100 : null,
+        populationScore:
+          populationScore !== null
+            ? Math.round(populationScore * 100) / 100
+            : null,
+        storesScore:
+          storesScore !== null ? Math.round(storesScore * 100) / 100 : null,
+        queenScore:
+          queenScore !== null ? Math.round(queenScore * 100) / 100 : null,
+        lastInspectionDate: latestInspection
+          ? latestInspection.date.toISOString()
+          : null,
       });
     }
 
@@ -164,7 +215,9 @@ export class ReportsService {
       apiaryId: apiary.id,
       apiaryName: apiary.name,
       period: {
-        startDate: startDate ? startDate.toISOString() : new Date(0).toISOString(),
+        startDate: startDate
+          ? startDate.toISOString()
+          : new Date(0).toISOString(),
         endDate: endDate.toISOString(),
       },
       summary: {
@@ -183,10 +236,22 @@ export class ReportsService {
         byHive: feedingByHive,
       },
       healthScores: {
-        averageOverall: countOverall > 0 ? Math.round((totalOverall / countOverall) * 100) / 100 : null,
-        averagePopulation: countPopulation > 0 ? Math.round((totalPopulation / countPopulation) * 100) / 100 : null,
-        averageStores: countStores > 0 ? Math.round((totalStores / countStores) * 100) / 100 : null,
-        averageQueen: countQueen > 0 ? Math.round((totalQueen / countQueen) * 100) / 100 : null,
+        averageOverall:
+          countOverall > 0
+            ? Math.round((totalOverall / countOverall) * 100) / 100
+            : null,
+        averagePopulation:
+          countPopulation > 0
+            ? Math.round((totalPopulation / countPopulation) * 100) / 100
+            : null,
+        averageStores:
+          countStores > 0
+            ? Math.round((totalStores / countStores) * 100) / 100
+            : null,
+        averageQueen:
+          countQueen > 0
+            ? Math.round((totalQueen / countQueen) * 100) / 100
+            : null,
         byHive: healthByHive,
       },
     };
@@ -198,12 +263,22 @@ export class ReportsService {
     startDate: Date | null,
     endDate: Date,
     hives: Array<{ id: string; name: string }>,
-  ): Promise<Array<{ hiveId: string; hiveName: string; amount: number; unit: string; harvestCount: number }>> {
+  ): Promise<
+    Array<{
+      hiveId: string;
+      hiveName: string;
+      amount: number;
+      unit: string;
+      harvestCount: number;
+    }>
+  > {
     const harvests = await this.prisma.harvest.findMany({
       where: {
         apiaryId,
         status: HarvestStatus.COMPLETED,
-        ...(startDate ? { date: { gte: startDate, lte: endDate } } : { date: { lte: endDate } }),
+        ...(startDate
+          ? { date: { gte: startDate, lte: endDate } }
+          : { date: { lte: endDate } }),
       },
       include: {
         harvestHives: {
@@ -212,13 +287,22 @@ export class ReportsService {
       },
     });
 
-    const hiveHoneyMap = new Map<string, { amount: number; harvestCount: number }>();
+    const hiveHoneyMap = new Map<
+      string,
+      { amount: number; harvestCount: number }
+    >();
 
     for (const harvest of harvests) {
       for (const hh of harvest.harvestHives) {
-        const existing = hiveHoneyMap.get(hh.hiveId) || { amount: 0, harvestCount: 0 };
+        const existing = hiveHoneyMap.get(hh.hiveId) || {
+          amount: 0,
+          harvestCount: 0,
+        };
         if (hh.honeyAmount && hh.honeyAmountUnit) {
-          existing.amount += this.convertToKg(hh.honeyAmount, hh.honeyAmountUnit);
+          existing.amount += this.convertToKg(
+            hh.honeyAmount,
+            hh.honeyAmountUnit,
+          );
         }
         existing.harvestCount++;
         hiveHoneyMap.set(hh.hiveId, existing);
@@ -242,31 +326,50 @@ export class ReportsService {
     startDate: Date | null,
     endDate: Date,
     hives: Array<{ id: string; name: string }>,
-  ): Promise<Array<{ hiveId: string; hiveName: string; sugarKg: number; feedingCount: number }>> {
+  ): Promise<
+    Array<{
+      hiveId: string;
+      hiveName: string;
+      sugarKg: number;
+      feedingCount: number;
+    }>
+  > {
     const feedingActions = await this.prisma.action.findMany({
       where: {
         hiveId: { in: hiveIds },
         type: 'FEEDING',
-        ...(startDate ? { date: { gte: startDate, lte: endDate } } : { date: { lte: endDate } }),
+        ...(startDate
+          ? { date: { gte: startDate, lte: endDate } }
+          : { date: { lte: endDate } }),
       },
       include: {
         feedingAction: true,
       },
     });
 
-    const hiveFeedingMap = new Map<string, { sugarKg: number; feedingCount: number }>();
+    const hiveFeedingMap = new Map<
+      string,
+      { sugarKg: number; feedingCount: number }
+    >();
 
     for (const action of feedingActions) {
       if (action.feedingAction && action.hiveId) {
-        const existing = hiveFeedingMap.get(action.hiveId) || { sugarKg: 0, feedingCount: 0 };
-        existing.sugarKg += this.calculateSugarFromFeeding(action.feedingAction) / 1000;
+        const existing = hiveFeedingMap.get(action.hiveId) || {
+          sugarKg: 0,
+          feedingCount: 0,
+        };
+        existing.sugarKg +=
+          this.calculateSugarFromFeeding(action.feedingAction) / 1000;
         existing.feedingCount++;
         hiveFeedingMap.set(action.hiveId, existing);
       }
     }
 
     return hives.map((hive) => {
-      const data = hiveFeedingMap.get(hive.id) || { sugarKg: 0, feedingCount: 0 };
+      const data = hiveFeedingMap.get(hive.id) || {
+        sugarKg: 0,
+        feedingCount: 0,
+      };
       return {
         hiveId: hive.id,
         hiveName: hive.name,
@@ -403,7 +506,11 @@ export class ReportsService {
     // Process harvests
     for (const harvest of harvests) {
       const monthKey = this.getMonthKey(harvest.date);
-      const point = this.getOrCreateTrendPoint(trendsMap, monthKey, harvest.date);
+      const point = this.getOrCreateTrendPoint(
+        trendsMap,
+        monthKey,
+        harvest.date,
+      );
 
       for (const harvestHive of harvest.harvestHives) {
         if (harvestHive.honeyAmount && harvestHive.honeyAmountUnit) {
@@ -420,7 +527,11 @@ export class ReportsService {
     for (const action of feedingActions) {
       if (action.feedingAction) {
         const monthKey = this.getMonthKey(action.date);
-        const point = this.getOrCreateTrendPoint(trendsMap, monthKey, action.date);
+        const point = this.getOrCreateTrendPoint(
+          trendsMap,
+          monthKey,
+          action.date,
+        );
 
         const sugarGrams = this.calculateSugarFromFeeding(action.feedingAction);
         point.sugarKg += sugarGrams / 1000;
@@ -428,7 +539,10 @@ export class ReportsService {
     }
 
     // Process inspections for health scores
-    const inspectionsByMonth = new Map<string, any[]>();
+    const inspectionsByMonth = new Map<
+      string,
+      (typeof inspections)[number][]
+    >();
     for (const inspection of inspections) {
       const monthKey = this.getMonthKey(inspection.date);
       if (!inspectionsByMonth.has(monthKey)) {
@@ -448,8 +562,11 @@ export class ReportsService {
 
       for (const inspection of monthInspections) {
         if (inspection.observations.length > 0) {
-          const observationMap = this.convertObservationsToMap(inspection.observations);
-          const scores = this.metricsService.calculateOveralScore(observationMap);
+          const observationMap = this.convertObservationsToMap(
+            inspection.observations,
+          );
+          const scores =
+            this.metricsService.calculateOveralScore(observationMap);
           if (scores.overallScore !== null) {
             totalScore += scores.overallScore;
             scoreCount++;
@@ -458,7 +575,9 @@ export class ReportsService {
       }
 
       point.averageHealthScore =
-        scoreCount > 0 ? Math.round((totalScore / scoreCount) * 100) / 100 : null;
+        scoreCount > 0
+          ? Math.round((totalScore / scoreCount) * 100) / 100
+          : null;
     }
 
     // Convert map to sorted array
@@ -482,7 +601,10 @@ export class ReportsService {
     };
   }
 
-  private calculateDateRange(period: ReportPeriod): { startDate: Date | null; endDate: Date } {
+  private calculateDateRange(period: ReportPeriod): {
+    startDate: Date | null;
+    endDate: Date;
+  } {
     const endDate = new Date();
     let startDate: Date | null = null;
 
@@ -552,7 +674,8 @@ export class ReportsService {
         sugarGrams = (amountMl / 1000) * syrupConcentration.sugarPerLiter;
       } else {
         // Default to 1:1
-        sugarGrams = (amountMl / 1000) * SYRUP_CONCENTRATIONS['1:1'].sugarPerLiter;
+        sugarGrams =
+          (amountMl / 1000) * SYRUP_CONCENTRATIONS['1:1'].sugarPerLiter;
       }
     } else if (feedType === 'CANDY') {
       // Convert to grams
@@ -606,12 +729,19 @@ export class ReportsService {
     }
   }
 
-  private convertObservationsToMap(observations: any[]): any {
-    const map: any = {};
+  private convertObservationsToMap(
+    observations: {
+      type: string;
+      numericValue?: number | null;
+      booleanValue?: boolean | null;
+      textValue?: string | null;
+    }[],
+  ): ObservationSchemaType {
+    const map: Record<string, number | boolean | string | null> = {};
 
     for (const obs of observations) {
       const type = obs.type;
-      let value: any = null;
+      let value: number | boolean | string | null = null;
 
       if (obs.numericValue !== null && obs.numericValue !== undefined) {
         value = obs.numericValue;
@@ -626,15 +756,15 @@ export class ReportsService {
 
     // Map observation types to the format expected by MetricsService
     return {
-      strength: map.strength ?? null,
-      cappedBrood: map.cappedBrood ?? null,
-      uncappedBrood: map.uncappedBrood ?? null,
-      honeyStores: map.honeyStores ?? null,
-      pollenStores: map.pollenStores ?? null,
-      queenCells: map.queenCells ?? null,
-      swarmCells: map.swarmCells ?? null,
-      supersedureCells: map.supersedureCells ?? null,
-      queenSeen: map.queenSeen ?? null,
+      strength: (map.strength as number | null) ?? null,
+      cappedBrood: (map.cappedBrood as number | null) ?? null,
+      uncappedBrood: (map.uncappedBrood as number | null) ?? null,
+      honeyStores: (map.honeyStores as number | null) ?? null,
+      pollenStores: (map.pollenStores as number | null) ?? null,
+      queenCells: (map.queenCells as number | null) ?? null,
+      swarmCells: (map.swarmCells as boolean | null) ?? null,
+      supersedureCells: (map.supersedureCells as boolean | null) ?? null,
+      queenSeen: (map.queenSeen as boolean | null) ?? null,
     };
   }
 
@@ -647,7 +777,7 @@ export class ReportsService {
   private getOrCreateTrendPoint(
     trendsMap: Map<string, TrendDataPoint>,
     monthKey: string,
-    date: Date,
+    _date: Date,
   ): TrendDataPoint {
     if (!trendsMap.has(monthKey)) {
       // Create a date for the first of the month
@@ -680,7 +810,11 @@ export class ReportsService {
         return '';
       }
       const stringValue = String(value);
-      if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+      if (
+        stringValue.includes(',') ||
+        stringValue.includes('"') ||
+        stringValue.includes('\n')
+      ) {
         return `"${stringValue.replace(/"/g, '""')}"`;
       }
       return stringValue;
@@ -705,16 +839,24 @@ export class ReportsService {
     lines.push(`Total Harvests,${stats.summary.totalHarvests}`);
     lines.push(`Total Honey (kg),${stats.honeyProduction.totalAmount}`);
     lines.push(`Total Sugar Fed (kg),${stats.feedingTotals.totalSugarKg}`);
-    lines.push(`Average Health Score,${stats.healthScores.averageOverall ?? 'N/A'}`);
+    lines.push(
+      `Average Health Score,${stats.healthScores.averageOverall ?? 'N/A'}`,
+    );
     lines.push('');
 
     // Per-hive details
     lines.push('Hive Details');
-    lines.push('Hive Name,Honey (kg),Sugar Fed (kg),Health Score,Last Inspection');
+    lines.push(
+      'Hive Name,Honey (kg),Sugar Fed (kg),Health Score,Last Inspection',
+    );
 
     for (const hive of stats.healthScores.byHive) {
-      const honeyData = stats.honeyProduction.byHive.find((h) => h.hiveId === hive.hiveId);
-      const feedingData = stats.feedingTotals.byHive.find((f) => f.hiveId === hive.hiveId);
+      const honeyData = stats.honeyProduction.byHive.find(
+        (h) => h.hiveId === hive.hiveId,
+      );
+      const feedingData = stats.feedingTotals.byHive.find(
+        (f) => f.hiveId === hive.hiveId,
+      );
       lines.push(
         [
           escapeCsv(hive.hiveName),
@@ -764,8 +906,12 @@ HIVE DETAILS
 ------------
 ${stats.healthScores.byHive
   .map((hive) => {
-    const honeyData = stats.honeyProduction.byHive.find((h) => h.hiveId === hive.hiveId);
-    const feedingData = stats.feedingTotals.byHive.find((f) => f.hiveId === hive.hiveId);
+    const honeyData = stats.honeyProduction.byHive.find(
+      (h) => h.hiveId === hive.hiveId,
+    );
+    const feedingData = stats.feedingTotals.byHive.find(
+      (f) => f.hiveId === hive.hiveId,
+    );
     return `${hive.hiveName}
   Honey: ${honeyData?.amount ?? 0} kg
   Sugar Fed: ${feedingData?.sugarKg ?? 0} kg

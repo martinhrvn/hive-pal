@@ -154,14 +154,17 @@ export class UsersStatsService {
 
         let lastActivity: Date | null = null;
         if (lastInspection && lastAction) {
-          lastActivity = lastInspection > lastAction ? lastInspection : lastAction;
+          lastActivity =
+            lastInspection > lastAction ? lastInspection : lastAction;
         } else if (lastInspection) {
           lastActivity = lastInspection;
         } else if (lastAction) {
           lastActivity = lastAction;
         }
 
-        stats.lastActivityDate = lastActivity ? lastActivity.toISOString() : null;
+        stats.lastActivityDate = lastActivity
+          ? lastActivity.toISOString()
+          : null;
       }
     }
 
@@ -194,7 +197,7 @@ export class UsersStatsService {
       },
     });
 
-    const apiaryIds = apiaries.map((a) => a.id);
+    const _apiaryIds = apiaries.map((a) => a.id);
     const allHiveIds = apiaries.flatMap((a) => a.hives.map((h) => h.id));
 
     // Calculate totals

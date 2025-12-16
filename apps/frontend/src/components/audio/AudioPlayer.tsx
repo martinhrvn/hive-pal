@@ -96,13 +96,11 @@ export function AudioPlayer({
     setCurrentTime(time);
   };
 
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
-
   return (
     <div
       className={cn(
         'flex items-center gap-3 p-3 bg-muted rounded-lg',
-        className
+        className,
       )}
     >
       <audio ref={audioRef} src={src} preload="metadata" />
@@ -110,6 +108,7 @@ export function AudioPlayer({
       <Button
         variant="ghost"
         size="icon"
+        type="button"
         onClick={togglePlay}
         disabled={isLoading}
         className="shrink-0"
@@ -145,6 +144,7 @@ export function AudioPlayer({
         <Button
           variant="ghost"
           size="icon"
+          type="button"
           onClick={onDownload}
           className="shrink-0"
         >
@@ -156,6 +156,7 @@ export function AudioPlayer({
         <Button
           variant="ghost"
           size="icon"
+          type="button"
           onClick={onDelete}
           disabled={isDeleting}
           className="shrink-0 text-destructive hover:text-destructive"

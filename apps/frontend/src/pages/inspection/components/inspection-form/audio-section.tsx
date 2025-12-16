@@ -8,6 +8,7 @@ import {
   getAudioDownloadUrl,
 } from '@/api/hooks/useInspectionAudio';
 import { AudioResponse } from 'shared-schemas';
+import { apiClient } from '@/api/client';
 
 interface PendingRecording {
   id: string;
@@ -179,21 +180,7 @@ export async function uploadPendingRecordings(
       formData.append('fileName', recording.fileName);
       formData.append('duration', recording.duration.toString());
 
-      const response = await fetch(
-        `/api/inspections/${inspectionId}/audio`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-            'x-apiary-id': localStorage.getItem('apiary-selection') || '',
-          },
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to upload audio');
-      }
+      await apiClient.post(`/api/inspections/${inspectionId}/audio`, formData);
 
       completed++;
       onProgress?.(completed, total);

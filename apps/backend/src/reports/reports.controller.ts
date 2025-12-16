@@ -72,7 +72,11 @@ export class ReportsController {
       );
     }
 
-    return this.reportsService.getTrends(apiaryId, req.user.id, period as ReportPeriod);
+    return this.reportsService.getTrends(
+      apiaryId,
+      req.user.id,
+      period as ReportPeriod,
+    );
   }
 
   @Get('apiary/:apiaryId/export/csv')
@@ -95,7 +99,11 @@ export class ReportsController {
       );
     }
 
-    return this.reportsService.exportCsv(apiaryId, req.user.id, period as ReportPeriod);
+    return this.reportsService.exportCsv(
+      apiaryId,
+      req.user.id,
+      period as ReportPeriod,
+    );
   }
 
   @Get('apiary/:apiaryId/export/pdf')

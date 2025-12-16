@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AudioPlayer } from './AudioPlayer';
 import { AudioResponse } from 'shared-schemas';
 import { Mic } from 'lucide-react';
@@ -32,7 +32,7 @@ export function AudioRecordingsList({
   return (
     <div className={className}>
       <div className="space-y-2">
-        {recordings.map((recording) => (
+        {recordings.map(recording => (
           <AudioPlayerWithUrl
             key={recording.id}
             recording={recording}
@@ -64,7 +64,7 @@ function AudioPlayerWithUrl({
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
 
-  const loadUrl = async () => {
+  const loadUrl = useCallback(async () => {
     if (audioUrl || isLoadingUrl) return;
     setIsLoadingUrl(true);
     try {
@@ -75,12 +75,12 @@ function AudioPlayerWithUrl({
     } finally {
       setIsLoadingUrl(false);
     }
-  };
+  }, [audioUrl, isLoadingUrl, getDownloadUrl, recording.id]);
 
   // Load URL on mount
   useEffect(() => {
     loadUrl();
-  }, []);
+  }, [loadUrl]);
 
   if (!audioUrl) {
     return (

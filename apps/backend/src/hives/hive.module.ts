@@ -10,12 +10,14 @@ import { UsersModule } from '../users/users.module';
 import { InspectionsModule } from '../inspections/inspections.module';
 
 @Module({
-  imports: [AuthModule, LoggerModule, ActionsModule, UsersModule, InspectionsModule],
-  controllers: [HiveController],
-  providers: [
-    HiveService,
-    PrismaService,
-    MetricsService,
+  imports: [
+    AuthModule,
+    LoggerModule,
+    ActionsModule,
+    UsersModule,
+    InspectionsModule,
   ],
+  controllers: [HiveController],
+  providers: [HiveService, PrismaService, MetricsService],
 })
 export class HiveModule {}

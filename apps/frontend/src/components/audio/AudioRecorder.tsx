@@ -66,7 +66,7 @@ export function AudioRecorder({
     return (
       <div className={cn('p-4 bg-destructive/10 rounded-lg', className)}>
         <p className="text-destructive text-sm mb-2">{error}</p>
-        <Button variant="outline" size="sm" onClick={resetRecording}>
+        <Button variant="outline" size="sm" type="button" onClick={resetRecording}>
           Try Again
         </Button>
       </div>
@@ -90,6 +90,7 @@ export function AudioRecorder({
           <Button
             variant="outline"
             size="sm"
+            type="button"
             onClick={handleCancel}
             disabled={isUploading}
             className="flex-1"
@@ -99,6 +100,7 @@ export function AudioRecorder({
           </Button>
           <Button
             size="sm"
+            type="button"
             onClick={handleSave}
             disabled={isUploading}
             className="flex-1"
@@ -133,23 +135,24 @@ export function AudioRecorder({
 
         <div className="flex justify-center gap-2">
           {isPaused ? (
-            <Button variant="outline" size="icon" onClick={resumeRecording}>
+            <Button variant="outline" size="icon" type="button" onClick={resumeRecording}>
               <Play className="size-4" />
             </Button>
           ) : (
-            <Button variant="outline" size="icon" onClick={pauseRecording}>
+            <Button variant="outline" size="icon" type="button" onClick={pauseRecording}>
               <Pause className="size-4" />
             </Button>
           )}
           <Button
             variant="destructive"
             size="icon"
+            type="button"
             onClick={stopRecording}
             className="size-12"
           >
             <Square className="size-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleCancel}>
+          <Button variant="ghost" size="icon" type="button" onClick={handleCancel}>
             <X className="size-4" />
           </Button>
         </div>
@@ -167,6 +170,7 @@ export function AudioRecorder({
       <Button
         variant="outline"
         size="lg"
+        type="button"
         onClick={startRecording}
         disabled={disabled}
         className="gap-2"

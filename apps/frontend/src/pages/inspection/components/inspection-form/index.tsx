@@ -341,6 +341,12 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
           {!isInFuture && (
             <>
               <hr className={'border-t border-border'} />
+              <AudioSection
+                inspectionId={inspectionId}
+                pendingRecordings={pendingRecordings}
+                onPendingRecordingsChange={setPendingRecordings}
+              />
+              <hr className={'border-t border-border'} />
               <WeatherSection />
 
               <hr className={'border-t border-border'} />
@@ -349,12 +355,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               <ActionsSection />
               <hr className={'border-t border-border'} />
               <NotesSection />
-              <hr className={'border-t border-border'} />
-              <AudioSection
-                inspectionId={inspectionId}
-                pendingRecordings={pendingRecordings}
-                onPendingRecordingsChange={setPendingRecordings}
-              />
             </>
           )}
 

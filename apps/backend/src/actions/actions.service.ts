@@ -463,7 +463,7 @@ export class ActionsService {
     // Use transaction to update action and related details
     const result = await this.prisma.$transaction(async (tx) => {
       // Update the base action
-      const updatedAction = await tx.action.update({
+      const _updatedAction = await tx.action.update({
         where: { id: actionId },
         data: {
           ...(type && { type }),
@@ -473,7 +473,7 @@ export class ActionsService {
       });
 
       // Handle type-specific details
-      const newType = type || existingAction.type;
+      const _newType = type || existingAction.type;
 
       // If type changed or details provided, delete old details and create new ones
       if (type && type !== existingAction.type) {
