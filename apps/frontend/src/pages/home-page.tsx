@@ -19,8 +19,11 @@ export const HomePage = () => {
     <Page>
       <MainContent>
         <div className="space-y-6">
-          <InspectionStatusSummary />
-          <ReportsSummaryWidget />
+          {/* Side by side on lg+ screens, stacked below */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <InspectionStatusSummary />
+            <ReportsSummaryWidget />
+          </div>
           {activeApiaryId && (
             <HiveMinimap apiaryId={activeApiaryId} className="mb-6" />
           )}

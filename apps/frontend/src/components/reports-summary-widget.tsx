@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { BarChart, Droplet, TrendingUp } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { BarChart, Droplet, TrendingUp, PieChart } from 'lucide-react';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ViewDetailsLink } from '@/components/ui/view-details-link';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import { useApiaryStatistics } from '@/api/hooks/useReports';
 
@@ -13,26 +13,36 @@ export const ReportsSummaryWidget = () => {
 
   if (isLoading) {
     return (
-      <Card className="p-4 sm:p-6">
-        <div className="space-y-4">
+      <Card className="h-full">
+        <CardHeader className="pb-3">
           <Skeleton className="h-5 w-40" />
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="space-y-3">
             <Skeleton className="h-8 w-full" />
             <Skeleton className="h-8 w-full" />
             <Skeleton className="h-8 w-full" />
           </div>
           <Skeleton className="h-9 w-32" />
-        </div>
+        </CardContent>
       </Card>
     );
   }
 
   if (!activeApiaryId) {
     return (
-      <Card className="p-4 sm:p-6">
-        <div className="text-sm text-muted-foreground">
-          {t('reports.widget.noApiary')}
-        </div>
+      <Card className="h-full">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <PieChart className="h-5 w-5" />
+            {t('reports.widget.title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-sm text-muted-foreground">
+            {t('reports.widget.noApiary')}
+          </div>
+        </CardContent>
       </Card>
     );
   }
@@ -56,15 +66,14 @@ export const ReportsSummaryWidget = () => {
   };
 
   return (
-    <Card className="p-4 sm:p-6">
-      <div className="space-y-4">
-        {/* Title */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-muted-foreground">
-            {t('reports.widget.title')}
-          </h3>
-        </div>
-
+    <Card className="h-full flex flex-col">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <PieChart className="h-5 w-5" />
+          {t('reports.widget.title')}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
         {/* Statistics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Honey Production */}
@@ -119,17 +128,12 @@ export const ReportsSummaryWidget = () => {
             </div>
           </div>
         </div>
-
-        {/* View Reports Link */}
-        <div className="pt-2">
-          <Link
-            to="/reports"
-            className="inline-flex items-center text-sm font-medium text-primary hover:underline"
-          >
-            {t('reports.widget.viewReports')}
-          </Link>
-        </div>
-      </div>
+      </CardContent>
+      <CardFooter className="mt-auto">
+        <ViewDetailsLink to="/reports">
+          {t('reports.widget.viewReports')}
+        </ViewDetailsLink>
+      </CardFooter>
     </Card>
   );
 };

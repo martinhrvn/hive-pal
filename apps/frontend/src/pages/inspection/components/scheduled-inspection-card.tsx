@@ -149,37 +149,40 @@ export const ScheduledInspectionCard: React.FC<
         )}
       >
         <div className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <CalendarClock className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">
-                  {format(inspectionDate, 'EEEE, MMMM d')}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              {/* Date and Time */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                <CalendarClock className="h-4 w-4 shrink-0" />
+                <span className="font-medium text-foreground">
+                  {format(inspectionDate, 'MMM d')}
                 </span>
-                <span className="text-sm text-muted-foreground">
-                  {format(inspectionDate, 'h:mm a')}
-                </span>
+                <span>{format(inspectionDate, 'h:mm a')}</span>
+              </div>
+
+              {/* Status Badge */}
+              <div className="mb-2">
                 {getStatusBadge()}
               </div>
 
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Home className="h-3 w-3" />
-                  <span>{hiveName}</span>
-                </div>
-
-                {(inspection.temperature || inspection.weatherConditions) && (
-                  <div className="flex items-center gap-1">
-                    {getWeatherIcon(inspection.weatherConditions)}
-                    {inspection.temperature && (
-                      <span>{inspection.temperature}°</span>
-                    )}
-                    {inspection.weatherConditions && (
-                      <span>{inspection.weatherConditions}</span>
-                    )}
-                  </div>
-                )}
+              {/* Hive Name */}
+              <div className="flex items-center gap-1 text-sm font-medium truncate">
+                <Home className="h-3 w-3 shrink-0 text-muted-foreground" />
+                <span className="truncate">{hiveName}</span>
               </div>
+
+              {/* Weather (if available) */}
+              {(inspection.temperature || inspection.weatherConditions) && (
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                  {getWeatherIcon(inspection.weatherConditions)}
+                  {inspection.temperature && (
+                    <span>{inspection.temperature}°</span>
+                  )}
+                  {inspection.weatherConditions && (
+                    <span className="truncate">{inspection.weatherConditions}</span>
+                  )}
+                </div>
+              )}
 
               {inspection.notes && (
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-1">
