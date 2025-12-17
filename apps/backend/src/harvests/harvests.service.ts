@@ -472,12 +472,24 @@ export class HarvestsService {
       throw new NotFoundException('Harvest not found or access denied');
     }
 
-    if (harvest.status !== HarvestStatus.DRAFT) {
-      throw new BadRequestException('Only draft harvests can be deleted');
-    }
+    // Delete in transaction to ensure all related data is removed
+    await this.prisma.$transaction(async (tx) => {
+      // Delete associated actions and their details (for completed harvests)
+      const actions = await tx.action.findMany({
+        where: { harvestId },
+        select: { id: true },
+      });
 
-    await this.prisma.harvest.delete({
-      where: { id: harvestId },
+      for (const action of actions) {
+        await tx.harvestAction.deleteMany({ where: { actionId: action.id } });
+      }
+
+      await tx.action.deleteMany({ where: { harvestId } });
+
+      // Delete the harvest (cascade will handle harvestHives)
+      await tx.harvest.delete({
+        where: { id: harvestId },
+      });
     });
   }
 

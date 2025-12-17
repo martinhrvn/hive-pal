@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -14,8 +17,10 @@ import {
   ActionFilter,
   ActionResponse,
   CreateStandaloneAction,
+  UpdateAction,
   actionFilterSchema,
   createStandaloneActionSchema,
+  updateActionSchema,
 } from 'shared-schemas';
 import { ZodValidation } from '../common';
 
@@ -50,5 +55,29 @@ export class ActionsController {
       req.apiaryId,
       req.user.id,
     );
+  }
+
+  @Put(':id')
+  @ZodValidation(updateActionSchema)
+  update(
+    @Param('id') id: string,
+    @Body() updateActionDto: UpdateAction,
+    @Req() req: RequestWithApiary,
+  ): Promise<ActionResponse> {
+    return this.actionsService.updateAction(
+      id,
+      updateActionDto,
+      req.apiaryId,
+      req.user.id,
+    );
+  }
+
+  @Delete(':id')
+  async delete(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiary,
+  ): Promise<{ message: string }> {
+    await this.actionsService.deleteAction(id, req.apiaryId, req.user.id);
+    return { message: 'Action deleted successfully' };
   }
 }

@@ -4,6 +4,7 @@ import {
   ActionFilter,
   ActionResponse,
   CreateStandaloneAction,
+  UpdateAction,
 } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
@@ -57,6 +58,48 @@ export const useCreateAction = () => {
         queryKey: ACTIONS_KEYS.list({ hiveId: variables.hiveId }),
       });
       // Also invalidate all actions queries
+      queryClient.invalidateQueries({
+        queryKey: ACTIONS_KEYS.all,
+      });
+    },
+  });
+};
+
+// Update an existing action
+export const useUpdateAction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ActionResponse,
+    Error,
+    { actionId: string; data: UpdateAction }
+  >({
+    mutationFn: async ({ actionId, data }) => {
+      const response = await apiClient.put<ActionResponse>(
+        `/api/actions/${actionId}`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      // Invalidate all actions queries
+      queryClient.invalidateQueries({
+        queryKey: ACTIONS_KEYS.all,
+      });
+    },
+  });
+};
+
+// Delete an action
+export const useDeleteAction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationFn: async (actionId: string) => {
+      await apiClient.delete(`/api/actions/${actionId}`);
+    },
+    onSuccess: () => {
+      // Invalidate all actions queries
       queryClient.invalidateQueries({
         queryKey: ACTIONS_KEYS.all,
       });

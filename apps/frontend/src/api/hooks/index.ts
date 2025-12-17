@@ -8,5 +8,6 @@ export * from './useEquipmentNew';
 export * from './useHarvests';
 export * from './useHives';
 export * from './useInspections';
+export * from './useInspectionAudio';
 export * from './useQueens';
 export * from './useWeather';

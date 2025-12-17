@@ -24,7 +24,7 @@ import {
   BatchInspectionPage,
 } from '@/pages/batch-inspection';
 import { CreateQueenPage } from '@/pages/queen';
-import { UserManagementPage, FeedbackManagementPage } from '@/pages/admin';
+import { UserManagementPage, UserDetailPage, FeedbackManagementPage } from '@/pages/admin';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 import {
@@ -45,6 +45,7 @@ import { CalendarPage } from '@/pages/calendar';
 import { UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
+import { ReportsPage } from '@/pages/reports';
 
 const router = createBrowserRouter([
   {
@@ -161,6 +162,10 @@ const router = createBrowserRouter([
         element: <CalendarPage />,
       },
       {
+        path: '/reports',
+        element: <ReportsPage />,
+      },
+      {
         path: '/settings',
         element: <UserSettingsPage />,
       },
@@ -173,6 +178,14 @@ const router = createBrowserRouter([
         element: (
           <AdminProtectedRoute>
             <UserManagementPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/users/:id',
+        element: (
+          <AdminProtectedRoute>
+            <UserDetailPage />
           </AdminProtectedRoute>
         ),
       },

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
+import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
 import { Input } from '@/components/ui/input';
 import {
   Select,

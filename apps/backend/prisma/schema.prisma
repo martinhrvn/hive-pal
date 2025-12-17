@@ -114,9 +114,9 @@ model Queen {
 }
 
 model Inspection {
-  id                String           @id @default(uuid())
+  id                String             @id @default(uuid())
   hiveId            String
-  hive              Hive             @relation(fields: [hiveId], references: [id])
+  hive              Hive               @relation(fields: [hiveId], references: [id])
   date              DateTime
   notes             InspectionNote[]
   temperature       Float?
@@ -125,6 +125,8 @@ model Inspection {
   actions           Action[]
   status            InspectionStatus @default(COMPLETED)
   batchInspectionHive BatchInspectionHive?
+  status            InspectionStatus   @default(COMPLETED)
+  audioRecordings   InspectionAudio[]
 
   // Create index for quick lookup by hiveId - used in authorization checks
   @@index([hiveId])
@@ -146,6 +148,36 @@ model InspectionNote {
   text         String
 
   @@index([inspectionId])
+}
+
+// Audio recordings attached to inspections for voice notes during hive visits
+model InspectionAudio {
+  id            String              @id @default(uuid())
+  inspectionId  String
+  inspection    Inspection          @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  // Storage metadata
+  storageKey    String              // S3 key: "audio/{inspectionId}/{id}.webm"
+  fileName      String              // Original filename for display
+  mimeType      String              // "audio/webm", "audio/mp3"
+  fileSize      Int                 // Size in bytes
+  duration      Float?              // Duration in seconds (optional)
+
+  // Transcription support (future-ready)
+  transcription       String?             @db.Text
+  transcriptionStatus TranscriptionStatus @default(NONE)
+
+  createdAt     DateTime            @default(now())
+
+  @@index([inspectionId])
+}
+
+enum TranscriptionStatus {
+  NONE        // No transcription requested
+  PENDING     // Queued for transcription
+  PROCESSING  // Currently being transcribed
+  COMPLETED   // Transcription available
+  FAILED      // Transcription failed
 }
 
 model Observation {

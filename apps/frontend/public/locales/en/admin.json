@@ -7,7 +7,11 @@
     "role": "Role",
     "passwordChangeRequired": "Password Change Required",
     "createdAt": "Created At",
-    "actions": "Actions"
+    "actions": "Actions",
+    "apiaries": "Apiaries",
+    "hives": "Hives",
+    "inspections": "Inspections",
+    "lastActivity": "Last Activity"
   },
   "actions": {
     "resetPassword": "Reset Password"
@@ -21,10 +25,11 @@
     "submit": "Reset Password"
   },
   "messages": {
+    "loading": "Loading...",
     "loadingUsers": "Loading users...",
     "noUsers": "No users found",
     "resetSuccess": "Password reset successful! The user will be required to change their password on next login.",
-    "failedToFetch": "Failed to fetch users",
+    "failedToFetch": "Failed to fetch data",
     "failedToReset": "Failed to reset password",
     "unexpectedError": "An unexpected error occurred"
   },
@@ -32,5 +37,32 @@
     "yes": "Yes",
     "no": "No",
     "dash": "-"
+  },
+  "userDetail": {
+    "backToList": "Back to Users",
+    "summary": {
+      "totalApiaries": "Total Apiaries",
+      "totalHives": "Total Hives",
+      "totalInspections": "Total Inspections",
+      "lastActivity": "Last Activity",
+      "lastInspection": "Last Inspection"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "period": "Last 30 days",
+      "inspections": "Inspections",
+      "actions": "Actions",
+      "byType": "Actions by Type"
+    },
+    "apiaryBreakdown": {
+      "title": "Apiary Breakdown",
+      "name": "Apiary Name",
+      "location": "Location",
+      "coordinates": "Coordinates",
+      "hives": "Hives",
+      "inspections": "Inspections",
+      "lastInspection": "Last Inspection",
+      "noApiaries": "No apiaries found for this user"
+    }
   }
 }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/auth-context';
 import { useIsAdmin } from '@/hooks/use-is-admin.ts';
+import { useAdminUsers } from '@/api/hooks/useAdminUsers';
 import {
   Table,
   TableBody,
@@ -32,28 +33,18 @@ import { Label } from '@/components/ui/label.tsx';
 import { Alert } from '@/components/ui/alert.tsx';
 import { AxiosError } from 'axios';
 import axios from 'axios';
-
-interface User {
-  id: string;
-  email: string;
-  name?: string;
-  role: string;
-  passwordChangeRequired: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { UserWithStatsResponse } from 'shared-schemas';
 
 const UserManagementPage: React.FC = () => {
   const { t } = useTranslation('admin');
   const { token } = useAuth();
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const { data: users, isLoading, error: queryError, refetch } = useAdminUsers();
+  const [selectedUser, setSelectedUser] = useState<UserWithStatsResponse | null>(null);
   const [tempPassword, setTempPassword] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
 
   // Check if user is admin, otherwise redirect
   useEffect(() => {
@@ -62,39 +53,11 @@ const UserManagementPage: React.FC = () => {
     }
   }, [isAdmin, navigate]);
 
-  // Fetch users from API
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await axios.get<User[]>('/api/users', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setUsers(response.data);
-      } catch (err) {
-        if (err instanceof AxiosError) {
-          setError(err.response?.data?.message || t('messages.failedToFetch'));
-        } else {
-          setError(t('messages.unexpectedError'));
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, [t, token]);
-
   const handleResetPassword = async () => {
     if (!selectedUser || !tempPassword.trim()) return;
 
     try {
-      setError(null);
+      setResetError(null);
 
       await axios.post(
         `/api/users/${selectedUser.id}/reset-password`,
@@ -108,27 +71,31 @@ const UserManagementPage: React.FC = () => {
 
       setResetSuccess(true);
 
-      // Update user in the list to show passwordChangeRequired
-      setUsers(
-        users.map(u =>
-          u.id === selectedUser.id ? { ...u, passwordChangeRequired: true } : u,
-        ),
-      );
+      // Refetch to get updated data
+      refetch();
 
       // Clear temporary password
       setTempPassword('');
     } catch (err) {
       if (err instanceof AxiosError) {
-        setError(err.response?.data?.message || t('messages.failedToReset'));
+        setResetError(err.response?.data?.message || t('messages.failedToReset'));
       } else {
-        setError(t('messages.unexpectedError'));
+        setResetError(t('messages.unexpectedError'));
       }
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return t('status.dash');
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const formatDateTime = (dateString: string | null | undefined) => {
+    if (!dateString) return t('status.dash');
     return new Date(dateString).toLocaleString();
   };
+
+  const error = queryError ? t('messages.failedToFetch') : resetError;
 
   return (
     <div className="container mx-auto py-6">
@@ -144,107 +111,128 @@ const UserManagementPage: React.FC = () => {
             </Alert>
           )}
 
-          {loading ? (
+          {isLoading ? (
             <div className="flex justify-center py-8">
               {t('messages.loadingUsers')}
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('table.email')}</TableHead>
-                  <TableHead>{t('table.name')}</TableHead>
-                  <TableHead>{t('table.role')}</TableHead>
-                  <TableHead>{t('table.passwordChangeRequired')}</TableHead>
-                  <TableHead>{t('table.createdAt')}</TableHead>
-                  <TableHead>{t('table.actions')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map(user => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.name || t('status.dash')}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
-                      {user.passwordChangeRequired
-                        ? t('status.yes')
-                        : t('status.no')}
-                    </TableCell>
-                    <TableCell>{formatDate(user.createdAt)}</TableCell>
-                    <TableCell>
-                      <Sheet>
-                        <SheetTrigger asChild>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setTempPassword('');
-                              setResetSuccess(false);
-                            }}
-                          >
-                            {t('actions.resetPassword')}
-                          </Button>
-                        </SheetTrigger>
-                        <SheetContent>
-                          <SheetHeader>
-                            <SheetTitle>
-                              {t('resetPasswordDialog.title')}
-                            </SheetTitle>
-                            <SheetDescription>
-                              {t('resetPasswordDialog.description', {
-                                email: selectedUser?.email,
-                              })}
-                            </SheetDescription>
-                          </SheetHeader>
-
-                          <div className="mt-8 space-y-4">
-                            {resetSuccess ? (
-                              <div className="bg-green-50 text-green-800 p-4 rounded-md">
-                                {t('messages.resetSuccess')}
-                              </div>
-                            ) : (
-                              <>
-                                <div className="space-y-2">
-                                  <Label htmlFor="temp-password">
-                                    {t('resetPasswordDialog.tempPasswordLabel')}
-                                  </Label>
-                                  <Input
-                                    id="temp-password"
-                                    type="text"
-                                    value={tempPassword}
-                                    onChange={e =>
-                                      setTempPassword(e.target.value)
-                                    }
-                                    placeholder={t(
-                                      'resetPasswordDialog.tempPasswordPlaceholder',
-                                    )}
-                                  />
-                                  <p className="text-sm text-gray-500">
-                                    {t('resetPasswordDialog.minCharacters')}
-                                  </p>
-                                </div>
-
-                                <Button
-                                  onClick={handleResetPassword}
-                                  disabled={
-                                    !tempPassword.trim() ||
-                                    tempPassword.length < 6
-                                  }
-                                  className="w-full"
-                                >
-                                  {t('resetPasswordDialog.submit')}
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        </SheetContent>
-                      </Sheet>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('table.email')}</TableHead>
+                    <TableHead>{t('table.name')}</TableHead>
+                    <TableHead>{t('table.role')}</TableHead>
+                    <TableHead className="text-center">{t('table.apiaries')}</TableHead>
+                    <TableHead className="text-center">{t('table.hives')}</TableHead>
+                    <TableHead className="text-center">{t('table.inspections')}</TableHead>
+                    <TableHead>{t('table.lastActivity')}</TableHead>
+                    <TableHead>{t('table.createdAt')}</TableHead>
+                    <TableHead>{t('table.actions')}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {users?.map(user => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <Link
+                          to={`/admin/users/${user.id}`}
+                          className="text-primary hover:underline font-medium"
+                        >
+                          {user.email}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{user.name || t('status.dash')}</TableCell>
+                      <TableCell>{user.role}</TableCell>
+                      <TableCell className="text-center">
+                        {user.stats.apiariesCount}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {user.stats.hivesCount}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {user.stats.inspectionsCount}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(user.stats.lastActivityDate)}
+                      </TableCell>
+                      <TableCell>{formatDateTime(user.createdAt.toString())}</TableCell>
+                      <TableCell>
+                        <Sheet>
+                          <SheetTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setTempPassword('');
+                                setResetSuccess(false);
+                                setResetError(null);
+                              }}
+                            >
+                              {t('actions.resetPassword')}
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent>
+                            <SheetHeader>
+                              <SheetTitle>
+                                {t('resetPasswordDialog.title')}
+                              </SheetTitle>
+                              <SheetDescription>
+                                {t('resetPasswordDialog.description', {
+                                  email: selectedUser?.email,
+                                })}
+                              </SheetDescription>
+                            </SheetHeader>
+
+                            <div className="mt-8 space-y-4">
+                              {resetSuccess ? (
+                                <div className="bg-green-50 text-green-800 p-4 rounded-md">
+                                  {t('messages.resetSuccess')}
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="temp-password">
+                                      {t('resetPasswordDialog.tempPasswordLabel')}
+                                    </Label>
+                                    <Input
+                                      id="temp-password"
+                                      type="text"
+                                      value={tempPassword}
+                                      onChange={e =>
+                                        setTempPassword(e.target.value)
+                                      }
+                                      placeholder={t(
+                                        'resetPasswordDialog.tempPasswordPlaceholder',
+                                      )}
+                                    />
+                                    <p className="text-sm text-gray-500">
+                                      {t('resetPasswordDialog.minCharacters')}
+                                    </p>
+                                  </div>
+
+                                  <Button
+                                    onClick={handleResetPassword}
+                                    disabled={
+                                      !tempPassword.trim() ||
+                                      tempPassword.length < 6
+                                    }
+                                    className="w-full"
+                                  >
+                                    {t('resetPasswordDialog.submit')}
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </SheetContent>
+                        </Sheet>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

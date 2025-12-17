@@ -69,6 +69,34 @@ export const useDueTodayInspections = () => {
   });
 };
 
+// Get upcoming inspections (future pending inspections)
+export const useUpcomingInspections = (limit?: number) => {
+  return useQuery<InspectionResponse[]>({
+    queryKey: ['inspections', 'upcoming', limit],
+    queryFn: async () => {
+      // Get tomorrow's date as start
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+
+      const params = new URLSearchParams();
+      params.append('startDate', tomorrow.toISOString());
+      params.append('status', 'PENDING');
+
+      const response = await apiClient.get<InspectionResponse[]>(
+        `/api/inspections?${params.toString()}`,
+      );
+
+      // Sort by date ascending and limit if specified
+      const sorted = response.data.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+      return limit ? sorted.slice(0, limit) : sorted;
+    },
+  });
+};
+
 // Get a single inspection by ID
 export const useInspection = (id: string, options = {}) => {
   return useQuery<InspectionResponse>({

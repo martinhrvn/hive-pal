@@ -12,16 +12,14 @@ import {
   Bell,
 } from 'lucide-react';
 
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { WeatherForecast } from '@/components/weather';
 import { CalendarSidebar } from '@/components/calendar-sidebar';
 import { useApiary } from '@/hooks/use-apiary';
+import {
+  ActionSidebarContainer,
+  ActionSidebarGroup,
+  MenuItemButton,
+  WeatherForecastSection,
+} from '@/components/sidebar';
 
 interface HomeActionSidebarProps {
   onRefreshData?: () => void;
@@ -38,136 +36,79 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
     <div className="space-y-4">
       <CalendarSidebar />
 
-      {activeApiaryId && (
-        <div className="border rounded-md">
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-2 pt-2">
-              {t('weather.weatherForecast')}
-            </SidebarGroupLabel>
-            <WeatherForecast apiaryId={activeApiaryId} />
-          </SidebarGroup>
-        </div>
-      )}
+      <WeatherForecastSection apiaryId={activeApiaryId} />
 
-      <div className="border rounded-md">
-        <div className="p-2">
-          <SidebarGroup>
-            <SidebarGroupLabel>{t('actions.createNew')}</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/hives/create/')}
-                  tooltip={t('actions.newHive')}
-                >
-                  <PlusCircle className="h-4 w-4 text-green-600" />
-                  <span>{t('actions.newHive')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+      <ActionSidebarContainer>
+        <ActionSidebarGroup title={t('actions.createNew')}>
+          <MenuItemButton
+            icon={<PlusCircle className="h-4 w-4 text-green-600" />}
+            label={t('actions.newHive')}
+            onClick={() => navigate('/hives/create/')}
+            tooltip={t('actions.newHive')}
+          />
+          <MenuItemButton
+            icon={<ClipboardCheck className="h-4 w-4 text-blue-600" />}
+            label={t('actions.newInspection')}
+            onClick={() => navigate('/inspections/create')}
+            tooltip={t('actions.newInspection')}
+          />
+          <MenuItemButton
+            icon={<CalendarPlus className="h-4 w-4 text-indigo-600" />}
+            label={t('actions.scheduleInspection')}
+            onClick={() => navigate('/inspections/schedule')}
+            tooltip={t('actions.scheduleInspection')}
+          />
+          <MenuItemButton
+            icon={<Crown className="h-4 w-4 text-purple-600" />}
+            label={t('actions.newQueen')}
+            onClick={() => navigate('/queens/create')}
+            tooltip={t('actions.newQueen')}
+          />
+        </ActionSidebarGroup>
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/inspections/create')}
-                  tooltip={t('actions.newInspection')}
-                >
-                  <ClipboardCheck className="h-4 w-4 text-blue-600" />
-                  <span>{t('actions.newInspection')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+        <ActionSidebarGroup title={t('actions.navigate')} className="mt-4">
+          <MenuItemButton
+            icon={<Home className="h-4 w-4" />}
+            label={t('navigation.home')}
+            onClick={() => navigate('/')}
+            tooltip={t('navigation.home')}
+            className="bg-accent"
+          />
+          <MenuItemButton
+            icon={<Home className="h-4 w-4" />}
+            label={t('navigation.allHives')}
+            onClick={() => navigate('/hives')}
+            tooltip={t('navigation.allHives')}
+          />
+          <MenuItemButton
+            icon={<ClipboardCheck className="h-4 w-4" />}
+            label={t('navigation.allInspections')}
+            onClick={() => navigate('/inspections')}
+            tooltip={t('navigation.allInspections')}
+          />
+          <MenuItemButton
+            icon={<CalendarCheck className="h-4 w-4" />}
+            label={t('actions.recentInspections')}
+            onClick={() => navigate('/inspections/list/recent')}
+            tooltip={t('actions.recentInspections')}
+          />
+        </ActionSidebarGroup>
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/inspections/schedule')}
-                  tooltip={t('actions.scheduleInspection')}
-                >
-                  <CalendarPlus className="h-4 w-4 text-indigo-600" />
-                  <span>{t('actions.scheduleInspection')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/queens/create')}
-                  tooltip={t('actions.newQueen')}
-                >
-                  <Crown className="h-4 w-4 text-purple-600" />
-                  <span>{t('actions.newQueen')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-
-          <SidebarGroup className="mt-4">
-            <SidebarGroupLabel>{t('actions.navigate')}</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/')}
-                  tooltip={t('navigation.home')}
-                  className="bg-accent"
-                >
-                  <Home className="h-4 w-4" />
-                  <span>{t('navigation.home')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/hives')}
-                  tooltip={t('navigation.allHives')}
-                >
-                  <Home className="h-4 w-4" />
-                  <span>{t('navigation.allHives')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/inspections')}
-                  tooltip={t('navigation.allInspections')}
-                >
-                  <ClipboardCheck className="h-4 w-4" />
-                  <span>{t('navigation.allInspections')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate('/inspections/list/recent')}
-                  tooltip={t('actions.recentInspections')}
-                >
-                  <CalendarCheck className="h-4 w-4" />
-                  <span>{t('actions.recentInspections')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-
-          <SidebarGroup className="mt-4">
-            <SidebarGroupLabel>{t('actions.actions')}</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => onRefreshData && onRefreshData()}
-                  tooltip={t('actions.refreshData')}
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  <span>{t('actions.refreshData')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => alert(t('messages.notificationsComingSoon'))}
-                  tooltip={`${t('actions.notifications')} (${t('messages.notificationsComingSoon')})`}
-                >
-                  <Bell className="h-4 w-4" />
-                  <span>{t('actions.notifications')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        </div>
-      </div>
+        <ActionSidebarGroup title={t('actions.actions')} className="mt-4">
+          <MenuItemButton
+            icon={<RefreshCw className="h-4 w-4" />}
+            label={t('actions.refreshData')}
+            onClick={() => onRefreshData?.()}
+            tooltip={t('actions.refreshData')}
+          />
+          <MenuItemButton
+            icon={<Bell className="h-4 w-4" />}
+            label={t('actions.notifications')}
+            onClick={() => alert(t('messages.notificationsComingSoon'))}
+            tooltip={`${t('actions.notifications')} (${t('messages.notificationsComingSoon')})`}
+          />
+        </ActionSidebarGroup>
+      </ActionSidebarContainer>
     </div>
   );
 };

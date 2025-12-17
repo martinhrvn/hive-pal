@@ -30,6 +30,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useUserProfile } from '@/api/hooks/useAuth';
+import { useAuth } from '@/context/auth-context';
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -38,6 +39,7 @@ const LANGUAGES = [
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const { logout } = useAuth();
   const { data: user, isLoading } = useUserProfile();
   const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
@@ -121,7 +123,7 @@ export function NavUser() {
               {t('feedback.sendFeedback')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => logout()}>
               <LogOut />
               {t('actions.logout')}
             </DropdownMenuItem>

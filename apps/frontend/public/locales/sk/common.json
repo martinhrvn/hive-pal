@@ -20,7 +20,8 @@
     "upcoming": "Nadchádzajúce",
     "general": "Všeobecné",
     "harvests": "Zbery",
-    "allHarvests": "Všetky zbery"
+    "allHarvests": "Všetky zbery",
+    "reports": "Reporty"
   },
   "actions": {
     "save": "Uložiť",
@@ -135,5 +136,54 @@
     "thankYou": "Ďakujeme!",
     "submittedMessage": "Vaša spätná väzba bola úspešne odoslaná. Vážime si váš názor a čoskoro ho preskúmame.",
     "submitAnother": "Odoslať ďalšiu spätnú väzbu"
+  },
+  "reports": {
+    "title": "Reporty",
+    "selectApiary": "Vyberte včelnicu na zobrazenie reportov",
+    "tabs": {
+      "overview": "Prehľad",
+      "charts": "Grafy",
+      "trends": "Trendy"
+    },
+    "honeyProduction": "Produkcia medu",
+    "feedingTotals": "Celkové prikrmovanie",
+    "healthScores": "Zdravotné skóre",
+    "hiveComparison": "Porovnanie úľov",
+    "table": {
+      "hiveName": "Úľ",
+      "honey": "Med",
+      "sugarFed": "Cukor",
+      "overall": "Celkové",
+      "population": "Populácia",
+      "stores": "Zásoby",
+      "queen": "Matka",
+      "lastInspection": "Posledná prehliadka"
+    },
+    "charts": {
+      "hiveScoreTrends": "Trendy skóre úľov"
+    },
+    "periods": {
+      "1month": "1 mesiac",
+      "3months": "3 mesiace",
+      "6months": "6 mesiacov",
+      "ytd": "Od začiatku roka",
+      "1year": "1 rok",
+      "all": "Všetko"
+    },
+    "filters": {
+      "period": "Obdobie"
+    },
+    "export": {
+      "title": "Export",
+      "csv": "Exportovať CSV",
+      "pdf": "Exportovať PDF",
+      "success": "Report bol úspešne exportovaný",
+      "error": "Nepodarilo sa exportovať report"
+    },
+    "widget": {
+      "title": "Štatistiky včelnice",
+      "viewReports": "Zobraziť reporty",
+      "noApiary": "Vyberte včelnicu na zobrazenie štatistík"
+    }
   }
 }

@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
+import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCalendar } from '@/api/hooks/useCalendar';
+import { useHives } from '@/api/hooks';
 import { InspectionResponse } from 'shared-schemas';
 import {
   format,
@@ -54,6 +55,17 @@ export const CalendarPage = () => {
     startDate: monthStart,
     endDate: monthEnd,
   });
+
+  // Fetch hives to get hive names for display
+  const { data: hives } = useHives();
+
+  // Create a lookup map for hive names
+  const hiveNameMap = useMemo(() => {
+    if (!hives) return new Map<string, string>();
+    return new Map(hives.map(hive => [hive.id, hive.name]));
+  }, [hives]);
+
+  const getHiveName = (hiveId: string) => hiveNameMap.get(hiveId) || hiveId;
 
   // Generate 7 days starting from selected date
   const generateDays = () => {
@@ -310,21 +322,17 @@ export const CalendarPage = () => {
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 flex-wrap">
                                     {getStatusIcon(inspection)}
-                                    <Link
-                                      to={`/hives/${inspection.hiveId}`}
-                                      className="font-medium hover:underline flex items-center gap-1"
-                                    >
-                                      Hive {inspection.hiveId}
-                                      <ExternalLink className="h-3 w-3" />
-                                    </Link>
-                                    <Badge
-                                      variant="outline"
-                                      className="text-xs"
-                                    >
-                                      inspection
-                                    </Badge>
+                                    <span className="font-medium">
+                                      Inspection of{' '}
+                                      <Link
+                                        to={`/hives/${inspection.hiveId}`}
+                                        className="hover:underline text-blue-600"
+                                      >
+                                        {getHiveName(inspection.hiveId)}
+                                      </Link>
+                                    </span>
                                     <Badge
                                       variant="outline"
                                       className="text-xs"
@@ -371,20 +379,18 @@ export const CalendarPage = () => {
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <Link
-                                      to={`/hives/${action.hiveId}`}
-                                      className="font-medium hover:underline flex items-center gap-1"
-                                    >
-                                      Hive {action.hiveId}
-                                      <ExternalLink className="h-3 w-3" />
-                                    </Link>
-                                    <Badge
-                                      variant="outline"
-                                      className="text-xs"
-                                    >
-                                      {action.type.toLowerCase()}
-                                    </Badge>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-medium">
+                                      {action.type.charAt(0).toUpperCase() +
+                                        action.type.slice(1).toLowerCase()}{' '}
+                                      on{' '}
+                                      <Link
+                                        to={`/hives/${action.hiveId}`}
+                                        className="hover:underline text-purple-700"
+                                      >
+                                        {getHiveName(action.hiveId)}
+                                      </Link>
+                                    </span>
                                   </div>
                                   {action.notes && (
                                     <p className="text-sm mt-2 opacity-90">

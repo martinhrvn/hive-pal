@@ -1,4 +1,3 @@
-
 services:
   backend:
     build:
@@ -21,6 +20,13 @@ services:
       SMTP_USER: ${SMTP_USER}
       FROM_EMAIL: noreply@hivepal.app
       FRONTEND_URL: ${FRONTEND_URL:-https://preview.hivepal.app}
+      # S3 Storage (for audio recordings)
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      AUDIO_MAX_FILE_SIZE: ${AUDIO_MAX_FILE_SIZE:-52428800}
     depends_on:
       - postgres
   frontend:
@@ -28,7 +34,7 @@ services:
       context: .
       dockerfile: apps/frontend/Dockerfile
       tags:
-          - hive-pal-frontend
+        - hive-pal-frontend
     depends_on:
       - backend
     environment:
@@ -37,7 +43,7 @@ services:
   postgres:
     image: postgres:14
     ports:
-      - "6543:5432"
+      - '6543:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -45,7 +51,7 @@ services:
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d beekeeper" ]
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres -d beekeeper' ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -61,7 +67,7 @@ services:
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
-      - "9090:9090"
+      - '9090:9090'
     depends_on:
       - backend
   loki:
@@ -89,18 +95,18 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - prometheus
   postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter
     ports:
-      - "9187:9187"
+      - '9187:9187'
     environment:
       - DATA_SOURCE_NAME=${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper?sslmode=disable}
     restart: unless-stopped
 volumes:
-    postgres_data_prod:
-    prometheus_data:
-    grafana_data:
-    loki-data:
+  postgres_data_prod:
+  prometheus_data:
+  grafana_data:
+  loki-data:

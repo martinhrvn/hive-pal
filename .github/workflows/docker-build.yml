@@ -1,19 +1,25 @@
 name: Build and Push Docker Images
 
 on:
-  workflow_run:
-    workflows: ["Comprehensive Check Workflow"]
-    types:
-      - completed
   release:
-    types: [ created, released, published ]
+    types: [created, released, published]
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Docker image tag (e.g., v1.0.0, latest, custom-tag)'
+        required: true
+        type: string
+      ref:
+        description: 'Git ref to checkout (branch, tag, or commit SHA)'
+        required: false
+        default: 'main'
+        type: string
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'release' }}
     strategy:
       matrix:
         app: [frontend, backend]
@@ -25,6 +31,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -49,6 +57,7 @@ jobs:
             type=semver,pattern={{version}},event=tag
             type=semver,pattern={{major}}.{{minor}},event=tag
             type=sha,format=short
+            type=raw,value=${{ github.event.inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
 
       # Build for both architectures for releases
       - name: Build and push Docker image (release)

@@ -46,6 +46,8 @@ export const HarvestDetailPage = () => {
   const [weight, setWeight] = useState<string>('');
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState('');
+  const [isEditingHives, setIsEditingHives] = useState(false);
+  const [editedHives, setEditedHives] = useState<{ hiveId: string; framesTaken: number }[]>([]);
 
   const { data: harvest, isLoading } = useHarvest(harvestId!);
   const updateHarvest = useUpdateHarvest();
@@ -132,6 +134,23 @@ export const HarvestDetailPage = () => {
     }
   };
 
+  const handleUpdateHives = async () => {
+    try {
+      await updateHarvest.mutateAsync({
+        harvestId: harvest.id,
+        data: {
+          harvestHives: editedHives,
+          // Include totalWeight to trigger recalculation if weight is set
+          ...(harvest.totalWeight && { totalWeight: harvest.totalWeight }),
+        },
+      });
+      toast.success('Hives updated and distribution recalculated');
+      setIsEditingHives(false);
+    } catch {
+      toast.error('Failed to update hives');
+    }
+  };
+
   const getStatusColor = (status: HarvestStatus) => {
     switch (status) {
       case HarvestStatus.DRAFT:
@@ -179,32 +198,39 @@ export const HarvestDetailPage = () => {
                 Finalize
               </Button>
             )}
-          {harvest.status === HarvestStatus.DRAFT && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="destructive" size="icon">
-                  <Trash2 className="h-4 w-4" />
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="destructive" size="icon">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Harvest?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  the harvest.
+                </DialogDescription>
+              </DialogHeader>
+              {harvest.status === HarvestStatus.COMPLETED && (
+                <Alert className="border-amber-200 bg-amber-50">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <AlertDescription className="text-amber-800">
+                    This harvest has been finalized. Deleting it will also remove
+                    all associated harvest actions from the hive timelines.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button variant="destructive" onClick={handleDelete}>
+                  Delete
                 </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Delete Harvest?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    the harvest.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button variant="destructive" onClick={handleDelete}>
-                    Delete
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -231,17 +257,33 @@ export const HarvestDetailPage = () => {
             </div>
             <div>
               <Label className="text-muted-foreground">Total Weight</Label>
-              {harvest.status !== HarvestStatus.COMPLETED &&
-              !harvest.totalWeight &&
-              !isEditingWeight ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditingWeight(true)}
-                >
-                  <Droplets className="mr-2 h-4 w-4" />
-                  Set Weight
-                </Button>
+              {harvest.status !== HarvestStatus.COMPLETED && !isEditingWeight ? (
+                harvest.totalWeight ? (
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">
+                      {harvest.totalWeight} {harvest.totalWeightUnit || 'kg'}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setWeight(harvest.totalWeight?.toString() || '');
+                        setIsEditingWeight(true);
+                      }}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditingWeight(true)}
+                  >
+                    <Droplets className="mr-2 h-4 w-4" />
+                    Set Weight
+                  </Button>
+                )
               ) : isEditingWeight ? (
                 <div className="flex space-x-2">
                   <Input
@@ -328,35 +370,106 @@ export const HarvestDetailPage = () => {
 
       {/* Hives Card */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Hive Distribution</CardTitle>
+          {harvest.status !== HarvestStatus.COMPLETED && !isEditingHives && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setEditedHives(
+                  harvest.harvestHives.map(hh => ({
+                    hiveId: hh.hiveId,
+                    framesTaken: hh.framesTaken,
+                  })),
+                );
+                setIsEditingHives(true);
+              }}
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {harvest.harvestHives.map(hh => (
-              <div
-                key={hh.id}
-                className="flex items-center justify-between p-3 border rounded-lg"
-              >
-                <div className="flex-1">
-                  <p className="font-medium">{hh.hiveName}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {hh.framesTaken} frames
-                  </p>
-                </div>
-                {hh.honeyAmount && (
-                  <div className="text-right">
-                    <p className="font-medium">
-                      {hh.honeyAmount.toFixed(2)} {hh.honeyAmountUnit || 'kg'}
-                    </p>
+          {isEditingHives ? (
+            <div className="space-y-3">
+              {editedHives.map((hh, index) => {
+                const originalHive = harvest.harvestHives.find(
+                  h => h.hiveId === hh.hiveId,
+                );
+                return (
+                  <div
+                    key={hh.hiveId}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">
+                        {originalHive?.hiveName || 'Unknown Hive'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        min="1"
+                        value={hh.framesTaken}
+                        onChange={e => {
+                          const newHives = [...editedHives];
+                          newHives[index].framesTaken =
+                            parseInt(e.target.value) || 1;
+                          setEditedHives(newHives);
+                        }}
+                        className="w-20"
+                      />
+                      <span className="text-sm text-muted-foreground">frames</span>
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditingHives(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleUpdateHives}
+                  disabled={updateHarvest.isPending}
+                >
+                  {updateHarvest.isPending ? 'Saving...' : 'Save & Recalculate'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {harvest.harvestHives.map(hh => (
+                <div
+                  key={hh.id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div className="flex-1">
+                    <p className="font-medium">{hh.hiveName}</p>
                     <p className="text-sm text-muted-foreground">
-                      {hh.honeyPercentage?.toFixed(1)}%
+                      {hh.framesTaken} frames
                     </p>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+                  {hh.honeyAmount && (
+                    <div className="text-right">
+                      <p className="font-medium">
+                        {hh.honeyAmount.toFixed(2)} {hh.honeyAmountUnit || 'kg'}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {hh.honeyPercentage?.toFixed(1)}%
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

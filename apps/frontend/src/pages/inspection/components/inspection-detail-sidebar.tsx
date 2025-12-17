@@ -11,14 +11,12 @@ import {
   Printer,
 } from 'lucide-react';
 
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
+import {
+  ActionSidebarContainer,
+  ActionSidebarGroup,
+  MenuItemButton,
+} from '@/components/sidebar';
 
 interface InspectionDetailSidebarProps {
   inspectionId: string;
@@ -31,104 +29,67 @@ export const InspectionDetailSidebar: React.FC<
   const navigate = useNavigate();
 
   return (
-    <div className="border rounded-md">
-      <div className="p-2">
-        <SidebarGroup>
-          <SidebarGroupLabel>Inspection Actions</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => navigate(`/inspections/${inspectionId}/edit`)}
-                tooltip="Edit Inspection"
-              >
-                <Pencil className="h-4 w-4" />
-                <span>Edit Inspection</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+    <ActionSidebarContainer>
+      <ActionSidebarGroup title="Inspection Actions">
+        <MenuItemButton
+          icon={<Pencil className="h-4 w-4" />}
+          label="Edit Inspection"
+          onClick={() => navigate(`/inspections/${inspectionId}/edit`)}
+          tooltip="Edit Inspection"
+        />
+        <MenuItemButton
+          icon={<Printer className="h-4 w-4" />}
+          label="Print Details"
+          onClick={() => window.print()}
+          tooltip="Print Inspection"
+        />
+        <MenuItemButton
+          icon={<Trash className="h-4 w-4" />}
+          label="Delete Inspection"
+          tooltip="Delete Inspection"
+          className="text-red-600 hover:text-red-700"
+        />
+      </ActionSidebarGroup>
 
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => window.print()}
-                tooltip="Print Inspection"
-              >
-                <Printer className="h-4 w-4" />
-                <span>Print Details</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+      <Separator className="my-2" />
 
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                tooltip="Delete Inspection"
-                className="text-red-600 hover:text-red-700"
-              >
-                <Trash className="h-4 w-4" />
-                <span>Delete Inspection</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+      <ActionSidebarGroup title="Related Actions">
+        <MenuItemButton
+          icon={<Home className="h-4 w-4" />}
+          label="View Hive"
+          onClick={() => navigate(`/hives/${hiveId}`)}
+          tooltip="Go to Hive"
+        />
+        <MenuItemButton
+          icon={<PlusCircle className="h-4 w-4" />}
+          label="New Inspection"
+          onClick={() => navigate(`/hives/${hiveId}/inspections/create`)}
+          tooltip="Create New Inspection"
+        />
+      </ActionSidebarGroup>
 
-        <Separator className="my-2" />
+      <Separator className="my-2" />
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Related Actions</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => navigate(`/hives/${hiveId}`)}
-                tooltip="Go to Hive"
-              >
-                <Home className="h-4 w-4" />
-                <span>View Hive</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => navigate(`/hives/${hiveId}/inspections/create`)}
-                tooltip="Create New Inspection"
-              >
-                <PlusCircle className="h-4 w-4" />
-                <span>New Inspection</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-
-        <Separator className="my-2" />
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => navigate('/inspections')}
-                tooltip="All Inspections"
-              >
-                <ClipboardList className="h-4 w-4" />
-                <span>All Inspections</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => navigate('/inspections/list/recent')}
-                tooltip="Recent Inspections"
-              >
-                <CalendarRange className="h-4 w-4" />
-                <span>Recent Inspections</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => navigate(-1)} tooltip="Go Back">
-                <ArrowLeft className="h-4 w-4" />
-                <span>Go Back</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-      </div>
-    </div>
+      <ActionSidebarGroup title="Navigation">
+        <MenuItemButton
+          icon={<ClipboardList className="h-4 w-4" />}
+          label="All Inspections"
+          onClick={() => navigate('/inspections')}
+          tooltip="All Inspections"
+        />
+        <MenuItemButton
+          icon={<CalendarRange className="h-4 w-4" />}
+          label="Recent Inspections"
+          onClick={() => navigate('/inspections/list/recent')}
+          tooltip="Recent Inspections"
+        />
+        <MenuItemButton
+          icon={<ArrowLeft className="h-4 w-4" />}
+          label="Go Back"
+          onClick={() => navigate(-1)}
+          tooltip="Go Back"
+        />
+      </ActionSidebarGroup>
+    </ActionSidebarContainer>
   );
 };

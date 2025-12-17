@@ -10,17 +10,17 @@ import {
 } from 'lucide-react';
 import { bee } from '@lucide/lab';
 
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { WeatherForecast } from '@/components/weather';
+import { SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { AlertItem } from '@/components/alerts';
 import { useHive } from '@/api/hooks';
 import { QRCodeDialog } from './qr-code-dialog';
+import {
+  ActionSidebarContainer,
+  ActionSidebarGroup,
+  MenuItemButton,
+  WeatherForecastSection,
+} from '@/components/sidebar';
+import { SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
 type ActionSideBarProps = {
   hiveId?: string;
@@ -52,108 +52,64 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
         </div>
       )}
 
-      {hive?.apiaryId && (
-        <div className="border rounded-md">
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-2 pt-2">
-              Weather Forecast
-            </SidebarGroupLabel>
-            <WeatherForecast apiaryId={hive.apiaryId} compact />
-          </SidebarGroup>
-        </div>
-      )}
+      <WeatherForecastSection apiaryId={hive?.apiaryId} compact />
 
-      <div className="border rounded-md">
-        <div className="p-2">
-          <SidebarGroup>
-            <SidebarGroupLabel>Hive Actions</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() =>
-                    hiveId && navigate(`/hives/${hiveId}/inspections/create`)
-                  }
-                  tooltip="Add Inspection"
-                  disabled={!hiveId}
-                >
-                  <PlusCircle className="h-4 w-4" />
-                  <span>Add Inspection</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+      <ActionSidebarContainer>
+        <ActionSidebarGroup title="Hive Actions">
+          <MenuItemButton
+            icon={<PlusCircle className="h-4 w-4" />}
+            label="Add Inspection"
+            onClick={() => hiveId && navigate(`/hives/${hiveId}/inspections/create`)}
+            tooltip="Add Inspection"
+            disabled={!hiveId}
+          />
+          <MenuItemButton
+            icon={<CalendarPlus className="h-4 w-4" />}
+            label="Schedule Inspection"
+            onClick={() => navigate(`/inspections/schedule`)}
+            tooltip="Schedule Inspection"
+          />
+          <MenuItemButton
+            icon={<Icon iconNode={bee} className="h-4 w-4" />}
+            label="Add Queen"
+            onClick={() => hiveId && navigate(`/hives/${hiveId}/queens/create`)}
+            tooltip="Add Queen"
+            disabled={!hiveId}
+          />
+          <MenuItemButton
+            icon={<RefreshCw className="h-4 w-4" />}
+            label="Refresh Data"
+            onClick={() => onRefreshData?.()}
+            tooltip="Refresh Data"
+          />
+        </ActionSidebarGroup>
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate(`/inspections/schedule`)}
-                  tooltip="Schedule Inspection"
-                >
-                  <CalendarPlus className="h-4 w-4" />
-                  <span>Schedule Inspection</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() =>
-                    hiveId && navigate(`/hives/${hiveId}/queens/create`)
-                  }
-                  tooltip="Add Queen"
-                  disabled={!hiveId}
-                >
-                  <Icon iconNode={bee} className="h-4 w-4" />
-                  <span>Add Queen</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => onRefreshData && onRefreshData()}
-                  tooltip="Refresh Data"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  <span>Refresh Data</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-
-          <SidebarGroup className="mt-4">
-            <SidebarGroupLabel>Manage Hive</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => hiveId && navigate(`/hives/${hiveId}/edit`)}
-                  tooltip="Edit Hive"
-                  disabled={!hiveId}
-                >
-                  <EditIcon className="h-4 w-4" />
-                  <span>Edit Hive</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                {hiveId && hive ? (
-                  <QRCodeDialog hiveId={hiveId} hiveName={hive.name} />
-                ) : (
-                  <SidebarMenuButton disabled tooltip="QR Code">
-                    <span>QR Code</span>
-                  </SidebarMenuButton>
-                )}
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => alert('Remove functionality coming soon')}
-                  tooltip="Remove Hive"
-                  disabled={!hiveId}
-                >
-                  <TrashIcon className="h-4 w-4" />
-                  <span>Remove Hive</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        </div>
-      </div>
+        <ActionSidebarGroup title="Manage Hive" className="mt-4">
+          <MenuItemButton
+            icon={<EditIcon className="h-4 w-4" />}
+            label="Edit Hive"
+            onClick={() => hiveId && navigate(`/hives/${hiveId}/edit`)}
+            tooltip="Edit Hive"
+            disabled={!hiveId}
+          />
+          <SidebarMenuItem>
+            {hiveId && hive ? (
+              <QRCodeDialog hiveId={hiveId} hiveName={hive.name} />
+            ) : (
+              <SidebarMenuButton disabled tooltip="QR Code">
+                <span>QR Code</span>
+              </SidebarMenuButton>
+            )}
+          </SidebarMenuItem>
+          <MenuItemButton
+            icon={<TrashIcon className="h-4 w-4" />}
+            label="Remove Hive"
+            onClick={() => alert('Remove functionality coming soon')}
+            tooltip="Remove Hive"
+            disabled={!hiveId}
+          />
+        </ActionSidebarGroup>
+      </ActionSidebarContainer>
     </div>
   );
 };

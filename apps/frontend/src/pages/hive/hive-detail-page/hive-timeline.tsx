@@ -22,8 +22,11 @@ import {
   X,
   StickyNote,
   AlertCircle,
+  Pencil,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -41,11 +44,22 @@ import {
   CreateStandaloneAction,
   ActionType,
 } from 'shared-schemas';
-import { useActions, useInspections, useCreateAction } from '@/api/hooks';
+import { useActions, useInspections, useCreateAction, useDeleteAction } from '@/api/hooks';
 import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
 import { cn } from '@/lib/utils';
 import { AddActionDialog } from './actions/add-action-dialog';
+import { EditActionDialog } from './actions/edit-action-dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 type TimelineEvent = {
   id: string;
@@ -78,7 +92,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
   const [noteContent, setNoteContent] = useState('');
   const [isSavingNote, setIsSavingNote] = useState(false);
   const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [editingAction, setEditingAction] = useState<ActionResponse | null>(null);
+  const [deletingAction, setDeletingAction] = useState<ActionResponse | null>(null);
   const createAction = useCreateAction();
+  const deleteActionMutation = useDeleteAction();
   const MAX_DISPLAYED = 10;
 
   // Fetch inspections and actions
@@ -221,6 +238,35 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
   const formatTime = (date: string) => {
     return format(new Date(date), 'h:mm a');
+  };
+
+  const getActionWarning = (action: ActionResponse): { message: string; linkTo?: string; linkText?: string } | null => {
+    if (action.inspectionId) {
+      return {
+        message: 'This action is part of an inspection. Modifying it here will cause it to be out of sync with the inspection record.',
+        linkTo: `/inspections/${action.inspectionId}`,
+        linkText: 'Edit inspection instead',
+      };
+    }
+    if (action.type === ActionType.HARVEST || action.harvestId) {
+      return {
+        message: 'This action is linked to a harvest. Modifying it here will cause it to be out of sync with the harvest record.',
+        linkTo: action.harvestId ? `/harvests/${action.harvestId}` : '/harvests',
+        linkText: 'Go to harvest',
+      };
+    }
+    return null;
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingAction) return;
+    try {
+      await deleteActionMutation.mutateAsync(deletingAction.id);
+      toast.success('Action deleted');
+      setDeletingAction(null);
+    } catch {
+      toast.error('Failed to delete action');
+    }
   };
 
   const getActionIcon = (action: ActionResponse) => {
@@ -394,7 +440,13 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
           {/* Action content */}
           {action && (
-            <div className="flex items-start gap-2">
+            <div
+              className={cn(
+                "flex items-start gap-2 group",
+                action.harvestId && "cursor-pointer rounded-lg p-2 -ml-2 -mt-2 hover:bg-gray-50"
+              )}
+              onClick={action.harvestId ? () => navigate(`/harvests/${action.harvestId}`) : undefined}
+            >
               <div className="mt-0.5">{getActionIcon(action)}</div>
               <div className="flex-1">
                 <div className="text-sm">{getActionLabel(action)}</div>
@@ -404,6 +456,32 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
                   </div>
                 )}
               </div>
+              {!action.harvestId && (
+                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingAction(action);
+                    }}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-destructive hover:text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeletingAction(action);
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -598,6 +676,58 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
           </>
         )}
       </div>
+
+      {/* Edit Action Dialog */}
+      {editingAction && (
+        <EditActionDialog
+          action={editingAction}
+          open={!!editingAction}
+          onOpenChange={(open) => !open && setEditingAction(null)}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deletingAction} onOpenChange={(open) => !open && setDeletingAction(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Action?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete this action.
+            </DialogDescription>
+          </DialogHeader>
+          {deletingAction && (() => {
+            const warning = getActionWarning(deletingAction);
+            return warning ? (
+              <Alert className="border-amber-200 bg-amber-50">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800">
+                  {warning.message}
+                  {warning.linkTo && (
+                    <>
+                      {' '}
+                      <Link to={warning.linkTo} className="underline font-medium hover:text-amber-900">
+                        {warning.linkText}
+                      </Link>
+                    </>
+                  )}
+                </AlertDescription>
+              </Alert>
+            ) : null;
+          })()}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={deleteActionMutation.isPending}
+            >
+              {deleteActionMutation.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Section>
   );
 };

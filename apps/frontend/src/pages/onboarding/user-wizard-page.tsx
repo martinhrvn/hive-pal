@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,13 +18,20 @@ import { HiveForm, HiveFormData } from '@/pages/hive/components/hive-form';
 import { ApiaryResponse, HiveStatus } from 'shared-schemas';
 
 // Import CheckIcon for success step
-import { CheckIcon } from 'lucide-react';
-import { useCreateApiary, useCreateHive } from '@/api/hooks';
+import { CheckIcon, Loader2 } from 'lucide-react';
+import {
+  useApiaries,
+  useCreateApiary,
+  useCreateHive,
+  useHives,
+} from '@/api/hooks';
+import { useApiaryStore } from '@/hooks/use-apiary';
 
 export const UserWizardPage = () => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState<number | null>(null); // null = loading
   const [apiary, setApiary] = useState<ApiaryResponse | null>(null);
   const { t } = useTranslation('onboarding');
+  const { setActiveApiaryId } = useApiaryStore();
 
   const steps = [
     t('steps.welcome'),
@@ -33,13 +40,44 @@ export const UserWizardPage = () => {
     t('steps.complete'),
   ];
 
+  // Fetch existing data to determine starting step
+  const { data: apiaries, isLoading: apiariesLoading } = useApiaries();
+  const { data: hives, isLoading: hivesLoading } = useHives();
+
   const apiaryMutation = useCreateApiary();
   const hiveMutation = useCreateHive();
+
+  // Determine initial step based on existing data
+  useEffect(() => {
+    if (apiariesLoading || hivesLoading) return;
+
+    const hasApiaries = apiaries && apiaries.length > 0;
+    const hasHives = hives && hives.length > 0;
+
+    if (hasApiaries && hasHives) {
+      // User has both - skip onboarding entirely
+      window.location.href = '/';
+      return;
+    }
+
+    if (hasApiaries) {
+      // User has apiary but no hives - skip to hive creation
+      const existingApiary = apiaries[0];
+      setApiary(existingApiary);
+      setActiveApiaryId(existingApiary.id);
+      setStep(2);
+    } else {
+      // No apiaries - start from welcome
+      setStep(0);
+    }
+  }, [apiaries, hives, apiariesLoading, hivesLoading, setActiveApiaryId]);
 
   const handleApiarySubmit = async (data: ApiaryFormData) => {
     try {
       const result = await apiaryMutation.mutateAsync({ ...data });
       setApiary(result);
+      // Set the newly created apiary as active so the x-apiary-id header is available for subsequent API calls
+      setActiveApiaryId(result.id);
       setStep(2);
     } catch (error) {
       console.error('Error creating apiary:', error);
@@ -69,6 +107,19 @@ export const UserWizardPage = () => {
   const handleFinish = () => {
     window.location.href = '/';
   };
+
+  // Show loading state while determining initial step
+  if (step === null) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 mt-10 p-4">
+        <Card className="w-full max-w-3xl">
+          <CardContent className="flex items-center justify-center py-16">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 mt-10 p-4">

@@ -7,7 +7,11 @@
     "role": "Rola",
     "passwordChangeRequired": "Vyžaduje zmenu hesla",
     "createdAt": "Vytvorené",
-    "actions": "Akcie"
+    "actions": "Akcie",
+    "apiaries": "Včelnice",
+    "hives": "Úle",
+    "inspections": "Prehliadky",
+    "lastActivity": "Posledná aktivita"
   },
   "actions": {
     "resetPassword": "Resetovať heslo"
@@ -21,10 +25,11 @@
     "submit": "Resetovať heslo"
   },
   "messages": {
+    "loading": "Načítavam...",
     "loadingUsers": "Načítavam používateľov...",
     "noUsers": "Nenašli sa žiadni používatelia",
     "resetSuccess": "Reset hesla úspešný! Používateľ bude musieť zmeniť svoje heslo pri ďalšom prihlásení.",
-    "failedToFetch": "Nepodarilo sa načítať používateľov",
+    "failedToFetch": "Nepodarilo sa načítať dáta",
     "failedToReset": "Nepodarilo sa resetovať heslo",
     "unexpectedError": "Nastala neočakávaná chyba"
   },
@@ -32,5 +37,32 @@
     "yes": "Áno",
     "no": "Nie",
     "dash": "-"
+  },
+  "userDetail": {
+    "backToList": "Späť na používateľov",
+    "summary": {
+      "totalApiaries": "Celkom včelníc",
+      "totalHives": "Celkom úľov",
+      "totalInspections": "Celkom prehliadok",
+      "lastActivity": "Posledná aktivita",
+      "lastInspection": "Posledná prehliadka"
+    },
+    "recentActivity": {
+      "title": "Nedávna aktivita",
+      "period": "Posledných 30 dní",
+      "inspections": "Prehliadky",
+      "actions": "Akcie",
+      "byType": "Akcie podľa typu"
+    },
+    "apiaryBreakdown": {
+      "title": "Prehľad včelníc",
+      "name": "Názov včelnice",
+      "location": "Lokalita",
+      "coordinates": "Súradnice",
+      "hives": "Úle",
+      "inspections": "Prehliadky",
+      "lastInspection": "Posledná prehliadka",
+      "noApiaries": "Pre tohto používateľa neboli nájdené žiadne včelnice"
+    }
   }
 }

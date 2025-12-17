@@ -64,10 +64,13 @@ apiClient.interceptors.request.use(config => {
   const apiaryId = localStorage.getItem(APIARY_SELECTION);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    config.headers['Content-Type'] = 'application/json';
     if (apiaryId) {
       config.headers['x-apiary-id'] = apiaryId;
     }
+  }
+  // For FormData, delete Content-Type so browser sets it with boundary
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
   }
   config.baseURL = getApiUrl('');
   return config;

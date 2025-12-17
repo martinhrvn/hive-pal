@@ -9,10 +9,12 @@
   "scripts": {
     "test": "playwright test",
     "test:ui": "dotenv  -e .env.local -- playwright test --ui",
-    "test:local": "dotenv  -e .env.local -- playwright test"
+    "test:local": "dotenv  -e .env.local -- playwright test",
+    "test:preview": "dotenv -e .env.preview -- playwright test",
+    "test:preview:ui": "dotenv -e .env.preview -- playwright test --ui"
   },
   "devDependencies": {
-    "@playwright/test":  "1.50.1",
+    "@playwright/test": "1.52.0",
     "@types/node": "^22.13.10",
     "dotenv-cli": "^8.0.0",
     "page-objects": "workspace:*"

@@ -20,7 +20,8 @@
     "upcoming": "Upcoming",
     "general": "General",
     "harvests": "Harvests",
-    "allHarvests": "All Harvests"
+    "allHarvests": "All Harvests",
+    "reports": "Reports"
   },
   "actions": {
     "save": "Save",
@@ -170,5 +171,54 @@
     "thankYou": "Thank You!",
     "submittedMessage": "Your feedback has been submitted successfully. We appreciate your input and will review it soon.",
     "submitAnother": "Submit Another Feedback"
+  },
+  "reports": {
+    "title": "Reports",
+    "selectApiary": "Select an apiary to view reports",
+    "tabs": {
+      "overview": "Overview",
+      "charts": "Charts",
+      "trends": "Trends"
+    },
+    "honeyProduction": "Honey Production",
+    "feedingTotals": "Feeding Totals",
+    "healthScores": "Health Scores",
+    "hiveComparison": "Hive Comparison",
+    "table": {
+      "hiveName": "Hive",
+      "honey": "Honey",
+      "sugarFed": "Sugar Fed",
+      "overall": "Overall",
+      "population": "Population",
+      "stores": "Stores",
+      "queen": "Queen",
+      "lastInspection": "Last Inspection"
+    },
+    "charts": {
+      "hiveScoreTrends": "Hive Score Trends"
+    },
+    "periods": {
+      "1month": "1 Month",
+      "3months": "3 Months",
+      "6months": "6 Months",
+      "ytd": "Year to Date",
+      "1year": "1 Year",
+      "all": "All Time"
+    },
+    "filters": {
+      "period": "Period"
+    },
+    "export": {
+      "title": "Export",
+      "csv": "Export as CSV",
+      "pdf": "Export as PDF",
+      "success": "Report exported successfully",
+      "error": "Failed to export report"
+    },
+    "widget": {
+      "title": "Apiary Statistics",
+      "viewReports": "View Reports",
+      "noApiary": "Select an apiary to view statistics"
+    }
   }
 }

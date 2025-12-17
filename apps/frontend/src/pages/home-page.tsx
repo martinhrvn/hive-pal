@@ -1,8 +1,9 @@
 import { HiveList } from '@/pages/hive/components';
-import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
+import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
 import { HomeActionSidebar } from '@/components/home-action-sidebar';
 import { HiveMinimap } from '@/components/hive-minimap';
 import { InspectionStatusSummary } from '@/components/inspection-status-summary';
+import { ReportsSummaryWidget } from '@/components/reports-summary-widget';
 import { useHives } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
 
@@ -18,7 +19,11 @@ export const HomePage = () => {
     <Page>
       <MainContent>
         <div className="space-y-6">
-          <InspectionStatusSummary />
+          {/* Side by side on lg+ screens, stacked below */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <InspectionStatusSummary />
+            <ReportsSummaryWidget />
+          </div>
           {activeApiaryId && (
             <HiveMinimap apiaryId={activeApiaryId} className="mb-6" />
           )}

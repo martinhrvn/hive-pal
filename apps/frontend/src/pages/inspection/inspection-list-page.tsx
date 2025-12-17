@@ -29,7 +29,7 @@ import {
   UsersIcon,
 } from 'lucide-react';
 
-import { MainContent, Page, Sidebar } from '@/components/layout/sidebar-layout';
+import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {

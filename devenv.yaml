@@ -1,0 +1,7 @@
+
+-language-server: $schema=https://devenv.sh/devenv.schema.json
+inputs:
+  nixpkgs:
+    url: github:cachix/devenv-nixpkgs/rolling
+  nixpkgs-playwright:
+    url: github:NixOS/nixpkgs/979daf34c8cacebcd917d540070b52a3c2b9b16e

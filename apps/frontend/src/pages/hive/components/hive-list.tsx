@@ -1,6 +1,7 @@
 import { HiveStatus } from './hive-status';
-import { ChevronRight, Activity, TrendingUp } from 'lucide-react';
+import { Activity, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ViewDetailsLink } from '@/components/ui/view-details-link';
 import { HiveResponse } from 'shared-schemas';
 import { AlertsPopover } from '@/components/alerts';
 import { useHive } from '@/api/hooks/useHives';
@@ -10,12 +11,14 @@ import {
   isWithinFeedingWindow,
 } from '@/utils/feeding-calculations';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type HiveListProps = {
   hives: HiveResponse[];
 };
 
 const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
+  const { t } = useTranslation(['hive']);
   const { data: hiveDetails } = useHive(hive.id, { staleTime: 5 * 60 * 1000 });
   const { data: actions } = useActions(
     { hiveId: hive.id },
@@ -95,11 +98,11 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
         {/* Alerts (show below feeding or other metrics) */}
         <AlertsPopover alerts={hive.alerts || []} />
 
-        <p className={'col-start-1 flex'}>
-          <a href={`/hives/${hive.id}`} className={'flex gap-4'}>
-            Show details <ChevronRight />
-          </a>
-        </p>
+        <div className="pt-2">
+          <ViewDetailsLink to={`/hives/${hive.id}`}>
+            {t('hive:card.showDetails', 'Show details')}
+          </ViewDetailsLink>
+        </div>
       </CardContent>
     </Card>
   );

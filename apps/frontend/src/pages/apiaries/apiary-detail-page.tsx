@@ -9,7 +9,7 @@ import {
   MainContent,
   Page,
   Sidebar,
-} from '@/components/layout/sidebar-layout.tsx';
+} from '@/components/layout/page-grid-layout';
 import { useApiary } from '@/api/hooks';
 
 export const ApiaryDetailPage = () => {

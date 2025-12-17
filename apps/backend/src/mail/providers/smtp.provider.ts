@@ -44,7 +44,7 @@ export class SmtpProvider implements MailProvider {
         this.logger.log(`SMTP provider initialized with host: ${host}:${port}`);
 
         // Verify connection configuration
-        this.verifyConnection();
+        void this.verifyConnection();
       } catch (error) {
         this.logger.error('Failed to create SMTP transporter:', error);
         this.transporter = null;
