@@ -125,7 +125,6 @@ model Inspection {
   actions           Action[]
   status            InspectionStatus @default(COMPLETED)
   batchInspectionHive BatchInspectionHive?
-  status            InspectionStatus   @default(COMPLETED)
   audioRecordings   InspectionAudio[]
 
   // Create index for quick lookup by hiveId - used in authorization checks

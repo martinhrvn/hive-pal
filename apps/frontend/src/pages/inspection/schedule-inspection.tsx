@@ -39,6 +39,7 @@ import { useWeatherDailyForecast } from '@/api/hooks/useWeather';
 import { WeatherCondition, InspectionStatus } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
@@ -123,7 +124,7 @@ export const ScheduleInspectionPage = () => {
     const apiaryId = firstHive?.apiaryId;
 
     if (!apiaryId) {
-      alert('Unable to determine apiary for selected hives');
+      toast.error('Unable to determine apiary for selected hives');
       return;
     }
 
@@ -137,12 +138,12 @@ export const ScheduleInspectionPage = () => {
         },
         {
           onSuccess: (batch) => {
-            alert(`Successfully created batch inspection: ${batchName}`);
+            toast.success(`Successfully created batch inspection: ${batchName}`);
             navigate(`/batch-inspections/${batch.id}`);
           },
           onError: (error) => {
             console.error('Failed to create batch inspection:', error);
-            alert('Failed to create batch inspection');
+            toast.error('Failed to create batch inspection');
           },
         },
       );
@@ -184,14 +185,14 @@ export const ScheduleInspectionPage = () => {
       }
 
       if (successCount > 0) {
-        alert(
+        toast.success(
           `Successfully scheduled ${successCount} inspection${successCount > 1 ? 's' : ''}`,
         );
         navigate('/inspections/list/upcoming');
       }
 
       if (errorCount > 0) {
-        alert(
+        toast.error(
           `Failed to schedule ${errorCount} inspection${errorCount > 1 ? 's' : ''}`,
         );
       }

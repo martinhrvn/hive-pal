@@ -20,6 +20,7 @@ import {
   X,
   ArrowRight,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { InspectionForm } from '@/pages/inspection/components/inspection-form';
 import {
   Dialog,
@@ -107,7 +108,7 @@ export const BatchInspectionPage = () => {
       },
       onError: (error) => {
         console.error('Failed to skip hive:', error);
-        alert('Failed to skip hive');
+        toast.error('Failed to skip hive');
       },
     });
   };
@@ -129,14 +130,14 @@ export const BatchInspectionPage = () => {
         onSuccess: (result) => {
           if (!result.next) {
             // Batch complete
-            alert('Batch inspection completed!');
+            toast.success('Batch inspection completed!');
             navigate(`/batch-inspections/${id}`);
           }
           // Otherwise, the query will refetch and show the next hive
         },
         onError: (error) => {
           console.error('Failed to create inspection:', error);
-          alert('Failed to save inspection');
+          toast.error('Failed to save inspection');
         },
       },
     );

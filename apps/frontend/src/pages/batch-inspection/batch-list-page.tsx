@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { BatchInspectionStatus } from 'shared-schemas';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -47,7 +48,7 @@ export const BatchListPage = () => {
       },
       onError: (error) => {
         console.error('Failed to start batch:', error);
-        alert('Failed to start batch inspection');
+        toast.error('Failed to start batch inspection');
       },
     });
   };
@@ -60,7 +61,7 @@ export const BatchListPage = () => {
       },
       onError: (error) => {
         console.error('Failed to delete batch:', error);
-        alert('Failed to delete batch inspection');
+        toast.error('Failed to delete batch inspection');
         setDeleteDialogOpen(null);
       },
     });

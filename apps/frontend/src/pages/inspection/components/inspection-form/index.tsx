@@ -39,6 +39,7 @@ import {
   useWeatherForDate,
   useCreateInspection,
   useUpdateInspection,
+  useUpsertInspection,
 } from '@/api/hooks';
 import { ActionType, InspectionStatus } from 'shared-schemas';
 import { mapWeatherConditionToForm } from '@/utils/weather-mapping';
@@ -242,52 +243,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     };
   };
 
-  // Handler for submission
-  const handleSubmit = async (
-    data: InspectionFormData,
-    status?: InspectionStatus,
-  ) => {
-    setIsSubmitting(true);
-    try {
-      const formattedData = transformFormData(data, status);
-      let resultId: string;
-
-      if (!inspectionId) {
-        // Create new inspection
-        const result = await createInspection.mutateAsync(formattedData);
-        resultId = result.id;
-
-        // Upload pending audio recordings
-        if (pendingRecordings.length > 0) {
-          await uploadPendingRecordings(resultId, pendingRecordings);
-        }
-      } else {
-        // Update existing inspection
-        const result = await updateInspection.mutateAsync({
-          id: inspectionId,
-          data: { ...formattedData, id: inspectionId },
-        });
-        resultId = result.id;
-      }
-
-      navigate(`/inspections/${resultId}`);
-    } catch (error) {
-      console.error('Failed to save inspection:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Handler for regular save button
-  const handleSave = form.handleSubmit(data => {
-    const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
-    handleSubmit(data, status);
-  });
-
-  // Handler for save and complete button
-  const handleSaveAndComplete = form.handleSubmit(data =>
-    handleSubmit(data, InspectionStatus.COMPLETED),
-  );
   const date = form.watch('date');
   const isInFuture = date && date > new Date();
   const isEdit = Boolean(inspectionId);
