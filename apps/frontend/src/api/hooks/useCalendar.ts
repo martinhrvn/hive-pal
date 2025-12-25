@@ -1,8 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import { CalendarFilter, CalendarResponse } from 'shared-schemas';
+import {
+  CalendarFilter,
+  CalendarResponse,
+  SubscriptionUrlResponse,
+} from 'shared-schemas';
 
-export type { CalendarEvent } from 'shared-schemas';
+export type { CalendarEvent, SubscriptionUrlResponse } from 'shared-schemas';
 
 // Query keys
 const CALENDAR_KEYS = {
@@ -10,6 +14,8 @@ const CALENDAR_KEYS = {
   lists: () => [...CALENDAR_KEYS.all, 'list'] as const,
   list: (filters: CalendarFilter | undefined) =>
     [...CALENDAR_KEYS.lists(), filters] as const,
+  subscription: (apiaryId: string) =>
+    [...CALENDAR_KEYS.all, 'subscription', apiaryId] as const,
 };
 
 // Get calendar events with optional filtering
@@ -25,6 +31,37 @@ export const useCalendar = (filters?: CalendarFilter) => {
       const url = `/api/calendar${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await apiClient.get<CalendarResponse>(url);
       return response.data;
+    },
+  });
+};
+
+// Get calendar subscription URL for an apiary
+export const useCalendarSubscription = (apiaryId: string) => {
+  return useQuery<SubscriptionUrlResponse>({
+    queryKey: CALENDAR_KEYS.subscription(apiaryId),
+    queryFn: async () => {
+      const response = await apiClient.get<SubscriptionUrlResponse>(
+        `/api/calendar/apiary/${apiaryId}/subscription`,
+      );
+      return response.data;
+    },
+    enabled: !!apiaryId,
+  });
+};
+
+// Regenerate calendar subscription URL
+export const useRegenerateCalendarSubscription = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<SubscriptionUrlResponse, Error, string>({
+    mutationFn: async (apiaryId: string) => {
+      const response = await apiClient.post<SubscriptionUrlResponse>(
+        `/api/calendar/apiary/${apiaryId}/subscription/regenerate`,
+      );
+      return response.data;
+    },
+    onSuccess: (data, apiaryId) => {
+      queryClient.setQueryData(CALENDAR_KEYS.subscription(apiaryId), data);
     },
   });
 };

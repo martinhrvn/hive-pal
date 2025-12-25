@@ -19,7 +19,16 @@ export const calendarEventSchema = z.object({
 // Calendar response schema (array of events)
 export const calendarResponseSchema = z.array(calendarEventSchema);
 
+// Subscription URL response schema
+export const subscriptionUrlResponseSchema = z.object({
+  subscriptionUrl: z.string().url(),
+  expiresAt: z.string().datetime(),
+});
+
 // Export types
 export type CalendarFilter = z.infer<typeof calendarFilterSchema>;
 export type CalendarEvent = z.infer<typeof calendarEventSchema>;
 export type CalendarResponse = z.infer<typeof calendarResponseSchema>;
+export type SubscriptionUrlResponse = z.infer<
+  typeof subscriptionUrlResponseSchema
+>;

@@ -22,7 +22,7 @@ export class BatchInspectionsService {
   constructor(
     private prisma: PrismaService,
     private inspectionsService: InspectionsService,
-  ) { }
+  ) {}
 
   /**
    * Create a new batch inspection
@@ -494,10 +494,10 @@ export class BatchInspectionsService {
     }
 
     // Create the inspection
-    const inspection = await this.inspectionsService.create(
-      inspectionData,
-      { apiaryId, userId }
-    );
+    const inspection = await this.inspectionsService.create(inspectionData, {
+      apiaryId,
+      userId,
+    });
 
     // Update batch hive record
     await this.prisma.batchInspectionHive.update({
@@ -608,9 +608,7 @@ export class BatchInspectionsService {
 
       if (completed > 0) {
         averageMinutesPerHive = elapsedMinutes / completed;
-        estimatedRemainingMinutes = Math.ceil(
-          averageMinutesPerHive * pending,
-        );
+        estimatedRemainingMinutes = Math.ceil(averageMinutesPerHive * pending);
       }
     }
 

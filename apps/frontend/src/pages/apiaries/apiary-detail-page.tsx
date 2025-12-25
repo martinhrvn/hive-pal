@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Section } from '@/components/common/section';
 import { ApiaryActionSidebar, HivesLayout } from './components';
+import { CalendarSubscriptionCard } from './components/calendar-subscription-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MapPicker from '@/components/common/map-picker';
@@ -103,6 +104,8 @@ export const ApiaryDetailPage = () => {
                 </Card>
               )}
             </div>
+
+            <CalendarSubscriptionCard apiaryId={apiary.id} />
           </TabsContent>
 
           <TabsContent value="hives">

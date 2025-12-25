@@ -32,7 +32,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 export class BatchInspectionsController {
   constructor(
     private readonly batchInspectionsService: BatchInspectionsService,
-  ) { }
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new batch inspection' })
@@ -134,7 +134,9 @@ export class BatchInspectionsController {
   }
 
   @Post(':id/inspect')
-  @ApiOperation({ summary: 'Create inspection for current hive and move to next' })
+  @ApiOperation({
+    summary: 'Create inspection for current hive and move to next',
+  })
   async createInspectionAndNext(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(createInspectionSchema))

@@ -193,7 +193,9 @@ export class ReportsService {
       const overallScore =
         hiveOverallCount > 0 ? hiveOverallSum / hiveOverallCount : null;
       const populationScore =
-        hivePopulationCount > 0 ? hivePopulationSum / hivePopulationCount : null;
+        hivePopulationCount > 0
+          ? hivePopulationSum / hivePopulationCount
+          : null;
       const storesScore =
         hiveStoresCount > 0 ? hiveStoresSum / hiveStoresCount : null;
       const queenScore =
