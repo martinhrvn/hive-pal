@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { useCalendar } from '@/api/hooks/useCalendar';
 import { useHives } from '@/api/hooks';
 import { InspectionResponse } from 'shared-schemas';
+import { CalendarSubscriptionCard } from '@/pages/apiaries/components/calendar-subscription-card';
+import { useApiaryStore } from '@/hooks/use-apiary';
 import {
   format,
   startOfDay,
@@ -29,6 +31,7 @@ import { Link } from 'react-router-dom';
 
 export const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { activeApiaryId } = useApiaryStore();
 
   // Get inspections for a broader date range to cover the 7-day view
   const startDate = format(startOfDay(selectedDate), 'yyyy-MM-dd');
@@ -466,6 +469,10 @@ export const CalendarPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {activeApiaryId && (
+          <CalendarSubscriptionCard apiaryId={activeApiaryId} />
+        )}
       </Sidebar>
     </Page>
   );
