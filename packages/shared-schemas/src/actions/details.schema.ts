@@ -1,6 +1,27 @@
 import { z } from 'zod';
 import { ActionType } from './types';
 
+// Treatment product configuration with default units and quantity requirements
+export const TREATMENT_PRODUCTS = {
+  OXALIC_ACID: { label: 'Oxalic Acid', defaultUnit: 'ml', requiresQuantity: true },
+  FORMIC_ACID: { label: 'Formic Acid', defaultUnit: 'ml', requiresQuantity: true },
+  THYMOL: { label: 'Thymol', defaultUnit: 'g', requiresQuantity: true },
+  APIVAR: { label: 'Apivar', defaultUnit: 'pcs', requiresQuantity: true },
+  APISTAN: { label: 'Apistan', defaultUnit: 'pcs', requiresQuantity: true },
+  CHECKMITE_PLUS: { label: 'CheckMite+', defaultUnit: 'pcs', requiresQuantity: true },
+  HOPGUARD: { label: 'HopGuard', defaultUnit: 'pcs', requiresQuantity: true },
+  API_BIOXAL: { label: 'Api-Bioxal', defaultUnit: 'g', requiresQuantity: true },
+  APIGUARD: { label: 'Apiguard', defaultUnit: 'g', requiresQuantity: true },
+  MAQS: { label: 'MAQS', defaultUnit: 'pcs', requiresQuantity: true },
+  FUMIGATION: { label: 'Fumigation', defaultUnit: 'pcs', requiresQuantity: false },
+  OTHER: { label: 'Other', defaultUnit: 'pcs', requiresQuantity: true },
+} as const;
+
+export type TreatmentProductId = keyof typeof TREATMENT_PRODUCTS;
+
+export const TREATMENT_UNITS = ['ml', 'g', 'pcs'] as const;
+export type TreatmentUnit = (typeof TREATMENT_UNITS)[number];
+
 // Base details schemas for specific action types
 export const feedingActionDetailsSchema = z.object({
   type: z.literal(ActionType.FEEDING),
@@ -13,7 +34,7 @@ export const feedingActionDetailsSchema = z.object({
 export const treatmentActionDetailsSchema = z.object({
   type: z.literal(ActionType.TREATMENT),
   product: z.string(),
-  quantity: z.number().positive(),
+  quantity: z.number().positive().optional().nullable(),
   unit: z.string(),
   duration: z.string().optional(),
 });

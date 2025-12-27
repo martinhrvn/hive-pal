@@ -235,8 +235,8 @@ model TreatmentAction {
   actionId String  @unique
   action   Action  @relation(fields: [actionId], references: [id], onDelete: Cascade)
   product  String // Apivar, Formic Pro, etc.
-  quantity Float // Numeric quantity
-  unit     String // strips, pads, grams, ml
+  quantity Float? // Numeric quantity (optional for some treatments like fumigation)
+  unit     String // pcs, ml, g
   duration String? // 7 days, 14 days, etc.
 }
 

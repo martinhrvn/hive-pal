@@ -98,6 +98,27 @@ export class ActionsService {
   }
 
   /**
+   * Convert mass from grams to user's preferred unit (for small quantities like treatments)
+   */
+  private convertMassForUser(
+    massGrams: number,
+    userPreference: 'metric' | 'imperial' = 'metric',
+  ): { value: number; unit: string } {
+    if (userPreference === 'imperial') {
+      const ounces = massGrams * 0.035274;
+      return {
+        value: Math.round(ounces * 10) / 10,
+        unit: 'oz',
+      };
+    }
+
+    return {
+      value: Math.round(massGrams * 10) / 10,
+      unit: 'g',
+    };
+  }
+
+  /**
    * Creates actions for an inspection within a transaction
    * @param inspectionId The ID of the inspection to add actions to
    * @param actions Array of actions to create
@@ -682,37 +703,37 @@ export class ActionsService {
         }
 
         // Convert units for treatments if they use volume or weight
-        let convertedQuantity = prismaAction.treatmentAction.quantity;
+        // Quantity can be null for treatments that don't require it (e.g., fumigation)
+        let convertedQuantity: number | null =
+          prismaAction.treatmentAction.quantity;
         let convertedTreatmentUnit = prismaAction.treatmentAction.unit;
 
-        if (
-          prismaAction.treatmentAction.unit === 'L' ||
-          prismaAction.treatmentAction.unit === 'ml'
-        ) {
-          const volumeInLiters =
+        // Only convert if quantity is not null
+        if (convertedQuantity !== null) {
+          if (
+            prismaAction.treatmentAction.unit === 'L' ||
             prismaAction.treatmentAction.unit === 'ml'
-              ? prismaAction.treatmentAction.quantity / 1000
-              : prismaAction.treatmentAction.quantity;
-          const converted = this.convertVolumeForUser(
-            volumeInLiters,
-            unitPreference,
-          );
-          convertedQuantity = converted.value;
-          convertedTreatmentUnit = converted.unit;
-        } else if (
-          prismaAction.treatmentAction.unit === 'kg' ||
-          prismaAction.treatmentAction.unit === 'g'
-        ) {
-          const weightInKg =
-            prismaAction.treatmentAction.unit === 'g'
-              ? prismaAction.treatmentAction.quantity / 1000
-              : prismaAction.treatmentAction.quantity;
-          const converted = this.convertWeightForUser(
-            weightInKg,
-            unitPreference,
-          );
-          convertedQuantity = converted.value;
-          convertedTreatmentUnit = converted.unit;
+          ) {
+            const volumeInLiters =
+              prismaAction.treatmentAction.unit === 'ml'
+                ? convertedQuantity / 1000
+                : convertedQuantity;
+            const converted = this.convertVolumeForUser(
+              volumeInLiters,
+              unitPreference,
+            );
+            convertedQuantity = converted.value;
+            convertedTreatmentUnit = converted.unit;
+          } else if (prismaAction.treatmentAction.unit === 'g') {
+            // Use mass conversion for grams (g → oz for imperial)
+            const converted = this.convertMassForUser(
+              convertedQuantity,
+              unitPreference,
+            );
+            convertedQuantity = converted.value;
+            convertedTreatmentUnit = converted.unit;
+          }
+          // 'pcs' unit passes through unchanged - no conversion needed
         }
 
         return {

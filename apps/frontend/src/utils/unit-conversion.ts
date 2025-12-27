@@ -307,7 +307,7 @@ export function convertVolumeUnit(
 ): number {
   // First convert to liters as the base unit
   let liters = value;
-  
+
   switch (fromUnit.toLowerCase()) {
     case 'ml':
       liters = value / 1000;
@@ -325,7 +325,7 @@ export function convertVolumeUnit(
       liters = value / 0.264172;
       break;
   }
-  
+
   // Then convert from liters to target unit
   switch (toUnit.toLowerCase()) {
     case 'ml':
@@ -341,4 +341,126 @@ export function convertVolumeUnit(
     default:
       return liters;
   }
+}
+
+export interface MassUnit {
+  value: number;
+  unit: string;
+  label: string;
+}
+
+/**
+ * Convert mass from grams to user's preferred unit (for small quantities like treatments)
+ * @param massGrams - Mass in grams
+ * @param preference - User's unit preference
+ * @returns Formatted mass with unit
+ */
+export function formatMass(
+  massGrams: number,
+  preference: UnitPreference = 'metric',
+): MassUnit {
+  if (preference === 'imperial') {
+    const ounces = massGrams * 0.035274;
+    return {
+      value: Math.round(ounces * 10) / 10,
+      unit: 'oz',
+      label: `${Math.round(ounces * 10) / 10} oz`,
+    };
+  }
+
+  return {
+    value: Math.round(massGrams * 10) / 10,
+    unit: 'g',
+    label: `${Math.round(massGrams * 10) / 10} g`,
+  };
+}
+
+/**
+ * Convert user input mass to grams (for storage)
+ * @param value - Mass value in user's preferred unit
+ * @param unit - The unit the user entered ('g' or 'oz')
+ * @param preference - User's unit preference
+ * @returns Mass in grams
+ */
+export function parseMass(
+  value: number,
+  unit: string,
+  preference: UnitPreference = 'metric',
+): number {
+  if (preference === 'imperial' && unit === 'oz') {
+    return value / 0.035274; // Convert oz to grams
+  }
+  return value; // Already in grams
+}
+
+/**
+ * Get the appropriate mass unit label for user preference
+ * @param preference - User's unit preference
+ * @returns Mass unit label (g or oz)
+ */
+export function getMassUnit(preference: UnitPreference = 'metric'): string {
+  return preference === 'imperial' ? 'oz' : 'g';
+}
+
+/**
+ * Format treatment quantity based on unit type
+ * Handles ml (volume), g (mass), and pcs (count - no conversion)
+ * @param quantity - The quantity value
+ * @param unit - The storage unit ('ml', 'g', or 'pcs')
+ * @param preference - User's unit preference
+ * @returns Formatted quantity with unit
+ */
+export function formatTreatmentQuantity(
+  quantity: number,
+  unit: string,
+  preference: UnitPreference = 'metric',
+): { value: number; unit: string; label: string } {
+  if (unit === 'pcs') {
+    // Pieces don't convert - universal unit
+    return {
+      value: quantity,
+      unit: 'pcs',
+      label: `${quantity} pcs`,
+    };
+  }
+
+  if (unit === 'ml') {
+    // Convert ml to user's preferred volume unit
+    const volumeInLiters = quantity / 1000;
+    return formatVolume(volumeInLiters, preference);
+  }
+
+  if (unit === 'g') {
+    // Convert grams to user's preferred mass unit
+    return formatMass(quantity, preference);
+  }
+
+  // Fallback for unknown units
+  return {
+    value: quantity,
+    unit,
+    label: `${quantity} ${unit}`,
+  };
+}
+
+/**
+ * Get the display unit for treatment based on storage unit and user preference
+ * @param storageUnit - The unit used for storage ('ml', 'g', or 'pcs')
+ * @param preference - User's unit preference
+ * @returns Display unit string
+ */
+export function getTreatmentDisplayUnit(
+  storageUnit: string,
+  preference: UnitPreference = 'metric',
+): string {
+  if (storageUnit === 'pcs') {
+    return 'pcs';
+  }
+  if (storageUnit === 'ml') {
+    return preference === 'imperial' ? 'fl oz' : 'ml';
+  }
+  if (storageUnit === 'g') {
+    return preference === 'imperial' ? 'oz' : 'g';
+  }
+  return storageUnit;
 }
