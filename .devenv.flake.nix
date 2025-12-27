@@ -15,7 +15,7 @@
   container_name = null;
   active_profiles = [
   ];
-  hostname = "severus";
+  hostname = "donnie";
   username = "martin";
   git_root = "/home/martin/proj/hive-pal";
   secretspec = null;
@@ -52,7 +52,7 @@
   container_name = null;
   active_profiles = [
   ];
-  hostname = "severus";
+  hostname = "donnie";
   username = "martin";
   git_root = "/home/martin/proj/hive-pal";
   secretspec = null;

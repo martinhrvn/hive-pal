@@ -143,4 +143,47 @@ export class ApiariesService {
       throw error;
     }
   }
+
+  /**
+   * Admin only: Get all apiaries with coordinates for map display
+   */
+  async findAllWithCoordinates(): Promise<
+    {
+      id: string;
+      name: string;
+      latitude: number;
+      longitude: number;
+      userId: string;
+      hiveCount: number;
+    }[]
+  > {
+    this.logger.log('Admin: Fetching all apiaries with coordinates');
+
+    const apiaries = await this.prisma.apiary.findMany({
+      where: {
+        latitude: { not: null },
+        longitude: { not: null },
+      },
+      include: {
+        _count: {
+          select: { hives: true },
+        },
+      },
+    });
+
+    this.logger.log(
+      `Found ${apiaries.length} apiaries with coordinates`,
+    );
+
+    return apiaries
+      .filter((a) => a.latitude !== null && a.longitude !== null)
+      .map((apiary) => ({
+        id: apiary.id,
+        name: apiary.name,
+        latitude: apiary.latitude!,
+        longitude: apiary.longitude!,
+        userId: apiary.userId,
+        hiveCount: apiary._count.hives,
+      }));
+  }
 }

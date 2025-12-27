@@ -21,7 +21,8 @@
     "general": "General",
     "harvests": "Harvests",
     "allHarvests": "All Harvests",
-    "reports": "Reports"
+    "reports": "Reports",
+    "metrics": "Metrics"
   },
   "actions": {
     "save": "Save",

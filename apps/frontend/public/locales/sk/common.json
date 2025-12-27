@@ -21,7 +21,8 @@
     "general": "Všeobecné",
     "harvests": "Zbery",
     "allHarvests": "Všetky zbery",
-    "reports": "Reporty"
+    "reports": "Reporty",
+    "metrics": "Metriky"
   },
   "actions": {
     "save": "Uložiť",

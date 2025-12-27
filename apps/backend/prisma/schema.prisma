@@ -603,3 +603,22 @@ enum BatchHiveStatus {
   COMPLETED  // Inspection completed
   CANCELLED  // Hive removed from batch
 }
+
+// Platform metrics snapshot for admin observability
+model PlatformMetricsSnapshot {
+  id                  String   @id @default(uuid())
+  date                DateTime @unique // One snapshot per day
+  totalUsers          Int
+  totalApiaries       Int
+  totalHives          Int
+  totalInspections    Int
+  totalActions        Int
+  totalQueens         Int
+  totalHarvests       Int
+  totalEquipmentItems Int
+  activeUsers7Days    Int      // Users with activity in last 7 days
+  activeUsers30Days   Int      // Users with activity in last 30 days
+  createdAt           DateTime @default(now())
+
+  @@index([date])
+}

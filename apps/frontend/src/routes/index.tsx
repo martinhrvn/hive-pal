@@ -24,7 +24,7 @@ import {
   BatchInspectionPage,
 } from '@/pages/batch-inspection';
 import { CreateQueenPage } from '@/pages/queen';
-import { UserManagementPage, UserDetailPage, FeedbackManagementPage } from '@/pages/admin';
+import { UserManagementPage, UserDetailPage, FeedbackManagementPage, PlatformMetricsPage } from '@/pages/admin';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 import {
@@ -194,6 +194,14 @@ const router = createBrowserRouter([
         element: (
           <AdminProtectedRoute>
             <FeedbackManagementPage />
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/metrics',
+        element: (
+          <AdminProtectedRoute>
+            <PlatformMetricsPage />
           </AdminProtectedRoute>
         ),
       },

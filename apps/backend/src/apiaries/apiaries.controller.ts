@@ -12,7 +12,12 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ApiariesService } from './apiaries.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  JwtAuthGuard,
+  RolesGuard,
+  Roles,
+  Role,
+} from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
@@ -22,6 +27,7 @@ import {
   CreateApiary,
   UpdateApiary,
   ApiaryResponse,
+  ApiaryMapPoint,
 } from 'shared-schemas';
 
 @UseGuards(JwtAuthGuard)
@@ -45,6 +51,14 @@ export class ApiariesController {
       `Creating apiary with name ${createApiaryDto.name} for user ${req.user.id}`,
     );
     return this.apiariesService.create(createApiaryDto, req.user.id);
+  }
+
+  @Get('admin/map')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  findAllForMap(): Promise<ApiaryMapPoint[]> {
+    this.logger.log('Admin: Getting all apiaries for map display');
+    return this.apiariesService.findAllWithCoordinates();
   }
 
   @Get()

@@ -15,3 +15,4 @@ export * from './equipment';
 export * from './users';
 export * from './feedback';
 export * from './reports';
+export * from './platform-metrics';
