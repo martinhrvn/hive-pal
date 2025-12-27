@@ -1,4 +1,10 @@
-import { Box, BoxTypeEnum, BoxVariantEnum } from 'shared-schemas';
+import { useMemo } from 'react';
+import {
+  Box,
+  BoxTypeEnum,
+  BoxVariantEnum,
+  getCompatibleVariants,
+} from 'shared-schemas';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -12,18 +18,54 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 
+const getVariantLabel = (variant: BoxVariantEnum): string => {
+  const labels: Record<BoxVariantEnum, string> = {
+    [BoxVariantEnum.LANGSTROTH_DEEP]: 'Langstroth Deep',
+    [BoxVariantEnum.LANGSTROTH_SHALLOW]: 'Langstroth Shallow',
+    [BoxVariantEnum.B_DEEP]: 'B Deep',
+    [BoxVariantEnum.B_SHALLOW]: 'B Shallow',
+    [BoxVariantEnum.DADANT]: 'Dadant',
+    [BoxVariantEnum.NATIONAL_DEEP]: 'National Deep',
+    [BoxVariantEnum.NATIONAL_SHALLOW]: 'National Shallow',
+    [BoxVariantEnum.WARRE]: 'Warré',
+    [BoxVariantEnum.TOP_BAR]: 'Top Bar',
+    [BoxVariantEnum.CUSTOM]: 'Custom',
+  };
+  return labels[variant];
+};
+
 interface BoxConfigPanelProps {
   box: Box;
   onUpdate: (box: Box) => void;
+  mainBoxVariant?: BoxVariantEnum;
+  isMainBox?: boolean;
 }
 
-export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
+export const BoxConfigPanel = ({
+  box,
+  onUpdate,
+  mainBoxVariant,
+  isMainBox,
+}: BoxConfigPanelProps) => {
+  // Get available variants based on main box
+  const availableVariants = useMemo(() => {
+    if (isMainBox || !mainBoxVariant) {
+      // Main box can be any variant
+      return Object.values(BoxVariantEnum);
+    }
+    return getCompatibleVariants(mainBoxVariant);
+  }, [mainBoxVariant, isMainBox]);
+
   const handleTypeChange = (value: string) => {
     onUpdate({ ...box, type: value as BoxTypeEnum });
   };
 
   const handleVariantChange = (value: string) => {
     onUpdate({ ...box, variant: value as BoxVariantEnum });
+  };
+
+  const handleWinterizedChange = (checked: boolean) => {
+    onUpdate({ ...box, winterized: checked });
   };
 
   const handleFrameCountChange = (value: number[]) => {
@@ -78,28 +120,19 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
               <SelectValue placeholder="Select box type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={BoxVariantEnum.LANGSTROTH_DEEP}>
-                Langstroth Deep
-              </SelectItem>
-              <SelectItem value={BoxVariantEnum.LANGSTROTH_SHALLOW}>
-                Langstroth Shallow
-              </SelectItem>
-              <SelectItem value={BoxVariantEnum.B_DEEP}>B Deep</SelectItem>
-              <SelectItem value={BoxVariantEnum.B_SHALLOW}>
-                B Shallow
-              </SelectItem>
-              <SelectItem value={BoxVariantEnum.DADANT}>Dadant</SelectItem>
-              <SelectItem value={BoxVariantEnum.NATIONAL_DEEP}>
-                National Deep
-              </SelectItem>
-              <SelectItem value={BoxVariantEnum.NATIONAL_SHALLOW}>
-                National Shallow
-              </SelectItem>
-              <SelectItem value={BoxVariantEnum.WARRE}>Warré</SelectItem>
-              <SelectItem value={BoxVariantEnum.TOP_BAR}>Top Bar</SelectItem>
-              <SelectItem value={BoxVariantEnum.CUSTOM}>Custom</SelectItem>
+              {availableVariants.map((variant) => (
+                <SelectItem key={variant} value={variant}>
+                  {getVariantLabel(variant)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
+          {!isMainBox && mainBoxVariant && (
+            <p className="text-xs text-muted-foreground">
+              Only variants compatible with {getVariantLabel(mainBoxVariant)} are
+              shown
+            </p>
+          )}
         </div>
 
         {/* Frame Count */}
@@ -163,6 +196,21 @@ export const BoxConfigPanel = ({ box, onUpdate }: BoxConfigPanelProps) => {
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Queen excluder above this box
+          </Label>
+        </div>
+
+        {/* Winterized */}
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="winterized"
+            checked={box.winterized ?? false}
+            onCheckedChange={handleWinterizedChange}
+          />
+          <Label
+            htmlFor="winterized"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Winterized
           </Label>
         </div>
 

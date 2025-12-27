@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
 import { cn } from '@/lib/utils';
-import { Package } from 'lucide-react';
+import { Package, Snowflake } from 'lucide-react';
 import { AlertsPopover } from '@/components/alerts';
 
 interface HiveCardProps {
@@ -59,6 +59,9 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
     ? [...hive.boxes].sort((a, b) => b.position - a.position).slice(0, 4)
     : [];
 
+  // Check if any box is winterized
+  const isWinterized = hive.boxes?.some((box) => box.winterized) ?? false;
+
   return (
     <Card
       className={cn(
@@ -70,9 +73,14 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
       {/* Header with hive info */}
       <div className="space-y-0.5 px-2">
         <div className="flex items-center justify-between">
-          <h4 className="font-medium text-sm truncate">{hive.name}</h4>
+          <div className="flex items-center gap-1 min-w-0">
+            {isWinterized && (
+              <Snowflake className="h-3.5 w-3.5 text-blue-500 flex-shrink-0 drop-shadow-sm" />
+            )}
+            <h4 className="font-medium text-sm truncate">{hive.name}</h4>
+          </div>
           <div
-            className={cn('w-2 h-2 rounded-full', getStatusColor(hive.status))}
+            className={cn('w-2 h-2 rounded-full flex-shrink-0', getStatusColor(hive.status))}
           />
         </div>
 

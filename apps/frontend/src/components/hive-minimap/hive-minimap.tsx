@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { useHivesWithBoxes } from '@/api/hooks';
-import { Package } from 'lucide-react';
+import { Package, Snowflake } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface HiveMinimapProps {
@@ -65,6 +65,9 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
     ? [...hive.boxes].sort((a, b) => b.position - a.position).slice(0, 3)
     : [];
 
+  // Check if any box is winterized
+  const isWinterized = hive.boxes?.some((box) => box.winterized) ?? false;
+
   return (
     <div
       className="group cursor-pointer hover:scale-110 transition-transform flex flex-col items-center"
@@ -79,6 +82,13 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
             getStatusColor(hive.status),
           )}
         />
+
+        {/* Winterized indicator */}
+        {isWinterized && (
+          <div className="absolute -top-1 -left-1 z-10">
+            <Snowflake className="h-3.5 w-3.5 text-blue-500 [filter:drop-shadow(0_0_2px_white)_drop-shadow(0_0_1px_white)]" />
+          </div>
+        )}
 
         {/* Mini hive visualization */}
         {sortedBoxes.length > 0 ? (

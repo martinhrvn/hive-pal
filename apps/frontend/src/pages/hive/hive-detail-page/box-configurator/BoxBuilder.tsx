@@ -1,10 +1,19 @@
-import { useState, useCallback, useImperativeHandle, forwardRef } from 'react';
+import {
+  useState,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+  useMemo,
+} from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import {
   Box,
   BoxTypeEnum,
   BoxVariantEnum,
+  getHiveSystem,
+  getEquivalentVariant,
+  isVariantCompatible,
 } from 'shared-schemas';
 import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
@@ -25,6 +34,13 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
   ({ initialBoxes = [], onChange, simplified = false }, ref) => {
     const [boxes, setBoxes] = useState<Box[]>(initialBoxes);
     const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
+
+    // Get main box variant (position 0)
+    const mainBox = useMemo(
+      () => boxes.find((b) => b.position === 0),
+      [boxes],
+    );
+    const mainBoxVariant = mainBox?.variant;
 
     useImperativeHandle(ref, () => ({
       getBoxes: () => boxes,
@@ -66,15 +82,43 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
       [selectedBoxId, onChange],
     );
 
-    const handleBoxUpdate = useCallback((updatedBox: Box) => {
-      setBoxes(prevBoxes => {
-        const updated = prevBoxes.map(box => 
-          box.id === updatedBox.id ? updatedBox : box
-        );
-        onChange?.(updated);
-        return updated;
-      });
-    }, [onChange]);
+    const handleBoxUpdate = useCallback(
+      (updatedBox: Box) => {
+        setBoxes((prevBoxes) => {
+          // If updating main box (position 0) variant, auto-convert incompatible boxes
+          if (updatedBox.position === 0 && updatedBox.variant) {
+            const newSystem = getHiveSystem(updatedBox.variant);
+
+            const updated = prevBoxes.map((box) => {
+              if (box.id === updatedBox.id) {
+                return updatedBox;
+              }
+
+              // Check if other boxes need variant update
+              if (
+                box.variant &&
+                !isVariantCompatible(updatedBox.variant, box.variant)
+              ) {
+                // Auto-convert to equivalent in new system
+                const newVariant = getEquivalentVariant(box.variant, newSystem);
+                return { ...box, variant: newVariant };
+              }
+
+              return box;
+            });
+            onChange?.(updated);
+            return updated;
+          }
+
+          const updated = prevBoxes.map((box) =>
+            box.id === updatedBox.id ? updatedBox : box,
+          );
+          onChange?.(updated);
+          return updated;
+        });
+      },
+      [onChange],
+    );
 
     const handleReorder = useCallback((newBoxes: Box[]) => {
       const sortedBoxes = [...newBoxes].sort((a, b) => a.position - b.position);
@@ -121,7 +165,12 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
               {selectedBox ? (
                 <>
                   <div className="font-medium text-sm mb-3">Configure Selected Box</div>
-                  <CompactBoxConfig box={selectedBox} onUpdate={handleBoxUpdate} />
+                  <CompactBoxConfig
+                    box={selectedBox}
+                    onUpdate={handleBoxUpdate}
+                    mainBoxVariant={mainBoxVariant}
+                    isMainBox={selectedBox.position === 0}
+                  />
                 </>
               ) : (
                 <div className="text-sm text-muted-foreground text-center py-8">
@@ -159,7 +208,12 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
 
         {selectedBox && (
           <div className="lg:col-span-1">
-            <BoxConfigPanel box={selectedBox} onUpdate={handleBoxUpdate} />
+            <BoxConfigPanel
+              box={selectedBox}
+              onUpdate={handleBoxUpdate}
+              mainBoxVariant={mainBoxVariant}
+              isMainBox={selectedBox.position === 0}
+            />
           </div>
         )}
       </div>

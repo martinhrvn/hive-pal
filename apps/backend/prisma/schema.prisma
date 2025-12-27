@@ -92,6 +92,7 @@ model Box {
   variant       BoxVariant? // LANGSTROTH_DEEP, LANGSTROTH_SHALLOW, etc.
   color         String? // Hex color code for visual representation
   lastSanitized DateTime? // When this box position was last replaced with a sanitized box
+  winterized    Boolean     @default(false) // Whether this box is prepared for winter
 
   @@index([hiveId])
   @@index([hiveId, position]) // For looking up boxes by position in a hive

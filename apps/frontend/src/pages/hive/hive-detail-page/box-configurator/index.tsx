@@ -1,17 +1,21 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Save, X } from 'lucide-react';
+import { Plus, Save, X, Snowflake } from 'lucide-react';
 import {
   HiveDetailResponse,
   Box,
   BoxTypeEnum,
   BoxVariantEnum,
+  getHiveSystem,
+  getEquivalentVariant,
+  isVariantCompatible,
 } from 'shared-schemas';
 import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
 import { useUpdateHiveBoxes } from '@/api/hooks/useHives';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface BoxConfiguratorProps {
   hive: HiveDetailResponse | undefined;
@@ -22,6 +26,29 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const updateBoxesMutation = useUpdateHiveBoxes();
+
+  // Get main box variant (position 0)
+  const mainBox = useMemo(
+    () => boxes.find((b) => b.position === 0),
+    [boxes],
+  );
+  const mainBoxVariant = mainBox?.variant;
+
+  // Check winterization status
+  const allWinterized = useMemo(
+    () => boxes.length > 0 && boxes.every((b) => b.winterized),
+    [boxes],
+  );
+  const anyWinterized = useMemo(
+    () => boxes.some((b) => b.winterized),
+    [boxes],
+  );
+
+  const handleWinterizeAll = useCallback((winterized: boolean) => {
+    setBoxes((prevBoxes) =>
+      prevBoxes.map((box) => ({ ...box, winterized })),
+    );
+  }, []);
 
   const handleAddBox = useCallback(() => {
     const newBox: Box = {
@@ -57,9 +84,34 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
   );
 
   const handleBoxUpdate = useCallback((updatedBox: Box) => {
-    setBoxes(prevBoxes =>
-      prevBoxes.map(box => (box.id === updatedBox.id ? updatedBox : box)),
-    );
+    setBoxes((prevBoxes) => {
+      // If updating main box (position 0) variant, auto-convert incompatible boxes
+      if (updatedBox.position === 0 && updatedBox.variant) {
+        const newSystem = getHiveSystem(updatedBox.variant);
+
+        return prevBoxes.map((box) => {
+          if (box.id === updatedBox.id) {
+            return updatedBox;
+          }
+
+          // Check if other boxes need variant update
+          if (
+            box.variant &&
+            !isVariantCompatible(updatedBox.variant, box.variant)
+          ) {
+            // Auto-convert to equivalent in new system
+            const newVariant = getEquivalentVariant(box.variant, newSystem);
+            return { ...box, variant: newVariant };
+          }
+
+          return box;
+        });
+      }
+
+      return prevBoxes.map((box) =>
+        box.id === updatedBox.id ? updatedBox : box,
+      );
+    });
   }, []);
 
   const handleReorder = useCallback((newBoxes: Box[]) => {
@@ -109,6 +161,24 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
+                    <Button
+                      onClick={() => handleWinterizeAll(!allWinterized)}
+                      variant="outline"
+                      size="sm"
+                      title={
+                        allWinterized
+                          ? 'Remove winterization'
+                          : 'Winterize all boxes'
+                      }
+                    >
+                      <Snowflake
+                        className={cn(
+                          'h-4 w-4 mr-1',
+                          anyWinterized && 'text-blue-500',
+                        )}
+                      />
+                      {allWinterized ? 'Unwinterize' : 'Winterize All'}
+                    </Button>
                     <Button onClick={handleCancel} variant="outline" size="sm">
                       <X className="h-4 w-4 mr-1" />
                       Cancel
@@ -169,7 +239,12 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
 
       {isEditing && selectedBox && (
         <div className="lg:col-span-1">
-          <BoxConfigPanel box={selectedBox} onUpdate={handleBoxUpdate} />
+          <BoxConfigPanel
+            box={selectedBox}
+            onUpdate={handleBoxUpdate}
+            mainBoxVariant={mainBoxVariant}
+            isMainBox={selectedBox.position === 0}
+          />
         </div>
       )}
     </div>

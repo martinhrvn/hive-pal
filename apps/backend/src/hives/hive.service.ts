@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { InspectionsService } from '../inspections/inspections.service';
@@ -22,6 +26,7 @@ import {
   HiveSettings,
   AlertSeverity,
   AlertStatus,
+  isVariantCompatible,
 } from 'shared-schemas';
 
 @Injectable()
@@ -82,6 +87,7 @@ export class HiveService {
             type: box.type,
             variant: box.variant,
             color: box.color,
+            winterized: box.winterized ?? false,
           })),
         });
         this.logger.log(`Created ${boxes.length} boxes for hive ${hive.id}`);
@@ -211,6 +217,7 @@ export class HiveService {
             type: box.type as BoxTypeEnum,
             variant: box.variant as BoxVariantEnum,
             color: box.color ?? undefined,
+            winterized: box.winterized,
           })),
         };
       }
@@ -312,6 +319,8 @@ export class HiveService {
         hasExcluder: box.hasExcluder,
         color: box.color ?? undefined,
         type: box.type as BoxTypeEnum,
+        variant: box.variant as BoxVariantEnum,
+        winterized: box.winterized,
       })),
       hiveScore: score,
       activeQueen: activeQueen
@@ -508,6 +517,27 @@ export class HiveService {
     const framesAdded = Math.max(0, newFrameCount - oldFrameCount);
     const framesRemoved = Math.max(0, oldFrameCount - newFrameCount);
 
+    // Validate variant compatibility
+    if (newBoxes.length > 0) {
+      const mainBox = newBoxes.find((b) => b.position === 0);
+      const mainBoxVariant = mainBox?.variant;
+      if (mainBoxVariant) {
+        const incompatibleBoxes = newBoxes.filter(
+          (b) =>
+            b.position !== 0 &&
+            b.variant &&
+            !isVariantCompatible(mainBoxVariant, b.variant),
+        );
+
+        if (incompatibleBoxes.length > 0) {
+          throw new BadRequestException(
+            `Boxes at positions ${incompatibleBoxes.map((b) => b.position).join(', ')} ` +
+              `are not compatible with the main box variant (${mainBoxVariant})`,
+          );
+        }
+      }
+    }
+
     this.logger.debug(`Found hive, proceeding with box updates`);
     // Use a transaction to ensure atomicity
     const updatedHive = await this.prisma.$transaction(async (tx) => {
@@ -532,8 +562,9 @@ export class HiveService {
             hasExcluder: box.hasExcluder,
             type: box.type, // BoxType enum matches our DTO enum
             maxFrameCount: box.maxFrameCount,
-            variant: box.variant, // New field for box variant
-            color: box.color, // New field for box color
+            variant: box.variant,
+            color: box.color,
+            winterized: box.winterized ?? false,
           },
         });
       });

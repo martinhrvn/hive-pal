@@ -1,7 +1,7 @@
 import { Box, BoxVariantEnum } from 'shared-schemas';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronUp, ChevronDown, X, Package } from 'lucide-react';
+import { ChevronUp, ChevronDown, X, Package, Snowflake } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BoxItemProps {
@@ -101,6 +101,13 @@ export const BoxItem = ({
       }}
       onClick={isEditing ? onSelect : undefined}
     >
+      {/* Winterized indicator in upper left */}
+      {box.winterized && (
+        <div className="absolute top-2 left-2">
+          <Snowflake className="h-5 w-5 text-blue-400 [filter:drop-shadow(0_0_2px_white)_drop-shadow(0_0_1px_white)]" />
+        </div>
+      )}
+
       {/* Type badge in upper right */}
       <div className="absolute top-2 right-2">
         <Badge
