@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { TrendData, HiveHealthTrend } from 'shared-schemas';
+import type { TrendData } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
 
 type ScoreType = 'overallScore' | 'populationScore' | 'storesScore' | 'queenScore';

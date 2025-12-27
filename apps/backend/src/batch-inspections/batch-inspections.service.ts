@@ -5,6 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import {
   CreateBatchInspection,
   UpdateBatchInspection,
@@ -16,6 +17,24 @@ import {
   CreateInspection,
 } from 'shared-schemas';
 import { InspectionsService } from '../inspections/inspections.service';
+
+// Type for batch inspection with included hives
+type BatchInspectionWithHives = Prisma.BatchInspectionGetPayload<{
+  include: {
+    hives: {
+      include: {
+        hive: {
+          select: {
+            id: true;
+            name: true;
+            status: true;
+            apiaryId: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 
 @Injectable()
 export class BatchInspectionsService {
@@ -516,7 +535,7 @@ export class BatchInspectionsService {
     let next: CurrentHiveToInspect | null = null;
     try {
       next = await this.getCurrentHive(id, apiaryId, userId);
-    } catch (error) {
+    } catch {
       // No more hives - batch is complete
       next = null;
     }
@@ -586,8 +605,10 @@ export class BatchInspectionsService {
   /**
    * Map database model to response DTO
    */
-  private mapToResponse(batch: any): BatchInspectionResponse {
-    const hives = batch.hives || [];
+  private mapToResponse(
+    batch: BatchInspectionWithHives,
+  ): BatchInspectionResponse {
+    const hives = batch.hives;
     const completed = hives.filter(
       (h) => h.status === BatchHiveStatus.COMPLETED,
     ).length;

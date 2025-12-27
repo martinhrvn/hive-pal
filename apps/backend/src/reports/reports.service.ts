@@ -438,7 +438,6 @@ export class ReportsService {
     });
 
     const hiveIds = hives.map((h) => h.id);
-    const hiveMap = new Map(hives.map((h) => [h.id, h.name]));
 
     // Get all harvests in the date range
     const harvests = await this.prisma.harvest.findMany({
@@ -643,7 +642,9 @@ export class ReportsService {
 
     // Calculate per-hive trends
     const hiveHealthTrends = hives.map((hive) => {
-      const monthsMap = hiveInspectionsByMonth.get(hive.id) || new Map();
+      const monthsMap =
+        hiveInspectionsByMonth.get(hive.id) ||
+        new Map<string, (typeof inspections)[number][]>();
       const dataPoints = Array.from(monthsMap.entries())
         .map(([, monthInspections]) => {
           // Calculate average scores for this hive for this month

@@ -49,7 +49,9 @@ export class PlatformMetricsController {
   }
 
   @Get('latest')
-  @ApiOperation({ summary: 'Get latest platform metrics snapshot (admin only)' })
+  @ApiOperation({
+    summary: 'Get latest platform metrics snapshot (admin only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Latest platform metrics snapshot',

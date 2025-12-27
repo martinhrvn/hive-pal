@@ -17,11 +17,11 @@ import {
   Timer,
   CheckCircle2,
   SkipForward,
-  X,
   ArrowRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { InspectionForm } from '@/pages/inspection/components/inspection-form';
+import type { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema';
 import {
   Dialog,
   DialogContent,
@@ -113,7 +113,7 @@ export const BatchInspectionPage = () => {
     });
   };
 
-  const handleInspectionSubmit = (data: any) => {
+  const handleInspectionSubmit = (data: InspectionFormData) => {
     // Transform inspection form data to API format
     const inspectionData = {
       ...data,

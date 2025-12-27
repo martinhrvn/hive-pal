@@ -7,6 +7,7 @@ import {
   BatchInspectionResponse,
   CurrentHiveToInspect,
   CreateInspection,
+  InspectionResponse,
 } from 'shared-schemas';
 
 // Query keys
@@ -237,7 +238,7 @@ export const useCreateInspectionAndNext = () => {
       inspectionData: CreateInspection;
     }) => {
       const response = await apiClient.post<{
-        inspection: any;
+        inspection: InspectionResponse;
         next: CurrentHiveToInspect | null;
       }>(`/api/batch-inspections/${batchId}/inspect`, inspectionData);
       return response.data;

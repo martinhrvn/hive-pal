@@ -171,9 +171,7 @@ export class ApiariesService {
       },
     });
 
-    this.logger.log(
-      `Found ${apiaries.length} apiaries with coordinates`,
-    );
+    this.logger.log(`Found ${apiaries.length} apiaries with coordinates`);
 
     return apiaries
       .filter((a) => a.latitude !== null && a.longitude !== null)

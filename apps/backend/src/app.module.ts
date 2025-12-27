@@ -28,7 +28,6 @@ import { MailModule } from './mail/mail.module';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { ReportsModule } from './reports/reports.module';
 import { StorageModule } from './storage/storage.module';
-import { InspectionAudioModule } from './inspection-audio/inspection-audio.module';
 import { PlatformMetricsModule } from './platform-metrics/platform-metrics.module';
 
 @Module({

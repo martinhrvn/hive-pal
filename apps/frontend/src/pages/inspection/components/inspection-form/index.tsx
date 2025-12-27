@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import {
   Form,
   FormControl,
@@ -37,15 +37,13 @@ import {
   useInspection,
   useHive,
   useWeatherForDate,
-  useCreateInspection,
-  useUpdateInspection,
   useUpsertInspection,
 } from '@/api/hooks';
 import { ActionType, InspectionStatus } from 'shared-schemas';
 import { mapWeatherConditionToForm } from '@/utils/weather-mapping';
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { AudioSection, uploadPendingRecordings } from './audio-section';
+import { AudioSection } from './audio-section';
 
 interface PendingRecording {
   id: string;
@@ -184,64 +182,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       onSubmit(data, InspectionStatus.COMPLETED);
     }
   });
-  const navigate = useNavigate();
-  const createInspection = useCreateInspection();
-  const updateInspection = useUpdateInspection();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Transform form data to API format
-  const transformFormData = (
-    data: InspectionFormData,
-    status?: InspectionStatus,
-  ) => {
-    const transformedActions = data.actions
-      ?.map(action => {
-        switch (action.type) {
-          case 'FEEDING':
-            return {
-              type: action.type,
-              notes: action.notes,
-              details: {
-                type: action.type,
-                feedType: action.feedType,
-                amount: action.quantity,
-                unit: action.unit,
-                concentration: action.concentration,
-              },
-            };
-          case 'TREATMENT':
-            return {
-              type: action.type,
-              notes: action.notes,
-              details: {
-                type: action.type,
-                product: action.treatmentType,
-                quantity: action.amount,
-                unit: action.unit,
-              },
-            };
-          case 'FRAME':
-            return {
-              type: ActionType.FRAME,
-              notes: action.notes,
-              details: {
-                type: ActionType.FRAME,
-                quantity: action.frames,
-              },
-            };
-          default:
-            return null;
-        }
-      })
-      .filter(Boolean);
-
-    return {
-      ...data,
-      date: data.date.toISOString(),
-      status: status || data.status,
-      actions: transformedActions,
-    };
-  };
 
   const date = form.watch('date');
   const isInFuture = date && date > new Date();
