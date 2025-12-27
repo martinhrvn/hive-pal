@@ -13,7 +13,11 @@ export class TreatmentSectionPageObject {
   }
 
   getTreatmentTypeField() {
-    return this.page.getByRole('combobox');
+    return this.page.getByRole('combobox').first();
+  }
+
+  getProductNameField() {
+    return this.page.getByRole('textbox', { name: 'Product Name' });
   }
 
   selectTreatmentType(treatmentType: string) {
@@ -40,10 +44,13 @@ export class TreatmentSectionPageObject {
       .getByRole('button', { name: 'Delete' });
   }
 
-  async fillTreatmentForm(treatmentType: string, amount: string) {
+  async fillTreatmentForm(treatmentType: string, amount: string, productName?: string) {
     if (treatmentType !== 'Oxalic Acid') {
       await this.getTreatmentTypeField().click();
       await this.selectTreatmentType(treatmentType);
+    }
+    if (treatmentType === 'Other') {
+      await this.getProductNameField().fill(productName ?? 'Custom Treatment');
     }
     await this.getAmountField().fill(amount);
     await this.getSaveButton().click();

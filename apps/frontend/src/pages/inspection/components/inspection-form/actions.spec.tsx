@@ -146,14 +146,14 @@ test.describe('Treatment', () => {
     await actionsSection.selectAction('Treatment');
 
     await treatmentSection.fillTreatmentForm('Thymol', '15');
-    await treatmentSection.verifyTreatmentView('15', 'Thymol', 'ml');
+    await treatmentSection.verifyTreatmentView('15', 'Thymol', 'g');
 
     await treatmentSection.getEditButton().click();
     await expect(page.getByTestId(TEST_SELECTORS.TREATMENT_FORM)).toBeVisible();
     await treatmentSection.getAmountField().fill('20');
     await treatmentSection.getSaveButton().click();
 
-    await treatmentSection.verifyTreatmentView('20', 'Thymol', 'ml');
+    await treatmentSection.verifyTreatmentView('20', 'Thymol', 'g');
   });
 
   test('Remove should work', async ({ page, mount }) => {
@@ -163,7 +163,7 @@ test.describe('Treatment', () => {
     await actionsSection.selectAction('Treatment');
 
     await treatmentSection.fillTreatmentForm('Other', '30');
-    await treatmentSection.verifyTreatmentView('30', 'Other', 'ml');
+    await treatmentSection.verifyTreatmentView('30', 'Custom Treatment', 'pcs');
 
     await treatmentSection.getRemoveButton().click();
     await expect(
