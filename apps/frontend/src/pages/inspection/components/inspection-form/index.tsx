@@ -187,6 +187,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const isInFuture = date && date > new Date();
   const isEdit = Boolean(inspectionId);
   const isCompleted = inspection?.status === InspectionStatus.COMPLETED;
+  const { isSubmitting } = form.formState;
   return (
     <div className={'max-w-4xl ml-4'}>
       <h1 className={'text-lg font-bold'}>
