@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -14,9 +15,18 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
-import MapPicker from '@/components/common/map-picker.tsx';
 import { useCreateApiary } from '@/api/hooks';
+
+// Lazy load the map component (heavy ~200KB)
+const MapPicker = lazy(() => import('@/components/common/map-picker.tsx'));
+
+function MapLoader() {
+  return (
+    <div className="flex h-96 items-center justify-center bg-muted/50 rounded-md border">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    </div>
+  );
+}
 
 export type ApiaryFormData = z.infer<typeof apiariesSchema>;
 
@@ -97,12 +107,14 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           )}
         />
 
-        <MapPicker
-          onLocationSelect={({ latitude, longitude }) => {
-            form.setValue('latitude', latitude);
-            form.setValue('longitude', longitude);
-          }}
-        />
+        <Suspense fallback={<MapLoader />}>
+          <MapPicker
+            onLocationSelect={({ latitude, longitude }) => {
+              form.setValue('latitude', latitude);
+              form.setValue('longitude', longitude);
+            }}
+          />
+        </Suspense>
         <div className="flex justify-end">
           <Button
             type="button"

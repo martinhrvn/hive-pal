@@ -1,3 +1,3 @@
 export * from './create-apiary-page';
 export * from './apiary-list-page';
-export * from './apiary-detail-page';
+// apiary-detail-page is lazy-loaded directly in routes/index.tsx

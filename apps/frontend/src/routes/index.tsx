@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from '@/pages/login-page.tsx';
 import RegisterPage from '@/pages/register-page.tsx';
@@ -10,7 +11,6 @@ import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
 import { CreateHivePage, HiveListPage } from '@/pages/hive';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
-import { QRCodesPrintPage } from '@/pages/hive/qr-codes-print-page';
 import {
   CreateInspectionPage,
   InspectionDetailPage,
@@ -18,34 +18,61 @@ import {
   InspectionListPage,
   ScheduleInspectionPage,
 } from '@/pages/inspection';
-import {
-  BatchListPage,
-  BatchDetailPage,
-  BatchInspectionPage,
-} from '@/pages/batch-inspection';
 import { CreateQueenPage } from '@/pages/queen';
-import { UserManagementPage, UserDetailPage, FeedbackManagementPage, PlatformMetricsPage } from '@/pages/admin';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 import {
   CreateApiaryPage,
   ApiaryListPage,
-  ApiaryDetailPage,
 } from '@/pages/apiaries';
-import { UserWizardPage } from '@/pages/onboarding';
-import { HarvestListPage } from '@/pages/harvest/harvest-list-page';
-import { HarvestDetailPage } from '@/pages/harvest/harvest-detail-page';
 import { ReleasesPage } from '@/pages/releases';
-import {
-  EquipmentPlanningPage,
-  EquipmentSettingsPage,
-} from '@/pages/equipment';
-import { BulkActionsPage } from '@/pages/actions/bulk-actions-page';
-import { CalendarPage } from '@/pages/calendar';
 import { UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
-import { ReportsPage } from '@/pages/reports';
+
+// Lazy loaded components - heavy pages that benefit from code splitting
+// Admin pages (only accessed by admins)
+const UserManagementPage = lazy(() => import('@/pages/admin/user-management/user-management-page'));
+const UserDetailPage = lazy(() => import('@/pages/admin/user-detail/user-detail-page'));
+const FeedbackManagementPage = lazy(() => import('@/pages/admin/feedback-management/feedback-management-page'));
+const PlatformMetricsPage = lazy(() => import('@/pages/admin/platform-metrics/platform-metrics-page'));
+
+// Heavy feature pages (named exports)
+const ReportsPage = lazy(() => import('@/pages/reports/reports-page').then(m => ({ default: m.ReportsPage })));
+const CalendarPage = lazy(() => import('@/pages/calendar/calendar-page').then(m => ({ default: m.CalendarPage })));
+const ApiaryDetailPage = lazy(() => import('@/pages/apiaries/apiary-detail-page').then(m => ({ default: m.ApiaryDetailPage })));
+
+// Equipment pages (specialized feature, named exports)
+const EquipmentPlanningPage = lazy(() => import('@/pages/equipment/equipment-planning-page').then(m => ({ default: m.EquipmentPlanningPage })));
+const EquipmentSettingsPage = lazy(() => import('@/pages/equipment/equipment-settings-page').then(m => ({ default: m.EquipmentSettingsPage })));
+
+// Batch inspection pages (less frequently used, named exports)
+const BatchListPage = lazy(() => import('@/pages/batch-inspection/batch-list-page').then(m => ({ default: m.BatchListPage })));
+const BatchDetailPage = lazy(() => import('@/pages/batch-inspection/batch-detail-page').then(m => ({ default: m.BatchDetailPage })));
+const BatchInspectionPage = lazy(() => import('@/pages/batch-inspection/batch-inspection-page').then(m => ({ default: m.BatchInspectionPage })));
+
+// Harvest pages (seasonal/periodic use, named exports)
+const HarvestListPage = lazy(() => import('@/pages/harvest/harvest-list-page').then(m => ({ default: m.HarvestListPage })));
+const HarvestDetailPage = lazy(() => import('@/pages/harvest/harvest-detail-page').then(m => ({ default: m.HarvestDetailPage })));
+
+// Other less frequently used pages (named exports)
+const QRCodesPrintPage = lazy(() => import('@/pages/hive/qr-codes-print-page').then(m => ({ default: m.QRCodesPrintPage })));
+const BulkActionsPage = lazy(() => import('@/pages/actions/bulk-actions-page').then(m => ({ default: m.BulkActionsPage })));
+const UserWizardPage = lazy(() => import('@/pages/onboarding/user-wizard-page').then(m => ({ default: m.UserWizardPage })));
+
+// Loading fallback component
+function PageLoader() {
+  return (
+    <div className="flex h-64 items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  );
+}
+
+// Wrapper for lazy-loaded components
+function LazyPage({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<PageLoader />}>{children}</Suspense>;
+}
 
 const router = createBrowserRouter([
   {
@@ -67,7 +94,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/apiaries/:id',
-        element: <ApiaryDetailPage />,
+        element: <LazyPage><ApiaryDetailPage /></LazyPage>,
       },
       {
         path: '/apiaries/create',
@@ -87,7 +114,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/hives/qr-codes/print',
-        element: <QRCodesPrintPage />,
+        element: <LazyPage><QRCodesPrintPage /></LazyPage>,
       },
       {
         path: '/hives/:hiveId/inspections/create',
@@ -119,15 +146,15 @@ const router = createBrowserRouter([
       },
       {
         path: '/batch-inspections',
-        element: <BatchListPage />,
+        element: <LazyPage><BatchListPage /></LazyPage>,
       },
       {
         path: '/batch-inspections/:id',
-        element: <BatchDetailPage />,
+        element: <LazyPage><BatchDetailPage /></LazyPage>,
       },
       {
         path: '/batch-inspections/:id/inspect',
-        element: <BatchInspectionPage />,
+        element: <LazyPage><BatchInspectionPage /></LazyPage>,
       },
       {
         path: '/queens/create',
@@ -139,31 +166,31 @@ const router = createBrowserRouter([
       },
       {
         path: '/harvests',
-        element: <HarvestListPage />,
+        element: <LazyPage><HarvestListPage /></LazyPage>,
       },
       {
         path: '/harvests/:harvestId',
-        element: <HarvestDetailPage />,
+        element: <LazyPage><HarvestDetailPage /></LazyPage>,
       },
       {
         path: '/equipment',
-        element: <EquipmentPlanningPage />,
+        element: <LazyPage><EquipmentPlanningPage /></LazyPage>,
       },
       {
         path: '/equipment/settings',
-        element: <EquipmentSettingsPage />,
+        element: <LazyPage><EquipmentSettingsPage /></LazyPage>,
       },
       {
         path: '/actions/bulk',
-        element: <BulkActionsPage />,
+        element: <LazyPage><BulkActionsPage /></LazyPage>,
       },
       {
         path: '/calendar',
-        element: <CalendarPage />,
+        element: <LazyPage><CalendarPage /></LazyPage>,
       },
       {
         path: '/reports',
-        element: <ReportsPage />,
+        element: <LazyPage><ReportsPage /></LazyPage>,
       },
       {
         path: '/settings',
@@ -177,7 +204,7 @@ const router = createBrowserRouter([
         path: '/admin/users',
         element: (
           <AdminProtectedRoute>
-            <UserManagementPage />
+            <LazyPage><UserManagementPage /></LazyPage>
           </AdminProtectedRoute>
         ),
       },
@@ -185,7 +212,7 @@ const router = createBrowserRouter([
         path: '/admin/users/:id',
         element: (
           <AdminProtectedRoute>
-            <UserDetailPage />
+            <LazyPage><UserDetailPage /></LazyPage>
           </AdminProtectedRoute>
         ),
       },
@@ -193,7 +220,7 @@ const router = createBrowserRouter([
         path: '/admin/feedback',
         element: (
           <AdminProtectedRoute>
-            <FeedbackManagementPage />
+            <LazyPage><FeedbackManagementPage /></LazyPage>
           </AdminProtectedRoute>
         ),
       },
@@ -201,7 +228,7 @@ const router = createBrowserRouter([
         path: '/admin/metrics',
         element: (
           <AdminProtectedRoute>
-            <PlatformMetricsPage />
+            <LazyPage><PlatformMetricsPage /></LazyPage>
           </AdminProtectedRoute>
         ),
       },
@@ -231,7 +258,7 @@ const router = createBrowserRouter([
     path: '/onboarding',
     element: (
       <ProtectedRoute>
-        <UserWizardPage />
+        <LazyPage><UserWizardPage /></LazyPage>
       </ProtectedRoute>
     ),
   },

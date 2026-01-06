@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useHives } from '@/api/hooks/useHives';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PrinterIcon, QrCodeIcon, ImageIcon } from 'lucide-react';
-import QRCode from 'react-qr-code';
 import {
   Select,
   SelectContent,
@@ -21,6 +20,17 @@ import {
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
+
+// Lazy load QR code library
+const QRCode = lazy(() => import('react-qr-code').then(m => ({ default: m.default })));
+
+function QRPreviewLoader() {
+  return (
+    <div className="flex h-20 w-20 items-center justify-center bg-muted/50 rounded">
+      <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    </div>
+  );
+}
 
 export function QRCodesPrintPage() {
   const { data: hives, isLoading } = useHives();
@@ -375,13 +385,15 @@ export function QRCodesPrintPage() {
                         className="flex flex-col items-center p-2 bg-white rounded border"
                       >
                         <div className="relative">
-                          <QRCode
-                            value={hiveUrl}
-                            size={80}
-                            level="H"
-                            bgColor="#ffffff"
-                            fgColor="#000000"
-                          />
+                          <Suspense fallback={<QRPreviewLoader />}>
+                            <QRCode
+                              value={hiveUrl}
+                              size={80}
+                              level="H"
+                              bgColor="#ffffff"
+                              fgColor="#000000"
+                            />
+                          </Suspense>
                           {includeLogo && (
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="bg-white p-0.5 rounded shadow-sm">

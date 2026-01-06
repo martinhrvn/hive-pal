@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Section } from '@/components/common/section';
@@ -5,13 +6,23 @@ import { ApiaryActionSidebar, HivesLayout } from './components';
 import { CalendarSubscriptionCard } from './components/calendar-subscription-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import MapPicker from '@/components/common/map-picker';
 import {
   MainContent,
   Page,
   Sidebar,
 } from '@/components/layout/page-grid-layout';
 import { useApiary } from '@/api/hooks';
+
+// Lazy load the map component (heavy ~200KB)
+const MapPicker = lazy(() => import('@/components/common/map-picker'));
+
+function MapLoader() {
+  return (
+    <div className="flex h-full items-center justify-center bg-muted/50 rounded-md">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    </div>
+  );
+}
 
 export const ApiaryDetailPage = () => {
   const { t } = useTranslation(['apiary', 'common']);
@@ -92,13 +103,15 @@ export const ApiaryDetailPage = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="h-[200px]">
-                      <MapPicker
-                        initialLocation={{
-                          lat: apiary.latitude,
-                          lng: apiary.longitude,
-                        }}
-                        readOnly
-                      />
+                      <Suspense fallback={<MapLoader />}>
+                        <MapPicker
+                          initialLocation={{
+                            lat: apiary.latitude,
+                            lng: apiary.longitude,
+                          }}
+                          readOnly
+                        />
+                      </Suspense>
                     </div>
                   </CardContent>
                 </Card>
@@ -116,13 +129,15 @@ export const ApiaryDetailPage = () => {
             <Section title={t('apiary:detail.apiaryLocation')}>
               {apiary.latitude && apiary.longitude ? (
                 <div className="h-[400px]">
-                  <MapPicker
-                    initialLocation={{
-                      lat: apiary.latitude,
-                      lng: apiary.longitude,
-                    }}
-                    readOnly
-                  />
+                  <Suspense fallback={<MapLoader />}>
+                    <MapPicker
+                      initialLocation={{
+                        lat: apiary.latitude,
+                        lng: apiary.longitude,
+                      }}
+                      readOnly
+                    />
+                  </Suspense>
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">

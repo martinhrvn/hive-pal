@@ -1,3 +1,4 @@
+import { lazy, Suspense, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,8 +9,17 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { PrinterIcon, QrCodeIcon } from 'lucide-react';
-import QRCode from 'react-qr-code';
-import { useRef } from 'react';
+
+// Lazy load QR code library
+const QRCode = lazy(() => import('react-qr-code').then(m => ({ default: m.default })));
+
+function QRLoader() {
+  return (
+    <div className="flex h-64 w-64 items-center justify-center bg-muted/50 rounded-lg">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    </div>
+  );
+}
 
 interface QRCodeDialogProps {
   hiveId: string;
@@ -117,13 +127,15 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
         </DialogHeader>
         <div className="flex flex-col items-center space-y-4 py-4">
           <div ref={qrCodeRef} className="bg-white p-4 rounded-lg border">
-            <QRCode
-              value={hiveUrl}
-              size={256}
-              level="H"
-              bgColor="#ffffff"
-              fgColor="#000000"
-            />
+            <Suspense fallback={<QRLoader />}>
+              <QRCode
+                value={hiveUrl}
+                size={256}
+                level="H"
+                bgColor="#ffffff"
+                fgColor="#000000"
+              />
+            </Suspense>
           </div>
           <div className="text-sm text-muted-foreground text-center break-all max-w-full px-4">
             {hiveUrl}
