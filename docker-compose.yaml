@@ -49,7 +49,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: beekeeper
     volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
+      - hivepal_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
       interval: 10s
