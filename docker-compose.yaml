@@ -51,60 +51,11 @@ services:
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
-      test: [ 'CMD-SHELL', 'pg_isready -U postgres -d beekeeper' ]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
       interval: 10s
       timeout: 5s
       retries: 5
   # Prometheus
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-    ports:
-      - '9090:9090'
-    depends_on:
-      - backend
-  loki:
-    image: grafana/loki
-    command:
-      - '-config.file=/etc/loki/loki-config.yaml'
-    volumes:
-      - './loki/loki-config.yaml:/etc/loki/loki-config.yaml'
-      - 'loki-data:/loki'
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - 'wget --tries=1 --spider http://localhost:3100/ready || exit 1'
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  # Grafana
-  grafana:
-    image: grafana/grafana:latest
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
-      - GF_USERS_ALLOW_SIGN_UP=false
-    ports:
-      - '3000:3000'
-    depends_on:
-      - prometheus
-  postgres-exporter:
-    image: quay.io/prometheuscommunity/postgres-exporter
-    ports:
-      - '9187:9187'
-    environment:
-      - DATA_SOURCE_NAME=${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper?sslmode=disable}
-    restart: unless-stopped
 volumes:
   postgres_data_prod:
   prometheus_data:
