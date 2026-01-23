@@ -23,9 +23,12 @@ RUN turbo run build --filter=backend...
 RUN ls -la /app
 # Stage 2: Production
 FROM node:22-alpine as production
-#
+RUN apk add --no-cache netcat-openbsd
 WORKDIR /app
 
 COPY --from=builder /app/ /app/
+COPY apps/backend/docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 EXPOSE 3000
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["node", "apps/backend/dist/src/main.js"]

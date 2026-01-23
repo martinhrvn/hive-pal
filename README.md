@@ -120,6 +120,7 @@ The `docker-compose.prod.yaml` file sets up three services:
    - Depends on PostgreSQL
    - Health endpoint: `/api/health`
    - Handles API requests and business logic
+   - **Automatic migrations**: Database migrations run automatically on startup
 
 3. **Frontend (React)**
    - Image: `ghcr.io/martinhrvn/hive-pal-frontend:latest`
