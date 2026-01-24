@@ -1,6 +1,8 @@
 services:
   backend:
     image: 'ghcr.io/martinhrvn/hive-pal-backend:latest'
+    ports:
+      - '3000:3000'
     environment:
       NODE_ENV: production
       ADMIN_EMAIL: '${ADMIN_EMAIL:-admin@example.com}'
@@ -29,6 +31,8 @@ services:
       start_period: 10s
   frontend:
     image: 'ghcr.io/martinhrvn/hive-pal-frontend:latest'
+    ports:
+      - '80:9000'
     depends_on:
       - backend
     healthcheck:

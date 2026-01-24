@@ -48,26 +48,32 @@ docker-compose -f docker-compose.prod.yaml down -v
 ```
 
 The application will be available at:
-- Frontend: Port needs to be exposed via docker-compose override or reverse proxy
-- Backend API: Port 3000 (internal to Docker network)
-- API Documentation: http://localhost:3000/api-docs (if port 3000 is exposed)
+- Frontend: http://localhost (port 80)
+- Backend API: http://localhost:3000
+- API Documentation: http://localhost:3000/api-docs
 
-### Port Configuration
+### Production Deployment with Traefik (Recommended)
 
-The default `docker-compose.prod.yaml` doesn't expose ports directly for security. To access the services:
+For production deployments with SSL/TLS, use the Traefik configuration:
 
-**Option 1: Add port mappings** (create `docker-compose.override.yaml`):
-```yaml
-services:
-  frontend:
-    ports:
-      - "80:9000"     # Expose frontend on port 80
-  backend:
-    ports:
-      - "3000:3000"   # Expose backend API on port 3000
+```bash
+# Set your domain and email for Let's Encrypt
+export DOMAIN=yourdomain.com
+export ACME_EMAIL=admin@yourdomain.com
+
+# Start with Traefik reverse proxy
+docker-compose -f docker-compose.traefik.yaml up -d
 ```
 
-**Option 2: Use a reverse proxy** (recommended for production) - Configure nginx/Caddy to proxy requests to the Docker services.
+This provides:
+- Automatic HTTPS with Let's Encrypt certificates
+- Frontend at `https://yourdomain.com`
+- Backend API at `https://api.yourdomain.com`
+- Automatic HTTP to HTTPS redirect
+
+Required DNS records:
+- `yourdomain.com` → your server IP
+- `api.yourdomain.com` → your server IP
 
 ### Environment Variables
 

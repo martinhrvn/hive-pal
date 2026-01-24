@@ -1,0 +1,116 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: hive-pal-traefik
+    command:
+      - '--api.dashboard=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
+      - '--certificatesresolvers.letsencrypt.acme.httpchallenge=true'
+      - '--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web'
+      - '--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}'
+      - '--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json'
+      # Redirect HTTP to HTTPS
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - '/data/hive-pal-data/letsencrypt:/letsencrypt'
+    labels:
+      - 'traefik.enable=true'
+      # Dashboard (optional - remove in production or secure properly)
+      - 'traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN:-localhost}`)'
+      - 'traefik.http.routers.dashboard.service=api@internal'
+      - 'traefik.http.routers.dashboard.entrypoints=websecure'
+      - 'traefik.http.routers.dashboard.tls.certresolver=letsencrypt'
+    restart: unless-stopped
+
+  backend:
+    image: 'ghcr.io/martinhrvn/hive-pal-backend:latest'
+    container_name: hive-pal-backend
+    environment:
+      NODE_ENV: production
+      ADMIN_EMAIL: '${ADMIN_EMAIL:-admin@example.com}'
+      ADMIN_PASSWORD: '${ADMIN_PASSWORD:-password}'
+      DATABASE_URL: '${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper}'
+      SENTRY_DSN: '${SENTRY_DNS}'
+      SENTRY_ENVIRONMENT: '${SENTRY_ENVIRONMENT}'
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_REJECT_UNAUTHORIZED: ${SMTP_REJECT_UNAUTHORIZED}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      FROM_EMAIL: noreply@hivepal.app
+      FRONTEND_URL: 'https://${DOMAIN:-localhost}'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - '-q'
+        - '--spider'
+        - 'http://localhost:3000/api/health'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.backend.rule=Host(`api.${DOMAIN:-localhost}`)'
+      - 'traefik.http.routers.backend.entrypoints=websecure'
+      - 'traefik.http.routers.backend.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.backend.loadbalancer.server.port=3000'
+    restart: unless-stopped
+
+  frontend:
+    image: 'ghcr.io/martinhrvn/hive-pal-frontend:latest'
+    container_name: hive-pal-frontend
+    depends_on:
+      - backend
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://localhost:9000/'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    environment:
+      VITE_API_URL: 'https://api.${DOMAIN:-localhost}'
+      VITE_SENTRY_DSN: '${VITE_SENTRY_DSN}'
+      VITE_SENTRY_ENVIRONMENT: '${VITE_SENTRY_ENVIRONMENT}'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.frontend.rule=Host(`${DOMAIN:-localhost}`)'
+      - 'traefik.http.routers.frontend.entrypoints=websecure'
+      - 'traefik.http.routers.frontend.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.frontend.loadbalancer.server.port=9000'
+    restart: unless-stopped
+
+  postgres:
+    image: 'postgres:14'
+    container_name: hive-pal-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-postgres}'
+      POSTGRES_DB: beekeeper
+    volumes:
+      - '/data/hive-pal-data/postgres:/var/lib/postgresql/data'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U postgres -d beekeeper'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped

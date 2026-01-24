@@ -30,6 +30,8 @@ services:
     depends_on:
       - postgres
   frontend:
+    ports:
+      - '8080:8080'
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
@@ -57,7 +59,7 @@ services:
       retries: 5
   # Prometheus
 volumes:
-  postgres_data_prod:
+  hivepal_postgres_data:
   prometheus_data:
   grafana_data:
   loki-data:
