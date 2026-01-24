@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState } from 'react';
+import { lazy, Suspense, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,7 +11,9 @@ import {
 import { PrinterIcon, QrCodeIcon } from 'lucide-react';
 
 // Lazy load QR code library
-const QRCode = lazy(() => import('react-qr-code').then(m => ({ default: m.default })));
+const QRCode = lazy(() =>
+  import('react-qr-code').then(m => ({ default: m.default })),
+);
 
 function QRLoader() {
   return (
