@@ -18,6 +18,7 @@ services:
       SMTP_USER: ${SMTP_USER}
       FROM_EMAIL: noreply@hivepal.app
       FRONTEND_URL: ${FRONTEND_URL:-https://hivepal.app}
+      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS}'
     depends_on:
       - postgres
     healthcheck:
