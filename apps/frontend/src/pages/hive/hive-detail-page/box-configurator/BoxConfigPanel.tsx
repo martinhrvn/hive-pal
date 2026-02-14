@@ -3,9 +3,10 @@ import {
   Box,
   BoxTypeEnum,
   BoxVariantEnum,
-  getCompatibleVariants,
   FrameSize,
   FrameSizeStatus,
+  getVariantForFrameSize,
+  getCompatibleFrameSizes,
 } from 'shared-schemas';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -24,26 +25,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { useSubmitFrameSize, useUserProfile } from '@/api/hooks';
 
-const getVariantLabel = (variant: BoxVariantEnum): string => {
-  const labels: Record<BoxVariantEnum, string> = {
-    [BoxVariantEnum.LANGSTROTH_DEEP]: 'Langstroth Deep',
-    [BoxVariantEnum.LANGSTROTH_SHALLOW]: 'Langstroth Shallow',
-    [BoxVariantEnum.B_DEEP]: 'B Deep',
-    [BoxVariantEnum.B_SHALLOW]: 'B Shallow',
-    [BoxVariantEnum.DADANT]: 'Dadant',
-    [BoxVariantEnum.NATIONAL_DEEP]: 'National Deep',
-    [BoxVariantEnum.NATIONAL_SHALLOW]: 'National Shallow',
-    [BoxVariantEnum.WARRE]: 'Warré',
-    [BoxVariantEnum.TOP_BAR]: 'Top Bar',
-    [BoxVariantEnum.CUSTOM]: 'Custom',
-  };
-  return labels[variant];
-};
-
 interface BoxConfigPanelProps {
   box: Box;
   onUpdate: (box: Box) => void;
-  mainBoxVariant?: BoxVariantEnum;
+  mainBoxFrameSizeId?: string;
   isMainBox?: boolean;
   frameSizes?: FrameSize[];
 }
@@ -51,7 +36,7 @@ interface BoxConfigPanelProps {
 export const BoxConfigPanel = ({
   box,
   onUpdate,
-  mainBoxVariant,
+  mainBoxFrameSizeId,
   isMainBox,
   frameSizes = [],
 }: BoxConfigPanelProps) => {
@@ -66,23 +51,31 @@ export const BoxConfigPanel = ({
   const { data: currentUser } = useUserProfile();
   const currentUserId = currentUser?.id;
 
+  // Filter frame sizes for secondary boxes by compatibility with main box
+  const availableFrameSizes = useMemo(() => {
+    if (isMainBox || !mainBoxFrameSizeId) return frameSizes;
+    const mainFs = frameSizes.find((fs) => fs.id === mainBoxFrameSizeId);
+    if (!mainFs) return frameSizes;
+    return getCompatibleFrameSizes(frameSizes, mainFs);
+  }, [frameSizes, isMainBox, mainBoxFrameSizeId]);
+
   const builtInSizes = useMemo(
-    () => frameSizes.filter((fs) => fs.isBuiltIn),
-    [frameSizes],
+    () => availableFrameSizes.filter((fs) => fs.isBuiltIn),
+    [availableFrameSizes],
   );
   const communitySizes = useMemo(
     () =>
-      frameSizes.filter(
+      availableFrameSizes.filter(
         (fs) =>
           !fs.isBuiltIn &&
           fs.status === FrameSizeStatus.APPROVED &&
           fs.createdByUserId !== currentUserId,
       ),
-    [frameSizes, currentUserId],
+    [availableFrameSizes, currentUserId],
   );
   const mySizes = useMemo(
-    () => frameSizes.filter((fs) => fs.createdByUserId === currentUserId),
-    [frameSizes, currentUserId],
+    () => availableFrameSizes.filter((fs) => fs.createdByUserId === currentUserId),
+    [availableFrameSizes, currentUserId],
   );
 
   const handleFrameSizeChange = (value: string) => {
@@ -95,7 +88,11 @@ export const BoxConfigPanel = ({
       onUpdate({ ...box, frameSizeId: null });
       return;
     }
-    onUpdate({ ...box, frameSizeId: value });
+    const selectedFs = frameSizes.find((fs) => fs.id === value);
+    const variant = selectedFs
+      ? getVariantForFrameSize(selectedFs)
+      : box.variant;
+    onUpdate({ ...box, frameSizeId: value, variant });
   };
 
   const handleCustomSubmit = () => {
@@ -103,25 +100,17 @@ export const BoxConfigPanel = ({
       onSuccess: (created) => {
         setShowCustomFields(false);
         setNewFrameSize({ name: '', width: 0, height: 0, depth: 0 });
-        onUpdate({ ...box, frameSizeId: created.id });
+        onUpdate({
+          ...box,
+          frameSizeId: created.id,
+          variant: BoxVariantEnum.CUSTOM,
+        });
       },
     });
   };
-  // Get available variants based on main box
-  const availableVariants = useMemo(() => {
-    if (isMainBox || !mainBoxVariant) {
-      // Main box can be any variant
-      return Object.values(BoxVariantEnum);
-    }
-    return getCompatibleVariants(mainBoxVariant);
-  }, [mainBoxVariant, isMainBox]);
 
   const handleTypeChange = (value: string) => {
     onUpdate({ ...box, type: value as BoxTypeEnum });
-  };
-
-  const handleVariantChange = (value: string) => {
-    onUpdate({ ...box, variant: value as BoxVariantEnum });
   };
 
   const handleWinterizedChange = (checked: boolean) => {
@@ -172,31 +161,8 @@ export const BoxConfigPanel = ({
           </Select>
         </div>
 
-        {/* Box Variant */}
-        <div className="space-y-2">
-          <Label htmlFor="box-variant">Box Type</Label>
-          <Select value={box.variant || ''} onValueChange={handleVariantChange}>
-            <SelectTrigger id="box-variant">
-              <SelectValue placeholder="Select box type" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableVariants.map((variant) => (
-                <SelectItem key={variant} value={variant}>
-                  {getVariantLabel(variant)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {!isMainBox && mainBoxVariant && (
-            <p className="text-xs text-muted-foreground">
-              Only variants compatible with {getVariantLabel(mainBoxVariant)} are
-              shown
-            </p>
-          )}
-        </div>
-
         {/* Frame Size */}
-        {frameSizes.length > 0 && (
+        {availableFrameSizes.length > 0 && (
           <div className="space-y-2">
             <Label htmlFor="frame-size">Frame Size</Label>
             <Select

@@ -37,11 +37,12 @@ import {
 } from '@/components/ui/collapsible';
 import { useApiary } from '@/hooks/use-apiary';
 import React, { useEffect, useState, useRef } from 'react';
-import { useCreateHive } from '@/api/hooks';
+import { useCreateHive, useFrameSizes } from '@/api/hooks';
 import {
   boxSchema,
   hiveSettingsSchema,
   HiveStatus as HiveStatusEnum,
+  findFrameSizeForVariant,
 } from 'shared-schemas';
 import {
   BoxBuilder,
@@ -80,6 +81,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   const [isBoxConfigOpen, setIsBoxConfigOpen] = useState(false);
   const [configureBoxes, setConfigureBoxes] = useState(false);
   const boxBuilderRef = useRef<BoxBuilderRef>(null);
+  const { data: frameSizes = [] } = useFrameSizes();
   const apiaryOptions = apiaries?.map(apiary => ({
     value: apiary.id,
     label: `${apiary.name}${apiary.location ? ` (${apiary.location})` : ''}`,
@@ -420,6 +422,10 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                       boxBuilderRef.current?.getBoxes().length === 0
                     ) {
                       // Set default box configuration
+                      const defaultFs = findFrameSizeForVariant(
+                        frameSizes,
+                        BoxVariantEnum.LANGSTROTH_DEEP,
+                      );
                       boxBuilderRef.current?.setBoxes([
                         {
                           id: `temp-${Date.now()}`,
@@ -429,6 +435,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                           hasExcluder: false,
                           type: BoxTypeEnum.BROOD,
                           variant: BoxVariantEnum.LANGSTROTH_DEEP,
+                          frameSizeId: defaultFs?.id ?? null,
                           color: '#3b82f6',
                         },
                       ]);
@@ -457,6 +464,11 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                       hasExcluder: false,
                       type: BoxTypeEnum.BROOD,
                       variant: BoxVariantEnum.LANGSTROTH_DEEP,
+                      frameSizeId:
+                        findFrameSizeForVariant(
+                          frameSizes,
+                          BoxVariantEnum.LANGSTROTH_DEEP,
+                        )?.id ?? null,
                       color: '#3b82f6',
                     },
                   ]}

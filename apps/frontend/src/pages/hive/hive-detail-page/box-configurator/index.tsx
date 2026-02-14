@@ -10,6 +10,7 @@ import {
   getHiveSystem,
   getEquivalentVariant,
   isVariantCompatible,
+  findFrameSizeForVariant,
 } from 'shared-schemas';
 import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
@@ -34,8 +35,6 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
     () => boxes.find((b) => b.position === 0),
     [boxes],
   );
-  const mainBoxVariant = mainBox?.variant;
-
   // Check winterization status
   const allWinterized = useMemo(
     () => boxes.length > 0 && boxes.every((b) => b.winterized),
@@ -53,6 +52,10 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
   }, []);
 
   const handleAddBox = useCallback(() => {
+    const defaultFs = findFrameSizeForVariant(
+      frameSizes,
+      BoxVariantEnum.LANGSTROTH_DEEP,
+    );
     const newBox: Box = {
       id: `temp-${Date.now()}`,
       position: boxes.length,
@@ -61,12 +64,13 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
       hasExcluder: false,
       type: BoxTypeEnum.BROOD,
       variant: BoxVariantEnum.LANGSTROTH_DEEP,
+      frameSizeId: defaultFs?.id ?? null,
       color: '#3b82f6', // blue-500
     };
     setBoxes([...boxes, newBox]);
     setSelectedBoxId(newBox.id ?? null);
     setIsEditing(true);
-  }, [boxes]);
+  }, [boxes, frameSizes]);
 
   const handleRemoveBox = useCallback(
     (boxId: string) => {
@@ -103,7 +107,12 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
           ) {
             // Auto-convert to equivalent in new system
             const newVariant = getEquivalentVariant(box.variant, newSystem);
-            return { ...box, variant: newVariant };
+            const newFs = findFrameSizeForVariant(frameSizes, newVariant);
+            return {
+              ...box,
+              variant: newVariant,
+              frameSizeId: newFs?.id ?? box.frameSizeId,
+            };
           }
 
           return box;
@@ -114,7 +123,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
         box.id === updatedBox.id ? updatedBox : box,
       );
     });
-  }, []);
+  }, [frameSizes]);
 
   const handleReorder = useCallback((newBoxes: Box[]) => {
     // Sort by position and ensure positions are sequential
@@ -244,7 +253,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
           <BoxConfigPanel
             box={selectedBox}
             onUpdate={handleBoxUpdate}
-            mainBoxVariant={mainBoxVariant}
+            mainBoxFrameSizeId={mainBox?.frameSizeId ?? undefined}
             isMainBox={selectedBox.position === 0}
             frameSizes={frameSizes}
           />

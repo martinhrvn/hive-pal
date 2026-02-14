@@ -56,24 +56,6 @@ const getBoxTypeBadgeClass = (type: string) => {
   return classes[type] || 'bg-gray-100 text-gray-800 border-gray-200';
 };
 
-const getVariantLabel = (variant?: BoxVariantEnum) => {
-  if (!variant) return '';
-
-  const labels: Record<BoxVariantEnum, string> = {
-    [BoxVariantEnum.LANGSTROTH_DEEP]: 'Langstroth Deep',
-    [BoxVariantEnum.LANGSTROTH_SHALLOW]: 'Langstroth Shallow',
-    [BoxVariantEnum.B_DEEP]: 'B Deep',
-    [BoxVariantEnum.B_SHALLOW]: 'B Shallow',
-    [BoxVariantEnum.DADANT]: 'Dadant',
-    [BoxVariantEnum.NATIONAL_DEEP]: 'National Deep',
-    [BoxVariantEnum.NATIONAL_SHALLOW]: 'National Shallow',
-    [BoxVariantEnum.WARRE]: 'Warré',
-    [BoxVariantEnum.TOP_BAR]: 'Top Bar',
-    [BoxVariantEnum.CUSTOM]: 'Custom',
-  };
-  return labels[variant];
-};
-
 export const BoxItem = ({
   box,
   isSelected,
@@ -133,15 +115,6 @@ export const BoxItem = ({
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <span className="text-white/70 text-xs font-medium" title={frameSizeName}>
             {frameSizeName}
-          </span>
-        </div>
-      )}
-
-      {/* Variant type in bottom right */}
-      {box.variant && (
-        <div className="absolute bottom-2 right-2">
-          <span className="text-white/80 text-xs font-medium">
-            {getVariantLabel(box.variant)}
           </span>
         </div>
       )}

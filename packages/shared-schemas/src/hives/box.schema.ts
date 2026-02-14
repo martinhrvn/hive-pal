@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { FrameSize } from '../frame-sizes/frame-size.schema';
 
 export enum BoxTypeEnum {
   BROOD = 'BROOD',
@@ -55,12 +56,18 @@ export function getCompatibleVariants(
 }
 
 /**
- * Check if a variant is compatible with the main box variant
+ * Check if a variant is compatible with the main box variant.
+ * CUSTOM is always compatible with any variant.
  */
 export function isVariantCompatible(
   mainBoxVariant: BoxVariantEnum,
   boxVariant: BoxVariantEnum
 ): boolean {
+  if (
+    mainBoxVariant === BoxVariantEnum.CUSTOM ||
+    boxVariant === BoxVariantEnum.CUSTOM
+  )
+    return true;
   const system = getHiveSystem(mainBoxVariant);
   return (HIVE_SYSTEM_VARIANTS[system] as readonly BoxVariantEnum[]).includes(
     boxVariant
@@ -88,6 +95,63 @@ export function getEquivalentVariant(
     );
   }
   return targetVariants.find((v) => v.includes('SHALLOW')) || targetVariants[0];
+}
+
+/** Maps built-in frame size names to box variant */
+export const FRAME_SIZE_VARIANT_MAP: Record<string, BoxVariantEnum> = {
+  'Langstroth Deep': BoxVariantEnum.LANGSTROTH_DEEP,
+  'Langstroth Medium': BoxVariantEnum.LANGSTROTH_SHALLOW,
+  'Langstroth Shallow': BoxVariantEnum.LANGSTROTH_SHALLOW,
+  Dadant: BoxVariantEnum.DADANT,
+  'National Deep': BoxVariantEnum.NATIONAL_DEEP,
+  'National Shallow': BoxVariantEnum.NATIONAL_SHALLOW,
+  'Warré': BoxVariantEnum.WARRE,
+  'Top Bar': BoxVariantEnum.TOP_BAR,
+  'B Deep': BoxVariantEnum.B_DEEP,
+  'B Shallow': BoxVariantEnum.B_SHALLOW,
+};
+
+/** Reverse map: variant to primary built-in frame size name */
+export const VARIANT_FRAME_SIZE_MAP: Record<BoxVariantEnum, string> = {
+  [BoxVariantEnum.LANGSTROTH_DEEP]: 'Langstroth Deep',
+  [BoxVariantEnum.LANGSTROTH_SHALLOW]: 'Langstroth Shallow',
+  [BoxVariantEnum.B_DEEP]: 'B Deep',
+  [BoxVariantEnum.B_SHALLOW]: 'B Shallow',
+  [BoxVariantEnum.DADANT]: 'Dadant',
+  [BoxVariantEnum.NATIONAL_DEEP]: 'National Deep',
+  [BoxVariantEnum.NATIONAL_SHALLOW]: 'National Shallow',
+  [BoxVariantEnum.WARRE]: 'Warré',
+  [BoxVariantEnum.TOP_BAR]: 'Top Bar',
+  [BoxVariantEnum.CUSTOM]: '',
+};
+
+/** Get the variant for a frame size (CUSTOM for non-built-in) */
+export function getVariantForFrameSize(frameSize: FrameSize): BoxVariantEnum {
+  if (!frameSize.isBuiltIn) return BoxVariantEnum.CUSTOM;
+  return FRAME_SIZE_VARIANT_MAP[frameSize.name] ?? BoxVariantEnum.CUSTOM;
+}
+
+/** Find the built-in frame size matching a variant */
+export function findFrameSizeForVariant(
+  frameSizes: FrameSize[],
+  variant: BoxVariantEnum
+): FrameSize | undefined {
+  const name = VARIANT_FRAME_SIZE_MAP[variant];
+  if (!name) return undefined;
+  return frameSizes.find((fs) => fs.name === name && fs.isBuiltIn);
+}
+
+/** Get compatible frame sizes for a given main box frame size */
+export function getCompatibleFrameSizes(
+  allFrameSizes: FrameSize[],
+  mainBoxFrameSize: FrameSize
+): FrameSize[] {
+  const mainVariant = getVariantForFrameSize(mainBoxFrameSize);
+  const compatibleVariants = getCompatibleVariants(mainVariant);
+  return allFrameSizes.filter((fs) => {
+    const v = getVariantForFrameSize(fs);
+    return v === BoxVariantEnum.CUSTOM || compatibleVariants.includes(v);
+  });
 }
 
 export const boxTypeSchema = z.nativeEnum(BoxTypeEnum);

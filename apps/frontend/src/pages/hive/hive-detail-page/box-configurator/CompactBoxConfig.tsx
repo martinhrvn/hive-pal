@@ -3,9 +3,10 @@ import {
   Box,
   BoxTypeEnum,
   BoxVariantEnum,
-  getCompatibleVariants,
   FrameSize,
   FrameSizeStatus,
+  getVariantForFrameSize,
+  getCompatibleFrameSizes,
 } from 'shared-schemas';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -23,26 +24,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { useSubmitFrameSize, useUserProfile } from '@/api/hooks';
 
-const getVariantLabel = (variant: BoxVariantEnum): string => {
-  const labels: Record<BoxVariantEnum, string> = {
-    [BoxVariantEnum.LANGSTROTH_DEEP]: 'Langstroth Deep',
-    [BoxVariantEnum.LANGSTROTH_SHALLOW]: 'Langstroth Shallow',
-    [BoxVariantEnum.B_DEEP]: 'B Deep',
-    [BoxVariantEnum.B_SHALLOW]: 'B Shallow',
-    [BoxVariantEnum.DADANT]: 'Dadant',
-    [BoxVariantEnum.NATIONAL_DEEP]: 'National Deep',
-    [BoxVariantEnum.NATIONAL_SHALLOW]: 'National Shallow',
-    [BoxVariantEnum.WARRE]: 'Warré',
-    [BoxVariantEnum.TOP_BAR]: 'Top Bar',
-    [BoxVariantEnum.CUSTOM]: 'Custom',
-  };
-  return labels[variant];
-};
-
 interface CompactBoxConfigProps {
   box: Box;
   onUpdate: (box: Box) => void;
-  mainBoxVariant?: BoxVariantEnum;
+  mainBoxFrameSizeId?: string;
   isMainBox?: boolean;
   frameSizes?: FrameSize[];
 }
@@ -50,7 +35,7 @@ interface CompactBoxConfigProps {
 export const CompactBoxConfig = ({
   box,
   onUpdate,
-  mainBoxVariant,
+  mainBoxFrameSizeId,
   isMainBox,
   frameSizes = [],
 }: CompactBoxConfigProps) => {
@@ -65,20 +50,16 @@ export const CompactBoxConfig = ({
   const { data: currentUser } = useUserProfile();
   const currentUserId = currentUser?.id;
 
-  // Get available variants based on main box
-  const availableVariants = useMemo(() => {
-    if (isMainBox || !mainBoxVariant) {
-      return Object.values(BoxVariantEnum);
-    }
-    return getCompatibleVariants(mainBoxVariant);
-  }, [mainBoxVariant, isMainBox]);
+  // Filter frame sizes for secondary boxes by compatibility with main box
+  const availableFrameSizes = useMemo(() => {
+    if (isMainBox || !mainBoxFrameSizeId) return frameSizes;
+    const mainFs = frameSizes.find((fs) => fs.id === mainBoxFrameSizeId);
+    if (!mainFs) return frameSizes;
+    return getCompatibleFrameSizes(frameSizes, mainFs);
+  }, [frameSizes, isMainBox, mainBoxFrameSizeId]);
 
   const handleTypeChange = (value: string) => {
     onUpdate({ ...box, type: value as BoxTypeEnum });
-  };
-
-  const handleVariantChange = (value: string) => {
-    onUpdate({ ...box, variant: value as BoxVariantEnum });
   };
 
   const handleFrameCountChange = (value: number[]) => {
@@ -125,25 +106,8 @@ export const CompactBoxConfig = ({
           </Select>
         </div>
 
-        {/* Box Variant */}
-        <div>
-          <Label htmlFor="box-variant" className="text-xs">Box Type</Label>
-          <Select value={box.variant || ''} onValueChange={handleVariantChange}>
-            <SelectTrigger id="box-variant" className="h-8 text-sm">
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableVariants.map((variant) => (
-                <SelectItem key={variant} value={variant}>
-                  {getVariantLabel(variant)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Frame Size */}
-        {frameSizes.length > 0 && (
+        {availableFrameSizes.length > 0 && (
           <div>
             <Label htmlFor="frame-size" className="text-xs">Frame Size</Label>
             <Select
@@ -157,7 +121,11 @@ export const CompactBoxConfig = ({
                 if (value === '__none__') {
                   onUpdate({ ...box, frameSizeId: null });
                 } else {
-                  onUpdate({ ...box, frameSizeId: value });
+                  const selectedFs = frameSizes.find((fs) => fs.id === value);
+                  const variant = selectedFs
+                    ? getVariantForFrameSize(selectedFs)
+                    : box.variant;
+                  onUpdate({ ...box, frameSizeId: value, variant });
                 }
               }}
             >
@@ -166,10 +134,10 @@ export const CompactBoxConfig = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">No frame size</SelectItem>
-                {frameSizes.filter((fs) => fs.isBuiltIn).length > 0 && (
+                {availableFrameSizes.filter((fs) => fs.isBuiltIn).length > 0 && (
                   <SelectGroup>
                     <SelectLabel>Built-in</SelectLabel>
-                    {frameSizes
+                    {availableFrameSizes
                       .filter((fs) => fs.isBuiltIn)
                       .map((fs) => (
                         <SelectItem key={fs.id} value={fs.id}>
@@ -178,7 +146,7 @@ export const CompactBoxConfig = ({
                       ))}
                   </SelectGroup>
                 )}
-                {frameSizes.filter(
+                {availableFrameSizes.filter(
                   (fs) =>
                     !fs.isBuiltIn &&
                     fs.status === FrameSizeStatus.APPROVED &&
@@ -186,7 +154,7 @@ export const CompactBoxConfig = ({
                 ).length > 0 && (
                   <SelectGroup>
                     <SelectLabel>Community</SelectLabel>
-                    {frameSizes
+                    {availableFrameSizes
                       .filter(
                         (fs) =>
                           !fs.isBuiltIn &&
@@ -200,11 +168,11 @@ export const CompactBoxConfig = ({
                       ))}
                   </SelectGroup>
                 )}
-                {frameSizes.filter((fs) => fs.createdByUserId === currentUserId)
+                {availableFrameSizes.filter((fs) => fs.createdByUserId === currentUserId)
                   .length > 0 && (
                   <SelectGroup>
                     <SelectLabel>My Sizes</SelectLabel>
-                    {frameSizes
+                    {availableFrameSizes
                       .filter((fs) => fs.createdByUserId === currentUserId)
                       .map((fs) => (
                         <SelectItem key={fs.id} value={fs.id}>
@@ -297,7 +265,11 @@ export const CompactBoxConfig = ({
                         onSuccess: (created) => {
                           setShowCustomFields(false);
                           setNewFrameSize({ name: '', width: 0, height: 0, depth: 0 });
-                          onUpdate({ ...box, frameSizeId: created.id });
+                          onUpdate({
+                            ...box,
+                            frameSizeId: created.id,
+                            variant: BoxVariantEnum.CUSTOM,
+                          });
                         },
                       });
                     }}
