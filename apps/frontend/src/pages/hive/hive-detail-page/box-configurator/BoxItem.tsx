@@ -14,6 +14,7 @@ interface BoxItemProps {
   canMoveUp: boolean;
   canMoveDown: boolean;
   isEditing: boolean;
+  frameSizeName?: string;
 }
 
 const getBoxHeight = (variant?: BoxVariantEnum) => {
@@ -83,6 +84,7 @@ export const BoxItem = ({
   canMoveUp,
   canMoveDown,
   isEditing,
+  frameSizeName,
 }: BoxItemProps) => {
   const height = getBoxHeight(box.variant);
   const defaultColor = '#CD853F'; // Default wood color
@@ -125,6 +127,15 @@ export const BoxItem = ({
           {box.frameCount}/{box.maxFrameCount || 10}
         </span>
       </div>
+
+      {/* Frame size name */}
+      {frameSizeName && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <span className="text-white/70 text-xs font-medium" title={frameSizeName}>
+            {frameSizeName}
+          </span>
+        </div>
+      )}
 
       {/* Variant type in bottom right */}
       {box.variant && (

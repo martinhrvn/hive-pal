@@ -1,4 +1,4 @@
-import { Box } from 'shared-schemas';
+import { Box, FrameSize } from 'shared-schemas';
 import { BoxItem } from './BoxItem';
 import { QueenExcluder } from './QueenExcluder';
 
@@ -9,6 +9,7 @@ interface BoxStackProps {
   onReorder: (boxes: Box[]) => void;
   onRemoveBox: (boxId: string) => void;
   isEditing: boolean;
+  frameSizes?: FrameSize[];
 }
 
 export const BoxStack = ({
@@ -18,6 +19,7 @@ export const BoxStack = ({
   onReorder,
   onRemoveBox,
   isEditing,
+  frameSizes = [],
 }: BoxStackProps) => {
   // Sort boxes by position (bottom to top)
   const sortedBoxes = [...boxes].sort((a, b) => b.position - a.position);
@@ -84,6 +86,11 @@ export const BoxStack = ({
             canMoveUp={box.position < boxes.length - 1}
             canMoveDown={box.position > 0}
             isEditing={isEditing}
+            frameSizeName={
+              box.frameSizeId
+                ? frameSizes.find((fs) => fs.id === box.frameSizeId)?.name
+                : undefined
+            }
           />
         </div>
       ))}

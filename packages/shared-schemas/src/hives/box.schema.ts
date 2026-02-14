@@ -104,6 +104,7 @@ export const boxSchema = z.object({
   type: boxTypeSchema,
   maxFrameCount: z.number().int().min(1).optional(),
   variant: boxVariantSchema.optional(),
+  frameSizeId: z.string().uuid().optional().nullable(),
   color: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
   winterized: z.boolean().default(false),
 });

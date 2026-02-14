@@ -15,6 +15,7 @@ import {
   getEquivalentVariant,
   isVariantCompatible,
 } from 'shared-schemas';
+import { useFrameSizes } from '@/api/hooks';
 import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
 import { CompactBoxConfig } from './CompactBoxConfig';
@@ -34,6 +35,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
   ({ initialBoxes = [], onChange, simplified = false }, ref) => {
     const [boxes, setBoxes] = useState<Box[]>(initialBoxes);
     const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
+    const { data: frameSizes = [] } = useFrameSizes();
 
     // Get main box variant (position 0)
     const mainBox = useMemo(
@@ -148,6 +150,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
                 onReorder={handleReorder}
                 onRemoveBox={handleRemoveBox}
                 isEditing={true}
+                frameSizes={frameSizes}
               />
 
               <Button
@@ -170,6 +173,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
                     onUpdate={handleBoxUpdate}
                     mainBoxVariant={mainBoxVariant}
                     isMainBox={selectedBox.position === 0}
+                    frameSizes={frameSizes}
                   />
                 </>
               ) : (
@@ -213,6 +217,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
               onUpdate={handleBoxUpdate}
               mainBoxVariant={mainBoxVariant}
               isMainBox={selectedBox.position === 0}
+              frameSizes={frameSizes}
             />
           </div>
         )}

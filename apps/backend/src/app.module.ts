@@ -24,6 +24,7 @@ import { HarvestsModule } from './harvests/harvests.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { FrameSizesModule } from './frame-sizes/frame-sizes.module';
 import { MailModule } from './mail/mail.module';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { ReportsModule } from './reports/reports.module';
@@ -52,6 +53,7 @@ import { PlatformMetricsModule } from './platform-metrics/platform-metrics.modul
     AlertsModule,
     CalendarModule,
     FeedbackModule,
+    FrameSizesModule,
     MailModule,
     ReportsModule,
     PlatformMetricsModule,

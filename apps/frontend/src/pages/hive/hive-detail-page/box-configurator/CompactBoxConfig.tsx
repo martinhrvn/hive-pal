@@ -4,13 +4,17 @@ import {
   BoxTypeEnum,
   BoxVariantEnum,
   getCompatibleVariants,
+  FrameSize,
+  FrameSizeStatus,
 } from 'shared-schemas';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -38,6 +42,7 @@ interface CompactBoxConfigProps {
   onUpdate: (box: Box) => void;
   mainBoxVariant?: BoxVariantEnum;
   isMainBox?: boolean;
+  frameSizes?: FrameSize[];
 }
 
 export const CompactBoxConfig = ({
@@ -45,6 +50,7 @@ export const CompactBoxConfig = ({
   onUpdate,
   mainBoxVariant,
   isMainBox,
+  frameSizes = [],
 }: CompactBoxConfigProps) => {
   // Get available variants based on main box
   const availableVariants = useMemo(() => {
@@ -122,6 +128,60 @@ export const CompactBoxConfig = ({
             </SelectContent>
           </Select>
         </div>
+
+        {/* Frame Size */}
+        {frameSizes.length > 0 && (
+          <div>
+            <Label htmlFor="frame-size" className="text-xs">Frame Size</Label>
+            <Select
+              value={box.frameSizeId || '__none__'}
+              onValueChange={(value) => {
+                if (value === '__none__') {
+                  onUpdate({ ...box, frameSizeId: null });
+                } else {
+                  onUpdate({ ...box, frameSizeId: value });
+                }
+              }}
+            >
+              <SelectTrigger id="frame-size" className="h-8 text-sm">
+                <SelectValue placeholder="No frame size" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">No frame size</SelectItem>
+                {frameSizes.filter((fs) => fs.isBuiltIn).length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>Built-in</SelectLabel>
+                    {frameSizes
+                      .filter((fs) => fs.isBuiltIn)
+                      .map((fs) => (
+                        <SelectItem key={fs.id} value={fs.id}>
+                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                        </SelectItem>
+                      ))}
+                  </SelectGroup>
+                )}
+                {frameSizes.filter(
+                  (fs) => !fs.isBuiltIn && fs.status === FrameSizeStatus.APPROVED,
+                ).length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>Community</SelectLabel>
+                    {frameSizes
+                      .filter(
+                        (fs) =>
+                          !fs.isBuiltIn &&
+                          fs.status === FrameSizeStatus.APPROVED,
+                      )
+                      .map((fs) => (
+                        <SelectItem key={fs.id} value={fs.id}>
+                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                        </SelectItem>
+                      ))}
+                  </SelectGroup>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {/* Frame Count */}
         <div>

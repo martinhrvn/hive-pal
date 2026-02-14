@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Box,
   BoxTypeEnum,
   BoxVariantEnum,
   getCompatibleVariants,
+  FrameSize,
+  FrameSizeStatus,
 } from 'shared-schemas';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -11,12 +13,23 @@ import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { useSubmitFrameSize } from '@/api/hooks';
 
 const getVariantLabel = (variant: BoxVariantEnum): string => {
   const labels: Record<BoxVariantEnum, string> = {
@@ -39,6 +52,7 @@ interface BoxConfigPanelProps {
   onUpdate: (box: Box) => void;
   mainBoxVariant?: BoxVariantEnum;
   isMainBox?: boolean;
+  frameSizes?: FrameSize[];
 }
 
 export const BoxConfigPanel = ({
@@ -46,7 +60,53 @@ export const BoxConfigPanel = ({
   onUpdate,
   mainBoxVariant,
   isMainBox,
+  frameSizes = [],
 }: BoxConfigPanelProps) => {
+  const [suggestDialogOpen, setSuggestDialogOpen] = useState(false);
+  const [newFrameSize, setNewFrameSize] = useState({
+    name: '',
+    width: 0,
+    height: 0,
+    depth: 0,
+  });
+  const submitFrameSize = useSubmitFrameSize();
+
+  const builtInSizes = useMemo(
+    () => frameSizes.filter((fs) => fs.isBuiltIn),
+    [frameSizes],
+  );
+  const communitySizes = useMemo(
+    () =>
+      frameSizes.filter(
+        (fs) => !fs.isBuiltIn && fs.status === FrameSizeStatus.APPROVED,
+      ),
+    [frameSizes],
+  );
+  const pendingSizes = useMemo(
+    () => frameSizes.filter((fs) => fs.status === FrameSizeStatus.PENDING),
+    [frameSizes],
+  );
+
+  const handleFrameSizeChange = (value: string) => {
+    if (value === '__suggest__') {
+      setSuggestDialogOpen(true);
+      return;
+    }
+    if (value === '__none__') {
+      onUpdate({ ...box, frameSizeId: null });
+      return;
+    }
+    onUpdate({ ...box, frameSizeId: value });
+  };
+
+  const handleSuggestSubmit = () => {
+    submitFrameSize.mutate(newFrameSize, {
+      onSuccess: () => {
+        setSuggestDialogOpen(false);
+        setNewFrameSize({ name: '', width: 0, height: 0, depth: 0 });
+      },
+    });
+  };
   // Get available variants based on main box
   const availableVariants = useMemo(() => {
     if (isMainBox || !mainBoxVariant) {
@@ -134,6 +194,146 @@ export const BoxConfigPanel = ({
             </p>
           )}
         </div>
+
+        {/* Frame Size */}
+        {frameSizes.length > 0 && (
+          <div className="space-y-2">
+            <Label htmlFor="frame-size">Frame Size</Label>
+            <Select
+              value={box.frameSizeId || '__none__'}
+              onValueChange={handleFrameSizeChange}
+            >
+              <SelectTrigger id="frame-size">
+                <SelectValue placeholder="No frame size selected" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">No frame size</SelectItem>
+                {builtInSizes.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>Built-in</SelectLabel>
+                    {builtInSizes.map((fs) => (
+                      <SelectItem key={fs.id} value={fs.id}>
+                        {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
+                {communitySizes.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>Community</SelectLabel>
+                    {communitySizes.map((fs) => (
+                      <SelectItem key={fs.id} value={fs.id}>
+                        {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
+                {pendingSizes.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>Pending Review</SelectLabel>
+                    {pendingSizes.map((fs) => (
+                      <SelectItem key={fs.id} value={fs.id}>
+                        {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
+                <SelectItem value="__suggest__">
+                  Suggest new size...
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {/* Suggest Frame Size Dialog */}
+        <Dialog open={suggestDialogOpen} onOpenChange={setSuggestDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Suggest a Frame Size</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="fs-name">Name</Label>
+                <Input
+                  id="fs-name"
+                  value={newFrameSize.name}
+                  onChange={(e) =>
+                    setNewFrameSize({ ...newFrameSize, name: e.target.value })
+                  }
+                  placeholder="e.g. Belgian Standard"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="fs-width">Width (mm)</Label>
+                  <Input
+                    id="fs-width"
+                    type="number"
+                    min="1"
+                    value={newFrameSize.width || ''}
+                    onChange={(e) =>
+                      setNewFrameSize({
+                        ...newFrameSize,
+                        width: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fs-height">Height (mm)</Label>
+                  <Input
+                    id="fs-height"
+                    type="number"
+                    min="1"
+                    value={newFrameSize.height || ''}
+                    onChange={(e) =>
+                      setNewFrameSize({
+                        ...newFrameSize,
+                        height: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fs-depth">Depth (mm)</Label>
+                  <Input
+                    id="fs-depth"
+                    type="number"
+                    min="1"
+                    value={newFrameSize.depth || ''}
+                    onChange={(e) =>
+                      setNewFrameSize({
+                        ...newFrameSize,
+                        depth: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setSuggestDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSuggestSubmit}
+                disabled={
+                  submitFrameSize.isPending ||
+                  !newFrameSize.name ||
+                  !newFrameSize.width ||
+                  !newFrameSize.height ||
+                  !newFrameSize.depth
+                }
+              >
+                {submitFrameSize.isPending ? 'Submitting...' : 'Submit'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Frame Count */}
         <div className="space-y-2">

@@ -89,6 +89,34 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           {!collapsed && <span>{t('navigation.feedback')}</span>}
         </Link>
         <Link
+          to="/admin/frame-sizes"
+          className={cn(
+            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            {
+              'justify-center': collapsed,
+              'bg-accent': isActive('/admin/frame-sizes'),
+            },
+          )}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn('h-4 w-4', {
+              'mr-2': !collapsed,
+            })}
+          >
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M2 8h20" />
+            <path d="M2 12h20" />
+          </svg>
+          {!collapsed && <span>Frame Sizes</span>}
+        </Link>
+        <Link
           to="/admin/metrics"
           className={cn(
             'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
