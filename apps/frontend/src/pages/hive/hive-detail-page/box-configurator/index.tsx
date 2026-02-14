@@ -14,6 +14,7 @@ import {
 import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
 import { useUpdateHiveBoxes } from '@/api/hooks/useHives';
+import { useFrameSizes } from '@/api/hooks';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +27,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const updateBoxesMutation = useUpdateHiveBoxes();
+  const { data: frameSizes = [] } = useFrameSizes();
 
   // Get main box variant (position 0)
   const mainBox = useMemo(
@@ -244,6 +246,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
             onUpdate={handleBoxUpdate}
             mainBoxVariant={mainBoxVariant}
             isMainBox={selectedBox.position === 0}
+            frameSizes={frameSizes}
           />
         </div>
       )}

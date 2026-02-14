@@ -26,8 +26,11 @@ export const useFrameSizes = () => {
 export const useSubmitFrameSize = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: CreateFrameSizeDto) => {
-      const response = await apiClient.post('/api/frame-sizes', data);
+    mutationFn: async (data: CreateFrameSizeDto): Promise<FrameSize> => {
+      const response = await apiClient.post<FrameSize>(
+        '/api/frame-sizes',
+        data,
+      );
       return response.data;
     },
     onSuccess: async () => {

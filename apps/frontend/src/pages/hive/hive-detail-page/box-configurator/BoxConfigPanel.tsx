@@ -22,14 +22,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { useSubmitFrameSize } from '@/api/hooks';
+import { useSubmitFrameSize, useUserProfile } from '@/api/hooks';
 
 const getVariantLabel = (variant: BoxVariantEnum): string => {
   const labels: Record<BoxVariantEnum, string> = {
@@ -62,7 +55,7 @@ export const BoxConfigPanel = ({
   isMainBox,
   frameSizes = [],
 }: BoxConfigPanelProps) => {
-  const [suggestDialogOpen, setSuggestDialogOpen] = useState(false);
+  const [showCustomFields, setShowCustomFields] = useState(false);
   const [newFrameSize, setNewFrameSize] = useState({
     name: '',
     width: 0,
@@ -70,6 +63,8 @@ export const BoxConfigPanel = ({
     depth: 0,
   });
   const submitFrameSize = useSubmitFrameSize();
+  const { data: currentUser } = useUserProfile();
+  const currentUserId = currentUser?.id;
 
   const builtInSizes = useMemo(
     () => frameSizes.filter((fs) => fs.isBuiltIn),
@@ -78,20 +73,24 @@ export const BoxConfigPanel = ({
   const communitySizes = useMemo(
     () =>
       frameSizes.filter(
-        (fs) => !fs.isBuiltIn && fs.status === FrameSizeStatus.APPROVED,
+        (fs) =>
+          !fs.isBuiltIn &&
+          fs.status === FrameSizeStatus.APPROVED &&
+          fs.createdByUserId !== currentUserId,
       ),
-    [frameSizes],
+    [frameSizes, currentUserId],
   );
-  const pendingSizes = useMemo(
-    () => frameSizes.filter((fs) => fs.status === FrameSizeStatus.PENDING),
-    [frameSizes],
+  const mySizes = useMemo(
+    () => frameSizes.filter((fs) => fs.createdByUserId === currentUserId),
+    [frameSizes, currentUserId],
   );
 
   const handleFrameSizeChange = (value: string) => {
-    if (value === '__suggest__') {
-      setSuggestDialogOpen(true);
+    if (value === '__custom__') {
+      setShowCustomFields(true);
       return;
     }
+    setShowCustomFields(false);
     if (value === '__none__') {
       onUpdate({ ...box, frameSizeId: null });
       return;
@@ -99,11 +98,12 @@ export const BoxConfigPanel = ({
     onUpdate({ ...box, frameSizeId: value });
   };
 
-  const handleSuggestSubmit = () => {
+  const handleCustomSubmit = () => {
     submitFrameSize.mutate(newFrameSize, {
-      onSuccess: () => {
-        setSuggestDialogOpen(false);
+      onSuccess: (created) => {
+        setShowCustomFields(false);
         setNewFrameSize({ name: '', width: 0, height: 0, depth: 0 });
+        onUpdate({ ...box, frameSizeId: created.id });
       },
     });
   };
@@ -200,7 +200,7 @@ export const BoxConfigPanel = ({
           <div className="space-y-2">
             <Label htmlFor="frame-size">Frame Size</Label>
             <Select
-              value={box.frameSizeId || '__none__'}
+              value={showCustomFields ? '__custom__' : (box.frameSizeId || '__none__')}
               onValueChange={handleFrameSizeChange}
             >
               <SelectTrigger id="frame-size">
@@ -228,112 +228,105 @@ export const BoxConfigPanel = ({
                     ))}
                   </SelectGroup>
                 )}
-                {pendingSizes.length > 0 && (
+                {mySizes.length > 0 && (
                   <SelectGroup>
-                    <SelectLabel>Pending Review</SelectLabel>
-                    {pendingSizes.map((fs) => (
+                    <SelectLabel>My Sizes</SelectLabel>
+                    {mySizes.map((fs) => (
                       <SelectItem key={fs.id} value={fs.id}>
                         {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 )}
-                <SelectItem value="__suggest__">
-                  Suggest new size...
-                </SelectItem>
+                <SelectItem value="__custom__">Custom...</SelectItem>
               </SelectContent>
             </Select>
+            {showCustomFields && (
+              <div className="space-y-3 rounded-md border p-3">
+                <div className="space-y-2">
+                  <Label htmlFor="fs-name">Name</Label>
+                  <Input
+                    id="fs-name"
+                    value={newFrameSize.name}
+                    onChange={(e) =>
+                      setNewFrameSize({ ...newFrameSize, name: e.target.value })
+                    }
+                    placeholder="e.g. Belgian Standard"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="fs-width">Width (mm)</Label>
+                    <Input
+                      id="fs-width"
+                      type="number"
+                      min="1"
+                      value={newFrameSize.width || ''}
+                      onChange={(e) =>
+                        setNewFrameSize({
+                          ...newFrameSize,
+                          width: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="fs-height">Height (mm)</Label>
+                    <Input
+                      id="fs-height"
+                      type="number"
+                      min="1"
+                      value={newFrameSize.height || ''}
+                      onChange={(e) =>
+                        setNewFrameSize({
+                          ...newFrameSize,
+                          height: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="fs-depth">Depth (mm)</Label>
+                    <Input
+                      id="fs-depth"
+                      type="number"
+                      min="1"
+                      value={newFrameSize.depth || ''}
+                      onChange={(e) =>
+                        setNewFrameSize({
+                          ...newFrameSize,
+                          depth: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowCustomFields(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleCustomSubmit}
+                    disabled={
+                      submitFrameSize.isPending ||
+                      !newFrameSize.name ||
+                      !newFrameSize.width ||
+                      !newFrameSize.height ||
+                      !newFrameSize.depth
+                    }
+                  >
+                    {submitFrameSize.isPending ? 'Submitting...' : 'Submit'}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
-
-        {/* Suggest Frame Size Dialog */}
-        <Dialog open={suggestDialogOpen} onOpenChange={setSuggestDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Suggest a Frame Size</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="fs-name">Name</Label>
-                <Input
-                  id="fs-name"
-                  value={newFrameSize.name}
-                  onChange={(e) =>
-                    setNewFrameSize({ ...newFrameSize, name: e.target.value })
-                  }
-                  placeholder="e.g. Belgian Standard"
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="fs-width">Width (mm)</Label>
-                  <Input
-                    id="fs-width"
-                    type="number"
-                    min="1"
-                    value={newFrameSize.width || ''}
-                    onChange={(e) =>
-                      setNewFrameSize({
-                        ...newFrameSize,
-                        width: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fs-height">Height (mm)</Label>
-                  <Input
-                    id="fs-height"
-                    type="number"
-                    min="1"
-                    value={newFrameSize.height || ''}
-                    onChange={(e) =>
-                      setNewFrameSize({
-                        ...newFrameSize,
-                        height: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fs-depth">Depth (mm)</Label>
-                  <Input
-                    id="fs-depth"
-                    type="number"
-                    min="1"
-                    value={newFrameSize.depth || ''}
-                    onChange={(e) =>
-                      setNewFrameSize({
-                        ...newFrameSize,
-                        depth: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setSuggestDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSuggestSubmit}
-                disabled={
-                  submitFrameSize.isPending ||
-                  !newFrameSize.name ||
-                  !newFrameSize.width ||
-                  !newFrameSize.height ||
-                  !newFrameSize.depth
-                }
-              >
-                {submitFrameSize.isPending ? 'Submitting...' : 'Submit'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
         {/* Frame Count */}
         <div className="space-y-2">
