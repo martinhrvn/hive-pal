@@ -14,7 +14,9 @@ import {
   getHiveSystem,
   getEquivalentVariant,
   isVariantCompatible,
+  findFrameSizeForVariant,
 } from 'shared-schemas';
+import { useFrameSizes } from '@/api/hooks';
 import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
 import { CompactBoxConfig } from './CompactBoxConfig';
@@ -34,20 +36,23 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
   ({ initialBoxes = [], onChange, simplified = false }, ref) => {
     const [boxes, setBoxes] = useState<Box[]>(initialBoxes);
     const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
+    const { data: frameSizes = [] } = useFrameSizes();
 
     // Get main box variant (position 0)
     const mainBox = useMemo(
       () => boxes.find((b) => b.position === 0),
       [boxes],
     );
-    const mainBoxVariant = mainBox?.variant;
-
     useImperativeHandle(ref, () => ({
       getBoxes: () => boxes,
       setBoxes: (newBoxes: Box[]) => setBoxes(newBoxes),
     }));
 
     const handleAddBox = useCallback(() => {
+      const defaultFs = findFrameSizeForVariant(
+        frameSizes,
+        BoxVariantEnum.LANGSTROTH_DEEP,
+      );
       const newBox: Box = {
         id: `temp-${Date.now()}`,
         position: boxes.length,
@@ -56,13 +61,14 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
         hasExcluder: false,
         type: boxes.length === 0 ? BoxTypeEnum.BROOD : BoxTypeEnum.HONEY,
         variant: BoxVariantEnum.LANGSTROTH_DEEP,
+        frameSizeId: defaultFs?.id ?? null,
         color: boxes.length === 0 ? '#3b82f6' : '#f59e0b',
       };
       const updatedBoxes = [...boxes, newBox];
       setBoxes(updatedBoxes);
       setSelectedBoxId(newBox.id ?? null);
       onChange?.(updatedBoxes);
-    }, [boxes, onChange]);
+    }, [boxes, onChange, frameSizes]);
 
     const handleRemoveBox = useCallback(
       (boxId: string) => {
@@ -101,7 +107,12 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
               ) {
                 // Auto-convert to equivalent in new system
                 const newVariant = getEquivalentVariant(box.variant, newSystem);
-                return { ...box, variant: newVariant };
+                const newFs = findFrameSizeForVariant(frameSizes, newVariant);
+                return {
+                  ...box,
+                  variant: newVariant,
+                  frameSizeId: newFs?.id ?? box.frameSizeId,
+                };
               }
 
               return box;
@@ -117,7 +128,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
           return updated;
         });
       },
-      [onChange],
+      [onChange, frameSizes],
     );
 
     const handleReorder = useCallback((newBoxes: Box[]) => {
@@ -148,6 +159,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
                 onReorder={handleReorder}
                 onRemoveBox={handleRemoveBox}
                 isEditing={true}
+                frameSizes={frameSizes}
               />
 
               <Button
@@ -168,8 +180,9 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
                   <CompactBoxConfig
                     box={selectedBox}
                     onUpdate={handleBoxUpdate}
-                    mainBoxVariant={mainBoxVariant}
+                    mainBoxFrameSizeId={mainBox?.frameSizeId ?? undefined}
                     isMainBox={selectedBox.position === 0}
+                    frameSizes={frameSizes}
                   />
                 </>
               ) : (
@@ -211,8 +224,9 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
             <BoxConfigPanel
               box={selectedBox}
               onUpdate={handleBoxUpdate}
-              mainBoxVariant={mainBoxVariant}
+              mainBoxFrameSizeId={mainBox?.frameSizeId ?? undefined}
               isMainBox={selectedBox.position === 0}
+              frameSizes={frameSizes}
             />
           </div>
         )}

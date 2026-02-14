@@ -86,6 +86,7 @@ export class HiveService {
             hasExcluder: box.hasExcluder,
             type: box.type,
             variant: box.variant,
+            frameSizeId: box.frameSizeId ?? null,
             color: box.color,
             winterized: box.winterized ?? false,
           })),
@@ -216,6 +217,7 @@ export class HiveService {
             hasExcluder: box.hasExcluder,
             type: box.type as BoxTypeEnum,
             variant: box.variant as BoxVariantEnum,
+            frameSizeId: box.frameSizeId ?? undefined,
             color: box.color ?? undefined,
             winterized: box.winterized,
           })),
@@ -255,6 +257,9 @@ export class HiveService {
         boxes: {
           orderBy: {
             position: 'asc',
+          },
+          include: {
+            frameSize: true,
           },
         },
         inspections: {
@@ -320,6 +325,11 @@ export class HiveService {
         color: box.color ?? undefined,
         type: box.type as BoxTypeEnum,
         variant: box.variant as BoxVariantEnum,
+        frameSizeId: box.frameSizeId ?? undefined,
+        frameSize:
+          'frameSize' in box
+            ? ((box as Record<string, unknown>).frameSize ?? undefined)
+            : undefined,
         winterized: box.winterized,
       })),
       hiveScore: score,
@@ -563,6 +573,7 @@ export class HiveService {
             type: box.type, // BoxType enum matches our DTO enum
             maxFrameCount: box.maxFrameCount,
             variant: box.variant,
+            frameSizeId: box.frameSizeId ?? null,
             color: box.color,
             winterized: box.winterized ?? false,
           },

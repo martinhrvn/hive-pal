@@ -36,6 +36,7 @@ const UserManagementPage = lazy(() => import('@/pages/admin/user-management/user
 const UserDetailPage = lazy(() => import('@/pages/admin/user-detail/user-detail-page'));
 const FeedbackManagementPage = lazy(() => import('@/pages/admin/feedback-management/feedback-management-page'));
 const PlatformMetricsPage = lazy(() => import('@/pages/admin/platform-metrics/platform-metrics-page'));
+const FrameSizeReviewPage = lazy(() => import('@/pages/admin/frame-sizes/frame-size-review-page'));
 
 // Heavy feature pages (named exports)
 const ReportsPage = lazy(() => import('@/pages/reports/reports-page').then(m => ({ default: m.ReportsPage })));
@@ -221,6 +222,14 @@ const router = createBrowserRouter([
         element: (
           <AdminProtectedRoute>
             <LazyPage><FeedbackManagementPage /></LazyPage>
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/frame-sizes',
+        element: (
+          <AdminProtectedRoute>
+            <LazyPage><FrameSizeReviewPage /></LazyPage>
           </AdminProtectedRoute>
         ),
       },

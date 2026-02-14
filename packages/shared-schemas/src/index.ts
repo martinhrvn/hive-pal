@@ -14,5 +14,6 @@ export * from './alerts';
 export * from './equipment';
 export * from './users';
 export * from './feedback';
+export * from './frame-sizes';
 export * from './reports';
 export * from './platform-metrics';

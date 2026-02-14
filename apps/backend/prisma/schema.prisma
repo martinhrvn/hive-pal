@@ -21,6 +21,7 @@ model User {
   equipmentMultiplier    EquipmentMultiplier?
   preferences            Json?                  // JSON field for user preferences
   feedbacks              Feedback[]
+  frameSizes             FrameSize[]
   passwordResetTokens    PasswordResetToken[]
   
   // GDPR consent fields
@@ -90,6 +91,8 @@ model Box {
   hasExcluder   Boolean     @default(false) // Whether there's a queen excluder above this box
   type          BoxType // BROOD, HONEY, etc.
   variant       BoxVariant? // LANGSTROTH_DEEP, LANGSTROTH_SHALLOW, etc.
+  frameSizeId   String?
+  frameSize     FrameSize?  @relation(fields: [frameSizeId], references: [id], onDelete: SetNull)
   color         String? // Hex color code for visual representation
   lastSanitized DateTime? // When this box position was last replaced with a sanitized box
   winterized    Boolean     @default(false) // Whether this box is prepared for winter
@@ -504,6 +507,31 @@ enum EquipmentCategory {
   PROTECTIVE      // Suits, gloves, veils
   EXTRACTION      // Extractors, uncapping tools
   CUSTOM          // User-defined categories
+}
+
+// Frame size catalog (shared across all users)
+model FrameSize {
+  id              String          @id @default(uuid())
+  name            String          @unique
+  width           Float           // mm
+  height          Float           // mm
+  depth           Float           // mm
+  isBuiltIn       Boolean         @default(false)  // true = system preset
+  status          FrameSizeStatus @default(PENDING)
+  createdByUserId String?
+  createdByUser   User?           @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  boxes           Box[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([status])
+  @@index([createdByUserId])
+}
+
+enum FrameSizeStatus {
+  PENDING   // User-contributed, awaiting admin approval
+  APPROVED  // Visible to all users
+  REJECTED  // Admin rejected
 }
 
 // Feedback system for user suggestions, bug reports, etc.

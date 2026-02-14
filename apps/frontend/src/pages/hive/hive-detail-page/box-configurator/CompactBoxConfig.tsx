@@ -1,65 +1,65 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Box,
   BoxTypeEnum,
   BoxVariantEnum,
-  getCompatibleVariants,
+  FrameSize,
+  FrameSizeStatus,
+  getVariantForFrameSize,
+  getCompatibleFrameSizes,
 } from 'shared-schemas';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-
-const getVariantLabel = (variant: BoxVariantEnum): string => {
-  const labels: Record<BoxVariantEnum, string> = {
-    [BoxVariantEnum.LANGSTROTH_DEEP]: 'Langstroth Deep',
-    [BoxVariantEnum.LANGSTROTH_SHALLOW]: 'Langstroth Shallow',
-    [BoxVariantEnum.B_DEEP]: 'B Deep',
-    [BoxVariantEnum.B_SHALLOW]: 'B Shallow',
-    [BoxVariantEnum.DADANT]: 'Dadant',
-    [BoxVariantEnum.NATIONAL_DEEP]: 'National Deep',
-    [BoxVariantEnum.NATIONAL_SHALLOW]: 'National Shallow',
-    [BoxVariantEnum.WARRE]: 'Warré',
-    [BoxVariantEnum.TOP_BAR]: 'Top Bar',
-    [BoxVariantEnum.CUSTOM]: 'Custom',
-  };
-  return labels[variant];
-};
+import { Button } from '@/components/ui/button';
+import { useSubmitFrameSize, useUserProfile } from '@/api/hooks';
 
 interface CompactBoxConfigProps {
   box: Box;
   onUpdate: (box: Box) => void;
-  mainBoxVariant?: BoxVariantEnum;
+  mainBoxFrameSizeId?: string;
   isMainBox?: boolean;
+  frameSizes?: FrameSize[];
 }
 
 export const CompactBoxConfig = ({
   box,
   onUpdate,
-  mainBoxVariant,
+  mainBoxFrameSizeId,
   isMainBox,
+  frameSizes = [],
 }: CompactBoxConfigProps) => {
-  // Get available variants based on main box
-  const availableVariants = useMemo(() => {
-    if (isMainBox || !mainBoxVariant) {
-      return Object.values(BoxVariantEnum);
-    }
-    return getCompatibleVariants(mainBoxVariant);
-  }, [mainBoxVariant, isMainBox]);
+  const [showCustomFields, setShowCustomFields] = useState(false);
+  const [newFrameSize, setNewFrameSize] = useState({
+    name: '',
+    width: 0,
+    height: 0,
+    depth: 0,
+  });
+  const submitFrameSize = useSubmitFrameSize();
+  const { data: currentUser } = useUserProfile();
+  const currentUserId = currentUser?.id;
+
+  // Filter frame sizes for secondary boxes by compatibility with main box
+  const availableFrameSizes = useMemo(() => {
+    if (isMainBox || !mainBoxFrameSizeId) return frameSizes;
+    const mainFs = frameSizes.find((fs) => fs.id === mainBoxFrameSizeId);
+    if (!mainFs) return frameSizes;
+    return getCompatibleFrameSizes(frameSizes, mainFs);
+  }, [frameSizes, isMainBox, mainBoxFrameSizeId]);
 
   const handleTypeChange = (value: string) => {
     onUpdate({ ...box, type: value as BoxTypeEnum });
-  };
-
-  const handleVariantChange = (value: string) => {
-    onUpdate({ ...box, variant: value as BoxVariantEnum });
   };
 
   const handleFrameCountChange = (value: number[]) => {
@@ -106,22 +106,188 @@ export const CompactBoxConfig = ({
           </Select>
         </div>
 
-        {/* Box Variant */}
-        <div>
-          <Label htmlFor="box-variant" className="text-xs">Box Type</Label>
-          <Select value={box.variant || ''} onValueChange={handleVariantChange}>
-            <SelectTrigger id="box-variant" className="h-8 text-sm">
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableVariants.map((variant) => (
-                <SelectItem key={variant} value={variant}>
-                  {getVariantLabel(variant)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Frame Size */}
+        {availableFrameSizes.length > 0 && (
+          <div>
+            <Label htmlFor="frame-size" className="text-xs">Frame Size</Label>
+            <Select
+              value={showCustomFields ? '__custom__' : (box.frameSizeId || '__none__')}
+              onValueChange={(value) => {
+                if (value === '__custom__') {
+                  setShowCustomFields(true);
+                  return;
+                }
+                setShowCustomFields(false);
+                if (value === '__none__') {
+                  onUpdate({ ...box, frameSizeId: null });
+                } else {
+                  const selectedFs = frameSizes.find((fs) => fs.id === value);
+                  const variant = selectedFs
+                    ? getVariantForFrameSize(selectedFs)
+                    : box.variant;
+                  onUpdate({ ...box, frameSizeId: value, variant });
+                }
+              }}
+            >
+              <SelectTrigger id="frame-size" className="h-8 text-sm">
+                <SelectValue placeholder="No frame size" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">No frame size</SelectItem>
+                {availableFrameSizes.filter((fs) => fs.isBuiltIn).length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>Built-in</SelectLabel>
+                    {availableFrameSizes
+                      .filter((fs) => fs.isBuiltIn)
+                      .map((fs) => (
+                        <SelectItem key={fs.id} value={fs.id}>
+                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                        </SelectItem>
+                      ))}
+                  </SelectGroup>
+                )}
+                {availableFrameSizes.filter(
+                  (fs) =>
+                    !fs.isBuiltIn &&
+                    fs.status === FrameSizeStatus.APPROVED &&
+                    fs.createdByUserId !== currentUserId,
+                ).length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>Community</SelectLabel>
+                    {availableFrameSizes
+                      .filter(
+                        (fs) =>
+                          !fs.isBuiltIn &&
+                          fs.status === FrameSizeStatus.APPROVED &&
+                          fs.createdByUserId !== currentUserId,
+                      )
+                      .map((fs) => (
+                        <SelectItem key={fs.id} value={fs.id}>
+                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                        </SelectItem>
+                      ))}
+                  </SelectGroup>
+                )}
+                {availableFrameSizes.filter((fs) => fs.createdByUserId === currentUserId)
+                  .length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>My Sizes</SelectLabel>
+                    {availableFrameSizes
+                      .filter((fs) => fs.createdByUserId === currentUserId)
+                      .map((fs) => (
+                        <SelectItem key={fs.id} value={fs.id}>
+                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                        </SelectItem>
+                      ))}
+                  </SelectGroup>
+                )}
+                <SelectItem value="__custom__">Custom...</SelectItem>
+              </SelectContent>
+            </Select>
+            {showCustomFields && (
+              <div className="space-y-2 rounded-md border p-2 mt-2">
+                <div>
+                  <Label htmlFor="fs-name" className="text-xs">Name</Label>
+                  <Input
+                    id="fs-name"
+                    className="h-8 text-sm"
+                    value={newFrameSize.name}
+                    onChange={(e) =>
+                      setNewFrameSize({ ...newFrameSize, name: e.target.value })
+                    }
+                    placeholder="e.g. Belgian Standard"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label htmlFor="fs-width" className="text-xs">Width (mm)</Label>
+                    <Input
+                      id="fs-width"
+                      className="h-8 text-sm"
+                      type="number"
+                      min="1"
+                      value={newFrameSize.width || ''}
+                      onChange={(e) =>
+                        setNewFrameSize({
+                          ...newFrameSize,
+                          width: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="fs-height" className="text-xs">Height (mm)</Label>
+                    <Input
+                      id="fs-height"
+                      className="h-8 text-sm"
+                      type="number"
+                      min="1"
+                      value={newFrameSize.height || ''}
+                      onChange={(e) =>
+                        setNewFrameSize({
+                          ...newFrameSize,
+                          height: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="fs-depth" className="text-xs">Depth (mm)</Label>
+                    <Input
+                      id="fs-depth"
+                      className="h-8 text-sm"
+                      type="number"
+                      min="1"
+                      value={newFrameSize.depth || ''}
+                      onChange={(e) =>
+                        setNewFrameSize({
+                          ...newFrameSize,
+                          depth: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => setShowCustomFields(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => {
+                      submitFrameSize.mutate(newFrameSize, {
+                        onSuccess: (created) => {
+                          setShowCustomFields(false);
+                          setNewFrameSize({ name: '', width: 0, height: 0, depth: 0 });
+                          onUpdate({
+                            ...box,
+                            frameSizeId: created.id,
+                            variant: BoxVariantEnum.CUSTOM,
+                          });
+                        },
+                      });
+                    }}
+                    disabled={
+                      submitFrameSize.isPending ||
+                      !newFrameSize.name ||
+                      !newFrameSize.width ||
+                      !newFrameSize.height ||
+                      !newFrameSize.depth
+                    }
+                  >
+                    {submitFrameSize.isPending ? 'Submitting...' : 'Submit'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Frame Count */}
         <div>
