@@ -58,7 +58,10 @@ export class InspectionStatusUpdaterService {
       select: { id: true, status: true, date: true },
     });
 
-    if (!inspection || inspection.status !== InspectionStatus.SCHEDULED) {
+    if (
+      !inspection ||
+      (inspection.status as InspectionStatus) !== InspectionStatus.SCHEDULED
+    ) {
       return;
     }
 

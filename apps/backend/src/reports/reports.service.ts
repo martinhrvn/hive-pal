@@ -85,7 +85,7 @@ export class ReportsService {
     const hiveIds = hives.map((h) => h.id);
     const totalHives = hives.length;
     const activeHives = hives.filter(
-      (h) => h.status === HiveStatus.ACTIVE,
+      (h) => (h.status as HiveStatus) === HiveStatus.ACTIVE,
     ).length;
 
     // Calculate honey harvested per hive
