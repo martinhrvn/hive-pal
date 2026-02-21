@@ -104,7 +104,7 @@ export class HarvestsService {
       throw new NotFoundException('Harvest not found or access denied');
     }
 
-    if (harvest.status === HarvestStatus.COMPLETED) {
+    if ((harvest.status as HarvestStatus) === HarvestStatus.COMPLETED) {
       throw new BadRequestException(
         'Cannot edit completed harvest. Reopen it first.',
       );
@@ -195,7 +195,7 @@ export class HarvestsService {
       throw new NotFoundException('Harvest not found or access denied');
     }
 
-    if (harvest.status === HarvestStatus.COMPLETED) {
+    if ((harvest.status as HarvestStatus) === HarvestStatus.COMPLETED) {
       throw new BadRequestException(
         'Cannot edit completed harvest. Reopen it first.',
       );
@@ -259,7 +259,7 @@ export class HarvestsService {
       throw new NotFoundException('Harvest not found or access denied');
     }
 
-    if (harvest.status === HarvestStatus.COMPLETED) {
+    if ((harvest.status as HarvestStatus) === HarvestStatus.COMPLETED) {
       throw new BadRequestException('Harvest is already completed');
     }
 
@@ -338,7 +338,7 @@ export class HarvestsService {
       throw new NotFoundException('Harvest not found or access denied');
     }
 
-    if (harvest.status !== HarvestStatus.COMPLETED) {
+    if ((harvest.status as HarvestStatus) !== HarvestStatus.COMPLETED) {
       throw new BadRequestException('Only completed harvests can be reopened');
     }
 

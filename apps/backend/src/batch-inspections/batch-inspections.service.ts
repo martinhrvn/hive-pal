@@ -195,7 +195,9 @@ export class BatchInspectionsService {
     // Verify apiary ownership and get batch
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
-    if (batch.status !== BatchInspectionStatus.DRAFT) {
+    if (
+      (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
+    ) {
       throw new BadRequestException(
         'Can only update batch inspection name when in DRAFT status',
       );
@@ -234,7 +236,9 @@ export class BatchInspectionsService {
   async delete(id: string, apiaryId: string, userId: string): Promise<void> {
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
-    if (batch.status !== BatchInspectionStatus.DRAFT) {
+    if (
+      (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
+    ) {
       throw new BadRequestException(
         'Can only delete batch inspection when in DRAFT status',
       );
@@ -256,7 +260,9 @@ export class BatchInspectionsService {
   ): Promise<BatchInspectionResponse> {
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
-    if (batch.status !== BatchInspectionStatus.DRAFT) {
+    if (
+      (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
+    ) {
       throw new BadRequestException(
         'Can only reorder hives when batch is in DRAFT status',
       );
@@ -290,7 +296,9 @@ export class BatchInspectionsService {
   ): Promise<BatchInspectionResponse> {
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
-    if (batch.status !== BatchInspectionStatus.DRAFT) {
+    if (
+      (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
+    ) {
       throw new BadRequestException(
         'Can only start batch inspection from DRAFT status',
       );
@@ -335,8 +343,9 @@ export class BatchInspectionsService {
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
     if (
-      batch.status !== BatchInspectionStatus.IN_PROGRESS &&
-      batch.status !== BatchInspectionStatus.DRAFT
+      (batch.status as BatchInspectionStatus) !==
+        BatchInspectionStatus.IN_PROGRESS &&
+      (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
     ) {
       throw new BadRequestException(
         'Batch inspection is not active or in draft status',
@@ -404,7 +413,10 @@ export class BatchInspectionsService {
   ): Promise<CurrentHiveToInspect> {
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
-    if (batch.status !== BatchInspectionStatus.IN_PROGRESS) {
+    if (
+      (batch.status as BatchInspectionStatus) !==
+      BatchInspectionStatus.IN_PROGRESS
+    ) {
       throw new BadRequestException('Batch inspection is not in progress');
     }
 
@@ -455,7 +467,10 @@ export class BatchInspectionsService {
   ): Promise<BatchInspectionResponse> {
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
-    if (batch.status === BatchInspectionStatus.COMPLETED) {
+    if (
+      (batch.status as BatchInspectionStatus) ===
+      BatchInspectionStatus.COMPLETED
+    ) {
       throw new BadRequestException('Cannot cancel hives in completed batch');
     }
 
@@ -486,7 +501,10 @@ export class BatchInspectionsService {
   ): Promise<{ inspection: any; next: CurrentHiveToInspect | null }> {
     const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
 
-    if (batch.status !== BatchInspectionStatus.IN_PROGRESS) {
+    if (
+      (batch.status as BatchInspectionStatus) !==
+      BatchInspectionStatus.IN_PROGRESS
+    ) {
       throw new BadRequestException('Batch inspection is not in progress');
     }
 
@@ -610,13 +628,13 @@ export class BatchInspectionsService {
   ): BatchInspectionResponse {
     const hives = batch.hives;
     const completed = hives.filter(
-      (h) => h.status === BatchHiveStatus.COMPLETED,
+      (h) => (h.status as BatchHiveStatus) === BatchHiveStatus.COMPLETED,
     ).length;
     const pending = hives.filter(
-      (h) => h.status === BatchHiveStatus.PENDING,
+      (h) => (h.status as BatchHiveStatus) === BatchHiveStatus.PENDING,
     ).length;
     const cancelled = hives.filter(
-      (h) => h.status === BatchHiveStatus.CANCELLED,
+      (h) => (h.status as BatchHiveStatus) === BatchHiveStatus.CANCELLED,
     ).length;
 
     let elapsedMinutes: number | null = null;

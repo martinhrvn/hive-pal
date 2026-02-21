@@ -497,7 +497,7 @@ export class ActionsService {
       const _newType = type || existingAction.type;
 
       // If type changed or details provided, delete old details and create new ones
-      if (type && type !== existingAction.type) {
+      if (type && type !== (existingAction.type as ActionType)) {
         // Delete old type-specific details
         await this.deleteActionDetails(actionId, tx);
       }
@@ -656,7 +656,7 @@ export class ActionsService {
     };
 
     const unitPreference = userPreferences?.units || 'metric';
-    switch (prismaAction.type) {
+    switch (prismaAction.type as ActionType) {
       case ActionType.FEEDING: {
         if (!prismaAction.feedingAction) {
           throw new Error('Feeding action details missing');
