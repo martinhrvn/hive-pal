@@ -47,7 +47,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: beekeeper
     volumes:
-      - hivepal_postgres_data:/var/lib/postgresql/data
+      - hivepal_postgres_data_preview:/var/lib/postgresql/data
     healthcheck:
       test: [ 'CMD-SHELL', 'pg_isready -U postgres -d beekeeper' ]
       interval: 10s
@@ -55,7 +55,7 @@ services:
       retries: 5
   # Prometheus
 volumes:
-  hivepal_postgres_data:
+  hivepal_postgres_data_preview:
   prometheus_data:
   grafana_data:
   loki-data:
