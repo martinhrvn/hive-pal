@@ -3,7 +3,8 @@
   "globalDependencies": ["tsconfig.json", ".env"],
   "globalPassThroughEnv": [
     "PRISMA_QUERY_ENGINE_LIBRARY",
-    "PRISMA_SCHEMA_ENGINE_BINARY"
+    "PRISMA_SCHEMA_ENGINE_BINARY",
+    "DATABASE_URL"
   ],
   "tasks": {
     "lint": {
