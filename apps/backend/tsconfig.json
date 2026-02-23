@@ -1,5 +1,4 @@
 {
-  "exclude": ["dist", "node_modules"],
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "bundler",
