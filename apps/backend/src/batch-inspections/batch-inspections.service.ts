@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/prisma/client';
 import {
   CreateBatchInspection,
   UpdateBatchInspection,
@@ -41,7 +41,7 @@ export class BatchInspectionsService {
   constructor(
     private prisma: PrismaService,
     private inspectionsService: InspectionsService,
-  ) {}
+  ) { }
 
   /**
    * Create a new batch inspection
@@ -344,7 +344,7 @@ export class BatchInspectionsService {
 
     if (
       (batch.status as BatchInspectionStatus) !==
-        BatchInspectionStatus.IN_PROGRESS &&
+      BatchInspectionStatus.IN_PROGRESS &&
       (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
     ) {
       throw new BadRequestException(

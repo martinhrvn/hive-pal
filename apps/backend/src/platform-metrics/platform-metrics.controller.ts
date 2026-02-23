@@ -17,7 +17,7 @@ import {
   PlatformMetricsQueryParams,
   platformMetricsQueryParamsSchema,
 } from 'shared-schemas';
-import { PlatformMetricsSnapshot } from '@prisma/client';
+import { PlatformMetricsSnapshot } from '@/prisma/client';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @ApiTags('admin/platform-metrics')
@@ -28,7 +28,7 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 export class PlatformMetricsController {
   constructor(
     private readonly platformMetricsService: PlatformMetricsService,
-  ) {}
+  ) { }
 
   @Get()
   @ApiOperation({ summary: 'Get platform metrics snapshots (admin only)' })

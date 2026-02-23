@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/prisma/client';
 import { v4 as uuid } from 'uuid';
 
 export function getRandomApiary({

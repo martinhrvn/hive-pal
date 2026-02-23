@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PlatformMetricsSnapshot } from '@prisma/client';
+import { PlatformMetricsSnapshot } from '@/prisma/client';
 
 @Injectable()
 export class PlatformMetricsService {
   private readonly logger = new Logger(PlatformMetricsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Calculate current platform metrics

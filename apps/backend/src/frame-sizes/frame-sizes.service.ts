@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { FrameSizeStatus } from '@prisma/client';
+import { FrameSizeStatus } from '@/prisma/client';
 
 interface CreateFrameSizeData {
   name: string;
@@ -16,7 +16,7 @@ interface CreateFrameSizeData {
 
 @Injectable()
 export class FrameSizesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(userId: string) {
     return this.prisma.frameSize.findMany({

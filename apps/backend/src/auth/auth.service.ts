@@ -13,7 +13,7 @@ import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { User as PrismaUser } from '@prisma/client';
+import { User as PrismaUser } from '@/prisma/client';
 import { AuthResponse, User, SuccessResponse } from 'shared-schemas';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
-  ) {}
+  ) { }
 
   async validateUser(
     email: string,

@@ -8,12 +8,14 @@
 Refactoring from polymorphic Action tables to a unified HiveActivity model with proper Task scheduling.
 
 ### Current State
+
 - `Action` table with `ActionType` discriminator
 - 5 detail tables: `TreatmentAction`, `FeedingAction`, `FrameAction`, `HarvestAction`, `BoxConfigurationAction`
 - `Observation` table with EAV pattern (type + numericValue/textValue/booleanValue)
 - No task/follow-up system
 
 ### Target State
+
 - `HiveActivity` - unified timeline log with typed JSON
 - `Task` - scheduler for follow-ups
 - `Inspection` - simplified container with cached summary
@@ -24,12 +26,14 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 ## Migration Checklist
 
 ### Phase 1: Preparation
+
 - [ ] Back up production database
 - [ ] Review and finalize schema design
 - [ ] Create shared-schemas for new types
 - [ ] Write unit tests for data transformation logic
 
 ### Phase 2: Schema (Additive Only)
+
 - [ ] Create `HiveActivity` table
 - [ ] Create `Task` table
 - [ ] Add `summary` field to `Inspection`
@@ -38,6 +42,7 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 - [ ] Verify no breaking changes
 
 ### Phase 3: Shared Schemas
+
 - [ ] Create `activity/types.ts` with ActivityType enum
 - [ ] Create `activity/details.schema.ts` with all detail schemas
 - [ ] Create `inspection/summary.schema.ts`
@@ -46,6 +51,7 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 - [ ] Run type checks
 
 ### Phase 4: Backend - New Services
+
 - [ ] Create `HiveActivityService`
 - [ ] Create `HiveActivityRepository` with typed JSON handling
 - [ ] Create `TaskService`
@@ -54,6 +60,7 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 - [ ] Write integration tests
 
 ### Phase 5: Data Migration Script
+
 - [ ] Write migration script (see below)
 - [ ] Test on staging with production data copy
 - [ ] Verify row counts match
@@ -61,6 +68,7 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 - [ ] Document any edge cases
 
 ### Phase 6: Backend - Dual Write
+
 - [ ] Update `InspectionsService.create()` to write to both old and new
 - [ ] Update `InspectionsService.update()` to write to both
 - [ ] Update `ActionsService.createStandaloneAction()` to write to both
@@ -68,6 +76,7 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 - [ ] Deploy and monitor for errors
 
 ### Phase 7: Backend - Switch Reads
+
 - [ ] Update `InspectionsService` to read from new tables
 - [ ] Update `ActionsService.findAll()` to read from HiveActivity
 - [ ] Update `CalendarService` to use HiveActivity
@@ -75,6 +84,7 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 - [ ] Deploy and monitor
 
 ### Phase 8: Frontend Updates
+
 - [ ] Update inspection form to use new activity types
 - [ ] Update hive detail page actions section
 - [ ] Update calendar view
@@ -82,6 +92,7 @@ Refactoring from polymorphic Action tables to a unified HiveActivity model with 
 - [ ] Test all flows end-to-end
 
 ### Phase 9: Cleanup (After Confidence Period)
+
 - [ ] Remove dual-write code
 - [ ] Remove old Action/Observation services
 - [ ] Drop old tables (keep backup)
@@ -243,7 +254,12 @@ import { z } from 'zod';
 // ============ OBSERVATIONS ============
 
 export const miteCountDetailsSchema = z.object({
-  method: z.enum(['ALCOHOL_WASH', 'SUGAR_ROLL', 'STICKY_BOARD', 'NATURAL_DROP']),
+  method: z.enum([
+    'ALCOHOL_WASH',
+    'SUGAR_ROLL',
+    'STICKY_BOARD',
+    'NATURAL_DROP',
+  ]),
   count: z.number().int().min(0),
   sampleSize: z.number().int().optional(),
   dropDays: z.number().int().optional(),
@@ -259,7 +275,9 @@ export const queenStatusDetailsSchema = z.object({
 });
 
 export const broodDetailsSchema = z.object({
-  pattern: z.enum(['solid', 'spotty', 'scattered', 'patchy', 'excellent', 'poor']).optional(),
+  pattern: z
+    .enum(['solid', 'spotty', 'scattered', 'patchy', 'excellent', 'poor'])
+    .optional(),
   cappedFrames: z.number().int().min(0).optional(),
   uncappedFrames: z.number().int().min(0).optional(),
   queenCells: z.number().int().min(0).optional(),
@@ -283,7 +301,18 @@ export const temperamentDetailsSchema = z.object({
 });
 
 export const pestDiseaseDetailsSchema = z.object({
-  pest: z.enum(['varroa', 'shb', 'wax_moths', 'ants', 'wasps', 'nosema', 'afb', 'efb', 'chalkbrood', 'other']),
+  pest: z.enum([
+    'varroa',
+    'shb',
+    'wax_moths',
+    'ants',
+    'wasps',
+    'nosema',
+    'afb',
+    'efb',
+    'chalkbrood',
+    'other',
+  ]),
   severity: z.enum(['low', 'medium', 'high']).optional(),
   location: z.string().optional(),
 });
@@ -364,10 +393,9 @@ export type ActivityDetailsMap = {
 };
 
 // Runtime validator
-export function validateActivityDetails<T extends keyof typeof activityDetailsSchemas>(
-  type: T,
-  details: unknown
-): ActivityDetailsMap[T] {
+export function validateActivityDetails<
+  T extends keyof typeof activityDetailsSchemas,
+>(type: T, details: unknown): ActivityDetailsMap[T] {
   const schema = activityDetailsSchemas[type];
   return schema.parse(details) as ActivityDetailsMap[T];
 }
@@ -461,7 +489,7 @@ export type TaskFilter = z.infer<typeof taskFilterSchema>;
 ```typescript
 // apps/backend/src/migrations/migrate-to-hive-activity.ts
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { ActivityType } from '@hive-pal/shared-schemas';
 
 const prisma = new PrismaClient();
@@ -505,7 +533,8 @@ async function migrateActions(stats: MigrationStats) {
           break;
 
         case 'TREATMENT':
-          if (!action.treatmentAction) throw new Error('Missing treatmentAction');
+          if (!action.treatmentAction)
+            throw new Error('Missing treatmentAction');
           type = ActivityType.TREATMENT;
           details = {
             product: action.treatmentAction.product,
@@ -520,8 +549,12 @@ async function migrateActions(stats: MigrationStats) {
           if (!action.frameAction) throw new Error('Missing frameAction');
           type = ActivityType.FRAME_MANIPULATION;
           details = {
-            added: action.frameAction.quantity > 0 ? action.frameAction.quantity : 0,
-            removed: action.frameAction.quantity < 0 ? Math.abs(action.frameAction.quantity) : 0,
+            added:
+              action.frameAction.quantity > 0 ? action.frameAction.quantity : 0,
+            removed:
+              action.frameAction.quantity < 0
+                ? Math.abs(action.frameAction.quantity)
+                : 0,
           };
           break;
 
@@ -535,7 +568,8 @@ async function migrateActions(stats: MigrationStats) {
           break;
 
         case 'BOX_CONFIGURATION':
-          if (!action.boxConfigurationAction) throw new Error('Missing boxConfigurationAction');
+          if (!action.boxConfigurationAction)
+            throw new Error('Missing boxConfigurationAction');
           type = ActivityType.BOX_CONFIGURATION;
           details = {
             boxesAdded: action.boxConfigurationAction.boxesAdded,
@@ -623,9 +657,13 @@ async function migrateObservations(stats: MigrationStats) {
         switch (obs.type) {
           case 'strength':
             summary.strength = obs.numericValue;
-            await createObservationActivity(inspection, ActivityType.COLONY_STRENGTH, {
-              score: obs.numericValue,
-            });
+            await createObservationActivity(
+              inspection,
+              ActivityType.COLONY_STRENGTH,
+              {
+                score: obs.numericValue,
+              },
+            );
             break;
 
           case 'capped_brood':
@@ -658,9 +696,13 @@ async function migrateObservations(stats: MigrationStats) {
 
           case 'queen_seen':
             summary.queenSeen = obs.booleanValue;
-            await createObservationActivity(inspection, ActivityType.QUEEN_STATUS, {
-              seen: obs.booleanValue ?? false,
-            });
+            await createObservationActivity(
+              inspection,
+              ActivityType.QUEEN_STATUS,
+              {
+                seen: obs.booleanValue ?? false,
+              },
+            );
             break;
 
           case 'brood_pattern':
@@ -672,9 +714,13 @@ async function migrateObservations(stats: MigrationStats) {
           case 'defensive':
           case 'aggressive':
           case 'nervous':
-            await createObservationActivity(inspection, ActivityType.TEMPERAMENT, {
-              temperament: obs.type,
-            });
+            await createObservationActivity(
+              inspection,
+              ActivityType.TEMPERAMENT,
+              {
+                temperament: obs.type,
+              },
+            );
             break;
 
           case 'varroa_present':
@@ -687,9 +733,13 @@ async function migrateObservations(stats: MigrationStats) {
               wax_moths: 'wax_moths',
               ants_present: 'ants',
             };
-            await createObservationActivity(inspection, ActivityType.PEST_DISEASE, {
-              pest: pestMap[obs.type] || 'other',
-            });
+            await createObservationActivity(
+              inspection,
+              ActivityType.PEST_DISEASE,
+              {
+                pest: pestMap[obs.type] || 'other',
+              },
+            );
             break;
 
           // Reminder observations - create tasks
@@ -712,11 +762,18 @@ async function migrateObservations(stats: MigrationStats) {
     }
 
     // Create combined BROOD activity if we have brood data
-    const hasBroodData = summary.cappedBroodFrames || summary.uncappedBroodFrames ||
-                         summary.queenCells || summary.swarmCells;
+    const hasBroodData =
+      summary.cappedBroodFrames ||
+      summary.uncappedBroodFrames ||
+      summary.queenCells ||
+      summary.swarmCells;
     if (hasBroodData) {
-      const broodPatternObs = inspection.observations.find(o => o.type === 'brood_pattern');
-      const supersedureObs = inspection.observations.find(o => o.type === 'supersedure_cells');
+      const broodPatternObs = inspection.observations.find(
+        o => o.type === 'brood_pattern',
+      );
+      const supersedureObs = inspection.observations.find(
+        o => o.type === 'supersedure_cells',
+      );
 
       await createObservationActivity(inspection, ActivityType.BROOD, {
         pattern: broodPatternObs?.textValue,
@@ -751,7 +808,7 @@ async function migrateObservations(stats: MigrationStats) {
 async function createObservationActivity(
   inspection: { id: string; hiveId: string; date: Date },
   type: ActivityType,
-  details: Record<string, unknown>
+  details: Record<string, unknown>,
 ) {
   await prisma.hiveActivity.create({
     data: {
@@ -800,19 +857,27 @@ async function main() {
   };
 
   try {
-    await prisma.$transaction(async (tx) => {
-      // Note: In real migration, pass tx to all functions
-      await migrateActions(stats);
-      await migrateObservations(stats);
-    }, {
-      timeout: 300000, // 5 minutes
-    });
+    await prisma.$transaction(
+      async tx => {
+        // Note: In real migration, pass tx to all functions
+        await migrateActions(stats);
+        await migrateObservations(stats);
+      },
+      {
+        timeout: 300000, // 5 minutes
+      },
+    );
 
     console.log('\n=== Migration Complete ===');
-    console.log(`Actions: ${stats.actions.migrated}/${stats.actions.total} migrated, ${stats.actions.failed} failed`);
-    console.log(`Observations: ${stats.observations.migrated}/${stats.observations.total} migrated, ${stats.observations.failed} failed`);
-    console.log(`Inspections: ${stats.inspections.summariesCreated}/${stats.inspections.total} summaries created`);
-
+    console.log(
+      `Actions: ${stats.actions.migrated}/${stats.actions.total} migrated, ${stats.actions.failed} failed`,
+    );
+    console.log(
+      `Observations: ${stats.observations.migrated}/${stats.observations.total} migrated, ${stats.observations.failed} failed`,
+    );
+    console.log(
+      `Inspections: ${stats.inspections.summariesCreated}/${stats.inspections.total} summaries created`,
+    );
   } catch (error) {
     console.error('Migration failed:', error);
     throw error;
@@ -831,10 +896,12 @@ main();
 If issues are found after migration:
 
 1. **Reads switched but problems found**:
+
    - Switch reads back to old tables (code change + deploy)
    - New tables remain for debugging
 
 2. **Data integrity issues**:
+
    - Old tables are untouched - no data loss
    - Fix migration script, truncate new tables, re-run
 
@@ -877,13 +944,13 @@ DROP TABLE "Action";
 
 ## Notes & Decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| Keep treatment follow-ups as Tasks | Separates "what happened" from "what needs to happen" |
-| Mite count → treatment link is temporal | Query by date proximity, no FK coupling |
+| Decision                                 | Rationale                                              |
+| ---------------------------------------- | ------------------------------------------------------ |
+| Keep treatment follow-ups as Tasks       | Separates "what happened" from "what needs to happen"  |
+| Mite count → treatment link is temporal  | Query by date proximity, no FK coupling                |
 | Inspection summary is denormalized cache | Fast reads for list views, updated on activity changes |
-| Task starts hive-scoped | Can add apiaryId later without breaking changes |
-| Preserve action IDs during migration | Allows referential integrity checks |
+| Task starts hive-scoped                  | Can add apiaryId later without breaking changes        |
+| Preserve action IDs during migration     | Allows referential integrity checks                    |
 
 ---
 
@@ -895,5 +962,5 @@ DROP TABLE "Action";
 
 ---
 
-*Last updated: [DATE]*
-*Migration status: Not started*
+_Last updated: [DATE]_
+_Migration status: Not started_

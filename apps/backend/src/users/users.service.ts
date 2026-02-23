@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User } from '@/prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserPreferences, UpdateUserInfo } from 'shared-schemas';
@@ -8,7 +8,7 @@ type PartialUser = Omit<User, 'password'>;
 
 @Injectable()
 export class UsersService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async findByEmail(email: string): Promise<User | null> {
     return this.prismaService.user.findUnique({

@@ -34,12 +34,12 @@ import {
   FeedbackFilters,
 } from 'shared-schemas';
 import { ZodValidation } from '../common';
-import { FeedbackStatus, FeedbackType } from '@prisma/client';
+import { FeedbackStatus, FeedbackType } from '@/prisma/client';
 
 @ApiTags('feedback')
 @Controller('feedback')
 export class FeedbackController {
-  constructor(private readonly feedbackService: FeedbackService) {}
+  constructor(private readonly feedbackService: FeedbackService) { }
 
   @Post()
   @ApiOperation({ summary: 'Submit feedback (authentication optional)' })

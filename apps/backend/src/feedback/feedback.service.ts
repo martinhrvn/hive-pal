@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { FeedbackType, FeedbackStatus, Prisma } from '@prisma/client';
+import { FeedbackType, FeedbackStatus, Prisma } from '@/prisma/client';
 
 interface CreateFeedbackData {
   userId?: string | null;
@@ -19,7 +19,7 @@ interface FindAllOptions {
 
 @Injectable()
 export class FeedbackService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(data: CreateFeedbackData) {
     return this.prisma.feedback.create({

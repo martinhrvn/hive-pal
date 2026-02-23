@@ -9,7 +9,7 @@ import { CustomLoggerService } from '../logger/logger.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
-import { TranscriptionStatus } from '@prisma/client';
+import { TranscriptionStatus } from '@/prisma/client';
 
 export interface UploadAudioDto {
   fileName: string;

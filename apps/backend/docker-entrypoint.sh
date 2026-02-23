@@ -11,7 +11,7 @@ done
 echo "Database is ready!"
 
 echo "Running database migrations..."
-npx prisma@6 migrate deploy --schema=./apps/backend/prisma/schema.prisma
+./node_modules/.bin/prisma migrate deploy --schema=./apps/backend/prisma/schema.prisma
 
 echo "Starting application..."
 exec "$@"

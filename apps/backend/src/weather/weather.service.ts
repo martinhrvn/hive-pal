@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { WeatherCondition, Prisma } from '@prisma/client';
+import { WeatherCondition, Prisma } from '@/prisma/client';
 import axios from 'axios';
 
 interface OpenMeteoHourlyData {
@@ -30,7 +30,7 @@ interface OpenMeteoResponse {
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Map Open-Meteo weather codes to our simplified conditions

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
-import { Alert, Prisma } from '@prisma/client';
+import { Alert, Prisma } from '@/prisma/client';
 import {
   CreateAlert,
   UpdateAlert,
