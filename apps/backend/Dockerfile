@@ -31,4 +31,4 @@ COPY apps/backend/docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 EXPOSE 3000
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["node", "apps/backend/dist/src/main.js"]
+CMD ["node", "apps/backend/dist/main.js"]
