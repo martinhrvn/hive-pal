@@ -13,23 +13,23 @@ const severityConfig = {
   LOW: {
     icon: Info,
     variant: 'secondary' as const,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
+    color: 'text-blue-600 dark:text-blue-400',
+    bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+    borderColor: 'border-blue-200 dark:border-blue-800',
   },
   MEDIUM: {
     icon: AlertTriangle,
     variant: 'default' as const,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-50',
-    borderColor: 'border-amber-200',
+    color: 'text-amber-600 dark:text-amber-400',
+    bgColor: 'bg-amber-50 dark:bg-amber-900/30',
+    borderColor: 'border-amber-200 dark:border-amber-800',
   },
   HIGH: {
     icon: AlertCircle,
     variant: 'destructive' as const,
-    color: 'text-red-600',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
+    color: 'text-red-600 dark:text-red-400',
+    bgColor: 'bg-red-50 dark:bg-red-900/30',
+    borderColor: 'border-red-200 dark:border-red-800',
   },
 };
 

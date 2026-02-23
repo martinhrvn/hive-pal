@@ -97,18 +97,18 @@ export const CalendarPage = () => {
     const today = new Date();
 
     if (inspection.status === 'COMPLETED') {
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
     }
 
     if (isBefore(inspectionDate, startOfDay(today))) {
-      return 'bg-red-100 text-red-800 border-red-200';
+      return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800';
     }
 
     if (isSameDay(inspectionDate, today)) {
-      return 'bg-orange-100 text-orange-800 border-orange-200';
+      return 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800';
     }
 
-    return 'bg-blue-100 text-blue-800 border-blue-200';
+    return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800';
   };
 
   const getStatusIcon = (inspection: InspectionResponse) => {
@@ -331,7 +331,7 @@ export const CalendarPage = () => {
                                       Inspection of{' '}
                                       <Link
                                         to={`/hives/${inspection.hiveId}`}
-                                        className="hover:underline text-blue-600"
+                                        className="hover:underline text-blue-600 dark:text-blue-400"
                                       >
                                         {getHiveName(inspection.hiveId)}
                                       </Link>
@@ -351,7 +351,7 @@ export const CalendarPage = () => {
                                   <div className="mt-2 flex gap-2">
                                     <Link
                                       to={`/inspections/${inspection.id}`}
-                                      className="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                                      className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline flex items-center gap-1"
                                     >
                                       View Inspection
                                       <ExternalLink className="h-3 w-3" />
@@ -378,7 +378,7 @@ export const CalendarPage = () => {
                           {standaloneActions.map(action => (
                             <div
                               key={`action-${action.id}`}
-                              className="p-3 rounded-lg border bg-purple-50 text-purple-900 border-purple-200"
+                              className="p-3 rounded-lg border bg-purple-50 text-purple-900 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800"
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -389,7 +389,7 @@ export const CalendarPage = () => {
                                       on{' '}
                                       <Link
                                         to={`/hives/${action.hiveId}`}
-                                        className="hover:underline text-purple-700"
+                                        className="hover:underline text-purple-700 dark:text-purple-400"
                                       >
                                         {getHiveName(action.hiveId)}
                                       </Link>
@@ -446,11 +446,11 @@ export const CalendarPage = () => {
               }}
               modifiersClassNames={{
                 hasInspectionsOnly:
-                  'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-blue-500 after:rounded-full cursor-pointer hover:bg-blue-50',
+                  'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-blue-500 after:rounded-full cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950',
                 hasActionsOnly:
-                  'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-purple-500 after:rounded-full cursor-pointer hover:bg-purple-50',
+                  'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-purple-500 after:rounded-full cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-950',
                 hasBoth:
-                  'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-2 after:h-1 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:rounded-full cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50',
+                  'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-2 after:h-1 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:rounded-full cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950 dark:hover:to-purple-950',
               }}
             />
             <div className="mt-4 space-y-2 text-xs">

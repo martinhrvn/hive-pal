@@ -17,21 +17,21 @@ interface AlertCardProps {
 const severityConfig = {
   LOW: {
     icon: Info,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
+    color: 'text-blue-600 dark:text-blue-400',
+    bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+    borderColor: 'border-blue-200 dark:border-blue-800',
   },
   MEDIUM: {
     icon: AlertTriangle,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-50',
-    borderColor: 'border-amber-200',
+    color: 'text-amber-600 dark:text-amber-400',
+    bgColor: 'bg-amber-50 dark:bg-amber-900/30',
+    borderColor: 'border-amber-200 dark:border-amber-800',
   },
   HIGH: {
     icon: AlertCircle,
-    color: 'text-red-600',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
+    color: 'text-red-600 dark:text-red-400',
+    bgColor: 'bg-red-50 dark:bg-red-900/30',
+    borderColor: 'border-red-200 dark:border-red-800',
   },
 };
 
@@ -121,18 +121,18 @@ export function AlertCard({
                     size="sm"
                     onClick={handleResolve}
                     disabled={isLoading}
-                    className="h-6 w-6 p-0 hover:bg-green-100"
+                    className="h-6 w-6 p-0 hover:bg-green-100 dark:hover:bg-green-900/30"
                   >
-                    <Check className="h-3 w-3 text-green-600" />
+                    <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleDismiss}
                     disabled={isLoading}
-                    className="h-6 w-6 p-0 hover:bg-gray-100"
+                    className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <X className="h-3 w-3 text-gray-600" />
+                    <X className="h-3 w-3 text-gray-600 dark:text-gray-400" />
                   </Button>
                 </div>
               )}

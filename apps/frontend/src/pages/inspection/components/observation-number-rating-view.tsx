@@ -14,7 +14,7 @@ export const ObservationNumberRatingView = ({
         <div className="flex items-center gap-4">
           <div className="grow grid grid-cols-10 gap-1">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => {
-              const color = rating >= value ? 'bg-amber-300' : 'bg-gray-200';
+              const color = rating >= value ? 'bg-amber-300 dark:bg-amber-700' : 'bg-gray-200 dark:bg-gray-700';
               return (
                 <div
                   key={value}
@@ -23,7 +23,7 @@ export const ObservationNumberRatingView = ({
               );
             })}
           </div>
-          <span className="p-1 px-5 block bg-gray-100 rounded font-semibold text-lg">
+          <span className="p-1 px-5 block bg-gray-100 dark:bg-gray-800 rounded font-semibold text-lg">
             {rating}
           </span>
         </div>

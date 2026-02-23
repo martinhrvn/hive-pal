@@ -33,7 +33,7 @@ export const pillVariants = cva(
       {
         color: 'neutral',
         active: true,
-        className: 'bg-gray-100 border-gray-500 [&>svg]:text-gray-600',
+        className: 'bg-gray-100 dark:bg-gray-800 border-gray-500 [&>svg]:text-gray-600 dark:[&>svg]:text-gray-400',
       },
 
       // Blue
@@ -46,7 +46,7 @@ export const pillVariants = cva(
       {
         color: 'blue',
         active: true,
-        className: 'bg-blue-100 border-blue-500 [&>svg]:text-blue-600',
+        className: 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 [&>svg]:text-blue-600 dark:[&>svg]:text-blue-400',
       },
 
       // Green
@@ -59,7 +59,7 @@ export const pillVariants = cva(
       {
         color: 'green',
         active: true,
-        className: 'bg-green-100 border-green-500 [&>svg]:text-green-600',
+        className: 'bg-green-100 dark:bg-green-900/30 border-green-500 [&>svg]:text-green-600 dark:[&>svg]:text-green-400',
       },
 
       // Red
@@ -72,7 +72,7 @@ export const pillVariants = cva(
       {
         color: 'red',
         active: true,
-        className: 'bg-red-100 border-red-500 [&>svg]:text-red-600',
+        className: 'bg-red-100 dark:bg-red-900/30 border-red-500 [&>svg]:text-red-600 dark:[&>svg]:text-red-400',
       },
 
       // Amber
@@ -85,7 +85,7 @@ export const pillVariants = cva(
       {
         color: 'amber',
         active: true,
-        className: 'bg-amber-100 border-amber-500 [&>svg]:text-amber-600',
+        className: 'bg-amber-100 dark:bg-amber-900/30 border-amber-500 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-400',
       },
 
       // Purple
@@ -98,7 +98,7 @@ export const pillVariants = cva(
       {
         color: 'purple',
         active: true,
-        className: 'bg-purple-100 border-purple-500 [&>svg]:text-purple-600',
+        className: 'bg-purple-100 dark:bg-purple-900/30 border-purple-500 [&>svg]:text-purple-600 dark:[&>svg]:text-purple-400',
       },
 
       // Slate
@@ -111,7 +111,7 @@ export const pillVariants = cva(
       {
         color: 'slate',
         active: true,
-        className: 'bg-slate-100 border-slate-500 [&>svg]:text-slate-600',
+        className: 'bg-slate-100 dark:bg-slate-800 border-slate-500 [&>svg]:text-slate-600 dark:[&>svg]:text-slate-400',
       },
     ],
     defaultVariants: {

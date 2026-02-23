@@ -16,17 +16,17 @@ interface AlertsPopoverProps {
 const severityConfig = {
   LOW: {
     icon: Info,
-    color: 'text-blue-600',
+    color: 'text-blue-600 dark:text-blue-400',
     label: 'alert',
   },
   MEDIUM: {
     icon: AlertTriangle,
-    color: 'text-amber-600',
+    color: 'text-amber-600 dark:text-amber-400',
     label: 'alert',
   },
   HIGH: {
     icon: AlertCircle,
-    color: 'text-red-600',
+    color: 'text-red-600 dark:text-red-400',
     label: 'alert',
   },
 };
@@ -61,7 +61,7 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
           )}
         >
           <Icon className={cn('h-4 w-4', config.color)} />
-          <span className="text-gray-600">
+          <span className="text-gray-600 dark:text-gray-400">
             {alertCount} {pluralLabel}
           </span>
         </div>

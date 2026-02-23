@@ -45,8 +45,8 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                     <button
                       className={`w-8 h-8 rounded-lg flex items-center justify-center mr-2 ${
                         currentValue === 0
-                          ? 'bg-gray-600 text-white'
-                          : 'bg-gray-100'
+                          ? 'bg-gray-600 text-white dark:bg-gray-300 dark:text-gray-900'
+                          : 'bg-gray-100 dark:bg-gray-800'
                       }`}
                       onClick={e => {
                         e.preventDefault();
@@ -61,19 +61,19 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                     {/* Half point rating buttons */}
                     <div className="grow grid grid-cols-10 gap-1 h-8">
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => {
-                        let color = 'bg-gray-200';
+                        let color = 'bg-gray-200 dark:bg-gray-700';
                         if (hoveredValue != null && hoveredValue >= fullValue) {
-                          color = 'bg-amber-200';
+                          color = 'bg-amber-200 dark:bg-amber-800';
                         } else if (
                           currentValue != null &&
                           currentValue >= fullValue
                         ) {
-                          color = 'bg-amber-300';
+                          color = 'bg-amber-300 dark:bg-amber-700';
                         }
 
                         return (
                           <button
-                            className={`rounded w-full duration-300 transition-colors text-xs ${color} ${hoveredValue === fullValue ? 'text-gray-700' : 'text-transparent'}`}
+                            className={`rounded w-full duration-300 transition-colors text-xs ${color} ${hoveredValue === fullValue ? 'text-gray-700 dark:text-gray-300' : 'text-transparent'}`}
                             onMouseEnter={() => setHoveredValue(fullValue)}
                             onMouseLeave={() => setHoveredValue(null)}
                             onClick={e => {
@@ -94,7 +94,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 
                     {/* Value display */}
                     <div className="ml-4 w-8 h-8 text-center">
-                      <span className="text-sm px-2 py-1 h-8 block bg-gray-100 rounded">
+                      <span className="text-sm px-2 py-1 h-8 block bg-gray-100 dark:bg-gray-800 rounded">
                         {currentValue ?? '-'}
                       </span>
                     </div>
@@ -102,7 +102,7 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                     <Button
                       variant={'ghost'}
                       disabled={currentValue === null}
-                      className="ml-2 text-gray-400 hover:text-red-500"
+                      className="ml-2 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
                       onClick={e => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -201,8 +201,8 @@ export const ObservationsSection: React.FC = () => {
                           key={option}
                           className={`cursor-pointer p-2 rounded-md border text-center text-sm transition-colors ${
                             currentValue === option
-                              ? 'bg-green-100 border-green-300 text-green-800'
-                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                              ? 'bg-green-100 border-green-300 text-green-800 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300'
+                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'
                           }`}
                           onClick={() => selectPattern(option)}
                         >
@@ -310,8 +310,8 @@ export const ObservationsSection: React.FC = () => {
                           key={option}
                           className={`cursor-pointer p-2 rounded-md border text-center text-sm transition-colors ${
                             currentValues.includes(option)
-                              ? 'bg-blue-100 border-blue-300 text-blue-800'
-                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                              ? 'bg-blue-100 border-blue-300 text-blue-800 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'
+                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'
                           }`}
                           onClick={() => toggleObservation(option)}
                         >
@@ -361,8 +361,8 @@ export const ObservationsSection: React.FC = () => {
                           key={option}
                           className={`cursor-pointer p-2 rounded-md border text-center text-sm transition-colors ${
                             currentValues.includes(option)
-                              ? 'bg-amber-100 border-amber-300 text-amber-800'
-                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                              ? 'bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-300'
+                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'
                           }`}
                           onClick={() => toggleObservation(option)}
                         >

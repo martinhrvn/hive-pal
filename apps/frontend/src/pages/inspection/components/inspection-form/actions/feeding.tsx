@@ -244,7 +244,7 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
           <span>{action.concentration}</span>
         </div>
         {action.notes && (
-          <div className="text-sm text-gray-600 mt-1">
+          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             <span>Notes: {action.notes}</span>
           </div>
         )}

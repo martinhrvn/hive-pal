@@ -63,7 +63,7 @@ export const ObservationsCard = ({
           {/* Brood Pattern */}
           {observations.broodPattern && (
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Brood Pattern</h4>
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Brood Pattern</h4>
               <Badge variant="outline" className="capitalize">
                 {observations.broodPattern.replace('_', ' ')}
               </Badge>
@@ -73,7 +73,7 @@ export const ObservationsCard = ({
           {/* Additional Observations (Badges/Tags) */}
           {observations.additionalObservations && observations.additionalObservations.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Additional Observations</h4>
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Additional Observations</h4>
               <div className="flex flex-wrap gap-2">
                 {observations.additionalObservations.map((observation, index) => (
                   <Badge key={index} variant="secondary" className="capitalize">
@@ -87,7 +87,7 @@ export const ObservationsCard = ({
           {/* Reminder Observations */}
           {observations.reminderObservations && observations.reminderObservations.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Reminders</h4>
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reminders</h4>
               <div className="flex flex-wrap gap-2">
                 {observations.reminderObservations.map((observation, index) => (
                   <Badge key={index} variant="destructive" className="capitalize">
