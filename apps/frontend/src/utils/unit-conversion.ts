@@ -141,7 +141,7 @@ export function formatVolume(
   if (preference === 'imperial') {
     // Convert to fluid ounces first for smaller volumes
     const fluidOunces = volumeLiters * 33.814;
-    
+
     if (fluidOunces < 32) {
       // Show in fluid ounces for very small volumes
       return {
@@ -230,7 +230,7 @@ export function getVolumeUnitForAmount(
     if (fluidOunces < 128) return 'qt';
     return 'gal';
   }
-  
+
   return volumeLiters < 1 ? 'ml' : 'L';
 }
 

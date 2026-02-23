@@ -113,7 +113,10 @@ export const BoxItem = ({
       {/* Frame size name */}
       {frameSizeName && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <span className="text-white/70 text-xs font-medium" title={frameSizeName}>
+          <span
+            className="text-white/70 text-xs font-medium"
+            title={frameSizeName}
+          >
             {frameSizeName}
           </span>
         </div>

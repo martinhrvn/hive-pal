@@ -34,7 +34,11 @@ import {
   X,
 } from 'lucide-react';
 import { format, addDays, isSameDay, startOfDay } from 'date-fns';
-import { useHives, useCreateInspection, useCreateBatchInspection } from '@/api/hooks';
+import {
+  useHives,
+  useCreateInspection,
+  useCreateBatchInspection,
+} from '@/api/hooks';
 import { useWeatherDailyForecast } from '@/api/hooks/useWeather';
 import { WeatherCondition, InspectionStatus } from 'shared-schemas';
 import { cn } from '@/lib/utils';
@@ -44,25 +48,30 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 
-const scheduleSchema = z.object({
-  hiveIds: z.array(z.string()).min(1, 'Please select at least one hive'),
-  date: z.date(),
-  notes: z.string().optional(),
-  createAsBatch: z.boolean().optional(),
-  batchName: z.string().optional(),
-}).refine(
-  (data) => {
-    // If createAsBatch is true, batchName must be provided
-    if (data.createAsBatch && (!data.batchName || data.batchName.trim() === '')) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: 'Batch name is required when creating a batch inspection',
-    path: ['batchName'],
-  }
-);
+const scheduleSchema = z
+  .object({
+    hiveIds: z.array(z.string()).min(1, 'Please select at least one hive'),
+    date: z.date(),
+    notes: z.string().optional(),
+    createAsBatch: z.boolean().optional(),
+    batchName: z.string().optional(),
+  })
+  .refine(
+    data => {
+      // If createAsBatch is true, batchName must be provided
+      if (
+        data.createAsBatch &&
+        (!data.batchName || data.batchName.trim() === '')
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Batch name is required when creating a batch inspection',
+      path: ['batchName'],
+    },
+  );
 
 type ScheduleFormData = z.infer<typeof scheduleSchema>;
 
@@ -137,11 +146,13 @@ export const ScheduleInspectionPage = () => {
           hiveIds,
         },
         {
-          onSuccess: (batch) => {
-            toast.success(`Successfully created batch inspection: ${batchName}`);
+          onSuccess: batch => {
+            toast.success(
+              `Successfully created batch inspection: ${batchName}`,
+            );
             navigate(`/batch-inspections/${batch.id}`);
           },
-          onError: (error) => {
+          onError: error => {
             console.error('Failed to create batch inspection:', error);
             toast.error('Failed to create batch inspection');
           },
@@ -522,11 +533,10 @@ export const ScheduleInspectionPage = () => {
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>
-                            Create as Batch Inspection
-                          </FormLabel>
+                          <FormLabel>Create as Batch Inspection</FormLabel>
                           <p className="text-sm text-muted-foreground">
-                            Perform inspections sequentially with a guided workflow
+                            Perform inspections sequentially with a guided
+                            workflow
                           </p>
                         </div>
                       </FormItem>

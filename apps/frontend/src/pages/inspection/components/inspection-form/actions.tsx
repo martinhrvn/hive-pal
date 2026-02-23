@@ -48,7 +48,9 @@ interface ActionsSectionProps {
   editMode?: boolean;
 }
 
-export const ActionsSection: React.FC<ActionsSectionProps> = ({ editMode = false }) => {
+export const ActionsSection: React.FC<ActionsSectionProps> = ({
+  editMode = false,
+}) => {
   const { setValue, getValues, watch, formState } =
     useFormContext<InspectionFormData>();
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -145,7 +147,9 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({ editMode = false
 
   return (
     <div>
-      <h3 className={'text-lg my-4 font-medium'}>{editMode ? 'Action' : 'Actions'}</h3>
+      <h3 className={'text-lg my-4 font-medium'}>
+        {editMode ? 'Action' : 'Actions'}
+      </h3>
       {!editMode && (
         <div
           data-test={TEST_SELECTORS.ACTION_BUTTONS}

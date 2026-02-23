@@ -26,15 +26,21 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { QueenFormData, queenSchema } from './schema';
-import { useMemo } from 'react';
-import { useCreateQueen, useHives } from '@/api/hooks';
+import { useEffect, useMemo } from 'react';
+import {
+  useCreateQueen,
+  useUpdateQueen,
+  useQueen,
+  useHives,
+} from '@/api/hooks';
 
 type QueenFormProps = {
   hiveId?: string;
+  queenId?: string;
 };
 
 const getColorOptions = (t: (key: string) => string) => [
@@ -90,14 +96,21 @@ const getColorOptions = (t: (key: string) => string) => [
   },
 ];
 
-export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
+export const QueenForm: React.FC<QueenFormProps> = ({
+  hiveId: propHiveId,
+  queenId,
+}) => {
   const { t } = useTranslation(['queen', 'common']);
   const navigate = useNavigate();
   const { hiveId: urlHiveId } = useParams();
 
+  const isEditMode = !!queenId;
   const effectiveHiveId = propHiveId || urlHiveId;
 
   const { data: hives } = useHives();
+  const { data: existingQueen } = useQueen(queenId || '', {
+    enabled: !!queenId,
+  });
 
   const hiveOptions = useMemo(() => {
     if (!hives) return [];
@@ -108,6 +121,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
   }, [hives]);
 
   const { mutateAsync: createQueen } = useCreateQueen();
+  const { mutateAsync: updateQueen } = useUpdateQueen();
   const form = useForm<QueenFormData>({
     resolver: zodResolver(queenSchema),
     defaultValues: {
@@ -122,24 +136,57 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
     },
   });
 
+  useEffect(() => {
+    if (existingQueen) {
+      form.reset({
+        hiveId: existingQueen.hiveId || '',
+        marking: existingQueen.marking || '',
+        color: existingQueen.color || '',
+        year: existingQueen.year ?? new Date().getFullYear(),
+        source: existingQueen.source || '',
+        status: (existingQueen.status as QueenFormData['status']) || 'ACTIVE',
+        installedAt: existingQueen.installedAt
+          ? parseISO(existingQueen.installedAt)
+          : new Date(),
+        replacedAt: existingQueen.replacedAt
+          ? parseISO(existingQueen.replacedAt)
+          : null,
+      });
+    }
+  }, [existingQueen, form]);
+
   const colorValue = useWatch({ control: form.control, name: 'color' });
   const hiveValue = useWatch({ control: form.control, name: 'hiveId' });
   const colorOptions = getColorOptions(t);
   const onSubmit = async (data: QueenFormData) => {
     try {
-      await createQueen({
-        ...data,
-        installedAt: data.installedAt.toISOString(),
-        replacedAt: data.replacedAt?.toISOString() ?? null,
-      });
-      // Navigate to the hive detail page after successful creation
+      if (isEditMode) {
+        await updateQueen({
+          id: queenId,
+          data: {
+            ...data,
+            installedAt: data.installedAt.toISOString(),
+            replacedAt: data.replacedAt?.toISOString() ?? null,
+          },
+        });
+      } else {
+        await createQueen({
+          ...data,
+          installedAt: data.installedAt.toISOString(),
+          replacedAt: data.replacedAt?.toISOString() ?? null,
+        });
+      }
+      // Navigate to the hive detail page after successful save
       if (data.hiveId) {
         navigate(`/hives/${data.hiveId}`);
       } else {
         navigate('/');
       }
     } catch (error) {
-      console.error('Failed to create queen:', error);
+      console.error(
+        `Failed to ${isEditMode ? 'update' : 'create'} queen:`,
+        error,
+      );
     }
   };
 
@@ -152,7 +199,9 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
     <div className="container mx-auto max-w-xl">
       <Card>
         <CardHeader>
-          <CardTitle>{t('queen:create.title')}</CardTitle>
+          <CardTitle>
+            {isEditMode ? t('queen:edit.title') : t('queen:create.title')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -458,8 +507,13 @@ export const QueenForm: React.FC<QueenFormProps> = ({ hiveId: propHiveId }) => {
                 >
                   {t('common:actions.cancel')}
                 </Button>
-                <Button type="submit" data-umami-event="Queen Create">
-                  {t('queen:create.button')}
+                <Button
+                  type="submit"
+                  data-umami-event={isEditMode ? 'Queen Edit' : 'Queen Create'}
+                >
+                  {isEditMode
+                    ? t('queen:edit.button')
+                    : t('queen:create.button')}
                 </Button>
               </div>
             </form>

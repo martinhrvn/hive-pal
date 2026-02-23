@@ -104,7 +104,9 @@ export const HarvestListPage = () => {
             <Droplet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalHoney.toFixed(1)} {getWeightUnit()}</div>
+            <div className="text-2xl font-bold">
+              {totalHoney.toFixed(1)} {getWeightUnit()}
+            </div>
             <p className="text-xs text-muted-foreground">
               From completed harvests
             </p>

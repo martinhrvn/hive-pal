@@ -61,7 +61,10 @@ export const InspectionActionSidebar: React.FC<
         />
       </ActionSidebarGroup>
 
-      <ActionSidebarGroup title={t('inspection:sidebar.views')} className="mt-4">
+      <ActionSidebarGroup
+        title={t('inspection:sidebar.views')}
+        className="mt-4"
+      >
         <MenuItemButton
           icon={<ClipboardCheckIcon className="h-4 w-4" />}
           label={t('inspection:sidebar.allInspections')}

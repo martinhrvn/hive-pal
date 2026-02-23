@@ -54,19 +54,19 @@ export const BoxConfigPanel = ({
   // Filter frame sizes for secondary boxes by compatibility with main box
   const availableFrameSizes = useMemo(() => {
     if (isMainBox || !mainBoxFrameSizeId) return frameSizes;
-    const mainFs = frameSizes.find((fs) => fs.id === mainBoxFrameSizeId);
+    const mainFs = frameSizes.find(fs => fs.id === mainBoxFrameSizeId);
     if (!mainFs) return frameSizes;
     return getCompatibleFrameSizes(frameSizes, mainFs);
   }, [frameSizes, isMainBox, mainBoxFrameSizeId]);
 
   const builtInSizes = useMemo(
-    () => availableFrameSizes.filter((fs) => fs.isBuiltIn),
+    () => availableFrameSizes.filter(fs => fs.isBuiltIn),
     [availableFrameSizes],
   );
   const communitySizes = useMemo(
     () =>
       availableFrameSizes.filter(
-        (fs) =>
+        fs =>
           !fs.isBuiltIn &&
           fs.status === FrameSizeStatus.APPROVED &&
           fs.createdByUserId !== currentUserId,
@@ -74,7 +74,8 @@ export const BoxConfigPanel = ({
     [availableFrameSizes, currentUserId],
   );
   const mySizes = useMemo(
-    () => availableFrameSizes.filter((fs) => fs.createdByUserId === currentUserId),
+    () =>
+      availableFrameSizes.filter(fs => fs.createdByUserId === currentUserId),
     [availableFrameSizes, currentUserId],
   );
 
@@ -88,7 +89,7 @@ export const BoxConfigPanel = ({
       onUpdate({ ...box, frameSizeId: null });
       return;
     }
-    const selectedFs = frameSizes.find((fs) => fs.id === value);
+    const selectedFs = frameSizes.find(fs => fs.id === value);
     const variant = selectedFs
       ? getVariantForFrameSize(selectedFs)
       : box.variant;
@@ -97,7 +98,7 @@ export const BoxConfigPanel = ({
 
   const handleCustomSubmit = () => {
     submitFrameSize.mutate(newFrameSize, {
-      onSuccess: (created) => {
+      onSuccess: created => {
         setShowCustomFields(false);
         setNewFrameSize({ name: '', width: 0, height: 0, depth: 0 });
         onUpdate({
@@ -166,7 +167,9 @@ export const BoxConfigPanel = ({
           <div className="space-y-2">
             <Label htmlFor="frame-size">Frame Size</Label>
             <Select
-              value={showCustomFields ? '__custom__' : (box.frameSizeId || '__none__')}
+              value={
+                showCustomFields ? '__custom__' : box.frameSizeId || '__none__'
+              }
               onValueChange={handleFrameSizeChange}
             >
               <SelectTrigger id="frame-size">
@@ -177,7 +180,7 @@ export const BoxConfigPanel = ({
                 {builtInSizes.length > 0 && (
                   <SelectGroup>
                     <SelectLabel>Built-in</SelectLabel>
-                    {builtInSizes.map((fs) => (
+                    {builtInSizes.map(fs => (
                       <SelectItem key={fs.id} value={fs.id}>
                         {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
                       </SelectItem>
@@ -187,7 +190,7 @@ export const BoxConfigPanel = ({
                 {communitySizes.length > 0 && (
                   <SelectGroup>
                     <SelectLabel>Community</SelectLabel>
-                    {communitySizes.map((fs) => (
+                    {communitySizes.map(fs => (
                       <SelectItem key={fs.id} value={fs.id}>
                         {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
                       </SelectItem>
@@ -197,7 +200,7 @@ export const BoxConfigPanel = ({
                 {mySizes.length > 0 && (
                   <SelectGroup>
                     <SelectLabel>My Sizes</SelectLabel>
-                    {mySizes.map((fs) => (
+                    {mySizes.map(fs => (
                       <SelectItem key={fs.id} value={fs.id}>
                         {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
                       </SelectItem>
@@ -214,7 +217,7 @@ export const BoxConfigPanel = ({
                   <Input
                     id="fs-name"
                     value={newFrameSize.name}
-                    onChange={(e) =>
+                    onChange={e =>
                       setNewFrameSize({ ...newFrameSize, name: e.target.value })
                     }
                     placeholder="e.g. Belgian Standard"
@@ -228,7 +231,7 @@ export const BoxConfigPanel = ({
                       type="number"
                       min="1"
                       value={newFrameSize.width || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         setNewFrameSize({
                           ...newFrameSize,
                           width: parseFloat(e.target.value) || 0,
@@ -243,7 +246,7 @@ export const BoxConfigPanel = ({
                       type="number"
                       min="1"
                       value={newFrameSize.height || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         setNewFrameSize({
                           ...newFrameSize,
                           height: parseFloat(e.target.value) || 0,
@@ -258,7 +261,7 @@ export const BoxConfigPanel = ({
                       type="number"
                       min="1"
                       value={newFrameSize.depth || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         setNewFrameSize({
                           ...newFrameSize,
                           depth: parseFloat(e.target.value) || 0,
@@ -404,7 +407,7 @@ export const BoxConfigPanel = ({
                 type="button"
                 className="w-10 h-10 rounded border-2 border-gray-300 hover:border-gray-500 transition-colors"
                 style={{ backgroundColor: color }}
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault();
                   handleColorChange(color);
                 }}

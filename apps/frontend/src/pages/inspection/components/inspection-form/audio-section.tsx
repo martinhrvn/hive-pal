@@ -35,7 +35,7 @@ export function AudioSection({
   // Hooks for existing inspections
   const { data: existingRecordings = [], isLoading } = useInspectionAudio(
     inspectionId || '',
-    { enabled: !!inspectionId }
+    { enabled: !!inspectionId },
   );
   const { upload, isUploading } = useUploadInspectionAudio(inspectionId || '');
   const deleteAudio = useDeleteInspectionAudio(inspectionId || '');
@@ -59,7 +59,7 @@ export function AudioSection({
         await upload(blob, fileName, duration);
       }
     },
-    [isNewInspection, onPendingRecordingsChange, pendingRecordings, upload]
+    [isNewInspection, onPendingRecordingsChange, pendingRecordings, upload],
   );
 
   // Handle delete
@@ -68,7 +68,7 @@ export function AudioSection({
       if (audioId.startsWith('pending-')) {
         // Remove from pending recordings
         onPendingRecordingsChange?.(
-          pendingRecordings.filter((r) => r.id !== audioId)
+          pendingRecordings.filter(r => r.id !== audioId),
         );
       } else {
         // Delete from server
@@ -80,7 +80,7 @@ export function AudioSection({
         }
       }
     },
-    [onPendingRecordingsChange, pendingRecordings, deleteAudio]
+    [onPendingRecordingsChange, pendingRecordings, deleteAudio],
   );
 
   // Get download URL for existing recordings
@@ -89,11 +89,11 @@ export function AudioSection({
       if (!inspectionId) return '';
       return getAudioDownloadUrl(inspectionId, audioId);
     },
-    [inspectionId]
+    [inspectionId],
   );
 
   // Convert pending recordings to display format
-  const pendingAsAudioResponse: AudioResponse[] = pendingRecordings.map((r) => ({
+  const pendingAsAudioResponse: AudioResponse[] = pendingRecordings.map(r => ({
     id: r.id,
     inspectionId: '',
     fileName: r.fileName,
@@ -108,13 +108,13 @@ export function AudioSection({
   // Get download URL for pending recordings (using blob URL)
   const getPendingDownloadUrl = useCallback(
     async (audioId: string) => {
-      const recording = pendingRecordings.find((r) => r.id === audioId);
+      const recording = pendingRecordings.find(r => r.id === audioId);
       if (recording) {
         return URL.createObjectURL(recording.blob);
       }
       return '';
     },
-    [pendingRecordings]
+    [pendingRecordings],
   );
 
   if (isLoading) {
@@ -143,7 +143,7 @@ export function AudioSection({
       {allRecordings.length > 0 && (
         <AudioRecordingsList
           recordings={allRecordings}
-          getDownloadUrl={(audioId) =>
+          getDownloadUrl={audioId =>
             audioId.startsWith('pending-')
               ? getPendingDownloadUrl(audioId)
               : getDownloadUrl(audioId)
@@ -157,7 +157,9 @@ export function AudioSection({
       {isNewInspection && pendingRecordings.length > 0 && (
         <div className="flex items-start gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
           <Info className="mt-0.5 size-4 shrink-0" />
-          <span>Audio recordings will be uploaded when you save the inspection.</span>
+          <span>
+            Audio recordings will be uploaded when you save the inspection.
+          </span>
         </div>
       )}
 
@@ -176,7 +178,7 @@ export function AudioSection({
 export async function uploadPendingRecordings(
   inspectionId: string,
   pendingRecordings: PendingRecording[],
-  onProgress?: (completed: number, total: number) => void
+  onProgress?: (completed: number, total: number) => void,
 ): Promise<void> {
   const total = pendingRecordings.length;
   let completed = 0;

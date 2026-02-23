@@ -25,8 +25,8 @@ const getBounds = (
 ): L.LatLngBoundsExpression | undefined => {
   if (apiaries.length === 0) return undefined;
 
-  const lats = apiaries.map((a) => a.latitude);
-  const lngs = apiaries.map((a) => a.longitude);
+  const lats = apiaries.map(a => a.latitude);
+  const lngs = apiaries.map(a => a.longitude);
 
   return [
     [Math.min(...lats), Math.min(...lngs)],
@@ -80,7 +80,7 @@ export const AllApiariesMap: React.FC = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {apiaries.map((apiary) => (
+        {apiaries.map(apiary => (
           <Marker
             key={apiary.id}
             position={[apiary.latitude, apiary.longitude]}

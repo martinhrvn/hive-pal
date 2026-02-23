@@ -1,10 +1,4 @@
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
   ChartContainer,
@@ -73,12 +67,7 @@ export const HealthTrendChart: React.FC<HealthTrendChartProps> = ({
     <ChartContainer config={chartConfig}>
       <AreaChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="date"
-          angle={-45}
-          textAnchor="end"
-          height={60}
-        />
+        <XAxis dataKey="date" angle={-45} textAnchor="end" height={60} />
         <YAxis domain={[0, 10]} />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />

@@ -29,7 +29,10 @@ type WeatherCardProps = {
   weatherConditions?: string | null;
 };
 
-export const WeatherCard = ({ temperature, weatherConditions }: WeatherCardProps) => {
+export const WeatherCard = ({
+  temperature,
+  weatherConditions,
+}: WeatherCardProps) => {
   if (!temperature && !weatherConditions) return null;
 
   return (
@@ -52,7 +55,7 @@ export const WeatherCard = ({ temperature, weatherConditions }: WeatherCardProps
               </div>
             </div>
           )}
-          
+
           {weatherConditions && (
             <div className="space-y-2">
               <div className="text-sm text-muted-foreground">Conditions</div>

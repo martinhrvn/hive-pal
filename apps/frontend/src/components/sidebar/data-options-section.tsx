@@ -2,7 +2,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileDown, Printer, Share2 } from 'lucide-react';
 
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu } from '@/components/ui/sidebar';
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+} from '@/components/ui/sidebar';
 import { MenuItemButton } from './menu-item-button';
 
 interface DataOptionsSectionProps {
@@ -24,9 +28,11 @@ export const DataOptionsSection: React.FC<DataOptionsSectionProps> = ({
 }) => {
   const { t } = useTranslation([i18nNamespace, 'common']);
 
-  const handleExport = onExport || (() => alert(t(`${i18nNamespace}:messages.exportComingSoon`)));
+  const handleExport =
+    onExport || (() => alert(t(`${i18nNamespace}:messages.exportComingSoon`)));
   const handlePrint = onPrint || (() => window.print());
-  const handleShare = onShare || (() => alert(t(`${i18nNamespace}:messages.shareComingSoon`)));
+  const handleShare =
+    onShare || (() => alert(t(`${i18nNamespace}:messages.shareComingSoon`)));
 
   return (
     <SidebarGroup className={className}>

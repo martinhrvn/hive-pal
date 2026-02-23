@@ -13,7 +13,11 @@ import {
   WeatherCard,
 } from './components';
 import { AudioCard } from './components/audio-card';
-import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
+import {
+  MainContent,
+  Page,
+  Sidebar,
+} from '@/components/layout/page-grid-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
 import { useHive, useInspection } from '@/api/hooks';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
@@ -105,9 +109,9 @@ export const InspectionDetailPage = () => {
             {/* Top row: Score, Weather, and Status cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
               {hive && <StatisticCards score={hive.hiveScore} />}
-              <WeatherCard 
-                temperature={inspection.temperature} 
-                weatherConditions={inspection.weatherConditions} 
+              <WeatherCard
+                temperature={inspection.temperature}
+                weatherConditions={inspection.weatherConditions}
               />
               <InspectionStatusCard
                 inspectionId={inspection.id}

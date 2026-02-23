@@ -1,6 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { BarChart, Droplet, TrendingUp, PieChart } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ViewDetailsLink } from '@/components/ui/view-details-link';
 import { useApiaryStore } from '@/hooks/use-apiary';
@@ -9,7 +15,10 @@ import { useApiaryStatistics } from '@/api/hooks/useReports';
 export const ReportsSummaryWidget = () => {
   const { t } = useTranslation(['common']);
   const { activeApiaryId } = useApiaryStore();
-  const { data: statistics, isLoading } = useApiaryStatistics(activeApiaryId ?? undefined, 'ytd');
+  const { data: statistics, isLoading } = useApiaryStatistics(
+    activeApiaryId ?? undefined,
+    'ytd',
+  );
 
   if (isLoading) {
     return (

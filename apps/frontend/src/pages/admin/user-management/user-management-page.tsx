@@ -40,8 +40,14 @@ const UserManagementPage: React.FC = () => {
   const { token } = useAuth();
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
-  const { data: users, isLoading, error: queryError, refetch } = useAdminUsers();
-  const [selectedUser, setSelectedUser] = useState<UserWithStatsResponse | null>(null);
+  const {
+    data: users,
+    isLoading,
+    error: queryError,
+    refetch,
+  } = useAdminUsers();
+  const [selectedUser, setSelectedUser] =
+    useState<UserWithStatsResponse | null>(null);
   const [tempPassword, setTempPassword] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
@@ -78,7 +84,9 @@ const UserManagementPage: React.FC = () => {
       setTempPassword('');
     } catch (err) {
       if (err instanceof AxiosError) {
-        setResetError(err.response?.data?.message || t('messages.failedToReset'));
+        setResetError(
+          err.response?.data?.message || t('messages.failedToReset'),
+        );
       } else {
         setResetError(t('messages.unexpectedError'));
       }
@@ -123,9 +131,15 @@ const UserManagementPage: React.FC = () => {
                     <TableHead>{t('table.email')}</TableHead>
                     <TableHead>{t('table.name')}</TableHead>
                     <TableHead>{t('table.role')}</TableHead>
-                    <TableHead className="text-center">{t('table.apiaries')}</TableHead>
-                    <TableHead className="text-center">{t('table.hives')}</TableHead>
-                    <TableHead className="text-center">{t('table.inspections')}</TableHead>
+                    <TableHead className="text-center">
+                      {t('table.apiaries')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('table.hives')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('table.inspections')}
+                    </TableHead>
                     <TableHead>{t('table.lastActivity')}</TableHead>
                     <TableHead>{t('table.createdAt')}</TableHead>
                     <TableHead>{t('table.actions')}</TableHead>
@@ -156,7 +170,9 @@ const UserManagementPage: React.FC = () => {
                       <TableCell>
                         {formatDate(user.stats.lastActivityDate)}
                       </TableCell>
-                      <TableCell>{formatDateTime(user.createdAt.toString())}</TableCell>
+                      <TableCell>
+                        {formatDateTime(user.createdAt.toString())}
+                      </TableCell>
                       <TableCell>
                         <Sheet>
                           <SheetTrigger asChild>
@@ -194,7 +210,9 @@ const UserManagementPage: React.FC = () => {
                                 <>
                                   <div className="space-y-2">
                                     <Label htmlFor="temp-password">
-                                      {t('resetPasswordDialog.tempPasswordLabel')}
+                                      {t(
+                                        'resetPasswordDialog.tempPasswordLabel',
+                                      )}
                                     </Label>
                                     <Input
                                       id="temp-password"

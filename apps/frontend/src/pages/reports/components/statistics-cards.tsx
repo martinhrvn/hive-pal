@@ -9,7 +9,10 @@ interface StatisticsCardsProps {
   isLoading: boolean;
 }
 
-export const StatisticsCards = ({ statistics, isLoading }: StatisticsCardsProps) => {
+export const StatisticsCards = ({
+  statistics,
+  isLoading,
+}: StatisticsCardsProps) => {
   const { t } = useTranslation('common');
 
   const StatCard = ({
@@ -39,7 +42,12 @@ export const StatisticsCards = ({ statistics, isLoading }: StatisticsCardsProps)
           ) : (
             <>
               {value !== null && value !== undefined ? value.toFixed(1) : '—'}
-              {unit && <span className="text-sm font-normal text-muted-foreground"> {unit}</span>}
+              {unit && (
+                <span className="text-sm font-normal text-muted-foreground">
+                  {' '}
+                  {unit}
+                </span>
+              )}
             </>
           )}
         </div>

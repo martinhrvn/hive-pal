@@ -156,7 +156,9 @@ const RegisterPage = () => {
                 <Checkbox
                   id="privacy-consent"
                   checked={privacyPolicyConsent}
-                  onCheckedChange={(checked) => setPrivacyPolicyConsent(checked as boolean)}
+                  onCheckedChange={checked =>
+                    setPrivacyPolicyConsent(checked as boolean)
+                  }
                   className="mt-1"
                 />
                 <Label
@@ -179,7 +181,9 @@ const RegisterPage = () => {
                 <Checkbox
                   id="newsletter-consent"
                   checked={newsletterConsent}
-                  onCheckedChange={(checked) => setNewsletterConsent(checked as boolean)}
+                  onCheckedChange={checked =>
+                    setNewsletterConsent(checked as boolean)
+                  }
                   className="mt-1"
                 />
                 <Label

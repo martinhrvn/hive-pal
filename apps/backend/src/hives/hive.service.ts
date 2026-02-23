@@ -189,6 +189,11 @@ export class HiveService {
                 id: hive.queens[0].id,
                 hiveId: hive.queens[0].hiveId || undefined,
                 year: hive.queens[0].year || undefined,
+                source: hive.queens[0].source || undefined,
+                marking: hive.queens[0].marking || null,
+                color: hive.queens[0].color,
+                status: hive.queens[0].status,
+                installedAt: hive.queens[0].installedAt?.toISOString(),
               }
             : null,
         alerts:
@@ -341,6 +346,7 @@ export class HiveService {
             color: activeQueen.color,
             year: activeQueen.year,
             status: activeQueen.status,
+            source: activeQueen.source || undefined,
             installedAt: activeQueen.installedAt?.toISOString(),
           }
         : null,

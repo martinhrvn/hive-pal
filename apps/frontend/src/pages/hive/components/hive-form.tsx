@@ -57,7 +57,7 @@ const hiveSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   installationDate: z.date(),
   settings: hiveSettingsSchema,
-  boxes: boxSchema.optional()
+  boxes: boxSchema.optional(),
 });
 
 export type HiveFormData = z.infer<typeof hiveSchema>;
@@ -137,7 +137,6 @@ export const HiveForm: React.FC<HiveFormProps> = ({
       console.log('Submitting with override:', finalData);
       return onSubmitOverride(finalData);
     } else {
-
       mutate({
         ...finalData,
         status: data.status as HiveStatusEnum,

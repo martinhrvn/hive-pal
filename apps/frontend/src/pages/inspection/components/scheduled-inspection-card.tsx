@@ -161,9 +161,7 @@ export const ScheduledInspectionCard: React.FC<
               </div>
 
               {/* Status Badge */}
-              <div className="mb-2">
-                {getStatusBadge()}
-              </div>
+              <div className="mb-2">{getStatusBadge()}</div>
 
               {/* Hive Name */}
               <div className="flex items-center gap-1 text-sm font-medium truncate">
@@ -179,7 +177,9 @@ export const ScheduledInspectionCard: React.FC<
                     <span>{inspection.temperature}°</span>
                   )}
                   {inspection.weatherConditions && (
-                    <span className="truncate">{inspection.weatherConditions}</span>
+                    <span className="truncate">
+                      {inspection.weatherConditions}
+                    </span>
                   )}
                 </div>
               )}

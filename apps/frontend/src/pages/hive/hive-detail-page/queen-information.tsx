@@ -8,6 +8,7 @@ import {
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { CalendarDays, MoreHorizontal } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button.tsx';
 import {
@@ -72,9 +73,16 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
               <span className="text-sm font-medium">
                 {activeQueen?.marking} • {activeQueen?.year}
               </span>
-              <span className="text-xs text-muted-foreground">
-                {new Date().toLocaleDateString()}
-              </span>
+              {activeQueen?.installedAt && (
+                <span className="text-xs text-muted-foreground">
+                  {format(
+                    typeof activeQueen.installedAt === 'string'
+                      ? parseISO(activeQueen.installedAt)
+                      : activeQueen.installedAt,
+                    'PPP',
+                  )}
+                </span>
+              )}
             </div>
             {activeQueen && (
               <DropdownMenu>
@@ -82,10 +90,17 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
                   <MoreHorizontal className="h-4 w-4 text-muted-foreground cursor-pointer" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => navigate(`/queens/${activeQueen.id}/edit`)}
+                  >
+                    {t('actions.editQueen')}
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleReplaceQueen}>
                     {t('actions.replaceQueen')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleMarkQueenState('DEAD')}>
+                  <DropdownMenuItem
+                    onClick={() => handleMarkQueenState('DEAD')}
+                  >
                     {t('actions.markAsDead')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -133,10 +148,17 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
                   <MoreHorizontal className="h-4 w-4 text-muted-foreground cursor-pointer" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => navigate(`/queens/${activeQueen.id}/edit`)}
+                  >
+                    {t('actions.editQueen')}
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleReplaceQueen}>
                     {t('actions.replaceQueen')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleMarkQueenState('DEAD')}>
+                  <DropdownMenuItem
+                    onClick={() => handleMarkQueenState('DEAD')}
+                  >
                     {t('actions.markAsDead')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -155,12 +177,23 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-sm">
                   <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                  <span>
-                    {t('fields.installedOn', { date: 'January 15, 2025' })}
-                  </span>
-                  <span className="text-muted-foreground">
-                    ({t('fields.via', { source: 'Package' })})
-                  </span>
+                  {activeQueen?.installedAt && (
+                    <span>
+                      {t('fields.installedOn', {
+                        date: format(
+                          typeof activeQueen.installedAt === 'string'
+                            ? parseISO(activeQueen.installedAt)
+                            : activeQueen.installedAt,
+                          'PPP',
+                        ),
+                      })}
+                    </span>
+                  )}
+                  {activeQueen?.source && (
+                    <span className="text-muted-foreground">
+                      ({t('fields.via', { source: activeQueen.source })})
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3"></div>

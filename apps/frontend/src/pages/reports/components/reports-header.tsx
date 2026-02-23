@@ -34,16 +34,22 @@ export const ReportsHeader: React.FC<ReportsHeaderProps> = ({
       <div className="flex items-center gap-2">
         <Select
           value={period}
-          onValueChange={(value) => onPeriodChange(value as ReportPeriod)}
+          onValueChange={value => onPeriodChange(value as ReportPeriod)}
         >
           <SelectTrigger className="w-[180px]">
             <Calendar className="h-4 w-4" />
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1month">{t('reports.periods.1month')}</SelectItem>
-            <SelectItem value="3months">{t('reports.periods.3months')}</SelectItem>
-            <SelectItem value="6months">{t('reports.periods.6months')}</SelectItem>
+            <SelectItem value="1month">
+              {t('reports.periods.1month')}
+            </SelectItem>
+            <SelectItem value="3months">
+              {t('reports.periods.3months')}
+            </SelectItem>
+            <SelectItem value="6months">
+              {t('reports.periods.6months')}
+            </SelectItem>
             <SelectItem value="ytd">{t('reports.periods.ytd')}</SelectItem>
             <SelectItem value="1year">{t('reports.periods.1year')}</SelectItem>
             <SelectItem value="all">{t('reports.periods.all')}</SelectItem>

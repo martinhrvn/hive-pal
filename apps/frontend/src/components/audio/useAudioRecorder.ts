@@ -106,7 +106,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
-      mediaRecorder.ondataavailable = (event) => {
+      mediaRecorder.ondataavailable = event => {
         if (event.data.size > 0) {
           chunksRef.current.push(event.data);
         }
@@ -119,12 +119,12 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
 
         // Clean up stream
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
+          streamRef.current.getTracks().forEach(track => track.stop());
           streamRef.current = null;
         }
       };
 
-      mediaRecorder.onerror = (event) => {
+      mediaRecorder.onerror = event => {
         console.error('MediaRecorder error:', event);
         setError('Recording error occurred');
         stopTimer();
@@ -141,7 +141,9 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       console.error('Error starting recording:', err);
       if (err instanceof Error) {
         if (err.name === 'NotAllowedError') {
-          setError('Microphone access was denied. Please allow access to record audio.');
+          setError(
+            'Microphone access was denied. Please allow access to record audio.',
+          );
         } else if (err.name === 'NotFoundError') {
           setError('No microphone found. Please connect a microphone.');
         } else {
@@ -188,7 +190,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
 
     // Clean up stream
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
 

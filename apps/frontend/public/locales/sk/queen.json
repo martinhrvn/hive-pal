@@ -9,6 +9,7 @@
   },
   "edit": {
     "title": "Upraviť matku",
+    "button": "Uložiť zmeny",
     "success": "Matka bola úspešne aktualizovaná"
   },
   "delete": {
@@ -49,7 +50,8 @@
     "replaceQueen": "Vymeniť matku",
     "markAsDead": "Označiť ako mŕtvu",
     "markAsLostMissing": "Označiť ako stratenú/chýbajúcu",
-    "addQueen": "Pridať matku"
+    "addQueen": "Pridať matku",
+    "editQueen": "Upraviť matku"
   },
   "form": {
     "selectHive": "Vybrať úľ",

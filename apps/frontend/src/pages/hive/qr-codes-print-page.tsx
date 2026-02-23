@@ -22,7 +22,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 
 // Lazy load QR code library
-const QRCode = lazy(() => import('react-qr-code').then(m => ({ default: m.default })));
+const QRCode = lazy(() =>
+  import('react-qr-code').then(m => ({ default: m.default })),
+);
 
 function QRPreviewLoader() {
   return (

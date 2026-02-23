@@ -157,7 +157,8 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {t('weather.feelsLike', {
-                    temperature: formatTemperature(currentWeather.feelsLike).value,
+                    temperature: formatTemperature(currentWeather.feelsLike)
+                      .value,
                   })}
                 </div>
               </div>
@@ -167,7 +168,8 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                 {t('weather.humidity')}: {currentWeather.humidity}%
               </div>
               <div>
-                {t('weather.wind')}: {formatSpeed(currentWeather.windSpeed).label}
+                {t('weather.wind')}:{' '}
+                {formatSpeed(currentWeather.windSpeed).label}
               </div>
             </div>
           </div>
@@ -248,10 +250,12 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                     </div>
                     <div className="text-center">
                       <div className="text-xs font-medium">
-                        {formatTemperature(day.temperatureMax).value.toFixed(0)}°
+                        {formatTemperature(day.temperatureMax).value.toFixed(0)}
+                        °
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {formatTemperature(day.temperatureMin).value.toFixed(0)}°
+                        {formatTemperature(day.temperatureMin).value.toFixed(0)}
+                        °
                       </div>
                     </div>
                   </div>

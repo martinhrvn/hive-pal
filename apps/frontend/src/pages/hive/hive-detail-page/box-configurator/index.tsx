@@ -31,24 +31,16 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
   const { data: frameSizes = [] } = useFrameSizes();
 
   // Get main box variant (position 0)
-  const mainBox = useMemo(
-    () => boxes.find((b) => b.position === 0),
-    [boxes],
-  );
+  const mainBox = useMemo(() => boxes.find(b => b.position === 0), [boxes]);
   // Check winterization status
   const allWinterized = useMemo(
-    () => boxes.length > 0 && boxes.every((b) => b.winterized),
+    () => boxes.length > 0 && boxes.every(b => b.winterized),
     [boxes],
   );
-  const anyWinterized = useMemo(
-    () => boxes.some((b) => b.winterized),
-    [boxes],
-  );
+  const anyWinterized = useMemo(() => boxes.some(b => b.winterized), [boxes]);
 
   const handleWinterizeAll = useCallback((winterized: boolean) => {
-    setBoxes((prevBoxes) =>
-      prevBoxes.map((box) => ({ ...box, winterized })),
-    );
+    setBoxes(prevBoxes => prevBoxes.map(box => ({ ...box, winterized })));
   }, []);
 
   const handleAddBox = useCallback(() => {
@@ -89,41 +81,44 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
     [selectedBoxId],
   );
 
-  const handleBoxUpdate = useCallback((updatedBox: Box) => {
-    setBoxes((prevBoxes) => {
-      // If updating main box (position 0) variant, auto-convert incompatible boxes
-      if (updatedBox.position === 0 && updatedBox.variant) {
-        const newSystem = getHiveSystem(updatedBox.variant);
+  const handleBoxUpdate = useCallback(
+    (updatedBox: Box) => {
+      setBoxes(prevBoxes => {
+        // If updating main box (position 0) variant, auto-convert incompatible boxes
+        if (updatedBox.position === 0 && updatedBox.variant) {
+          const newSystem = getHiveSystem(updatedBox.variant);
 
-        return prevBoxes.map((box) => {
-          if (box.id === updatedBox.id) {
-            return updatedBox;
-          }
+          return prevBoxes.map(box => {
+            if (box.id === updatedBox.id) {
+              return updatedBox;
+            }
 
-          // Check if other boxes need variant update
-          if (
-            box.variant &&
-            !isVariantCompatible(updatedBox.variant, box.variant)
-          ) {
-            // Auto-convert to equivalent in new system
-            const newVariant = getEquivalentVariant(box.variant, newSystem);
-            const newFs = findFrameSizeForVariant(frameSizes, newVariant);
-            return {
-              ...box,
-              variant: newVariant,
-              frameSizeId: newFs?.id ?? box.frameSizeId,
-            };
-          }
+            // Check if other boxes need variant update
+            if (
+              box.variant &&
+              !isVariantCompatible(updatedBox.variant, box.variant)
+            ) {
+              // Auto-convert to equivalent in new system
+              const newVariant = getEquivalentVariant(box.variant, newSystem);
+              const newFs = findFrameSizeForVariant(frameSizes, newVariant);
+              return {
+                ...box,
+                variant: newVariant,
+                frameSizeId: newFs?.id ?? box.frameSizeId,
+              };
+            }
 
-          return box;
-        });
-      }
+            return box;
+          });
+        }
 
-      return prevBoxes.map((box) =>
-        box.id === updatedBox.id ? updatedBox : box,
-      );
-    });
-  }, [frameSizes]);
+        return prevBoxes.map(box =>
+          box.id === updatedBox.id ? updatedBox : box,
+        );
+      });
+    },
+    [frameSizes],
+  );
 
   const handleReorder = useCallback((newBoxes: Box[]) => {
     // Sort by position and ensure positions are sequential

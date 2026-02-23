@@ -99,12 +99,12 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
   };
 
   // Combine data from different sources by hive
-  const combinedData = statistics.healthScores.byHive.map((healthData) => {
+  const combinedData = statistics.healthScores.byHive.map(healthData => {
     const honeyData = statistics.honeyProduction.byHive.find(
-      (h) => h.hiveId === healthData.hiveId
+      h => h.hiveId === healthData.hiveId,
     );
     const feedingData = statistics.feedingTotals.byHive.find(
-      (f) => f.hiveId === healthData.hiveId
+      f => f.hiveId === healthData.hiveId,
     );
 
     return {
@@ -155,8 +155,12 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
         bValue = b.queenScore ?? -1;
         break;
       case 'lastInspection':
-        aValue = a.lastInspectionDate ? new Date(a.lastInspectionDate).getTime() : 0;
-        bValue = b.lastInspectionDate ? new Date(b.lastInspectionDate).getTime() : 0;
+        aValue = a.lastInspectionDate
+          ? new Date(a.lastInspectionDate).getTime()
+          : 0;
+        bValue = b.lastInspectionDate
+          ? new Date(b.lastInspectionDate).getTime()
+          : 0;
         break;
       default:
         aValue = a.hiveName;
@@ -191,14 +195,14 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
         onClick={() => handleSort(field)}
         className={cn(
           'flex items-center gap-1 hover:text-foreground transition-colors',
-          className?.includes('text-right') && 'ml-auto'
+          className?.includes('text-right') && 'ml-auto',
         )}
       >
         {children}
         <ArrowUpDown
           className={cn(
             'h-3 w-3',
-            sortField === field ? 'opacity-100' : 'opacity-30'
+            sortField === field ? 'opacity-100' : 'opacity-30',
           )}
         />
       </button>
@@ -215,7 +219,9 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <SortableHeader field="hiveName">{t('reports.table.hiveName')}</SortableHeader>
+                <SortableHeader field="hiveName">
+                  {t('reports.table.hiveName')}
+                </SortableHeader>
                 <SortableHeader field="honey" className="text-right">
                   {t('reports.table.honey')}
                 </SortableHeader>
@@ -240,28 +246,52 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedData.map((row) => (
+              {sortedData.map(row => (
                 <TableRow key={row.hiveId}>
                   <TableCell className="font-medium">{row.hiveName}</TableCell>
-                  <TableCell className="text-right">{row.honey.toFixed(1)} kg</TableCell>
-                  <TableCell className="text-right">{row.sugar.toFixed(1)} kg</TableCell>
                   <TableCell className="text-right">
-                    <span className={cn('font-medium', getHealthScoreColor(row.overallScore))}>
+                    {row.honey.toFixed(1)} kg
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {row.sugar.toFixed(1)} kg
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span
+                      className={cn(
+                        'font-medium',
+                        getHealthScoreColor(row.overallScore),
+                      )}
+                    >
                       {formatScore(row.overallScore)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <span className={cn('font-medium', getHealthScoreColor(row.populationScore))}>
+                    <span
+                      className={cn(
+                        'font-medium',
+                        getHealthScoreColor(row.populationScore),
+                      )}
+                    >
                       {formatScore(row.populationScore)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <span className={cn('font-medium', getHealthScoreColor(row.storesScore))}>
+                    <span
+                      className={cn(
+                        'font-medium',
+                        getHealthScoreColor(row.storesScore),
+                      )}
+                    >
                       {formatScore(row.storesScore)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <span className={cn('font-medium', getHealthScoreColor(row.queenScore))}>
+                    <span
+                      className={cn(
+                        'font-medium',
+                        getHealthScoreColor(row.queenScore),
+                      )}
+                    >
                       {formatScore(row.queenScore)}
                     </span>
                   </TableCell>

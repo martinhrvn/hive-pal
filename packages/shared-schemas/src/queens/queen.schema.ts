@@ -36,7 +36,8 @@ export const activeQueenSchema = z.object({
   marking: z.string().nullish(),
   installedAt: z.string().datetime().optional().or(z.date()).nullable(),
   color: z.string().nullish(),
-  status: queenStatusSchema.nullish()
+  status: queenStatusSchema.nullish(),
+  source: z.string().nullish(),
 })
 
 export type ActiveQueen = z.infer<typeof activeQueenSchema>;

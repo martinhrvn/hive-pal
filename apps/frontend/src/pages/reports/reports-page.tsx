@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
+import {
+  MainContent,
+  Page,
+  Sidebar,
+} from '@/components/layout/page-grid-layout';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import { useApiaryStatistics, useApiaryTrends } from '@/api/hooks/useReports';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,8 +27,15 @@ export const ReportsPage = () => {
   const [period, setPeriod] = useState<ReportPeriod>('ytd');
   const [isExporting, setIsExporting] = useState(false);
   const { activeApiaryId, activeApiary } = useApiaryStore();
-  const { data: statistics, isLoading, refetch } = useApiaryStatistics(activeApiaryId || undefined, period);
-  const { data: trends, isLoading: isTrendsLoading } = useApiaryTrends(activeApiaryId || undefined, period);
+  const {
+    data: statistics,
+    isLoading,
+    refetch,
+  } = useApiaryStatistics(activeApiaryId || undefined, period);
+  const { data: trends, isLoading: isTrendsLoading } = useApiaryTrends(
+    activeApiaryId || undefined,
+    period,
+  );
 
   const handleExportCsv = async () => {
     if (!activeApiaryId) return;
@@ -33,7 +44,7 @@ export const ReportsPage = () => {
     try {
       const response = await apiClient.get(
         `/api/reports/apiary/${activeApiaryId}/export/csv`,
-        { params: { period }, responseType: 'blob' }
+        { params: { period }, responseType: 'blob' },
       );
 
       const blob = new Blob([response.data], { type: 'text/csv' });
@@ -62,7 +73,7 @@ export const ReportsPage = () => {
     try {
       const response = await apiClient.get(
         `/api/reports/apiary/${activeApiaryId}/export/pdf`,
-        { params: { period }, responseType: 'blob' }
+        { params: { period }, responseType: 'blob' },
       );
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -116,12 +127,21 @@ export const ReportsPage = () => {
 
           <Tabs defaultValue="overview">
             <TabsList>
-              <TabsTrigger value="overview">{t('reports.tabs.overview')}</TabsTrigger>
-              <TabsTrigger value="charts">{t('reports.tabs.charts')}</TabsTrigger>
-              <TabsTrigger value="trends">{t('reports.tabs.trends')}</TabsTrigger>
+              <TabsTrigger value="overview">
+                {t('reports.tabs.overview')}
+              </TabsTrigger>
+              <TabsTrigger value="charts">
+                {t('reports.tabs.charts')}
+              </TabsTrigger>
+              <TabsTrigger value="trends">
+                {t('reports.tabs.trends')}
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-6 pt-4">
-              <HiveComparisonTable statistics={statistics} isLoading={isLoading} />
+              <HiveComparisonTable
+                statistics={statistics}
+                isLoading={isLoading}
+              />
             </TabsContent>
             <TabsContent value="charts" className="space-y-6 pt-4">
               <HoneyProductionChart
@@ -136,12 +156,23 @@ export const ReportsPage = () => {
             <TabsContent value="trends" className="space-y-6 pt-4">
               <Card>
                 <CardContent className="pt-6">
-                  <h3 className="text-lg font-semibold mb-4">{t('reports.charts.hiveScoreTrends')}</h3>
-                  <HiveScoreTrendChart data={trends?.hiveHealthTrends} isLoading={isTrendsLoading} />
+                  <h3 className="text-lg font-semibold mb-4">
+                    {t('reports.charts.hiveScoreTrends')}
+                  </h3>
+                  <HiveScoreTrendChart
+                    data={trends?.hiveHealthTrends}
+                    isLoading={isTrendsLoading}
+                  />
                 </CardContent>
               </Card>
-              <HealthTrendChart data={trends?.healthTrends} isLoading={isTrendsLoading} />
-              <FeedingTrendChart data={trends?.feedingTrends} isLoading={isTrendsLoading} />
+              <HealthTrendChart
+                data={trends?.healthTrends}
+                isLoading={isTrendsLoading}
+              />
+              <FeedingTrendChart
+                data={trends?.feedingTrends}
+                isLoading={isTrendsLoading}
+              />
             </TabsContent>
           </Tabs>
         </div>

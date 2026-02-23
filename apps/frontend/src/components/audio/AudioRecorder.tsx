@@ -66,7 +66,12 @@ export function AudioRecorder({
     return (
       <div className={cn('p-4 bg-destructive/10 rounded-lg', className)}>
         <p className="text-destructive text-sm mb-2">{error}</p>
-        <Button variant="outline" size="sm" type="button" onClick={resetRecording}>
+        <Button
+          variant="outline"
+          size="sm"
+          type="button"
+          onClick={resetRecording}
+        >
           Try Again
         </Button>
       </div>
@@ -125,7 +130,7 @@ export function AudioRecorder({
           <div
             className={cn(
               'size-3 rounded-full',
-              isPaused ? 'bg-amber-500' : 'bg-red-500 animate-pulse'
+              isPaused ? 'bg-amber-500' : 'bg-red-500 animate-pulse',
             )}
           />
           <span className="text-2xl font-mono font-bold tabular-nums">
@@ -135,11 +140,21 @@ export function AudioRecorder({
 
         <div className="flex justify-center gap-2">
           {isPaused ? (
-            <Button variant="outline" size="icon" type="button" onClick={resumeRecording}>
+            <Button
+              variant="outline"
+              size="icon"
+              type="button"
+              onClick={resumeRecording}
+            >
               <Play className="size-4" />
             </Button>
           ) : (
-            <Button variant="outline" size="icon" type="button" onClick={pauseRecording}>
+            <Button
+              variant="outline"
+              size="icon"
+              type="button"
+              onClick={pauseRecording}
+            >
               <Pause className="size-4" />
             </Button>
           )}
@@ -152,7 +167,12 @@ export function AudioRecorder({
           >
             <Square className="size-5" />
           </Button>
-          <Button variant="ghost" size="icon" type="button" onClick={handleCancel}>
+          <Button
+            variant="ghost"
+            size="icon"
+            type="button"
+            onClick={handleCancel}
+          >
             <X className="size-4" />
           </Button>
         </div>

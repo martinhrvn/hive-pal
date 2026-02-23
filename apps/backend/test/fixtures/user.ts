@@ -16,6 +16,6 @@ export async function getRandomUser({
     role: 'USER',
     id: uuid(),
     newsletterConsent: true,
-    privacyPolicyConsent: true
+    privacyPolicyConsent: true,
   };
 }

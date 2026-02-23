@@ -42,7 +42,7 @@ describe('User (e2e)', () => {
         password: 'password123',
         name: 'Test User',
         newsletterConsent: true,
-        privacyPolicyConsent: true
+        privacyPolicyConsent: true,
       })
       .expect(201);
 

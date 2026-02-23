@@ -159,7 +159,7 @@ export const BatchDetailPage = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {batch.hives.map((batchHive) => (
+            {batch.hives.map(batchHive => (
               <div
                 key={batchHive.id}
                 className="flex items-center justify-between p-4 border rounded-lg"

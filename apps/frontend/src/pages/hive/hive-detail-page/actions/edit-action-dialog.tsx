@@ -80,7 +80,9 @@ const convertResponseToFormData = (action: ActionResponse): ActionData => {
       // Harvest actions are displayed but we'll show them as OTHER for editing
       return {
         type: ActionType.OTHER,
-        notes: action.notes || `Harvest: ${action.details.amount} ${action.details.unit}`,
+        notes:
+          action.notes ||
+          `Harvest: ${action.details.amount} ${action.details.unit}`,
       };
 
     default:
@@ -163,18 +165,26 @@ export const EditActionDialog = ({
     });
   }, [action, methods]);
 
-  const getWarning = (): { message: string; linkTo?: string; linkText?: string } | null => {
+  const getWarning = (): {
+    message: string;
+    linkTo?: string;
+    linkText?: string;
+  } | null => {
     if (action.inspectionId) {
       return {
-        message: 'This action is part of an inspection. Editing it here will cause it to be out of sync with the inspection record.',
+        message:
+          'This action is part of an inspection. Editing it here will cause it to be out of sync with the inspection record.',
         linkTo: `/inspections/${action.inspectionId}`,
         linkText: 'Edit inspection instead',
       };
     }
     if (action.type === ActionType.HARVEST || action.harvestId) {
       return {
-        message: 'This action is linked to a harvest. Editing it here will cause it to be out of sync with the harvest record.',
-        linkTo: action.harvestId ? `/harvests/${action.harvestId}` : '/harvests',
+        message:
+          'This action is linked to a harvest. Editing it here will cause it to be out of sync with the harvest record.',
+        linkTo: action.harvestId
+          ? `/harvests/${action.harvestId}`
+          : '/harvests',
         linkText: 'Go to harvest',
       };
     }
@@ -225,7 +235,10 @@ export const EditActionDialog = ({
               {warning.linkTo && (
                 <>
                   {' '}
-                  <Link to={warning.linkTo} className="underline font-medium hover:text-amber-900">
+                  <Link
+                    to={warning.linkTo}
+                    className="underline font-medium hover:text-amber-900"
+                  >
                     {warning.linkText}
                   </Link>
                 </>

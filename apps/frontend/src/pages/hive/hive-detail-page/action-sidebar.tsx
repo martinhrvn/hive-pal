@@ -59,7 +59,9 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
           <MenuItemButton
             icon={<PlusCircle className="h-4 w-4" />}
             label="Add Inspection"
-            onClick={() => hiveId && navigate(`/hives/${hiveId}/inspections/create`)}
+            onClick={() =>
+              hiveId && navigate(`/hives/${hiveId}/inspections/create`)
+            }
             tooltip="Add Inspection"
             disabled={!hiveId}
           />

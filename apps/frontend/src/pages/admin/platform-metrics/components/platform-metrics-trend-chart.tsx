@@ -53,7 +53,7 @@ export const PlatformMetricsTrendChart: React.FC<
   }
 
   // Transform data for the chart
-  const chartData = data.map((snapshot) => ({
+  const chartData = data.map(snapshot => ({
     date: format(parseISO(snapshot.date), 'MMM dd'),
     totalUsers: snapshot.totalUsers,
     totalApiaries: snapshot.totalApiaries,
@@ -169,13 +169,13 @@ export const PlatformMetricsTrendChart: React.FC<
         <span className="text-sm font-medium">View:</span>
         <Select
           value={selectedMetric}
-          onValueChange={(v) => setSelectedMetric(v as MetricType)}
+          onValueChange={v => setSelectedMetric(v as MetricType)}
         >
           <SelectTrigger className="w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {METRIC_OPTIONS.map((option) => (
+            {METRIC_OPTIONS.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>

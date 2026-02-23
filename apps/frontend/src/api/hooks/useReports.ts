@@ -2,13 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import type { ApiaryStatistics, TrendData, ReportPeriod } from 'shared-schemas';
 
-export const useApiaryStatistics = (apiaryId: string | undefined, period: ReportPeriod = 'ytd') => {
+export const useApiaryStatistics = (
+  apiaryId: string | undefined,
+  period: ReportPeriod = 'ytd',
+) => {
   return useQuery({
     queryKey: ['reports', 'statistics', apiaryId, period],
     queryFn: async () => {
       const response = await apiClient.get<ApiaryStatistics>(
         `/api/reports/apiary/${apiaryId}/statistics`,
-        { params: { period } }
+        { params: { period } },
       );
       return response.data;
     },
@@ -17,13 +20,16 @@ export const useApiaryStatistics = (apiaryId: string | undefined, period: Report
   });
 };
 
-export const useApiaryTrends = (apiaryId: string | undefined, period: ReportPeriod = 'ytd') => {
+export const useApiaryTrends = (
+  apiaryId: string | undefined,
+  period: ReportPeriod = 'ytd',
+) => {
   return useQuery({
     queryKey: ['reports', 'trends', apiaryId, period],
     queryFn: async () => {
       const response = await apiClient.get<TrendData>(
         `/api/reports/apiary/${apiaryId}/trends`,
-        { params: { period } }
+        { params: { period } },
       );
       return response.data;
     },

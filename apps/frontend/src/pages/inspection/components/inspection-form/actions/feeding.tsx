@@ -14,9 +14,7 @@ import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 import { useUnitFormat } from '@/hooks/use-unit-format';
-import {
-  parseVolume,
-} from '@/utils/unit-conversion';
+import { parseVolume } from '@/utils/unit-conversion';
 
 export type FeedType = 'SYRUP' | 'HONEY' | 'CANDY';
 
@@ -63,9 +61,14 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
 
   // Get display units based on user preference and feed type
   // Using fixed units to avoid confusion when values change
-  const units = feedType === 'SYRUP'
-    ? (unitPreference === 'imperial' ? 'fl oz' : 'ml')
-    : (unitPreference === 'imperial' ? 'oz' : 'g');
+  const units =
+    feedType === 'SYRUP'
+      ? unitPreference === 'imperial'
+        ? 'fl oz'
+        : 'ml'
+      : unitPreference === 'imperial'
+        ? 'oz'
+        : 'g';
   return (
     <div
       className={'grid grid-cols-1 md:grid-cols-2 gap-4 mt-5'}

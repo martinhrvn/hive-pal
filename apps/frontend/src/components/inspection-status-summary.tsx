@@ -8,7 +8,13 @@ import {
   useUpcomingInspections,
 } from '@/api/hooks/useInspections';
 import { useHives } from '@/api/hooks';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { ViewDetailsLink } from '@/components/ui/view-details-link';
 import { format } from 'date-fns';
 
@@ -38,7 +44,12 @@ export const InspectionStatusSummary: React.FC = () => {
   const upcomingCount = upcomingInspections?.length ?? 0;
 
   // Don't show anything if there are no inspections to display
-  if (!isLoading && overdueCount === 0 && dueTodayCount === 0 && upcomingCount === 0) {
+  if (
+    !isLoading &&
+    overdueCount === 0 &&
+    dueTodayCount === 0 &&
+    upcomingCount === 0
+  ) {
     return null;
   }
 
@@ -92,7 +103,8 @@ export const InspectionStatusSummary: React.FC = () => {
               >
                 <Clock className="h-4 w-4" />
                 <span>
-                  {dueTodayCount} {t('inspection:dashboard.dueToday', 'due today')}
+                  {dueTodayCount}{' '}
+                  {t('inspection:dashboard.dueToday', 'due today')}
                 </span>
               </div>
             )}
@@ -133,7 +145,10 @@ export const InspectionStatusSummary: React.FC = () => {
         {/* Empty state when no alerts but component is shown due to upcoming */}
         {overdueCount === 0 && dueTodayCount === 0 && upcomingCount === 0 && (
           <p className="text-sm text-muted-foreground">
-            {t('inspection:dashboard.noInspections', 'No scheduled inspections')}
+            {t(
+              'inspection:dashboard.noInspections',
+              'No scheduled inspections',
+            )}
           </p>
         )}
       </CardContent>

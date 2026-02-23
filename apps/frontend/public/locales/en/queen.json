@@ -9,6 +9,7 @@
   },
   "edit": {
     "title": "Edit Queen",
+    "button": "Save Changes",
     "success": "Queen updated successfully"
   },
   "delete": {
@@ -49,7 +50,8 @@
     "replaceQueen": "Replace Queen",
     "markAsDead": "Mark as Dead",
     "markAsLostMissing": "Mark as Lost/Missing",
-    "addQueen": "Add Queen"
+    "addQueen": "Add Queen",
+    "editQueen": "Edit Queen"
   },
   "form": {
     "selectHive": "Select a hive",

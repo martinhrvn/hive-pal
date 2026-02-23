@@ -77,14 +77,20 @@ apiClient.interceptors.request.use(config => {
 });
 
 // List of public routes that don't require authentication
-const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password', '/'];
+const PUBLIC_ROUTES = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/',
+];
 
 apiClient.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
-      
+
       // Only redirect to login if we're not already on a public page
       // This prevents redirect loops when fetching user preferences on public pages
       if (!PUBLIC_ROUTES.some(route => currentPath.startsWith(route))) {

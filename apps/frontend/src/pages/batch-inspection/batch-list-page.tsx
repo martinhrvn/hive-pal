@@ -39,14 +39,16 @@ export const BatchListPage = () => {
     useStartBatchInspection();
   const { mutate: deleteBatch, isPending: isDeleting } =
     useDeleteBatchInspection();
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState<string | null>(
+    null,
+  );
 
   const handleStartBatch = (id: string) => {
     startBatch(id, {
       onSuccess: () => {
         navigate(`/batch-inspections/${id}/inspect`);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Failed to start batch:', error);
         toast.error('Failed to start batch inspection');
       },
@@ -59,7 +61,7 @@ export const BatchListPage = () => {
         // Batch list will auto-refresh via React Query
         setDeleteDialogOpen(null);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Failed to delete batch:', error);
         toast.error('Failed to delete batch inspection');
         setDeleteDialogOpen(null);
@@ -81,9 +83,7 @@ export const BatchListPage = () => {
     return (
       <div className="max-w-6xl mx-auto p-4">
         <Alert variant="destructive">
-          <AlertDescription>
-            Failed to load batch inspections
-          </AlertDescription>
+          <AlertDescription>Failed to load batch inspections</AlertDescription>
         </Alert>
       </div>
     );
@@ -143,7 +143,7 @@ export const BatchListPage = () => {
         </Card>
       ) : (
         <div className="space-y-4">
-          {batches.map((batch) => (
+          {batches.map(batch => (
             <Card key={batch.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -207,7 +207,9 @@ export const BatchListPage = () => {
                       </Button>
                       <Dialog
                         open={deleteDialogOpen === batch.id}
-                        onOpenChange={(open) => setDeleteDialogOpen(open ? batch.id : null)}
+                        onOpenChange={open =>
+                          setDeleteDialogOpen(open ? batch.id : null)
+                        }
                       >
                         <DialogTrigger asChild>
                           <Button
@@ -222,8 +224,8 @@ export const BatchListPage = () => {
                           <DialogHeader>
                             <DialogTitle>Delete batch?</DialogTitle>
                             <DialogDescription>
-                              This will permanently delete this batch inspection.
-                              This action cannot be undone.
+                              This will permanently delete this batch
+                              inspection. This action cannot be undone.
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter>

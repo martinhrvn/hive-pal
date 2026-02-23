@@ -13,12 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 // Fix for default marker icon issue with bundlers
 const defaultIcon = new Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconRetinaUrl:
+    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
 
 L.Marker.prototype.options.icon = defaultIcon;
@@ -37,7 +38,9 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({
   initialPosition,
   readOnly = false,
 }) => {
-  const [position, setPosition] = useState<L.LatLng | null>(initialPosition || null);
+  const [position, setPosition] = useState<L.LatLng | null>(
+    initialPosition || null,
+  );
 
   const map = useMapEvents({
     click(e) {
@@ -55,7 +58,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({
       }
     },
   });
-  
+
   useEffect(() => {
     if (!readOnly && !initialPosition) {
       map.locate();
@@ -83,13 +86,18 @@ const MapPicker: React.FC<MapPickerProps> = ({
   initialLocation = { lat: 50.4133645, lng: 10.8357111 },
   readOnly = false,
 }) => {
-  const hasInitialLocation = initialLocation.lat !== 50.4133645 || initialLocation.lng !== 10.8357111;
-  const initialPosition = hasInitialLocation ? new L.LatLng(initialLocation.lat, initialLocation.lng) : null;
-  
+  const hasInitialLocation =
+    initialLocation.lat !== 50.4133645 || initialLocation.lng !== 10.8357111;
+  const initialPosition = hasInitialLocation
+    ? new L.LatLng(initialLocation.lat, initialLocation.lng)
+    : null;
+
   return (
     <Card className="w-full max-w-4xl">
       <CardHeader>
-        <CardTitle>{readOnly ? 'Apiary Location' : 'Select Apiary Location'}</CardTitle>
+        <CardTitle>
+          {readOnly ? 'Apiary Location' : 'Select Apiary Location'}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-96 w-full border rounded-md overflow-hidden">
@@ -103,8 +111,8 @@ const MapPicker: React.FC<MapPickerProps> = ({
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            <LocationMarker 
-              onLocationSelect={onLocationSelect} 
+            <LocationMarker
+              onLocationSelect={onLocationSelect}
               initialPosition={initialPosition}
               readOnly={readOnly}
             />

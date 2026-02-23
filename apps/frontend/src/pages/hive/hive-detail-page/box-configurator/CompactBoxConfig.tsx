@@ -53,7 +53,7 @@ export const CompactBoxConfig = ({
   // Filter frame sizes for secondary boxes by compatibility with main box
   const availableFrameSizes = useMemo(() => {
     if (isMainBox || !mainBoxFrameSizeId) return frameSizes;
-    const mainFs = frameSizes.find((fs) => fs.id === mainBoxFrameSizeId);
+    const mainFs = frameSizes.find(fs => fs.id === mainBoxFrameSizeId);
     if (!mainFs) return frameSizes;
     return getCompatibleFrameSizes(frameSizes, mainFs);
   }, [frameSizes, isMainBox, mainBoxFrameSizeId]);
@@ -93,7 +93,9 @@ export const CompactBoxConfig = ({
       <div className="grid grid-cols-1 gap-3">
         {/* Box Purpose */}
         <div>
-          <Label htmlFor="box-type" className="text-xs">Purpose</Label>
+          <Label htmlFor="box-type" className="text-xs">
+            Purpose
+          </Label>
           <Select value={box.type} onValueChange={handleTypeChange}>
             <SelectTrigger id="box-type" className="h-8 text-sm">
               <SelectValue />
@@ -109,10 +111,14 @@ export const CompactBoxConfig = ({
         {/* Frame Size */}
         {availableFrameSizes.length > 0 && (
           <div>
-            <Label htmlFor="frame-size" className="text-xs">Frame Size</Label>
+            <Label htmlFor="frame-size" className="text-xs">
+              Frame Size
+            </Label>
             <Select
-              value={showCustomFields ? '__custom__' : (box.frameSizeId || '__none__')}
-              onValueChange={(value) => {
+              value={
+                showCustomFields ? '__custom__' : box.frameSizeId || '__none__'
+              }
+              onValueChange={value => {
                 if (value === '__custom__') {
                   setShowCustomFields(true);
                   return;
@@ -121,7 +127,7 @@ export const CompactBoxConfig = ({
                 if (value === '__none__') {
                   onUpdate({ ...box, frameSizeId: null });
                 } else {
-                  const selectedFs = frameSizes.find((fs) => fs.id === value);
+                  const selectedFs = frameSizes.find(fs => fs.id === value);
                   const variant = selectedFs
                     ? getVariantForFrameSize(selectedFs)
                     : box.variant;
@@ -134,12 +140,12 @@ export const CompactBoxConfig = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">No frame size</SelectItem>
-                {availableFrameSizes.filter((fs) => fs.isBuiltIn).length > 0 && (
+                {availableFrameSizes.filter(fs => fs.isBuiltIn).length > 0 && (
                   <SelectGroup>
                     <SelectLabel>Built-in</SelectLabel>
                     {availableFrameSizes
-                      .filter((fs) => fs.isBuiltIn)
-                      .map((fs) => (
+                      .filter(fs => fs.isBuiltIn)
+                      .map(fs => (
                         <SelectItem key={fs.id} value={fs.id}>
                           {fs.name} ({fs.width}x{fs.height}x{fs.depth})
                         </SelectItem>
@@ -147,7 +153,7 @@ export const CompactBoxConfig = ({
                   </SelectGroup>
                 )}
                 {availableFrameSizes.filter(
-                  (fs) =>
+                  fs =>
                     !fs.isBuiltIn &&
                     fs.status === FrameSizeStatus.APPROVED &&
                     fs.createdByUserId !== currentUserId,
@@ -156,25 +162,26 @@ export const CompactBoxConfig = ({
                     <SelectLabel>Community</SelectLabel>
                     {availableFrameSizes
                       .filter(
-                        (fs) =>
+                        fs =>
                           !fs.isBuiltIn &&
                           fs.status === FrameSizeStatus.APPROVED &&
                           fs.createdByUserId !== currentUserId,
                       )
-                      .map((fs) => (
+                      .map(fs => (
                         <SelectItem key={fs.id} value={fs.id}>
                           {fs.name} ({fs.width}x{fs.height}x{fs.depth})
                         </SelectItem>
                       ))}
                   </SelectGroup>
                 )}
-                {availableFrameSizes.filter((fs) => fs.createdByUserId === currentUserId)
-                  .length > 0 && (
+                {availableFrameSizes.filter(
+                  fs => fs.createdByUserId === currentUserId,
+                ).length > 0 && (
                   <SelectGroup>
                     <SelectLabel>My Sizes</SelectLabel>
                     {availableFrameSizes
-                      .filter((fs) => fs.createdByUserId === currentUserId)
-                      .map((fs) => (
+                      .filter(fs => fs.createdByUserId === currentUserId)
+                      .map(fs => (
                         <SelectItem key={fs.id} value={fs.id}>
                           {fs.name} ({fs.width}x{fs.height}x{fs.depth})
                         </SelectItem>
@@ -187,12 +194,14 @@ export const CompactBoxConfig = ({
             {showCustomFields && (
               <div className="space-y-2 rounded-md border p-2 mt-2">
                 <div>
-                  <Label htmlFor="fs-name" className="text-xs">Name</Label>
+                  <Label htmlFor="fs-name" className="text-xs">
+                    Name
+                  </Label>
                   <Input
                     id="fs-name"
                     className="h-8 text-sm"
                     value={newFrameSize.name}
-                    onChange={(e) =>
+                    onChange={e =>
                       setNewFrameSize({ ...newFrameSize, name: e.target.value })
                     }
                     placeholder="e.g. Belgian Standard"
@@ -200,14 +209,16 @@ export const CompactBoxConfig = ({
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <Label htmlFor="fs-width" className="text-xs">Width (mm)</Label>
+                    <Label htmlFor="fs-width" className="text-xs">
+                      Width (mm)
+                    </Label>
                     <Input
                       id="fs-width"
                       className="h-8 text-sm"
                       type="number"
                       min="1"
                       value={newFrameSize.width || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         setNewFrameSize({
                           ...newFrameSize,
                           width: parseFloat(e.target.value) || 0,
@@ -216,14 +227,16 @@ export const CompactBoxConfig = ({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="fs-height" className="text-xs">Height (mm)</Label>
+                    <Label htmlFor="fs-height" className="text-xs">
+                      Height (mm)
+                    </Label>
                     <Input
                       id="fs-height"
                       className="h-8 text-sm"
                       type="number"
                       min="1"
                       value={newFrameSize.height || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         setNewFrameSize({
                           ...newFrameSize,
                           height: parseFloat(e.target.value) || 0,
@@ -232,14 +245,16 @@ export const CompactBoxConfig = ({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="fs-depth" className="text-xs">Depth (mm)</Label>
+                    <Label htmlFor="fs-depth" className="text-xs">
+                      Depth (mm)
+                    </Label>
                     <Input
                       id="fs-depth"
                       className="h-8 text-sm"
                       type="number"
                       min="1"
                       value={newFrameSize.depth || ''}
-                      onChange={(e) =>
+                      onChange={e =>
                         setNewFrameSize({
                           ...newFrameSize,
                           depth: parseFloat(e.target.value) || 0,
@@ -262,9 +277,14 @@ export const CompactBoxConfig = ({
                     className="h-7 text-xs"
                     onClick={() => {
                       submitFrameSize.mutate(newFrameSize, {
-                        onSuccess: (created) => {
+                        onSuccess: created => {
                           setShowCustomFields(false);
-                          setNewFrameSize({ name: '', width: 0, height: 0, depth: 0 });
+                          setNewFrameSize({
+                            name: '',
+                            width: 0,
+                            height: 0,
+                            depth: 0,
+                          });
                           onUpdate({
                             ...box,
                             frameSizeId: created.id,
@@ -346,10 +366,12 @@ export const CompactBoxConfig = ({
                 key={color}
                 type="button"
                 className={`w-7 h-7 rounded border-2 transition-all ${
-                  box.color === color ? 'border-primary scale-110' : 'border-gray-300 hover:border-gray-500'
+                  box.color === color
+                    ? 'border-primary scale-110'
+                    : 'border-gray-300 hover:border-gray-500'
                 }`}
                 style={{ backgroundColor: color }}
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault();
                   handleColorChange(color);
                 }}

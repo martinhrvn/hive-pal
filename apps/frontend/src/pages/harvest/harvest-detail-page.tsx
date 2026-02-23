@@ -47,7 +47,9 @@ export const HarvestDetailPage = () => {
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState('');
   const [isEditingHives, setIsEditingHives] = useState(false);
-  const [editedHives, setEditedHives] = useState<{ hiveId: string; framesTaken: number }[]>([]);
+  const [editedHives, setEditedHives] = useState<
+    { hiveId: string; framesTaken: number }[]
+  >([]);
 
   const { data: harvest, isLoading } = useHarvest(harvestId!);
   const updateHarvest = useUpdateHarvest();
@@ -80,7 +82,7 @@ export const HarvestDetailPage = () => {
     try {
       await setHarvestWeight.mutateAsync({
         harvestId: harvest.id,
-        data: { 
+        data: {
           totalWeight: parseWeight(weightValue),
           totalWeightUnit: getWeightUnit(),
         },
@@ -208,16 +210,17 @@ export const HarvestDetailPage = () => {
               <DialogHeader>
                 <DialogTitle>Delete Harvest?</DialogTitle>
                 <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  the harvest.
+                  This action cannot be undone. This will permanently delete the
+                  harvest.
                 </DialogDescription>
               </DialogHeader>
               {harvest.status === HarvestStatus.COMPLETED && (
                 <Alert className="border-amber-200 bg-amber-50">
                   <AlertTriangle className="h-4 w-4 text-amber-600" />
                   <AlertDescription className="text-amber-800">
-                    This harvest has been finalized. Deleting it will also remove
-                    all associated harvest actions from the hive timelines.
+                    This harvest has been finalized. Deleting it will also
+                    remove all associated harvest actions from the hive
+                    timelines.
                   </AlertDescription>
                 </Alert>
               )}
@@ -257,7 +260,8 @@ export const HarvestDetailPage = () => {
             </div>
             <div>
               <Label className="text-muted-foreground">Total Weight</Label>
-              {harvest.status !== HarvestStatus.COMPLETED && !isEditingWeight ? (
+              {harvest.status !== HarvestStatus.COMPLETED &&
+              !isEditingWeight ? (
                 harvest.totalWeight ? (
                   <div className="flex items-center gap-2">
                     <p className="font-medium">
@@ -421,7 +425,9 @@ export const HarvestDetailPage = () => {
                         }}
                         className="w-20"
                       />
-                      <span className="text-sm text-muted-foreground">frames</span>
+                      <span className="text-sm text-muted-foreground">
+                        frames
+                      </span>
                     </div>
                   </div>
                 );

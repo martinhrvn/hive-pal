@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 
 interface MenuItemButtonProps {
   icon: React.ReactNode;

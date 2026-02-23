@@ -46,48 +46,69 @@ export const PrivacyPolicyPage = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('rightToInformation.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('rightToInformation.title')}
+              </h2>
               <p className="text-gray-600">{t('rightToInformation.content')}</p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('security.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('security.title')}
+              </h2>
               <p className="text-gray-600">{t('security.content')}</p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('dataProtection.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('dataProtection.title')}
+              </h2>
               <p className="text-gray-600">{t('dataProtection.content')}</p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('dataUsage.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('dataUsage.title')}
+              </h2>
               <p className="text-gray-600">{t('dataUsage.content')}</p>
               <p className="text-gray-600 mt-4">{t('dataUsage.marketing')}</p>
               <p className="text-gray-600 mt-4">{t('dataUsage.authorities')}</p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('newsletter.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('newsletter.title')}
+              </h2>
               <p className="text-gray-600">{t('newsletter.content')}</p>
-              <p className="text-gray-600 mt-4">{t('newsletter.unsubscribe')}</p>
+              <p className="text-gray-600 mt-4">
+                {t('newsletter.unsubscribe')}
+              </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('cookies.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('cookies.title')}
+              </h2>
               <p className="text-gray-600">{t('cookies.content')}</p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('consent.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('consent.title')}
+              </h2>
               <p className="text-gray-600">{t('consent.content')}</p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">{t('contact.title')}</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {t('contact.title')}
+              </h2>
               <p className="text-gray-600">
                 {t('contact.content')}{' '}
-                <a href="mailto:info@hivepal.app" className="text-blue-600 hover:underline">
+                <a
+                  href="mailto:info@hivepal.app"
+                  className="text-blue-600 hover:underline"
+                >
                   info@hivepal.app
                 </a>
               </p>
@@ -96,7 +117,8 @@ export const PrivacyPolicyPage = () => {
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500 text-center">
-              {t('footer.company')} | {t('footer.lastUpdated')}: {new Date().toLocaleDateString()}
+              {t('footer.company')} | {t('footer.lastUpdated')}:{' '}
+              {new Date().toLocaleDateString()}
             </p>
           </div>
         </div>

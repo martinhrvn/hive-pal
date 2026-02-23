@@ -43,7 +43,7 @@ export const ReportsSidebar: React.FC<ReportsSidebarProps> = ({
             <div className="w-full">
               <Select
                 value={period}
-                onValueChange={(value) => onPeriodChange(value as ReportPeriod)}
+                onValueChange={value => onPeriodChange(value as ReportPeriod)}
               >
                 <SelectTrigger className="w-full">
                   <Calendar className="h-4 w-4" />

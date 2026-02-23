@@ -76,7 +76,9 @@ const UserDetailPage: React.FC = () => {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">{stats.userName || stats.email}</h1>
+          <h1 className="text-2xl font-bold">
+            {stats.userName || stats.email}
+          </h1>
           <p className="text-muted-foreground">{stats.email}</p>
         </div>
       </div>
@@ -85,7 +87,9 @@ const UserDetailPage: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>{t('userDetail.summary.totalApiaries')}</CardDescription>
+            <CardDescription>
+              {t('userDetail.summary.totalApiaries')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{stats.summary.totalApiaries}</p>
@@ -94,7 +98,9 @@ const UserDetailPage: React.FC = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>{t('userDetail.summary.totalHives')}</CardDescription>
+            <CardDescription>
+              {t('userDetail.summary.totalHives')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{stats.summary.totalHives}</p>
@@ -103,16 +109,22 @@ const UserDetailPage: React.FC = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>{t('userDetail.summary.totalInspections')}</CardDescription>
+            <CardDescription>
+              {t('userDetail.summary.totalInspections')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{stats.summary.totalInspections}</p>
+            <p className="text-3xl font-bold">
+              {stats.summary.totalInspections}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>{t('userDetail.summary.lastActivity')}</CardDescription>
+            <CardDescription>
+              {t('userDetail.summary.lastActivity')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-xl font-semibold">
@@ -123,7 +135,9 @@ const UserDetailPage: React.FC = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>{t('userDetail.summary.lastInspection')}</CardDescription>
+            <CardDescription>
+              {t('userDetail.summary.lastInspection')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-xl font-semibold">
@@ -196,8 +210,12 @@ const UserDetailPage: React.FC = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t('userDetail.apiaryBreakdown.name')}</TableHead>
-                  <TableHead>{t('userDetail.apiaryBreakdown.location')}</TableHead>
-                  <TableHead>{t('userDetail.apiaryBreakdown.coordinates')}</TableHead>
+                  <TableHead>
+                    {t('userDetail.apiaryBreakdown.location')}
+                  </TableHead>
+                  <TableHead>
+                    {t('userDetail.apiaryBreakdown.coordinates')}
+                  </TableHead>
                   <TableHead className="text-center">
                     {t('userDetail.apiaryBreakdown.hives')}
                   </TableHead>

@@ -1,10 +1,4 @@
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
   ChartContainer,
@@ -56,12 +50,7 @@ export const FeedingTrendChart: React.FC<FeedingTrendChartProps> = ({
     <ChartContainer config={chartConfig}>
       <AreaChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="week"
-          angle={-45}
-          textAnchor="end"
-          height={60}
-        />
+        <XAxis dataKey="week" angle={-45} textAnchor="end" height={60} />
         <YAxis />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Area

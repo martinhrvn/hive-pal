@@ -86,9 +86,7 @@ export const BatchInspectionPage = () => {
             <CardTitle>Batch Inspection Complete!</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">
-              All hives in this batch have been inspected.
-            </p>
+            <p className="mb-4">All hives in this batch have been inspected.</p>
             <Button onClick={() => navigate('/batch-inspections')}>
               Back to Batch Inspections
             </Button>
@@ -106,7 +104,7 @@ export const BatchInspectionPage = () => {
       onSuccess: () => {
         setShowSkipDialog(false);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Failed to skip hive:', error);
         toast.error('Failed to skip hive');
       },
@@ -127,7 +125,7 @@ export const BatchInspectionPage = () => {
         inspectionData,
       },
       {
-        onSuccess: (result) => {
+        onSuccess: result => {
           if (!result.next) {
             // Batch complete
             toast.success('Batch inspection completed!');
@@ -135,7 +133,7 @@ export const BatchInspectionPage = () => {
           }
           // Otherwise, the query will refetch and show the next hive
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Failed to create inspection:', error);
           toast.error('Failed to save inspection');
         },
@@ -266,9 +264,7 @@ export const BatchInspectionPage = () => {
             <Button variant="outline" onClick={() => setShowSkipDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSkipHive}>
-              Skip Hive
-            </Button>
+            <Button onClick={handleSkipHive}>Skip Hive</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

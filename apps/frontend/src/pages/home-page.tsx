@@ -1,5 +1,9 @@
 import { HiveList } from '@/pages/hive/components';
-import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
+import {
+  MainContent,
+  Page,
+  Sidebar,
+} from '@/components/layout/page-grid-layout';
 import { HomeActionSidebar } from '@/components/home-action-sidebar';
 import { HiveMinimap } from '@/components/hive-minimap';
 import { InspectionStatusSummary } from '@/components/inspection-status-summary';

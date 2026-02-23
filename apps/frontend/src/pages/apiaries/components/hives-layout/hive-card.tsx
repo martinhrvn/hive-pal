@@ -60,7 +60,7 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
     : [];
 
   // Check if any box is winterized
-  const isWinterized = hive.boxes?.some((box) => box.winterized) ?? false;
+  const isWinterized = hive.boxes?.some(box => box.winterized) ?? false;
 
   return (
     <Card
@@ -80,7 +80,10 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
             <h4 className="font-medium text-sm truncate">{hive.name}</h4>
           </div>
           <div
-            className={cn('w-2 h-2 rounded-full flex-shrink-0', getStatusColor(hive.status))}
+            className={cn(
+              'w-2 h-2 rounded-full flex-shrink-0',
+              getStatusColor(hive.status),
+            )}
           />
         </div>
 

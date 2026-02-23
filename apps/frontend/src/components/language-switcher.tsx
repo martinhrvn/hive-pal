@@ -37,7 +37,10 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 
   if (compact) {
     return (
-      <Select value={normalizeLanguageCode(i18n.language)} onValueChange={handleLanguageChange}>
+      <Select
+        value={normalizeLanguageCode(i18n.language)}
+        onValueChange={handleLanguageChange}
+      >
         <SelectTrigger className="w-12 h-8 border-none shadow-none">
           <SelectValue>
             <Languages className="h-4 w-4" />
@@ -58,7 +61,10 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   }
 
   return (
-    <Select value={normalizeLanguageCode(i18n.language)} onValueChange={handleLanguageChange}>
+    <Select
+      value={normalizeLanguageCode(i18n.language)}
+      onValueChange={handleLanguageChange}
+    >
       <SelectTrigger className="w-40">
         <SelectValue>
           <div className="flex items-center gap-2">

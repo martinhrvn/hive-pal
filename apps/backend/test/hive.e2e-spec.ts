@@ -189,7 +189,7 @@ describe('Hives (e2e)', () => {
       name: 'Updated Hive Name',
       notes: 'Updated notes',
       status: HiveStatus.INACTIVE,
-    }
+    };
     const response = await request(app.getHttpServer())
       .patch(`/hives/${testHiveId}`)
       .set('Authorization', `Bearer ${authToken}`)

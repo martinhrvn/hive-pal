@@ -1,4 +1,8 @@
-import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
+import {
+  MainContent,
+  Page,
+  Sidebar,
+} from '@/components/layout/page-grid-layout';
 import { useEquipmentNew } from '@/api/hooks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

@@ -16,13 +16,13 @@ export const INSPECTION_AUDIO_KEYS = {
  */
 export const useInspectionAudio = (
   inspectionId: string,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) => {
   return useQuery<AudioResponse[]>({
     queryKey: INSPECTION_AUDIO_KEYS.list(inspectionId),
     queryFn: async () => {
       const response = await apiClient.get<AudioResponse[]>(
-        `/api/inspections/${inspectionId}/audio`
+        `/api/inspections/${inspectionId}/audio`,
       );
       return response.data;
     },
@@ -37,8 +37,10 @@ export const useDeleteInspectionAudio = (inspectionId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, string>({
-    mutationFn: async (audioId) => {
-      await apiClient.delete(`/api/inspections/${inspectionId}/audio/${audioId}`);
+    mutationFn: async audioId => {
+      await apiClient.delete(
+        `/api/inspections/${inspectionId}/audio/${audioId}`,
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -54,13 +56,13 @@ export const useDeleteInspectionAudio = (inspectionId: string) => {
 export const useAudioDownloadUrl = (
   inspectionId: string,
   audioId: string,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) => {
   return useQuery<DownloadUrlResponse>({
     queryKey: INSPECTION_AUDIO_KEYS.downloadUrl(inspectionId, audioId),
     queryFn: async () => {
       const response = await apiClient.get<DownloadUrlResponse>(
-        `/api/inspections/${inspectionId}/audio/${audioId}/download-url`
+        `/api/inspections/${inspectionId}/audio/${audioId}/download-url`,
       );
       return response.data;
     },
@@ -74,10 +76,10 @@ export const useAudioDownloadUrl = (
  */
 export const getAudioDownloadUrl = async (
   inspectionId: string,
-  audioId: string
+  audioId: string,
 ): Promise<string> => {
   const response = await apiClient.get<DownloadUrlResponse>(
-    `/api/inspections/${inspectionId}/audio/${audioId}/download-url`
+    `/api/inspections/${inspectionId}/audio/${audioId}/download-url`,
   );
   return response.data.downloadUrl;
 };
@@ -101,7 +103,7 @@ export const useUploadInspectionAudio = (inspectionId: string) => {
 
       const response = await apiClient.post<AudioResponse>(
         `/api/inspections/${inspectionId}/audio`,
-        formData
+        formData,
       );
       return response.data;
     },

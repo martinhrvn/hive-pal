@@ -26,14 +26,14 @@ export function AudioCard({ inspectionId }: AudioCardProps) {
         setDeletingId(null);
       }
     },
-    [deleteAudio]
+    [deleteAudio],
   );
 
   const getDownloadUrl = useCallback(
     async (audioId: string) => {
       return getAudioDownloadUrl(inspectionId, audioId);
     },
-    [inspectionId]
+    [inspectionId],
   );
 
   // Don't render the card if there are no recordings and we're not loading
@@ -49,7 +49,8 @@ export function AudioCard({ inspectionId }: AudioCardProps) {
           Audio Notes
           {recordings.length > 0 && (
             <span className="text-sm font-normal text-muted-foreground">
-              ({recordings.length} {recordings.length === 1 ? 'recording' : 'recordings'})
+              ({recordings.length}{' '}
+              {recordings.length === 1 ? 'recording' : 'recordings'})
             </span>
           )}
         </CardTitle>

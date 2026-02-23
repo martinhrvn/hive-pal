@@ -27,9 +27,7 @@ i18n
 
     // Language normalization
     lng: normalizeLanguageCode(
-      localStorage.getItem('language') || 
-      navigator.language || 
-      'en'
+      localStorage.getItem('language') || navigator.language || 'en',
     ),
 
     ns: [
@@ -47,7 +45,7 @@ i18n
   });
 
 // Add language normalization after initialization
-i18n.on('languageChanged', (lng) => {
+i18n.on('languageChanged', lng => {
   const normalizedLng = normalizeLanguageCode(lng);
   if (lng !== normalizedLng) {
     i18n.changeLanguage(normalizedLng);

@@ -88,7 +88,7 @@ export const BoxStack = ({
             isEditing={isEditing}
             frameSizeName={
               box.frameSizeId
-                ? frameSizes.find((fs) => fs.id === box.frameSizeId)?.name
+                ? frameSizes.find(fs => fs.id === box.frameSizeId)?.name
                 : undefined
             }
           />

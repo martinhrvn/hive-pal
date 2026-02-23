@@ -126,9 +126,7 @@ export const useDeleteFrameSize = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiClient.delete(
-        `/api/admin/frame-sizes/${id}`,
-      );
+      const response = await apiClient.delete(`/api/admin/frame-sizes/${id}`);
       return response.data;
     },
     onSuccess: async () => {

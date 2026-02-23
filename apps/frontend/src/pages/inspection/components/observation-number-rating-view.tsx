@@ -14,7 +14,10 @@ export const ObservationNumberRatingView = ({
         <div className="flex items-center gap-4">
           <div className="grow grid grid-cols-10 gap-1">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => {
-              const color = rating >= value ? 'bg-amber-300 dark:bg-amber-700' : 'bg-gray-200 dark:bg-gray-700';
+              const color =
+                rating >= value
+                  ? 'bg-amber-300 dark:bg-amber-700'
+                  : 'bg-gray-200 dark:bg-gray-700';
               return (
                 <div
                   key={value}

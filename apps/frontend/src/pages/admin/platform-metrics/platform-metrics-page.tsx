@@ -71,7 +71,11 @@ const PlatformMetricsPage: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange>('30d');
 
   const dateParams = useMemo(() => getDateRange(dateRange), [dateRange]);
-  const { data: snapshots, isLoading, refetch } = usePlatformMetrics(dateParams);
+  const {
+    data: snapshots,
+    isLoading,
+    refetch,
+  } = usePlatformMetrics(dateParams);
   const { data: latestSnapshot } = useLatestPlatformMetrics();
 
   // Redirect if not admin
@@ -113,7 +117,9 @@ const PlatformMetricsPage: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Apiaries</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Apiaries
+            </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -163,13 +169,13 @@ const PlatformMetricsPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Select
                 value={dateRange}
-                onValueChange={(v) => setDateRange(v as DateRange)}
+                onValueChange={v => setDateRange(v as DateRange)}
               >
                 <SelectTrigger className="w-[150px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {DATE_RANGE_OPTIONS.map((option) => (
+                  {DATE_RANGE_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>

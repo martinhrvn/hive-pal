@@ -18,7 +18,11 @@ import {
 import type { TrendData } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
 
-type ScoreType = 'overallScore' | 'populationScore' | 'storesScore' | 'queenScore';
+type ScoreType =
+  | 'overallScore'
+  | 'populationScore'
+  | 'storesScore'
+  | 'queenScore';
 
 interface HiveScoreTrendChartProps {
   data: TrendData['hiveHealthTrends'] | undefined;
@@ -69,7 +73,7 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
   }
 
   // Filter hives that have data points
-  const hivesWithData = data.filter((hive) => hive.dataPoints.length > 0);
+  const hivesWithData = data.filter(hive => hive.dataPoints.length > 0);
 
   if (hivesWithData.length === 0) {
     return (
@@ -81,8 +85,8 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
 
   // Get all unique dates across all hives
   const allDates = new Set<string>();
-  hivesWithData.forEach((hive) => {
-    hive.dataPoints.forEach((point) => {
+  hivesWithData.forEach(hive => {
+    hive.dataPoints.forEach(point => {
       allDates.add(format(parseISO(point.date), 'yyyy-MM'));
     });
   });
@@ -91,14 +95,14 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
   const sortedDates = Array.from(allDates).sort();
 
   // Transform data for the chart - one row per date, with each hive as a column
-  const chartData = sortedDates.map((dateKey) => {
+  const chartData = sortedDates.map(dateKey => {
     const row: Record<string, string | number | null> = {
       date: format(new Date(dateKey + '-01'), 'MMM yyyy'),
     };
 
-    hivesWithData.forEach((hive) => {
+    hivesWithData.forEach(hive => {
       const dataPoint = hive.dataPoints.find(
-        (point) => format(parseISO(point.date), 'yyyy-MM') === dateKey
+        point => format(parseISO(point.date), 'yyyy-MM') === dateKey,
       );
       row[hive.hiveId] = dataPoint ? dataPoint[selectedScore] : null;
     });
@@ -119,12 +123,15 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium">Score Type:</span>
-        <Select value={selectedScore} onValueChange={(v) => setSelectedScore(v as ScoreType)}>
+        <Select
+          value={selectedScore}
+          onValueChange={v => setSelectedScore(v as ScoreType)}
+        >
           <SelectTrigger className="w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {SCORE_OPTIONS.map((option) => (
+            {SCORE_OPTIONS.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>

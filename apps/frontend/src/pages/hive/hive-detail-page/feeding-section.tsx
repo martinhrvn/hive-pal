@@ -80,7 +80,9 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
               </span>
             </div>
           </div>
-          <span className={`text-sm font-bold ${progressPercentage >= 100 ? 'text-green-600' : progressPercentage >= 75 ? 'text-blue-600' : 'text-orange-600'}`}>
+          <span
+            className={`text-sm font-bold ${progressPercentage >= 100 ? 'text-green-600' : progressPercentage >= 75 ? 'text-blue-600' : 'text-orange-600'}`}
+          >
             {progressPercentage.toFixed(0)}%
           </span>
         </div>
@@ -188,7 +190,8 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId }) => {
             {progressPercentage.toFixed(0)}%
           </div>
           <div className="text-sm text-muted-foreground">
-            {formatWeight(currentAmount).label} / {formatWeight(targetAmount).label}
+            {formatWeight(currentAmount).label} /{' '}
+            {formatWeight(targetAmount).label}
           </div>
           <Progress
             value={progressPercentage}

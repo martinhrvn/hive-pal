@@ -66,7 +66,7 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
     : [];
 
   // Check if any box is winterized
-  const isWinterized = hive.boxes?.some((box) => box.winterized) ?? false;
+  const isWinterized = hive.boxes?.some(box => box.winterized) ?? false;
 
   return (
     <div

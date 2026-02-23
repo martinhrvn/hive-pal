@@ -49,7 +49,8 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
   // Get initial values from action or defaults
   const getInitialUnit = (): string => {
     if (action?.unit) return action.unit;
-    const config = TREATMENT_PRODUCTS[action?.treatmentType as TreatmentProductId];
+    const config =
+      TREATMENT_PRODUCTS[action?.treatmentType as TreatmentProductId];
     return config?.defaultUnit ?? 'ml';
   };
 
