@@ -9,6 +9,7 @@ RUN turbo prune --scope=frontend --docker
 
 FROM base AS builder
 COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile
 
 COPY --from=pruner /app/out/full/ .
