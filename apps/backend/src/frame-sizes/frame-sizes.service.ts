@@ -16,7 +16,7 @@ interface CreateFrameSizeData {
 
 @Injectable()
 export class FrameSizesService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(userId: string) {
     return this.prisma.frameSize.findMany({

@@ -24,7 +24,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
-  ) { }
+  ) {}
 
   async validateUser(
     email: string,

@@ -6,7 +6,7 @@ import { PlatformMetricsSnapshot } from '@/prisma/client';
 export class PlatformMetricsService {
   private readonly logger = new Logger(PlatformMetricsService.name);
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Calculate current platform metrics

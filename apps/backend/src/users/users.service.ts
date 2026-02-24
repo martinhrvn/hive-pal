@@ -8,7 +8,7 @@ type PartialUser = Omit<User, 'password'>;
 
 @Injectable()
 export class UsersService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
 
   async findByEmail(email: string): Promise<User | null> {
     return this.prismaService.user.findUnique({

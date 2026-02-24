@@ -186,15 +186,15 @@ export class HiveService {
         activeQueen:
           hive.queens.length > 0
             ? {
-              id: hive.queens[0].id,
-              hiveId: hive.queens[0].hiveId || undefined,
-              year: hive.queens[0].year || undefined,
-              source: hive.queens[0].source || undefined,
-              marking: hive.queens[0].marking || null,
-              color: hive.queens[0].color,
-              status: hive.queens[0].status,
-              installedAt: hive.queens[0].installedAt?.toISOString(),
-            }
+                id: hive.queens[0].id,
+                hiveId: hive.queens[0].hiveId || undefined,
+                year: hive.queens[0].year || undefined,
+                source: hive.queens[0].source || undefined,
+                marking: hive.queens[0].marking || null,
+                color: hive.queens[0].color,
+                status: hive.queens[0].status,
+                installedAt: hive.queens[0].installedAt?.toISOString(),
+              }
             : null,
         alerts:
           hive.alerts?.map((alert) => ({
@@ -340,15 +340,15 @@ export class HiveService {
       hiveScore: score,
       activeQueen: activeQueen
         ? {
-          id: activeQueen.id,
-          hiveId: activeQueen.hiveId || undefined,
-          marking: activeQueen.marking || null,
-          color: activeQueen.color,
-          year: activeQueen.year,
-          status: activeQueen.status,
-          source: activeQueen.source || undefined,
-          installedAt: activeQueen.installedAt?.toISOString(),
-        }
+            id: activeQueen.id,
+            hiveId: activeQueen.hiveId || undefined,
+            marking: activeQueen.marking || null,
+            color: activeQueen.color,
+            year: activeQueen.year,
+            status: activeQueen.status,
+            source: activeQueen.source || undefined,
+            installedAt: activeQueen.installedAt?.toISOString(),
+          }
         : null,
       alerts:
         hive.alerts?.map((alert) => ({
@@ -548,7 +548,7 @@ export class HiveService {
         if (incompatibleBoxes.length > 0) {
           throw new BadRequestException(
             `Boxes at positions ${incompatibleBoxes.map((b) => b.position).join(', ')} ` +
-            `are not compatible with the main box variant (${mainBoxVariant})`,
+              `are not compatible with the main box variant (${mainBoxVariant})`,
           );
         }
       }

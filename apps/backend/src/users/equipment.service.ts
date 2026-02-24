@@ -20,7 +20,7 @@ type ApiaryWithHives = Apiary & {
 
 @Injectable()
 export class EquipmentService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
 
   async getEquipmentItems(
     userId: string,

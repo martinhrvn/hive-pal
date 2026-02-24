@@ -60,7 +60,7 @@ export class InspectionsService {
     private inspectionStatusUpdater: InspectionStatusUpdaterService,
     @Inject(forwardRef(() => InspectionAudioService))
     private audioService: InspectionAudioService,
-  ) { }
+  ) {}
 
   async create(
     createInspectionDto: CreateInspection,
@@ -196,11 +196,11 @@ export class InspectionsService {
       // Add date filtering
       ...(filter.startDate || filter.endDate
         ? {
-          date: {
-            ...(filter.startDate && { gte: new Date(filter.startDate) }),
-            ...(filter.endDate && { lte: new Date(filter.endDate) }),
-          },
-        }
+            date: {
+              ...(filter.startDate && { gte: new Date(filter.startDate) }),
+              ...(filter.endDate && { lte: new Date(filter.endDate) }),
+            },
+          }
         : {}),
     };
 

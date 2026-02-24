@@ -29,7 +29,7 @@ export class ActionsService {
   constructor(
     private prisma: PrismaService,
     private usersService: UsersService,
-  ) { }
+  ) {}
 
   /**
    * Convert volume from liters to user's preferred unit
@@ -276,11 +276,11 @@ export class ActionsService {
       // Filter by date range (using action date now, not inspection date)
       ...(filter.startDate || filter.endDate
         ? {
-          date: {
-            ...(filter.startDate && { gte: new Date(filter.startDate) }),
-            ...(filter.endDate && { lte: new Date(filter.endDate) }),
-          },
-        }
+            date: {
+              ...(filter.startDate && { gte: new Date(filter.startDate) }),
+              ...(filter.endDate && { lte: new Date(filter.endDate) }),
+            },
+          }
         : {}),
       // Filter by hive if specified
       ...(filter.hiveId && { hiveId: filter.hiveId }),

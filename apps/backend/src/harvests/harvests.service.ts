@@ -25,7 +25,7 @@ export class HarvestsService {
     private prisma: PrismaService,
     private actionsService: ActionsService,
     private usersService: UsersService,
-  ) { }
+  ) {}
 
   async create(
     apiaryId: string,
@@ -425,11 +425,11 @@ export class HarvestsService {
       ...(filter.status && { status: filter.status }),
       ...(filter.startDate || filter.endDate
         ? {
-          date: {
-            ...(filter.startDate && { gte: new Date(filter.startDate) }),
-            ...(filter.endDate && { lte: new Date(filter.endDate) }),
-          },
-        }
+            date: {
+              ...(filter.startDate && { gte: new Date(filter.startDate) }),
+              ...(filter.endDate && { lte: new Date(filter.endDate) }),
+            },
+          }
         : {}),
     };
 

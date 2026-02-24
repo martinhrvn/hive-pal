@@ -19,7 +19,7 @@ interface FindAllOptions {
 
 @Injectable()
 export class FeedbackService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateFeedbackData) {
     return this.prisma.feedback.create({
