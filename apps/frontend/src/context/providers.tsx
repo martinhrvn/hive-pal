@@ -3,11 +3,22 @@ import { AuthProvider } from '@/context/auth-context';
 import { ThemeProvider } from './theme-provider';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { getEnvVariable } from '@/utils/get-env.ts';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        if (error instanceof AxiosError && error.response?.status === 404) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+    },
+  },
+});
 axios.defaults.baseURL = getEnvVariable('VITE_API_URL');
 
 const SKIP_SIDEBAR_PAGES = ['/login', '/register', '/onboarding'];
