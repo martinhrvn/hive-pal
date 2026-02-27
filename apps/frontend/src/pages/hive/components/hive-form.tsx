@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { CalendarIcon, ChevronDown, ChevronUp } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils.ts';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/collapsible';
 import { useApiary } from '@/hooks/use-apiary';
 import React, { useEffect, useState, useRef } from 'react';
-import { useCreateHive, useFrameSizes } from '@/api/hooks';
+import { useCreateHive, useUpdateHive, useHive, useFrameSizes } from '@/api/hooks';
 import {
   boxSchema,
   hiveSettingsSchema,
@@ -63,20 +63,27 @@ const hiveSchema = z.object({
 export type HiveFormData = z.infer<typeof hiveSchema>;
 
 type HiveFormProps = {
+  hiveId?: string;
   onSubmit?: (data: HiveFormData) => void;
   isLoading?: boolean;
 };
 
 export const HiveForm: React.FC<HiveFormProps> = ({
+  hiveId,
   onSubmit: onSubmitOverride,
   isLoading,
 }) => {
   const { t } = useTranslation(['hive', 'common']);
   const navigate = useNavigate();
   const { apiaries, activeApiaryId } = useApiary();
-  const { mutate } = useCreateHive({
+  const isEditMode = !!hiveId;
+  const { data: existingHive } = useHive(hiveId || '', {
+    enabled: isEditMode,
+  });
+  const { mutate: createHive } = useCreateHive({
     onSuccess: () => navigate('/'),
   });
+  const { mutateAsync: updateHive } = useUpdateHive();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [isBoxConfigOpen, setIsBoxConfigOpen] = useState(false);
   const [configureBoxes, setConfigureBoxes] = useState(false);
@@ -118,10 +125,30 @@ export const HiveForm: React.FC<HiveFormProps> = ({
       },
     },
   });
-  console.log('Form default values:', form.getValues());
-  console.log('Form errors:', form.formState.errors);
 
-  const onSubmit = (data: HiveFormData) => {
+  useEffect(() => {
+    if (existingHive) {
+      form.reset({
+        name: existingHive.name,
+        notes: existingHive.notes || '',
+        apiaryId: existingHive.apiaryId || '',
+        status: existingHive.status as 'ACTIVE' | 'INACTIVE',
+        installationDate: existingHive.installationDate
+          ? typeof existingHive.installationDate === 'string'
+            ? parseISO(existingHive.installationDate)
+            : existingHive.installationDate
+          : new Date(),
+        settings: existingHive.settings,
+      });
+      if (existingHive.boxes && existingHive.boxes.length > 0) {
+        setConfigureBoxes(true);
+        setIsBoxConfigOpen(true);
+        boxBuilderRef.current?.setBoxes(existingHive.boxes);
+      }
+    }
+  }, [existingHive, form]);
+
+  const onSubmit = async (data: HiveFormData) => {
     const boxes = configureBoxes
       ? boxBuilderRef.current?.getBoxes()
       : undefined;
@@ -134,10 +161,20 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     };
 
     if (onSubmitOverride) {
-      console.log('Submitting with override:', finalData);
       return onSubmitOverride(finalData);
+    } else if (isEditMode) {
+      await updateHive({
+        id: hiveId,
+        data: {
+          ...finalData,
+          id: hiveId,
+          status: data.status as HiveStatusEnum,
+          installationDate: data.installationDate.toISOString(),
+        },
+      });
+      navigate(`/hives/${hiveId}`);
     } else {
-      mutate({
+      createHive({
         ...finalData,
         status: data.status as HiveStatusEnum,
         installationDate: data.installationDate.toISOString(),
@@ -146,10 +183,10 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   };
 
   useEffect(() => {
-    if (activeApiaryId) {
+    if (activeApiaryId && !isEditMode) {
       form.setValue('apiaryId', activeApiaryId);
     }
-  }, [activeApiaryId, form]);
+  }, [activeApiaryId, form, isEditMode]);
 
   return (
     <Form {...form}>
@@ -454,23 +491,27 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                 <BoxBuilder
                   ref={boxBuilderRef}
                   simplified={true}
-                  initialBoxes={[
-                    {
-                      id: `temp-${Date.now()}`,
-                      position: 0,
-                      frameCount: 10,
-                      maxFrameCount: 10,
-                      hasExcluder: false,
-                      type: BoxTypeEnum.BROOD,
-                      variant: BoxVariantEnum.LANGSTROTH_DEEP,
-                      frameSizeId:
-                        findFrameSizeForVariant(
-                          frameSizes,
-                          BoxVariantEnum.LANGSTROTH_DEEP,
-                        )?.id ?? null,
-                      color: '#3b82f6',
-                    },
-                  ]}
+                  initialBoxes={
+                    isEditMode && existingHive?.boxes?.length
+                      ? existingHive.boxes
+                      : [
+                          {
+                            id: `temp-${Date.now()}`,
+                            position: 0,
+                            frameCount: 10,
+                            maxFrameCount: 10,
+                            hasExcluder: false,
+                            type: BoxTypeEnum.BROOD,
+                            variant: BoxVariantEnum.LANGSTROTH_DEEP,
+                            frameSizeId:
+                              findFrameSizeForVariant(
+                                frameSizes,
+                                BoxVariantEnum.LANGSTROTH_DEEP,
+                              )?.id ?? null,
+                            color: '#3b82f6',
+                          },
+                        ]
+                  }
                 />
               )}
             </div>
@@ -480,9 +521,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
         <Button
           disabled={isLoading}
           type="submit"
-          data-umami-event="Hive Create"
+          data-umami-event={isEditMode ? 'Hive Edit' : 'Hive Create'}
         >
-          {t('hive:form.submit')}
+          {isEditMode ? t('hive:edit.title') : t('hive:form.submit')}
         </Button>
       </form>
     </Form>

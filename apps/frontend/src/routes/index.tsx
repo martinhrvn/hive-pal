@@ -9,7 +9,7 @@ import { AdminProtectedRoute } from './admin-protected-route.tsx';
 import { NotFoundPage } from '@/pages/not-found-page.tsx';
 import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
-import { CreateHivePage, HiveListPage } from '@/pages/hive';
+import { CreateHivePage, EditHivePage, HiveListPage } from '@/pages/hive';
 import { HiveDetailPage } from '@/pages/hive/hive-detail-page';
 import {
   CreateInspectionPage,
@@ -175,6 +175,10 @@ const router = createBrowserRouter([
       {
         path: '/hives/:id',
         element: <HiveDetailPage />,
+      },
+      {
+        path: '/hives/:id/edit',
+        element: <EditHivePage />,
       },
       {
         path: '/hives/qr-codes/print',
