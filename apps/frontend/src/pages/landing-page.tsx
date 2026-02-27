@@ -39,7 +39,7 @@ export function LandingPage() {
         />
         <meta
           property="og:description"
-          content="Manage your beehives efficiently with Hive Pal. Track inspections, monitor hive health, manage harvests, and optimize your beekeeping operations."
+          content="Free, open-source beekeeping management platform. Track inspections, monitor hive health, manage harvests, and optimize your operations."
         />
         <meta property="og:url" content="https://hivepal.app/" />
         <meta property="og:type" content="website" />
@@ -54,7 +54,7 @@ export function LandingPage() {
         />
         <meta
           property="twitter:description"
-          content="Manage your beehives efficiently with Hive Pal. Track inspections, monitor hive health, and optimize your beekeeping operations."
+          content="Free, open-source beekeeping management platform. Track inspections, monitor hive health, manage harvests, and optimize your operations."
         />
         <meta
           property="twitter:image"
