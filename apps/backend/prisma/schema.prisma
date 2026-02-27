@@ -17,6 +17,7 @@ model User {
   name                   String?
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @updatedAt
+  lastLoginAt            DateTime?
   apiaries               Apiary[]
   role                   Role                   @default(USER)
   passwordChangeRequired Boolean                @default(false)

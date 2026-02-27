@@ -49,7 +49,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  login(@Request() req: RequestWithUser): AuthResponse {
+  async login(@Request() req: RequestWithUser): Promise<AuthResponse> {
     this.logger.log(`User ${req.user.email} (ID: ${req.user.id}) logged in`);
     return this.authService.login(req.user);
   }

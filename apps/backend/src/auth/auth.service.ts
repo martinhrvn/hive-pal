@@ -8,9 +8,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
+import { UserLoginEvent } from '../events/auth.events';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { User as PrismaUser } from '@/prisma/client';
@@ -24,7 +26,8 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
-  ) {}
+    private eventEmitter: EventEmitter2,
+  ) { }
 
   async validateUser(
     email: string,
@@ -47,6 +50,7 @@ export class AuthService {
         privacyConsentTimestamp: null,
         newsletterConsent: false,
         newsletterConsentTimestamp: null,
+        lastLoginAt: null,
       };
     }
 
@@ -59,7 +63,7 @@ export class AuthService {
     return null;
   }
 
-  login(user: User): AuthResponse {
+  async login(user: User): Promise<AuthResponse> {
     // If validation failed
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
@@ -71,6 +75,26 @@ export class AuthService {
       name: user.name,
       passwordChangeRequired: user.passwordChangeRequired || false,
     };
+
+    // Update lastLoginAt and emit event for non-admin users
+    if (user.id !== 'admin') {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        select: { lastLoginAt: true },
+      });
+
+      const previousLoginAt = existingUser?.lastLoginAt ?? null;
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+      });
+
+      this.eventEmitter.emit(
+        'user.login',
+        new UserLoginEvent(user.id, user.email, previousLoginAt),
+      );
+    }
 
     return {
       access_token: this.jwtService.sign(payload),
