@@ -62,7 +62,9 @@
   },
   "switcher": {
     "teams": "Teams",
-    "addApiary": "Add apiary"
+    "addApiary": "Add apiary",
+    "noApiarySelected": "No apiary selected",
+    "selectOrCreate": "Select or create an apiary"
   },
   "form": {
     "namePlaceholder": "Apiary name",

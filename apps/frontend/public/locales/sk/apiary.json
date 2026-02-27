@@ -62,7 +62,9 @@
   },
   "switcher": {
     "teams": "Tímy",
-    "addApiary": "Pridať včelnicu"
+    "addApiary": "Pridať včelnicu",
+    "noApiarySelected": "Žiadna včelnica nie je vybraná",
+    "selectOrCreate": "Vyberte alebo vytvorte včelnicu"
   },
   "form": {
     "namePlaceholder": "Názov včelnice",

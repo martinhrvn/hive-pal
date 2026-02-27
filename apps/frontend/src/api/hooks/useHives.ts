@@ -13,6 +13,7 @@ import {
   UpdateHiveBoxes,
 } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
+import { useApiaryStore } from '@/hooks/use-apiary';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
 // Query keys
@@ -33,6 +34,7 @@ export const useHives = (
   filters?: HiveFilter,
   queryOptions?: UseQueryOptions<HiveResponse[]>,
 ) => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<HiveResponse[]>({
     ...queryOptions,
     queryKey: HIVES_KEYS.list(filters),
@@ -52,6 +54,7 @@ export const useHives = (
         throw error;
       }
     },
+    enabled: !!activeApiaryId && (queryOptions?.enabled !== false),
     ...queryOptions,
   });
 };
@@ -69,6 +72,7 @@ export const useHivesWithBoxes = (
   filters?: HiveFilter,
   queryOptions?: UseQueryOptions<HiveWithBoxesResponse[]>,
 ) => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<HiveWithBoxesResponse[]>({
     ...queryOptions,
     queryKey: HIVES_KEYS.listWithBoxes(filters),
@@ -84,6 +88,7 @@ export const useHivesWithBoxes = (
       const response = await apiClient.get<HiveWithBoxesResponse[]>(url);
       return response.data;
     },
+    enabled: !!activeApiaryId && (queryOptions?.enabled !== false),
     ...queryOptions,
   });
 };

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { useApiaryStore } from '@/hooks/use-apiary';
 import {
   CalendarFilter,
   CalendarResponse,
@@ -20,6 +21,7 @@ const CALENDAR_KEYS = {
 
 // Get calendar events with optional filtering
 export const useCalendar = (filters?: CalendarFilter) => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<CalendarResponse>({
     queryKey: CALENDAR_KEYS.list(filters),
     queryFn: async () => {
@@ -32,6 +34,7 @@ export const useCalendar = (filters?: CalendarFilter) => {
       const response = await apiClient.get<CalendarResponse>(url);
       return response.data;
     },
+    enabled: !!activeApiaryId,
   });
 };
 

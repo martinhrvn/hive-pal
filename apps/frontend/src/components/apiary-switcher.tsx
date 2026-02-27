@@ -40,18 +40,31 @@ export function ApiarySwitcher() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${!activeApiary ? 'border border-dashed border-muted-foreground/50' : ''}`}
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+              <div className={`flex aspect-square size-8 items-center justify-center rounded-lg ${activeApiary ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                 <HomeIcon />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {activeApiary?.name}
-                </span>
-                <span className="truncate text-xs">
-                  {activeApiary?.location}
-                </span>
+                {activeApiary ? (
+                  <>
+                    <span className="truncate font-medium">
+                      {activeApiary.name}
+                    </span>
+                    <span className="truncate text-xs">
+                      {activeApiary.location}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="truncate font-medium text-muted-foreground">
+                      {t('switcher.noApiarySelected')}
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {t('switcher.selectOrCreate')}
+                    </span>
+                  </>
+                )}
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>

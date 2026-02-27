@@ -12,6 +12,7 @@ import {
   UpdateInspectionResponse,
 } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
+import { useApiaryStore } from '@/hooks/use-apiary';
 import { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,6 +28,7 @@ const INSPECTIONS_KEYS = {
 
 // Get all inspections with optional filtering
 export const useInspections = (filters?: InspectionFilter) => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<InspectionResponse[]>({
     queryKey: INSPECTIONS_KEYS.list(filters),
     queryFn: async () => {
@@ -40,11 +42,13 @@ export const useInspections = (filters?: InspectionFilter) => {
       const response = await apiClient.get<InspectionResponse[]>(url);
       return response.data;
     },
+    enabled: !!activeApiaryId,
   });
 };
 
 // Get overdue inspections
 export const useOverdueInspections = () => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<InspectionResponse[]>({
     queryKey: ['inspections', 'overdue'],
     queryFn: async () => {
@@ -53,11 +57,13 @@ export const useOverdueInspections = () => {
       );
       return response.data;
     },
+    enabled: !!activeApiaryId,
   });
 };
 
 // Get inspections due today
 export const useDueTodayInspections = () => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<InspectionResponse[]>({
     queryKey: ['inspections', 'due-today'],
     queryFn: async () => {
@@ -66,11 +72,13 @@ export const useDueTodayInspections = () => {
       );
       return response.data;
     },
+    enabled: !!activeApiaryId,
   });
 };
 
 // Get upcoming inspections (future pending inspections)
 export const useUpcomingInspections = (limit?: number) => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<InspectionResponse[]>({
     queryKey: ['inspections', 'upcoming', limit],
     queryFn: async () => {
@@ -94,6 +102,7 @@ export const useUpcomingInspections = (limit?: number) => {
 
       return limit ? sorted.slice(0, limit) : sorted;
     },
+    enabled: !!activeApiaryId,
   });
 };
 
