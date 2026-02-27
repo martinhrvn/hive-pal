@@ -1,10 +1,67 @@
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Github, BookOpen, Rocket } from 'lucide-react';
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Hive Pal',
+  description:
+    'Free and open-source beekeeping management platform. Manage apiaries, track hive health, schedule inspections, and monitor harvests.',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  url: 'https://hivepal.app',
+  author: {
+    '@type': 'Organization',
+    name: 'Hive Pal',
+  },
+};
+
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-green-50 w-full">
+      <Helmet>
+        <title>Hive Pal - Modern Beekeeping Management Software</title>
+        <meta
+          name="description"
+          content="Manage your beehives efficiently with Hive Pal. Track inspections, monitor hive health, manage harvests, and optimize your beekeeping operations with our comprehensive digital platform."
+        />
+        <link rel="canonical" href="https://hivepal.app/" />
+        <meta
+          property="og:title"
+          content="Hive Pal - Modern Beekeeping Management Software"
+        />
+        <meta
+          property="og:description"
+          content="Manage your beehives efficiently with Hive Pal. Track inspections, monitor hive health, manage harvests, and optimize your beekeeping operations."
+        />
+        <meta property="og:url" content="https://hivepal.app/" />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:image"
+          content="https://hivepal.app/og-image.jpg"
+        />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta
+          property="twitter:title"
+          content="Hive Pal - Modern Beekeeping Management Software"
+        />
+        <meta
+          property="twitter:description"
+          content="Manage your beehives efficiently with Hive Pal. Track inspections, monitor hive health, and optimize your beekeeping operations."
+        />
+        <meta
+          property="twitter:image"
+          content="https://hivepal.app/og-image.jpg"
+        />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

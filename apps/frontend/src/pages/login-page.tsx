@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +40,14 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-center relative overflow-hidden">
+      <Helmet>
+        <title>Sign In - Hive Pal</title>
+        <meta
+          name="description"
+          content="Sign in to your Hive Pal account to manage your apiaries, track hive inspections, and monitor your beekeeping operations."
+        />
+        <link rel="canonical" href="https://hivepal.app/login" />
+      </Helmet>
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero2.jpg')]"></div>
       <div className="absolute inset-0 bg-gradient-to-br from-amber-900/80 via-black/70 to-amber-900/80"></div>

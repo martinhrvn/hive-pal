@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -30,6 +31,14 @@ export function ReleasesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-green-50 w-full">
+      <Helmet>
+        <title>Release Notes - Hive Pal</title>
+        <meta
+          name="description"
+          content="Stay up to date with the latest Hive Pal features, improvements, and bug fixes. See what's new in each release."
+        />
+        <link rel="canonical" href="https://hivepal.app/releases" />
+      </Helmet>
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

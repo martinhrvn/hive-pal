@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +60,23 @@ const RegisterPage = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col justify-center relative overflow-hidden">
+      <Helmet>
+        <title>Create Account - Hive Pal</title>
+        <meta
+          name="description"
+          content="Create a free Hive Pal account and start managing your beehives today. Track inspections, monitor hive health, and optimize your beekeeping."
+        />
+        <link rel="canonical" href="https://hivepal.app/register" />
+        <meta
+          property="og:title"
+          content="Create Account - Hive Pal"
+        />
+        <meta
+          property="og:description"
+          content="Create a free Hive Pal account and start managing your beehives today."
+        />
+        <meta property="og:url" content="https://hivepal.app/register" />
+      </Helmet>
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero.jpg')]"></div>
       <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-black/70 to-green-900/80"></div>

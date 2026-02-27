@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /apiaries
+Disallow: /hives
+Disallow: /inspections
+Disallow: /batch-inspections
+Disallow: /harvests
+Disallow: /equipment
+Disallow: /calendar
+Disallow: /reports
+Disallow: /settings
+Disallow: /feedback
+Disallow: /admin
+
+Sitemap: https://hivepal.app/sitemap.xml
