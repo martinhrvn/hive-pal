@@ -9,6 +9,13 @@ catalogs:
     typescript:
       specifier: 5.9.x
       version: 5.9.3
+  playwright:
+    '@playwright/experimental-ct-react':
+      specifier: 1.58.2
+      version: 1.58.2
+    '@playwright/test':
+      specifier: 1.58.2
+      version: 1.58.2
   typescript:
     typescript:
       specifier: 5.9.X
@@ -285,8 +292,8 @@ importers:
         version: 11.1.0
     devDependencies:
       '@playwright/test':
-        specifier: 1.52.0
-        version: 1.52.0
+        specifier: catalog:playwright
+        version: 1.58.2
       '@types/node':
         specifier: ^22.13.10
         version: 22.13.10
@@ -454,10 +461,10 @@ importers:
         specifier: ^9.30.0
         version: 9.30.0
       '@playwright/experimental-ct-react':
-        specifier: 1.58.2
+        specifier: catalog:playwright
         version: 1.58.2(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(vite@7.3.1(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.7.0))(yaml@2.7.0)
       '@playwright/test':
-        specifier: 1.58.2
+        specifier: catalog:playwright
         version: 1.58.2
       '@tanstack/eslint-plugin-query':
         specifier: ^5.91.4
@@ -560,11 +567,8 @@ importers:
   packages/page-objects:
     dependencies:
       '@playwright/test':
-        specifier: 1.52.0
-        version: 1.52.0
-      playwright:
-        specifier: 1.52.0
-        version: 1.52.0
+        specifier: catalog:playwright
+        version: 1.58.2
     devDependencies:
       eslint:
         specifier: ^8.0.0
@@ -3757,11 +3761,6 @@ packages:
 
   '@playwright/experimental-ct-react@1.58.2':
     resolution: {integrity: sha512-8IdT7b+c3Wv8RVRKmAkAL2PWJU85Tu0IfqsvsbaS520OOoZJqytIoxdU7gog9gjaONpgw6SOKDykEWup3SeO7g==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  '@playwright/test@1.52.0':
-    resolution: {integrity: sha512-uh6W7sb55hl7D6vsAeA+V2p5JnlAqzhqFyF0VcJkKZXkgnFcVG9PziERRHQfPLfNGx1C292a4JqbWzhR8L4R1g==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -9984,18 +9983,8 @@ packages:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
 
-  playwright-core@1.52.0:
-    resolution: {integrity: sha512-l2osTgLXSMeuLZOML9qYODUQoPPnUsKsb5/P6LJ2e6uPKXUdPK5WYhN4z03G+YNbWmGDY4YENauNu4ZKczreHg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   playwright-core@1.58.2:
     resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright@1.52.0:
-    resolution: {integrity: sha512-JAwMNMBlxJ2oD1kce4KPtMkDeKGHQstdpFPcPH3maElAXon/QZeTvtsfXmTMRyO9TslfoYOXkSsvao2nE1ilTw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -14764,7 +14753,7 @@ snapshots:
       react-dev-utils: 12.0.1(eslint@9.20.1(jiti@2.6.1))(typescript@5.6.3)(webpack@5.98.0)
       terser-webpack-plugin: 5.3.11(webpack@5.98.0)
       tslib: 2.8.1
-      url-loader: 4.1.1(file-loader@6.2.0(webpack@5.97.1))(webpack@5.98.0)
+      url-loader: 4.1.1(file-loader@6.2.0(webpack@5.98.0))(webpack@5.98.0)
       webpack: 5.98.0
       webpackbar: 6.0.1(webpack@5.98.0)
     transitivePeerDependencies:
@@ -14889,7 +14878,7 @@ snapshots:
       tslib: 2.8.1
       unified: 11.0.5
       unist-util-visit: 5.0.0
-      url-loader: 4.1.1(file-loader@6.2.0(webpack@5.97.1))(webpack@5.98.0)
+      url-loader: 4.1.1(file-loader@6.2.0(webpack@5.98.0))(webpack@5.98.0)
       vfile: 6.0.3
       webpack: 5.98.0
     transitivePeerDependencies:
@@ -15472,7 +15461,7 @@ snapshots:
       resolve-pathname: 3.0.0
       shelljs: 0.8.5
       tslib: 2.8.1
-      url-loader: 4.1.1(file-loader@6.2.0(webpack@5.97.1))(webpack@5.98.0)
+      url-loader: 4.1.1(file-loader@6.2.0(webpack@5.98.0))(webpack@5.98.0)
       utility-types: 3.11.0
       webpack: 5.98.0
     transitivePeerDependencies:
@@ -16936,10 +16925,6 @@ snapshots:
       - tsx
       - vite
       - yaml
-
-  '@playwright/test@1.52.0':
-    dependencies:
-      playwright: 1.52.0
 
   '@playwright/test@1.58.2':
     dependencies:
@@ -21634,13 +21619,6 @@ snapshots:
     dependencies:
       flat-cache: 4.0.1
 
-  file-loader@6.2.0(webpack@5.97.1):
-    dependencies:
-      loader-utils: 2.0.4
-      schema-utils: 3.3.0
-      webpack: 5.97.1
-    optional: true
-
   file-loader@6.2.0(webpack@5.98.0):
     dependencies:
       loader-utils: 2.0.4
@@ -24335,15 +24313,7 @@ snapshots:
     dependencies:
       find-up: 3.0.0
 
-  playwright-core@1.52.0: {}
-
   playwright-core@1.58.2: {}
-
-  playwright@1.52.0:
-    dependencies:
-      playwright-core: 1.52.0
-    optionalDependencies:
-      fsevents: 2.3.2
 
   playwright@1.58.2:
     dependencies:
@@ -26688,14 +26658,14 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  url-loader@4.1.1(file-loader@6.2.0(webpack@5.97.1))(webpack@5.98.0):
+  url-loader@4.1.1(file-loader@6.2.0(webpack@5.98.0))(webpack@5.98.0):
     dependencies:
       loader-utils: 2.0.4
       mime-types: 2.1.35
       schema-utils: 3.3.0
       webpack: 5.98.0
     optionalDependencies:
-      file-loader: 6.2.0(webpack@5.97.1)
+      file-loader: 6.2.0(webpack@5.98.0)
 
   url-polyfill@1.1.13: {}
 

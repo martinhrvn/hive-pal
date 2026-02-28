@@ -16,7 +16,6 @@
     "eslint": "^8.0.0"
   },
   "peerDependencies": {
-    "playwright": "1.52.0",
-    "@playwright/test": "1.52.0"
+    "@playwright/test": "catalog:playwright"
   }
 }

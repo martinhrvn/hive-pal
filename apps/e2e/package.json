@@ -14,7 +14,7 @@
     "test:preview:ui": "dotenv -e .env.preview -- playwright test --ui"
   },
   "devDependencies": {
-    "@playwright/test": "1.52.0",
+    "@playwright/test": "catalog:playwright",
     "@types/node": "^22.13.10",
     "dotenv-cli": "^8.0.0",
     "page-objects": "workspace:*"
