@@ -1,6 +1,8 @@
 ---
 sidebar_position: 7
 title: Equipment Management
+description: Manage beekeeping equipment inventory, track condition and location, and generate shopping lists with Hive-Pal's equipment system.
+keywords: [beekeeping equipment, equipment inventory, hive equipment tracking, beekeeping supplies]
 ---
 
 # Equipment Management

@@ -1,5 +1,7 @@
 ---
 sidebar_position: 1
+description: Introduction to Hive-Pal, an open-source beekeeping management app for tracking apiaries, hives, inspections, queens, and harvests.
+keywords: [hive-pal, beekeeping app, hive management, apiary tracker, open source beekeeping]
 ---
 
 # Introduction to Hive-Pal

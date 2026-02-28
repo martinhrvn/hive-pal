@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 title: Manual Installation
+description: Install Hive-Pal manually without Docker for full control over Node.js, PostgreSQL, and application configuration.
+keywords: [manual installation, hive-pal setup, nodejs setup, postgresql beekeeping]
 ---
 
 # Manual Installation

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 8
 title: Weather Integration
+description: Monitor weather conditions at your apiary locations with Hive-Pal's weather integration for better beekeeping decisions.
+keywords: [beekeeping weather, apiary weather, weather monitoring, bee colony weather impact]
 ---
 
 # Weather Integration

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 10
 title: FAB Quick Actions
+description: Use the floating action button for quick access to adding inspections, hives, and harvests from any screen in Hive-Pal.
+keywords: [quick actions, floating action button, hive-pal shortcuts, fast data entry]
 ---
 
 # Floating Action Button (FAB)

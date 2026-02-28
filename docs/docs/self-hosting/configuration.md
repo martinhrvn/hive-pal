@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 title: Configuration
+description: Complete reference for configuring Hive-Pal environment variables, database settings, authentication, and integrations.
+keywords: [hive-pal configuration, environment variables, app settings, database config]
 ---
 
 # Configuration

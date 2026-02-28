@@ -1,5 +1,7 @@
 ---
 sidebar_position: 1
+description: Overview of Hive-Pal features including apiary management, hive tracking, inspections, queen management, and harvest recording.
+keywords: [hive-pal user guide, beekeeping features, apiary management, hive tracking overview]
 ---
 
 # User Guide Overview

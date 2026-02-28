@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 title: Hive Management
+description: Track hive status, configuration, and colony health with Hive-Pal's comprehensive hive management tools.
+keywords: [hive management, bee colony tracking, hive status, beehive monitoring]
 ---
 
 # Hive Management

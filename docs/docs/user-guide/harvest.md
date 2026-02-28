@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 title: Harvest Management
+description: Track honey harvests across multiple hives with proportional yield calculation and detailed harvest records in Hive-Pal.
+keywords: [honey harvest tracking, harvest management, honey yield, beekeeping harvest records]
 ---
 
 # Harvest Management

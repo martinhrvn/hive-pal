@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 title: Apiary Management
+description: Learn how to create, manage, and switch between apiaries in Hive-Pal. Apiaries are the main organizational context for all your beekeeping data.
+keywords: [apiary management, beekeeping locations, apiary tracker, manage bee yards]
 ---
 
 # Apiary Management

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 title: System Requirements
+description: Minimum and recommended hardware and software requirements for self-hosting Hive-Pal on your own server.
+keywords: [hive-pal requirements, self-hosting requirements, server specs, system requirements]
 ---
 
 # System Requirements

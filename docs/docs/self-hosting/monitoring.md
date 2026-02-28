@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 title: Monitoring
+description: Monitor your Hive-Pal installation with health checks, Prometheus metrics, Grafana dashboards, and centralized logging.
+keywords: [hive-pal monitoring, prometheus metrics, grafana dashboard, application logging]
 ---
 
 # Monitoring

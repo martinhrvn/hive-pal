@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 title: Docker Setup
+description: Deploy Hive-Pal with Docker and Docker Compose for the simplest self-hosted installation experience.
+keywords: [hive-pal docker, docker compose setup, self-hosted beekeeping, container deployment]
 ---
 
 # Docker Setup

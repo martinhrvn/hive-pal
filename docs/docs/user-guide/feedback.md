@@ -1,6 +1,8 @@
 ---
 sidebar_position: 11
 title: Sending Feedback
+description: Learn how to submit feedback, report bugs, and request features to help improve Hive-Pal.
+keywords: [hive-pal feedback, bug report, feature request, beekeeping app support]
 ---
 
 # Sending Feedback

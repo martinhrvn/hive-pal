@@ -1,5 +1,7 @@
 ---
 sidebar_position: 4
+description: Track queen bee information, lineage, and replacement history in Hive-Pal for better colony management.
+keywords: [queen bee management, queen tracking, bee queen lineage, queen replacement]
 ---
 
 # Queen Management

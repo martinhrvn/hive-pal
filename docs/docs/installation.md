@@ -1,5 +1,7 @@
 ---
 sidebar_position: 2
+description: Step-by-step guide to installing Hive-Pal using Docker or manual setup on your own server.
+keywords: [hive-pal installation, docker setup, beekeeping software install, self-hosted beekeeping]
 ---
 
 # Installation Guide

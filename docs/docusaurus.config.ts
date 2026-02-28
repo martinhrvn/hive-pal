@@ -26,6 +26,27 @@ const config: Config = {
     locales: ['en'],
   },
 
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Hive-Pal Documentation',
+        url: 'https://docs.hivepal.app',
+        description:
+          'Documentation for Hive-Pal, an open-source beekeeping management application.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Hive-Pal',
+        },
+      }),
+    },
+  ],
+
   presets: [
     [
       'classic',
@@ -39,6 +60,10 @@ const config: Config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        sitemap: {
+          changefreq: 'weekly' as const,
+          priority: 0.5,
+        },
       } satisfies Preset.Options,
     ],
   ],
@@ -46,6 +71,16 @@ const config: Config = {
   themeConfig: {
     // Hive-Pal social card
     image: 'img/hive-pal-social-card.jpg',
+    metadata: [
+      {
+        name: 'keywords',
+        content:
+          'beekeeping, hive management, apiary, bee colony, inspection tracking, open source',
+      },
+      {name: 'og:type', content: 'website'},
+      {name: 'og:site_name', content: 'Hive-Pal Documentation'},
+      {name: 'twitter:card', content: 'summary_large_image'},
+    ],
     navbar: {
       title: 'Hive-Pal',
       logo: {

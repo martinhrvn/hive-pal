@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 title: Backup & Restore
+description: Set up automated database backups and learn how to restore your Hive-Pal beekeeping data reliably.
+keywords: [hive-pal backup, database backup, data restore, postgresql backup, beekeeping data]
 ---
 
 # Backup & Restore

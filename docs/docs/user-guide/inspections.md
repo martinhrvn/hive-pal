@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 title: Inspections
+description: Record detailed hive inspections in Hive-Pal to track colony health, brood patterns, disease, and management actions over time.
+keywords: [hive inspection, bee colony inspection, inspection records, beekeeping log]
 ---
 
 # Hive Inspections
