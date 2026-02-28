@@ -67,10 +67,7 @@ const RegisterPage = () => {
           content="Create a free Hive Pal account and start managing your beehives today. Track inspections, monitor hive health, and optimize your beekeeping."
         />
         <link rel="canonical" href="https://hivepal.app/register" />
-        <meta
-          property="og:title"
-          content="Create Account - Hive Pal"
-        />
+        <meta property="og:title" content="Create Account - Hive Pal" />
         <meta
           property="og:description"
           content="Create a free Hive Pal account and start managing your beehives today."

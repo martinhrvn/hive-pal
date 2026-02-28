@@ -25,9 +25,7 @@ export function LlmPromptDialog({ hiveId, hiveName }: LlmPromptDialogProps) {
   const [copied, setCopied] = useState(false);
 
   const { data: hive } = useHive(hiveId, { enabled: !!hiveId });
-  const { data: inspections } = useInspections(
-    hiveId ? { hiveId } : undefined,
-  );
+  const { data: inspections } = useInspections(hiveId ? { hiveId } : undefined);
 
   useEffect(() => {
     if (open && hive) {

@@ -35,13 +35,14 @@ export const useApiary = () => {
   const navigate = useNavigate();
   const { data: apiaries } = useApiaries();
   const isAdmin = useIsAdmin();
-  const { activeApiaryId, setActiveApiaryId, clearActiveApiaryId } = useApiaryStore(
-    useShallow(state => ({
-      activeApiaryId: state.activeApiaryId,
-      setActiveApiaryId: state.setActiveApiaryId,
-      clearActiveApiaryId: state.clearActiveApiaryId,
-    })),
-  );
+  const { activeApiaryId, setActiveApiaryId, clearActiveApiaryId } =
+    useApiaryStore(
+      useShallow(state => ({
+        activeApiaryId: state.activeApiaryId,
+        setActiveApiaryId: state.setActiveApiaryId,
+        clearActiveApiaryId: state.clearActiveApiaryId,
+      })),
+    );
 
   // Redirect to onboarding wizard if no apiaries exist
   useEffect(() => {
@@ -63,7 +64,10 @@ export const useApiary = () => {
       if (activeApiaryId) {
         clearActiveApiaryId();
       }
-    } else if (!activeApiaryId || !apiaries.some(a => a.id === activeApiaryId)) {
+    } else if (
+      !activeApiaryId ||
+      !apiaries.some(a => a.id === activeApiaryId)
+    ) {
       // No selection or stale selection — set to first available
       setActiveApiaryId(apiaries[0].id);
     }

@@ -30,6 +30,8 @@ import { SentryModule } from '@sentry/nestjs/setup';
 import { ReportsModule } from './reports/reports.module';
 import { StorageModule } from './storage/storage.module';
 import { PlatformMetricsModule } from './platform-metrics/platform-metrics.module';
+import { FeaturesModule } from './features/features.module';
+import { QuickChecksModule } from './quick-checks/quick-checks.module';
 
 @Module({
   imports: [
@@ -57,6 +59,8 @@ import { PlatformMetricsModule } from './platform-metrics/platform-metrics.modul
     MailModule,
     ReportsModule,
     PlatformMetricsModule,
+    FeaturesModule,
+    QuickChecksModule,
   ],
   controllers: [AppController],
   providers: [

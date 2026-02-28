@@ -54,7 +54,7 @@ export const useHives = (
         throw error;
       }
     },
-    enabled: !!activeApiaryId && (queryOptions?.enabled !== false),
+    enabled: !!activeApiaryId && queryOptions?.enabled !== false,
     ...queryOptions,
   });
 };
@@ -88,7 +88,7 @@ export const useHivesWithBoxes = (
       const response = await apiClient.get<HiveWithBoxesResponse[]>(url);
       return response.data;
     },
-    enabled: !!activeApiaryId && (queryOptions?.enabled !== false),
+    enabled: !!activeApiaryId && queryOptions?.enabled !== false,
     ...queryOptions,
   });
 };

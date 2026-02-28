@@ -5,7 +5,8 @@ import { cn } from '@/lib/utils';
 import { pillVariants } from './pill-variants';
 
 export interface PillProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof pillVariants> {
   color?: 'neutral' | 'blue' | 'green' | 'red' | 'amber' | 'purple' | 'slate';
   asChild?: boolean;

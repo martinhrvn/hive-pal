@@ -54,6 +54,7 @@ model Apiary {
   weatherHourlyForecasts WeatherHourlyForecast[]
   weatherForecasts      WeatherForecast[]
   batchInspections      BatchInspection[]
+  quickChecks           QuickCheck[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -77,6 +78,7 @@ model Hive {
   harvestHives     HarvestHive[]
   alerts           Alert[]
   batchInspectionHives BatchInspectionHive[]
+  quickChecks          QuickCheck[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -634,6 +636,39 @@ enum BatchHiveStatus {
   PENDING    // Not yet inspected
   COMPLETED  // Inspection completed
   CANCELLED  // Hive removed from batch
+}
+
+// Quick check - lightweight structured observation for a hive or apiary
+model QuickCheck {
+  id        String           @id @default(uuid())
+  hiveId    String?
+  hive      Hive?            @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  apiaryId  String
+  apiary    Apiary           @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  date      DateTime         @default(now())
+  note      String?          @db.Text
+  tags      String[]         // reuses additionalObservation + reminderObservation values
+  photos    QuickCheckPhoto[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([hiveId])
+  @@index([apiaryId])
+  @@index([hiveId, date])
+}
+
+// Photo attached to a quick check
+model QuickCheckPhoto {
+  id           String     @id @default(uuid())
+  quickCheckId String
+  quickCheck   QuickCheck @relation(fields: [quickCheckId], references: [id], onDelete: Cascade)
+  storageKey   String
+  fileName     String
+  mimeType     String
+  fileSize     Int
+  createdAt    DateTime   @default(now())
+
+  @@index([quickCheckId])
 }
 
 // Platform metrics snapshot for admin observability

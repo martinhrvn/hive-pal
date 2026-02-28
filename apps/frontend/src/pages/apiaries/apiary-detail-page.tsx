@@ -149,7 +149,10 @@ export const ApiaryDetailPage = () => {
         </Tabs>
       </MainContent>
       <Sidebar>
-        <ApiaryActionSidebar onRefreshData={() => refetch()} />
+        <ApiaryActionSidebar
+          apiaryId={apiary.id}
+          onRefreshData={() => refetch()}
+        />
       </Sidebar>
     </Page>
   );

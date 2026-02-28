@@ -487,13 +487,15 @@ export const QueenForm: React.FC<QueenFormProps> = ({
                 />
               </div>
 
-              {selectedHive && selectedHive.activeQueen && selectedHive.activeQueen.id !== queenId && (
-                <div className="bg-red-100 border border-red-200 p-4 rounded-md">
-                  <p className="text-red-800">
-                    {t('queen:information.hasActiveQueen')}
-                  </p>
-                </div>
-              )}
+              {selectedHive &&
+                selectedHive.activeQueen &&
+                selectedHive.activeQueen.id !== queenId && (
+                  <div className="bg-red-100 border border-red-200 p-4 rounded-md">
+                    <p className="text-red-800">
+                      {t('queen:information.hasActiveQueen')}
+                    </p>
+                  </div>
+                )}
 
               <div className="flex space-x-4 justify-end">
                 <Button
