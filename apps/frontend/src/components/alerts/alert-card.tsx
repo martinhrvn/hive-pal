@@ -1,11 +1,9 @@
-import { formatDistance } from 'date-fns';
-import { AlertTriangle, AlertCircle, Info, X, Check } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useDismissAlert, useResolveAlert } from '@/api/hooks';
 import type { AlertResponse } from 'shared-schemas';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useAlertActions } from './use-alert-actions';
 
 interface AlertCardProps {
   alert: AlertResponse;
@@ -14,61 +12,14 @@ interface AlertCardProps {
   className?: string;
 }
 
-const severityConfig = {
-  LOW: {
-    icon: Info,
-    color: 'text-blue-600 dark:text-blue-400',
-    bgColor: 'bg-blue-50 dark:bg-blue-900/30',
-    borderColor: 'border-blue-200 dark:border-blue-800',
-  },
-  MEDIUM: {
-    icon: AlertTriangle,
-    color: 'text-amber-600 dark:text-amber-400',
-    bgColor: 'bg-amber-50 dark:bg-amber-900/30',
-    borderColor: 'border-amber-200 dark:border-amber-800',
-  },
-  HIGH: {
-    icon: AlertCircle,
-    color: 'text-red-600 dark:text-red-400',
-    bgColor: 'bg-red-50 dark:bg-red-900/30',
-    borderColor: 'border-red-200 dark:border-red-800',
-  },
-};
-
 export function AlertCard({
   alert,
   showActions = true,
   compact = false,
   className,
 }: AlertCardProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const dismissAlert = useDismissAlert();
-  const resolveAlert = useResolveAlert();
-
-  const config = severityConfig[alert.severity];
-  const Icon = config.icon;
-
-  const handleDismiss = async () => {
-    setIsLoading(true);
-    try {
-      await dismissAlert.mutateAsync(alert.id);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResolve = async () => {
-    setIsLoading(true);
-    try {
-      await resolveAlert.mutateAsync(alert.id);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const timeAgo = formatDistance(new Date(alert.createdAt), new Date(), {
-    addSuffix: true,
-  });
+  const { isLoading, config, Icon, handleDismiss, handleResolve, timeAgo } =
+    useAlertActions(alert);
 
   return (
     <Card
