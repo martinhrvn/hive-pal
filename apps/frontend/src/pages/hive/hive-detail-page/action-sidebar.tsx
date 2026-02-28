@@ -14,6 +14,7 @@ import { SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { AlertItem } from '@/components/alerts';
 import { useHive } from '@/api/hooks';
 import { QRCodeDialog } from './qr-code-dialog';
+import { LlmPromptDialog } from './llm-prompt-dialog';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
@@ -100,6 +101,15 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             ) : (
               <SidebarMenuButton disabled tooltip="QR Code">
                 <span>QR Code</span>
+              </SidebarMenuButton>
+            )}
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            {hiveId && hive ? (
+              <LlmPromptDialog hiveId={hiveId} hiveName={hive.name} />
+            ) : (
+              <SidebarMenuButton disabled tooltip="LLM Prompt">
+                <span>LLM Prompt</span>
               </SidebarMenuButton>
             )}
           </SidebarMenuItem>
