@@ -8,6 +8,7 @@ import { HomeActionSidebar } from '@/components/home-action-sidebar';
 import { HiveMinimap } from '@/components/hive-minimap';
 import { InspectionStatusSummary } from '@/components/inspection-status-summary';
 import { ReportsSummaryWidget } from '@/components/reports-summary-widget';
+import { ApiaryTimeline } from '@/components/apiary-timeline';
 import { useHives } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
 
@@ -32,6 +33,7 @@ export const HomePage = () => {
             <HiveMinimap apiaryId={activeApiaryId} className="mb-6" />
           )}
           <HiveList hives={data ?? []} />
+          <ApiaryTimeline />
         </div>
       </MainContent>
       <Sidebar>
