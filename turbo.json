@@ -7,6 +7,11 @@
     "DATABASE_URL"
   ],
   "tasks": {
+    "typecheck": {
+      "dependsOn": ["^prisma:generate"],
+      "outputs": [],
+      "cache": false
+    },
     "lint": {
       "outputs": [],
       "cache": false

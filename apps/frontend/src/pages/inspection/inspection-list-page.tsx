@@ -31,8 +31,8 @@ import {
 
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageAside,
+  PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -145,7 +145,7 @@ export const InspectionListPage = () => {
   }
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         {/* Tabs for filtering */}
         <Tabs defaultValue={activeTab} onValueChange={handleTabChange}>
@@ -244,15 +244,15 @@ export const InspectionListPage = () => {
         </Tabs>
       </MainContent>
 
-      <Sidebar>
+      <PageAside>
         <InspectionActionSidebar
           onRefreshData={() => refetchInspections()}
           selectedHiveId={selectedHiveId}
           onChangeView={handleTabChange}
           currentView={activeTab}
         />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };
 
@@ -361,7 +361,7 @@ const renderInspectionsTable = (
             </TableCell>
             <TableCell>
               {activeTab === InspectionTab.UPCOMING ||
-              inspection.status === InspectionStatus.SCHEDULED ? (
+                inspection.status === InspectionStatus.SCHEDULED ? (
                 getStatusBadge(inspection.status)
               ) : (
                 <Popover>

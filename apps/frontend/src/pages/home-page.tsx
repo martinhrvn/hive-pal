@@ -1,8 +1,8 @@
 import { HiveList } from '@/pages/hive/components';
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageAside,
+  PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { HomeActionSidebar } from '@/components/home-action-sidebar';
 import { HiveMinimap } from '@/components/hive-minimap';
@@ -21,7 +21,7 @@ export const HomePage = () => {
   }
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="space-y-6">
           {/* Side by side on lg+ screens, stacked below */}
@@ -36,9 +36,9 @@ export const HomePage = () => {
           <ApiaryTimeline />
         </div>
       </MainContent>
-      <Sidebar>
+      <PageAside>
         <HomeActionSidebar onRefreshData={refetch} />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

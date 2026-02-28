@@ -1,7 +1,7 @@
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageGrid,
+  PageAside,
 } from '@/components/layout/page-grid-layout';
 import { useEquipmentNew } from '@/api/hooks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -179,11 +179,11 @@ export const EquipmentPlanningPage = () => {
   const displayItems =
     localItems.length > 0
       ? plan.data?.items.map(planItem => {
-          const localItem = localItems.find(
-            local => local.itemId === planItem.itemId,
-          );
-          return localItem ? { ...planItem, ...localItem } : planItem;
-        }) || []
+        const localItem = localItems.find(
+          local => local.itemId === planItem.itemId,
+        );
+        return localItem ? { ...planItem, ...localItem } : planItem;
+      }) || []
       : plan.data?.items || [];
 
   if (plan.isLoading || items.isLoading || multiplier.isLoading) {
@@ -313,7 +313,7 @@ export const EquipmentPlanningPage = () => {
   const hasChanges = localItems.length > 0;
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="space-y-6">
           {/* Header Cards */}
@@ -356,7 +356,7 @@ export const EquipmentPlanningPage = () => {
         </div>
       </MainContent>
 
-      <Sidebar>
+      <PageAside>
         <EquipmentActionSidebar
           onRefresh={() => {
             plan.refetch();
@@ -368,7 +368,7 @@ export const EquipmentPlanningPage = () => {
           isUpdatingMultiplier={updateMultiplier.isPending}
         />
         <ShoppingList items={displayItems} />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageGrid,
+  PageAside,
 } from '@/components/layout/page-grid-layout';
 import { Input } from '@/components/ui/input';
 import {
@@ -61,7 +61,7 @@ export const HiveListPage = () => {
   });
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
@@ -112,14 +112,14 @@ export const HiveListPage = () => {
               {statusFilter === 'ALL'
                 ? t('hive:list.caption')
                 : t(
-                    hives.length === 1
-                      ? 'hive:list.captionFiltered'
-                      : 'hive:list.captionFilteredPlural',
-                    {
-                      count: hives.length,
-                      status: statusFilter.toLowerCase(),
-                    },
-                  )}
+                  hives.length === 1
+                    ? 'hive:list.captionFiltered'
+                    : 'hive:list.captionFilteredPlural',
+                  {
+                    count: hives.length,
+                    status: statusFilter.toLowerCase(),
+                  },
+                )}
             </TableCaption>
             <TableHeader>
               <TableRow>
@@ -170,15 +170,15 @@ export const HiveListPage = () => {
             <p className="text-muted-foreground mb-4">
               {searchTerm && statusFilter !== 'ALL'
                 ? t('hive:list.noHivesMatchingBoth', {
-                    status: statusFilter.toLowerCase(),
-                    searchTerm,
-                  })
+                  status: statusFilter.toLowerCase(),
+                  searchTerm,
+                })
                 : searchTerm
                   ? t('hive:list.noHivesMatchingSearch', { searchTerm })
                   : statusFilter !== 'ALL'
                     ? t('hive:list.noHivesWithStatus', {
-                        status: statusFilter.toLowerCase(),
-                      })
+                      status: statusFilter.toLowerCase(),
+                    })
                     : t('hive:list.noHives')}
             </p>
             <Button
@@ -192,9 +192,9 @@ export const HiveListPage = () => {
           </div>
         )}
       </MainContent>
-      <Sidebar>
+      <PageAside>
         <HiveActionSidebar onRefreshData={handleRefreshData} />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

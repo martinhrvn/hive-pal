@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageGrid,
+  PageAside,
 } from '@/components/layout/page-grid-layout';
 import { Input } from '@/components/ui/input';
 import {
@@ -48,7 +48,7 @@ export const ApiaryListPage = () => {
   });
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
@@ -123,9 +123,9 @@ export const ApiaryListPage = () => {
           </div>
         )}
       </MainContent>
-      <Sidebar>
+      <PageAside>
         <ApiaryActionSidebar onRefreshData={handleRefreshData} />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

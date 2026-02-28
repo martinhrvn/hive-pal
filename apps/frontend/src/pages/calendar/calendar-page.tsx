@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageAside,
+  PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -215,7 +215,7 @@ export const CalendarPage = () => {
   ]);
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -395,7 +395,7 @@ export const CalendarPage = () => {
                                         to={`/hives/${action.hiveId}`}
                                         className="hover:underline text-purple-700 dark:text-purple-400"
                                       >
-                                        {getHiveName(action.hiveId)}
+                                        {getHiveName(action.hiveId ?? '')}
                                       </Link>
                                     </span>
                                   </div>
@@ -419,7 +419,7 @@ export const CalendarPage = () => {
         </div>
       </MainContent>
 
-      <Sidebar>
+      <PageAside>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
@@ -477,7 +477,7 @@ export const CalendarPage = () => {
         {activeApiaryId && (
           <CalendarSubscriptionCard apiaryId={activeApiaryId} />
         )}
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

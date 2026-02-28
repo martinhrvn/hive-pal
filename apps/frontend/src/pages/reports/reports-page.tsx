@@ -1,32 +1,32 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { apiClient } from '@/api/client';
+import { useApiaryStatistics, useApiaryTrends } from '@/api/hooks/useReports';
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageAside,
+  PageGrid,
 } from '@/components/layout/page-grid-layout';
-import { useApiaryStore } from '@/hooks/use-apiary';
-import { useApiaryStatistics, useApiaryTrends } from '@/api/hooks/useReports';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ReportsSidebar } from './components/reports-sidebar';
-import { ReportsHeader } from './components/reports-header';
-import { StatisticsCards } from './components/statistics-cards';
-import { HoneyProductionChart } from './components/charts/honey-production-chart';
-import { FeedingTotalsChart } from './components/charts/feeding-totals-chart';
-import { HealthTrendChart } from './components/charts/health-trend-chart';
-import { FeedingTrendChart } from './components/charts/feeding-trend-chart';
-import { HiveScoreTrendChart } from './components/charts/hive-score-trend-chart';
-import { HiveComparisonTable } from './components/tables/hive-comparison-table';
+import { useApiary } from '@/hooks/use-apiary';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ReportPeriod } from 'shared-schemas';
-import { apiClient } from '@/api/client';
 import { toast } from 'sonner';
+import { FeedingTotalsChart } from './components/charts/feeding-totals-chart';
+import { FeedingTrendChart } from './components/charts/feeding-trend-chart';
+import { HealthTrendChart } from './components/charts/health-trend-chart';
+import { HiveScoreTrendChart } from './components/charts/hive-score-trend-chart';
+import { HoneyProductionChart } from './components/charts/honey-production-chart';
+import { ReportsHeader } from './components/reports-header';
+import { ReportsSidebar } from './components/reports-sidebar';
+import { StatisticsCards } from './components/statistics-cards';
+import { HiveComparisonTable } from './components/tables/hive-comparison-table';
 
 export const ReportsPage = () => {
   const { t } = useTranslation('common');
   const [period, setPeriod] = useState<ReportPeriod>('ytd');
   const [isExporting, setIsExporting] = useState(false);
-  const { activeApiaryId, activeApiary } = useApiaryStore();
+  const { activeApiaryId, activeApiary } = useApiary();
   const {
     data: statistics,
     isLoading,
@@ -101,7 +101,7 @@ export const ReportsPage = () => {
 
   if (!activeApiaryId) {
     return (
-      <Page>
+      <PageGrid>
         <MainContent>
           <Card>
             <CardContent className="py-8 text-center text-muted-foreground">
@@ -109,12 +109,12 @@ export const ReportsPage = () => {
             </CardContent>
           </Card>
         </MainContent>
-      </Page>
+      </PageGrid>
     );
   }
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="space-y-6">
           <ReportsHeader
@@ -177,7 +177,7 @@ export const ReportsPage = () => {
           </Tabs>
         </div>
       </MainContent>
-      <Sidebar>
+      <PageAside>
         <ReportsSidebar
           period={period}
           onPeriodChange={setPeriod}
@@ -186,7 +186,7 @@ export const ReportsPage = () => {
           onRefresh={handleRefresh}
           isExporting={isExporting}
         />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

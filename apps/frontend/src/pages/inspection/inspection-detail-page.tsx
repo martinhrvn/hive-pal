@@ -15,8 +15,8 @@ import {
 import { AudioCard } from './components/audio-card';
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageAside,
+  PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
 import { useHive, useInspection } from '@/api/hooks';
@@ -87,7 +87,7 @@ export const InspectionDetailPage = () => {
   }
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="mb-6">
           <Button
@@ -129,12 +129,12 @@ export const InspectionDetailPage = () => {
         </div>
       </MainContent>
 
-      <Sidebar>
+      <PageAside>
         <InspectionDetailSidebar
           inspectionId={inspection.id}
           hiveId={hive.id}
         />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

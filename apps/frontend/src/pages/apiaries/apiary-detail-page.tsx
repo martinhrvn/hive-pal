@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   MainContent,
-  Page,
-  Sidebar,
+  PageAside,
+  PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { useApiary } from '@/api/hooks';
 
@@ -38,7 +38,7 @@ export const ApiaryDetailPage = () => {
   }
 
   return (
-    <Page>
+    <PageGrid>
       <MainContent>
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">{apiary.name}</h1>
@@ -148,12 +148,12 @@ export const ApiaryDetailPage = () => {
           </TabsContent>
         </Tabs>
       </MainContent>
-      <Sidebar>
+      <PageAside>
         <ApiaryActionSidebar
           apiaryId={apiary.id}
           onRefreshData={() => refetch()}
         />
-      </Sidebar>
-    </Page>
+      </PageAside>
+    </PageGrid>
   );
 };

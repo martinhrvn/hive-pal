@@ -9,10 +9,12 @@ This directory contains the components for the Reports page in Hive Pal.
 Summary cards displaying key metrics for the selected apiary and period.
 
 **Props:**
+
 - `statistics: ApiaryStatistics | undefined` - The apiary statistics data
 - `isLoading: boolean` - Loading state
 
 **Features:**
+
 - Displays 4 key metrics:
   1. Total Honey Production (kg)
   2. Total Sugar Fed (kg)
@@ -24,6 +26,7 @@ Summary cards displaying key metrics for the selected apiary and period.
 - Handles missing data with "—" placeholder
 
 **Icons:**
+
 - Droplets (amber) - Honey production
 - Cookie (orange) - Feeding totals
 - Heart (red) - Health scores
@@ -34,10 +37,12 @@ Summary cards displaying key metrics for the selected apiary and period.
 Bar chart showing total honey production per hive using Recharts.
 
 **Props:**
+
 - `data: Array<{ hiveId: string; hiveName: string; amount: number }> | undefined` - Per-hive honey data
 - `isLoading: boolean` - Loading state
 
 **Features:**
+
 - Bar chart with hive names on X-axis, honey amount (kg) on Y-axis
 - Responsive ChartContainer from shadcn/ui
 - Tooltip showing hive name and exact amount
@@ -50,10 +55,12 @@ Bar chart showing total honey production per hive using Recharts.
 Bar chart showing total sugar fed per hive using Recharts.
 
 **Props:**
+
 - `data: Array<{ hiveId: string; hiveName: string; sugarKg: number }> | undefined` - Per-hive feeding data
 - `isLoading: boolean` - Loading state
 
 **Features:**
+
 - Bar chart with hive names on X-axis, sugar amount (kg) on Y-axis
 - Responsive ChartContainer from shadcn/ui
 - Tooltip showing hive name and exact amount
@@ -66,10 +73,12 @@ Bar chart showing total sugar fed per hive using Recharts.
 A sortable data table showing per-hive metrics for comparison.
 
 **Props:**
+
 - `statistics: ApiaryStatistics | undefined` - The apiary statistics data
 - `isLoading: boolean` - Loading state
 
 **Features:**
+
 - Sortable columns (click column headers to sort)
 - Color-coded health scores:
   - Green (≥7): Good health
@@ -79,6 +88,7 @@ A sortable data table showing per-hive metrics for comparison.
 - Handles missing data gracefully with "-" or "N/A"
 
 **Columns:**
+
 1. Hive Name
 2. Honey (kg) - total honey production
 3. Sugar Fed (kg) - total sugar feeding
@@ -90,11 +100,13 @@ A sortable data table showing per-hive metrics for comparison.
 Page header with title, apiary name, and period selector.
 
 **Props:**
+
 - `period: ReportPeriod` - Current selected period
 - `onPeriodChange: (period: ReportPeriod) => void` - Period change handler
 - `apiaryName: string | undefined` - Name of the active apiary
 
 **Features:**
+
 - Displays report title
 - Shows apiary name (if available)
 - Period selector dropdown with icon
@@ -105,6 +117,7 @@ Page header with title, apiary name, and period selector.
 Action sidebar with filters and export options.
 
 **Props:**
+
 - `period: ReportPeriod` - Current selected period
 - `onPeriodChange: (period: ReportPeriod) => void` - Period change handler
 - `onExportCsv: () => void` - CSV export handler
@@ -113,6 +126,7 @@ Action sidebar with filters and export options.
 - `isExporting?: boolean` - Optional export loading state
 
 **Features:**
+
 - Period filter section
 - Export section (CSV and PDF buttons)
 - Refresh button
@@ -172,7 +186,7 @@ export const ReportsPage = () => {
 
   if (!activeApiaryId) {
     return (
-      <Page>
+      <PageGrid>
         <MainContent>
           <Card>
             <CardContent className="py-8 text-center text-muted-foreground">
@@ -297,6 +311,7 @@ The components use types from `shared-schemas`:
 ## Styling
 
 All components use:
+
 - Tailwind CSS classes
 - shadcn/ui components (Table, Select, Button, Card)
 - Lucide React icons
