@@ -4,6 +4,8 @@ module.exports = {
   rootDir: './',
   modulePaths: ['<rootDir>'],
   moduleNameMapper: {
+    '^@/prisma/client$': '<rootDir>/src/generated/prisma/client',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
     '^src$': '<rootDir>/src',
     '^src/(.+)$': '<rootDir>/src/$1',
   },
