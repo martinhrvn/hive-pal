@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,9 +14,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ClipboardCheck, ImagePlus, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useCreateQuickCheck, useFeatures } from '@/api/hooks';
+import { useFeatures, QUICK_CHECK_KEYS } from '@/api/hooks';
 import { apiClient } from '@/api/client';
 import { cn } from '@/lib/utils';
+import { CreateQuickCheck, QuickCheckResponse } from 'shared-schemas';
 
 interface QuickCheckDialogProps {
   hiveId?: string;
@@ -57,11 +59,13 @@ export function QuickCheckDialog({
   const [open, setOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [note, setNote] = useState('');
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<
+    Array<{ file: File; previewUrl: string }>
+  >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const createQuickCheck = useCreateQuickCheck();
+  const queryClient = useQueryClient();
   const { data: features } = useFeatures();
 
   const toggleTag = (tag: string) => {
@@ -76,7 +80,13 @@ export function QuickCheckDialog({
     if (files.length > remaining) {
       toast.error(`Maximum 5 photos allowed. You can add ${remaining} more.`);
     }
-    setSelectedFiles(prev => [...prev, ...files.slice(0, remaining)]);
+    // Create stable preview URLs before resetting the input,
+    // since mobile browsers may invalidate File blobs after input reset
+    const newEntries = files.slice(0, remaining).map(file => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setSelectedFiles(prev => [...prev, ...newEntries]);
     // Reset input so the same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -84,19 +94,23 @@ export function QuickCheckDialog({
   };
 
   const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles(prev => {
+      URL.revokeObjectURL(prev[index].previewUrl);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const resetForm = () => {
     setSelectedTags([]);
     setNote('');
+    selectedFiles.forEach(entry => URL.revokeObjectURL(entry.previewUrl));
     setSelectedFiles([]);
   };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const result = await createQuickCheck.mutateAsync({
+      const dto: CreateQuickCheck = {
         apiaryId,
         hiveId,
         tags: selectedTags as Array<
@@ -105,10 +119,16 @@ export function QuickCheckDialog({
         >,
         note: note.trim() || undefined,
         date: new Date().toISOString(),
-      });
+      };
+
+      // Create the quick check without triggering query invalidation yet
+      const { data: result } = await apiClient.post<QuickCheckResponse>(
+        '/api/quick-checks',
+        dto,
+      );
 
       // Upload photos sequentially
-      for (const file of selectedFiles) {
+      for (const { file } of selectedFiles) {
         try {
           const formData = new FormData();
           formData.append('file', file);
@@ -120,6 +140,11 @@ export function QuickCheckDialog({
           toast.error(`Failed to upload ${file.name}`);
         }
       }
+
+      // Invalidate queries after all uploads complete so timeline shows photos
+      await queryClient.invalidateQueries({
+        queryKey: QUICK_CHECK_KEYS.all,
+      });
 
       toast.success('Quick check saved');
       resetForm();
@@ -241,14 +266,14 @@ export function QuickCheckDialog({
 
               {selectedFiles.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
-                  {selectedFiles.map((file, index) => (
+                  {selectedFiles.map((entry, index) => (
                     <div
                       key={index}
                       className="relative group w-16 h-16 rounded-md overflow-hidden border"
                     >
                       <img
-                        src={URL.createObjectURL(file)}
-                        alt={file.name}
+                        src={entry.previewUrl}
+                        alt={entry.file.name}
                         className="w-full h-full object-cover"
                       />
                       <button
