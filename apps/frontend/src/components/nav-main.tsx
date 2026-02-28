@@ -26,6 +26,7 @@ export function NavMain({
     url: string;
     icon?: LucideIcon;
     isActive?: boolean;
+    external?: boolean;
     items?: {
       title: string;
       url: string;
@@ -52,7 +53,11 @@ export function NavMain({
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
-                  onClick={() => navigate(item.url)}
+                  onClick={() =>
+                    item.external
+                      ? window.open(item.url, '_blank', 'noopener,noreferrer')
+                      : navigate(item.url)
+                  }
                   className="flex items-center cursor-pointer"
                 >
                   {item.icon && <item.icon />}

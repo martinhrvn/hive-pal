@@ -121,8 +121,9 @@ const getNavData = (t: (key: string) => string) => ({
     },
     {
       title: t('feedback.sendFeedback'),
-      url: '/feedback',
+      url: 'https://github.com/martinhrvn/hive-pal/issues',
       icon: MessageSquare,
+      external: true,
     },
   ],
 });
