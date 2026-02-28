@@ -15,7 +15,6 @@ import { AlertItem } from '@/components/alerts';
 import { useHive } from '@/api/hooks';
 import { QRCodeDialog } from './qr-code-dialog';
 import { LlmPromptDialog } from './llm-prompt-dialog';
-import { QuickCheckDialog } from './quick-check-dialog';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
@@ -67,15 +66,6 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             tooltip="Add Inspection"
             disabled={!hiveId}
           />
-          <SidebarMenuItem>
-            {hiveId && hive?.apiaryId ? (
-              <QuickCheckDialog hiveId={hiveId} apiaryId={hive.apiaryId} />
-            ) : (
-              <SidebarMenuButton disabled tooltip="Quick Check">
-                <span>Quick Check</span>
-              </SidebarMenuButton>
-            )}
-          </SidebarMenuItem>
           <MenuItemButton
             icon={<CalendarPlus className="h-4 w-4" />}
             label="Schedule Inspection"

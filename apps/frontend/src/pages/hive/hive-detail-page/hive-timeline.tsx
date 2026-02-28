@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   format,
   formatDistanceToNow,
@@ -26,11 +26,9 @@ import {
   Trash2,
   AlertTriangle,
   ClipboardCheck,
-  ImageIcon,
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -43,14 +41,12 @@ import {
   InspectionResponse,
   InspectionStatus,
   ActionResponse,
-  CreateStandaloneAction,
   ActionType,
   QuickCheckResponse,
 } from 'shared-schemas';
 import {
   useActions,
   useInspections,
-  useCreateAction,
   useDeleteAction,
   useQuickChecks,
   useDeleteQuickCheck,
@@ -59,6 +55,8 @@ import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
 import { cn } from '@/lib/utils';
 import { AddActionDialog } from './actions/add-action-dialog';
+import { QuickCheckDialog } from './quick-check-dialog';
+import { apiClient } from '@/api/client';
 import { EditActionDialog } from './actions/edit-action-dialog';
 import {
   Dialog,
@@ -71,6 +69,39 @@ import {
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+function PhotoThumbnail({
+  quickCheckId,
+  photoId,
+}: {
+  quickCheckId: string;
+  photoId: string;
+}) {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    apiClient
+      .get<{ downloadUrl: string }>(
+        `/api/quick-checks/${quickCheckId}/photos/${photoId}/download-url`,
+      )
+      .then(res => setUrl(res.data.downloadUrl))
+      .catch(() => {});
+  }, [quickCheckId, photoId]);
+
+  if (!url) {
+    return (
+      <div className="w-12 h-12 rounded bg-muted animate-pulse shrink-0" />
+    );
+  }
+
+  return (
+    <img
+      src={url}
+      alt=""
+      className="w-12 h-12 rounded object-cover shrink-0 border"
+    />
+  );
+}
+
 type TimelineEvent = {
   id: string;
   date: string;
@@ -80,6 +111,7 @@ type TimelineEvent = {
 
 interface HiveTimelineProps {
   hiveId: string | undefined;
+  apiaryId: string | undefined;
 }
 
 type EventTypeFilter =
@@ -93,16 +125,16 @@ type EventTypeFilter =
   | 'other';
 type DateRangeFilter = 'all' | '1month' | '3months' | '6months' | 'year';
 
-export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
+export const HiveTimeline: React.FC<HiveTimelineProps> = ({
+  hiveId,
+  apiaryId,
+}) => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   const [eventTypeFilter, setEventTypeFilter] =
     useState<EventTypeFilter>('all');
   const [dateRangeFilter, setDateRangeFilter] =
     useState<DateRangeFilter>('all');
-  const [noteContent, setNoteContent] = useState('');
-  const [isSavingNote, setIsSavingNote] = useState(false);
-  const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [editingAction, setEditingAction] = useState<ActionResponse | null>(
     null,
   );
@@ -111,7 +143,6 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
   );
   const [deletingQuickCheck, setDeletingQuickCheck] =
     useState<QuickCheckResponse | null>(null);
-  const createAction = useCreateAction();
   const deleteActionMutation = useDeleteAction();
   const deleteQuickCheckMutation = useDeleteQuickCheck();
   const MAX_DISPLAYED = 10;
@@ -530,12 +561,14 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
                   </div>
                 )}
                 {quickCheck.photos.length > 0 && (
-                  <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                    <ImageIcon className="h-3 w-3" />
-                    <span>
-                      {quickCheck.photos.length} photo
-                      {quickCheck.photos.length !== 1 ? 's' : ''}
-                    </span>
+                  <div className="flex gap-1.5 mt-2">
+                    {quickCheck.photos.map(photo => (
+                      <PhotoThumbnail
+                        key={photo.id}
+                        quickCheckId={quickCheck.id}
+                        photoId={photo.id}
+                      />
+                    ))}
                   </div>
                 )}
               </div>
@@ -639,71 +672,18 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
   const hasActiveFilters =
     eventTypeFilter !== 'all' || dateRangeFilter !== 'all';
 
-  const handleSaveNote = async () => {
-    if (!hiveId || !noteContent.trim()) return;
-
-    setIsSavingNote(true);
-    try {
-      const noteAction: CreateStandaloneAction = {
-        hiveId,
-        type: ActionType.NOTE,
-        notes: noteContent.trim(),
-        details: { type: ActionType.NOTE, content: noteContent.trim() },
-        date: new Date().toISOString(),
-      };
-
-      await createAction.mutateAsync(noteAction);
-      setNoteContent('');
-      toast.success('Note added successfully');
-
-      // Reset textarea height
-      if (noteTextareaRef.current) {
-        noteTextareaRef.current.style.height = 'auto';
-      }
-    } catch {
-      toast.error('Failed to add note');
-    } finally {
-      setIsSavingNote(false);
-    }
-  };
-
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNoteContent(e.target.value);
-
-    // Auto-resize textarea
-    const textarea = e.target;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  };
-
   return (
     <Section title="Activity Timeline">
-      {/* Quick Note Input */}
-      <div className="mb-4 space-y-2">
-        <Textarea
-          ref={noteTextareaRef}
-          value={noteContent}
-          onChange={handleTextareaChange}
-          placeholder="Add a quick note about this hive..."
-          className="min-h-[80px] resize-none"
-          maxLength={500}
-        />
-        <div className="flex justify-between items-center">
-          <span className="text-xs text-muted-foreground">
-            {noteContent.length}/500 characters
-          </span>
-          <div className="flex gap-2">
-            <Button
-              onClick={handleSaveNote}
-              disabled={!noteContent.trim() || isSavingNote}
-              size="sm"
-            >
-              <StickyNote className="mr-2 h-4 w-4" />
-              {isSavingNote ? 'Saving...' : 'Add Note'}
-            </Button>
-            {hiveId && <AddActionDialog hiveId={hiveId} />}
-          </div>
-        </div>
+      {/* Action buttons */}
+      <div className="flex gap-2 mb-4">
+        {hiveId && apiaryId && (
+          <QuickCheckDialog
+            hiveId={hiveId}
+            apiaryId={apiaryId}
+            triggerVariant="inline"
+          />
+        )}
+        {hiveId && <AddActionDialog hiveId={hiveId} />}
       </div>
 
       {/* Filters */}

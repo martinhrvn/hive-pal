@@ -33,10 +33,7 @@ export class WeatherEventHandler {
     try {
       await this.weatherService.updateUserApiariesWeather(userId);
     } catch (error) {
-      this.logger.error(
-        `Failed to refresh weather for user ${email}:`,
-        error,
-      );
+      this.logger.error(`Failed to refresh weather for user ${email}:`, error);
     }
   }
 }

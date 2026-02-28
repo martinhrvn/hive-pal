@@ -8,7 +8,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [ScheduleModule.forRoot()],
-  providers: [WeatherService, WeatherScheduler, WeatherEventHandler, PrismaService],
+  providers: [
+    WeatherService,
+    WeatherScheduler,
+    WeatherEventHandler,
+    PrismaService,
+  ],
   controllers: [WeatherController],
   exports: [WeatherService],
 })

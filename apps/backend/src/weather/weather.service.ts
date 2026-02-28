@@ -32,7 +32,7 @@ const ACTIVE_USER_THRESHOLD_DAYS = 5;
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name);
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Map Open-Meteo weather codes to our simplified conditions

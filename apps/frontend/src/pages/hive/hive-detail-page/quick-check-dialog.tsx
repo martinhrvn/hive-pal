@@ -20,6 +20,8 @@ import { cn } from '@/lib/utils';
 interface QuickCheckDialogProps {
   hiveId?: string;
   apiaryId: string;
+  /** "sidebar" renders as a full-width ghost button; "inline" renders as a compact outlined button */
+  triggerVariant?: 'sidebar' | 'inline';
 }
 
 const ADDITIONAL_OBSERVATION_TAGS = [
@@ -47,7 +49,11 @@ const REMINDER_OBSERVATION_TAGS = [
   { value: 'prepare_for_winter', label: 'Prepare for Winter' },
 ] as const;
 
-export function QuickCheckDialog({ hiveId, apiaryId }: QuickCheckDialogProps) {
+export function QuickCheckDialog({
+  hiveId,
+  apiaryId,
+  triggerVariant = 'sidebar',
+}: QuickCheckDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [note, setNote] = useState('');
@@ -134,10 +140,17 @@ export function QuickCheckDialog({ hiveId, apiaryId }: QuickCheckDialogProps) {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start" size="sm">
-          <ClipboardCheck className="mr-2 h-4 w-4" />
-          Quick Check
-        </Button>
+        {triggerVariant === 'sidebar' ? (
+          <Button variant="ghost" className="w-full justify-start" size="sm">
+            <ClipboardCheck className="mr-2 h-4 w-4" />
+            Quick Check
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm">
+            <ClipboardCheck className="mr-2 h-4 w-4" />
+            Quick Check
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>

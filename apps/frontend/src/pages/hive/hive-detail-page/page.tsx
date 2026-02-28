@@ -101,7 +101,7 @@ export const HiveDetailPage = () => {
                 </div>
 
                 {/* Hive timeline */}
-                <HiveTimeline hiveId={hiveId} />
+                <HiveTimeline hiveId={hiveId} apiaryId={hive?.apiaryId} />
               </div>
             </TabsContent>
 
