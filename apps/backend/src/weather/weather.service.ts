@@ -26,11 +26,13 @@ interface OpenMeteoResponse {
   daily?: OpenMeteoDailyData;
 }
 
+const ACTIVE_USER_THRESHOLD_DAYS = 5;
+
 @Injectable()
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Map Open-Meteo weather codes to our simplified conditions
@@ -266,16 +268,69 @@ export class WeatherService {
   }
 
   /**
-   * Update weather for all apiaries with coordinates
+   * Update weather for all apiaries belonging to a specific user
    */
-  async updateAllApiariesWeather(): Promise<void> {
+  async updateUserApiariesWeather(userId: string): Promise<void> {
     const apiaries = await this.prisma.apiary.findMany({
       where: {
-        AND: [{ latitude: { not: null } }, { longitude: { not: null } }],
+        userId,
+        latitude: { not: null },
+        longitude: { not: null },
       },
     });
 
-    this.logger.log(`Updating weather for ${apiaries.length} apiaries`);
+    this.logger.log(
+      `Updating weather for ${apiaries.length} apiaries of user ${userId}`,
+    );
+
+    for (const apiary of apiaries) {
+      if (apiary.latitude === null || apiary.longitude === null) continue;
+
+      try {
+        const hourlyData = await this.fetchHourlyWeather(
+          apiary.latitude,
+          apiary.longitude,
+        );
+        await this.saveHourlyWeather(apiary.id, hourlyData);
+
+        const dailyData = await this.fetchDailyForecast(
+          apiary.latitude,
+          apiary.longitude,
+        );
+        await this.saveDailyForecast(apiary.id, dailyData);
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      } catch (error) {
+        this.logger.error(
+          `Failed to update weather for apiary ${apiary.id}:`,
+          error,
+        );
+      }
+    }
+  }
+
+  /**
+   * Update weather for all apiaries with coordinates (only active users)
+   */
+  async updateAllApiariesWeather(): Promise<void> {
+    const activeThreshold = new Date();
+    activeThreshold.setDate(
+      activeThreshold.getDate() - ACTIVE_USER_THRESHOLD_DAYS,
+    );
+
+    const apiaries = await this.prisma.apiary.findMany({
+      where: {
+        latitude: { not: null },
+        longitude: { not: null },
+        user: {
+          lastLoginAt: { gte: activeThreshold },
+        },
+      },
+    });
+
+    this.logger.log(
+      `Updating weather for ${apiaries.length} apiaries (active users within ${ACTIVE_USER_THRESHOLD_DAYS} days)`,
+    );
 
     for (const apiary of apiaries) {
       if (apiary.latitude === null || apiary.longitude === null) continue;

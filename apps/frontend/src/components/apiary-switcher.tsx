@@ -42,7 +42,9 @@ export function ApiarySwitcher() {
               size="lg"
               className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${!activeApiary ? 'border border-dashed border-muted-foreground/50' : ''}`}
             >
-              <div className={`flex aspect-square size-8 items-center justify-center rounded-lg ${activeApiary ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+              <div
+                className={`flex aspect-square size-8 items-center justify-center rounded-lg ${activeApiary ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'bg-muted text-muted-foreground'}`}
+              >
                 <HomeIcon />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">

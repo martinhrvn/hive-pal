@@ -92,9 +92,7 @@ export function generateHivePrompt(
   // Box configuration
   if (hive.boxes.length > 0) {
     lines.push('## Box Configuration');
-    const sortedBoxes = [...hive.boxes].sort(
-      (a, b) => a.position - b.position,
-    );
+    const sortedBoxes = [...hive.boxes].sort((a, b) => a.position - b.position);
     for (const box of sortedBoxes) {
       const parts = [`Position ${box.position}: ${box.type}`];
       if (box.variant) parts.push(`variant=${box.variant}`);
@@ -192,10 +190,7 @@ export function generateHivePrompt(
           lines.push(`- Queen cells: ${obs.queenCells}`);
         if (obs.swarmCells !== null && obs.swarmCells !== undefined)
           lines.push(`- Swarm cells: ${obs.swarmCells ? 'Yes' : 'No'}`);
-        if (
-          obs.supersedureCells !== null &&
-          obs.supersedureCells !== undefined
-        )
+        if (obs.supersedureCells !== null && obs.supersedureCells !== undefined)
           lines.push(
             `- Supersedure cells: ${obs.supersedureCells ? 'Yes' : 'No'}`,
           );
@@ -203,20 +198,12 @@ export function generateHivePrompt(
           lines.push(`- Queen seen: ${obs.queenSeen ? 'Yes' : 'No'}`);
         if (obs.broodPattern)
           lines.push(`- Brood pattern: ${obs.broodPattern}`);
-        if (
-          obs.additionalObservations &&
-          obs.additionalObservations.length > 0
-        )
+        if (obs.additionalObservations && obs.additionalObservations.length > 0)
           lines.push(
             `- Additional observations: ${obs.additionalObservations.join(', ')}`,
           );
-        if (
-          obs.reminderObservations &&
-          obs.reminderObservations.length > 0
-        )
-          lines.push(
-            `- Reminders: ${obs.reminderObservations.join(', ')}`,
-          );
+        if (obs.reminderObservations && obs.reminderObservations.length > 0)
+          lines.push(`- Reminders: ${obs.reminderObservations.join(', ')}`);
       }
 
       // Actions
@@ -236,7 +223,8 @@ export function generateHivePrompt(
       if (insp.score) {
         const s = insp.score;
         const scoreParts: string[] = [];
-        if (s.overallScore !== null) scoreParts.push(`overall=${s.overallScore}`);
+        if (s.overallScore !== null)
+          scoreParts.push(`overall=${s.overallScore}`);
         if (s.populationScore !== null)
           scoreParts.push(`population=${s.populationScore}`);
         if (s.storesScore !== null) scoreParts.push(`stores=${s.storesScore}`);

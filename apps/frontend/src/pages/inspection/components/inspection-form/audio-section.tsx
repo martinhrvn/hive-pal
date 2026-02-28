@@ -7,6 +7,7 @@ import {
   useDeleteInspectionAudio,
   getAudioDownloadUrl,
 } from '@/api/hooks/useInspectionAudio';
+import { useFeatures } from '@/api/hooks/useFeatures';
 import { AudioResponse } from 'shared-schemas';
 import { apiClient } from '@/api/client';
 
@@ -31,6 +32,7 @@ export function AudioSection({
 }: AudioSectionProps) {
   const isNewInspection = !inspectionId;
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { data: features } = useFeatures();
 
   // Hooks for existing inspections
   const { data: existingRecordings = [], isLoading } = useInspectionAudio(
@@ -116,6 +118,11 @@ export function AudioSection({
     },
     [pendingRecordings],
   );
+
+  // Hide audio section when storage is not configured
+  if (features && !features.storageEnabled) {
+    return null;
+  }
 
   if (isLoading) {
     return (

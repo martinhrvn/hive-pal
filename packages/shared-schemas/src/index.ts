@@ -17,3 +17,5 @@ export * from './feedback';
 export * from './frame-sizes';
 export * from './reports';
 export * from './platform-metrics';
+export * from './quick-checks';
+export * from './features';

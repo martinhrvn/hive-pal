@@ -9,12 +9,16 @@ import {
   DataOptionsSection,
   MenuItemButton,
 } from '@/components/sidebar';
+import { SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { QuickCheckDialog } from '@/pages/hive/hive-detail-page/quick-check-dialog';
 
 interface ApiaryActionSidebarProps {
+  apiaryId?: string;
   onRefreshData?: () => void;
 }
 
 export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
+  apiaryId,
   onRefreshData,
 }) => {
   const { t } = useTranslation(['apiary', 'common']);
@@ -31,6 +35,15 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
           onClick={() => navigate('/apiaries/create/')}
           tooltip={t('apiary:create.button')}
         />
+        <SidebarMenuItem>
+          {apiaryId ? (
+            <QuickCheckDialog apiaryId={apiaryId} />
+          ) : (
+            <SidebarMenuButton disabled tooltip="Quick Check">
+              <span>Quick Check</span>
+            </SidebarMenuButton>
+          )}
+        </SidebarMenuItem>
         <MenuItemButton
           icon={<RefreshCw className="h-4 w-4" />}
           label={t('apiary:actions.refreshData')}

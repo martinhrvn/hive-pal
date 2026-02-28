@@ -43,10 +43,7 @@ export function LandingPage() {
         />
         <meta property="og:url" content="https://hivepal.app/" />
         <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content="https://hivepal.app/og-image.jpg"
-        />
+        <meta property="og:image" content="https://hivepal.app/og-image.jpg" />
         <meta property="twitter:card" content="summary_large_image" />
         <meta
           property="twitter:title"

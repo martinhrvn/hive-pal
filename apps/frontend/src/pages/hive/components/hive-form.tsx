@@ -37,7 +37,12 @@ import {
 } from '@/components/ui/collapsible';
 import { useApiary } from '@/hooks/use-apiary';
 import React, { useEffect, useState, useRef } from 'react';
-import { useCreateHive, useUpdateHive, useHive, useFrameSizes } from '@/api/hooks';
+import {
+  useCreateHive,
+  useUpdateHive,
+  useHive,
+  useFrameSizes,
+} from '@/api/hooks';
 import {
   boxSchema,
   hiveSettingsSchema,

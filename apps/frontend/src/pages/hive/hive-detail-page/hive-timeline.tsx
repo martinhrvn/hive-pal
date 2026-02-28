@@ -25,6 +25,8 @@ import {
   Pencil,
   Trash2,
   AlertTriangle,
+  ClipboardCheck,
+  ImageIcon,
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -43,12 +45,15 @@ import {
   ActionResponse,
   CreateStandaloneAction,
   ActionType,
+  QuickCheckResponse,
 } from 'shared-schemas';
 import {
   useActions,
   useInspections,
   useCreateAction,
   useDeleteAction,
+  useQuickChecks,
+  useDeleteQuickCheck,
 } from '@/api/hooks';
 import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
@@ -69,8 +74,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 type TimelineEvent = {
   id: string;
   date: string;
-  type: 'inspection' | 'action' | 'note';
-  data: InspectionResponse | ActionResponse;
+  type: 'inspection' | 'action' | 'note' | 'quick-check';
+  data: InspectionResponse | ActionResponse | QuickCheckResponse;
 };
 
 interface HiveTimelineProps {
@@ -84,6 +89,7 @@ type EventTypeFilter =
   | 'treatment'
   | 'harvest'
   | 'notes'
+  | 'quick-checks'
   | 'other';
 type DateRangeFilter = 'all' | '1month' | '3months' | '6months' | 'year';
 
@@ -103,16 +109,24 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
   const [deletingAction, setDeletingAction] = useState<ActionResponse | null>(
     null,
   );
+  const [deletingQuickCheck, setDeletingQuickCheck] =
+    useState<QuickCheckResponse | null>(null);
   const createAction = useCreateAction();
   const deleteActionMutation = useDeleteAction();
+  const deleteQuickCheckMutation = useDeleteQuickCheck();
   const MAX_DISPLAYED = 10;
 
-  // Fetch inspections and actions
+  // Fetch inspections, actions, and quick checks
   const { data: inspections, isLoading: inspectionsLoading } = useInspections(
     hiveId ? { hiveId } : undefined,
   );
 
   const { data: actions, isLoading: actionsLoading } = useActions(
+    hiveId ? { hiveId } : undefined,
+    { enabled: !!hiveId },
+  );
+
+  const { data: quickChecks, isLoading: quickChecksLoading } = useQuickChecks(
     hiveId ? { hiveId } : undefined,
     { enabled: !!hiveId },
   );
@@ -208,6 +222,24 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
         });
     }
 
+    // Add quick checks to timeline
+    if (
+      quickChecks &&
+      (eventTypeFilter === 'all' || eventTypeFilter === 'quick-checks')
+    ) {
+      quickChecks.forEach(quickCheck => {
+        const eventDate = new Date(quickCheck.date);
+        if (!startDate || eventDate >= startDate) {
+          events.push({
+            id: `quick-check-${quickCheck.id}`,
+            date: quickCheck.date,
+            type: 'quick-check',
+            data: quickCheck,
+          });
+        }
+      });
+    }
+
     // Sort events: overdue inspections first, then by date (newest first)
     return events.sort((a, b) => {
       const aIsOverdue =
@@ -226,7 +258,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
       // Otherwise sort by date (newest first)
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }, [inspections, actions, eventTypeFilter, dateRangeFilter]);
+  }, [inspections, actions, quickChecks, eventTypeFilter, dateRangeFilter]);
 
   const displayedEvents = showAll
     ? timelineEvents
@@ -339,14 +371,28 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
     }
   };
 
+  const handleDeleteQuickCheckConfirm = async () => {
+    if (!deletingQuickCheck) return;
+    try {
+      await deleteQuickCheckMutation.mutateAsync(deletingQuickCheck.id);
+      toast.success('Quick check deleted');
+      setDeletingQuickCheck(null);
+    } catch {
+      toast.error('Failed to delete quick check');
+    }
+  };
+
   const renderTimelineEvent = (
     event: TimelineEvent,
     _index: number,
     isLast: boolean,
   ) => {
     const isInspection = event.type === 'inspection';
+    const isQuickCheck = event.type === 'quick-check';
     const inspection = isInspection ? (event.data as InspectionResponse) : null;
-    const action = !isInspection ? (event.data as ActionResponse) : null;
+    const quickCheck = isQuickCheck ? (event.data as QuickCheckResponse) : null;
+    const action =
+      !isInspection && !isQuickCheck ? (event.data as ActionResponse) : null;
 
     const isScheduled = inspection?.status === InspectionStatus.SCHEDULED;
     const isCancelled = inspection?.status === InspectionStatus.CANCELLED;
@@ -360,6 +406,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
             className={cn(
               'w-3 h-3 rounded-full border-2 bg-background z-10',
               isInspection ? 'border-blue-500' : 'border-gray-400',
+              isQuickCheck && 'border-green-500',
               isScheduled && !isOverdue && 'border-amber-500',
               isOverdue && 'border-red-500',
               isCancelled && 'border-gray-300',
@@ -367,6 +414,9 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
           >
             {isInspection && (
               <CircleIcon className="w-2 h-2 -mt-0.5 -ml-0.5 fill-current text-blue-500" />
+            )}
+            {isQuickCheck && (
+              <CircleIcon className="w-2 h-2 -mt-0.5 -ml-0.5 fill-current text-green-500" />
             )}
           </div>
           {!isLast && (
@@ -453,6 +503,58 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
             </div>
           )}
 
+          {/* Quick check content */}
+          {isQuickCheck && quickCheck && (
+            <div className="flex items-start gap-2 group">
+              <div className="mt-0.5">
+                <ClipboardCheck className="h-4 w-4 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">Quick Check</div>
+                {quickCheck.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {quickCheck.tags.map(tag => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="text-xs py-0"
+                      >
+                        {tag.replace(/_/g, ' ')}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {quickCheck.note && (
+                  <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    {quickCheck.note}
+                  </div>
+                )}
+                {quickCheck.photos.length > 0 && (
+                  <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                    <ImageIcon className="h-3 w-3" />
+                    <span>
+                      {quickCheck.photos.length} photo
+                      {quickCheck.photos.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-destructive hover:text-destructive"
+                  onClick={e => {
+                    e.stopPropagation();
+                    setDeletingQuickCheck(quickCheck);
+                  }}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Action content */}
           {action && (
             <div
@@ -511,7 +613,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
 
   if (!hiveId) return null;
 
-  if (inspectionsLoading || actionsLoading) {
+  if (inspectionsLoading || actionsLoading || quickChecksLoading) {
     return (
       <Section title="Activity Timeline">
         <div className="relative">
@@ -620,6 +722,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
             <SelectItem value="feeding">Feeding</SelectItem>
             <SelectItem value="treatment">Treatments</SelectItem>
             <SelectItem value="harvest">Harvests</SelectItem>
+            <SelectItem value="quick-checks">Quick Checks</SelectItem>
             <SelectItem value="notes">Notes</SelectItem>
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
@@ -706,7 +809,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
         />
       )}
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Action Confirmation Dialog */}
       <Dialog
         open={!!deletingAction}
         onOpenChange={open => !open && setDeletingAction(null)}
@@ -752,6 +855,34 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({ hiveId }) => {
               disabled={deleteActionMutation.isPending}
             >
               {deleteActionMutation.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Quick Check Confirmation Dialog */}
+      <Dialog
+        open={!!deletingQuickCheck}
+        onOpenChange={open => !open && setDeletingQuickCheck(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Quick Check?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete this
+              quick check and its photos.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteQuickCheckConfirm}
+              disabled={deleteQuickCheckMutation.isPending}
+            >
+              {deleteQuickCheckMutation.isPending ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>
