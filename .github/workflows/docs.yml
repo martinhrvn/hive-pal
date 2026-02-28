@@ -5,7 +5,7 @@ on:
     branches:
       - main # or your default branch
     paths:
-      - /docs
+      - 'docs/**'
 
 jobs:
   deploy:
