@@ -94,5 +94,5 @@ export const getLatestVersion = (versions: string[]): string => {
 
   return versions.reduce((latest, current) => {
     return compareVersions(current, latest) > 0 ? current : latest;
-  });
+  }, '');
 };

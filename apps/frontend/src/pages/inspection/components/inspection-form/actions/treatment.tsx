@@ -169,9 +169,7 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
       )}
 
       {/* Unit Selector */}
-      <div
-        className={`${isOther ? 'col-span-2 lg:col-span-1' : 'col-span-2 lg:col-span-1'} flex flex-col gap-4`}
-      >
+      <div className={`col-span-2 lg:col-span-1 flex flex-col gap-4`}>
         <label htmlFor={'unit'}>Unit</label>
         <Select value={unit} onValueChange={setUnit}>
           <SelectTrigger className={'w-full'}>

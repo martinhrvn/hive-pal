@@ -92,7 +92,9 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
   });
 
   // Sort dates
-  const sortedDates = Array.from(allDates).sort();
+  const sortedDates = Array.from(allDates).sort(
+    (a, b) => new Date(a + '-01').getTime() - new Date(b + '-01').getTime(),
+  );
 
   // Transform data for the chart - one row per date, with each hive as a column
   const chartData = sortedDates.map(dateKey => {
