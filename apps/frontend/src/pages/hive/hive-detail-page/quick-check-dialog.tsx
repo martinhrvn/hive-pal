@@ -319,6 +319,7 @@ export function QuickCheckDialog({
             disabled={
               isSubmitting || (selectedTags.length === 0 && !note.trim())
             }
+            data-umami-event="Quick Check Save"
           >
             {isSubmitting ? (
               <>

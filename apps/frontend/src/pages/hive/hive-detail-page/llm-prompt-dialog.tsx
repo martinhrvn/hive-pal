@@ -47,7 +47,7 @@ export function LlmPromptDialog({ hiveId, hiveName }: LlmPromptDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start" size="sm">
+        <Button variant="ghost" className="w-full justify-start" size="sm" data-umami-event="LLM Prompt Open">
           <BotMessageSquare className="mr-2 h-4 w-4" />
           LLM Prompt
         </Button>
@@ -70,7 +70,7 @@ export function LlmPromptDialog({ hiveId, hiveName }: LlmPromptDialogProps) {
             <span className="text-xs text-muted-foreground">
               {promptText.length} characters
             </span>
-            <Button onClick={handleCopy}>
+            <Button onClick={handleCopy} data-umami-event="LLM Prompt Copy">
               {copied ? (
                 <Check className="mr-2 h-4 w-4" />
               ) : (
