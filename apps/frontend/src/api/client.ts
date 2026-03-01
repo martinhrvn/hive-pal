@@ -50,7 +50,7 @@ export const createApiClient = (getToken: () => string | null) => {
 };
 
 export const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: '/',
   headers: {
     'Content-Type': 'application/json',
   },

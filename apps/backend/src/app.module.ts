@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { EnvController } from './env.controller';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -42,7 +43,7 @@ import { QuickChecksModule } from './quick-checks/quick-checks.module';
     EventEmitterModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
-      exclude: ['/api/(.*)'],
+      exclude: ['/api{/*path}'],
     }),
     StorageModule,
     AuthModule,
@@ -68,7 +69,7 @@ import { QuickChecksModule } from './quick-checks/quick-checks.module';
     FeaturesModule,
     QuickChecksModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, EnvController],
   providers: [
     AppService,
     MetricsService,

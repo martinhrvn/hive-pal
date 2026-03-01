@@ -6,9 +6,16 @@ import './index.css';
 import './lib/i18n';
 import App from './App.tsx';
 
+const sentryDsn =
+  window.ENV?.VITE_SENTRY_DSN || import.meta.env.VITE_SENTRY_DSN;
+const sentryEnv =
+  window.ENV?.VITE_SENTRY_ENVIRONMENT ||
+  import.meta.env.VITE_SENTRY_ENVIRONMENT ||
+  'development';
+
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
-  environment: import.meta.env.VITE_SENTRY_ENVIRONMENT || 'development',
+  dsn: sentryDsn,
+  environment: sentryEnv,
   sendDefaultPii: true,
   sendClientReports: true,
 });

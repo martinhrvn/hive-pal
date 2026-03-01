@@ -66,7 +66,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=app-buildkit
           cache-to: type=gha,mode=max,scope=app-buildkit
-          build-args: |
-            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN }}
-            VITE_SENTRY_ENVIRONMENT=${{ vars.VITE_SENTRY_ENVIRONMENT || 'production' }}
           push: true

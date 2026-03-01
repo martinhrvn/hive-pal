@@ -40,6 +40,8 @@ services:
       DATABASE_URL: '${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper}'
       SENTRY_DSN: '${SENTRY_DNS}'
       SENTRY_ENVIRONMENT: '${SENTRY_ENVIRONMENT}'
+      VITE_SENTRY_DSN: '${VITE_SENTRY_DSN}'
+      VITE_SENTRY_ENVIRONMENT: '${VITE_SENTRY_ENVIRONMENT}'
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PASS: ${SMTP_PASS}
       SMTP_PORT: ${SMTP_PORT}

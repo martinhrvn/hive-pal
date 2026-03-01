@@ -13,7 +13,9 @@ async function bootstrap() {
       credentials: true,
     });
   }
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: ['env.js'],
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Strip properties not in the DTO

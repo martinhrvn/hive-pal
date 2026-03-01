@@ -12,9 +12,6 @@ RUN turbo prune --scope=backend --scope=frontend --docker
 # Stage 3: Build
 FROM base AS builder
 
-ARG VITE_SENTRY_DSN
-ARG VITE_SENTRY_ENVIRONMENT
-
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile
