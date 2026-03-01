@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient, getApiUrl } from '../client';
+import { apiClient } from '../client';
 import {
   ActionType,
   CreateAction,
@@ -181,7 +181,7 @@ export const useDeleteInspection = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(getApiUrl(`/api/inspections/${id}`), {
+      const response = await fetch(`/api/inspections/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

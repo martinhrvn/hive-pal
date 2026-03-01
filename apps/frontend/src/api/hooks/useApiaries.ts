@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient, getApiUrl } from '../client';
+import { apiClient } from '../client';
 import { CreateApiary, UpdateApiary, ApiaryResponse } from 'shared-schemas';
 import { useAuth } from '@/context/auth-context';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -121,7 +121,7 @@ export const useDeleteApiary = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(getApiUrl(`/api/apiaries/${id}`), {
+      const response = await fetch(`/api/apiaries/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

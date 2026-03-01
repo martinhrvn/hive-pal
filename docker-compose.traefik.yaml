@@ -31,8 +31,8 @@ services:
     restart: unless-stopped
 
   backend:
-    image: 'ghcr.io/martinhrvn/hive-pal-backend:latest'
-    container_name: hive-pal-backend
+    image: 'ghcr.io/martinhrvn/hive-pal:latest'
+    container_name: hive-pal-app
     environment:
       NODE_ENV: production
       ADMIN_EMAIL: '${ADMIN_EMAIL:-admin@example.com}'
@@ -64,37 +64,10 @@ services:
       start_period: 10s
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.backend.rule=Host(`api.${DOMAIN:-localhost}`)'
-      - 'traefik.http.routers.backend.entrypoints=websecure'
-      - 'traefik.http.routers.backend.tls.certresolver=letsencrypt'
-      - 'traefik.http.services.backend.loadbalancer.server.port=3000'
-    restart: unless-stopped
-
-  frontend:
-    image: 'ghcr.io/martinhrvn/hive-pal-frontend:latest'
-    container_name: hive-pal-frontend
-    depends_on:
-      - backend
-    healthcheck:
-      test:
-        - CMD
-        - curl
-        - '-f'
-        - 'http://localhost:9000/'
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    environment:
-      VITE_API_URL: 'https://api.${DOMAIN:-localhost}'
-      VITE_SENTRY_DSN: '${VITE_SENTRY_DSN}'
-      VITE_SENTRY_ENVIRONMENT: '${VITE_SENTRY_ENVIRONMENT}'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.frontend.rule=Host(`${DOMAIN:-localhost}`)'
-      - 'traefik.http.routers.frontend.entrypoints=websecure'
-      - 'traefik.http.routers.frontend.tls.certresolver=letsencrypt'
-      - 'traefik.http.services.frontend.loadbalancer.server.port=9000'
+      - 'traefik.http.routers.app.rule=Host(`${DOMAIN:-localhost}`)'
+      - 'traefik.http.routers.app.entrypoints=websecure'
+      - 'traefik.http.routers.app.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.app.loadbalancer.server.port=3000'
     restart: unless-stopped
 
   postgres:

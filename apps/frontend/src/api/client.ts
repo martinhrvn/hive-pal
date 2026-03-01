@@ -1,10 +1,6 @@
 import axios from 'axios';
 import { APIARY_SELECTION, TOKEN_KEY } from '@/context/auth-context';
-import { getEnvVariable } from '@/utils/get-env';
 
-export const getApiUrl = (url: string) => {
-  return `${getEnvVariable('VITE_API_URL') ?? 'http://localhost:3000'}${url}`;
-};
 export const createApiClient = (getToken: () => string | null) => {
   const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
     const token = getToken();
@@ -15,7 +11,7 @@ export const createApiClient = (getToken: () => string | null) => {
       ...options.headers,
     };
 
-    const response = await fetch(`${getApiUrl(endpoint)}`, {
+    const response = await fetch(endpoint, {
       ...options,
       headers,
     });
@@ -54,7 +50,7 @@ export const createApiClient = (getToken: () => string | null) => {
 };
 
 export const apiClient = axios.create({
-  baseURL: `${getApiUrl(getEnvVariable('VITE_API_URL'))}/api`,
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -72,7 +68,6 @@ apiClient.interceptors.request.use(config => {
   if (config.data instanceof FormData) {
     delete config.headers['Content-Type'];
   }
-  config.baseURL = getApiUrl('');
   return config;
 });
 

@@ -1,4 +1,4 @@
-name: Build and Push Backend Docker Image
+name: Build and Push Docker Image
 
 on:
   release:
@@ -47,7 +47,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/hive-pal-backend
+          images: ghcr.io/${{ github.repository_owner }}/hive-pal
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -60,10 +60,13 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./apps/backend/Dockerfile
+          file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=backend-buildkit
-          cache-to: type=gha,mode=max,scope=backend-buildkit
+          cache-from: type=gha,scope=app-buildkit
+          cache-to: type=gha,mode=max,scope=app-buildkit
+          build-args: |
+            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN }}
+            VITE_SENTRY_ENVIRONMENT=${{ vars.VITE_SENTRY_ENVIRONMENT || 'production' }}
           push: true

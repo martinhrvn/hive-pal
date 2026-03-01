@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AppService } from './app.service';
 import { HiveModule } from './hives/hive.module';
 import { InspectionsModule } from './inspections/inspections.module';
@@ -38,6 +40,10 @@ import { QuickChecksModule } from './quick-checks/quick-checks.module';
     SentryModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+      exclude: ['/api/(.*)'],
+    }),
     StorageModule,
     AuthModule,
     HiveModule,

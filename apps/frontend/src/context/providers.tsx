@@ -3,8 +3,7 @@ import { AuthProvider } from '@/context/auth-context';
 import { ThemeProvider } from './theme-provider';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import axios, { AxiosError } from 'axios';
-import { getEnvVariable } from '@/utils/get-env.ts';
+import { AxiosError } from 'axios';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
 
 const queryClient = new QueryClient({
@@ -19,7 +18,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-axios.defaults.baseURL = getEnvVariable('VITE_API_URL');
 
 const SKIP_SIDEBAR_PAGES = ['/login', '/register', '/onboarding'];
 export const Providers: React.FC<PropsWithChildren> = ({ children }) => {

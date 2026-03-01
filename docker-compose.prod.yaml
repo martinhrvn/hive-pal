@@ -1,8 +1,8 @@
 services:
   backend:
-    image: 'ghcr.io/martinhrvn/hive-pal-backend:latest'
+    image: 'ghcr.io/martinhrvn/hive-pal:latest'
     ports:
-      - '3000:3000'
+      - '80:3000'
     environment:
       NODE_ENV: production
       ADMIN_EMAIL: '${ADMIN_EMAIL:-admin@example.com}'
@@ -18,7 +18,6 @@ services:
       SMTP_USER: ${SMTP_USER}
       FROM_EMAIL: noreply@hivepal.app
       FRONTEND_URL: ${FRONTEND_URL:-https://hivepal.app}
-      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS}'
     depends_on:
       - postgres
     healthcheck:
@@ -30,26 +29,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-  frontend:
-    image: 'ghcr.io/martinhrvn/hive-pal-frontend:latest'
-    ports:
-      - '80:9000'
-    depends_on:
-      - backend
-    healthcheck:
-      test:
-        - CMD
-        - curl
-        - '-f'
-        - 'http://frontend:9000/'
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    environment:
-      VITE_API_URL: '${API_URL}'
-      VITE_SENTRY_DSN: '${VITE_SENTRY_DSN}'
-      VITE_SENTRY_ENVIRONMENT: '${VITE_SENTRY_ENVIRONMENT}'
+
   postgres:
     image: 'postgres:14'
     container_name: hive-pal-db

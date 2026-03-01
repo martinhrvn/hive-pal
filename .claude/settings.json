@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "output=$(turbo typecheck 2>&1); rc=$?; if [ $rc -ne 0 ]; then echo \"$output\" | tail -80; fi"
+      }
+    ]
+  }
+}
