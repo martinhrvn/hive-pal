@@ -1,4 +1,4 @@
-type SupportedLanguage = 'en' | 'sk';
+type SupportedLanguage = 'en' | 'sk' | 'it';
 
 // Mapping from locale codes to supported language codes
 const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
@@ -12,6 +12,10 @@ const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
   // Slovak variants
   sk: 'sk',
   'sk-SK': 'sk',
+
+  // Italian variants
+  it: 'it',
+  'it-IT': 'it',
 };
 
 /**
@@ -44,7 +48,7 @@ export function normalizeLanguageCode(languageCode: string): SupportedLanguage {
  * Gets the list of supported language codes
  */
 export function getSupportedLanguages(): SupportedLanguage[] {
-  return ['en', 'sk'];
+  return ['en', 'sk', 'it'];
 }
 
 /**
