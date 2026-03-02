@@ -1,0 +1,28 @@
+{
+  "title": "Benvenuto su Hive-Pal!",
+  "subtitle": "Configuriamo il tuo ambiente di apicoltura",
+  "steps": {
+    "welcome": "Benvenuto",
+    "createApiary": "Crea Apiario",
+    "addHive": "Aggiungi Arnia",
+    "complete": "Completato"
+  },
+  "welcome": {
+    "title": "Inizia il tuo viaggio nell'apicoltura",
+    "description": "Benvenuto su Hive-Pal, il tuo assistente digitale per l'apicoltura! Ti guideremo nella configurazione del tuo primo apiario e della tua prima arnia per iniziare.",
+    "action": "Iniziamo"
+  },
+  "apiary": {
+    "title": "Crea il tuo primo apiario",
+    "description": "Un apiario è il luogo in cui vengono tenute le tue arnie. Creiamo il primo."
+  },
+  "hive": {
+    "title": "Aggiungi la tua prima arnia",
+    "description": "Ora aggiungiamo la tua prima arnia al nuovo apiario: {{apiaryName}}."
+  },
+  "complete": {
+    "title": "Congratulazioni!",
+    "description": "Hai configurato con successo il tuo primo apiario e la tua prima arnia. Sei pronto a monitorare le tue attività di apicoltura con Hive-Pal!",
+    "action": "Vai alla Dashboard"
+  }
+}

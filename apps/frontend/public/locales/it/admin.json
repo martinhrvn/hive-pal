@@ -1,0 +1,68 @@
+{
+  "title": "Gestione Utenti",
+  "description": "Gestisci gli utenti e reimposta le password",
+  "table": {
+    "email": "Email",
+    "name": "Nome",
+    "role": "Ruolo",
+    "passwordChangeRequired": "Cambio password richiesto",
+    "createdAt": "Creato il",
+    "actions": "Azioni",
+    "apiaries": "Apiari",
+    "hives": "Arnie",
+    "inspections": "Ispezioni",
+    "lastActivity": "Ultima attività"
+  },
+  "actions": {
+    "resetPassword": "Reimposta Password"
+  },
+  "resetPasswordDialog": {
+    "title": "Reimposta Password Utente",
+    "description": "Imposta una password temporanea per {email}. All'utente verrà richiesto di cambiare la password al prossimo accesso.",
+    "tempPasswordLabel": "Password Temporanea",
+    "tempPasswordPlaceholder": "Inserisci la password temporanea",
+    "minCharacters": "Minimo 6 caratteri",
+    "submit": "Reimposta Password"
+  },
+  "messages": {
+    "loading": "Caricamento...",
+    "loadingUsers": "Caricamento utenti...",
+    "noUsers": "Nessun utente trovato",
+    "resetSuccess": "Password reimpostata con successo! L'utente dovrà cambiare la password al prossimo accesso.",
+    "failedToFetch": "Errore nel recupero dei dati",
+    "failedToReset": "Errore nel ripristino della password",
+    "unexpectedError": "Si è verificato un errore imprevisto"
+  },
+  "status": {
+    "yes": "Sì",
+    "no": "No",
+    "dash": "-"
+  },
+  "userDetail": {
+    "backToList": "Torna agli Utenti",
+    "summary": {
+      "totalApiaries": "Apiari Totali",
+      "totalHives": "Arnie Totali",
+      "totalInspections": "Ispezioni Totali",
+      "lastActivity": "Ultima Attività",
+      "lastInspection": "Ultima Ispezione"
+    },
+    "recentActivity": {
+      "title": "Attività Recente",
+      "period": "Ultimi 30 giorni",
+      "inspections": "Ispezioni",
+      "actions": "Azioni",
+      "byType": "Azioni per Tipo"
+    },
+    "apiaryBreakdown": {
+      "title": "Riepilogo Apiari",
+      "name": "Nome Apiario",
+      "location": "Posizione",
+      "coordinates": "Coordinate",
+      "hives": "Arnie",
+      "inspections": "Ispezioni",
+      "lastInspection": "Ultima Ispezione",
+      "noApiaries": "Nessun apiario trovato per questo utente"
+    }
+  }
+}

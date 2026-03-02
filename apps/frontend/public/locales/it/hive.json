@@ -1,0 +1,136 @@
+{
+  "title": "Arnie",
+  "singular": "Arnia",
+  "plural": "Arnie",
+  "list": {
+    "title": "Elenco Arnie",
+    "caption": "Un elenco di tutte le tue arnie",
+    "captionFiltered": "Visualizzazione di {{count}} arnia {{status}}",
+    "captionFilteredPlural": "Visualizzazione di {{count}} arnie {{status}}",
+    "searchPlaceholder": "Cerca arnie...",
+    "filterByStatus": "Filtra per stato",
+    "allStatuses": "Tutti gli stati",
+    "noHives": "Nessuna arnia trovata",
+    "noHivesMatchingBoth": "Nessuna arnia {{status}} trovata corrispondente a \"{{searchTerm}}\"",
+    "noHivesMatchingSearch": "Nessuna arnia trovata corrispondente a \"{{searchTerm}}\"",
+    "noHivesWithStatus": "Nessuna arnia {{status}} trovata",
+    "clearFilters": "Cancella filtri",
+    "createFirst": "Crea la tua prima arnia"
+  },
+  "create": {
+    "title": "Crea Nuova Arnia",
+    "success": "Arnia creata con successo"
+  },
+  "edit": {
+    "title": "Modifica Arnia",
+    "success": "Arnia aggiornata con successo"
+  },
+  "delete": {
+    "confirm": "Sei sicuro di voler eliminare questa arnia?",
+    "success": "Arnia eliminata con successo"
+  },
+  "fields": {
+    "name": "Nome",
+    "label": "Etichetta",
+    "number": "Numero Arnia",
+    "type": "Tipo di Arnia",
+    "status": "Stato",
+    "location": "Posizione",
+    "notes": "Note",
+    "queen": "Regina",
+    "lastInspection": "Ultima Ispezione",
+    "installationDate": "Data di Installazione",
+    "established": "Insediata",
+    "boxes": "Moduli/Corpi",
+    "frames": "Telaini",
+    "position": "Posizione",
+    "apiary": "Apiario",
+    "notSpecified": "Non specificato",
+    "noInspectionYet": "Nessuna ispezione effettuata",
+    "noNotes": "Nessuna nota"
+  },
+  "boxConfigurator": {
+    "title": "Configurazione Moduli",
+    "description": "Visualizza e configura l'impilamento dei moduli della tua arnia. I moduli sono mostrati dal basso verso l'alto.",
+    "editConfiguration": "Modifica Configurazione",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "addBox": "Aggiungi Modulo",
+    "noBoxes": "Nessun modulo configurato",
+    "clickToAdd": "Clicca \"Aggiungi Modulo\" per iniziare a comporre la tua arnia",
+    "saveSuccess": "Configurazione moduli salvata con successo",
+    "saveError": "Errore nel salvataggio della configurazione",
+    "boxProperties": "Proprietà Modulo",
+    "purpose": "Scopo",
+    "boxType": "Tipo di Modulo",
+    "frames": "Telaini",
+    "maximumFrames": "Telaini massimi",
+    "color": "Colore",
+    "colorPresets": "Colori predefiniti",
+    "queenExcluder": "Escludiregina sopra questo modulo",
+    "boxTypes": {
+      "brood": "Nido (Covata)",
+      "honey": "Melario",
+      "feeder": "Nutritore"
+    },
+    "boxVariants": {
+      "langstrothDeep": "Langstroth Profondo",
+      "langstrothShallow": "Langstroth Basso",
+      "bDeep": "B Profondo",
+      "bShallow": "B Basso",
+      "dadant": "Dadant-Blatt",
+      "nationalDeep": "National Profondo",
+      "nationalShallow": "National Basso",
+      "warre": "Warré",
+      "topBar": "Top Bar",
+      "custom": "Personalizzato"
+    }
+  },
+  "status": {
+    "active": "Attiva",
+    "inactive": "Inattiva",
+    "queenless": "Orfana",
+    "weak": "Debole",
+    "strong": "Forte",
+    "dead": "Morta (Famiglia)",
+    "sold": "Venduta",
+    "unknown": "Sconosciuto",
+    "archived": "Archiviata"
+  },
+  "actions": {
+    "inspect": "Ispeziona",
+    "addBox": "Aggiungi Modulo",
+    "removeBox": "Rimuovi Modulo",
+    "addQueen": "Aggiungi Regina",
+    "archive": "Archivia",
+    "restore": "Ripristina",
+    "details": "Dettagli",
+    "refreshData": "Aggiorna Dati",
+    "exportCSV": "Esporta in CSV",
+    "print": "Stampa Elenco Arnie",
+    "share": "Condividi Elenco Arnie",
+    "dataOptions": "Opzioni Dati",
+    "createNewHive": "Crea Nuova Arnia"
+  },
+  "form": {
+    "selectHive": "Seleziona un'arnia",
+    "hivePlaceholder": "arnia 01",
+    "notesPlaceholder": "Buona famiglia",
+    "pickDate": "Scegli una data",
+    "submit": "Invia"
+  },
+  "weather": {
+    "forecast": "Previsioni Meteo"
+  },
+  "messages": {
+    "exportComingSoon": "Funzione di esportazione disponibile a breve",
+    "shareComingSoon": "Funzione di condivisione disponibile a breve"
+  },
+  "layout": {
+    "title": "Disposizione Arnie",
+    "grid": "Griglia",
+    "unpositionedHives": "Arnie non posizionate",
+    "noHivesInApiary": "Ancora nessuna arnia in questo apiario.",
+    "dragToOrganize": "Aggiungi le arnie e trascinale sulla griglia per organizzare la disposizione del tuo apiario."
+  }
+}
