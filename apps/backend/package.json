@@ -38,6 +38,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^6.0.0",
+    "@nestjs/serve-static": "^5.0.4",
     "@nestjs/swagger": "^11.0.6",
     "@nestjs/terminus": "^11.0.0",
     "@prisma/adapter-pg": "^7.4.1",

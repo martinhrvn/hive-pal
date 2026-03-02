@@ -19,120 +19,77 @@ A modern beekeeping management application designed for both mobile and desktop 
 ### Prerequisites
 
 - Docker and Docker Compose
-- Node.js 18+ (for development only)
-- PNPM package manager
 
-### Running with Docker Compose (Production)
+### Running with Docker Compose
 
-The application includes a production-ready Docker Compose configuration that sets up all required services.
+Create a `docker-compose.yaml` with the following content:
 
-```bash
-# Clone the repository (or download docker-compose.prod.yaml)
-git clone https://github.com/martinhrvn/hive-pal.git
-cd hive-pal
+```yaml
+services:
+  app:
+    image: ghcr.io/martinhrvn/hive-pal:latest
+    ports:
+      - '80:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/beekeeper
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: changeme123
+      FRONTEND_URL: https://yourdomain.com
+    depends_on:
+      postgres:
+        condition: service_healthy
 
-# Create a .env file with your configuration (see Environment Variables below)
-cp .env.example .env
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: beekeeper
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-# Start all services (backend, frontend, database)
-docker-compose -f docker-compose.prod.yaml up -d
-
-# View logs
-docker-compose -f docker-compose.prod.yaml logs -f
-
-# Stop all services
-docker-compose -f docker-compose.prod.yaml down
-
-# Stop and remove volumes (WARNING: deletes all data)
-docker-compose -f docker-compose.prod.yaml down -v
+volumes:
+  postgres_data:
 ```
 
-The application will be available at:
-- Frontend: http://localhost (port 80)
-- Backend API: http://localhost:3000
-- API Documentation: http://localhost:3000/api-docs
-
-### Production Deployment with Traefik (Recommended)
-
-For production deployments with SSL/TLS, use the Traefik configuration:
+Then run:
 
 ```bash
-# Set your domain and email for Let's Encrypt
-export DOMAIN=yourdomain.com
-export ACME_EMAIL=admin@yourdomain.com
-
-# Start with Traefik reverse proxy
-docker-compose -f docker-compose.traefik.yaml up -d
+docker compose up -d
 ```
 
-This provides:
-- Automatic HTTPS with Let's Encrypt certificates
-- Frontend at `https://yourdomain.com`
-- Backend API at `https://api.yourdomain.com`
-- Automatic HTTP to HTTPS redirect
-
-Required DNS records:
-- `yourdomain.com` → your server IP
-- `api.yourdomain.com` → your server IP
+The application will be available at http://localhost.
 
 ### Environment Variables
 
-Create a `.env` file in the project root with the following variables:
+#### Required
 
-#### Required Variables
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `ADMIN_EMAIL` | Initial admin account email |
+| `ADMIN_PASSWORD` | Initial admin account password |
+| `FRONTEND_URL` | Public URL (used in emails) |
 
-```bash
-# Backend Configuration
-DATABASE_URL=postgres://postgres:postgres@postgres:5432/beekeeper
-ADMIN_EMAIL=admin@example.com           # Initial admin account email
-ADMIN_PASSWORD=changeme123              # Initial admin account password (change this!)
-API_URL=http://backend:3000             # Internal API URL for frontend
-FRONTEND_URL=https://yourdomain.com     # Public frontend URL (for emails)
+#### Optional
 
-# Frontend Configuration
-VITE_API_URL=https://api.yourdomain.com # Public API URL for browser
-```
-
-#### Optional Variables
-
-```bash
-# Email Configuration (Optional - required for password reset functionality)
-SMTP_HOST=smtp.gmail.com                # SMTP server hostname
-SMTP_PORT=587                           # SMTP server port
-SMTP_USER=your-email@gmail.com          # SMTP username
-SMTP_PASS=your-app-password             # SMTP password
-SMTP_SECURE=false                       # Use TLS (true for port 465, false for 587)
-SMTP_REJECT_UNAUTHORIZED=false          # Reject self-signed certificates
-FROM_EMAIL=noreply@yourdomain.com       # Sender email address
-
-# Monitoring (Optional - for error tracking)
-SENTRY_DSN=https://your-sentry-dsn      # Backend Sentry DSN
-SENTRY_ENVIRONMENT=production            # Environment name
-VITE_SENTRY_DSN=https://frontend-dsn    # Frontend Sentry DSN
-VITE_SENTRY_ENVIRONMENT=production      # Frontend environment
-```
-
-### Docker Compose Services
-
-The `docker-compose.prod.yaml` file sets up three services:
-
-1. **PostgreSQL Database**
-   - Image: `postgres:14`
-   - Persistent data storage at `/data/hive-pal-data/postgres`
-   - Health checks ensure database readiness
-
-2. **Backend (NestJS)**
-   - Image: `ghcr.io/martinhrvn/hive-pal-backend:latest`
-   - Depends on PostgreSQL
-   - Health endpoint: `/api/health`
-   - Handles API requests and business logic
-   - **Automatic migrations**: Database migrations run automatically on startup
-
-3. **Frontend (React)**
-   - Image: `ghcr.io/martinhrvn/hive-pal-frontend:latest`
-   - Depends on Backend
-   - Serves the web interface
-   - Connects to backend via configured API URL
+| Variable | Description |
+|----------|-------------|
+| `SMTP_HOST` | SMTP server hostname |
+| `SMTP_PORT` | SMTP server port |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password |
+| `SMTP_SECURE` | Use TLS (`true` for port 465, `false` for 587) |
+| `FROM_EMAIL` | Sender email address |
+| `SENTRY_DSN` | Backend Sentry DSN |
+| `VITE_SENTRY_DSN` | Frontend Sentry DSN |
+| `VITE_SENTRY_ENVIRONMENT` | Frontend Sentry environment |
 
 ## Development
 
@@ -147,6 +104,11 @@ pnpm install
 # Start the development server
 pnpm dev
 ```
+
+### Prerequisites for Development
+
+- Node.js 22+
+- PNPM package manager
 
 ## Project Structure
 

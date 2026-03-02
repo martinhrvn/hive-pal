@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient, getApiUrl } from '../client';
+import { apiClient } from '../client';
 import { logApiError } from '../errorLogger';
 import {
   CreateHive,
@@ -174,7 +174,7 @@ export const useDeleteHive = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(getApiUrl(`/api/hives/${id}`), {
+      const response = await fetch(`/api/hives/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

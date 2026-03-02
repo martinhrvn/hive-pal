@@ -5,12 +5,17 @@ import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 import './lib/i18n';
 import App from './App.tsx';
-import { getEnvVariable } from '@/utils/get-env.ts';
 
-console.log(import.meta.env.VITE_SENTRY_DSN);
+const sentryDsn =
+  window.ENV?.VITE_SENTRY_DSN || import.meta.env.VITE_SENTRY_DSN;
+const sentryEnv =
+  window.ENV?.VITE_SENTRY_ENVIRONMENT ||
+  import.meta.env.VITE_SENTRY_ENVIRONMENT ||
+  'development';
+
 Sentry.init({
-  dsn: getEnvVariable('VITE_SENTRY_DSN'),
-  environment: getEnvVariable('VITE_SENTRY_ENVIRONMENT') || 'development',
+  dsn: sentryDsn,
+  environment: sentryEnv,
   sendDefaultPii: true,
   sendClientReports: true,
 });

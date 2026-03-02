@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '@/api/client.ts';
 import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
 import { useRegister } from '@/api/hooks/useAuth';
@@ -55,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = useCallback(
     async (username: string, password: string, from: string = '/') => {
       try {
-        const response = await axios.post(getApiUrl('/api/auth/login'), {
+        const response = await axios.post('/api/auth/login', {
           email: username,
           password,
         });

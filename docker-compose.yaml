@@ -2,9 +2,11 @@ services:
   backend:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
+      dockerfile: Dockerfile
       tags:
-        - hive-pal-backend
+        - hive-pal
+    ports:
+      - '3000:3000'
     environment:
       NODE_ENV: production
       ADMIN_USERNAME: ${ADMIN_EMAIL:-admin@hivepal.com}
@@ -29,19 +31,11 @@ services:
       AUDIO_MAX_FILE_SIZE: ${AUDIO_MAX_FILE_SIZE:-52428800}
     depends_on:
       - postgres
-  frontend:
-    build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
-      tags:
-        - hive-pal-frontend
-    depends_on:
-      - backend
-    environment:
-      VITE_API_URL: ${API_URL}
 
   postgres:
     image: postgres:14
+    ports:
+      - 6543:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -53,9 +47,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  # Prometheus
+
 volumes:
   hivepal_postgres_data_preview:
-  prometheus_data:
-  grafana_data:
-  loki-data:
