@@ -1,18 +1,21 @@
-import React from 'react';
+import { ChevronRight, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Languages } from 'lucide-react';
-import { normalizeLanguageCode } from '@/utils/language-utils';
 
-interface LanguageSwitcherProps {
-  compact?: boolean;
-}
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from '@/components/ui/sidebar';
+import { normalizeLanguageCode } from '@/utils/language-utils';
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -20,10 +23,8 @@ const LANGUAGES = [
   { code: 'it', name: 'Italiano', flag: '🇮🇹' },
 ];
 
-export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
-  compact = false,
-}) => {
-  const { i18n } = useTranslation();
+export function LanguageSwitcher() {
+  const { t, i18n } = useTranslation('common');
 
   const handleLanguageChange = (languageCode: string) => {
     const normalizedCode = normalizeLanguageCode(languageCode);
@@ -31,59 +32,38 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     localStorage.setItem('language', normalizedCode);
   };
 
-  const getCurrentLanguage = () => {
-    const normalizedLang = normalizeLanguageCode(i18n.language);
-    return LANGUAGES.find(lang => lang.code === normalizedLang) || LANGUAGES[0];
-  };
-
-  if (compact) {
-    return (
-      <Select
-        value={normalizeLanguageCode(i18n.language)}
-        onValueChange={handleLanguageChange}
-      >
-        <SelectTrigger className="w-12 h-8 border-none shadow-none">
-          <SelectValue>
-            <Languages className="h-4 w-4" />
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {LANGUAGES.map(language => (
-            <SelectItem key={language.code} value={language.code}>
-              <div className="flex items-center gap-2">
-                <span>{language.flag}</span>
-                <span>{language.name}</span>
-              </div>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  }
+  const currentLanguage = normalizeLanguageCode(i18n.language);
 
   return (
-    <Select
-      value={normalizeLanguageCode(i18n.language)}
-      onValueChange={handleLanguageChange}
-    >
-      <SelectTrigger className="w-40">
-        <SelectValue>
-          <div className="flex items-center gap-2">
-            <span>{getCurrentLanguage().flag}</span>
-            <span>{getCurrentLanguage().name}</span>
-          </div>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {LANGUAGES.map(language => (
-          <SelectItem key={language.code} value={language.code}>
-            <div className="flex items-center gap-2">
-              <span>{language.flag}</span>
-              <span>{language.name}</span>
-            </div>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <SidebarGroup>
+      <SidebarMenu>
+        <Collapsible asChild className="group/collapsible">
+          <SidebarMenuItem>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton tooltip={t('actions.language')}>
+                <Languages />
+                <span>{t('actions.language')}</span>
+                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {LANGUAGES.map(language => (
+                  <SidebarMenuSubItem key={language.code}>
+                    <SidebarMenuSubButton
+                      onClick={() => handleLanguageChange(language.code)}
+                      className={`cursor-pointer ${currentLanguage === language.code ? 'bg-accent' : ''}`}
+                    >
+                      <span>{language.flag}</span>
+                      <span>{language.name}</span>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </SidebarMenuItem>
+        </Collapsible>
+      </SidebarMenu>
+    </SidebarGroup>
   );
-};
+}

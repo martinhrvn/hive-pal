@@ -17,6 +17,7 @@ import { NavMain } from '@/components/nav-main';
 import { NavHives } from '@/components/nav-hives.tsx';
 import { NavUser } from '@/components/nav-user';
 import { NavAdmin } from '@/components/nav-admin';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { ApiarySwitcher } from '@/components/apiary-switcher.tsx';
 import {
   Sidebar,
@@ -141,6 +142,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
         <NavAdmin />
         <NavHives />
+        <LanguageSwitcher />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

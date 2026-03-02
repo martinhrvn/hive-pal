@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Bell,
-  ChevronsUpDown,
-  LogOut,
-  Languages,
-  MessageSquare,
-} from 'lucide-react';
+import { Bell, ChevronsUpDown, LogOut, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,9 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -32,22 +23,12 @@ import {
 import { useUserProfile } from '@/api/hooks/useAuth';
 import { useAuth } from '@/context/auth-context';
 
-const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
-];
-
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { logout } = useAuth();
   const { data: user, isLoading } = useUserProfile();
-  const { t, i18n } = useTranslation('common');
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
-
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
-    localStorage.setItem('language', languageCode);
-  };
 
   if (isLoading || !user) {
     return null;
@@ -96,26 +77,6 @@ export function NavUser() {
                 <Bell />
                 {t('actions.notifications')}
               </DropdownMenuItem>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Languages />
-                  {t('actions.language')}
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  {LANGUAGES.map(language => (
-                    <DropdownMenuItem
-                      key={language.code}
-                      onClick={() => handleLanguageChange(language.code)}
-                      className={
-                        i18n.language === language.code ? 'bg-accent' : ''
-                      }
-                    >
-                      <span className="mr-2">{language.flag}</span>
-                      {language.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate('/feedback')}>
