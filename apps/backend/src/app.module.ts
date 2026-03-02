@@ -44,6 +44,7 @@ import { QuickChecksModule } from './quick-checks/quick-checks.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
       exclude: ['/api{/*path}'],
+      renderPath: /^(?!\/assets\/)/,
     }),
     StorageModule,
     AuthModule,
