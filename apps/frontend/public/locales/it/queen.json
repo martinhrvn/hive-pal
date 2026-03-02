@@ -1,0 +1,69 @@
+{
+  "title": "Regine",
+  "singular": "Regina",
+  "plural": "Regine",
+  "create": {
+    "title": "Nuova Regina",
+    "button": "Crea Regina",
+    "success": "Regina creata con successo"
+  },
+  "edit": {
+    "title": "Modifica Regina",
+    "button": "Salva Modifiche",
+    "success": "Regina aggiornata con successo"
+  },
+  "delete": {
+    "confirm": "Sei sicuro di voler eliminare questa regina?",
+    "success": "Regina eliminata con successo"
+  },
+  "fields": {
+    "hive": "Arnia",
+    "year": "Anno",
+    "color": "Colore",
+    "marking": "Marcatura",
+    "source": "Provenienza",
+    "status": "Stato",
+    "installationDate": "Data di inserimento",
+    "replacedDate": "Data di sostituzione (Opzionale)",
+    "installedOn": "Inserita il {{date}}",
+    "via": "tramite {{source}}"
+  },
+  "colors": {
+    "blue": "Blu",
+    "green": "Verde",
+    "red": "Rosso",
+    "yellow": "Giallo",
+    "purple": "Viola",
+    "indigo": "Indaco",
+    "pink": "Rosa",
+    "gray": "Grigio",
+    "black": "Nero",
+    "white": "Bianco"
+  },
+  "status": {
+    "active": "Attiva",
+    "replaced": "Sostituita",
+    "dead": "Morta",
+    "unknown": "Sconosciuto"
+  },
+  "actions": {
+    "replaceQueen": "Sostituisci Regina",
+    "markAsDead": "Segna come Morta",
+    "markAsLostMissing": "Segna come Persa/Mancante",
+    "addQueen": "Aggiungi Regina",
+    "editQueen": "Modifica Regina"
+  },
+  "form": {
+    "selectHive": "Seleziona un'arnia",
+    "enterYear": "Inserisci l'anno",
+    "selectColor": "Seleziona colore",
+    "enterMarking": "Inserisci marcatura regina",
+    "enterSource": "Inserisci provenienza regina",
+    "selectStatus": "Seleziona stato",
+    "pickDate": "Scegli una data"
+  },
+  "information": {
+    "noActiveQueen": "Nessuna regina attiva trovata",
+    "hasActiveQueen": "Questa arnia ha già una regina attiva. Sostituendo la regina, quella attuale verrà contrassegnata come sostituita."
+  }
+}

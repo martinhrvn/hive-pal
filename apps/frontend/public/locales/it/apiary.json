@@ -1,0 +1,73 @@
+{
+  "title": "Apiari",
+  "singular": "Apiario",
+  "plural": "Apiari",
+  "list": {
+    "title": "Elenco Apiari",
+    "caption": "Un elenco di tutti i tuoi apiari",
+    "searchPlaceholder": "Cerca apiari...",
+    "noApiaries": "Nessun apiario trovato",
+    "noApiariesMatching": "Nessun apiario trovato corrispondente a \"{{searchTerm}}\"",
+    "clearFilters": "Cancella filtri"
+  },
+  "create": {
+    "title": "Crea Apiario",
+    "button": "Crea Nuovo Apiario",
+    "success": "Apiario creato con successo"
+  },
+  "edit": {
+    "title": "Modifica Apiario",
+    "success": "Apiario aggiornato con successo"
+  },
+  "delete": {
+    "confirm": "Sei sicuro di voler eliminare questo apiario?",
+    "success": "Apiario eliminato con successo"
+  },
+  "detail": {
+    "notFound": "Apiario non trovato",
+    "noLocationSpecified": "Nessuna posizione specificata",
+    "tabs": {
+      "overview": "Panoramica",
+      "hives": "Arnie",
+      "location": "Posizione"
+    },
+    "apiaryInformation": "Informazioni Apiario",
+    "locationMap": "Mappa della posizione",
+    "apiaryLocation": "Posizione Apiario",
+    "noCoordinates": "Nessuna coordinata disponibile per questo apiario"
+  },
+  "fields": {
+    "name": "Nome",
+    "location": "Posizione",
+    "locationDescription": "Descrizione posizione",
+    "coordinates": "Coordinate",
+    "hivesCount": "Numero Arnie",
+    "latitude": "Latitudine",
+    "longitude": "Longitudine",
+    "notSpecified": "Non specificato",
+    "noLocation": "Nessuna posizione",
+    "noCoordinates": "Nessuna coordinata"
+  },
+  "actions": {
+    "details": "Dettagli",
+    "refreshData": "Aggiorna Dati",
+    "exportCSV": "Esporta in CSV",
+    "print": "Stampa Elenco Apiari",
+    "share": "Condividi Elenco Apiari",
+    "dataOptions": "Opzioni Dati"
+  },
+  "messages": {
+    "exportComingSoon": "Funzione di esportazione disponibile a breve",
+    "shareComingSoon": "Funzione di condivisione disponibile a breve"
+  },
+  "switcher": {
+    "teams": "Team",
+    "addApiary": "Aggiungi apiario",
+    "noApiarySelected": "Nessun apiario selezionato",
+    "selectOrCreate": "Seleziona o crea un apiario"
+  },
+  "form": {
+    "namePlaceholder": "Nome apiario",
+    "locationPlaceholder": "Descrizione della posizione"
+  }
+}

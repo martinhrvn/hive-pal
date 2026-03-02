@@ -1,0 +1,174 @@
+{
+  "title": "Ispezioni",
+  "singular": "Ispezione",
+  "plural": "Ispezioni",
+  "tabs": {
+    "all": "Tutte",
+    "recent": "Recenti",
+    "upcoming": "In programma"
+  },
+  "list": {
+    "title": "Elenco Ispezioni",
+    "allInspections": "Tutte le ispezioni",
+    "recentInspections": "Ispezioni recenti",
+    "upcomingInspections": "Prossime ispezioni",
+    "searchPlaceholder": "Cerca ispezioni...",
+    "filterByHive": "Filtra per arnia",
+    "allHives": "Tutte le arnie",
+    "noInspections": "Nessuna ispezione trovata",
+    "unknownHive": "Arnia sconosciuta"
+  },
+  "status": {
+    "scheduled": "Programmata",
+    "completed": "Completata",
+    "overdue": "In ritardo",
+    "cancelled": "Annullata"
+  },
+  "fields": {
+    "dateTime": "Data e Ora",
+    "hive": "Arnia",
+    "weather": "Meteo",
+    "scoreStatus": "Punteggio/Stato",
+    "status": "Stato",
+    "queenSeen": "Regina vista",
+    "temperature": "Temperatura",
+    "weatherConditions": "Condizioni meteo",
+    "notRecorded": "Non registrato",
+    "yes": "Sì",
+    "no": "No"
+  },
+  "scores": {
+    "title": "Punteggi Ispezione",
+    "population": "Popolazione",
+    "stores": "Scorte",
+    "queen": "Regina",
+    "overall": "Totale",
+    "warnings": "Avvisi"
+  },
+  "observations": {
+    "title": "Osservazioni",
+    "queenSeen": "Regina vista",
+    "strength": "Forza",
+    "cappedBrood": "Covata opercolata",
+    "uncappedBrood": "Covata fresca",
+    "honeyStores": "Scorte di miele",
+    "pollenStores": "Scorte di polline",
+    "queenCells": "Celle reali",
+    "swarmCells": "Celle da sciame",
+    "supersedureCells": "Celle di sostituzione",
+    "clearRating": "Cancella valutazione",
+    "rateAs": "Valuta come {{value}}",
+    "broodPattern": "Rosata di covata",
+    "selectBroodPattern": "Seleziona schema covata",
+    "broodPatternOptions": {
+      "solid": "Compatta",
+      "spotty": "A macchie",
+      "scattered": "Dispersa",
+      "patchy": "Irregolare",
+      "excellent": "Eccellente",
+      "poor": "Scarsa"
+    },
+    "additionalObservations": "Osservazioni aggiuntive",
+    "additional": {
+      "calm": "Calme",
+      "defensive": "Difensive",
+      "aggressive": "Aggressive",
+      "nervous": "Nervose",
+      "varroa_present": "Presenza di Varroa",
+      "small_hive_beetle": "Aethina tumida",
+      "wax_moths": "Tarma della cera",
+      "ants_present": "Presenza di formiche",
+      "healthy": "Sana",
+      "active": "Attiva",
+      "sluggish": "Lenta",
+      "thriving": "Fiorente"
+    },
+    "reminderObservations": "Promemoria",
+    "reminder": {
+      "honey_bound": "Blocco da miele",
+      "overcrowded": "Sovraffollata",
+      "needs_super": "Serve melario",
+      "queen_issues": "Problemi con la regina",
+      "requires_treatment": "Richiede trattamento",
+      "low_stores": "Scorte scarse",
+      "prepare_for_winter": "Preparare per l'inverno"
+    }
+  },
+  "actions": {
+    "details": "Dettagli",
+    "createInspection": "Crea Ispezione",
+    "scheduleInspection": "Programma Ispezione",
+    "refreshData": "Aggiorna dati",
+    "exportCSV": "Esporta in CSV",
+    "printList": "Stampa elenco",
+    "shareList": "Condividi elenco",
+    "dataOptions": "Opzioni dati",
+    "doInspection": "Esegui Ispezione",
+    "reschedule": "Riprogramma",
+    "cancel": "Annulla",
+    "completeInspection": "Completa Ispezione"
+  },
+  "sidebar": {
+    "actions": "Azioni",
+    "views": "Visualizzazioni",
+    "allInspections": "Tutte le ispezioni",
+    "recentInspections": "Ispezioni recenti",
+    "upcomingInspections": "Prossime ispezioni",
+    "printInspectionList": "Stampa elenco ispezioni",
+    "shareInspectionList": "Condividi elenco ispezioni"
+  },
+  "messages": {
+    "exportComingSoon": "Funzione di esportazione presto disponibile",
+    "shareComingSoon": "Funzione di condivisione presto disponibile"
+  },
+  "scheduled": {
+    "title": "Ispezioni programmate",
+    "overdueInspections": "Ispezioni in ritardo",
+    "todaysInspections": "Ispezioni di oggi",
+    "upcomingInspections": "Prossime ispezioni",
+    "otherUpcomingInspections": "Altre ispezioni in programma",
+    "doInspection": "Esegui ispezione",
+    "reschedule": "Riprogramma",
+    "cancel": "Annulla",
+    "today": "Oggi",
+    "overdue": "In ritardo"
+  },
+  "dialogs": {
+    "cancelInspection": {
+      "title": "Annulla Ispezione",
+      "description": "Sei sicuro di voler annullare l'ispezione per {{hiveName}} programmata per il {{date}}? L'azione non è reversibile.",
+      "keepInspection": "Mantieni ispezione",
+      "cancelInspection": "Annulla ispezione"
+    },
+    "reschedule": {
+      "title": "Riprogramma Ispezione",
+      "description": "Scegli una nuova data per l'ispezione di {{hiveName}}. Le previsioni meteo sono mostrate per i prossimi 7 giorni.",
+      "newDate": "Nuova data ispezione: {{date}}",
+      "cancel": "Annulla",
+      "reschedule": "Riprogramma ispezione",
+      "showFewerDays": "Mostra meno giorni",
+      "showMoreDays": "Mostra più giorni (+7)",
+      "noForecast": "Previsioni non disponibili",
+      "noWeatherData": "Nessun dato meteo"
+    },
+    "completingScheduled": {
+      "title": "Completamento ispezione programmata del {{date}}",
+      "description": "Questa ispezione sarà segnata come completata al salvataggio delle modifiche."
+    }
+  },
+  "weather": {
+    "sunny": "Soleggiato",
+    "clear": "Sereno",
+    "partlyCloudy": "Parzialmente nuvoloso",
+    "cloudy": "Nuvoloso",
+    "overcast": "Coperto",
+    "rain": "Pioggia"
+  },
+  "dashboard": {
+    "title": "Stato Ispezioni",
+    "overdue": "In ritardo",
+    "dueToday": "In scadenza oggi",
+    "overdueCount": "{{count}} {{count, plural, one {ispezione in ritardo} other{ispezioni in ritardo}}}",
+    "dueTodayCount": "{{count}} {{count, plural, one {ispezione prevista oggi} other{ispezioni previste oggi}}}"
+  }
+}
