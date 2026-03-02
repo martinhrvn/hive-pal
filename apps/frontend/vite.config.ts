@@ -14,6 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': 'http://localhost:3000',
+      '/env.js': 'http://localhost:3000',
     },
   },
   build: {
