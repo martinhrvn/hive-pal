@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from '@/pages/login-page.tsx';
 import RegisterPage from '@/pages/register-page.tsx';
@@ -26,95 +26,96 @@ import { ReleasesPage } from '@/pages/releases';
 import { UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
+import { lazyWithRetry } from '@/lib/lazy-with-retry';
 
 // Lazy loaded components - heavy pages that benefit from code splitting
 // Admin pages (only accessed by admins)
-const UserManagementPage = lazy(
+const UserManagementPage = lazyWithRetry(
   () => import('@/pages/admin/user-management/user-management-page'),
 );
-const UserDetailPage = lazy(
+const UserDetailPage = lazyWithRetry(
   () => import('@/pages/admin/user-detail/user-detail-page'),
 );
-const FeedbackManagementPage = lazy(
+const FeedbackManagementPage = lazyWithRetry(
   () => import('@/pages/admin/feedback-management/feedback-management-page'),
 );
-const PlatformMetricsPage = lazy(
+const PlatformMetricsPage = lazyWithRetry(
   () => import('@/pages/admin/platform-metrics/platform-metrics-page'),
 );
-const FrameSizeReviewPage = lazy(
+const FrameSizeReviewPage = lazyWithRetry(
   () => import('@/pages/admin/frame-sizes/frame-size-review-page'),
 );
 
 // Heavy feature pages (named exports)
-const ReportsPage = lazy(() =>
+const ReportsPage = lazyWithRetry(() =>
   import('@/pages/reports/reports-page').then(m => ({
     default: m.ReportsPage,
   })),
 );
-const CalendarPage = lazy(() =>
+const CalendarPage = lazyWithRetry(() =>
   import('@/pages/calendar/calendar-page').then(m => ({
     default: m.CalendarPage,
   })),
 );
-const ApiaryDetailPage = lazy(() =>
+const ApiaryDetailPage = lazyWithRetry(() =>
   import('@/pages/apiaries/apiary-detail-page').then(m => ({
     default: m.ApiaryDetailPage,
   })),
 );
 
 // Equipment pages (specialized feature, named exports)
-const EquipmentPlanningPage = lazy(() =>
+const EquipmentPlanningPage = lazyWithRetry(() =>
   import('@/pages/equipment/equipment-planning-page').then(m => ({
     default: m.EquipmentPlanningPage,
   })),
 );
-const EquipmentSettingsPage = lazy(() =>
+const EquipmentSettingsPage = lazyWithRetry(() =>
   import('@/pages/equipment/equipment-settings-page').then(m => ({
     default: m.EquipmentSettingsPage,
   })),
 );
 
 // Batch inspection pages (less frequently used, named exports)
-const BatchListPage = lazy(() =>
+const BatchListPage = lazyWithRetry(() =>
   import('@/pages/batch-inspection/batch-list-page').then(m => ({
     default: m.BatchListPage,
   })),
 );
-const BatchDetailPage = lazy(() =>
+const BatchDetailPage = lazyWithRetry(() =>
   import('@/pages/batch-inspection/batch-detail-page').then(m => ({
     default: m.BatchDetailPage,
   })),
 );
-const BatchInspectionPage = lazy(() =>
+const BatchInspectionPage = lazyWithRetry(() =>
   import('@/pages/batch-inspection/batch-inspection-page').then(m => ({
     default: m.BatchInspectionPage,
   })),
 );
 
 // Harvest pages (seasonal/periodic use, named exports)
-const HarvestListPage = lazy(() =>
+const HarvestListPage = lazyWithRetry(() =>
   import('@/pages/harvest/harvest-list-page').then(m => ({
     default: m.HarvestListPage,
   })),
 );
-const HarvestDetailPage = lazy(() =>
+const HarvestDetailPage = lazyWithRetry(() =>
   import('@/pages/harvest/harvest-detail-page').then(m => ({
     default: m.HarvestDetailPage,
   })),
 );
 
 // Other less frequently used pages (named exports)
-const QRCodesPrintPage = lazy(() =>
+const QRCodesPrintPage = lazyWithRetry(() =>
   import('@/pages/hive/qr-codes-print-page').then(m => ({
     default: m.QRCodesPrintPage,
   })),
 );
-const BulkActionsPage = lazy(() =>
+const BulkActionsPage = lazyWithRetry(() =>
   import('@/pages/actions/bulk-actions-page').then(m => ({
     default: m.BulkActionsPage,
   })),
 );
-const UserWizardPage = lazy(() =>
+const UserWizardPage = lazyWithRetry(() =>
   import('@/pages/onboarding/user-wizard-page').then(m => ({
     default: m.UserWizardPage,
   })),
