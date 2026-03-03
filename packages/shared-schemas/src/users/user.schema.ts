@@ -26,7 +26,7 @@ export const adminResetPasswordSchema = z.object({
 
 // User preferences schema
 export const userPreferencesSchema = z.object({
-  language: z.enum(['en', 'sk']).optional(),
+  language: z.enum(['en', 'sk', 'it']).optional(),
   theme: z.enum(['light', 'dark', 'system']).optional(),
   dateFormat: z.enum(['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']).optional(),
   units: z.enum(['metric', 'imperial']).optional(),
