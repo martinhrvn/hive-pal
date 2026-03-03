@@ -9,21 +9,17 @@ export function lazyWithRetry<T extends ComponentModule>(
     try {
       return await importFn();
     } catch {
-      // Retry once with a cache-busting query param
-      try {
-        return await importFn();
-      } catch {
-        // If retry also fails, try a guarded page reload
-        const lastReload = Number(
-          sessionStorage.getItem('last_chunk_reload') || '0',
-        );
-        if (Date.now() - lastReload > 10_000) {
-          sessionStorage.setItem('last_chunk_reload', String(Date.now()));
-          window.location.reload();
-        }
-        // Re-throw so React error boundary can handle it
-        throw new Error('Failed to load page module after retry');
+      // Import failed — likely a stale chunk from a previous deploy.
+      // Trigger a guarded page reload so the browser fetches fresh HTML.
+      const lastReload = Number(
+        sessionStorage.getItem('last_chunk_reload') || '0',
+      );
+      if (Date.now() - lastReload > 30_000) {
+        sessionStorage.setItem('last_chunk_reload', String(Date.now()));
+        window.location.reload();
       }
+      // Re-throw so React error boundary can handle it
+      throw new Error('Failed to load page module');
     }
   });
 }

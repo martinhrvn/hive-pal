@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { PublicFooter } from '@/components/layout/public-footer';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -137,6 +138,7 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+      <PublicFooter />
     </div>
   );
 };

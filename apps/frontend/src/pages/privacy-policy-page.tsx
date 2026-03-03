@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 export const PrivacyPolicyPage = () => {
-  const { t, i18n } = useTranslation('privacy');
+  const { t } = useTranslation('privacy');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
@@ -30,22 +31,7 @@ export const PrivacyPolicyPage = () => {
 
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            <div className="flex gap-2">
-              <Button
-                variant={i18n.language === 'sk' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => i18n.changeLanguage('sk')}
-              >
-                SK
-              </Button>
-              <Button
-                variant={i18n.language === 'en' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => i18n.changeLanguage('en')}
-              >
-                EN
-              </Button>
-            </div>
+            <LanguageSwitcher variant="buttons" />
           </div>
 
           <div className="prose prose-lg max-w-none">

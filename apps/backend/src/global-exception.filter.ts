@@ -24,8 +24,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // Return bare 404 for missing static assets so the browser sees a real
     // network error instead of a JSON/HTML body with the wrong MIME type.
     // This lets the frontend's chunk-reload logic handle version skew.
+    // Use writeHead + end to bypass Express helpers that may set Content-Type.
     if (request.url.startsWith('/assets/')) {
-      response.status(404).end();
+      this.logger.warn(`Missing static asset: ${request.url}`);
+      response.writeHead(404);
+      response.end();
       return;
     }
 

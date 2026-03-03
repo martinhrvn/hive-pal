@@ -18,12 +18,18 @@ const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
   'it-IT': 'it',
 };
 
+export const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+] as const;
+
 /**
  * Normalizes a language/locale code to one of the supported language codes.
  * Falls back to 'en' if the language is not supported.
  *
  * @param languageCode - The language or locale code to normalize (e.g., 'en-US', 'es-ES')
- * @returns A supported language code ('en' | 'sk')
+ * @returns A supported language code ('en' | 'sk' | 'it')
  */
 export function normalizeLanguageCode(languageCode: string): SupportedLanguage {
   // Convert to lowercase for case-insensitive matching

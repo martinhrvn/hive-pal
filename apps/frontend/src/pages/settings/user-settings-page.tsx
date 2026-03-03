@@ -25,6 +25,7 @@ import { usePreferences } from '@/api/hooks/useUserPreferences';
 import { useTheme } from '@/context/use-theme';
 import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 export const UserSettingsPage = () => {
   const { t, i18n } = useTranslation('common');
@@ -77,9 +78,7 @@ export const UserSettingsPage = () => {
   };
 
   const handleLanguageChange = (value: string) => {
-    const normalizedValue = normalizeLanguageCode(value);
-    setSettings({ ...settings, language: normalizedValue });
-    i18n.changeLanguage(normalizedValue);
+    setSettings({ ...settings, language: normalizeLanguageCode(value) });
   };
 
   // Show loading state while fetching preferences
@@ -124,28 +123,10 @@ export const UserSettingsPage = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="language">{t('actions.language')}</Label>
-                <Select
-                  value={settings.language}
-                  onValueChange={handleLanguageChange}
-                >
-                  <SelectTrigger id="language">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">
-                      <div className="flex items-center gap-2">
-                        <span>🇺🇸</span>
-                        <span>English</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="sk">
-                      <div className="flex items-center gap-2">
-                        <span>🇸🇰</span>
-                        <span>Slovenčina</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                <LanguageSwitcher
+                  variant="select"
+                  onLanguageChange={handleLanguageChange}
+                />
               </div>
 
               <div className="space-y-2">

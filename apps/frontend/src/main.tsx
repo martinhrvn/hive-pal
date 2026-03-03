@@ -11,7 +11,7 @@ window.addEventListener('vite:preloadError', () => {
   const lastReload = Number(
     sessionStorage.getItem('last_chunk_reload') || '0',
   );
-  if (Date.now() - lastReload > 10_000) {
+  if (Date.now() - lastReload > 30_000) {
     sessionStorage.setItem('last_chunk_reload', String(Date.now()));
     window.location.reload();
   }
