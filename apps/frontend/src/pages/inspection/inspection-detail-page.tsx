@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, X } from 'lucide-react';
+import { ChevronLeft, Share2, X } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,13 +19,34 @@ import {
   PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
-import { useHive, useInspection } from '@/api/hooks';
+import { useHive, useInspection, useCreateShareLink } from '@/api/hooks';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
+import { isCloudMode } from '@/utils/feature-flags';
+import { ShareResourceType, ShareLinkResponse } from 'shared-schemas';
+import { ShareDialog } from '@/components/share/share-dialog';
+import { toast } from 'sonner';
 
 export const InspectionDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { setInspectionContext, setHiveContext } = useBreadcrumbStore();
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareLink, setShareLink] = useState<ShareLinkResponse | null>(null);
+  const createShareLink = useCreateShareLink();
+
+  const handleShareClick = async () => {
+    if (!id) return;
+    try {
+      const result = await createShareLink.mutateAsync({
+        resourceType: ShareResourceType.INSPECTION,
+        resourceId: id,
+      });
+      setShareLink(result);
+      setShowShareDialog(true);
+    } catch {
+      toast.error('Failed to create share link');
+    }
+  };
 
   const {
     data: inspection,
@@ -99,11 +120,23 @@ export const InspectionDetailPage = () => {
             <ChevronLeft className="mr-2 h-4 w-4" /> Back
           </Button>
 
-          <InspectionHeader
-            hiveId={hive.id}
-            date={inspection.date}
-            hiveName={hive.name}
-          />
+          <div className="flex items-center justify-between">
+            <InspectionHeader
+              hiveId={hive.id}
+              date={inspection.date}
+              hiveName={hive.name}
+            />
+            {isCloudMode() && (
+              <Button
+                variant="outline"
+                onClick={handleShareClick}
+                disabled={createShareLink.isPending}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Share
+              </Button>
+            )}
+          </div>
 
           <div className="mt-6 space-y-4">
             {/* Top row: Score, Weather, and Status cards */}
@@ -135,6 +168,11 @@ export const InspectionDetailPage = () => {
           hiveId={hive.id}
         />
       </PageAside>
+      <ShareDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        shareLink={shareLink}
+      />
     </PageGrid>
   );
 };

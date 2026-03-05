@@ -27,6 +27,7 @@ model User {
   feedbacks              Feedback[]
   frameSizes             FrameSize[]
   passwordResetTokens    PasswordResetToken[]
+  shareLinks             ShareLink[]
   
   // GDPR consent fields
   privacyPolicyConsent   Boolean                @default(false)
@@ -670,6 +671,22 @@ model QuickCheckPhoto {
   createdAt    DateTime   @default(now())
 
   @@index([quickCheckId])
+}
+
+// Share links for publicly sharing harvests/inspections
+model ShareLink {
+  id           String    @id @default(uuid())
+  token        String    @unique
+  resourceType String    // "HARVEST" or "INSPECTION"
+  resourceId   String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@index([resourceType, resourceId])
 }
 
 // Platform metrics snapshot for admin observability

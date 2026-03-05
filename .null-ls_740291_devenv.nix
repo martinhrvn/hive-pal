@@ -15,7 +15,7 @@ in {
     pkgs-playwright.playwright-driver.browsers
     pkgs-playwright.playwright-test
     openssl
-    prisma
+    # prisma
     go-task
     prisma-engines
   ];
@@ -28,11 +28,11 @@ in {
     PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH =
       "${pkgs-playwright.playwright.browsers}/chromium-${chromium-rev}/chrome-linux/chrome";
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
-    PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
-    PRISMA_QUERY_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/query-engine";
-    PRISMA_QUERY_ENGINE_LIBRARY =
-      "${pkgs.prisma-engines}/lib/libquery_engine.node";
-    PRISMA_FMT_BINARY = "${pkgs.prisma-engines}/bin/prisma-fmt";
+    # PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
+    # PRISMA_QUERY_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/query-engine";
+    # PRISMA_QUERY_ENGINE_LIBRARY =
+    #   "${pkgs.prisma-engines}/lib/libquery_engine.node";
+    # PRISMA_FMT_BINARY = "${pkgs.prisma-engines}/bin/prisma-fmt";
   };
 
   processes = { dev.exec = "pnpm dev"; };

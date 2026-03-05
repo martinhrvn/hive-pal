@@ -35,6 +35,7 @@ import { StorageModule } from './storage/storage.module';
 import { PlatformMetricsModule } from './platform-metrics/platform-metrics.module';
 import { FeaturesModule } from './features/features.module';
 import { QuickChecksModule } from './quick-checks/quick-checks.module';
+import { SharesModule } from './shares/shares.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { QuickChecksModule } from './quick-checks/quick-checks.module';
     PlatformMetricsModule,
     FeaturesModule,
     QuickChecksModule,
+    SharesModule,
   ],
   controllers: [AppController, EnvController],
   providers: [

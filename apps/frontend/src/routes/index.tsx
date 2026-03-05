@@ -26,6 +26,7 @@ import { ReleasesPage } from '@/pages/releases';
 import { UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
+import { SharedPage } from '@/pages/shared/shared-page';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
 
 // Lazy loaded components - heavy pages that benefit from code splitting
@@ -402,6 +403,10 @@ const router = createBrowserRouter([
   {
     path: '/releases',
     element: <ReleasesPage />,
+  },
+  {
+    path: '/shared/:token',
+    element: <SharedPage />,
   },
   {
     path: '/privacy-policy',
