@@ -218,30 +218,71 @@ export class ShareImageService {
       },
     ];
 
-    if (data.score !== null) {
-      titleChildren.push({
-        type: 'div',
-        props: {
-          style: {
-            fontSize: '36px',
-            fontWeight: 700,
-            background: 'rgba(255,255,255,0.2)',
-            padding: '12px 24px',
-            borderRadius: '12px',
-          },
-          children: `Score: ${data.score}`,
-        },
-      });
-    }
-
     const bodyChildren: unknown[] = [];
 
     if (weatherInfo) {
       bodyChildren.push({
         type: 'div',
         props: {
-          style: { fontSize: '22px', opacity: 0.9, marginBottom: '28px' },
+          style: { fontSize: '22px', opacity: 0.9, marginBottom: '16px' },
           children: weatherInfo,
+        },
+      });
+    }
+
+    // Score cards row
+    if (data.scores) {
+      const scoreItems = [
+        { label: 'Overall', value: data.scores.overallScore },
+        { label: 'Population', value: data.scores.populationScore },
+        { label: 'Stores', value: data.scores.storesScore },
+        { label: 'Queen', value: data.scores.queenScore },
+      ];
+
+      bodyChildren.push({
+        type: 'div',
+        props: {
+          style: {
+            display: 'flex',
+            gap: '12px',
+            marginBottom: '20px',
+            marginRight: '24px',
+            paddingRight: '24px'
+          }, children: scoreItems.map((s) => ({
+            type: 'div',
+            props: {
+              style: {
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(255,255,255,0.2)',
+                padding: '12px 0',
+                borderRadius: '12px',
+                flex: 1,
+                minWidth: 0,
+              },
+              children: [
+                {
+                  type: 'div',
+                  props: {
+                    style: { fontSize: '14px', opacity: 0.8 },
+                    children: s.label,
+                  },
+                },
+                {
+                  type: 'div',
+                  props: {
+                    style: { fontSize: '32px', fontWeight: 700 },
+                    children:
+                      s.value !== null
+                        ? `${Math.round(s.value * 10) / 10}`
+                        : '–',
+                  },
+                },
+              ],
+            },
+          })),
         },
       });
     }
@@ -249,7 +290,12 @@ export class ShareImageService {
     bodyChildren.push({
       type: 'div',
       props: {
-        style: { display: 'flex', flexWrap: 'wrap', gap: '12px', flex: 1 },
+        style: {
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '12px',
+          flex: 1,
+        },
         children: data.observations.slice(0, 6).map((obs) => ({
           type: 'div',
           props: {
@@ -259,7 +305,7 @@ export class ShareImageService {
               background: 'rgba(255,255,255,0.15)',
               padding: '12px 20px',
               borderRadius: '8px',
-              minWidth: '200px',
+              width: '31%',
             },
             children: [
               {

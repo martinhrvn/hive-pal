@@ -217,7 +217,12 @@ function InspectionView({
       textValue?: string | null;
       booleanValue?: boolean | null;
     }>;
-    score: number | null;
+    scores: {
+      overallScore: number | null;
+      populationScore: number | null;
+      storesScore: number | null;
+      queenScore: number | null;
+    } | null;
     notes: string[];
   };
 
@@ -225,14 +230,9 @@ function InspectionView({
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">
-              Inspection: {inspection.hiveName}
-            </CardTitle>
-            {inspection.score !== null && (
-              <Badge variant="outline">Score: {inspection.score}</Badge>
-            )}
-          </div>
+          <CardTitle className="text-2xl">
+            Inspection: {inspection.hiveName}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -253,6 +253,30 @@ function InspectionView({
               </div>
             )}
           </div>
+
+          {/* Score cards */}
+          {inspection.scores && (
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { label: 'Overall', value: inspection.scores.overallScore },
+                { label: 'Population', value: inspection.scores.populationScore },
+                { label: 'Stores', value: inspection.scores.storesScore },
+                { label: 'Queen', value: inspection.scores.queenScore },
+              ]
+                .filter((s) => s.value !== null)
+                .map((s) => (
+                  <div
+                    key={s.label}
+                    className="text-center p-3 rounded-lg bg-muted/50"
+                  >
+                    <p className="text-xs text-muted-foreground">{s.label}</p>
+                    <p className="text-xl font-bold">
+                      {Math.round(s.value! * 10) / 10}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

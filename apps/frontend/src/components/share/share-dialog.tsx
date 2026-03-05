@@ -30,7 +30,7 @@ export function ShareDialog({
   if (!shareLink) return null;
 
   const shareUrl = shareLink.url;
-  const imageUrl = `/api/shares/${shareLink.token}/image`;
+  const imageUrl = `/api/shares/${shareLink.token}/image?t=${Date.now()}`;
 
   const handleCopy = async () => {
     try {

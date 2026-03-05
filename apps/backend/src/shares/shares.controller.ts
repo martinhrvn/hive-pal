@@ -39,7 +39,7 @@ export class SharesController {
   // Must be before :token to avoid the wildcard matching "image"
   @Get(':token/image')
   @Header('Content-Type', 'image/png')
-  @Header('Cache-Control', 'public, max-age=3600')
+  @Header('Cache-Control', 'no-cache')
   async getShareImage(
     @Param('token') token: string,
     @Res() res: Response,

@@ -56,7 +56,12 @@ export const sharedInspectionResponseSchema = z.object({
       booleanValue: z.boolean().nullable().optional(),
     }),
   ),
-  score: z.number().nullable(),
+  scores: z.object({
+    overallScore: z.number().nullable(),
+    populationScore: z.number().nullable(),
+    storesScore: z.number().nullable(),
+    queenScore: z.number().nullable(),
+  }).nullable(),
   notes: z.array(z.string()),
 });
 

@@ -4,6 +4,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { InspectionsService } from '../inspections/inspections.service';
+import { MetricsService } from '../metrics/metrics.service';
 import {
   CreateShareLink,
   ShareLinkResponse,
@@ -14,7 +16,11 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class SharesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private inspectionsService: InspectionsService,
+    private metricsService: MetricsService,
+  ) {}
 
   async createShareLink(
     userId: string,
@@ -146,9 +152,11 @@ export class SharesService {
       throw new NotFoundException('Inspection not found');
     }
 
-    // Extract hive score from settings if available
-    const settings = inspection.hive.settings as Record<string, unknown> | null;
-    const score = (settings?.hiveScore as number) ?? null;
+    // Compute scores from observations using the same logic as inspection detail
+    const metrics = this.inspectionsService.mapObservationsToDto(
+      inspection.observations,
+    );
+    const hiveScore = this.metricsService.calculateOveralScore(metrics);
 
     return {
       resourceType: ShareResourceType.INSPECTION,
@@ -162,7 +170,12 @@ export class SharesService {
         textValue: obs.textValue,
         booleanValue: obs.booleanValue,
       })),
-      score,
+      scores: {
+        overallScore: hiveScore.overallScore ?? null,
+        populationScore: hiveScore.populationScore ?? null,
+        storesScore: hiveScore.storesScore ?? null,
+        queenScore: hiveScore.queenScore ?? null,
+      },
       notes: inspection.notes.map((n) => n.text),
     };
   }
