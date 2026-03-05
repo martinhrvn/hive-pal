@@ -246,9 +246,10 @@ export class ShareImageService {
             display: 'flex',
             gap: '12px',
             marginBottom: '20px',
-            marginRight: '24px',
-            paddingRight: '24px'
-          }, children: scoreItems.map((s) => ({
+            marginRight: '25px',
+            paddingRight: '25px',
+          },
+          children: scoreItems.map((s) => ({
             type: 'div',
             props: {
               style: {
