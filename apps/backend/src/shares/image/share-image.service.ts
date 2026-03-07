@@ -174,7 +174,7 @@ export class ShareImageService {
             },
           ],
         },
-      } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      } as any,
       {
         width: 1200,
         height: 630,
@@ -429,7 +429,7 @@ export class ShareImageService {
             },
           ],
         },
-      } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      } as any,
       {
         width: 1200,
         height: 630,

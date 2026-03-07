@@ -40,10 +40,7 @@ export class SharesController {
   @Get(':token/image')
   @Header('Content-Type', 'image/png')
   @Header('Cache-Control', 'no-cache')
-  async getShareImage(
-    @Param('token') token: string,
-    @Res() res: Response,
-  ) {
+  async getShareImage(@Param('token') token: string, @Res() res: Response) {
     const data = await this.sharesService.getSharedResource(token);
     const png = await this.shareImageService.generateImage(data);
     res.send(png);

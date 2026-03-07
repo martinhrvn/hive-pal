@@ -84,7 +84,7 @@ export class SharesService {
       throw new NotFoundException('Share link has expired');
     }
 
-    if (shareLink.resourceType === ShareResourceType.HARVEST) {
+    if (shareLink.resourceType === (ShareResourceType.HARVEST as string)) {
       return this.getSharedHarvest(shareLink.resourceId);
     } else {
       return this.getSharedInspection(shareLink.resourceId);
