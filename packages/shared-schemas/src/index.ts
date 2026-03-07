@@ -19,3 +19,4 @@ export * from './reports';
 export * from './platform-metrics';
 export * from './quick-checks';
 export * from './features';
+export * from './shares';

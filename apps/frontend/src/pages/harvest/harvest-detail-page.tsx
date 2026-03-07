@@ -11,6 +11,7 @@ import {
   Edit,
   Droplets,
   RefreshCw,
+  Share2,
   Trash2,
   AlertTriangle,
 } from 'lucide-react';
@@ -38,6 +39,14 @@ import {
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useUnitFormat } from '@/hooks/use-unit-format';
+import { isCloudMode } from '@/utils/feature-flags';
+import { ShareResourceType, ShareLinkResponse } from 'shared-schemas';
+import { useCreateShareLink } from '@/api/hooks/useShares';
+import {
+  SharePromptDialog,
+  isSharePromptDismissed,
+} from '@/components/share/share-prompt-dialog';
+import { ShareDialog } from '@/components/share/share-dialog';
 
 export const HarvestDetailPage = () => {
   const { harvestId } = useParams<{ harvestId: string }>();
@@ -50,6 +59,11 @@ export const HarvestDetailPage = () => {
   const [editedHives, setEditedHives] = useState<
     { hiveId: string; framesTaken: number }[]
   >([]);
+
+  const [showSharePrompt, setShowSharePrompt] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareLink, setShareLink] = useState<ShareLinkResponse | null>(null);
+  const createShareLink = useCreateShareLink();
 
   const { data: harvest, isLoading } = useHarvest(harvestId!);
   const updateHarvest = useUpdateHarvest();
@@ -112,8 +126,24 @@ export const HarvestDetailPage = () => {
     try {
       await finalizeHarvest.mutateAsync(harvest.id);
       toast.success('Harvest finalized successfully');
+      if (isCloudMode() && !isSharePromptDismissed()) {
+        setShowSharePrompt(true);
+      }
     } catch {
       toast.error('Failed to finalize harvest');
+    }
+  };
+
+  const handleShareClick = async () => {
+    try {
+      const result = await createShareLink.mutateAsync({
+        resourceType: ShareResourceType.HARVEST,
+        resourceId: harvest.id,
+      });
+      setShareLink(result);
+      setShowShareDialog(true);
+    } catch {
+      toast.error('Failed to create share link');
     }
   };
 
@@ -184,6 +214,16 @@ export const HarvestDetailPage = () => {
           </Badge>
         </div>
         <div className="flex items-center space-x-2">
+          {isCloudMode() && (
+            <Button
+              variant="outline"
+              onClick={handleShareClick}
+              disabled={createShareLink.isPending}
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              Share
+            </Button>
+          )}
           {harvest.status === HarvestStatus.COMPLETED && (
             <Button variant="outline" onClick={handleReopen}>
               <RefreshCw className="mr-2 h-4 w-4" />
@@ -501,6 +541,20 @@ export const HarvestDetailPage = () => {
           </AlertDescription>
         </Alert>
       )}
+
+      <SharePromptDialog
+        open={showSharePrompt}
+        onOpenChange={setShowSharePrompt}
+        resourceType={ShareResourceType.HARVEST}
+        resourceId={harvest.id}
+        title="Harvest finalized!"
+      />
+
+      <ShareDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        shareLink={shareLink}
+      />
     </div>
   );
 };

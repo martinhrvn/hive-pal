@@ -14,3 +14,4 @@ export * from './useQueens';
 export * from './useWeather';
 export * from './useFeatures';
 export * from './useQuickChecks';
+export * from './useShares';
