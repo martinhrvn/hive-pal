@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -24,6 +25,7 @@ interface NoteFormProps {
 }
 
 export const NoteForm: React.FC<NoteFormProps> = ({ onSave, onRemove }) => {
+  const { t } = useTranslation('inspection');
   const { getValues } = useFormContext<InspectionFormData>();
   const existingActions = getValues('actions') || [];
   const existingNote = existingActions.find(a => a.type === 'NOTE') as
@@ -52,25 +54,25 @@ export const NoteForm: React.FC<NoteFormProps> = ({ onSave, onRemove }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <StickyNote className="h-5 w-5" />
-          Note
+          {t('inspection:form.actions.note_section.title')}
         </CardTitle>
         <CardDescription>
-          Add a note or observation about this hive
+          {t('inspection:form.actions.note_section.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="note-content">Note Content</Label>
+          <Label htmlFor="note-content">{t('inspection:form.actions.note_section.noteContent')}</Label>
           <Textarea
             id="note-content"
             value={content}
             onChange={e => setContent(e.target.value)}
-            placeholder="Enter your note or observation..."
+            placeholder={t('inspection:form.actions.note_section.placeholder')}
             className="min-h-[120px]"
             maxLength={500}
           />
           <p className="text-xs text-muted-foreground text-right">
-            {content.length}/500 characters
+            {t('inspection:form.actions.note_section.characters', { count: content.length })}
           </p>
         </div>
 
@@ -83,12 +85,12 @@ export const NoteForm: React.FC<NoteFormProps> = ({ onSave, onRemove }) => {
               onClick={handleRemove}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Remove
+              {t('inspection:form.actions.note_section.remove')}
             </Button>
           )}
           <Button type="button" onClick={handleSave} disabled={!content.trim()}>
             <Save className="mr-2 h-4 w-4" />
-            Save Note
+            {t('inspection:form.actions.note_section.saveNote')}
           </Button>
         </div>
       </CardContent>
@@ -107,6 +109,7 @@ export const NoteView: React.FC<NoteViewProps> = ({
   onSave,
   onRemove,
 }) => {
+  const { t } = useTranslation('inspection');
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(action.notes);
 
@@ -132,7 +135,7 @@ export const NoteView: React.FC<NoteViewProps> = ({
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <StickyNote className="h-4 w-4" />
-            Note
+            {t('inspection:form.actions.note_section.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -149,7 +152,7 @@ export const NoteView: React.FC<NoteViewProps> = ({
               size="sm"
               onClick={() => setIsEditing(false)}
             >
-              Cancel
+              {t('inspection:form.cancel')}
             </Button>
             <Button
               type="button"
@@ -157,7 +160,7 @@ export const NoteView: React.FC<NoteViewProps> = ({
               onClick={handleSave}
               disabled={!content.trim()}
             >
-              Save
+              {t('inspection:form.actions.save')}
             </Button>
           </div>
         </CardContent>
@@ -171,7 +174,7 @@ export const NoteView: React.FC<NoteViewProps> = ({
         <CardTitle className="text-sm flex items-center justify-between">
           <div className="flex items-center gap-2">
             <StickyNote className="h-4 w-4" />
-            Note
+            {t('inspection:form.actions.note_section.title')}
           </div>
           <div className="flex gap-1">
             <Button
@@ -180,7 +183,7 @@ export const NoteView: React.FC<NoteViewProps> = ({
               size="sm"
               onClick={() => setIsEditing(true)}
             >
-              Edit
+              {t('inspection:form.actions.note_section.edit')}
             </Button>
             <Button
               type="button"
@@ -188,7 +191,7 @@ export const NoteView: React.FC<NoteViewProps> = ({
               size="sm"
               onClick={handleRemove}
             >
-              Remove
+              {t('inspection:form.actions.note_section.remove')}
             </Button>
           </div>
         </CardTitle>

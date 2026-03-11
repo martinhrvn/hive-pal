@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -34,6 +35,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 export const CalendarPage = () => {
+  const { t } = useTranslation('common');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { activeApiaryId } = useApiaryStore();
 
@@ -460,15 +462,15 @@ export const CalendarPage = () => {
             <div className="mt-4 space-y-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Inspections</span>
+                <span>{t('common:calendar.inspections')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span>Actions</span>
+                <span>{t('common:calendar.actions')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                <span>Both</span>
+                <span>{t('common:calendar.both')}</span>
               </div>
             </div>
           </CardContent>

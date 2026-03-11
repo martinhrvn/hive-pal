@@ -19,6 +19,7 @@ import {
   Edit,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +42,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
   inspections,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('inspection');
   const [showAll, setShowAll] = useState(false);
   const MAX_DISPLAYED = 5;
   const { data: hives } = useHives();
@@ -136,7 +138,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
     <div className="space-y-4">
       {displayedInspections.length === 0 ? (
         <p className="text-muted-foreground text-center py-4">
-          No inspections recorded yet.
+          {t('inspection:timeline.noInspections')}
         </p>
       ) : (
         <>
@@ -144,7 +146,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
           {sortedScheduled.length > 0 && (
             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <Clock className="h-4 w-4" />
-              <span>Scheduled Inspections</span>
+              <span>{t('inspection:timeline.scheduledInspections')}</span>
             </div>
           )}
 
@@ -161,7 +163,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                 {showDivider && (
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mt-6 mb-4">
                     <CalendarIcon className="h-4 w-4" />
-                    <span>Completed Inspections</span>
+                    <span>{t('inspection:timeline.completedInspections')}</span>
                   </div>
                 )}
 
@@ -199,7 +201,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                                 variant="outline"
                                 className="text-gray-600 border-gray-600"
                               >
-                                Cancelled
+                                {t('inspection:timeline.cancelled')}
                               </Badge>
                             )}
                           </div>
@@ -221,7 +223,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                                 }
                               >
                                 <Eye className="h-4 w-4 mr-2" />
-                                View details
+                                {t('inspection:timeline.viewDetails')}
                               </DropdownMenuItem>
                               {inspection.status !==
                                 InspectionStatus.CANCELLED && (
@@ -233,7 +235,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                                   }
                                 >
                                   <Edit className="h-4 w-4 mr-2" />
-                                  Edit
+                                  {t('inspection:timeline.edit')}
                                 </DropdownMenuItem>
                               )}
                             </DropdownMenuContent>
@@ -247,7 +249,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               size={16}
                               className="text-muted-foreground"
                             />
-                            <span className="text-sm">Strength:</span>
+                            <span className="text-sm">{t('inspection:timeline.strength')}</span>
                             <span
                               className={`font-semibold ${getStrengthColor(inspection.observations?.strength ?? null)}`}
                             >
@@ -260,7 +262,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               size={16}
                               className="text-muted-foreground"
                             />
-                            <span className="text-sm">Honey:</span>
+                            <span className="text-sm">{t('inspection:timeline.honey')}</span>
                             <span
                               className={`font-semibold ${getHoneyColor(inspection.observations?.honeyStores ?? null)}`}
                             >
@@ -273,7 +275,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               size={16}
                               className="text-muted-foreground"
                             />
-                            <span className="text-sm">Brood:</span>
+                            <span className="text-sm">{t('inspection:timeline.brood')}</span>
                             <span
                               className={`font-semibold ${getBroodColor(calculateBroodScore(inspection) as number | null)}`}
                             >
@@ -286,7 +288,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         {(inspection.temperature ||
                           inspection.weatherConditions) && (
                           <div className="text-sm text-muted-foreground mb-2">
-                            Weather:{' '}
+                            {t('inspection:timeline.weather')}{' '}
                             {inspection.temperature
                               ? `${inspection.temperature}°`
                               : ''}
@@ -302,7 +304,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         {inspection.observations?.queenSeen !== null && (
                           <div className="mt-2 text-sm">
                             <span className="text-muted-foreground">
-                              Queen:{' '}
+                              {t('inspection:timeline.queen')}{' '}
                             </span>
                             <span
                               className={
@@ -312,8 +314,8 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               }
                             >
                               {inspection.observations?.queenSeen
-                                ? 'Seen'
-                                : 'Not seen'}
+                                ? t('inspection:timeline.queenSeen')
+                                : t('inspection:timeline.queenNotSeen')}
                             </span>
                           </div>
                         )}
@@ -326,7 +328,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               className="text-muted-foreground"
                             />
                             <span className="text-muted-foreground">
-                              Notes available
+                              {t('inspection:timeline.notesAvailable')}
                             </span>
                           </div>
                         )}
@@ -347,8 +349,8 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                 className="text-sm"
               >
                 {showAll
-                  ? 'Show fewer'
-                  : `Show all ${sortedInspections.length} inspections`}
+                  ? t('inspection:timeline.showFewer')
+                  : t('inspection:timeline.showAllCount', { count: sortedInspections.length })}
                 <ChevronDownIcon
                   className={`ml-2 h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`}
                 />

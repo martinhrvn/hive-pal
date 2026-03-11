@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { InspectionStatus } from 'shared-schemas';
 import { useUpdateInspection } from '@/api/hooks/useInspections';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 const getStatusConfig = (status: InspectionStatus) => {
   switch (status) {
@@ -61,6 +62,7 @@ export const InspectionStatusCard = ({
   inspectionId,
   status,
 }: InspectionStatusCardProps) => {
+  const { t } = useTranslation('inspection');
   const queryClient = useQueryClient();
   const { mutate: updateInspection, isPending } = useUpdateInspection();
 
@@ -107,14 +109,14 @@ export const InspectionStatusCard = ({
         <CardTitle>
           <div className="flex items-center gap-2">
             {statusConfig.icon}
-            Status
+            {t('inspection:statusCard.title')}
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-4">
           <div className="space-y-2">
-            <div className="text-sm text-muted-foreground">Current Status</div>
+            <div className="text-sm text-muted-foreground">{t('inspection:statusCard.currentStatus')}</div>
             <Badge
               variant={statusConfig.badgeVariant}
               className={`${statusConfig.bgColor} ${statusConfig.color} text-lg px-3 py-1`}
@@ -125,7 +127,7 @@ export const InspectionStatusCard = ({
 
           {showActions && (
             <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">Actions</div>
+              <div className="text-sm text-muted-foreground">{t('inspection:statusCard.actions')}</div>
               <div className="flex flex-col gap-2">
                 <Button
                   onClick={handleComplete}
@@ -135,7 +137,7 @@ export const InspectionStatusCard = ({
                   className="w-full"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  Mark as Completed
+                  {t('inspection:statusCard.markCompleted')}
                 </Button>
                 <Button
                   onClick={handleCancel}
@@ -145,7 +147,7 @@ export const InspectionStatusCard = ({
                   className="w-full"
                 >
                   <XCircle className="h-4 w-4 mr-2" />
-                  Cancel Inspection
+                  {t('inspection:statusCard.cancelInspection')}
                 </Button>
               </div>
             </div>

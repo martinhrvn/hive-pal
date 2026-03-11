@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Calendar, Copy, Check, RefreshCw, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   CardHeader,
@@ -22,6 +23,7 @@ interface CalendarSubscriptionCardProps {
 export function CalendarSubscriptionCard({
   apiaryId,
 }: CalendarSubscriptionCardProps) {
+  const { t } = useTranslation('apiary');
   const [copied, setCopied] = useState(false);
   const { data: subscription, isLoading } = useCalendarSubscription(apiaryId);
   const regenerate = useRegenerateCalendarSubscription();
@@ -32,10 +34,10 @@ export function CalendarSubscriptionCard({
     try {
       await navigator.clipboard.writeText(subscription.subscriptionUrl);
       setCopied(true);
-      toast.success('Subscription URL copied to clipboard');
+      toast.success(t('apiary:calendarSubscription.copied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy to clipboard');
+      toast.error(t('apiary:calendarSubscription.copyFailed'));
     }
   };
 
@@ -53,10 +55,10 @@ export function CalendarSubscriptionCard({
   const handleRegenerate = () => {
     regenerate.mutate(apiaryId, {
       onSuccess: () => {
-        toast.success('Subscription URL regenerated');
+        toast.success(t('apiary:calendarSubscription.regenerated'));
       },
       onError: () => {
-        toast.error('Failed to regenerate subscription URL');
+        toast.error(t('apiary:calendarSubscription.regenerateFailed'));
       },
     });
   };
@@ -67,7 +69,7 @@ export function CalendarSubscriptionCard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Calendar Subscription
+            {t('apiary:calendarSubscription.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -84,10 +86,10 @@ export function CalendarSubscriptionCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
-          Calendar Subscription
+          {t('apiary:calendarSubscription.title')}
         </CardTitle>
         <CardDescription>
-          Subscribe to this apiary's inspection schedule in your calendar app
+          {t('apiary:calendarSubscription.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -101,7 +103,7 @@ export function CalendarSubscriptionCard({
             variant="outline"
             size="icon"
             onClick={handleCopy}
-            title="Copy URL"
+            title={t('apiary:calendarSubscription.copyUrl')}
           >
             {copied ? (
               <Check className="h-4 w-4" />
@@ -114,7 +116,7 @@ export function CalendarSubscriptionCard({
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={handleAddToCalendar}>
             <Plus className="h-4 w-4 mr-2" />
-            Add to Calendar
+            {t('apiary:calendarSubscription.addToCalendar')}
           </Button>
           <Button
             variant="ghost"
@@ -127,13 +129,12 @@ export function CalendarSubscriptionCard({
             ) : (
               <RefreshCw className="h-4 w-4 mr-2" />
             )}
-            Regenerate URL
+            {t('apiary:calendarSubscription.regenerateUrl')}
           </Button>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          This URL provides read-only access to your inspection schedule.
-          Regenerating the URL will invalidate the previous one.
+          {t('apiary:calendarSubscription.readOnlyNote')}
         </p>
       </CardContent>
     </Card>

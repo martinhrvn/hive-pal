@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -10,13 +11,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { InspectionFormData } from './schema';
 
 export const NotesSection = () => {
+  const { t } = useTranslation('inspection');
   const form = useFormContext<InspectionFormData>();
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-medium">Notes</h2>
+      <h2 className="text-lg font-medium">{t('inspection:form.notes.title')}</h2>
       <p className="text-sm text-muted-foreground">
-        Add any additional notes about this inspection
+        {t('inspection:form.notes.description')}
       </p>
 
       <FormField
@@ -24,10 +26,10 @@ export const NotesSection = () => {
         name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Notes</FormLabel>
+            <FormLabel>{t('inspection:form.notes.label')}</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Enter any observations, findings, or actions taken during the inspection..."
+                placeholder={t('inspection:form.notes.placeholder')}
                 className="min-h-[120px]"
                 {...field}
                 value={field.value ?? ''}

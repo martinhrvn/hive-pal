@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   format,
   formatDistanceToNow,
@@ -115,7 +116,7 @@ const getActionIcon = (action: ActionResponse) => {
   }
 };
 
-const getActionLabel = (action: ActionResponse) => {
+const getActionLabel = (action: ActionResponse, t: (key: string) => string) => {
   switch (action.type) {
     case 'FEEDING':
       if (action.details?.type === 'FEEDING') {
@@ -144,7 +145,7 @@ const getActionLabel = (action: ActionResponse) => {
     case 'NOTE':
       return 'Note';
     case 'BOX_CONFIGURATION':
-      return 'Box configuration';
+      return t('common:timeline.boxConfiguration');
     default:
       return action.type;
   }
@@ -166,6 +167,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   hives,
   headerSlot,
 }) => {
+  const { t } = useTranslation('common');
   const [showAll, setShowAll] = useState(false);
   const [eventTypeFilter, setEventTypeFilter] =
     useState<EventTypeFilter>('all');
@@ -388,11 +390,11 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                 ) : (
                   <CalendarIcon className="h-4 w-4 text-blue-500" />
                 )}
-                <span className="font-medium text-sm">Inspection</span>
+                <span className="font-medium text-sm">{t('common:timeline.inspection')}</span>
                 {renderHiveName(event)}
                 {isOverdue && (
                   <Badge variant="destructive" className="text-xs">
-                    Overdue
+                    {t('common:timeline.overdue')}
                   </Badge>
                 )}
                 {isScheduled && !isOverdue && (
@@ -400,7 +402,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                     variant="outline"
                     className="text-amber-600 border-amber-600 text-xs"
                   >
-                    Scheduled
+                    {t('common:timeline.scheduled')}
                   </Badge>
                 )}
                 {isCancelled && (
@@ -408,7 +410,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                     variant="outline"
                     className="text-gray-500 border-gray-300 text-xs"
                   >
-                    Cancelled
+                    {t('common:timeline.cancelled')}
                   </Badge>
                 )}
               </div>
@@ -418,20 +420,19 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                   {inspection.observations.strength !== null && (
                     <span className="flex items-center gap-1">
                       <ActivityIcon className="h-3 w-3" />
-                      Strength: {inspection.observations.strength}
+                      {t('common:timeline.strength')}: {inspection.observations.strength}
                     </span>
                   )}
                   {inspection.observations.honeyStores !== null && (
                     <span className="flex items-center gap-1">
                       <DropletsIcon className="h-3 w-3" />
-                      Honey: {inspection.observations.honeyStores}
+                      {t('common:timeline.honey')}: {inspection.observations.honeyStores}
                     </span>
                   )}
                   {inspection.observations.queenSeen !== null && (
                     <span className="flex items-center gap-1">
                       <Crown className="h-3 w-3" />
-                      Queen{' '}
-                      {inspection.observations.queenSeen ? 'seen' : 'not seen'}
+                      {inspection.observations.queenSeen ? t('common:timeline.queenSeen') : t('common:timeline.queenNotSeen')}
                     </span>
                   )}
                 </div>
@@ -440,7 +441,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               {inspection.notes && (
                 <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                   <FileTextIcon className="h-3 w-3" />
-                  <span>Notes available</span>
+                  <span>{t('common:timeline.notesAvailable')}</span>
                 </div>
               )}
             </div>
@@ -454,7 +455,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium">
-                  Quick Check
+                  {t('common:quickCheck.title')}
                   {renderHiveName(event)}
                 </div>
                 {quickCheck.tags.length > 0 && (
@@ -517,7 +518,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               <div className="mt-0.5">{getActionIcon(action)}</div>
               <div className="flex-1">
                 <div className="text-sm">
-                  {getActionLabel(action)}
+                  {getActionLabel(action, t)}
                   {renderHiveName(event)}
                 </div>
                 {action.notes && (
@@ -597,14 +598,14 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
             <SelectValue placeholder="Event type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All events</SelectItem>
-            <SelectItem value="inspections">Inspections</SelectItem>
-            <SelectItem value="feeding">Feeding</SelectItem>
-            <SelectItem value="treatment">Treatments</SelectItem>
-            <SelectItem value="harvest">Harvests</SelectItem>
-            <SelectItem value="quick-checks">Quick Checks</SelectItem>
-            <SelectItem value="notes">Notes</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+            <SelectItem value="all">{t('common:timeline.allEvents')}</SelectItem>
+            <SelectItem value="inspections">{t('common:timeline.inspections')}</SelectItem>
+            <SelectItem value="feeding">{t('common:timeline.feeding')}</SelectItem>
+            <SelectItem value="treatment">{t('common:timeline.treatments')}</SelectItem>
+            <SelectItem value="harvest">{t('common:timeline.harvests')}</SelectItem>
+            <SelectItem value="quick-checks">{t('common:quickCheck.title')}</SelectItem>
+            <SelectItem value="notes">{t('common:timeline.notes')}</SelectItem>
+            <SelectItem value="other">{t('common:timeline.other')}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -617,11 +618,11 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
             <SelectValue placeholder="Date range" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All time</SelectItem>
-            <SelectItem value="1month">Last month</SelectItem>
-            <SelectItem value="3months">Last 3 months</SelectItem>
-            <SelectItem value="6months">Last 6 months</SelectItem>
-            <SelectItem value="year">Last year</SelectItem>
+            <SelectItem value="all">{t('common:timeline.allTime')}</SelectItem>
+            <SelectItem value="1month">{t('common:timeline.lastMonth')}</SelectItem>
+            <SelectItem value="3months">{t('common:timeline.last3Months')}</SelectItem>
+            <SelectItem value="6months">{t('common:timeline.last6Months')}</SelectItem>
+            <SelectItem value="year">{t('common:timeline.lastYear')}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -634,7 +635,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               <SelectValue placeholder="Hive" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All hives</SelectItem>
+              <SelectItem value="all">{t('common:timeline.allHives')}</SelectItem>
               {hives.map(hive => (
                 <SelectItem key={hive.id} value={hive.id}>
                   {hive.name}
@@ -656,7 +657,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
             className="h-9 px-2"
           >
             <X className="h-3 w-3 mr-1" />
-            Clear filters
+            {t('common:timeline.clearFilters')}
           </Button>
         )}
 
@@ -667,8 +668,8 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
         {displayedEvents.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
             {hasActiveFilters
-              ? 'No events match the selected filters'
-              : (emptyMessage ?? 'No activity recorded yet')}
+              ? t('common:timeline.noMatchingFilters')
+              : (emptyMessage ?? t('common:timeline.noActivity'))}
           </div>
         ) : (
           <>
@@ -687,8 +688,8 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                   className="text-xs h-7 px-2"
                 >
                   {showAll
-                    ? 'Show less'
-                    : `Show ${timelineEvents.length - maxDisplayed} more`}
+                    ? t('common:timeline.showLess')
+                    : t('common:timeline.showMore', { count: timelineEvents.length - maxDisplayed })}
                   <ChevronDownIcon
                     className={`ml-1 h-3 w-3 transition-transform ${
                       showAll ? 'rotate-180' : ''

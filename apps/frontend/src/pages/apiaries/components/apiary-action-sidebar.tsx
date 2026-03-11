@@ -39,8 +39,8 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
           {apiaryId ? (
             <QuickCheckDialog apiaryId={apiaryId} />
           ) : (
-            <SidebarMenuButton disabled tooltip="Quick Check">
-              <span>Quick Check</span>
+            <SidebarMenuButton disabled tooltip={t('common:quickCheck.title')}>
+              <span>{t('common:quickCheck.title')}</span>
             </SidebarMenuButton>
           )}
         </SidebarMenuItem>

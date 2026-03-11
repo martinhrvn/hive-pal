@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { BarChart, CrownIcon } from 'lucide-react';
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { IconJarLogoIcon } from '@radix-ui/react-icons';
@@ -5,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { HiveScore } from 'shared-schemas';
 
 export const StatisticCards = ({ score }: { score: HiveScore }) => {
+  const { t } = useTranslation(['hive']);
   const strength = score.populationScore;
   const honeyStores = score.storesScore;
   const queenScore = score.queenScore;
@@ -65,37 +67,37 @@ export const StatisticCards = ({ score }: { score: HiveScore }) => {
     <Card className="p-3 sm:p-6">
       {/* Mobile view - single line */}
       <div className="sm:hidden flex items-center justify-between flex-wrap gap-2">
-        <MobileScoreItem label="Overall" value={score.overallScore} />
-        <MobileScoreItem label="Pop" value={strength} />
-        <MobileScoreItem label="Stores" value={honeyStores} />
-        <MobileScoreItem label="Queen" value={queenScore} />
+        <MobileScoreItem label={t('hive:scores.overall')} value={score.overallScore} />
+        <MobileScoreItem label={t('hive:scores.populationShort')} value={strength} />
+        <MobileScoreItem label={t('hive:scores.stores')} value={honeyStores} />
+        <MobileScoreItem label={t('hive:scores.queen')} value={queenScore} />
       </div>
 
       {/* Desktop view - 2x2 grid */}
       <div className="hidden sm:block">
         <div className="h-full grid grid-cols-2 items-center justify-center">
           <ScoreItem
-            title="Overall Score"
+            title={t('hive:scores.overallScore')}
             value={score.overallScore}
             icon={<BarChart className="text-muted-foreground/60" />}
             emphasized
           />
 
           <ScoreItem
-            title="Population"
+            title={t('hive:scores.population')}
             value={strength}
             icon={<BeeIcon className="text-muted-foreground/60" />}
             emphasized
           />
           <ScoreItem
-            title="Stores"
+            title={t('hive:scores.stores')}
             value={honeyStores}
             icon={<IconJarLogoIcon className="text-muted-foreground/60" />}
             emphasized
           />
 
           <ScoreItem
-            title="Queen Score"
+            title={t('hive:scores.queenScore')}
             value={queenScore}
             icon={<CrownIcon className="text-muted-foreground/60" />}
             emphasized

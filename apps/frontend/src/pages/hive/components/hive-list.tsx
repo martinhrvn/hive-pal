@@ -44,9 +44,9 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
   }, [actions, hiveDetails?.settings]);
 
   const formatLastInspectionDate = (dateString?: string) => {
-    if (!dateString) return 'No inspection yet';
+    if (!dateString) return t('hive:card.noInspection');
     const date = new Date(dateString);
-    return `Last inspected ${date.toLocaleDateString()}`;
+    return t('hive:card.lastInspected', { date: date.toLocaleDateString() });
   };
 
   return (
@@ -65,7 +65,7 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
         <div className={'flex items-start flex-col'}>
           <div className={'flex items-center text-gray-400'}>
             <p className={'col-start-1 text-xs/6'}>
-              {hive.notes ?? 'No notes'}
+              {hive.notes ?? t('hive:fields.noNotes')}
             </p>
           </div>
         </div>
@@ -74,7 +74,7 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
         {hiveDetails?.hiveScore?.overallScore !== undefined && (
           <div className="flex items-center gap-2 text-sm">
             <TrendingUp className="h-4 w-4 text-blue-500" />
-            <span className="text-gray-600">Score:</span>
+            <span className="text-gray-600">{t('hive:card.score')}</span>
             <span className="font-medium">
               {hiveDetails.hiveScore.overallScore}/100
             </span>
@@ -85,7 +85,7 @@ const HiveCard: React.FC<{ hive: HiveResponse }> = ({ hive }) => {
         {feedingInfo && (
           <div className="flex items-center gap-2 text-sm">
             <Activity className="h-4 w-4 text-green-500" />
-            <span className="text-gray-600">Feeding:</span>
+            <span className="text-gray-600">{t('hive:card.feeding')}</span>
             <span className="font-medium">
               {feedingInfo.fed.toFixed(1)}kg / {feedingInfo.optimal}kg
             </span>

@@ -9,6 +9,7 @@ import {
 import 'leaflet/dist/leaflet.css';
 import L, { LatLngLiteral, Icon } from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 // Fix for default marker icon issue with bundlers
 const defaultIcon = new Icon({
@@ -38,6 +39,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({
   initialPosition,
   readOnly = false,
 }) => {
+  const { t } = useTranslation('apiary');
   const [position, setPosition] = useState<L.LatLng | null>(
     initialPosition || null,
   );
@@ -67,7 +69,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({
 
   return position === null ? null : (
     <Marker position={position} icon={defaultIcon}>
-      <Popup>{readOnly ? 'Apiary Location' : 'Selected Location'}</Popup>
+      <Popup>{readOnly ? t('apiary:map.apiaryLocation') : t('apiary:map.selectedLocation')}</Popup>
     </Marker>
   );
 };
@@ -86,6 +88,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
   initialLocation = { lat: 50.4133645, lng: 10.8357111 },
   readOnly = false,
 }) => {
+  const { t } = useTranslation('apiary');
   const hasInitialLocation =
     initialLocation.lat !== 50.4133645 || initialLocation.lng !== 10.8357111;
   const initialPosition = hasInitialLocation
@@ -96,7 +99,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
     <Card className="w-full max-w-4xl">
       <CardHeader>
         <CardTitle>
-          {readOnly ? 'Apiary Location' : 'Select Apiary Location'}
+          {readOnly ? t('apiary:map.apiaryLocation') : t('apiary:map.selectLocation')}
         </CardTitle>
       </CardHeader>
       <CardContent>

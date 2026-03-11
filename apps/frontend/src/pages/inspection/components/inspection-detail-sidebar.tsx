@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PlusCircle,
   Pencil,
@@ -26,68 +27,69 @@ interface InspectionDetailSidebarProps {
 export const InspectionDetailSidebar: React.FC<
   InspectionDetailSidebarProps
 > = ({ inspectionId, hiveId }) => {
+  const { t } = useTranslation('inspection');
   const navigate = useNavigate();
 
   return (
     <ActionSidebarContainer>
-      <ActionSidebarGroup title="Inspection Actions">
+      <ActionSidebarGroup title={t('inspection:detailSidebar.inspectionActions')}>
         <MenuItemButton
           icon={<Pencil className="h-4 w-4" />}
-          label="Edit Inspection"
+          label={t('inspection:detailSidebar.editInspection')}
           onClick={() => navigate(`/inspections/${inspectionId}/edit`)}
-          tooltip="Edit Inspection"
+          tooltip={t('inspection:detailSidebar.editInspection')}
         />
         <MenuItemButton
           icon={<Printer className="h-4 w-4" />}
-          label="Print Details"
+          label={t('inspection:detailSidebar.printDetails')}
           onClick={() => window.print()}
-          tooltip="Print Inspection"
+          tooltip={t('inspection:detailSidebar.printDetails')}
         />
         <MenuItemButton
           icon={<Trash className="h-4 w-4" />}
-          label="Delete Inspection"
-          tooltip="Delete Inspection"
+          label={t('inspection:detailSidebar.deleteInspection')}
+          tooltip={t('inspection:detailSidebar.deleteInspection')}
           className="text-red-600 hover:text-red-700"
         />
       </ActionSidebarGroup>
 
       <Separator className="my-2" />
 
-      <ActionSidebarGroup title="Related Actions">
+      <ActionSidebarGroup title={t('inspection:detailSidebar.relatedActions')}>
         <MenuItemButton
           icon={<Home className="h-4 w-4" />}
-          label="View Hive"
+          label={t('inspection:detailSidebar.viewHive')}
           onClick={() => navigate(`/hives/${hiveId}`)}
-          tooltip="Go to Hive"
+          tooltip={t('inspection:detailSidebar.viewHive')}
         />
         <MenuItemButton
           icon={<PlusCircle className="h-4 w-4" />}
-          label="New Inspection"
+          label={t('inspection:detailSidebar.newInspection')}
           onClick={() => navigate(`/hives/${hiveId}/inspections/create`)}
-          tooltip="Create New Inspection"
+          tooltip={t('inspection:detailSidebar.newInspection')}
         />
       </ActionSidebarGroup>
 
       <Separator className="my-2" />
 
-      <ActionSidebarGroup title="Navigation">
+      <ActionSidebarGroup title={t('inspection:detailSidebar.navigation')}>
         <MenuItemButton
           icon={<ClipboardList className="h-4 w-4" />}
-          label="All Inspections"
+          label={t('inspection:detailSidebar.allInspections')}
           onClick={() => navigate('/inspections')}
-          tooltip="All Inspections"
+          tooltip={t('inspection:detailSidebar.allInspections')}
         />
         <MenuItemButton
           icon={<CalendarRange className="h-4 w-4" />}
-          label="Recent Inspections"
+          label={t('inspection:detailSidebar.recentInspections')}
           onClick={() => navigate('/inspections/list/recent')}
-          tooltip="Recent Inspections"
+          tooltip={t('inspection:detailSidebar.recentInspections')}
         />
         <MenuItemButton
           icon={<ArrowLeft className="h-4 w-4" />}
-          label="Go Back"
+          label={t('inspection:detailSidebar.goBack')}
           onClick={() => navigate(-1)}
-          tooltip="Go Back"
+          tooltip={t('inspection:detailSidebar.goBack')}
         />
       </ActionSidebarGroup>
     </ActionSidebarContainer>

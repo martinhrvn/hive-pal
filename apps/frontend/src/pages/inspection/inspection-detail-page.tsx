@@ -25,8 +25,10 @@ import { isCloudMode } from '@/utils/feature-flags';
 import { ShareResourceType, ShareLinkResponse } from 'shared-schemas';
 import { ShareDialog } from '@/components/share/share-dialog';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export const InspectionDetailPage = () => {
+  const { t } = useTranslation('inspection');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { setInspectionContext, setHiveContext } = useBreadcrumbStore();
@@ -44,7 +46,7 @@ export const InspectionDetailPage = () => {
       setShareLink(result);
       setShowShareDialog(true);
     } catch {
-      toast.error('Failed to create share link');
+      toast.error(t('inspection:detail.shareFailed'));
     }
   };
 
@@ -81,22 +83,22 @@ export const InspectionDetailPage = () => {
   }, [inspection, hive, setInspectionContext, setHiveContext]);
 
   if (isLoading) {
-    return <div>Loading inspection...</div>;
+    return <div>{t('inspection:detail.loading')}</div>;
   }
 
   if (error || !inspection) {
     return (
       <Alert variant="destructive">
         <X className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
+        <AlertTitle>{t('inspection:detail.error')}</AlertTitle>
         <AlertDescription>
-          Failed to load inspection details.{' '}
+          {t('inspection:detail.errorDescription')}{' '}
           <Button
             variant="link"
             className="p-0 h-auto"
             onClick={() => navigate(-1)}
           >
-            Go back
+            {t('inspection:detail.goBack')}
           </Button>
         </AlertDescription>
       </Alert>
@@ -104,7 +106,7 @@ export const InspectionDetailPage = () => {
   }
 
   if (!inspection || !hive) {
-    return <div>Inspection not found</div>;
+    return <div>{t('inspection:detail.notFound')}</div>;
   }
 
   return (
@@ -117,7 +119,7 @@ export const InspectionDetailPage = () => {
             onClick={() => navigate(-1)}
             className="mb-4"
           >
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back
+            <ChevronLeft className="mr-2 h-4 w-4" /> {t('inspection:detail.back')}
           </Button>
 
           <div className="flex items-center justify-between">
@@ -133,7 +135,7 @@ export const InspectionDetailPage = () => {
                 disabled={createShareLink.isPending}
               >
                 <Share2 className="mr-2 h-4 w-4" />
-                Share
+                {t('inspection:detail.share')}
               </Button>
             )}
           </div>

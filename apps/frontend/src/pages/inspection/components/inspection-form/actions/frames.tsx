@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import NumericInputField from '@/components/common/numeric-input-field.tsx';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ type FramesActionProps = {
 };
 
 export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
+  const { t } = useTranslation('inspection');
   const [frames, setFrames] = useState<number | null>(action?.frames ?? 0);
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
 
@@ -27,9 +29,9 @@ export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
       className={'grid lg:grid-cols-2 grid-cols-1 gap-4 mt-5'}
       data-test={TEST_SELECTORS.FRAMES_FORM}
     >
-      <h3 className="lg:col-span-2 text-lg font-bold">Frames</h3>
+      <h3 className="lg:col-span-2 text-lg font-bold">{t('inspection:form.actions.frames_section.title')}</h3>
       <div className={'flex flex-col gap-4 col-span-2'}>
-        <label htmlFor={'frames'}>Number of frames added/removed</label>
+        <label htmlFor={'frames'}>{t('inspection:form.actions.frames_section.framesLabel')}</label>
         <NumericInputField
           id={'frames'}
           step={1}
@@ -44,15 +46,15 @@ export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
           )}
         />
         <div className="text-sm text-gray-500">
-          Use positive numbers for frames added, negative for frames removed
+          {t('inspection:form.actions.frames_section.framesHint')}
         </div>
       </div>
 
       <div className="lg:col-span-2 flex flex-col gap-4">
-        <label htmlFor="notes">Notes (optional)</label>
+        <label htmlFor="notes">{t('inspection:form.actions.frames_section.notesOptional')}</label>
         <Textarea
           id="notes"
-          placeholder="Add any additional notes about frames changes"
+          placeholder={t('inspection:form.actions.frames_section.notesPlaceholder')}
           value={notes}
           onChange={e => setNotes(e.target.value)}
           data-test={TEST_SELECTORS.FRAMES_NOTES}
@@ -70,7 +72,7 @@ export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
               });
             }}
           >
-            Save
+            {t('inspection:form.actions.save')}
           </Button>
         )}
       </div>
@@ -83,6 +85,7 @@ export const FramesView: React.FC<FramesActionProps> = ({
   onSave,
   onRemove,
 }) => {
+  const { t } = useTranslation('inspection');
   const [isEditing, setIsEditing] = useState(false);
 
   if (!action) {
@@ -107,7 +110,7 @@ export const FramesView: React.FC<FramesActionProps> = ({
       data-test={TEST_SELECTORS.FRAMES_VIEW}
     >
       <div className={'flex flex-col gap-2'}>
-        <h3 className="font-medium">Frames</h3>
+        <h3 className="font-medium">{t('inspection:form.actions.frames_section.title')}</h3>
         <div className={'flex gap-5 text-sm'}>
           <Badge>{framesDisplay}</Badge>
         </div>

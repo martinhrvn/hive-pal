@@ -46,6 +46,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 const scheduleSchema = z
@@ -97,6 +98,7 @@ const getWeatherIcon = (condition: WeatherCondition) => {
 };
 
 export const ScheduleInspectionPage = () => {
+  const { t } = useTranslation('inspection');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedHiveIds, setSelectedHiveIds] = useState<string[]>([]);
   const [selectedApiaryIds, setSelectedApiaryIds] = useState<string[]>([]);
@@ -133,7 +135,7 @@ export const ScheduleInspectionPage = () => {
     const apiaryId = firstHive?.apiaryId;
 
     if (!apiaryId) {
-      toast.error('Unable to determine apiary for selected hives');
+      toast.error(t('inspection:schedule.noApiary'));
       return;
     }
 
@@ -147,14 +149,12 @@ export const ScheduleInspectionPage = () => {
         },
         {
           onSuccess: batch => {
-            toast.success(
-              `Successfully created batch inspection: ${batchName}`,
-            );
+            toast.success(t('inspection:schedule.batchCreated', { name: batchName }));
             navigate(`/batch-inspections/${batch.id}`);
           },
           onError: error => {
             console.error('Failed to create batch inspection:', error);
-            toast.error('Failed to create batch inspection');
+            toast.error(t('inspection:schedule.batchCreateFailed'));
           },
         },
       );
@@ -196,16 +196,12 @@ export const ScheduleInspectionPage = () => {
       }
 
       if (successCount > 0) {
-        toast.success(
-          `Successfully scheduled ${successCount} inspection${successCount > 1 ? 's' : ''}`,
-        );
+        toast.success(t(successCount > 1 ? 'inspection:schedule.scheduledSuccessPlural' : 'inspection:schedule.scheduledSuccess', { count: successCount }));
         navigate('/inspections/list/upcoming');
       }
 
       if (errorCount > 0) {
-        toast.error(
-          `Failed to schedule ${errorCount} inspection${errorCount > 1 ? 's' : ''}`,
-        );
+        toast.error(t(errorCount > 1 ? 'inspection:schedule.scheduledFailedPlural' : 'inspection:schedule.scheduledFailed', { count: errorCount }));
       }
     }
   });
@@ -272,9 +268,9 @@ export const ScheduleInspectionPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Schedule Inspection</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('inspection:schedule.title')}</h1>
         <p className="text-muted-foreground">
-          Plan your inspections for the next 7 days with weather forecast
+          {t('inspection:schedule.description')}
         </p>
       </div>
 
@@ -282,15 +278,14 @@ export const ScheduleInspectionPage = () => {
         <form onSubmit={handleSchedule} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Select Hives</CardTitle>
+              <CardTitle>{t('inspection:schedule.selectHives')}</CardTitle>
               <CardDescription>
-                Choose which hives you want to schedule inspections for
+                {t('inspection:schedule.selectHivesDescription')}
               </CardDescription>
               {selectedHiveIds.length > 0 && (
                 <div className="flex items-center gap-2 mt-2">
                   <Badge variant="secondary">
-                    {selectedHiveIds.length} hive
-                    {selectedHiveIds.length !== 1 ? 's' : ''} selected
+                    {t(selectedHiveIds.length !== 1 ? 'inspection:schedule.hivesSelectedPlural' : 'inspection:schedule.hivesSelected', { count: selectedHiveIds.length })}
                   </Badge>
                   <Button
                     type="button"
@@ -300,7 +295,7 @@ export const ScheduleInspectionPage = () => {
                     className="h-6 px-2"
                   >
                     <X className="h-3 w-3 mr-1" />
-                    Clear
+                    {t('inspection:schedule.clear')}
                   </Button>
                 </div>
               )}
@@ -368,24 +363,22 @@ export const ScheduleInspectionPage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Schedule Calendar</CardTitle>
+              <CardTitle>{t('inspection:schedule.scheduleCalendar')}</CardTitle>
               <CardDescription>
-                Select a day to schedule your inspection with weather forecast
-                (next {daysToShow} days)
+                {t('inspection:schedule.calendarDescription', { days: daysToShow })}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {selectedHiveIds.length === 0 ? (
                 <Alert>
                   <AlertDescription>
-                    Please select at least one hive to view weather forecast
+                    {t('inspection:schedule.selectHiveFirst')}
                   </AlertDescription>
                 </Alert>
               ) : !primaryApiaryId ? (
                 <Alert>
                   <AlertDescription>
-                    Selected hives don't have an associated apiary for weather
-                    data
+                    {t('inspection:schedule.noApiaryWeather')}
                   </AlertDescription>
                 </Alert>
               ) : weatherLoading ? (
@@ -426,7 +419,7 @@ export const ScheduleInspectionPage = () => {
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between mb-2">
                               <div className="font-semibold text-sm">
-                                {isToday ? 'Today' : format(day, 'EEE')}
+                                {isToday ? t('inspection:schedule.today') : format(day, 'EEE')}
                               </div>
                               {isSelected && (
                                 <CalendarPlus className="h-4 w-4 text-primary" />
@@ -459,8 +452,8 @@ export const ScheduleInspectionPage = () => {
                             ) : (
                               <div className="text-xs text-muted-foreground">
                                 {isBeyondForecast
-                                  ? 'No forecast available'
-                                  : 'No weather data'}
+                                  ? t('inspection:schedule.noForecast')
+                                  : t('inspection:schedule.noWeatherData')}
                               </div>
                             )}
                           </CardContent>
@@ -477,7 +470,7 @@ export const ScheduleInspectionPage = () => {
                         onClick={showFewerDays}
                         size="sm"
                       >
-                        Show Fewer Days
+                        {t('inspection:schedule.showFewerDays')}
                       </Button>
                     )}
                     <Button
@@ -486,7 +479,7 @@ export const ScheduleInspectionPage = () => {
                       onClick={showMoreDays}
                       size="sm"
                     >
-                      Show More Days (+7)
+                      {t('inspection:schedule.showMoreDays')}
                     </Button>
                   </div>
                 </>
@@ -497,16 +490,14 @@ export const ScheduleInspectionPage = () => {
           {selectedDate && selectedHiveIds.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Inspection Details</CardTitle>
+                <CardTitle>{t('inspection:schedule.inspectionDetails')}</CardTitle>
                 <CardDescription>
-                  Scheduling {selectedHiveIds.length} inspection
-                  {selectedHiveIds.length !== 1 ? 's' : ''} for{' '}
-                  {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                  {t(selectedHiveIds.length !== 1 ? 'inspection:schedule.schedulingCountPlural' : 'inspection:schedule.schedulingCount', { count: selectedHiveIds.length, date: format(selectedDate, 'EEEE, MMMM d, yyyy') })}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="mb-4">
-                  <label className="text-sm font-medium">Selected Hives:</label>
+                  <label className="text-sm font-medium">{t('inspection:schedule.selectedHives')}</label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {selectedHiveIds.map(hiveId => {
                       const hive = hives?.find(h => h.id === hiveId);
@@ -533,10 +524,9 @@ export const ScheduleInspectionPage = () => {
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>Create as Batch Inspection</FormLabel>
+                          <FormLabel>{t('inspection:schedule.createAsBatch')}</FormLabel>
                           <p className="text-sm text-muted-foreground">
-                            Perform inspections sequentially with a guided
-                            workflow
+                            {t('inspection:schedule.batchDescription')}
                           </p>
                         </div>
                       </FormItem>
@@ -550,10 +540,10 @@ export const ScheduleInspectionPage = () => {
                     name="batchName"
                     render={({ field }) => (
                       <FormItem className="mb-4">
-                        <FormLabel>Batch Name</FormLabel>
+                        <FormLabel>{t('inspection:schedule.batchName')}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="e.g., Spring 2025 Inspection"
+                            placeholder={t('inspection:schedule.batchNamePlaceholder')}
                             {...field}
                           />
                         </FormControl>
@@ -569,10 +559,10 @@ export const ScheduleInspectionPage = () => {
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Notes (Optional)</FormLabel>
+                        <FormLabel>{t('inspection:schedule.notesOptional')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Add any notes for this scheduled inspection..."
+                            placeholder={t('inspection:schedule.notesPlaceholder')}
                             className="min-h-[100px]"
                             {...field}
                           />
@@ -588,21 +578,21 @@ export const ScheduleInspectionPage = () => {
                     <Calendar className="h-4 w-4" />
                     <span className="text-sm font-medium">
                       {createAsBatch
-                        ? 'This batch will be created and ready to start'
-                        : 'This inspection will be scheduled for a future date'}
+                        ? t('inspection:schedule.batchInfo')
+                        : t('inspection:schedule.scheduledInfo')}
                     </span>
                   </div>
                   <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
                     {createAsBatch
-                      ? 'You can begin the batch inspection immediately or start it later.'
-                      : 'You can add details and complete the inspection on the scheduled date.'}
+                      ? t('inspection:schedule.batchStartInfo')
+                      : t('inspection:schedule.scheduledStartInfo')}
                   </p>
                 </div>
 
                 <Button type="submit" className="w-full mt-6">
                   {createAsBatch
-                    ? `Create Batch Inspection`
-                    : `Schedule ${selectedHiveIds.length} Inspection${selectedHiveIds.length !== 1 ? 's' : ''}`}
+                    ? t('inspection:schedule.createBatchInspection')
+                    : t(selectedHiveIds.length !== 1 ? 'inspection:schedule.scheduleCountPlural' : 'inspection:schedule.scheduleCount', { count: selectedHiveIds.length })}
                 </Button>
               </CardContent>
             </Card>

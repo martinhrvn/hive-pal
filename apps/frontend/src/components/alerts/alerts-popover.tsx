@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import {
   Popover,
@@ -32,6 +33,7 @@ const severityConfig = {
 };
 
 export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
+  const { t } = useTranslation('common');
   if (!alerts || alerts.length === 0) {
     return null;
   }
@@ -49,7 +51,7 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
   const config = severityConfig[highestSeverity];
   const Icon = config.icon;
   const alertCount = alerts.length;
-  const pluralLabel = alertCount === 1 ? config.label : `${config.label}s`;
+  const pluralLabel = alertCount === 1 ? t('common:alerts.alert') : t('common:alerts.alerts');
 
   return (
     <Popover>
@@ -72,7 +74,7 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
           <div className="flex items-center gap-2 mb-3">
             <Icon className={cn('h-4 w-4', config.color)} />
             <h4 className="font-medium text-sm">
-              {alertCount} Active {alertCount === 1 ? 'Alert' : 'Alerts'}
+              {alertCount} {alertCount === 1 ? t('common:alerts.activeAlert') : t('common:alerts.activeAlerts')}
             </h4>
           </div>
 

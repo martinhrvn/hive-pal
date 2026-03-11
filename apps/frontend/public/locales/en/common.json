@@ -173,6 +173,58 @@
     "submittedMessage": "Your feedback has been submitted successfully. We appreciate your input and will review it soon.",
     "submitAnother": "Submit Another Feedback"
   },
+  "alerts": {
+    "alert": "alert",
+    "alerts": "alerts",
+    "activeAlerts": "Active Alerts",
+    "activeAlert": "Active Alert"
+  },
+  "calendar": {
+    "both": "Both",
+    "inspections": "Inspections",
+    "actions": "Actions"
+  },
+  "quickCheck": {
+    "title": "Quick Check",
+    "description": "This action cannot be undone. This will permanently delete this quick check and its photos.",
+    "deleteTitle": "Delete Quick Check?",
+    "deleteDescription": "This action cannot be undone. This will permanently delete this quick check and its photos.",
+    "deleted": "Quick check deleted",
+    "deleteFailed": "Failed to delete quick check"
+  },
+  "timeline": {
+    "recentActivity": "Recent Activity",
+    "noActivity": "No activity recorded yet",
+    "noActivityApiary": "No activity recorded in this apiary yet",
+    "noMatchingFilters": "No events match the selected filters",
+    "allEvents": "All events",
+    "inspections": "Inspections",
+    "feeding": "Feeding",
+    "treatments": "Treatments",
+    "harvests": "Harvests",
+    "notes": "Notes",
+    "quickChecks": "Quick Checks",
+    "other": "Other",
+    "allTime": "All time",
+    "lastMonth": "Last month",
+    "last3Months": "Last 3 months",
+    "last6Months": "Last 6 months",
+    "lastYear": "Last year",
+    "allHives": "All hives",
+    "clearFilters": "Clear filters",
+    "showMore": "Show {{count}} more",
+    "showLess": "Show less",
+    "notesAvailable": "Notes available",
+    "boxConfiguration": "Box configuration",
+    "inspection": "Inspection",
+    "overdue": "Overdue",
+    "scheduled": "Scheduled",
+    "cancelled": "Cancelled",
+    "strength": "Strength",
+    "honey": "Honey",
+    "queenSeen": "Queen seen",
+    "queenNotSeen": "Queen not seen"
+  },
   "reports": {
     "title": "Reports",
     "selectApiary": "Select an apiary to view reports",

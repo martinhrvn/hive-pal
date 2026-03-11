@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Droplet, Grid, Pill, StickyNote } from 'lucide-react';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
@@ -51,8 +52,16 @@ interface ActionsSectionProps {
 export const ActionsSection: React.FC<ActionsSectionProps> = ({
   editMode = false,
 }) => {
+  const { t } = useTranslation('inspection');
   const { setValue, getValues, watch, formState } =
     useFormContext<InspectionFormData>();
+
+  const actionLabels: Record<string, string> = {
+    'FEEDING': t('inspection:form.actions.feeding'),
+    'TREATMENT': t('inspection:form.actions.treatment'),
+    'FRAME': t('inspection:form.actions.frames'),
+    'NOTE': t('inspection:form.actions.note'),
+  };
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
   // Watch for changes to the actions array in the form
@@ -148,7 +157,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
   return (
     <div>
       <h3 className={'text-lg my-4 font-medium'}>
-        {editMode ? 'Action' : 'Actions'}
+        {editMode ? t('inspection:form.actions.titleSingular') : t('inspection:form.actions.title')}
       </h3>
       {!editMode && (
         <div
@@ -167,7 +176,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
                 key={id}
               >
                 <Icon size={16} />
-                {label}
+                {actionLabels[id] || label}
               </Button>
             );
           })}

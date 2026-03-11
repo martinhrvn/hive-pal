@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'react-router-dom';
@@ -71,6 +72,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   submitButtonText,
   showCancelButton = false,
 }) => {
+  const { t } = useTranslation('inspection');
   const [searchParams] = useSearchParams();
   const fromScheduled = searchParams.get('from') === 'scheduled';
   const { data: hives } = useHiveOptions();
@@ -191,7 +193,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   return (
     <div className={'max-w-4xl ml-4'}>
       <h1 className={'text-lg font-bold'}>
-        {isEdit ? 'Edit inspection' : 'New inspection'}
+        {isEdit ? t('inspection:form.editInspection') : t('inspection:form.newInspection')}
       </h1>
       <Separator className="my-2" />
       <Form {...form}>
@@ -201,7 +203,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             name="hiveId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Hive</FormLabel>
+                <FormLabel>{t('inspection:form.hive')}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
@@ -209,7 +211,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     disabled={mode === 'batch'}
                   >
                     <SelectTrigger className={'w-full'}>
-                      <SelectValue placeholder={'Select a hive'} />
+                      <SelectValue placeholder={t('inspection:form.selectHive')} />
                     </SelectTrigger>
                     <SelectContent>
                       {hives?.map(option => (
@@ -232,7 +234,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Inspection date</FormLabel>
+                  <FormLabel>{t('inspection:form.inspectionDate')}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -246,7 +248,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                           {field.value ? (
                             format(field.value, 'PPP')
                           ) : (
-                            <span>Pick a date</span>
+                            <span>{t('inspection:form.pickDate')}</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -264,10 +266,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   {isInFuture && (
                     <div className={'p-4 rounded'}>
                       <strong className={'text-blue-500'}>
-                        This inspection is scheduled for the future
+                        {t('inspection:form.futureScheduled')}
                       </strong>
                       <p className={'text-blue-500'}>
-                        You are scheduling an inspection for a future date.
+                        {t('inspection:form.futureScheduledDescription')}
                       </p>
                     </div>
                   )}
@@ -306,7 +308,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   type="button"
                   className="flex-1"
                 >
-                  Cancel
+                  {t('inspection:form.cancel')}
                 </Button>
               )}
               <Button
@@ -315,7 +317,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                 className="flex-1"
                 data-umami-event="Batch Inspection Save and Next"
               >
-                {submitButtonText || 'Save and Next'}
+                {submitButtonText || t('inspection:form.saveAndNext')}
               </Button>
             </div>
           ) : isEdit && !isCompleted ? (
@@ -329,7 +331,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   disabled={isSubmitting}
                   data-umami-event="Inspection Complete"
                 >
-                  {isSubmitting ? 'Saving...' : 'Complete Inspection'}
+                  {isSubmitting ? t('inspection:form.saving') : t('inspection:form.completeInspection')}
                 </Button>
               ) : (
                 <>
@@ -341,7 +343,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     disabled={isSubmitting}
                     data-umami-event="Inspection Save"
                   >
-                    {isSubmitting ? 'Saving...' : 'Save'}
+                    {isSubmitting ? t('inspection:form.saving') : t('inspection:form.save')}
                   </Button>
                   <Button
                     onClick={handleSaveAndComplete}
@@ -351,7 +353,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     disabled={isSubmitting}
                     data-umami-event="Inspection Complete"
                   >
-                    {isSubmitting ? 'Saving...' : 'Save and complete'}
+                    {isSubmitting ? t('inspection:form.saving') : t('inspection:form.saveAndComplete')}
                   </Button>
                 </>
               )}
@@ -364,7 +366,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               disabled={isSubmitting}
               data-umami-event="Inspection Create"
             >
-              {isSubmitting ? 'Saving...' : 'Save'}
+              {isSubmitting ? t('inspection:form.saving') : t('inspection:form.save')}
             </Button>
           )}
         </form>

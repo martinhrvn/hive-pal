@@ -66,6 +66,23 @@
     "noApiarySelected": "No apiary selected",
     "selectOrCreate": "Select or create an apiary"
   },
+  "map": {
+    "selectLocation": "Select Apiary Location",
+    "selectedLocation": "Selected Location",
+    "apiaryLocation": "Apiary Location"
+  },
+  "calendarSubscription": {
+    "title": "Calendar Subscription",
+    "description": "Subscribe to this apiary's inspection schedule in your calendar app",
+    "addToCalendar": "Add to Calendar",
+    "regenerateUrl": "Regenerate URL",
+    "regenerated": "Subscription URL regenerated",
+    "regenerateFailed": "Failed to regenerate subscription URL",
+    "copied": "Subscription URL copied to clipboard",
+    "copyFailed": "Failed to copy to clipboard",
+    "readOnlyNote": "This URL provides read-only access to your inspection schedule. Regenerating the URL will invalidate the previous one.",
+    "copyUrl": "Copy URL"
+  },
   "form": {
     "namePlaceholder": "Apiary name",
     "locationPlaceholder": "Location description"

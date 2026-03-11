@@ -1,11 +1,13 @@
 import { FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 type NotesCardProps = {
   notes?: string | null;
 };
 
 export const NotesCard = ({ notes }: NotesCardProps) => {
+  const { t } = useTranslation('inspection');
   if (!notes) return null;
 
   return (
@@ -14,7 +16,7 @@ export const NotesCard = ({ notes }: NotesCardProps) => {
         <CardTitle>
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Notes
+            {t('inspection:notesCard.title')}
           </div>
         </CardTitle>
       </CardHeader>

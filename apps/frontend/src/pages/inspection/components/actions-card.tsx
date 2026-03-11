@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ClipboardCheck, Droplet, Grid, Pill } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -126,6 +127,7 @@ type ActionsCardProps = {
 };
 
 export const ActionsCard = ({ actions }: ActionsCardProps) => {
+  const { t } = useTranslation('inspection');
   if (!actions || actions.length === 0) return null;
 
   return (
@@ -134,7 +136,7 @@ export const ActionsCard = ({ actions }: ActionsCardProps) => {
         <CardTitle>
           <div className="flex items-center gap-2">
             <ClipboardCheck className="h-5 w-5" />
-            Actions
+            {t('inspection:form.actions.title')}
           </div>
         </CardTitle>
       </CardHeader>

@@ -1,5 +1,6 @@
 import { Cloud, CloudRain, CloudSun, Sun, Thermometer } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 const getWeatherIcon = (condition: string) => {
   switch (condition.toLowerCase()) {
@@ -33,6 +34,7 @@ export const WeatherCard = ({
   temperature,
   weatherConditions,
 }: WeatherCardProps) => {
+  const { t } = useTranslation('inspection');
   if (!temperature && !weatherConditions) return null;
 
   return (
@@ -41,7 +43,7 @@ export const WeatherCard = ({
         <CardTitle>
           <div className="flex items-center gap-2">
             <Thermometer className="h-5 w-5" />
-            Weather
+            {t('inspection:weatherCard.title')}
           </div>
         </CardTitle>
       </CardHeader>
@@ -49,7 +51,7 @@ export const WeatherCard = ({
         <div className="space-y-4">
           {temperature && (
             <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">Temperature</div>
+              <div className="text-sm text-muted-foreground">{t('inspection:weatherCard.temperature')}</div>
               <div className="text-2xl font-bold text-orange-600">
                 {temperature}°C
               </div>
@@ -58,7 +60,7 @@ export const WeatherCard = ({
 
           {weatherConditions && (
             <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">Conditions</div>
+              <div className="text-sm text-muted-foreground">{t('inspection:weatherCard.conditions')}</div>
               <div className="flex items-center gap-2">
                 {getWeatherIcon(weatherConditions)}
                 <span className="text-lg font-medium">

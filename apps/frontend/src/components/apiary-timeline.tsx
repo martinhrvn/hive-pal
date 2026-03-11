@@ -21,6 +21,7 @@ import { useApiary } from '@/hooks/use-apiary';
 import { Section } from '@/components/common/section';
 import { TimelineEventList } from '@/components/common/timeline-event-list';
 import { QuickCheckDialog } from '@/pages/hive/hive-detail-page/quick-check-dialog';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
   InspectionResponse,
@@ -29,6 +30,7 @@ import {
 } from 'shared-schemas';
 
 export const ApiaryTimeline = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { activeApiaryId } = useApiary();
   const [deletingQuickCheck, setDeletingQuickCheck] =
@@ -39,10 +41,10 @@ export const ApiaryTimeline = () => {
     if (!deletingQuickCheck) return;
     try {
       await deleteQuickCheckMutation.mutateAsync(deletingQuickCheck.id);
-      toast.success('Quick check deleted');
+      toast.success(t('common:quickCheck.deleted'));
       setDeletingQuickCheck(null);
     } catch {
-      toast.error('Failed to delete quick check');
+      toast.error(t('common:quickCheck.deleteFailed'));
     }
   };
 
@@ -83,13 +85,13 @@ export const ApiaryTimeline = () => {
   );
 
   return (
-    <Section title="Recent Activity">
+    <Section title={t('common:timeline.recentActivity')}>
       <TimelineEventList
         inspections={inspections ?? []}
         actions={actions ?? []}
         quickChecks={quickChecks ?? []}
         isLoading={inspectionsLoading || actionsLoading || quickChecksLoading}
-        emptyMessage="No activity recorded in this apiary yet"
+        emptyMessage={t('common:timeline.noActivityApiary')}
         getHiveName={getHiveName}
         hives={hiveList}
         onInspectionClick={handleInspectionClick}
@@ -112,10 +114,9 @@ export const ApiaryTimeline = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Quick Check?</DialogTitle>
+            <DialogTitle>{t('common:quickCheck.deleteTitle')}</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete this
-              quick check and its photos.
+              {t('common:quickCheck.deleteDescription')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -127,7 +128,7 @@ export const ApiaryTimeline = () => {
               onClick={handleDeleteQuickCheckConfirm}
               disabled={deleteQuickCheckMutation.isPending}
             >
-              {deleteQuickCheckMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteQuickCheckMutation.isPending ? t('common:status.loading') : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

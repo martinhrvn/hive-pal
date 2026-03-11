@@ -2,6 +2,7 @@ import { ClipboardList } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ObservationNumberRatingView } from './observation-number-rating-view';
+import { useTranslation } from 'react-i18next';
 
 type ObservationsCardProps = {
   observations?: {
@@ -20,13 +21,14 @@ type ObservationsCardProps = {
 export const ObservationsCard = ({
   observations = {},
 }: ObservationsCardProps) => {
+  const { t } = useTranslation('inspection');
   return (
     <Card>
       <CardHeader>
         <CardTitle>
           <div className="flex items-center gap-2">
             <ClipboardList className="h-5 w-5" />
-            Observations
+            {t('inspection:observationsCard.title')}
           </div>
         </CardTitle>
       </CardHeader>
@@ -36,27 +38,27 @@ export const ObservationsCard = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ObservationNumberRatingView
               rating={observations.strength}
-              label={'Strength'}
+              label={t('inspection:observationsCard.strength')}
             />
             <ObservationNumberRatingView
               rating={observations.uncappedBrood}
-              label={'Uncapped Brood'}
+              label={t('inspection:observationsCard.uncappedBrood')}
             />
             <ObservationNumberRatingView
               rating={observations.cappedBrood}
-              label={'Capped Brood'}
+              label={t('inspection:observationsCard.cappedBrood')}
             />
             <ObservationNumberRatingView
               rating={observations.honeyStores}
-              label={'Honey Stores'}
+              label={t('inspection:observationsCard.honeyStores')}
             />
             <ObservationNumberRatingView
               rating={observations.pollenStores}
-              label={'Pollen Stores'}
+              label={t('inspection:observationsCard.pollenStores')}
             />
             <ObservationNumberRatingView
               rating={observations.queenCells}
-              label={'Queen cells'}
+              label={t('inspection:observationsCard.queenCells')}
             />
           </div>
 
@@ -64,7 +66,7 @@ export const ObservationsCard = ({
           {observations.broodPattern && (
             <div>
               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Brood Pattern
+                {t('inspection:observationsCard.broodPattern')}
               </h4>
               <Badge variant="outline" className="capitalize">
                 {observations.broodPattern.replace('_', ' ')}
@@ -77,7 +79,7 @@ export const ObservationsCard = ({
             observations.additionalObservations.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Additional Observations
+                  {t('inspection:observationsCard.additionalObservations')}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {observations.additionalObservations.map(
@@ -100,7 +102,7 @@ export const ObservationsCard = ({
             observations.reminderObservations.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Reminders
+                  {t('inspection:observationsCard.reminders')}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {observations.reminderObservations.map(

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   FormControl,
   FormField,
@@ -51,18 +52,27 @@ const weatherConditions = [
 ];
 
 export const WeatherSection = () => {
+  const { t } = useTranslation('inspection');
   const form = useFormContext<InspectionFormData>();
+
+  const weatherLabels: Record<string, string> = {
+    'sunny': t('inspection:form.weather.sunny'),
+    'partly-cloudy': t('inspection:form.weather.partlyCloudy'),
+    'cloudy': t('inspection:form.weather.cloudy'),
+    'rainy': t('inspection:form.weather.rainy'),
+  };
+
   return (
     <div>
-      <h3 className="text-lg font-medium">Weather information</h3>
-      <p className="text-sm text-gray-400">Add weather conditions</p>
+      <h3 className="text-lg font-medium">{t('inspection:form.weather.title')}</h3>
+      <p className="text-sm text-gray-400">{t('inspection:form.weather.description')}</p>
       <div className={'space-y-4 py-4 grid grid-cols-1'}>
         <FormField
           control={form.control}
           name="temperature"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Temperature</FormLabel>
+              <FormLabel>{t('inspection:form.weather.temperature')}</FormLabel>
               <TemperatureField
                 onChange={field.onChange}
                 min={0}
@@ -82,7 +92,7 @@ export const WeatherSection = () => {
           rules={{ required: 'Please select a weather condition' }}
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel>Condition</FormLabel>
+              <FormLabel>{t('inspection:form.weather.condition')}</FormLabel>
               <FormControl>
                 <div className="flex flex-wrap gap-3 justify-start">
                   {weatherConditions.map(condition => {
@@ -104,7 +114,7 @@ export const WeatherSection = () => {
                           className={`h-5 w-5 ${isSelected ? condition.iconStyleActive : condition.iconStyle}`}
                         />
                         <span className={`text-sm font-medium`}>
-                          {condition.label}
+                          {weatherLabels[condition.id] || condition.label}
                         </span>
                       </button>
                     );

@@ -86,6 +86,22 @@
       "custom": "Custom"
     }
   },
+  "card": {
+    "showDetails": "Show details",
+    "lastInspected": "Last inspected {{date}}",
+    "noInspection": "No inspection yet",
+    "score": "Score:",
+    "feeding": "Feeding:"
+  },
+  "scores": {
+    "overall": "Overall",
+    "overallScore": "Overall Score",
+    "population": "Population",
+    "populationShort": "Pop",
+    "stores": "Stores",
+    "queen": "Queen",
+    "queenScore": "Queen Score"
+  },
   "status": {
     "active": "Active",
     "inactive": "Inactive",

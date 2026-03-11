@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Mic, Loader2, Info } from 'lucide-react';
 import { AudioRecorder, AudioRecordingsList } from '@/components/audio';
 import {
@@ -30,6 +31,7 @@ export function AudioSection({
   onPendingRecordingsChange,
   pendingRecordings = [],
 }: AudioSectionProps) {
+  const { t } = useTranslation('inspection');
   const isNewInspection = !inspectionId;
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { data: features } = useFeatures();
@@ -138,10 +140,10 @@ export function AudioSection({
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Mic className="size-5" />
-        <h3 className="font-medium">Audio Notes</h3>
+        <h3 className="font-medium">{t('inspection:form.audio.title')}</h3>
         {pendingRecordings.length > 0 && (
           <span className="text-xs text-muted-foreground">
-            ({pendingRecordings.length} pending upload)
+            ({t('inspection:form.audio.pendingUpload', { count: pendingRecordings.length })})
           </span>
         )}
       </div>
@@ -165,7 +167,7 @@ export function AudioSection({
         <div className="flex items-start gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
           <Info className="mt-0.5 size-4 shrink-0" />
           <span>
-            Audio recordings will be uploaded when you save the inspection.
+            {t('inspection:form.audio.uploadWarning')}
           </span>
         </div>
       )}

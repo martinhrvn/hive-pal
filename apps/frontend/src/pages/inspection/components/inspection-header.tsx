@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type InspectionHeaderProps = {
   hiveName: string;
@@ -12,6 +13,7 @@ export const InspectionHeader = ({
   hiveId,
   date,
 }: InspectionHeaderProps) => {
+  const { t } = useTranslation('inspection');
   return (
     <div className="p-4 mb-4">
       <div className="flex flex-col justify-between items-start gap-2">
@@ -19,7 +21,7 @@ export const InspectionHeader = ({
           <h3 className="font-medium flex gap-5">
             {hiveName}
             <a href={`/hives/${hiveId}`} className="flex items-center text-xs">
-              View hive
+              {t('inspection:detail.viewHive')}
               <ChevronRight size={16} className="ml-1" />
             </a>
           </h3>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +17,7 @@ import {
 import { Link } from 'react-router-dom';
 
 export const CalendarSidebar = () => {
+  const { t } = useTranslation('common');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   // Fetch events for the entire month for calendar marking
@@ -170,15 +172,15 @@ export const CalendarSidebar = () => {
             <div className="mt-3 space-y-1 text-xs">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Inspections</span>
+                <span>{t('common:calendar.inspections')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span>Actions</span>
+                <span>{t('common:calendar.actions')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                <span>Both</span>
+                <span>{t('common:calendar.both')}</span>
               </div>
             </div>
           </div>
