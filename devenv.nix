@@ -11,7 +11,6 @@ in {
   packages = with pkgs; [
     nodejs_22
     pnpm_9
-    turbo
     pkgs-playwright.playwright-driver.browsers
     pkgs-playwright.playwright-test
     openssl
@@ -38,6 +37,7 @@ in {
   processes = { dev.exec = "pnpm dev"; };
 
   enterShell = ''
+    export PATH="$PWD/node_modules/.bin:$PATH"
     echo "Node.js $(node --version) and PNPM $(pnpm --version) environment activated"
   '';
 }
