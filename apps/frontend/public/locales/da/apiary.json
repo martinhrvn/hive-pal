@@ -1,10 +1,90 @@
 {
     "list": {
-        "clearFilters": "Nulstil filtre"
+        "clearFilters": "Nulstil filtre",
+        "title": "Bigårds liste",
+        "caption": "En liste af alle dine bigårde",
+        "searchPlaceholder": "Søg i bigårde...",
+        "noApiaries": "Ingen bigårde fundet",
+        "noApiariesMatching": "Ingen bigårde fundet, der indeholder \"{{searchTerm}}\""
     },
     "fields": {
         "name": "Navn",
         "location": "Placering",
-        "notSpecified": "Ikke angivet"
+        "notSpecified": "Ikke angivet",
+        "locationDescription": "Beskrivelse af lokation",
+        "coordinates": "Koordinater",
+        "hivesCount": "Antal stader",
+        "latitude": "Breddegrad",
+        "longitude": "Længdegrad",
+        "noLocation": "Lokation ikke angivet",
+        "noCoordinates": "Koordinater ikke angivet"
+    },
+    "title": "Bigårde",
+    "singular": "Bigård",
+    "plural": "Bigårde",
+    "create": {
+        "title": "Opret bigård",
+        "button": "Opret ny bigård",
+        "success": "Bigård oprettet"
+    },
+    "edit": {
+        "title": "Rediger bigård",
+        "success": "Bigård ændringer gemt"
+    },
+    "delete": {
+        "confirm": "Er du sikker på at du vil slette denne bigård?",
+        "success": "Bigården er slettet"
+    },
+    "detail": {
+        "notFound": "Bigård ikke fundet",
+        "noLocationSpecified": "Der er ikke angivet en placering",
+        "tabs": {
+            "overview": "Oversigt",
+            "hives": "Stader",
+            "location": "Lokation"
+        },
+        "apiaryInformation": "Bigårds information",
+        "locationMap": "Kort over lokation",
+        "apiaryLocation": "Lokation af bigård",
+        "noCoordinates": "Der er ikke angivet koordinater for bigårdens lokation"
+    },
+    "actions": {
+        "details": "Detaljer",
+        "refreshData": "Opdater data",
+        "exportCSV": "Eksporter til CSV",
+        "print": "Udskiv liste af bigårde",
+        "share": "Del liste af bigårde",
+        "dataOptions": "Data muligheder"
+    },
+    "messages": {
+        "exportComingSoon": "Funktionen \"eksporter\" kommer snart",
+        "shareComingSoon": "Funktionen \"del\" kommer snart"
+    },
+    "switcher": {
+        "teams": "Hold",
+        "addApiary": "Tilføj bigård",
+        "noApiarySelected": "Der er ikke valgt en bigård",
+        "selectOrCreate": "Vælg eller opret en bigård"
+    },
+    "map": {
+        "selectLocation": "Vælg lokation af bigård",
+        "selectedLocation": "Vælg lokation",
+        "apiaryLocation": "Lokation af bigård"
+    },
+    "calendarSubscription": {
+        "title": "Abonner på kalender",
+        "description": "Abonnerer på planen for inspektion af denne bigård i dit kalender program",
+        "addToCalendar": "Tilføj til kalender",
+        "regenerateUrl": "Regenerer URL",
+        "regenerated": "URL til abonnement er oprettet",
+        "regenerateFailed": "Oprettelse af URL til abonnement mislykkedes",
+        "copied": "Oprettelse af URL til abonnement kopieret til clipboard",
+        "copyFailed": "Kopiering til clipboard mislykkedes",
+        "readOnlyNote": "Denne URL giver læseadgang til planen for inspektioner. Regenerering af URL vil gøre den tidligere ugyldig.",
+        "copyUrl": "Kopier URL"
+    },
+    "form": {
+        "namePlaceholder": "Bigårds navn",
+        "locationPlaceholder": "Lokations beskrivelse"
     }
 }
