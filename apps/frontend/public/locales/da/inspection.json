@@ -1,13 +1,261 @@
 {
     "fields": {
         "hive": "Stade",
-        "status": "Status"
+        "status": "Status",
+        "dateTime": "Dato og klokkeslet",
+        "weather": "Vejr",
+        "scoreStatus": "Score/status",
+        "queenSeen": "Dronning observeret",
+        "temperature": "Temperatur",
+        "weatherConditions": "Vejrforhold",
+        "notRecorded": "Ikke registreret",
+        "yes": "Ja",
+        "no": "Nej"
     },
     "form": {
         "selectHive": "Vælg et stade",
-        "pickDate": "Vælg en dato"
+        "pickDate": "Vælg en dato",
+        "newInspection": "Ny inspektion",
+        "editInspection": "Rediger inspektion",
+        "hive": "Stade",
+        "inspectionDate": "Inspektions dato",
+        "futureScheduled": "Denne inspektion er blevet planlagt for fremtiden",
+        "futureScheduledDescription": "Du er ved at planlægge en inspektion til en senere dato.",
+        "cancel": "Afbryd",
+        "saveAndNext": "Gem og fortsæt",
+        "saving": "Gemmer...",
+        "save": "Gem",
+        "completeInspection": "Gennemfør inspektion",
+        "saveAndComplete": "Gem og afslut",
+        "weather": {
+            "title": "Information on vejret",
+            "description": "Tilføj vejrforhold",
+            "temperature": "Temperatur",
+            "condition": "Forhold",
+            "sunny": "Solskin",
+            "partlyCloudy": "Delvist overskyet",
+            "cloudy": "Overskyet",
+            "rainy": "Regn"
+        },
+        "notes": {
+            "title": "Noter",
+            "description": "Tilføj andre noter om denne inspektion",
+            "label": "Noter",
+            "placeholder": "Indtast eventuelle observationer, fund eller handlinger foretaget under inspektionen..."
+        },
+        "actions": {
+            "title": "Handlinger",
+            "titleSingular": "Handling",
+            "feeding": "Fodring",
+            "treatment": "Behandling",
+            "frames": "Rammer",
+            "note": "Notat",
+            "save": "Gem",
+            "feeding_section": {
+                "title": "Fodring",
+                "feedType": "Fodertype",
+                "syrup": "Sirup",
+                "honey": "Honning",
+                "candy": "Foderdej",
+                "quantity": "Mængde",
+                "concentration": "Koncentration",
+                "selectConcentration": "Vælg en koncentration",
+                "notesOptional": "Noter (Frivilligt)",
+                "notesPlaceholder": "Tilføj øvrige noter omkring denne fodring"
+            },
+            "treatment_section": {
+                "title": "Behandling",
+                "treatmentType": "Type af behandling",
+                "selectTreatmentType": "Vælg en type af behandling",
+                "productName": "Produktnavn",
+                "productNamePlaceholder": "Angiv produktnavn, der anvendes til behandling",
+                "unit": "Enhed",
+                "selectUnit": "Angiv enhed",
+                "amount": "Mængde",
+                "notesOptional": "Noter (Frivilligt)",
+                "notesPlaceholder": "Angiv eventuelle yderligere notater om denne behandling"
+            },
+            "frames_section": {
+                "title": "Rammer",
+                "framesLabel": "Antal rammer tilføjet/fjernet",
+                "framesHint": "Angiv et positivt tal for rammer tilføjet, eller et negativt tal for rammer fjernet",
+                "notesOptional": "Noter (frivilligt)",
+                "notesPlaceholder": "Tilføj eventuelle yderligere omkring ændring i rammer"
+            },
+            "note_section": {
+                "title": "Notat",
+                "description": "Tilføj et notat, eller en observation, om dette stade",
+                "noteContent": "Note om indhold",
+                "placeholder": "Indtast dit notat eller observation...",
+                "characters": "{{count}}/500 tegn",
+                "remove": "Fjern",
+                "saveNote": "Gem notat",
+                "edit": "Rediger"
+            }
+        },
+        "audio": {
+            "title": "Lyd notat",
+            "pendingUpload": "{{count}} afventende upload",
+            "uploadWarning": "Lyd notater vil blive uploadet når du gemmer din inspektion."
+        }
     },
     "scores": {
-        "overall": "Alt i alt"
+        "overall": "Alt i alt",
+        "population": "Bipopulation",
+        "stores": "Beholdninger",
+        "queen": "Dronning",
+        "title": "Inspektion scores",
+        "warnings": "Advarsler"
+    },
+    "actions": {
+        "details": "Detaljer",
+        "refreshData": "Opdater data",
+        "exportCSV": "Eksporter til CSV",
+        "dataOptions": "Data muligheder",
+        "cancel": "Afbryd",
+        "scheduleInspection": "Planlæg inspektion"
+    },
+    "messages": {
+        "exportComingSoon": "Funktionen \"eksporter\" kommer snart",
+        "shareComingSoon": "Funktionen \"del\" kommer snart"
+    },
+    "title": "Inspektioner",
+    "singular": "Inspektioner",
+    "plural": "Inspektioner",
+    "tabs": {
+        "all": "Alle",
+        "recent": "Seneste",
+        "upcoming": "Kommende"
+    },
+    "list": {
+        "title": "Oversigt over inspektioner",
+        "allInspections": "Alle inspektioner",
+        "recentInspections": "Seneste inspektioner",
+        "upcomingInspections": "Kommende inspektioner",
+        "searchPlaceholder": "Søg i inspektioner...",
+        "filterByHive": "Filtrer på stade",
+        "allHives": "Alle stader",
+        "noInspections": "Ingen inspektioner fundet",
+        "unknownHive": "Ukendt stade"
+    },
+    "status": {
+        "scheduled": "Planlagt",
+        "completed": "Gennemført",
+        "overdue": "Overskredet",
+        "cancelled": "Annuleret"
+    },
+    "observations": {
+        "title": "Observationer",
+        "queenSeen": "Dronning observeret",
+        "strength": "Styrke",
+        "cappedBrood": "Forseglet yngel",
+        "uncappedBrood": "Åben yngel",
+        "honeyStores": "Honning mængde",
+        "pollenStores": "Pollen beholdning",
+        "queenCells": "Dronningeceller",
+        "swarmCells": "Sværmceller",
+        "supersedureCells": "Nødceller",
+        "clearRating": "Nulstil vurdering",
+        "rateAs": "Vurder som {{value}}",
+        "broodPattern": "Yngelmønster",
+        "selectBroodPattern": "Vælg yngelmønster",
+        "broodPatternOptions": {
+            "solid": "Sammenhængende",
+            "spotty": "Pletvis",
+            "scattered": "Spredt",
+            "patchy": "Ujævnt",
+            "excellent": "Fremragende",
+            "poor": "Dårlig"
+        },
+        "additionalObservations": "Øvrige observationer",
+        "additional": {
+            "calm": "Rolig",
+            "defensive": "Defensiv",
+            "aggressive": "Aggresssiv",
+            "nervous": "Nervøs",
+            "varroa_present": "Varroamider observeret",
+            "small_hive_beetle": "Lille stadebille",
+            "wax_moths": "Voksmøl",
+            "ants_present": "Myrer observeret",
+            "healthy": "Sund",
+            "active": "Aktiv",
+            "sluggish": "Træg",
+            "thriving": "Trives"
+        },
+        "reminderObservations": "Påmindelser"
+    },
+    "statusCard": {
+        "actions": "Handlinger",
+        "markCompleted": "Marker som færdiggjort",
+        "cancelInspection": "Afbryd inspektion"
+    },
+    "weatherCard": {
+        "title": "Vejr",
+        "temperature": "Temperatur",
+        "conditions": "Forhold"
+    },
+    "notesCard": {
+        "title": "Noter"
+    },
+    "observationsCard": {
+        "title": "Observationer",
+        "strength": "Styrke",
+        "uncappedBrood": "Åben yngel",
+        "cappedBrood": "Forseglet yngel",
+        "honeyStores": "Honning beholdning",
+        "pollenStores": "Pollen beholdning",
+        "queenCells": "Drronningeceller",
+        "broodPattern": "Yngelmønster",
+        "additionalObservations": "Øvrige observationer",
+        "reminders": "Påmindelser"
+    },
+    "timeline": {
+        "notesAvailable": "Noter tilgængelig",
+        "cancelled": "Afbrudt",
+        "scheduledInspections": "Planlagte inspektioner",
+        "completedInspections": "Gennemførte inspektioner",
+        "noInspections": "Der er endnu ikke registreret en inspektion.",
+        "viewDetails": "Vis detaljer",
+        "edit": "Rediger",
+        "strength": "Styrke:",
+        "honey": "Honning:",
+        "brood": "Yngel:",
+        "weather": "Vejr:",
+        "queen": "Dronning:",
+        "queenSeen": "Observeret",
+        "queenNotSeen": "Ikke observeret",
+        "showFewer": "Vis mindre",
+        "showAllCount": "Vis alle {{count}} inspektioner"
+    },
+    "detailSidebar": {
+        "inspectionActions": "Inspektions handlinger",
+        "editInspection": "Rediger inspektion",
+        "printDetails": "Udskriv detaljer",
+        "deleteInspection": "Slet inspektion",
+        "relatedActions": "Relaterede handlinger",
+        "viewHive": "Vis stade",
+        "newInspection": "Ny inspektion",
+        "navigation": "Navigation",
+        "allInspections": "Alle inspektioner",
+        "recentInspections": "Seneste inspektioner",
+        "goBack": "Tilbage"
+    },
+    "schedule": {
+        "title": "Planlæg inspektion",
+        "description": "Planlæg dine inspektion for de næste 7 dage med vejrudsigt",
+        "selectHives": "Vælg stader",
+        "selectHivesDescription": "Angiv hvilke stader du gerne vil planlægge en inspektion for",
+        "hivesSelected": "{{count}} stade valg",
+        "hivesSelectedPlural": "{{count}} stader valgt",
+        "clear": "Ryd",
+        "scheduleCalendar": "Planlægnings kalender",
+        "calendarDescription": "Vælg en dag at planlægge din inspektion med vejrudsigt (next {{days}} days)",
+        "selectHiveFirst": "Vælg venligst mindst en stade for at se vejrudsigt",
+        "noApiaryWeather": "De valgte stader er ikke tilknyttet en bigård for vejr data",
+        "today": "I dag",
+        "noForecast": "Ingen vejrudsigt tilgængelig",
+        "noWeatherData": "Ingen vejrdata",
+        "showFewerDays": "Vis færre dage",
+        "showMoreDays": "Vis flere dage (+7)"
     }
 }
