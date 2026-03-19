@@ -397,7 +397,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               if (!performer) return null;
               return (
                 <span className="ml-1">
-                  · {performer.name ?? performer.email}
+                  · {performer.name ?? 'Unknown'}
                 </span>
               );
             })()}

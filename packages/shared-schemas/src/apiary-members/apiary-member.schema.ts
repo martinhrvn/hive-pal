@@ -8,11 +8,11 @@ export const apiaryMemberSchema = z.object({
   userId: z.string().uuid(),
   role: apiaryMemberRoleSchema,
   invitedById: z.string().uuid(),
-  invitedAt: z.coerce.date(),
-  acceptedAt: z.coerce.date().nullable(),
+  invitedAt: z.string().datetime(),
+  acceptedAt: z.string().datetime().nullable(),
   user: z.object({
     id: z.string().uuid(),
-    email: z.string().email(),
+    email: z.string().email().optional(),
     name: z.string().nullable(),
   }),
 });

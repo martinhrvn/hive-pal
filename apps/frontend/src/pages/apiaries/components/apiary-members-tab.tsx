@@ -94,7 +94,7 @@ function MemberRow({
     }
   };
 
-  const displayName = member.user.name || member.user.email;
+  const displayName = member.user.name || (showEmail ? member.user.email : undefined) || 'Unnamed user';
 
   return (
     <div className="flex items-center justify-between py-3 border-b last:border-0">

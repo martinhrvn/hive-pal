@@ -49,7 +49,7 @@ export class ApiaryMembersController {
   @Get()
   @UseGuards(JwtAuthGuard, ApiaryContextGuard)
   findAll(@Req() req: RequestWithApiary): Promise<ApiaryMember[]> {
-    return this.membersService.findAll(req.apiaryId);
+    return this.membersService.findAll(req.apiaryId, req.apiaryRole);
   }
 
   @Post()

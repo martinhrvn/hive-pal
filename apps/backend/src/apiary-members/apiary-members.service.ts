@@ -20,12 +20,17 @@ export class ApiaryMembersService {
     this.logger.setContext('ApiaryMembersService');
   }
 
-  async findAll(apiaryId: string): Promise<ApiaryMember[]> {
+  async findAll(
+    apiaryId: string,
+    callerRole: 'OWNER' | 'EDITOR' | 'VIEWER',
+  ): Promise<ApiaryMember[]> {
     const members = await this.prisma.apiaryMember.findMany({
       where: { apiaryId },
       include: { user: { select: { id: true, email: true, name: true } } },
       orderBy: [{ role: 'asc' }, { invitedAt: 'asc' }],
     });
+
+    const includeEmail = callerRole === 'OWNER';
 
     return members.map((m) => ({
       id: m.id,
@@ -33,9 +38,13 @@ export class ApiaryMembersService {
       userId: m.userId,
       role: m.role,
       invitedById: m.invitedById,
-      invitedAt: m.invitedAt,
-      acceptedAt: m.acceptedAt,
-      user: { id: m.user.id, email: m.user.email, name: m.user.name },
+      invitedAt: m.invitedAt.toISOString(),
+      acceptedAt: m.acceptedAt?.toISOString() ?? null,
+      user: {
+        id: m.user.id,
+        email: includeEmail ? m.user.email : undefined,
+        name: m.user.name,
+      },
     }));
   }
 
@@ -110,8 +119,8 @@ export class ApiaryMembersService {
       userId: member.userId,
       role: member.role,
       invitedById: member.invitedById,
-      invitedAt: member.invitedAt,
-      acceptedAt: member.acceptedAt,
+      invitedAt: member.invitedAt.toISOString(),
+      acceptedAt: member.acceptedAt?.toISOString() ?? null,
       user: {
         id: member.user.id,
         email: member.user.email,
@@ -168,8 +177,8 @@ export class ApiaryMembersService {
       userId: updated.userId,
       role: updated.role,
       invitedById: updated.invitedById,
-      invitedAt: updated.invitedAt,
-      acceptedAt: updated.acceptedAt,
+      invitedAt: updated.invitedAt.toISOString(),
+      acceptedAt: updated.acceptedAt?.toISOString() ?? null,
       user: {
         id: updated.user.id,
         email: updated.user.email,

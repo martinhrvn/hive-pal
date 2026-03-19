@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useApiaryRole } from '@/hooks/use-apiary-role';
 import { useApiaryStore } from '@/hooks/use-apiary';
@@ -7,7 +8,7 @@ import { useApiaryStore } from '@/hooks/use-apiary';
  * While the role is being fetched, renders a spinner.
  * Once resolved, VIEWERs are redirected to the home page.
  */
-export function EditorRoute({ children }: Readonly<{ children: React.ReactNode }>) {
+export function EditorRoute({ children }: Readonly<{ children: ReactNode }>) {
   const activeApiaryId = useApiaryStore(s => s.activeApiaryId);
   const { canEdit, isLoading } = useApiaryRole(activeApiaryId);
 

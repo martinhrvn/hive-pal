@@ -16,12 +16,12 @@ export function useApiaryRole(apiaryId: string | null | undefined): {
   const { token } = useAuth();
   const { data: members, isLoading } = useApiaryMembers(apiaryId ?? '');
 
-  if (!token || !apiaryId) return { role: null, canEdit: true, isLoading: false };
+  if (!token || !apiaryId) return { role: null, canEdit: false, isLoading: false };
 
   const decoded = decodeJwt(token);
-  if (!decoded?.sub) return { role: null, canEdit: true, isLoading: false };
+  if (!decoded?.sub) return { role: null, canEdit: false, isLoading: false };
 
-  if (isLoading) return { role: null, canEdit: true, isLoading: true };
+  if (isLoading) return { role: null, canEdit: false, isLoading: true };
 
   const member = members?.find(m => m.userId === decoded.sub);
   const role = (member?.role as ApiaryMemberRole) ?? null;

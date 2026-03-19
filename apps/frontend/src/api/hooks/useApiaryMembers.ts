@@ -86,13 +86,12 @@ export const useRemoveMember = (apiaryId: string) => {
 export const useAcceptInvite = () =>
   useMutation<{ apiaryId: string }, Error, string>({
     mutationFn: async (token: string) => {
-      // The apiaryId segment is not validated on this endpoint; token is the key.
       const response = await apiClient.post<{ apiaryId: string }>(
-        `/api/apiaries/invite/members/accept/${token}`,
+        `/api/invite/accept/${token}`,
       );
       return response.data;
     },
     onError: error => {
-      logApiError(error, '/api/apiaries/invite/members/accept', 'POST');
+      logApiError(error, '/api/invite/accept', 'POST');
     },
   });
