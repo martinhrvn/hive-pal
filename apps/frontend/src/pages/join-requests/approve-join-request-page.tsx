@@ -36,19 +36,17 @@ export const ApproveJoinRequestPage = () => {
     } catch { /* error shown inline */ }
   };
 
-  const approveError =
-    approveMutation.error && (approveMutation.error as any)?.response?.data?.message
-      ? (approveMutation.error as any).response.data.message
-      : approveMutation.error
-        ? 'Something went wrong. Please try again.'
-        : null;
+  let approveError: string | null = null;
+  if (approveMutation.error) {
+    approveError = (approveMutation.error as any)?.response?.data?.message
+      ?? 'Something went wrong. Please try again.';
+  }
 
-  const infoError =
-    error && (error as any)?.response?.data?.message
-      ? (error as any).response.data.message
-      : error
-        ? 'This link is invalid or has already been used.'
-        : null;
+  let infoError: string | null = null;
+  if (error) {
+    infoError = (error as any)?.response?.data?.message
+      ?? 'This link is invalid or has already been used.';
+  }
 
   if (isLoading) {
     return (
@@ -94,7 +92,7 @@ export const ApproveJoinRequestPage = () => {
             </CardDescription>
           </CardHeader>
           <CardFooter className="justify-center">
-            <Button onClick={() => (window.location.href = '/')}>Open Hive Pal</Button>
+            <Button onClick={() => { globalThis.location.href = '/'; }}>Open Hive Pal</Button>
           </CardFooter>
         </Card>
       </div>

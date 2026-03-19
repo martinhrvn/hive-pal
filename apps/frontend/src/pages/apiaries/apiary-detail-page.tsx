@@ -12,8 +12,7 @@ import {
   PageAside,
   PageGrid,
 } from '@/components/layout/page-grid-layout';
-import { useApiary } from '@/api/hooks';
-import { useHives } from '@/api/hooks';
+import { useApiary, useHives } from '@/api/hooks';
 
 // Lazy load the map component (heavy ~200KB)
 const MapPicker = lazy(() => import('@/components/common/map-picker'));

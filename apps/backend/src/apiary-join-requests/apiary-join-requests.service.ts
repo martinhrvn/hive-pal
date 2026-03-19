@@ -4,7 +4,7 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -25,9 +25,9 @@ export interface JoinRequestInfo {
 @Injectable()
 export class ApiaryJoinRequestsService {
   constructor(
-    private prisma: PrismaService,
-    private mailService: MailService,
-    private logger: CustomLoggerService,
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+    private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('ApiaryJoinRequestsService');
   }

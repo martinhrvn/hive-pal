@@ -132,7 +132,7 @@ export const UserWizardPage = () => {
     }
   };
 
-  const handleFinish = () => { window.location.href = '/'; };
+  const handleFinish = () => { globalThis.location.href = '/'; };
 
   if (step === null) {
     return (
@@ -146,12 +146,11 @@ export const UserWizardPage = () => {
     );
   }
 
-  const lookupErrorMessage =
-    lookupError && (lookupError as any)?.response?.data?.message
-      ? (lookupError as any).response.data.message
-      : lookupError
-        ? 'No apiaries found for that email address.'
-        : null;
+  let lookupErrorMessage: string | null = null;
+  if (lookupError) {
+    lookupErrorMessage = (lookupError as any)?.response?.data?.message
+      ?? 'No apiaries found for that email address.';
+  }
 
   const joinErrorMessage =
     joinRequestMutation.error && (joinRequestMutation.error as any)?.response?.data?.message

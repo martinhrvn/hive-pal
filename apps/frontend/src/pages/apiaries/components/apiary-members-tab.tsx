@@ -62,13 +62,13 @@ function MemberRow({
   canManage,
   showEmail,
   apiaryId,
-}: {
+}: Readonly<{
   member: ApiaryMember;
   isCurrentUser: boolean;
   canManage: boolean;
   showEmail: boolean;
   apiaryId: string;
-}) {
+}>) {
   const updateRole = useUpdateMemberRole(apiaryId);
   const removeMember = useRemoveMember(apiaryId);
   const isPending = !member.acceptedAt;
@@ -184,7 +184,7 @@ function MemberRow({
   );
 }
 
-function InviteMemberDialog({ apiaryId }: { apiaryId: string }) {
+function InviteMemberDialog({ apiaryId }: Readonly<{ apiaryId: string }>) {
   const [open, setOpen] = useState(false);
   const inviteMember = useInviteMember(apiaryId);
   const { register, handleSubmit, reset, formState: { errors }, setValue, watch } =
@@ -271,7 +271,7 @@ function InviteMemberDialog({ apiaryId }: { apiaryId: string }) {
   );
 }
 
-export function ApiaryMembersTab({ apiaryId }: ApiaryMembersTabProps) {
+export function ApiaryMembersTab({ apiaryId }: Readonly<ApiaryMembersTabProps>) {
   const { data: members, isLoading } = useApiaryMembers(apiaryId);
   const { data: currentUser } = useUserProfile();
 
@@ -292,7 +292,7 @@ export function ApiaryMembersTab({ apiaryId }: ApiaryMembersTabProps) {
         <div>
           <h3 className="text-base font-semibold">Members</h3>
           <p className="text-sm text-muted-foreground">
-            {members?.length ?? 0} member{members?.length !== 1 ? 's' : ''}
+            {members?.length === 1 ? 'member' : `${members?.length ?? 0} members`}
           </p>
         </div>
         {isOwner && <InviteMemberDialog apiaryId={apiaryId} />}

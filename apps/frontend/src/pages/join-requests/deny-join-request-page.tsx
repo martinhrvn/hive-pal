@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CheckIcon, Loader2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,27 +14,20 @@ import { useDenyJoinRequest } from '@/api/hooks';
 
 export const DenyJoinRequestPage = () => {
   const { token } = useParams<{ token: string }>();
-  const [done, setDone] = useState(false);
   const denyMutation = useDenyJoinRequest();
 
   useEffect(() => {
     if (!token) return;
-    denyMutation.mutate(
-      { token },
-      {
-        onSuccess: () => setDone(true),
-      },
-    );
+    denyMutation.mutate({ token });
     // Only run on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  const denyError =
-    denyMutation.error && (denyMutation.error as any)?.response?.data?.message
-      ? (denyMutation.error as any).response.data.message
-      : denyMutation.error
-        ? 'Something went wrong. The request may have already been processed.'
-        : null;
+  let denyError: string | null = null;
+  if (denyMutation.error) {
+    denyError = (denyMutation.error as any)?.response?.data?.message
+      ?? 'Something went wrong. The request may have already been processed.';
+  }
 
   if (denyMutation.isPending) {
     return (
@@ -60,7 +53,7 @@ export const DenyJoinRequestPage = () => {
             <CardDescription>{denyError}</CardDescription>
           </CardHeader>
           <CardFooter className="justify-center">
-            <Button variant="outline" onClick={() => (window.location.href = '/')}>
+            <Button variant="outline" onClick={() => { globalThis.location.href = '/'; }}>
               Go to Hive Pal
             </Button>
           </CardFooter>
@@ -84,7 +77,7 @@ export const DenyJoinRequestPage = () => {
           </CardDescription>
         </CardHeader>
         <CardFooter className="justify-center">
-          <Button variant="outline" onClick={() => (window.location.href = '/')}>
+          <Button variant="outline" onClick={() => { globalThis.location.href = '/'; }}>
             Go to Hive Pal
           </Button>
         </CardFooter>
