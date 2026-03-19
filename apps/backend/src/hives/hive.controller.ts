@@ -17,6 +17,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
@@ -48,6 +50,8 @@ export class HiveController {
   }
 
   @Post()
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiConsumes('application/json')
   @ZodValidation(createHiveSchema)
   create(
@@ -92,6 +96,8 @@ export class HiveController {
   }
 
   @Patch(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(updateHiveSchema)
   update(
     @Param('id') id: string,
@@ -105,6 +111,8 @@ export class HiveController {
   }
 
   @Delete(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
     return this.hiveService.remove(id, {
       apiaryId: req.apiaryId,
@@ -113,6 +121,8 @@ export class HiveController {
   }
 
   @Put(':id/boxes')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiConsumes('application/json')
   @ZodValidation(updateHiveBoxesSchema)
   updateBoxes(

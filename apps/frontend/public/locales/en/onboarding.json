@@ -5,11 +5,15 @@
     "welcome": "Welcome",
     "createApiary": "Create Apiary",
     "addHive": "Add First Hive",
-    "complete": "Complete"
+    "complete": "Complete",
+    "findApiary": "Find Apiary",
+    "requestSent": "Request Sent"
   },
   "welcome": {
     "title": "Start Your Beekeeping Journey",
-    "description": "Welcome to Hive-Pal, your digital beekeeping assistant! We'll guide you through setting up your first apiary and hive to get you started.",
+    "description": "Welcome to Hive-Pal, your digital beekeeping assistant! Would you like to create your own apiary, or join an existing one?",
+    "actionCreate": "Create My Own Apiary",
+    "actionJoin": "Join an Existing Apiary",
     "action": "Let's Get Started"
   },
   "apiary": {
@@ -24,5 +28,21 @@
     "title": "Congratulations!",
     "description": "You've successfully set up your first apiary and hive. You're ready to start tracking your beekeeping activities with Hive-Pal!",
     "action": "Go to Dashboard"
+  },
+  "join": {
+    "title": "Join an Existing Apiary",
+    "description": "Enter the email address of the apiary owner. We'll find their apiaries and send them a request on your behalf.",
+    "emailLabel": "Owner's email address",
+    "emailPlaceholder": "owner@example.com",
+    "lookupButton": "Find Apiaries",
+    "selectApiary": "Select an apiary to join",
+    "sendRequest": "Send Join Request",
+    "sending": "Sending…",
+    "back": "Back"
+  },
+  "joinSent": {
+    "title": "Request Sent!",
+    "description": "Your request has been sent to the apiary owner. You'll receive an email once they've reviewed it.",
+    "action": "Done"
   }
 }

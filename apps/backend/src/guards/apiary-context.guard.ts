@@ -6,6 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ApiaryMemberRole } from '@/prisma/client';
 
 @Injectable()
 export class ApiaryContextGuard implements CanActivate {
@@ -16,32 +17,37 @@ export class ApiaryContextGuard implements CanActivate {
       headers: Record<string, string>;
       query: Record<string, string>;
       apiaryId: string | undefined;
+      apiaryRole: ApiaryMemberRole | undefined;
       user?: { id: string };
     } = context.switchToHttp().getRequest();
 
     const apiaryId = request.headers['x-apiary-id'] || request.query.apiaryId;
 
-    // If user is not authenticated, we can't proceed
     if (!request.user?.id) {
       throw new ForbiddenException('User is not authenticated');
     }
 
-    // Find the apiary and check if it belongs to the user
-    const apiary = await this.prisma.apiary.findFirst({
+    if (!apiaryId) {
+      throw new NotFoundException('Apiary ID is required');
+    }
+
+    // Resolve access through the ApiaryMember table (accepted memberships only)
+    const membership = await this.prisma.apiaryMember.findFirst({
       where: {
-        id: apiaryId,
+        apiaryId,
         userId: request.user.id,
+        acceptedAt: { not: null },
       },
     });
 
-    if (!apiary) {
+    if (!membership) {
       throw new NotFoundException(
-        'Apiary not found or does not belong to the user',
+        'Apiary not found or you do not have access',
       );
     }
 
-    // Add apiary to request context
-    request.apiaryId = apiaryId ? apiary.id : undefined;
+    request.apiaryId = membership.apiaryId;
+    request.apiaryRole = membership.role;
     return true;
   }
 }

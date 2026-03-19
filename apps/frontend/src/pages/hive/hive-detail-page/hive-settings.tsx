@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/card';
 import { useUpdateHive } from '@/api/hooks';
 import { toast } from 'sonner';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 import type { HiveDetailResponse } from 'shared-schemas';
 
 const hiveSettingsSchema = z.object({
@@ -55,6 +56,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
   onHiveUpdated,
 }) => {
   const { mutate: updateHive, isPending } = useUpdateHive();
+  const { canEdit } = useApiaryRole(hive?.apiaryId);
 
   const monthOptions = [
     { value: 1, label: 'January' },
@@ -281,7 +283,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
               </div>
 
               <div className="flex justify-end pt-4">
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit" disabled={isPending || !canEdit}>
                   {isPending ? 'Saving...' : 'Save Settings'}
                 </Button>
               </div>

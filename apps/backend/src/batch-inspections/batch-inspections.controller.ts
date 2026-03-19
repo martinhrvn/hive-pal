@@ -12,6 +12,8 @@ import {
 import { BatchInspectionsService } from './batch-inspections.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import {
   CreateBatchInspection,
@@ -36,6 +38,8 @@ export class BatchInspectionsController {
   ) {}
 
   @Post()
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({ summary: 'Create a new batch inspection' })
   async create(
     @Body(new ZodValidationPipe(createBatchInspectionSchema))
@@ -62,6 +66,8 @@ export class BatchInspectionsController {
   }
 
   @Patch(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({ summary: 'Update batch inspection (name only, DRAFT only)' })
   async update(
     @Param('id') id: string,
@@ -78,6 +84,8 @@ export class BatchInspectionsController {
   }
 
   @Delete(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({ summary: 'Delete batch inspection (DRAFT only)' })
   async delete(@Param('id') id: string, @Req() req: RequestWithApiary) {
     await this.batchInspectionsService.delete(id, req.apiaryId, req.user.id);
@@ -85,6 +93,8 @@ export class BatchInspectionsController {
   }
 
   @Patch(':id/reorder')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({ summary: 'Reorder hives in batch (DRAFT only)' })
   async reorderHives(
     @Param('id') id: string,
@@ -101,6 +111,8 @@ export class BatchInspectionsController {
   }
 
   @Post(':id/start')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({ summary: 'Start batch inspection' })
   async start(@Param('id') id: string, @Req() req: RequestWithApiary) {
     return this.batchInspectionsService.start(id, req.apiaryId, req.user.id);
@@ -117,12 +129,16 @@ export class BatchInspectionsController {
   }
 
   @Post(':id/skip')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({ summary: 'Skip current hive (move to end of queue)' })
   async skipHive(@Param('id') id: string, @Req() req: RequestWithApiary) {
     return this.batchInspectionsService.skipHive(id, req.apiaryId, req.user.id);
   }
 
   @Delete(':id/hives/:hiveId')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({ summary: 'Cancel a hive from the batch' })
   async cancelHive(
     @Param('id') id: string,
@@ -138,6 +154,8 @@ export class BatchInspectionsController {
   }
 
   @Post(':id/inspect')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiOperation({
     summary: 'Create inspection for current hive and move to next',
   })

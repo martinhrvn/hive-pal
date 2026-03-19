@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@/prisma/client';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -27,8 +31,19 @@ export class ApiariesService {
       longitude: createApiaryDto.longitude,
       userId,
     };
-    const apiary = await this.prisma.apiary.create({
-      data: apiaryData,
+
+    const apiary = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.apiary.create({ data: apiaryData });
+      await tx.apiaryMember.create({
+        data: {
+          apiaryId: created.id,
+          userId,
+          role: 'OWNER',
+          invitedById: userId,
+          acceptedAt: new Date(),
+        },
+      });
+      return created;
     });
 
     this.logger.log(`Apiary created with ID: ${apiary.id}`);
@@ -39,51 +54,75 @@ export class ApiariesService {
       location: apiary.location,
       latitude: apiary.latitude,
       longitude: apiary.longitude,
+      memberRole: 'OWNER',
+      memberCount: 1,
     };
   }
 
   async findAll(userId: string): Promise<ApiaryResponse[]> {
     this.logger.log(`Fetching all apiaries for user ${userId}`);
 
-    const apiaries = await this.prisma.apiary.findMany({
+    const memberships = await this.prisma.apiaryMember.findMany({
       where: {
         userId,
+        acceptedAt: { not: null },
+      },
+      include: {
+        apiary: {
+          include: {
+            _count: { select: { members: true } },
+          },
+        },
       },
     });
 
-    this.logger.log(`Found ${apiaries.length} apiaries for user ${userId}`);
-    return apiaries.map((apiary) => ({
+    this.logger.log(
+      `Found ${memberships.length} apiaries for user ${userId}`,
+    );
+    return memberships.map(({ apiary, role }) => ({
       id: apiary.id,
       name: apiary.name,
       location: apiary.location,
       latitude: apiary.latitude,
       longitude: apiary.longitude,
+      memberRole: role,
+      memberCount: apiary._count.members,
     }));
   }
 
   async findOne(apiaryId: string, userId: string): Promise<ApiaryResponse> {
     this.logger.log(`Fetching apiary ${apiaryId} for user ${userId}`);
 
-    const apiary = await this.prisma.apiary.findFirst({
+    const membership = await this.prisma.apiaryMember.findFirst({
       where: {
-        id: apiaryId,
+        apiaryId,
         userId,
+        acceptedAt: { not: null },
+      },
+      include: {
+        apiary: {
+          include: {
+            _count: { select: { members: true } },
+          },
+        },
       },
     });
 
-    if (!apiary) {
+    if (!membership) {
       this.logger.warn(`Apiary ${apiaryId} not found for user ${userId}`);
       throw new NotFoundException();
-    } else {
-      this.logger.debug(`Found apiary: ${apiary.name}`);
     }
 
+    this.logger.debug(`Found apiary: ${membership.apiary.name}`);
+
     return {
-      id: apiary.id,
-      name: apiary.name,
-      location: apiary.location,
-      latitude: apiary.latitude,
-      longitude: apiary.longitude,
+      id: membership.apiary.id,
+      name: membership.apiary.name,
+      location: membership.apiary.location,
+      latitude: membership.apiary.latitude,
+      longitude: membership.apiary.longitude,
+      memberRole: membership.role,
+      memberCount: membership.apiary._count.members,
     };
   }
 
@@ -95,10 +134,13 @@ export class ApiariesService {
     this.logger.log(`Updating apiary ${id} for user ${userId}`);
     this.logger.debug(`Update data: ${JSON.stringify(updateApiaryDto)}`);
 
+    await this.requireOwner(id, userId);
+
     try {
       const updatedApiary = await this.prisma.apiary.update({
-        where: { id, userId },
+        where: { id },
         data: updateApiaryDto,
+        include: { _count: { select: { members: true } } },
       });
 
       this.logger.log(`Apiary ${id} updated successfully`);
@@ -108,6 +150,8 @@ export class ApiariesService {
         location: updatedApiary.location,
         latitude: updatedApiary.latitude,
         longitude: updatedApiary.longitude,
+        memberRole: 'OWNER',
+        memberCount: updatedApiary._count.members,
       };
     } catch (error: unknown) {
       this.logger.error(
@@ -123,11 +167,10 @@ export class ApiariesService {
   async remove(id: string, userId: string) {
     this.logger.log(`Removing apiary ${id} for user ${userId}`);
 
-    try {
-      const deletedApiary = await this.prisma.apiary.delete({
-        where: { id, userId },
-      });
+    await this.requireOwner(id, userId);
 
+    try {
+      const deletedApiary = await this.prisma.apiary.delete({ where: { id } });
       this.logger.log(`Apiary ${id} removed successfully`);
       return deletedApiary;
     } catch (error: unknown) {
@@ -139,7 +182,6 @@ export class ApiariesService {
           JSON.stringify(error),
         );
       }
-
       throw error;
     }
   }
@@ -183,5 +225,16 @@ export class ApiariesService {
         userId: apiary.userId,
         hiveCount: apiary._count.hives,
       }));
+  }
+
+  private async requireOwner(apiaryId: string, userId: string): Promise<void> {
+    const membership = await this.prisma.apiaryMember.findFirst({
+      where: { apiaryId, userId, role: 'OWNER', acceptedAt: { not: null } },
+    });
+    if (!membership) {
+      throw new ForbiddenException(
+        'Only the apiary owner can perform this action',
+      );
+    }
   }
 }

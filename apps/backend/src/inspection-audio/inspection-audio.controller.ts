@@ -16,6 +16,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
@@ -39,6 +41,8 @@ export class InspectionAudioController {
    * Upload an audio recording
    */
   @Post()
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
     @Param('inspectionId') inspectionId: string,
@@ -108,6 +112,8 @@ export class InspectionAudioController {
    * Delete an audio recording
    */
   @Delete(':audioId')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
     @Param('inspectionId') inspectionId: string,

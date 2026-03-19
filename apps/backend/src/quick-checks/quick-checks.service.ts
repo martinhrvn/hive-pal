@@ -44,15 +44,6 @@ export class QuickChecksService {
     dto: CreateQuickCheck,
     filter: ApiaryUserFilter,
   ): Promise<QuickCheckResponse> {
-    // Verify apiary belongs to user
-    const apiary = await this.prisma.apiary.findFirst({
-      where: { id: dto.apiaryId, userId: filter.userId },
-    });
-
-    if (!apiary) {
-      throw new NotFoundException(`Apiary with ID ${dto.apiaryId} not found`);
-    }
-
     // If hiveId is provided, verify it belongs to the apiary
     if (dto.hiveId) {
       const hive = await this.prisma.hive.findFirst({
@@ -73,8 +64,9 @@ export class QuickChecksService {
         date: dto.date ? new Date(dto.date) : new Date(),
         note: dto.note ?? null,
         tags: dto.tags ?? [],
+        performedById: filter.userId,
       },
-      include: { photos: true },
+      include: { photos: true, performedBy: { select: { id: true, name: true, email: true } } },
     });
 
     this.logger.log({
@@ -90,19 +82,8 @@ export class QuickChecksService {
   async findAll(
     filter: QuickCheckFilterInternal,
   ): Promise<QuickCheckResponse[]> {
-    // Verify apiary belongs to user
-    const apiary = await this.prisma.apiary.findFirst({
-      where: { id: filter.apiaryId, userId: filter.userId },
-    });
-
-    if (!apiary) {
-      throw new NotFoundException(
-        `Apiary with ID ${filter.apiaryId} not found`,
-      );
-    }
-
     const where: Record<string, unknown> = {
-      apiary: { id: filter.apiaryId, userId: filter.userId },
+      apiaryId: filter.apiaryId,
     };
 
     if (filter.hiveId) {
@@ -118,7 +99,7 @@ export class QuickChecksService {
 
     const quickChecks = await this.prisma.quickCheck.findMany({
       where,
-      include: { photos: true },
+      include: { photos: true, performedBy: { select: { id: true, name: true, email: true } } },
       orderBy: { date: 'desc' },
     });
 
@@ -132,9 +113,9 @@ export class QuickChecksService {
     const quickCheck = await this.prisma.quickCheck.findFirst({
       where: {
         id,
-        apiary: { id: filter.apiaryId, userId: filter.userId },
+        apiaryId: filter.apiaryId,
       },
-      include: { photos: true },
+      include: { photos: true, performedBy: { select: { id: true, name: true, email: true } } },
     });
 
     if (!quickCheck) {
@@ -148,7 +129,7 @@ export class QuickChecksService {
     const quickCheck = await this.prisma.quickCheck.findFirst({
       where: {
         id,
-        apiary: { id: filter.apiaryId, userId: filter.userId },
+        apiaryId: filter.apiaryId,
       },
       include: { photos: { select: { storageKey: true } } },
     });
@@ -206,7 +187,7 @@ export class QuickChecksService {
     const quickCheck = await this.prisma.quickCheck.findFirst({
       where: {
         id: quickCheckId,
-        apiary: { id: filter.apiaryId, userId: filter.userId },
+        apiaryId: filter.apiaryId,
       },
       include: { photos: { select: { id: true } } },
     });
@@ -270,7 +251,7 @@ export class QuickChecksService {
         id: photoId,
         quickCheckId,
         quickCheck: {
-          apiary: { id: filter.apiaryId, userId: filter.userId },
+          apiaryId: filter.apiaryId,
         },
       },
     });
@@ -298,7 +279,7 @@ export class QuickChecksService {
         id: photoId,
         quickCheckId,
         quickCheck: {
-          apiary: { id: filter.apiaryId, userId: filter.userId },
+          apiaryId: filter.apiaryId,
         },
       },
     });
@@ -348,6 +329,7 @@ export class QuickChecksService {
     tags: string[];
     createdAt: Date;
     updatedAt: Date;
+    performedBy?: { id: string; name: string | null; email: string } | null;
     photos: Array<{
       id: string;
       quickCheckId: string;
@@ -368,6 +350,7 @@ export class QuickChecksService {
       photos: quickCheck.photos.map((p) => this.mapPhotoToResponse(p)),
       createdAt: quickCheck.createdAt.toISOString(),
       updatedAt: quickCheck.updatedAt.toISOString(),
+      performedBy: quickCheck.performedBy ?? null,
     };
   }
 

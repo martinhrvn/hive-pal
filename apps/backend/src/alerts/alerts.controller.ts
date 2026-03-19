@@ -17,6 +17,8 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { AlertsService } from './alerts.service';
@@ -79,6 +81,8 @@ export class AlertsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update alert status' })
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiResponse({
     status: 200,
     description: 'Alert updated successfully',
@@ -100,6 +104,8 @@ export class AlertsController {
 
   @Post(':id/dismiss')
   @ApiOperation({ summary: 'Dismiss an alert' })
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiResponse({
     status: 200,
     description: 'Alert dismissed successfully',
@@ -120,6 +126,8 @@ export class AlertsController {
 
   @Post(':id/resolve')
   @ApiOperation({ summary: 'Mark an alert as resolved' })
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ApiResponse({
     status: 200,
     description: 'Alert resolved successfully',

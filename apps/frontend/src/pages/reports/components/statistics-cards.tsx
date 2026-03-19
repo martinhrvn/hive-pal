@@ -1,19 +1,23 @@
-import { Droplets, Cookie, Heart, Home } from 'lucide-react';
+import { Droplets, Cookie, Heart, Home, MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiaryStatistics } from 'shared-schemas';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface StatisticsCardsProps {
   statistics: ApiaryStatistics | undefined;
   isLoading: boolean;
+  apiaryId?: string;
 }
 
 export const StatisticsCards = ({
   statistics,
   isLoading,
+  apiaryId,
 }: StatisticsCardsProps) => {
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
 
   const StatCard = ({
     title,
@@ -56,7 +60,20 @@ export const StatisticsCards = ({
   );
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="space-y-2">
+      {apiaryId && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => navigate(`/apiaries/${apiaryId}`)}
+            className="flex items-center gap-1 text-xs text-primary hover:underline"
+            title="View apiary details"
+          >
+            <MapPin className="h-3.5 w-3.5" />
+            Apiary Details
+          </button>
+        </div>
+      )}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <StatCard
         title={t('reports.honeyProduction')}
         value={statistics?.honeyProduction.totalAmount}
@@ -84,6 +101,7 @@ export const StatisticsCards = ({
         icon={<Home className="h-5 w-5 text-green-500" />}
         color="text-green-600"
       />
+    </div>
     </div>
   );
 };

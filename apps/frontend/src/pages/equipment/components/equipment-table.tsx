@@ -42,6 +42,7 @@ interface EquipmentRowProps {
   onDelete?: () => Promise<void>;
   isUpdating?: boolean;
   isDeleting?: boolean;
+  canEdit?: boolean;
 }
 
 export const EquipmentRow = ({
@@ -51,6 +52,7 @@ export const EquipmentRow = ({
   onDelete,
   isUpdating = false,
   isDeleting = false,
+  canEdit = true,
 }: EquipmentRowProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -296,7 +298,7 @@ export const EquipmentRow = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        {isOverridden && (
+        {isOverridden && canEdit && (
           <Button
             size="icon"
             variant="ghost"
@@ -331,15 +333,17 @@ export const EquipmentRow = ({
         )}
       </div>
       <div className="flex items-center justify-center gap-1">
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-8 w-8"
-          onClick={handleEdit}
-        >
-          <Edit2 className="h-3 w-3" />
-        </Button>
-        {item.isCustom && onDelete && (
+        {canEdit && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8"
+            onClick={handleEdit}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+        {canEdit && item.isCustom && onDelete && (
           <>
             <Button
               size="icon"
@@ -399,6 +403,7 @@ interface EquipmentTableProps {
   updatingItems?: Set<string>;
   deletingItems?: Set<string>;
   isCreating?: boolean;
+  canEdit?: boolean;
 }
 
 export const EquipmentTable = ({
@@ -413,6 +418,7 @@ export const EquipmentTable = ({
   updatingItems = new Set(),
   deletingItems = new Set(),
   isCreating = false,
+  canEdit = true,
 }: EquipmentTableProps) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newItemData, setNewItemData] = useState<CreateEquipmentItem>({
@@ -493,7 +499,7 @@ export const EquipmentTable = ({
   return (
     <div className="space-y-6">
       {/* Add Equipment Button */}
-      {onCreate && (
+      {onCreate && canEdit && (
         <div className="flex justify-end">
           <Button
             onClick={handleAddEquipment}
@@ -655,6 +661,7 @@ export const EquipmentTable = ({
                   onDelete={onDelete ? () => onDelete(item.itemId) : undefined}
                   isUpdating={updatingItems.has(item.itemId)}
                   isDeleting={deletingItems.has(item.itemId)}
+                  canEdit={canEdit}
                 />
               ))}
           </div>

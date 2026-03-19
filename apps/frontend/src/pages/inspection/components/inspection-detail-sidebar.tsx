@@ -18,6 +18,8 @@ import {
   ActionSidebarGroup,
   MenuItemButton,
 } from '@/components/sidebar';
+import { useApiaryStore } from '@/hooks/use-apiary';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 
 interface InspectionDetailSidebarProps {
   inspectionId: string;
@@ -29,6 +31,8 @@ export const InspectionDetailSidebar: React.FC<
 > = ({ inspectionId, hiveId }) => {
   const { t } = useTranslation('inspection');
   const navigate = useNavigate();
+  const activeApiaryId = useApiaryStore((s) => s.activeApiaryId);
+  const { canEdit } = useApiaryRole(activeApiaryId);
 
   return (
     <ActionSidebarContainer>
@@ -38,6 +42,7 @@ export const InspectionDetailSidebar: React.FC<
           label={t('inspection:detailSidebar.editInspection')}
           onClick={() => navigate(`/inspections/${inspectionId}/edit`)}
           tooltip={t('inspection:detailSidebar.editInspection')}
+          disabled={!canEdit}
         />
         <MenuItemButton
           icon={<Printer className="h-4 w-4" />}
@@ -50,6 +55,7 @@ export const InspectionDetailSidebar: React.FC<
           label={t('inspection:detailSidebar.deleteInspection')}
           tooltip={t('inspection:detailSidebar.deleteInspection')}
           className="text-red-600 hover:text-red-700"
+          disabled={!canEdit}
         />
       </ActionSidebarGroup>
 
@@ -67,6 +73,7 @@ export const InspectionDetailSidebar: React.FC<
           label={t('inspection:detailSidebar.newInspection')}
           onClick={() => navigate(`/hives/${hiveId}/inspections/create`)}
           tooltip={t('inspection:detailSidebar.newInspection')}
+          disabled={!canEdit}
         />
       </ActionSidebarGroup>
 

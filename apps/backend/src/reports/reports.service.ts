@@ -44,11 +44,10 @@ export class ReportsService {
       `Getting statistics for apiary ${apiaryId}, period: ${period}`,
     );
 
-    // Verify apiary ownership
+    // Verify apiary exists
     const apiary = await this.prisma.apiary.findFirst({
       where: {
         id: apiaryId,
-        userId,
       },
     });
 
@@ -411,11 +410,10 @@ export class ReportsService {
   ): Promise<ApiaryTrendsDto> {
     this.logger.log(`Getting trends for apiary ${apiaryId}, period: ${period}`);
 
-    // Verify apiary ownership
+    // Verify apiary exists
     const apiary = await this.prisma.apiary.findFirst({
       where: {
         id: apiaryId,
-        userId,
       },
     });
 

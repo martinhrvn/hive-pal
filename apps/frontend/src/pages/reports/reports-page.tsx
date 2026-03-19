@@ -123,7 +123,7 @@ export const ReportsPage = () => {
             apiaryName={activeApiary?.name}
           />
 
-          <StatisticsCards statistics={statistics} isLoading={isLoading} />
+          <StatisticsCards statistics={statistics} isLoading={isLoading} apiaryId={activeApiaryId ?? undefined} />
 
           <Tabs defaultValue="overview">
             <TabsList>

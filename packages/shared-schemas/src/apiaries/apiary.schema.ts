@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { apiaryMemberRoleSchema } from '../apiary-members/apiary-member.schema';
 
 // Base schema for creating apiaries
 export const createApiarySchema = z.object({
@@ -14,6 +15,8 @@ export const updateApiarySchema = createApiarySchema.partial();
 // Schema for apiary response
 export const apiaryResponseSchema = createApiarySchema.extend({
   id: z.string().uuid(),
+  memberRole: apiaryMemberRoleSchema.optional(),
+  memberCount: z.number().optional(),
 });
 
 // Schema for apiary map point (admin view)

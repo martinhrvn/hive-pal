@@ -11,6 +11,7 @@ import {
 } from '@/components/sidebar';
 import { SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { QuickCheckDialog } from '@/pages/hive/hive-detail-page/quick-check-dialog';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 
 interface ApiaryActionSidebarProps {
   apiaryId?: string;
@@ -23,6 +24,7 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
 }) => {
   const { t } = useTranslation(['apiary', 'common']);
   const navigate = useNavigate();
+  const { canEdit } = useApiaryRole(apiaryId);
 
   return (
     <ActionSidebarContainer>
@@ -37,7 +39,7 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
         />
         <SidebarMenuItem>
           {apiaryId ? (
-            <QuickCheckDialog apiaryId={apiaryId} />
+            <QuickCheckDialog apiaryId={apiaryId} disabled={!canEdit} />
           ) : (
             <SidebarMenuButton disabled tooltip={t('common:quickCheck.title')}>
               <span>{t('common:quickCheck.title')}</span>

@@ -24,6 +24,7 @@ interface QuickCheckDialogProps {
   apiaryId: string;
   /** "sidebar" renders as a full-width ghost button; "inline" renders as a compact outlined button */
   triggerVariant?: 'sidebar' | 'inline';
+  disabled?: boolean;
 }
 
 const ADDITIONAL_OBSERVATION_TAGS = [
@@ -55,6 +56,7 @@ export function QuickCheckDialog({
   hiveId,
   apiaryId,
   triggerVariant = 'sidebar',
+  disabled = false,
 }: QuickCheckDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -166,12 +168,12 @@ export function QuickCheckDialog({
     >
       <DialogTrigger asChild>
         {triggerVariant === 'sidebar' ? (
-          <Button variant="ghost" className="w-full justify-start" size="sm">
+          <Button variant="ghost" className="w-full justify-start" size="sm" disabled={disabled}>
             <ClipboardCheck className="mr-2 h-4 w-4" />
             Quick Check
           </Button>
         ) : (
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" disabled={disabled}>
             <ClipboardCheck className="mr-2 h-4 w-4" />
             Quick Check
           </Button>

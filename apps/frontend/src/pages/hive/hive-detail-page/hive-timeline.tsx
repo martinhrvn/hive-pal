@@ -13,6 +13,7 @@ import {
   useQuickChecks,
   useDeleteQuickCheck,
 } from '@/api/hooks';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
 import { TimelineEventList } from '@/components/common/timeline-event-list';
@@ -41,6 +42,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   apiaryId,
 }) => {
   const navigate = useNavigate();
+  const { canEdit } = useApiaryRole(apiaryId);
   const [editingAction, setEditingAction] = useState<ActionResponse | null>(
     null,
   );
@@ -140,9 +142,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
                 hiveId={hiveId}
                 apiaryId={apiaryId}
                 triggerVariant="inline"
+                disabled={!canEdit}
               />
             )}
-            {hiveId && <AddActionDialog hiveId={hiveId} />}
+            {hiveId && canEdit && <AddActionDialog hiveId={hiveId} />}
           </>
         }
       />

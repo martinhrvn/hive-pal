@@ -20,3 +20,4 @@ export * from './platform-metrics';
 export * from './quick-checks';
 export * from './features';
 export * from './shares';
+export * from './apiary-members';

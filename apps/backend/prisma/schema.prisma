@@ -28,7 +28,13 @@ model User {
   frameSizes             FrameSize[]
   passwordResetTokens    PasswordResetToken[]
   shareLinks             ShareLink[]
-  
+  apiaryMemberships      ApiaryMember[]
+  apiaryMembershipsGiven ApiaryMember[] @relation("ApiaryMemberInvitedBy")
+  joinRequests           ApiaryJoinRequest[]
+  actionsPerformed       Action[]     @relation("PerformedBy")
+  inspectionsPerformed   Inspection[] @relation("InspectedBy")
+  quickChecksPerformed   QuickCheck[] @relation("QuickCheckBy")
+
   // GDPR consent fields
   privacyPolicyConsent   Boolean                @default(false)
   privacyConsentTimestamp DateTime?
@@ -39,6 +45,12 @@ model User {
 enum Role {
   USER
   ADMIN
+}
+
+enum ApiaryMemberRole {
+  OWNER
+  EDITOR
+  VIEWER
 }
 
 model Apiary {
@@ -57,9 +69,54 @@ model Apiary {
   weatherForecasts      WeatherForecast[]
   batchInspections      BatchInspection[]
   quickChecks           QuickCheck[]
+  members               ApiaryMember[]
+  joinRequests          ApiaryJoinRequest[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
+}
+
+model ApiaryJoinRequest {
+  id           String    @id @default(uuid())
+  requesterId  String
+  apiaryId     String
+  ownerEmail   String
+  status       ApiaryJoinRequestStatus @default(PENDING)
+  approveToken String    @unique
+  denyToken    String    @unique
+  createdAt    DateTime  @default(now())
+
+  requester User   @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+  apiary    Apiary @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+
+  @@index([requesterId])
+  @@index([apiaryId])
+}
+
+enum ApiaryJoinRequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+model ApiaryMember {
+  id          String           @id @default(uuid())
+  apiaryId    String
+  userId      String
+  role        ApiaryMemberRole @default(VIEWER)
+  invitedById String
+  inviteToken String?          @unique
+  invitedAt   DateTime         @default(now())
+  acceptedAt  DateTime?
+
+  apiary    Apiary @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invitedBy User   @relation("ApiaryMemberInvitedBy", fields: [invitedById], references: [id])
+
+  @@unique([apiaryId, userId])
+  @@index([userId])
+  @@index([apiaryId])
+  @@index([inviteToken])
 }
 
 model Hive {
@@ -137,11 +194,14 @@ model Inspection {
   status            InspectionStatus @default(COMPLETED)
   batchInspectionHive BatchInspectionHive?
   audioRecordings   InspectionAudio[]
+  performedById  String?
+  performedBy    User?   @relation("InspectedBy", fields: [performedById], references: [id], onDelete: SetNull)
 
   // Create index for quick lookup by hiveId - used in authorization checks
   @@index([hiveId])
   // Create index for date-based queries
   @@index([date])
+  @@index([performedById])
 }
 
 enum InspectionStatus {
@@ -221,10 +281,13 @@ model Action {
   frameAction     FrameAction?
   harvestAction   HarvestAction?
   boxConfigurationAction BoxConfigurationAction?
+  performedById  String?
+  performedBy    User?   @relation("PerformedBy", fields: [performedById], references: [id], onDelete: SetNull)
 
   @@index([hiveId])
   @@index([inspectionId])
   @@index([harvestId])
+  @@index([performedById])
   @@index([type, hiveId]) // For looking up specific action types
   @@index([date]) // For date-based queries
 }
@@ -653,10 +716,13 @@ model QuickCheck {
   photos    QuickCheckPhoto[]
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+  performedById  String?
+  performedBy    User?   @relation("QuickCheckBy", fields: [performedById], references: [id], onDelete: SetNull)
 
   @@index([hiveId])
   @@index([apiaryId])
   @@index([hiveId, date])
+  @@index([performedById])
 }
 
 // Photo attached to a quick check

@@ -45,6 +45,8 @@ import { useCreateShareLink } from '@/api/hooks/useShares';
 import { SharePromptDialog } from '@/components/share/share-prompt-dialog';
 import { isSharePromptDismissed } from '@/components/share/share-prompt-utils';
 import { ShareDialog } from '@/components/share/share-dialog';
+import { useApiaryStore } from '@/hooks/use-apiary';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 
 export const HarvestDetailPage = () => {
   const { harvestId } = useParams<{ harvestId: string }>();
@@ -70,6 +72,8 @@ export const HarvestDetailPage = () => {
   const reopenHarvest = useReopenHarvest();
   const deleteHarvest = useDeleteHarvest();
   const { getWeightUnit, parseWeight } = useUnitFormat();
+  const activeApiaryId = useApiaryStore(s => s.activeApiaryId);
+  const { canEdit } = useApiaryRole(activeApiaryId);
 
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
@@ -222,13 +226,14 @@ export const HarvestDetailPage = () => {
               Share
             </Button>
           )}
-          {harvest.status === HarvestStatus.COMPLETED && (
+          {canEdit && harvest.status === HarvestStatus.COMPLETED && (
             <Button variant="outline" onClick={handleReopen}>
               <RefreshCw className="mr-2 h-4 w-4" />
               Reopen
             </Button>
           )}
-          {harvest.status === HarvestStatus.IN_PROGRESS &&
+          {canEdit &&
+            harvest.status === HarvestStatus.IN_PROGRESS &&
             harvest.totalWeight && (
               <Button
                 onClick={handleFinalize}
@@ -238,40 +243,42 @@ export const HarvestDetailPage = () => {
                 Finalize
               </Button>
             )}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="destructive" size="icon">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Delete Harvest?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete the
-                  harvest.
-                </DialogDescription>
-              </DialogHeader>
-              {harvest.status === HarvestStatus.COMPLETED && (
-                <Alert className="border-amber-200 bg-amber-50">
-                  <AlertTriangle className="h-4 w-4 text-amber-600" />
-                  <AlertDescription className="text-amber-800">
-                    This harvest has been finalized. Deleting it will also
-                    remove all associated harvest actions from the hive
-                    timelines.
-                  </AlertDescription>
-                </Alert>
-              )}
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button variant="destructive" onClick={handleDelete}>
-                  Delete
+          {canEdit && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="destructive" size="icon">
+                  <Trash2 className="h-4 w-4" />
                 </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Delete Harvest?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete the
+                    harvest.
+                  </DialogDescription>
+                </DialogHeader>
+                {harvest.status === HarvestStatus.COMPLETED && (
+                  <Alert className="border-amber-200 bg-amber-50">
+                    <AlertTriangle className="h-4 w-4 text-amber-600" />
+                    <AlertDescription className="text-amber-800">
+                      This harvest has been finalized. Deleting it will also
+                      remove all associated harvest actions from the hive
+                      timelines.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button variant="destructive" onClick={handleDelete}>
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
 
@@ -308,6 +315,7 @@ export const HarvestDetailPage = () => {
                     <Button
                       variant="ghost"
                       size="sm"
+                      disabled={!canEdit}
                       onClick={() => {
                         setWeight(harvest.totalWeight?.toString() || '');
                         setIsEditingWeight(true);
@@ -320,6 +328,7 @@ export const HarvestDetailPage = () => {
                   <Button
                     variant="outline"
                     size="sm"
+                    disabled={!canEdit}
                     onClick={() => setIsEditingWeight(true)}
                   >
                     <Droplets className="mr-2 h-4 w-4" />
@@ -374,6 +383,7 @@ export const HarvestDetailPage = () => {
                   <Button
                     variant="ghost"
                     size="sm"
+                    disabled={!canEdit}
                     onClick={() => {
                       setNotes(harvest.notes || '');
                       setIsEditingNotes(true);
@@ -418,6 +428,7 @@ export const HarvestDetailPage = () => {
             <Button
               variant="ghost"
               size="sm"
+              disabled={!canEdit}
               onClick={() => {
                 setEditedHives(
                   harvest.harvestHives.map(hh => ({

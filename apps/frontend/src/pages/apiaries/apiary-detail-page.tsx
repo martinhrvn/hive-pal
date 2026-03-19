@@ -1,9 +1,10 @@
 import { lazy, Suspense } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Section } from '@/components/common/section';
 import { ApiaryActionSidebar, HivesLayout } from './components';
 import { CalendarSubscriptionCard } from './components/calendar-subscription-card';
+import { ApiaryMembersTab } from './components/apiary-members-tab';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -12,6 +13,7 @@ import {
   PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { useApiary } from '@/api/hooks';
+import { useHives } from '@/api/hooks';
 
 // Lazy load the map component (heavy ~200KB)
 const MapPicker = lazy(() => import('@/components/common/map-picker'));
@@ -27,7 +29,10 @@ function MapLoader() {
 export const ApiaryDetailPage = () => {
   const { t } = useTranslation(['apiary', 'common']);
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') ?? 'overview';
   const { data: apiary, isLoading, refetch } = useApiary(id ?? '');
+  const { data: hives } = useHives(id ?? '', { enabled: !!id });
 
   if (isLoading) {
     return <div>{t('common:status.loading')}</div>;
@@ -47,7 +52,7 @@ export const ApiaryDetailPage = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="overview" className="mb-6">
+        <Tabs defaultValue={defaultTab} className="mb-6">
           <TabsList className="mb-4">
             <TabsTrigger value="overview">
               {t('apiary:detail.tabs.overview')}
@@ -58,6 +63,7 @@ export const ApiaryDetailPage = () => {
             <TabsTrigger value="location">
               {t('apiary:detail.tabs.location')}
             </TabsTrigger>
+            <TabsTrigger value="members">Members</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -90,7 +96,7 @@ export const ApiaryDetailPage = () => {
                     </div>
                     <div>
                       <span className="font-medium">{t('hive:plural')}:</span>{' '}
-                      {0}
+                      {hives?.length ?? 0}
                     </div>
                   </div>
                 </CardContent>
@@ -145,6 +151,10 @@ export const ApiaryDetailPage = () => {
                 </div>
               )}
             </Section>
+          </TabsContent>
+
+          <TabsContent value="members">
+            <ApiaryMembersTab apiaryId={apiary.id} />
           </TabsContent>
         </Tabs>
       </MainContent>

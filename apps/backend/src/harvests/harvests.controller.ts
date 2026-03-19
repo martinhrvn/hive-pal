@@ -13,6 +13,8 @@ import {
 import { HarvestsService } from './harvests.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { ZodValidation } from '../common/decorators/zod-validation.decorator';
 import {
   CreateHarvest,
@@ -33,7 +35,8 @@ export class HarvestsController {
   constructor(private readonly harvestsService: HarvestsService) {}
 
   @Post()
-  @UseGuards(ApiaryContextGuard)
+  @UseGuards(ApiaryContextGuard, ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(createHarvestSchema)
   async create(
     @Request() req: RequestWithApiary,
@@ -61,6 +64,8 @@ export class HarvestsController {
   }
 
   @Put(':id')
+  @UseGuards(ApiaryContextGuard, ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(updateHarvestSchema)
   async update(
     @Request() req: RequestWithUser,
@@ -71,6 +76,8 @@ export class HarvestsController {
   }
 
   @Put(':id/weight')
+  @UseGuards(ApiaryContextGuard, ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(setHarvestWeightSchema)
   async setWeight(
     @Request() req: RequestWithUser,
@@ -81,16 +88,22 @@ export class HarvestsController {
   }
 
   @Post(':id/finalize')
+  @UseGuards(ApiaryContextGuard, ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   async finalize(@Request() req: RequestWithUser, @Param('id') id: string) {
     return this.harvestsService.finalize(id, req.user.id);
   }
 
   @Post(':id/reopen')
+  @UseGuards(ApiaryContextGuard, ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   async reopen(@Request() req: RequestWithUser, @Param('id') id: string) {
     return this.harvestsService.reopen(id, req.user.id);
   }
 
   @Delete(':id')
+  @UseGuards(ApiaryContextGuard, ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   async delete(@Request() req: RequestWithUser, @Param('id') id: string) {
     await this.harvestsService.delete(id, req.user.id);
     return { message: 'Harvest deleted successfully' };

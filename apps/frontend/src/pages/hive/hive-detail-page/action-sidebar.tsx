@@ -22,6 +22,7 @@ import {
   WeatherForecastSection,
 } from '@/components/sidebar';
 import { SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 
 type ActionSideBarProps = {
   hiveId?: string;
@@ -34,6 +35,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { data: hive } = useHive(hiveId || '', { enabled: !!hiveId });
+  const { canEdit } = useApiaryRole(hive?.apiaryId);
 
   return (
     <div className="space-y-4">
@@ -63,21 +65,22 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             onClick={() =>
               hiveId && navigate(`/hives/${hiveId}/inspections/create`)
             }
-            tooltip="Add Inspection"
-            disabled={!hiveId}
+            tooltip={canEdit ? 'Add Inspection' : 'Viewers cannot add inspections'}
+            disabled={!hiveId || !canEdit}
           />
           <MenuItemButton
             icon={<CalendarPlus className="h-4 w-4" />}
             label="Schedule Inspection"
             onClick={() => navigate(`/inspections/schedule`)}
-            tooltip="Schedule Inspection"
+            tooltip={canEdit ? 'Schedule Inspection' : 'Viewers cannot schedule inspections'}
+            disabled={!canEdit}
           />
           <MenuItemButton
             icon={<Icon iconNode={bee} className="h-4 w-4" />}
             label="Add Queen"
             onClick={() => hiveId && navigate(`/hives/${hiveId}/queens/create`)}
-            tooltip="Add Queen"
-            disabled={!hiveId}
+            tooltip={canEdit ? 'Add Queen' : 'Viewers cannot add queens'}
+            disabled={!hiveId || !canEdit}
           />
           <MenuItemButton
             icon={<RefreshCw className="h-4 w-4" />}
@@ -92,8 +95,8 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             icon={<EditIcon className="h-4 w-4" />}
             label="Edit Hive"
             onClick={() => hiveId && navigate(`/hives/${hiveId}/edit`)}
-            tooltip="Edit Hive"
-            disabled={!hiveId}
+            tooltip={canEdit ? 'Edit Hive' : 'Viewers cannot edit hives'}
+            disabled={!hiveId || !canEdit}
           />
           <SidebarMenuItem>
             {hiveId && hive ? (

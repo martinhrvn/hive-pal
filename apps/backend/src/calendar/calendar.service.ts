@@ -33,11 +33,10 @@ export class CalendarService {
     const baseWhereClause = {
       // Filter by hive if specified
       ...(filter.hiveId && { hiveId: filter.hiveId }),
-      // Ensure data belongs to the user's apiary
+      // Ensure data belongs to the apiary (membership enforced by ApiaryContextGuard)
       hive: {
         apiary: {
           id: filter.apiaryId,
-          userId: filter.userId,
         },
       },
     };
@@ -72,6 +71,7 @@ export class CalendarService {
               frameAction: true,
               harvestAction: true,
               boxConfigurationAction: true,
+              performedBy: { select: { id: true, name: true, email: true } },
             },
           },
           hive: {
@@ -84,6 +84,7 @@ export class CalendarService {
               },
             },
           },
+          performedBy: { select: { id: true, name: true, email: true } },
         },
       }),
       // Get standalone actions (not tied to any inspection)
@@ -100,6 +101,7 @@ export class CalendarService {
           frameAction: true,
           harvestAction: true,
           boxConfigurationAction: true,
+          performedBy: { select: { id: true, name: true, email: true } },
           hive: {
             select: {
               name: true,
@@ -136,6 +138,7 @@ export class CalendarService {
           status: inspection.status as InspectionStatus,
           score,
           actions,
+          performedBy: inspection.performedBy ?? null,
         };
       },
     );

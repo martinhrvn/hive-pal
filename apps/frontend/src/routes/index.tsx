@@ -6,6 +6,7 @@ import ForgotPasswordPage from '@/pages/forgot-password-page.tsx';
 import ResetPasswordPage from '@/pages/reset-password-page.tsx';
 import { ProtectedRoute } from './protected-route.tsx';
 import { AdminProtectedRoute } from './admin-protected-route.tsx';
+import { EditorRoute } from './editor-route.tsx';
 import { NotFoundPage } from '@/pages/not-found-page.tsx';
 import DasboardLayout from '@/components/layout/dashboard-layout.tsx';
 import { HomePage } from '@/pages/home-page.tsx';
@@ -27,6 +28,9 @@ import { UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
 import { SharedPage } from '@/pages/shared/shared-page';
+import { AcceptInvitePage } from '@/pages/invitations/accept-invite-page';
+import { ApproveJoinRequestPage } from '@/pages/join-requests/approve-join-request-page';
+import { DenyJoinRequestPage } from '@/pages/join-requests/deny-join-request-page';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
 
 // Lazy loaded components - heavy pages that benefit from code splitting
@@ -172,7 +176,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/hives/create',
-        element: <CreateHivePage />,
+        element: <EditorRoute><CreateHivePage /></EditorRoute>,
       },
       {
         path: '/hives/:id',
@@ -180,7 +184,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/hives/:id/edit',
-        element: <EditHivePage />,
+        element: <EditorRoute><EditHivePage /></EditorRoute>,
       },
       {
         path: '/hives/qr-codes/print',
@@ -192,15 +196,15 @@ const router = createBrowserRouter([
       },
       {
         path: '/hives/:hiveId/inspections/create',
-        element: <CreateInspectionPage />,
+        element: <EditorRoute><CreateInspectionPage /></EditorRoute>,
       },
       {
         path: '/inspections/create',
-        element: <CreateInspectionPage />,
+        element: <EditorRoute><CreateInspectionPage /></EditorRoute>,
       },
       {
         path: '/inspections/schedule',
-        element: <ScheduleInspectionPage />,
+        element: <EditorRoute><ScheduleInspectionPage /></EditorRoute>,
       },
       {
         path: '/inspections',
@@ -212,7 +216,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/inspections/:id/edit',
-        element: <EditInspectionPage />,
+        element: <EditorRoute><EditInspectionPage /></EditorRoute>,
       },
       {
         path: '/inspections/:id',
@@ -237,22 +241,24 @@ const router = createBrowserRouter([
       {
         path: '/batch-inspections/:id/inspect',
         element: (
-          <LazyPage>
-            <BatchInspectionPage />
-          </LazyPage>
+          <EditorRoute>
+            <LazyPage>
+              <BatchInspectionPage />
+            </LazyPage>
+          </EditorRoute>
         ),
       },
       {
         path: '/queens/create',
-        element: <CreateQueenPage />,
+        element: <EditorRoute><CreateQueenPage /></EditorRoute>,
       },
       {
         path: '/hives/:hiveId/queens/create',
-        element: <CreateQueenPage />,
+        element: <EditorRoute><CreateQueenPage /></EditorRoute>,
       },
       {
         path: '/queens/:queenId/edit',
-        element: <EditQueenPage />,
+        element: <EditorRoute><EditQueenPage /></EditorRoute>,
       },
       {
         path: '/harvests',
@@ -289,9 +295,11 @@ const router = createBrowserRouter([
       {
         path: '/actions/bulk',
         element: (
-          <LazyPage>
-            <BulkActionsPage />
-          </LazyPage>
+          <EditorRoute>
+            <LazyPage>
+              <BulkActionsPage />
+            </LazyPage>
+          </EditorRoute>
         ),
       },
       {
@@ -368,6 +376,10 @@ const router = createBrowserRouter([
           </AdminProtectedRoute>
         ),
       },
+      {
+        path: '/invitations/accept/:token',
+        element: <AcceptInvitePage />,
+      },
     ],
   },
   {
@@ -411,6 +423,14 @@ const router = createBrowserRouter([
   {
     path: '/privacy-policy',
     element: <PrivacyPolicyPage />,
+  },
+  {
+    path: '/join-requests/approve/:token',
+    element: <ApproveJoinRequestPage />,
+  },
+  {
+    path: '/join-requests/deny/:token',
+    element: <DenyJoinRequestPage />,
   },
   {
     path: '*',

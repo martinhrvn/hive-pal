@@ -48,6 +48,7 @@ export const quickCheckResponseSchema = z.object({
   photos: z.array(quickCheckPhotoResponseSchema),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  performedBy: z.object({ id: z.string(), name: z.string().nullable(), email: z.string() }).optional().nullable(),
 });
 
 export type QuickCheckResponse = z.infer<typeof quickCheckResponseSchema>;

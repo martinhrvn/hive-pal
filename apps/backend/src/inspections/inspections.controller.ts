@@ -13,6 +13,8 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { InspectionsService } from './inspections.service';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -40,6 +42,8 @@ export class InspectionsController {
   }
 
   @Post()
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(createInspectionSchema)
   async create(
     @Body() createInspectionDto: CreateInspection,
@@ -85,6 +89,8 @@ export class InspectionsController {
   }
 
   @Patch(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @UsePipes(new ZodValidationPipe(updateInspectionSchema))
   async update(
     @Param('id') id: string,
@@ -101,6 +107,8 @@ export class InspectionsController {
   }
 
   @Delete(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   async remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
     this.logger.log(
       `Removing inspection with ID ${id} from apiary ${req.apiaryId}`,

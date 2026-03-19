@@ -1,0 +1,9 @@
+# Default behavior
+* text=auto
+
+# Shell scripts must always use LF
+*.sh text eol=lf
+
+# Docker files
+Dockerfile text eol=lf
+docker-entrypoint* text eol=lf

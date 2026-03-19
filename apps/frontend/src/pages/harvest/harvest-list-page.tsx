@@ -15,12 +15,14 @@ import { HarvestWizard } from './components/harvest-wizard';
 import { format } from 'date-fns';
 import { HarvestStatus } from 'shared-schemas';
 import { useApiary } from '@/hooks/use-apiary';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 import { Droplets, Calendar, Droplet, Package2 } from 'lucide-react';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 
 export const HarvestListPage = () => {
   const navigate = useNavigate();
   const { activeApiaryId } = useApiary();
+  const { canEdit } = useApiaryRole(activeApiaryId);
   const { data: harvests = [], isLoading } = useHarvests({
     apiaryId: activeApiaryId || undefined,
   });
@@ -78,7 +80,7 @@ export const HarvestListPage = () => {
             Manage your honey harvests and track production
           </p>
         </div>
-        <HarvestWizard />
+        <HarvestWizard disabled={!canEdit} />
       </div>
 
       {/* Statistics Cards */}
@@ -161,7 +163,7 @@ export const HarvestListPage = () => {
               <p className="text-muted-foreground mb-4">
                 Start tracking your honey harvests to see production statistics
               </p>
-              <HarvestWizard />
+              <HarvestWizard disabled={!canEdit} />
             </div>
           ) : (
             <Table>

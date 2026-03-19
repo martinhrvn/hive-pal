@@ -92,6 +92,7 @@ export const HiveDetailPage = () => {
                   {/* Queen Information Card */}
                   <QueenInformation
                     hiveId={hive?.id}
+                    apiaryId={hive?.apiaryId}
                     activeQueen={hive?.activeQueen}
                     onQueenUpdated={() => refetch()}
                   />

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { useHivesWithBoxes } from '@/api/hooks';
-import { Package, Snowflake } from 'lucide-react';
+import { Package, Snowflake, LayoutGrid } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface HiveMinimapProps {
@@ -226,9 +226,21 @@ export const HiveMinimap = ({ apiaryId, className }: HiveMinimapProps) => {
   return (
     <Card className={cn('p-4', className)}>
       <div className="space-y-3">
-        <h3 className="text-sm font-medium text-muted-foreground">
-          Hive Layout
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Hive Layout
+          </h3>
+          {apiaryId && (
+            <button
+              onClick={() => navigate(`/apiaries/${apiaryId}?tab=hives`)}
+              className="flex items-center gap-1 text-xs text-primary hover:underline"
+              title="Configure hive layout"
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              Edit Layout
+            </button>
+          )}
+        </div>
         <div className="overflow-auto max-h-[500px]">
           <div
             className="grid gap-3 w-fit mx-auto p-2"

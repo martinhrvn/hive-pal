@@ -162,10 +162,7 @@ export class HiveService {
 
     const hives = await this.prisma.hive.findMany({
       where: {
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
         status: filter.includeInactive ? undefined : 'ACTIVE',
       },
       include: includeConfig,
@@ -243,10 +240,7 @@ export class HiveService {
     const hive = await this.prisma.hive.findFirst({
       where: {
         id,
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       },
       include: {
         apiary: true,
@@ -376,10 +370,7 @@ export class HiveService {
     const hive = await this.prisma.hive.findFirst({
       where: {
         id,
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       },
     });
 
@@ -392,7 +383,7 @@ export class HiveService {
       );
     }
 
-    // Extract boxes from updateHiveDto to avoid Prisma type errors
+    // Extract boxes from updateHiveDtoto avoid Prisma type errors
     const { boxes: _, ...hiveUpdateData } = updateHiveDto;
 
     const updatedHive = await this.prisma.hive.update({
@@ -459,10 +450,7 @@ export class HiveService {
     const hive = await this.prisma.hive.findFirst({
       where: {
         id,
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       },
     });
 
@@ -494,10 +482,7 @@ export class HiveService {
     const hive = await this.prisma.hive.findFirst({
       where: {
         id,
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       },
       include: {
         boxes: {
@@ -608,6 +593,7 @@ export class HiveService {
             notes:
               `Box configuration updated: ${boxesAdded > 0 ? `+${boxesAdded} boxes` : ''}${boxesRemoved > 0 ? `-${boxesRemoved} boxes` : ''} ${framesAdded > 0 ? `+${framesAdded} frames` : ''}${framesRemoved > 0 ? `-${framesRemoved} frames` : ''}`.trim(),
             date: new Date(),
+            performedById: filter.userId,
           },
         });
 

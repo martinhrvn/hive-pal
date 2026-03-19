@@ -11,6 +11,7 @@ import {
   WeatherForecastSection,
 } from '@/components/sidebar';
 import { useApiary } from '@/hooks/use-apiary';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 
 interface HiveActionSidebarProps {
   onRefreshData?: () => void;
@@ -22,6 +23,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
   const { t } = useTranslation(['hive', 'common']);
   const navigate = useNavigate();
   const { activeApiaryId } = useApiary();
+  const { canEdit } = useApiaryRole(activeApiaryId);
 
   return (
     <div className="space-y-4">
@@ -37,7 +39,8 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
             icon={<PlusCircle className="h-4 w-4" />}
             label={t('hive:actions.createNewHive')}
             onClick={() => navigate('/hives/create/')}
-            tooltip={t('hive:actions.createNewHive')}
+            tooltip={canEdit ? t('hive:actions.createNewHive') : 'Viewers cannot create hives'}
+            disabled={!canEdit}
           />
           <MenuItemButton
             icon={<RefreshCw className="h-4 w-4" />}

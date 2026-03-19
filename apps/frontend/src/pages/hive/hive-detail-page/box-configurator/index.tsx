@@ -16,6 +16,7 @@ import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
 import { useUpdateHiveBoxes } from '@/api/hooks/useHives';
 import { useFrameSizes } from '@/api/hooks';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const updateBoxesMutation = useUpdateHiveBoxes();
   const { data: frameSizes = [] } = useFrameSizes();
+  const { canEdit } = useApiaryRole(hive?.apiaryId);
 
   // Get main box variant (position 0)
   const mainBox = useMemo(() => boxes.find(b => b.position === 0), [boxes]);
@@ -203,6 +205,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
                     onClick={() => setIsEditing(true)}
                     size="sm"
                     variant="outline"
+                    disabled={!canEdit}
                   >
                     Edit Configuration
                   </Button>

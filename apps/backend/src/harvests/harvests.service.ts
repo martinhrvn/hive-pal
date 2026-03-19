@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ActionsService } from '../actions/actions.service';
@@ -32,18 +31,6 @@ export class HarvestsService {
     userId: string,
     createHarvestDto: CreateHarvest,
   ): Promise<HarvestResponse> {
-    // Verify the apiary belongs to the user
-    const apiary = await this.prisma.apiary.findFirst({
-      where: {
-        id: apiaryId,
-        userId,
-      },
-    });
-
-    if (!apiary) {
-      throw new ForbiddenException('Apiary not found or access denied');
-    }
-
     // Verify all hives belong to the apiary
     const hiveIds = createHarvestDto.harvestHives.map((hh) => hh.hiveId);
     const hives = await this.prisma.hive.findMany({
@@ -92,12 +79,7 @@ export class HarvestsService {
   ): Promise<HarvestResponse> {
     // Get the harvest and verify ownership
     const harvest = await this.prisma.harvest.findFirst({
-      where: {
-        id: harvestId,
-        apiary: {
-          userId,
-        },
-      },
+      where: { id: harvestId },
     });
 
     if (!harvest) {
@@ -181,14 +163,8 @@ export class HarvestsService {
     userId: string,
     setWeightDto: SetHarvestWeight,
   ): Promise<HarvestResponse> {
-    // Get the harvest and verify ownership
     const harvest = await this.prisma.harvest.findFirst({
-      where: {
-        id: harvestId,
-        apiary: {
-          userId,
-        },
-      },
+      where: { id: harvestId },
     });
 
     if (!harvest) {
@@ -242,14 +218,8 @@ export class HarvestsService {
   }
 
   async finalize(harvestId: string, userId: string): Promise<HarvestResponse> {
-    // Get the harvest and verify ownership
     const harvest = await this.prisma.harvest.findFirst({
-      where: {
-        id: harvestId,
-        apiary: {
-          userId,
-        },
-      },
+      where: { id: harvestId },
       include: {
         harvestHives: true,
       },
@@ -324,14 +294,8 @@ export class HarvestsService {
   }
 
   async reopen(harvestId: string, userId: string): Promise<HarvestResponse> {
-    // Get the harvest and verify ownership
     const harvest = await this.prisma.harvest.findFirst({
-      where: {
-        id: harvestId,
-        apiary: {
-          userId,
-        },
-      },
+      where: { id: harvestId },
     });
 
     if (!harvest) {
@@ -391,12 +355,7 @@ export class HarvestsService {
 
   async findOne(harvestId: string, userId: string): Promise<HarvestResponse> {
     const harvest = await this.prisma.harvest.findFirst({
-      where: {
-        id: harvestId,
-        apiary: {
-          userId,
-        },
-      },
+      where: { id: harvestId },
       include: {
         harvestHives: {
           include: {
@@ -418,10 +377,7 @@ export class HarvestsService {
     filter: HarvestFilter,
   ): Promise<HarvestListResponse[]> {
     const whereClause: Prisma.HarvestWhereInput = {
-      apiary: {
-        userId,
-        ...(filter.apiaryId && { id: filter.apiaryId }),
-      },
+      ...(filter.apiaryId && { apiaryId: filter.apiaryId }),
       ...(filter.status && { status: filter.status }),
       ...(filter.startDate || filter.endDate
         ? {
@@ -458,14 +414,8 @@ export class HarvestsService {
   }
 
   async delete(harvestId: string, userId: string): Promise<void> {
-    // Get the harvest and verify ownership
     const harvest = await this.prisma.harvest.findFirst({
-      where: {
-        id: harvestId,
-        apiary: {
-          userId,
-        },
-      },
+      where: { id: harvestId },
     });
 
     if (!harvest) {

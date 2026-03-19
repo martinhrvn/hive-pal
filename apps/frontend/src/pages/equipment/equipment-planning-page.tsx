@@ -19,6 +19,8 @@ import { Link } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { EquipmentTable } from './components/equipment-table';
 import { ShoppingList } from './components/shopping-list';
+import { useApiaryStore } from '@/hooks/use-apiary';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 
 const StatsCards = ({ planData }: { planData: EquipmentPlan }) => {
   const totalNeeded = planData.items.reduce(
@@ -150,6 +152,8 @@ const SaveChangesSection = ({
 };
 
 export const EquipmentPlanningPage = () => {
+  const activeApiaryId = useApiaryStore(s => s.activeApiaryId);
+  const { canEdit } = useApiaryRole(activeApiaryId);
   const {
     plan,
     items,
@@ -340,6 +344,7 @@ export const EquipmentPlanningPage = () => {
                 updatingItems={updatingItems}
                 deletingItems={deletingItems}
                 isCreating={isCreating}
+                canEdit={canEdit}
               />
             </CardContent>
           </Card>

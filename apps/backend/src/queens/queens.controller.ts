@@ -15,6 +15,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { QueensService } from './queens.service';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
@@ -40,6 +42,8 @@ export class QueensController {
 
   @Post()
   @ApiCreatedResponse({ type: Object })
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(createQueenSchema)
   create(
     @Body() createQueenDto: CreateQueen,
@@ -79,6 +83,8 @@ export class QueensController {
 
   @Patch(':id')
   @ApiOkResponse({ type: Object })
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(updateQueenSchema)
   update(
     @Param('id') id: string,
@@ -95,6 +101,8 @@ export class QueensController {
 
   @Delete(':id')
   @ApiOkResponse({ type: Object })
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
     this.logger.log(`Removing queen with ID ${id} from apiary ${req.apiaryId}`);
     return this.queensService.remove(id, {

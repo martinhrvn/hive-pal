@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useApiary } from '@/hooks/use-apiary';
 
-export const HarvestWizard = () => {
+export const HarvestWizard = ({ disabled = false }: { disabled?: boolean }) => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
   const [notes, setNotes] = useState('');
@@ -93,7 +93,7 @@ export const HarvestWizard = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button disabled={disabled}>
           <Plus className="mr-2 h-4 w-4" />
           Start Harvest
         </Button>

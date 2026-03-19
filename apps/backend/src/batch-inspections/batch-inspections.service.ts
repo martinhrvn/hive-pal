@@ -51,15 +51,6 @@ export class BatchInspectionsService {
     userId: string,
     createDto: CreateBatchInspection,
   ): Promise<BatchInspectionResponse> {
-    // Verify apiary ownership
-    const apiary = await this.prisma.apiary.findFirst({
-      where: { id: apiaryId, userId },
-    });
-
-    if (!apiary) {
-      throw new ForbiddenException('Apiary not found or access denied');
-    }
-
     // Verify all hives belong to this apiary
     const hives = await this.prisma.hive.findMany({
       where: {
@@ -588,10 +579,10 @@ export class BatchInspectionsService {
    */
   private async verifyApiaryOwnership(
     apiaryId: string,
-    userId: string,
+    _userId: string,
   ): Promise<void> {
     const apiary = await this.prisma.apiary.findFirst({
-      where: { id: apiaryId, userId },
+      where: { id: apiaryId },
     });
 
     if (!apiary) {

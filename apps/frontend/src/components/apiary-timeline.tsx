@@ -18,6 +18,7 @@ import {
   useDeleteQuickCheck,
 } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 import { Section } from '@/components/common/section';
 import { TimelineEventList } from '@/components/common/timeline-event-list';
 import { QuickCheckDialog } from '@/pages/hive/hive-detail-page/quick-check-dialog';
@@ -33,6 +34,7 @@ export const ApiaryTimeline = () => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { activeApiaryId } = useApiary();
+  const { canEdit } = useApiaryRole(activeApiaryId);
   const [deletingQuickCheck, setDeletingQuickCheck] =
     useState<QuickCheckResponse | null>(null);
   const deleteQuickCheckMutation = useDeleteQuickCheck();
@@ -102,6 +104,7 @@ export const ApiaryTimeline = () => {
             <QuickCheckDialog
               apiaryId={activeApiaryId}
               triggerVariant="inline"
+              disabled={!canEdit}
             />
           ) : undefined
         }

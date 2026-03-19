@@ -26,6 +26,7 @@ type InspectionWithIncludes = Prisma.InspectionGetPayload<{
         frameAction: true;
         harvestAction: true;
         boxConfigurationAction: true;
+        performedBy: { select: { id: true; name: true; email: true } };
       };
     };
     hive: {
@@ -33,6 +34,7 @@ type InspectionWithIncludes = Prisma.InspectionGetPayload<{
         name: true;
       };
     };
+    performedBy: { select: { id: true; name: true; email: true } };
   };
 }>;
 import {
@@ -70,10 +72,7 @@ export class InspectionsService {
     const hive = await this.prisma.hive.findFirst({
       where: {
         id: createInspectionDto.hiveId,
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       },
     });
 
@@ -99,6 +98,7 @@ export class InspectionsService {
           data: {
             ...inspectionData,
             status: status,
+            performedById: filter.userId,
             observations: {
               create: [
                 { type: 'strength', numericValue: observations?.strength },
@@ -205,12 +205,9 @@ export class InspectionsService {
     };
 
     // Add apiary filter if provided
-    if (filter.apiaryId && filter.userId) {
+    if (filter.apiaryId) {
       whereClause.hive = {
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       };
     }
 
@@ -229,8 +226,10 @@ export class InspectionsService {
             frameAction: true,
             harvestAction: true,
             boxConfigurationAction: true,
+            performedBy: { select: { id: true, name: true, email: true } },
           },
         },
+        performedBy: { select: { id: true, name: true, email: true } },
       },
     });
 
@@ -254,6 +253,7 @@ export class InspectionsService {
         status: inspection.status as InspectionStatus,
         score,
         actions,
+        performedBy: inspection.performedBy ?? null,
       };
     });
   }
@@ -266,10 +266,7 @@ export class InspectionsService {
       where: {
         id,
         hive: {
-          apiary: {
-            id: filter.apiaryId,
-            userId: filter.userId,
-          },
+          apiaryId: filter.apiaryId,
         },
       },
       include: {
@@ -282,8 +279,10 @@ export class InspectionsService {
             frameAction: true,
             harvestAction: true,
             boxConfigurationAction: true,
+            performedBy: { select: { id: true, name: true, email: true } },
           },
         },
+        performedBy: { select: { id: true, name: true, email: true } },
       },
     });
     if (!inspection) {
@@ -309,6 +308,7 @@ export class InspectionsService {
       status: inspection.status as InspectionStatus,
       score,
       actions,
+      performedBy: inspection.performedBy ?? null,
     };
   }
 
@@ -323,9 +323,7 @@ export class InspectionsService {
       where: {
         id,
         hive: {
-          apiary: {
-            userId: filter.userId,
-          },
+          apiaryId: filter.apiaryId,
         },
       },
     });
@@ -450,10 +448,7 @@ export class InspectionsService {
       where: {
         id,
         hive: {
-          apiary: {
-            id: filter.apiaryId,
-            userId: filter.userId,
-          },
+          apiaryId: filter.apiaryId,
         },
       },
     });
@@ -464,7 +459,7 @@ export class InspectionsService {
       );
     }
 
-    // Delete audio files from S3 before transaction (outside DB transaction)
+    // Delete audio files from S3 before transaction(outside DB transaction)
     await this.audioService.deleteAllForInspection(id);
 
     return this.prisma.$transaction(async (tx) => {
@@ -502,12 +497,9 @@ export class InspectionsService {
     };
 
     // Add apiary filter if provided
-    if (filter.apiaryId && filter.userId) {
+    if (filter.apiaryId) {
       whereClause.hive = {
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       };
     }
 
@@ -526,6 +518,7 @@ export class InspectionsService {
             frameAction: true,
             harvestAction: true,
             boxConfigurationAction: true,
+            performedBy: { select: { id: true, name: true, email: true } },
           },
         },
         hive: {
@@ -533,6 +526,7 @@ export class InspectionsService {
             name: true,
           },
         },
+        performedBy: { select: { id: true, name: true, email: true } },
       },
     });
 
@@ -559,12 +553,9 @@ export class InspectionsService {
     };
 
     // Add apiary filter if provided
-    if (filter.apiaryId && filter.userId) {
+    if (filter.apiaryId) {
       whereClause.hive = {
-        apiary: {
-          id: filter.apiaryId,
-          userId: filter.userId,
-        },
+        apiaryId: filter.apiaryId,
       };
     }
 
@@ -583,6 +574,7 @@ export class InspectionsService {
             frameAction: true,
             harvestAction: true,
             boxConfigurationAction: true,
+            performedBy: { select: { id: true, name: true, email: true } },
           },
         },
         hive: {
@@ -590,6 +582,7 @@ export class InspectionsService {
             name: true,
           },
         },
+        performedBy: { select: { id: true, name: true, email: true } },
       },
     });
 
@@ -619,6 +612,7 @@ export class InspectionsService {
         status: inspection.status as InspectionStatus,
         score,
         actions,
+        performedBy: inspection.performedBy ?? null,
       };
     });
   }

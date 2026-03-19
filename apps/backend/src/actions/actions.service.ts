@@ -21,6 +21,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
     frameAction: true;
     harvestAction: true;
     boxConfigurationAction: true;
+    performedBy: { select: { id: true; name: true; email: true } };
   };
 }>;
 
@@ -289,7 +290,6 @@ export class ActionsService {
         ...(filter.apiaryId && {
           apiary: {
             id: filter.apiaryId,
-            userId: filter.userId,
           },
         }),
       },
@@ -304,6 +304,7 @@ export class ActionsService {
         frameAction: true,
         harvestAction: true,
         boxConfigurationAction: true,
+        performedBy: { select: { id: true, name: true, email: true } },
       },
     });
 
@@ -336,14 +337,11 @@ export class ActionsService {
     apiaryId: string,
     userId: string,
   ): Promise<ActionResponse> {
-    // Verify the hive belongs to the user's apiary
+    // Verify the hive belongs to the apiary (members can also create actions)
     const hive = await this.prisma.hive.findFirst({
       where: {
         id: createActionDto.hiveId,
-        apiary: {
-          id: apiaryId,
-          userId: userId,
-        },
+        apiaryId: apiaryId,
       },
     });
 
@@ -362,6 +360,7 @@ export class ActionsService {
           type,
           notes,
           date: date ? new Date(date) : new Date(),
+          performedById: userId,
         },
       });
 
@@ -422,6 +421,7 @@ export class ActionsService {
           frameAction: true,
           harvestAction: true,
           boxConfigurationAction: true,
+          performedBy: { select: { id: true, name: true, email: true } },
         },
       });
     });
@@ -455,15 +455,12 @@ export class ActionsService {
     apiaryId: string,
     userId: string,
   ): Promise<ActionResponse> {
-    // Verify the action exists and belongs to the user's apiary
+    // Verify the action exists and belongs to the apiary (membership enforced by ApiaryContextGuard)
     const existingAction = await this.prisma.action.findFirst({
       where: {
         id: actionId,
         hive: {
-          apiary: {
-            id: apiaryId,
-            userId: userId,
-          },
+          apiaryId: apiaryId,
         },
       },
       include: {
@@ -568,6 +565,7 @@ export class ActionsService {
           frameAction: true,
           harvestAction: true,
           boxConfigurationAction: true,
+          performedBy: { select: { id: true, name: true, email: true } },
         },
       });
     });
@@ -598,15 +596,12 @@ export class ActionsService {
     apiaryId: string,
     userId: string,
   ): Promise<void> {
-    // Verify the action exists and belongs to the user's apiary
+    // Verify the action exists and belongs to the apiary (membership enforced by ApiaryContextGuard)
     const existingAction = await this.prisma.action.findFirst({
       where: {
         id: actionId,
         hive: {
-          apiary: {
-            id: apiaryId,
-            userId: userId,
-          },
+          apiaryId: apiaryId,
         },
       },
     });
@@ -653,6 +648,7 @@ export class ActionsService {
       harvestId: prismaAction.harvestId,
       date: prismaAction.date.toISOString(),
       notes: prismaAction.notes || undefined,
+      performedBy: prismaAction.performedBy ?? null,
     };
 
     const unitPreference = userPreferences?.units || 'metric';

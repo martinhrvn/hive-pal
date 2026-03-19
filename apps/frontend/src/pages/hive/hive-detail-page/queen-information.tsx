@@ -18,19 +18,23 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ActiveQueen } from 'shared-schemas';
+import { useApiaryRole } from '@/hooks/use-apiary-role';
 
 type QueenInformationProps = {
   hiveId?: string;
+  apiaryId?: string;
   activeQueen?: ActiveQueen | null;
   onQueenUpdated?: () => void;
 };
 export const QueenInformation: React.FC<QueenInformationProps> = ({
   activeQueen,
   hiveId,
+  apiaryId,
   onQueenUpdated,
 }) => {
   const { t } = useTranslation('queen');
   const navigate = useNavigate();
+  const { canEdit } = useApiaryRole(apiaryId);
 
   const getColor = (color?: string | null) => {
     switch (color?.toLowerCase()) {
@@ -94,7 +98,7 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
                 </span>
               )}
             </div>
-            {activeQueen && (
+            {activeQueen && canEdit && (
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <MoreHorizontal className="h-4 w-4 text-muted-foreground cursor-pointer" />
@@ -127,15 +131,17 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
             <span className="text-sm text-muted-foreground">
               {t('information.noActiveQueen')}
             </span>
-            <Link
-              to={`/hives/${hiveId}/queens/create`}
-              className={buttonVariants({
-                size: 'sm',
-                variant: 'ghost',
-              })}
-            >
-              <BeeIcon className="mr-2 h-4 w-4" /> {t('actions.addQueen')}
-            </Link>
+            {canEdit && (
+              <Link
+                to={`/hives/${hiveId}/queens/create`}
+                className={buttonVariants({
+                  size: 'sm',
+                  variant: 'ghost',
+                })}
+              >
+                <BeeIcon className="mr-2 h-4 w-4" /> {t('actions.addQueen')}
+              </Link>
+            )}
           </div>
         )}
       </div>

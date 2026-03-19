@@ -17,6 +17,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { RequestWithApiary } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { QuickChecksService } from './quick-checks.service';
@@ -41,6 +43,8 @@ export class QuickChecksController {
   }
 
   @Post()
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(createQuickCheckSchema)
   async create(
     @Body() dto: CreateQuickCheck,
@@ -93,6 +97,8 @@ export class QuickChecksController {
   }
 
   @Delete(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
     @Param('id') id: string,
@@ -110,6 +116,8 @@ export class QuickChecksController {
   }
 
   @Post(':id/photos')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @UseInterceptors(FileInterceptor('file'))
   async uploadPhoto(
     @Param('id') id: string,
@@ -152,6 +160,8 @@ export class QuickChecksController {
   }
 
   @Delete(':id/photos/:photoId')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePhoto(
     @Param('id') id: string,

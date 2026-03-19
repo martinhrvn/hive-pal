@@ -174,6 +174,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   const [dateRangeFilter, setDateRangeFilter] =
     useState<DateRangeFilter>('all');
   const [hiveFilter, setHiveFilter] = useState<string>('all');
+  const [userFilter, setUserFilter] = useState<string>('all');
 
   const timelineEvents = useMemo(() => {
     const events: TimelineEvent[] = [];
@@ -287,7 +288,15 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
           return eventHiveId === hiveFilter;
         });
 
-    return filtered.sort((a, b) => {
+    // Apply user filter
+    const userFiltered = userFilter === 'all'
+      ? filtered
+      : filtered.filter(event => {
+          const performer = (event.data as { performedBy?: { id?: string } | null })?.performedBy;
+          return performer?.id === userFilter;
+        });
+
+    return userFiltered.sort((a, b) => {
       const aIsOverdue =
         a.type === 'inspection' &&
         (a.data as InspectionResponse).status === InspectionStatus.SCHEDULED &&
@@ -302,14 +311,28 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
 
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }, [inspections, actions, quickChecks, eventTypeFilter, dateRangeFilter, hiveFilter]);
+  }, [inspections, actions, quickChecks, eventTypeFilter, dateRangeFilter, hiveFilter, userFilter]);
 
   const displayedEvents = showAll
     ? timelineEvents
     : timelineEvents.slice(0, maxDisplayed);
 
   const hasActiveFilters =
-    eventTypeFilter !== 'all' || dateRangeFilter !== 'all' || hiveFilter !== 'all';
+    eventTypeFilter !== 'all' || dateRangeFilter !== 'all' || hiveFilter !== 'all' || userFilter !== 'all';
+
+  const uniquePerformers = useMemo(() => {
+    const seen = new Map<string, { id: string; name: string | null; email: string }>();
+    const allData = [
+      ...(inspections ?? []),
+      ...(actions ?? []),
+      ...(quickChecks ?? []),
+    ] as Array<{ performedBy?: { id: string; name: string | null; email: string } | null }>;
+    allData.forEach(item => {
+      const p = item?.performedBy;
+      if (p?.id && !seen.has(p.id)) seen.set(p.id, p);
+    });
+    return Array.from(seen.values());
+  }, [inspections, actions, quickChecks]);
 
   const renderHiveName = (event: TimelineEvent) => {
     if (!getHiveName) return null;
@@ -368,6 +391,16 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
           {/* Date */}
           <div className="text-xs text-muted-foreground mb-1">
             {formatDate(event.date)} • {formatTime(event.date)}
+            {(() => {
+              const data = event.data as { performedBy?: { name?: string | null; email?: string } | null };
+              const performer = data?.performedBy;
+              if (!performer) return null;
+              return (
+                <span className="ml-1">
+                  · {performer.name ?? performer.email}
+                </span>
+              );
+            })()}
           </div>
 
           {/* Inspection content */}
@@ -645,6 +678,22 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
           </Select>
         )}
 
+        {uniquePerformers.length > 1 && (
+          <Select value={userFilter} onValueChange={setUserFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="User" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All users</SelectItem>
+              {uniquePerformers.map(user => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.name ?? user.email}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         {hasActiveFilters && (
           <Button
             variant="ghost"
@@ -653,6 +702,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               setEventTypeFilter('all');
               setDateRangeFilter('all');
               setHiveFilter('all');
+              setUserFilter('all');
             }}
             className="h-9 px-2"
           >

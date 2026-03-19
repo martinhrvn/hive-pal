@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { BarChart, Droplet, TrendingUp, PieChart } from 'lucide-react';
+import { BarChart, Droplet, TrendingUp, PieChart, MapPin } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -11,9 +11,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ViewDetailsLink } from '@/components/ui/view-details-link';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import { useApiaryStatistics } from '@/api/hooks/useReports';
+import { useNavigate } from 'react-router-dom';
 
 export const ReportsSummaryWidget = () => {
   const { t } = useTranslation(['common']);
+  const navigate = useNavigate();
   const { activeApiaryId } = useApiaryStore();
   const { data: statistics, isLoading } = useApiaryStatistics(
     activeApiaryId ?? undefined,
@@ -77,10 +79,22 @@ export const ReportsSummaryWidget = () => {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <PieChart className="h-5 w-5" />
-          {t('reports.widget.title')}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <PieChart className="h-5 w-5" />
+            {t('reports.widget.title')}
+          </CardTitle>
+          {activeApiaryId && (
+            <button
+              onClick={() => navigate(`/apiaries/${activeApiaryId}`)}
+              className="flex items-center gap-1 text-xs text-primary hover:underline"
+              title="View apiary details"
+            >
+              <MapPin className="h-3.5 w-3.5" />
+              Apiary Details
+            </button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Statistics Grid */}

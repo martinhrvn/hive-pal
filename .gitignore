@@ -68,3 +68,6 @@ packages/prisma/node_modules/.prisma
 # Local development SSL certificates
 *.pem
 .direnv
+
+# Local dev overrides (may contain personal/sensitive data)
+docker-compose.local-dev.yaml

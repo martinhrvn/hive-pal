@@ -12,6 +12,8 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
+import { ApiaryRoleGuard } from '../guards/apiary-role.guard';
+import { RequireApiaryRole } from '../guards/decorators/require-apiary-role.decorator';
 import { ActionsService } from './actions.service';
 import {
   ActionFilter,
@@ -45,6 +47,8 @@ export class ActionsController {
   }
 
   @Post()
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(createStandaloneActionSchema)
   create(
     @Body() createActionDto: CreateStandaloneAction,
@@ -58,6 +62,8 @@ export class ActionsController {
   }
 
   @Put(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   @ZodValidation(updateActionSchema)
   update(
     @Param('id') id: string,
@@ -73,6 +79,8 @@ export class ActionsController {
   }
 
   @Delete(':id')
+  @UseGuards(ApiaryRoleGuard)
+  @RequireApiaryRole('EDITOR')
   async delete(
     @Param('id') id: string,
     @Req() req: RequestWithApiary,
