@@ -58,11 +58,16 @@ export class LocalStorageService
     );
   }
 
-  generateDownloadUrl(key: string, expiresIn: number = 3600): Promise<string> {
+  async generateDownloadUrl(
+    key: string,
+    expiresIn: number = 3600,
+  ): Promise<string> {
     const expires = Math.floor(Date.now() / 1000) + expiresIn;
     const token = this.signToken(key, expires);
     const encodedKey = encodeURIComponent(key);
-    return `/api/storage/files/${encodedKey}?token=${token}&expires=${expires}`;
+    return Promise.resolve(
+      `/api/storage/files/${encodedKey}?token=${token}&expires=${expires}`,
+    );
   }
 
   async deleteObject(key: string): Promise<void> {
