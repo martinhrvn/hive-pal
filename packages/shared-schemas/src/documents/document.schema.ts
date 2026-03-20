@@ -34,12 +34,3 @@ export const documentFilterSchema = z.object({
 });
 
 export type DocumentFilter = z.infer<typeof documentFilterSchema>;
-
-export const documentDownloadUrlResponseSchema = z.object({
-  downloadUrl: z.string().url(),
-  expiresIn: z.number().positive(),
-});
-
-export type DocumentDownloadUrlResponse = z.infer<
-  typeof documentDownloadUrlResponseSchema
->;

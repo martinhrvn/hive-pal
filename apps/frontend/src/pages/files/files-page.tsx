@@ -41,7 +41,7 @@ import {
   useDocuments,
   useDeletePhoto,
   useDeleteDocument,
-  usePhotoDownloadUrl,
+  useStandalonePhotoDownloadUrl,
   useDocumentDownloadUrl,
   useHives,
 } from '@/api/hooks';
@@ -56,7 +56,7 @@ type DeletingItem =
   | null;
 
 function DownloadButton({ type, id }: { type: 'photo' | 'document'; id: string }) {
-  const photoUrl = usePhotoDownloadUrl(id, { enabled: type === 'photo' });
+  const photoUrl = useStandalonePhotoDownloadUrl(id, { enabled: type === 'photo' });
   const docUrl = useDocumentDownloadUrl(id, { enabled: type === 'document' });
   const url = type === 'photo' ? photoUrl.data?.downloadUrl : docUrl.data?.downloadUrl;
 

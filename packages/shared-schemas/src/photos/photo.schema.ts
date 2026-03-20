@@ -32,12 +32,3 @@ export const photoFilterSchema = z.object({
 });
 
 export type PhotoFilter = z.infer<typeof photoFilterSchema>;
-
-export const photoDownloadUrlResponseSchema = z.object({
-  downloadUrl: z.string().url(),
-  expiresIn: z.number().positive(),
-});
-
-export type PhotoDownloadUrlResponse = z.infer<
-  typeof photoDownloadUrlResponseSchema
->;

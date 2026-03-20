@@ -3,7 +3,6 @@ import { apiClient } from '../client';
 import {
   PhotoResponse,
   PhotoFilter,
-  PhotoDownloadUrlResponse,
 } from 'shared-schemas';
 
 export const PHOTO_KEYS = {
@@ -71,14 +70,14 @@ export const useDeletePhoto = () => {
   });
 };
 
-export const usePhotoDownloadUrl = (
+export const useStandalonePhotoDownloadUrl = (
   id: string,
   options?: { enabled?: boolean },
 ) => {
-  return useQuery<PhotoDownloadUrlResponse>({
+  return useQuery<{ downloadUrl: string; expiresIn: number }>({
     queryKey: PHOTO_KEYS.downloadUrl(id),
     queryFn: async () => {
-      const response = await apiClient.get<PhotoDownloadUrlResponse>(
+      const response = await apiClient.get<{ downloadUrl: string; expiresIn: number }>(
         `/api/photos/${id}/download-url`,
       );
       return response.data;

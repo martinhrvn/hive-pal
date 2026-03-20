@@ -26,6 +26,7 @@ import {
   Pencil,
   Trash2,
   ClipboardCheck,
+  Camera,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -46,7 +47,6 @@ import {
 } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { PhotoGallery } from './photo-gallery';
-import { Camera } from 'lucide-react';
 
 export type TimelineEvent = {
   id: string;

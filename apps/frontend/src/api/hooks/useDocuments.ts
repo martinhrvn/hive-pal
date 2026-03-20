@@ -3,7 +3,6 @@ import { apiClient } from '../client';
 import {
   DocumentResponse,
   DocumentFilter,
-  DocumentDownloadUrlResponse,
 } from 'shared-schemas';
 
 export const DOCUMENT_KEYS = {
@@ -75,10 +74,10 @@ export const useDocumentDownloadUrl = (
   id: string,
   options?: { enabled?: boolean },
 ) => {
-  return useQuery<DocumentDownloadUrlResponse>({
+  return useQuery<{ downloadUrl: string; expiresIn: number }>({
     queryKey: DOCUMENT_KEYS.downloadUrl(id),
     queryFn: async () => {
-      const response = await apiClient.get<DocumentDownloadUrlResponse>(
+      const response = await apiClient.get<{ downloadUrl: string; expiresIn: number }>(
         `/api/documents/${id}/download-url`,
       );
       return response.data;
