@@ -22,14 +22,35 @@
     "status": {
         "active": "Aktiv",
         "dead": "Død",
-        "unknown": "Ukendt"
+        "unknown": "Ukendt",
+        "inactive": "Inaktiv",
+        "queenless": "Dronningeløs",
+        "weak": "Svag",
+        "strong": "Stærk",
+        "sold": "Solgt",
+        "archived": "Arkiveret"
     },
     "actions": {
-        "addQueen": "Tilføj dronning"
+        "addQueen": "Tilføj dronning",
+        "details": "Detaljer",
+        "refreshData": "Opdater data",
+        "exportCSV": "Eksporter til CSV",
+        "dataOptions": "Data muligheder",
+        "inspect": "Inspicer",
+        "addBox": "Tilføj magasin",
+        "removeBox": "Fjern magasin",
+        "archive": "Arkiver",
+        "restore": "Genskab",
+        "print": "Udskriv liste af stader",
+        "share": "Del liste af stader",
+        "createNewHive": "Opret nyt stade"
     },
     "form": {
         "selectHive": "Vælg et stade",
-        "pickDate": "Vælg en dato"
+        "pickDate": "Vælg en dato",
+        "hivePlaceholder": "stade 01",
+        "notesPlaceholder": "Godt stade",
+        "submit": "Indsend"
     },
     "title": "Stader",
     "singular": "Stade",
@@ -107,6 +128,25 @@
     },
     "scores": {
         "overall": "Alt i alt",
-        "overallScore": "Samlet score"
+        "overallScore": "Samlet score",
+        "population": "Bipopulation",
+        "populationShort": "Pop",
+        "stores": "Beholdninger",
+        "queen": "Dronning",
+        "queenScore": "Dronninge score"
+    },
+    "messages": {
+        "exportComingSoon": "Funktionen \"eksporter\" kommer snart",
+        "shareComingSoon": "Funktionen \"del\" kommer snart"
+    },
+    "weather": {
+        "forecast": "Vejrudsigt"
+    },
+    "layout": {
+        "title": "Stadeopstilling",
+        "grid": "Gitter",
+        "unpositionedHives": "Stader uden placering",
+        "noHivesInApiary": "Der er endnu ingen stader i bigården.",
+        "dragToOrganize": "Tilføj stader og træk dem hen til gitteret, for at organisere bigårdens opbygning."
     }
 }

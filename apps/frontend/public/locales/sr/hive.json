@@ -1,1 +1,152 @@
-{}
+{
+    "list": {
+        "clearFilters": "Обриши филтере",
+        "title": "Листа кошница",
+        "caption": "Листа свих ваших кошница",
+        "captionFiltered": "Приказујем {{count}} {{status}} кошницу",
+        "captionFilteredPlural": "Приказујем {{count}} {{status}} кошница",
+        "searchPlaceholder": "Претражи кошнице...",
+        "filterByStatus": "Филтрирај по статусу",
+        "allStatuses": "Сви статуси",
+        "noHives": "Није пронађена ниједна кошница",
+        "noHivesMatchingBoth": "Није пронађена ниједна {{status}} кошница која одговара \"{{searchTerm}}\"",
+        "noHivesMatchingSearch": "Није пронађена ниједна кошница која одговара \"{{searchTerm}}\"",
+        "noHivesWithStatus": "Није пронађена ниједна {{status}} кошница",
+        "createFirst": "Креирај прву кошницу"
+    },
+    "fields": {
+        "name": "Назив",
+        "location": "Локација",
+        "notSpecified": "Није наведено",
+        "label": "Ознака",
+        "number": "Број кошнице",
+        "type": "Тип кошнице",
+        "status": "Статус",
+        "notes": "Белешке",
+        "queen": "Матица",
+        "lastInspection": "Последњи преглед",
+        "installationDate": "Датум постављања",
+        "established": "Успостављена",
+        "boxes": "Наставци",
+        "frames": "Рамови",
+        "position": "Позиција",
+        "apiary": "Пчелињак",
+        "noInspectionYet": "Још без прегледа",
+        "noNotes": "Нема бележака"
+    },
+    "actions": {
+        "details": "Детаљи",
+        "refreshData": "Освежи податке",
+        "exportCSV": "Извези у CSV",
+        "dataOptions": "Опције података",
+        "inspect": "Прегледај",
+        "addBox": "Додај наставак",
+        "removeBox": "Уклони наставак",
+        "addQueen": "Додај матицу",
+        "archive": "Архивирана",
+        "restore": "Врати",
+        "print": "Штампај листу кошница",
+        "share": "Подели листу кошница",
+        "createNewHive": "Креирај нову кошницу"
+    },
+    "messages": {
+        "exportComingSoon": "Функционалност извоза ускоро стиже",
+        "shareComingSoon": "Функционалност дељења ускоро стиже"
+    },
+    "title": "Кошнице",
+    "singular": "Кошница",
+    "plural": "Кошнице",
+    "create": {
+        "title": "Креирај нову кошницу",
+        "success": "Кошница је успешно креирана"
+    },
+    "edit": {
+        "title": "Измени кошницу",
+        "success": "Кошница је успешно ажурирана"
+    },
+    "delete": {
+        "confirm": "Да ли сте сигурни да желите да обришете ову кошницу?",
+        "success": "Кошница је успешно обрисана"
+    },
+    "boxConfigurator": {
+        "title": "Конфигурација наставака",
+        "description": "Визуелизујте и подесите слагање кутија ваше кошнице. Кутије се приказују од дна ка врху.",
+        "editConfiguration": "Измени конфигурацију",
+        "cancel": "Откажи",
+        "save": "Сачувај",
+        "addBox": "Додај наставак",
+        "noBoxes": "Још нема подешених кутија",
+        "clickToAdd": "Кликните \"Додај наставак\" да почнете са изградњом ваше кошнице",
+        "saveSuccess": "Конфигурација кутија је успешно сачувана",
+        "saveError": "Чување конфигурације кутија није успело",
+        "boxProperties": "Својства кутије",
+        "purpose": "Намена",
+        "boxType": "Тип кутије",
+        "frames": "Рамови",
+        "maximumFrames": "Максималан број рамова",
+        "color": "Боја",
+        "colorPresets": "Предефинисане боје",
+        "queenExcluder": "Матична решетка изнад ове кутије",
+        "boxTypes": {
+            "brood": "Плодиште",
+            "honey": "Медиште",
+            "feeder": "Хранилица"
+        },
+        "boxVariants": {
+            "langstrothDeep": "Лангстрот дубоки",
+            "langstrothShallow": "Лангстрот плитки",
+            "bDeep": "Б дубоки",
+            "bShallow": "Б плитки",
+            "dadant": "Дадан Блат",
+            "nationalDeep": "Национал дубоки",
+            "nationalShallow": "Национал плитки",
+            "warre": "Warre",
+            "topBar": "Top Bar",
+            "custom": "Прилагођено"
+        }
+    },
+    "card": {
+        "showDetails": "Прикажи детаље",
+        "lastInspected": "Последњи преглед {{date}}",
+        "noInspection": "Још без прегледа",
+        "score": "Оцена:",
+        "feeding": "Прихрана:"
+    },
+    "scores": {
+        "overall": "Укупно",
+        "overallScore": "Укупна оцена",
+        "population": "Популација",
+        "populationShort": "Поп.",
+        "stores": "Залихе",
+        "queen": "Матица",
+        "queenScore": "Оцена матице"
+    },
+    "status": {
+        "active": "Активна",
+        "inactive": "Неактивна",
+        "queenless": "Без матице",
+        "weak": "Слаба",
+        "strong": "Јака",
+        "dead": "Угинула",
+        "sold": "Продата",
+        "unknown": "Непознато",
+        "archived": "Архивирана"
+    },
+    "form": {
+        "selectHive": "Изабери кошницу",
+        "hivePlaceholder": "кошница 01",
+        "notesPlaceholder": "Добра кошница, јака",
+        "pickDate": "Изабери датум",
+        "submit": "Пошаљи"
+    },
+    "weather": {
+        "forecast": "Прогноза времена"
+    },
+    "layout": {
+        "title": "Распоред кошница",
+        "grid": "Мрежа",
+        "unpositionedHives": "Непозициониране кошнице",
+        "noHivesInApiary": "Још увек нема кошница у овом пчелињаку.",
+        "dragToOrganize": "Додајте кошнице и превуците их на мрежу изнад да бисте организовали распоред вашег пчелињака."
+    }
+}

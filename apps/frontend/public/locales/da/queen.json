@@ -1,1 +1,69 @@
-{}
+{
+    "title": "Dronninger",
+    "singular": "Dronning",
+    "plural": "Dronninger",
+    "create": {
+        "title": "Ny dronning",
+        "button": "Opret dronning",
+        "success": "Dronning er blevet oprettet"
+    },
+    "edit": {
+        "title": "Rediger dronning",
+        "button": "Gem ændringer",
+        "success": "Ændring af dronning er blevet gemt"
+    },
+    "delete": {
+        "confirm": "Er du sikker på at du vil slette denne dronning?",
+        "success": "Dronning er blevet slettet"
+    },
+    "fields": {
+        "hive": "Stade",
+        "year": "År",
+        "color": "Farve",
+        "marking": "Markering",
+        "source": "Ophav",
+        "status": "Status",
+        "installationDate": "Dato for tilsætning",
+        "replacedDate": "Udskiftet den (Frivilligt)",
+        "installedOn": "Tilsat den {{date}}",
+        "via": "fra {{source}}"
+    },
+    "colors": {
+        "blue": "Blå",
+        "green": "Grøn",
+        "red": "Rød",
+        "yellow": "Gul",
+        "purple": "Lilla",
+        "indigo": "Indigo",
+        "pink": "Pink",
+        "gray": "Grå",
+        "black": "Sort",
+        "white": "Hvid"
+    },
+    "status": {
+        "active": "Aktiv",
+        "replaced": "Udskiftet",
+        "dead": "Død",
+        "unknown": "Ukendt"
+    },
+    "actions": {
+        "replaceQueen": "Udskift dronning",
+        "markAsDead": "Marker som død",
+        "markAsLostMissing": "Marker som mistet/forsvundet",
+        "addQueen": "Tilføj dronning",
+        "editQueen": "Rediger dronning"
+    },
+    "form": {
+        "selectHive": "Vælg et stade",
+        "enterYear": "Indtast årstal",
+        "selectColor": "Vælg farve",
+        "enterMarking": "Indtaste dronning markering",
+        "enterSource": "Indtast ophav af dronning",
+        "selectStatus": "Vælg status",
+        "pickDate": "Vælg en dato"
+    },
+    "information": {
+        "noActiveQueen": "Ingen aktiv dronning fundet",
+        "hasActiveQueen": "Dette stade har allerede en aktiv dronning. Udskiftning af dronning vil markerede den nuværende som udskiftet."
+    }
+}

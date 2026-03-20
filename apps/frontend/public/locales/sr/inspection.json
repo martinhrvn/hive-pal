@@ -1,1 +1,30 @@
-{}
+{
+    "actions": {
+        "details": "Детаљи",
+        "refreshData": "Освежи податке",
+        "exportCSV": "Извези у CSV",
+        "dataOptions": "Опције података",
+        "cancel": "Откажи",
+        "scheduleInspection": "Закажи преглед"
+    },
+    "messages": {
+        "exportComingSoon": "Функционалност извоза ускоро стиже",
+        "shareComingSoon": "Функционалност дељења ускоро стиже"
+    },
+    "fields": {
+        "status": "Статус"
+    },
+    "scores": {
+        "overall": "Укупно",
+        "population": "Популација",
+        "stores": "Залихе",
+        "queen": "Матица"
+    },
+    "form": {
+        "selectHive": "Изабери кошницу",
+        "pickDate": "Изабери датум"
+    },
+    "status": {
+        "completed": "Завршено"
+    }
+}

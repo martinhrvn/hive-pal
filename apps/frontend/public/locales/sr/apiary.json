@@ -1,1 +1,90 @@
-{}
+{
+    "title": "Пчелињаци",
+    "singular": "Пчелињак",
+    "plural": "Пчелињаци",
+    "list": {
+        "title": "Листа пчелињака",
+        "caption": "Листа свих ваших пчелињака",
+        "searchPlaceholder": "Претражи пчелињаке...",
+        "noApiaries": "Нема пронађених пчелињака",
+        "noApiariesMatching": "Нема пчелињака који одговарају \"{{searchTerm}}\"",
+        "clearFilters": "Обриши филтере"
+    },
+    "create": {
+        "title": "Креирај пчелињак",
+        "button": "Креирај нови пчелињак",
+        "success": "Пчелињак је успешно креиран"
+    },
+    "edit": {
+        "title": "Уреди пчелињак",
+        "success": "Пчелињак је успешно ажуриран"
+    },
+    "delete": {
+        "confirm": "Да ли сте сигурни да желите да обришете овај пчелињак?",
+        "success": "Пчелињак је успешно обрисан"
+    },
+    "detail": {
+        "notFound": "Пчелињак није пронађен",
+        "noLocationSpecified": "Локација није наведена",
+        "tabs": {
+            "overview": "Преглед",
+            "hives": "Кошнице",
+            "location": "Локација"
+        },
+        "apiaryInformation": "Информације о пчелињаку",
+        "locationMap": "Мапа локације",
+        "apiaryLocation": "Локација пчелињака",
+        "noCoordinates": "За овај пчелињак нису доступне координате"
+    },
+    "fields": {
+        "name": "Назив",
+        "location": "Локација",
+        "locationDescription": "Опис локације",
+        "coordinates": "Координате",
+        "hivesCount": "Број кошница",
+        "latitude": "Географска ширина",
+        "longitude": "Географска дужина",
+        "notSpecified": "Није наведено",
+        "noLocation": "Нема локације",
+        "noCoordinates": "Нема координата"
+    },
+    "actions": {
+        "details": "Детаљи",
+        "refreshData": "Освежи податке",
+        "exportCSV": "Извези у CSV",
+        "print": "Штампај листу пчелињака",
+        "share": "Подели листу пчелињака",
+        "dataOptions": "Опције података"
+    },
+    "messages": {
+        "exportComingSoon": "Функционалност извоза ускоро стиже",
+        "shareComingSoon": "Функционалност дељења ускоро стиже"
+    },
+    "switcher": {
+        "teams": "Тимови",
+        "addApiary": "Додај пчелињак",
+        "noApiarySelected": "Није изабран ниједан пчелињак",
+        "selectOrCreate": "Изаберите или креирајте пчелињак"
+    },
+    "map": {
+        "selectLocation": "Изаберите локацију пчелињака",
+        "selectedLocation": "Изабрана локација",
+        "apiaryLocation": "Локација пчелињака"
+    },
+    "calendarSubscription": {
+        "title": "Претплата на календар",
+        "description": "Претплатите се на распоред прегледа овог пчелињака у вашој апликацији за календар",
+        "addToCalendar": "Додај у календар",
+        "regenerateUrl": "Регенериши URL",
+        "regenerated": "URL за претплату је регенерисан",
+        "regenerateFailed": "Регенерација URL-а за претплату није успела",
+        "copied": "URL за претплату је копиран",
+        "copyFailed": "Копирање није успело",
+        "readOnlyNote": "Овај URL омогућава само приступ за читање вашем распореду прегледа. Регенерација URL-а ће поништити претходни.",
+        "copyUrl": "Копирај URL"
+    },
+    "form": {
+        "namePlaceholder": "Назив пчелињака",
+        "locationPlaceholder": "Опис локације"
+    }
+}
