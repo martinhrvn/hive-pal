@@ -32,9 +32,13 @@ export function AddPhotoDialog({
   const [selectedFile, setSelectedFile] = useState<{
     file: File;
     previewUrl: string;
+    displayName: string;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createPhoto = useCreatePhoto();
+
+  const sanitizeFileName = (name: string) =>
+    name.replace(/[<>&"'/]/g, '_');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -47,6 +51,7 @@ export function AddPhotoDialog({
     setSelectedFile({
       file,
       previewUrl: URL.createObjectURL(file),
+      displayName: sanitizeFileName(file.name),
     });
 
     if (fileInputRef.current) {
@@ -106,7 +111,7 @@ export function AddPhotoDialog({
               <div className="relative group">
                 <img
                   src={selectedFile.previewUrl}
-                  alt={selectedFile.file.name}
+                  alt={selectedFile.displayName}
                   className="w-full max-h-64 object-contain rounded-md border"
                 />
                 <button
@@ -120,7 +125,7 @@ export function AddPhotoDialog({
                   <X className="h-4 w-4" />
                 </button>
                 <div className="text-xs text-muted-foreground mt-1">
-                  {selectedFile.file.name} ({(selectedFile.file.size / 1024 / 1024).toFixed(1)} MB)
+                  {selectedFile.displayName} ({(selectedFile.file.size / 1024 / 1024).toFixed(1)} MB)
                 </div>
               </div>
             ) : (
