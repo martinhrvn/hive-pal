@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../storage/storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { ConfigService } from '@nestjs/config';

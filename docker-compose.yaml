@@ -22,6 +22,9 @@ services:
       SMTP_USER: ${SMTP_USER}
       FROM_EMAIL: noreply@hivepal.app
       FRONTEND_URL: ${FRONTEND_URL:-https://preview.hivepal.app}
+      # Storage Configuration
+      STORAGE_TYPE: ${STORAGE_TYPE:-s3}
+      STORAGE_LOCAL_PATH: ${STORAGE_LOCAL_PATH:-/data/uploads}
       # S3 Storage (for audio recordings)
       S3_ENDPOINT: ${S3_ENDPOINT}
       S3_REGION: ${S3_REGION:-us-east-1}
@@ -29,6 +32,8 @@ services:
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       AUDIO_MAX_FILE_SIZE: ${AUDIO_MAX_FILE_SIZE:-52428800}
+    volumes:
+      - hivepal_uploads:/data/uploads
     depends_on:
       - postgres
 
@@ -49,4 +54,5 @@ services:
       retries: 5
 
 volumes:
+  hivepal_uploads:
   hivepal_postgres_data_preview:

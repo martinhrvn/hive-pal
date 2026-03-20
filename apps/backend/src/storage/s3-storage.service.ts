@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
@@ -9,17 +9,9 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { CustomLoggerService } from '../logger/logger.service';
+import { StorageService } from './storage.interface';
 
-export interface StorageConfig {
-  endpoint: string;
-  region: string;
-  bucket: string;
-  accessKeyId: string;
-  secretAccessKey: string;
-}
-
-@Injectable()
-export class StorageService implements OnModuleInit {
+export class S3StorageService extends StorageService implements OnModuleInit {
   private s3Client: S3Client | null = null;
   private bucket: string;
   private isConfigured = false;
@@ -27,7 +19,9 @@ export class StorageService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private logger: CustomLoggerService,
-  ) {}
+  ) {
+    super();
+  }
 
   onModuleInit() {
     const endpoint = this.configService.get<string>('S3_ENDPOINT');
@@ -71,16 +65,10 @@ export class StorageService implements OnModuleInit {
     });
   }
 
-  /**
-   * Check if storage is properly configured
-   */
   isEnabled(): boolean {
     return this.isConfigured;
   }
 
-  /**
-   * Generate a pre-signed URL for uploading a file
-   */
   async generateUploadUrl(
     key: string,
     contentType: string,
@@ -97,9 +85,6 @@ export class StorageService implements OnModuleInit {
     return getSignedUrl(this.s3Client!, command, { expiresIn });
   }
 
-  /**
-   * Generate a pre-signed URL for downloading a file
-   */
   async generateDownloadUrl(
     key: string,
     expiresIn: number = 3600,
@@ -114,9 +99,6 @@ export class StorageService implements OnModuleInit {
     return getSignedUrl(this.s3Client!, command, { expiresIn });
   }
 
-  /**
-   * Delete a single object from storage
-   */
   async deleteObject(key: string): Promise<void> {
     this.ensureConfigured();
 
@@ -128,9 +110,6 @@ export class StorageService implements OnModuleInit {
     await this.s3Client!.send(command);
   }
 
-  /**
-   * Delete multiple objects from storage
-   */
   async deleteObjects(keys: string[]): Promise<void> {
     if (keys.length === 0) return;
 
@@ -146,9 +125,6 @@ export class StorageService implements OnModuleInit {
     await this.s3Client!.send(command);
   }
 
-  /**
-   * Upload a file directly to storage
-   */
   async uploadObject(
     key: string,
     buffer: Buffer,

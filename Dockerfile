@@ -32,6 +32,8 @@ COPY --from=builder /app/ /app/
 # Copy frontend build output into backend's static directory
 RUN cp -r /app/apps/frontend/dist /app/apps/backend/dist/static
 
+RUN mkdir -p /data/uploads
+
 COPY apps/backend/docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 

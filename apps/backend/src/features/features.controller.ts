@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../storage/storage.interface';
 
 @Controller('features')
 export class FeaturesController {
