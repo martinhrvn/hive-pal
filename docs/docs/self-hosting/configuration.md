@@ -36,9 +36,8 @@ SMTP_PASS=your-app-password
 # Error Tracking
 SENTRY_DSN=your_sentry_dsn_here
 
-# File Storage
-UPLOAD_PATH=/uploads
-MAX_FILE_SIZE=10485760  # 10MB
+# File Storage (see "File Storage" section below for details)
+STORAGE_TYPE=local  # or 's3' (default)
 ```
 
 ### Frontend Configuration
@@ -98,24 +97,38 @@ RATE_LIMIT_MAX=100        # requests per window
 
 ## File Storage
 
+Hive-Pal supports two storage backends for file uploads (audio recordings, photos): **local filesystem** and **S3-compatible** object storage. Set `STORAGE_TYPE` to choose which one to use.
+
 ### Local Storage
+
+The simplest option for self-hosted deployments — files are stored directly on disk (or a Docker volume). No external services required.
+
 ```bash
-UPLOAD_PATH=/var/lib/hive-pal/uploads
-TEMP_PATH=/tmp/hive-pal
+STORAGE_TYPE=local
+STORAGE_LOCAL_PATH=./data/uploads  # default: ./data/uploads
 ```
 
-### Cloud Storage (Optional)
-```bash
-# AWS S3
-AWS_REGION=us-west-2
-AWS_BUCKET=hive-pal-uploads
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
+In Docker, `STORAGE_LOCAL_PATH` defaults to `/data/uploads`, which is backed by the `hivepal_uploads` volume for persistence across container restarts.
 
-# Alternative: MinIO
-MINIO_ENDPOINT=http://localhost:9000
-MINIO_ACCESS_KEY=your_key
-MINIO_SECRET_KEY=your_secret
+Download URLs are generated as signed, time-limited paths (using HMAC-SHA256 with `JWT_SECRET`), so they work the same way as S3 pre-signed URLs — no frontend changes needed.
+
+### S3-Compatible Storage
+
+Use this for AWS S3, MinIO, or any S3-compatible service. This is the default when `STORAGE_TYPE` is unset.
+
+```bash
+STORAGE_TYPE=s3  # default
+S3_ENDPOINT=http://localhost:9000   # MinIO or S3-compatible endpoint
+S3_REGION=us-east-1
+S3_BUCKET=hivepal-audio
+S3_ACCESS_KEY_ID=your_key
+S3_SECRET_ACCESS_KEY=your_secret
+```
+
+For local development with MinIO:
+```bash
+docker compose up -d minio
+# Access MinIO console at http://localhost:9001 to create a bucket
 ```
 
 ## Logging

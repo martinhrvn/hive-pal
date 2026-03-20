@@ -36,6 +36,9 @@ services:
       ADMIN_EMAIL: admin@example.com
       ADMIN_PASSWORD: changeme123
       FRONTEND_URL: https://yourdomain.com
+      STORAGE_TYPE: local # use 'local' for filesystem or 's3' for S3-compatible storage
+    volumes:
+      - uploads:/data/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,6 +59,7 @@ services:
 
 volumes:
   postgres_data:
+  uploads:
 ```
 
 Then run:
@@ -87,6 +91,13 @@ The application will be available at http://localhost.
 | `SMTP_PASS` | SMTP password |
 | `SMTP_SECURE` | Use TLS (`true` for port 465, `false` for 587) |
 | `FROM_EMAIL` | Sender email address |
+| `STORAGE_TYPE` | `s3` (default) or `local` for filesystem storage |
+| `STORAGE_LOCAL_PATH` | Directory for local file storage (default: `/data/uploads`) |
+| `S3_ENDPOINT` | S3-compatible endpoint URL |
+| `S3_REGION` | S3 region (default: `us-east-1`) |
+| `S3_BUCKET` | S3 bucket name |
+| `S3_ACCESS_KEY_ID` | S3 access key |
+| `S3_SECRET_ACCESS_KEY` | S3 secret key |
 | `SENTRY_DSN` | Backend Sentry DSN |
 | `VITE_SENTRY_DSN` | Frontend Sentry DSN |
 | `VITE_SENTRY_ENVIRONMENT` | Frontend Sentry environment |
