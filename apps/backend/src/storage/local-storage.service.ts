@@ -22,7 +22,7 @@ export class LocalStorageService
 
   async onModuleInit() {
     this.basePath = path.resolve(
-      this.configService.get<string>('STORAGE_LOCAL_PATH') || './data/uploads',
+      this.configService.get<string>('STORAGE_LOCAL_PATH') || '/data/uploads',
     );
     this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
 
