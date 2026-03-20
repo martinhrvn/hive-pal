@@ -84,8 +84,11 @@ export class LocalStorageService
   }
 
   getFilePath(key: string): string {
-    const resolved = path.resolve(this.basePath, key);
-    if (!resolved.startsWith(this.basePath + path.sep) && resolved !== this.basePath) {
+    if (path.isAbsolute(key) || key.split('/').includes('..')) {
+      throw new Error('Path traversal detected');
+    }
+    const resolved = path.join(this.basePath, key);
+    if (!resolved.startsWith(this.basePath + path.sep)) {
       throw new Error('Path traversal detected');
     }
     return resolved;
