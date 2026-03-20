@@ -41,15 +41,18 @@ import {
   InspectionStatus,
   ActionResponse,
   QuickCheckResponse,
+  PhotoResponse,
+  DocumentResponse,
 } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { PhotoGallery } from './photo-gallery';
+import { Camera } from 'lucide-react';
 
 export type TimelineEvent = {
   id: string;
   date: string;
-  type: 'inspection' | 'action' | 'note' | 'quick-check';
-  data: InspectionResponse | ActionResponse | QuickCheckResponse;
+  type: 'inspection' | 'action' | 'note' | 'quick-check' | 'photo' | 'document';
+  data: InspectionResponse | ActionResponse | QuickCheckResponse | PhotoResponse | DocumentResponse;
 };
 
 export type EventTypeFilter =
@@ -60,6 +63,8 @@ export type EventTypeFilter =
   | 'harvest'
   | 'notes'
   | 'quick-checks'
+  | 'photos'
+  | 'documents'
   | 'other';
 
 export type DateRangeFilter = 'all' | '1month' | '3months' | '6months' | 'year';
@@ -68,12 +73,16 @@ export interface TimelineEventListProps {
   inspections: InspectionResponse[];
   actions: ActionResponse[];
   quickChecks: QuickCheckResponse[];
+  photos?: PhotoResponse[];
+  documents?: DocumentResponse[];
   isLoading?: boolean;
   maxDisplayed?: number;
   emptyMessage?: string;
   onEditAction?: (action: ActionResponse) => void;
   onDeleteAction?: (action: ActionResponse) => void;
   onDeleteQuickCheck?: (quickCheck: QuickCheckResponse) => void;
+  onDeletePhoto?: (photo: PhotoResponse) => void;
+  onDeleteDocument?: (document: DocumentResponse) => void;
   onInspectionClick?: (inspection: InspectionResponse) => void;
   onActionClick?: (action: ActionResponse) => void;
   getHiveName?: (hiveId: string) => string | undefined;
@@ -155,12 +164,16 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   inspections,
   actions,
   quickChecks,
+  photos,
+  documents,
   isLoading,
   maxDisplayed = 10,
   emptyMessage,
   onEditAction,
   onDeleteAction,
   onDeleteQuickCheck,
+  onDeletePhoto,
+  onDeleteDocument,
   onInspectionClick,
   onActionClick,
   getHiveName,
@@ -278,6 +291,40 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
       });
     }
 
+    if (
+      photos &&
+      (eventTypeFilter === 'all' || eventTypeFilter === 'photos')
+    ) {
+      photos.forEach(photo => {
+        const eventDate = new Date(photo.date);
+        if (!startDate || eventDate >= startDate) {
+          events.push({
+            id: `photo-${photo.id}`,
+            date: photo.date,
+            type: 'photo',
+            data: photo,
+          });
+        }
+      });
+    }
+
+    if (
+      documents &&
+      (eventTypeFilter === 'all' || eventTypeFilter === 'documents')
+    ) {
+      documents.forEach(document => {
+        const eventDate = new Date(document.date);
+        if (!startDate || eventDate >= startDate) {
+          events.push({
+            id: `document-${document.id}`,
+            date: document.date,
+            type: 'document',
+            data: document,
+          });
+        }
+      });
+    }
+
     // Apply hive filter
     const filtered = hiveFilter === 'all'
       ? events
@@ -302,7 +349,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
 
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }, [inspections, actions, quickChecks, eventTypeFilter, dateRangeFilter, hiveFilter]);
+  }, [inspections, actions, quickChecks, photos, documents, eventTypeFilter, dateRangeFilter, hiveFilter]);
 
   const displayedEvents = showAll
     ? timelineEvents
@@ -328,10 +375,14 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   const renderTimelineEvent = (event: TimelineEvent, isLast: boolean) => {
     const isInspection = event.type === 'inspection';
     const isQuickCheck = event.type === 'quick-check';
+    const isPhoto = event.type === 'photo';
+    const isDocument = event.type === 'document';
     const inspection = isInspection ? (event.data as InspectionResponse) : null;
     const quickCheck = isQuickCheck ? (event.data as QuickCheckResponse) : null;
+    const photo = isPhoto ? (event.data as PhotoResponse) : null;
+    const document = isDocument ? (event.data as DocumentResponse) : null;
     const action =
-      !isInspection && !isQuickCheck ? (event.data as ActionResponse) : null;
+      !isInspection && !isQuickCheck && !isPhoto && !isDocument ? (event.data as ActionResponse) : null;
 
     const isScheduled = inspection?.status === InspectionStatus.SCHEDULED;
     const isCancelled = inspection?.status === InspectionStatus.CANCELLED;
@@ -346,6 +397,8 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               'w-3 h-3 rounded-full border-2 bg-background z-10',
               isInspection ? 'border-blue-500' : 'border-gray-400',
               isQuickCheck && 'border-green-500',
+              isPhoto && 'border-purple-500',
+              isDocument && 'border-orange-500',
               isScheduled && !isOverdue && 'border-amber-500',
               isOverdue && 'border-red-500',
               isCancelled && 'border-gray-300',
@@ -503,6 +556,82 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
             </div>
           )}
 
+          {/* Photo content */}
+          {isPhoto && photo && (
+            <div className="flex items-start gap-2 group">
+              <div className="mt-0.5">
+                <Camera className="h-4 w-4 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">
+                  {t('common:timeline.photos', { defaultValue: 'Photo' })}
+                  {renderHiveName(event)}
+                </div>
+                {photo.caption && (
+                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                    {photo.caption}
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {photo.fileName}
+                </div>
+              </div>
+              {onDeletePhoto && (
+                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-destructive hover:text-destructive"
+                    onClick={e => {
+                      e.stopPropagation();
+                      onDeletePhoto(photo);
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Document content */}
+          {isDocument && document && (
+            <div className="flex items-start gap-2 group">
+              <div className="mt-0.5">
+                <FileTextIcon className="h-4 w-4 text-orange-600" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">
+                  {document.title}
+                  {renderHiveName(event)}
+                </div>
+                {document.notes && (
+                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                    {document.notes}
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {document.fileName}
+                </div>
+              </div>
+              {onDeleteDocument && (
+                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-destructive hover:text-destructive"
+                    onClick={e => {
+                      e.stopPropagation();
+                      onDeleteDocument(document);
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Action content */}
           {action && (
             <div
@@ -604,6 +733,8 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
             <SelectItem value="treatment">{t('common:timeline.treatments')}</SelectItem>
             <SelectItem value="harvest">{t('common:timeline.harvests')}</SelectItem>
             <SelectItem value="quick-checks">{t('common:quickCheck.title')}</SelectItem>
+            <SelectItem value="photos">{t('common:timeline.photos', { defaultValue: 'Photos' })}</SelectItem>
+            <SelectItem value="documents">{t('common:timeline.documents', { defaultValue: 'Documents' })}</SelectItem>
             <SelectItem value="notes">{t('common:timeline.notes')}</SelectItem>
             <SelectItem value="other">{t('common:timeline.other')}</SelectItem>
           </SelectContent>

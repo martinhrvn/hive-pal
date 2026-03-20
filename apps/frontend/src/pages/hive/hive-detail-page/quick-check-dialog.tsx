@@ -24,6 +24,10 @@ interface QuickCheckDialogProps {
   apiaryId: string;
   /** "sidebar" renders as a full-width ghost button; "inline" renders as a compact outlined button */
   triggerVariant?: 'sidebar' | 'inline';
+  /** When provided, the dialog is controlled externally (no trigger rendered) */
+  open?: boolean;
+  /** Called when the dialog open state changes (controlled mode) */
+  onOpenChange?: (open: boolean) => void;
 }
 
 const ADDITIONAL_OBSERVATION_TAGS = [
@@ -55,8 +59,15 @@ export function QuickCheckDialog({
   hiveId,
   apiaryId,
   triggerVariant = 'sidebar',
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: QuickCheckDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled
+    ? (v: boolean) => controlledOnOpenChange?.(v)
+    : setInternalOpen;
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [note, setNote] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<
@@ -164,19 +175,21 @@ export function QuickCheckDialog({
         if (!isOpen) resetForm();
       }}
     >
-      <DialogTrigger asChild>
-        {triggerVariant === 'sidebar' ? (
-          <Button variant="ghost" className="w-full justify-start" size="sm">
-            <ClipboardCheck className="mr-2 h-4 w-4" />
-            Quick Check
-          </Button>
-        ) : (
-          <Button variant="outline" size="sm">
-            <ClipboardCheck className="mr-2 h-4 w-4" />
-            Quick Check
-          </Button>
-        )}
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          {triggerVariant === 'sidebar' ? (
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              <ClipboardCheck className="mr-2 h-4 w-4" />
+              Quick Check
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm">
+              <ClipboardCheck className="mr-2 h-4 w-4" />
+              Quick Check
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Quick Check</DialogTitle>

@@ -22,7 +22,8 @@
     "harvests": "Harvests",
     "allHarvests": "All Harvests",
     "reports": "Reports",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "files": "Files"
   },
   "actions": {
     "save": "Save",
@@ -184,6 +185,63 @@
     "inspections": "Inspections",
     "actions": "Actions"
   },
+  "quickAdd": {
+    "title": "Add Entry",
+    "quickCheck": "Quick Check",
+    "action": "Action",
+    "photo": "Photo",
+    "document": "Document"
+  },
+  "photo": {
+    "title": "Add Photo",
+    "description": "Upload a photo with an optional caption.",
+    "caption": "Caption",
+    "optional": "optional",
+    "captionPlaceholder": "Describe the photo...",
+    "selectPhoto": "Select a photo",
+    "upload": "Upload Photo",
+    "uploading": "Uploading...",
+    "uploadSuccess": "Photo uploaded",
+    "uploadFailed": "Failed to upload photo",
+    "deleteTitle": "Delete Photo?",
+    "deleteDescription": "This action cannot be undone. This will permanently delete this photo.",
+    "deleted": "Photo deleted",
+    "deleteFailed": "Failed to delete photo"
+  },
+  "document": {
+    "title": "Add Document",
+    "description": "Upload a PDF or scanned document.",
+    "titleField": "Title",
+    "titlePlaceholder": "Document title",
+    "notes": "Notes",
+    "optional": "optional",
+    "notesPlaceholder": "Add notes about this document...",
+    "selectFile": "Select a file (PDF, JPEG, PNG)",
+    "upload": "Upload Document",
+    "uploading": "Uploading...",
+    "uploadSuccess": "Document uploaded",
+    "uploadFailed": "Failed to upload document",
+    "deleteTitle": "Delete Document?",
+    "deleteDescription": "This action cannot be undone. This will permanently delete this document.",
+    "deleted": "Document deleted",
+    "deleteFailed": "Failed to delete document"
+  },
+  "files": {
+    "title": "Files",
+    "allFiles": "All Files",
+    "photos": "Photos",
+    "documents": "Documents",
+    "search": "Search files...",
+    "filterByHive": "Filter by hive",
+    "filterByType": "Filter by type",
+    "noFiles": "No files uploaded yet",
+    "name": "Name",
+    "type": "Type",
+    "hive": "Hive",
+    "size": "Size",
+    "download": "Download",
+    "delete": "Delete"
+  },
   "quickCheck": {
     "title": "Quick Check",
     "description": "This action cannot be undone. This will permanently delete this quick check and its photos.",
@@ -223,7 +281,9 @@
     "strength": "Strength",
     "honey": "Honey",
     "queenSeen": "Queen seen",
-    "queenNotSeen": "Queen not seen"
+    "queenNotSeen": "Queen not seen",
+    "photos": "Photos",
+    "documents": "Documents"
   },
   "reports": {
     "title": "Reports",

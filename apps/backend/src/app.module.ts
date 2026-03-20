@@ -36,6 +36,8 @@ import { PlatformMetricsModule } from './platform-metrics/platform-metrics.modul
 import { FeaturesModule } from './features/features.module';
 import { QuickChecksModule } from './quick-checks/quick-checks.module';
 import { SharesModule } from './shares/shares.module';
+import { PhotosModule } from './photos/photos.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -71,6 +73,8 @@ import { SharesModule } from './shares/shares.module';
     FeaturesModule,
     QuickChecksModule,
     SharesModule,
+    PhotosModule,
+    DocumentsModule,
   ],
   controllers: [AppController, EnvController],
   providers: [

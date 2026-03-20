@@ -15,3 +15,5 @@ export * from './useWeather';
 export * from './useFeatures';
 export * from './useQuickChecks';
 export * from './useShares';
+export * from './usePhotos';
+export * from './useDocuments';

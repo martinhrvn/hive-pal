@@ -57,6 +57,8 @@ model Apiary {
   weatherForecasts      WeatherForecast[]
   batchInspections      BatchInspection[]
   quickChecks           QuickCheck[]
+  photos                Photo[]
+  documents             Document[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -81,6 +83,8 @@ model Hive {
   alerts           Alert[]
   batchInspectionHives BatchInspectionHive[]
   quickChecks          QuickCheck[]
+  photos               Photo[]
+  documents            Document[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -687,6 +691,49 @@ model ShareLink {
   @@index([token])
   @@index([userId])
   @@index([resourceType, resourceId])
+}
+
+// Standalone photo attached to an apiary or hive
+model Photo {
+  id         String   @id @default(uuid())
+  hiveId     String?
+  hive       Hive?    @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  apiaryId   String
+  apiary     Apiary   @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  caption    String?  @db.Text
+  storageKey String
+  fileName   String
+  mimeType   String
+  fileSize   Int
+  date       DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([hiveId])
+  @@index([apiaryId])
+  @@index([hiveId, date])
+}
+
+// Document attached to an apiary or hive
+model Document {
+  id         String   @id @default(uuid())
+  hiveId     String?
+  hive       Hive?    @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  apiaryId   String
+  apiary     Apiary   @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  title      String
+  notes      String?  @db.Text
+  storageKey String
+  fileName   String
+  mimeType   String
+  fileSize   Int
+  date       DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([hiveId])
+  @@index([apiaryId])
+  @@index([hiveId, date])
 }
 
 // Platform metrics snapshot for admin observability

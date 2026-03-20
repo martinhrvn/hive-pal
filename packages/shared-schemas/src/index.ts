@@ -20,3 +20,5 @@ export * from './platform-metrics';
 export * from './quick-checks';
 export * from './features';
 export * from './shares';
+export * from './photos';
+export * from './documents';

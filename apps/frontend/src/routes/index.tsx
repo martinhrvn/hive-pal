@@ -121,6 +121,11 @@ const UserWizardPage = lazyWithRetry(() =>
     default: m.UserWizardPage,
   })),
 );
+const FilesPage = lazyWithRetry(() =>
+  import('@/pages/files/files-page').then(m => ({
+    default: m.FilesPage,
+  })),
+);
 
 // Loading fallback component
 function PageLoader() {
@@ -307,6 +312,14 @@ const router = createBrowserRouter([
         element: (
           <LazyPage>
             <ReportsPage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/files',
+        element: (
+          <LazyPage>
+            <FilesPage />
           </LazyPage>
         ),
       },

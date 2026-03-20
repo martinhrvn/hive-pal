@@ -16,17 +16,23 @@ import {
   useQuickChecks,
   useHives,
   useDeleteQuickCheck,
+  usePhotos,
+  useDocuments,
+  useDeletePhoto,
+  useDeleteDocument,
 } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
 import { Section } from '@/components/common/section';
 import { TimelineEventList } from '@/components/common/timeline-event-list';
-import { QuickCheckDialog } from '@/pages/hive/hive-detail-page/quick-check-dialog';
+import { QuickAddMenu } from '@/components/quick-add-menu';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
   InspectionResponse,
   ActionResponse,
   QuickCheckResponse,
+  PhotoResponse,
+  DocumentResponse,
 } from 'shared-schemas';
 
 export const ApiaryTimeline = () => {
@@ -35,7 +41,11 @@ export const ApiaryTimeline = () => {
   const { activeApiaryId } = useApiary();
   const [deletingQuickCheck, setDeletingQuickCheck] =
     useState<QuickCheckResponse | null>(null);
+  const [deletingPhoto, setDeletingPhoto] = useState<PhotoResponse | null>(null);
+  const [deletingDocument, setDeletingDocument] = useState<DocumentResponse | null>(null);
   const deleteQuickCheckMutation = useDeleteQuickCheck();
+  const deletePhotoMutation = useDeletePhoto();
+  const deleteDocumentMutation = useDeleteDocument();
 
   const handleDeleteQuickCheckConfirm = async () => {
     if (!deletingQuickCheck) return;
@@ -48,9 +58,39 @@ export const ApiaryTimeline = () => {
     }
   };
 
+  const handleDeletePhotoConfirm = async () => {
+    if (!deletingPhoto) return;
+    try {
+      await deletePhotoMutation.mutateAsync(deletingPhoto.id);
+      toast.success(t('common:photo.deleted', { defaultValue: 'Photo deleted' }));
+      setDeletingPhoto(null);
+    } catch {
+      toast.error(t('common:photo.deleteFailed', { defaultValue: 'Failed to delete photo' }));
+    }
+  };
+
+  const handleDeleteDocumentConfirm = async () => {
+    if (!deletingDocument) return;
+    try {
+      await deleteDocumentMutation.mutateAsync(deletingDocument.id);
+      toast.success(t('common:document.deleted', { defaultValue: 'Document deleted' }));
+      setDeletingDocument(null);
+    } catch {
+      toast.error(t('common:document.deleteFailed', { defaultValue: 'Failed to delete document' }));
+    }
+  };
+
   const { data: inspections, isLoading: inspectionsLoading } = useInspections();
   const { data: actions, isLoading: actionsLoading } = useActions();
   const { data: quickChecks, isLoading: quickChecksLoading } = useQuickChecks(
+    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
+    { enabled: !!activeApiaryId },
+  );
+  const { data: photos, isLoading: photosLoading } = usePhotos(
+    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
+    { enabled: !!activeApiaryId },
+  );
+  const { data: documents, isLoading: documentsLoading } = useDocuments(
     activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
     { enabled: !!activeApiaryId },
   );
@@ -90,19 +130,20 @@ export const ApiaryTimeline = () => {
         inspections={inspections ?? []}
         actions={actions ?? []}
         quickChecks={quickChecks ?? []}
-        isLoading={inspectionsLoading || actionsLoading || quickChecksLoading}
+        photos={photos ?? []}
+        documents={documents ?? []}
+        isLoading={inspectionsLoading || actionsLoading || quickChecksLoading || photosLoading || documentsLoading}
         emptyMessage={t('common:timeline.noActivityApiary')}
         getHiveName={getHiveName}
         hives={hiveList}
         onInspectionClick={handleInspectionClick}
         onActionClick={handleActionClick}
         onDeleteQuickCheck={setDeletingQuickCheck}
+        onDeletePhoto={setDeletingPhoto}
+        onDeleteDocument={setDeletingDocument}
         headerSlot={
           activeApiaryId ? (
-            <QuickCheckDialog
-              apiaryId={activeApiaryId}
-              triggerVariant="inline"
-            />
+            <QuickAddMenu apiaryId={activeApiaryId} variant="inline" />
           ) : undefined
         }
       />
@@ -129,6 +170,60 @@ export const ApiaryTimeline = () => {
               disabled={deleteQuickCheckMutation.isPending}
             >
               {deleteQuickCheckMutation.isPending ? t('common:status.loading') : t('common:actions.delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Photo Confirmation Dialog */}
+      <Dialog
+        open={!!deletingPhoto}
+        onOpenChange={open => !open && setDeletingPhoto(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('common:photo.deleteTitle', { defaultValue: 'Delete Photo?' })}</DialogTitle>
+            <DialogDescription>
+              {t('common:photo.deleteDescription', { defaultValue: 'This action cannot be undone. This will permanently delete this photo.' })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">{t('common:actions.cancel')}</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeletePhotoConfirm}
+              disabled={deletePhotoMutation.isPending}
+            >
+              {deletePhotoMutation.isPending ? t('common:status.loading') : t('common:actions.delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Document Confirmation Dialog */}
+      <Dialog
+        open={!!deletingDocument}
+        onOpenChange={open => !open && setDeletingDocument(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('common:document.deleteTitle', { defaultValue: 'Delete Document?' })}</DialogTitle>
+            <DialogDescription>
+              {t('common:document.deleteDescription', { defaultValue: 'This action cannot be undone. This will permanently delete this document.' })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">{t('common:actions.cancel')}</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteDocumentConfirm}
+              disabled={deleteDocumentMutation.isPending}
+            >
+              {deleteDocumentMutation.isPending ? t('common:status.loading') : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -5,6 +5,8 @@ import {
   ActionResponse,
   ActionType,
   QuickCheckResponse,
+  PhotoResponse,
+  DocumentResponse,
 } from 'shared-schemas';
 import {
   useActions,
@@ -12,13 +14,16 @@ import {
   useDeleteAction,
   useQuickChecks,
   useDeleteQuickCheck,
+  usePhotos,
+  useDocuments,
+  useDeletePhoto,
+  useDeleteDocument,
 } from '@/api/hooks';
 import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
 import { TimelineEventList } from '@/components/common/timeline-event-list';
-import { AddActionDialog } from './actions/add-action-dialog';
-import { QuickCheckDialog } from './quick-check-dialog';
 import { EditActionDialog } from './actions/edit-action-dialog';
+import { QuickAddMenu } from '@/components/quick-add-menu';
 import {
   Dialog,
   DialogClose,
@@ -49,8 +54,12 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   );
   const [deletingQuickCheck, setDeletingQuickCheck] =
     useState<QuickCheckResponse | null>(null);
+  const [deletingPhoto, setDeletingPhoto] = useState<PhotoResponse | null>(null);
+  const [deletingDocument, setDeletingDocument] = useState<DocumentResponse | null>(null);
   const deleteActionMutation = useDeleteAction();
   const deleteQuickCheckMutation = useDeleteQuickCheck();
+  const deletePhotoMutation = useDeletePhoto();
+  const deleteDocumentMutation = useDeleteDocument();
 
   const { data: inspections, isLoading: inspectionsLoading } = useInspections(
     hiveId ? { hiveId } : undefined,
@@ -62,6 +71,16 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   );
 
   const { data: quickChecks, isLoading: quickChecksLoading } = useQuickChecks(
+    hiveId ? { hiveId } : undefined,
+    { enabled: !!hiveId },
+  );
+
+  const { data: photos, isLoading: photosLoading } = usePhotos(
+    hiveId ? { hiveId } : undefined,
+    { enabled: !!hiveId },
+  );
+
+  const { data: documents, isLoading: documentsLoading } = useDocuments(
     hiveId ? { hiveId } : undefined,
     { enabled: !!hiveId },
   );
@@ -112,6 +131,28 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
     }
   };
 
+  const handleDeletePhotoConfirm = async () => {
+    if (!deletingPhoto) return;
+    try {
+      await deletePhotoMutation.mutateAsync(deletingPhoto.id);
+      toast.success('Photo deleted');
+      setDeletingPhoto(null);
+    } catch {
+      toast.error('Failed to delete photo');
+    }
+  };
+
+  const handleDeleteDocumentConfirm = async () => {
+    if (!deletingDocument) return;
+    try {
+      await deleteDocumentMutation.mutateAsync(deletingDocument.id);
+      toast.success('Document deleted');
+      setDeletingDocument(null);
+    } catch {
+      toast.error('Failed to delete document');
+    }
+  };
+
   if (!hiveId) return null;
 
   return (
@@ -120,11 +161,15 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         inspections={inspections ?? []}
         actions={actions ?? []}
         quickChecks={quickChecks ?? []}
-        isLoading={inspectionsLoading || actionsLoading || quickChecksLoading}
+        photos={photos ?? []}
+        documents={documents ?? []}
+        isLoading={inspectionsLoading || actionsLoading || quickChecksLoading || photosLoading || documentsLoading}
         emptyMessage="No activity recorded for this hive yet"
         onEditAction={setEditingAction}
         onDeleteAction={setDeletingAction}
         onDeleteQuickCheck={setDeletingQuickCheck}
+        onDeletePhoto={setDeletingPhoto}
+        onDeleteDocument={setDeletingDocument}
         onInspectionClick={inspection =>
           navigate(`/inspections/${inspection.id}`)
         }
@@ -134,16 +179,9 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
             : undefined
         }
         headerSlot={
-          <>
-            {hiveId && apiaryId && (
-              <QuickCheckDialog
-                hiveId={hiveId}
-                apiaryId={apiaryId}
-                triggerVariant="inline"
-              />
-            )}
-            {hiveId && <AddActionDialog hiveId={hiveId} />}
-          </>
+          hiveId && apiaryId ? (
+            <QuickAddMenu apiaryId={apiaryId} hiveId={hiveId} variant="inline" />
+          ) : undefined
         }
       />
 
@@ -230,6 +268,60 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
               disabled={deleteQuickCheckMutation.isPending}
             >
               {deleteQuickCheckMutation.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Photo Confirmation Dialog */}
+      <Dialog
+        open={!!deletingPhoto}
+        onOpenChange={open => !open && setDeletingPhoto(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Photo?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete this photo.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeletePhotoConfirm}
+              disabled={deletePhotoMutation.isPending}
+            >
+              {deletePhotoMutation.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Document Confirmation Dialog */}
+      <Dialog
+        open={!!deletingDocument}
+        onOpenChange={open => !open && setDeletingDocument(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Document?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete this document.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteDocumentConfirm}
+              disabled={deleteDocumentMutation.isPending}
+            >
+              {deleteDocumentMutation.isPending ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>

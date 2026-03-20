@@ -31,6 +31,10 @@ import type {
 
 interface AddActionDialogProps {
   hiveId: string;
+  /** When provided, the dialog is controlled externally (no trigger rendered) */
+  open?: boolean;
+  /** Called when the dialog open state changes (controlled mode) */
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface ActionFormData {
@@ -38,8 +42,17 @@ interface ActionFormData {
   actions: ActionData[];
 }
 
-export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const AddActionDialog = ({
+  hiveId,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: AddActionDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled
+    ? (v: boolean) => controlledOnOpenChange?.(v)
+    : setInternalOpen;
   const createAction = useCreateAction();
 
   const methods = useForm<ActionFormData>({
@@ -127,12 +140,14 @@ export const AddActionDialog = ({ hiveId }: AddActionDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Action
-        </Button>
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button size="sm">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Action
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Actions</DialogTitle>
