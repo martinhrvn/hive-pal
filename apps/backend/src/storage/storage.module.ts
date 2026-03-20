@@ -4,6 +4,8 @@ import { StorageService } from './storage.interface';
 import { S3StorageService } from './s3-storage.service';
 import { LocalStorageService } from './local-storage.service';
 import { StorageController } from './storage.controller';
+import { FileUploadService } from './file-upload.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
 import { CustomLoggerService } from '../logger/logger.service';
 
@@ -26,7 +28,9 @@ import { CustomLoggerService } from '../logger/logger.service';
       },
       inject: [ConfigService, CustomLoggerService],
     },
+    FileUploadService,
+    PrismaService,
   ],
-  exports: [StorageService],
+  exports: [StorageService, FileUploadService],
 })
 export class StorageModule {}

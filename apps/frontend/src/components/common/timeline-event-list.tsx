@@ -47,6 +47,8 @@ import {
 } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { PhotoGallery } from './photo-gallery';
+import { StandalonePhotoPreview } from './standalone-photo-preview';
+import { DocumentDownloadLink } from './document-download-link';
 
 export type TimelineEvent = {
   id: string;
@@ -572,9 +574,11 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                     {photo.caption}
                   </div>
                 )}
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  {photo.fileName}
-                </div>
+                <StandalonePhotoPreview
+                  photoId={photo.id}
+                  fileName={photo.fileName}
+                  caption={photo.caption}
+                />
               </div>
               {onDeletePhoto && (
                 <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -610,9 +614,10 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                     {document.notes}
                   </div>
                 )}
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  {document.fileName}
-                </div>
+                <DocumentDownloadLink
+                  documentId={document.id}
+                  fileName={document.fileName}
+                />
               </div>
               {onDeleteDocument && (
                 <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
