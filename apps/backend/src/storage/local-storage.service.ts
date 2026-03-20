@@ -56,7 +56,7 @@ export class LocalStorageService
       'Upload URLs are not supported with local storage. Use uploadObject instead.',
     );
   }
-
+  // eslint-disable-next-line @typescript-eslint/require-await
   async generateDownloadUrl(
     key: string,
     expiresIn: number = 3600,

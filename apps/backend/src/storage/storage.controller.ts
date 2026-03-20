@@ -12,15 +12,15 @@ import { Response } from 'express';
 import * as mime from 'mime-types';
 import { StorageService } from './storage.interface';
 import { LocalStorageService } from './local-storage.service';
-import { createReadStream } from 'fs';
-import { stat } from 'fs/promises';
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
 
 @Controller('storage')
 export class StorageController {
   constructor(
     @Inject(StorageService)
     private readonly storageService: StorageService,
-  ) {}
+  ) { }
 
   @Get('files/*key')
   async serveFile(
@@ -37,8 +37,8 @@ export class StorageController {
       throw new HttpException('Missing token or expires', HttpStatus.FORBIDDEN);
     }
 
-    const expiresNum = parseInt(expires, 10);
-    if (isNaN(expiresNum)) {
+    const expiresNum = Number.parseInt(expires, 10);
+    if (Number.isNaN(expiresNum)) {
       throw new HttpException('Invalid expires', HttpStatus.BAD_REQUEST);
     }
 

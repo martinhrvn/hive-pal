@@ -17,8 +17,8 @@ export class S3StorageService extends StorageService implements OnModuleInit {
   private isConfigured = false;
 
   constructor(
-    private configService: ConfigService,
-    private logger: CustomLoggerService,
+    private readonly configService: ConfigService,
+    private readonly logger: CustomLoggerService,
   ) {
     super();
   }
@@ -54,7 +54,7 @@ export class S3StorageService extends StorageService implements OnModuleInit {
         accessKeyId,
         secretAccessKey,
       },
-      forcePathStyle: true, // Required for MinIO and other S3-compatible services
+      forcePathStyle: true,
     });
     this.isConfigured = true;
 
