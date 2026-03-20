@@ -43,10 +43,7 @@ export class StorageController {
     }
 
     if (!this.storageService.verifyToken(key, token, expiresNum)) {
-      throw new HttpException(
-        'Invalid or expired token',
-        HttpStatus.FORBIDDEN,
-      );
+      throw new HttpException('Invalid or expired token', HttpStatus.FORBIDDEN);
     }
 
     let filePath: string;

@@ -41,27 +41,24 @@ export class LocalStorageService
   async uploadObject(
     key: string,
     buffer: Buffer,
-    contentType: string,
+    _contentType: string,
   ): Promise<void> {
     const filePath = this.getFilePath(key);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, buffer);
   }
 
-  async generateUploadUrl(
-    key: string,
-    contentType: string,
-    expiresIn?: number,
+  generateUploadUrl(
+    _key: string,
+    _contentType: string,
+    _expiresIn?: number,
   ): Promise<string> {
     throw new Error(
       'Upload URLs are not supported with local storage. Use uploadObject instead.',
     );
   }
 
-  async generateDownloadUrl(
-    key: string,
-    expiresIn: number = 3600,
-  ): Promise<string> {
+  generateDownloadUrl(key: string, expiresIn: number = 3600): Promise<string> {
     const expires = Math.floor(Date.now() / 1000) + expiresIn;
     const token = this.signToken(key, expires);
     const encodedKey = encodeURIComponent(key);

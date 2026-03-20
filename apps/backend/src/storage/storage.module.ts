@@ -14,7 +14,10 @@ import { CustomLoggerService } from '../logger/logger.service';
   providers: [
     {
       provide: StorageService,
-      useFactory: (configService: ConfigService, logger: CustomLoggerService) => {
+      useFactory: (
+        configService: ConfigService,
+        logger: CustomLoggerService,
+      ) => {
         const storageType = configService.get<string>('STORAGE_TYPE') || 's3';
         if (storageType === 'local') {
           return new LocalStorageService(configService, logger);
