@@ -22,8 +22,16 @@ export const SHARED_SCOPE_CATEGORIES = new Set([
   EquipmentCategory.EXTRACTION,
 ]);
 
-// Categories that support in-extraction and damaged status tracking
-export const STATUS_TRACKING_CATEGORIES = new Set([
+// Categories that support in-extraction status tracking (items that can be temporarily in the extractor)
+export const EXTRACTION_TRACKING_CATEGORIES = new Set([
   EquipmentCategory.BOXES,
+  EquipmentCategory.FRAMES,
+]);
+
+// Categories that support damaged status tracking
+export const DAMAGE_TRACKING_CATEGORIES = new Set([
+  EquipmentCategory.BOXES,
+  EquipmentCategory.FRAMES,
   EquipmentCategory.HIVE_PARTS,
 ]);
+
