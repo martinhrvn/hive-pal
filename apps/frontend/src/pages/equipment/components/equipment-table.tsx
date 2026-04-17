@@ -26,7 +26,8 @@ import {
   EquipmentScope,
   UpdateEquipmentItem,
   CreateEquipmentItem,
-  STATUS_TRACKING_CATEGORIES,
+  EXTRACTION_TRACKING_CATEGORIES,
+  DAMAGE_TRACKING_CATEGORIES,
   SHARED_SCOPE_CATEGORIES,
 } from 'shared-schemas';
 import { useState } from 'react';
@@ -90,7 +91,8 @@ export const EquipmentRow = ({
   });
 
   const isShared = item.scope === EquipmentScope.SHARED;
-  const hasStatusTracking = STATUS_TRACKING_CATEGORIES.has(item.category);
+  const hasExtractionTracking = EXTRACTION_TRACKING_CATEGORIES.has(item.category);
+  const hasDamageTracking = DAMAGE_TRACKING_CATEGORIES.has(item.category);
 
   const handleEdit = () => {
     setEditData({
@@ -238,29 +240,29 @@ export const EquipmentRow = ({
             min="0"
             placeholder="Storage"
           />
-          {hasStatusTracking && (
-            <>
-              <Input
-                type="number"
-                value={editData.inExtraction}
-                onChange={e =>
-                  setEditData(prev => ({ ...prev, inExtraction: parseInt(e.target.value) || 0 }))
-                }
-                className="w-20 text-center mx-auto block text-amber-600"
-                min="0"
-                placeholder="Extracting"
-              />
-              <Input
-                type="number"
-                value={editData.damaged}
-                onChange={e =>
-                  setEditData(prev => ({ ...prev, damaged: parseInt(e.target.value) || 0 }))
-                }
-                className="w-20 text-center mx-auto block text-red-500"
-                min="0"
-                placeholder="Damaged"
-              />
-            </>
+          {hasExtractionTracking && (
+            <Input
+              type="number"
+              value={editData.inExtraction}
+              onChange={e =>
+                setEditData(prev => ({ ...prev, inExtraction: parseInt(e.target.value) || 0 }))
+              }
+              className="w-20 text-center mx-auto block text-amber-600"
+              min="0"
+              placeholder="Extracting"
+            />
+          )}
+          {hasDamageTracking && (
+            <Input
+              type="number"
+              value={editData.damaged}
+              onChange={e =>
+                setEditData(prev => ({ ...prev, damaged: parseInt(e.target.value) || 0 }))
+              }
+              className="w-20 text-center mx-auto block text-red-500"
+              min="0"
+              placeholder="Damaged"
+            />
           )}
         </div>
 
@@ -376,13 +378,13 @@ export const EquipmentRow = ({
 
       {/* Storage / status */}
       <div className="text-center">
-        {hasStatusTracking ? (
+        {(hasExtractionTracking || hasDamageTracking) ? (
           <div className="flex flex-col items-center gap-0.5 text-xs">
             <span>{round2(extra)} stored</span>
-            {inExtraction > 0 && (
+            {hasExtractionTracking && inExtraction > 0 && (
               <span className="text-amber-600">{round2(inExtraction)} extracting</span>
             )}
-            {damaged > 0 && (
+            {hasDamageTracking && damaged > 0 && (
               <span className="text-red-500">{round2(damaged)} damaged</span>
             )}
           </div>
@@ -626,7 +628,7 @@ export const EquipmentTable = ({
   ];
 
   return (
-    <div className="space-y-6 min-w-[700px]">
+    <div className="space-y-6 min-w-[750px]">
       {showAddForm && (
         <div className="bg-muted/20 rounded-md p-4 border-2 border-dashed border-muted-foreground/25">
           <div className="grid grid-cols-7 gap-4 items-end">
