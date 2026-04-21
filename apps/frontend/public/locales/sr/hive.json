@@ -110,6 +110,8 @@
         "lastInspected": "Последњи преглед {{date}}",
         "noInspection": "Још без прегледа",
         "score": "Оцена:",
+        "strength": "",
+        "inspectionWarnings": "",
         "feeding": "Прихрана:"
     },
     "scores": {

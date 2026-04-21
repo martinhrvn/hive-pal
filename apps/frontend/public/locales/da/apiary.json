@@ -87,6 +87,13 @@
     },
     "form": {
         "namePlaceholder": "Bigårds navn",
-        "locationPlaceholder": "Lokations beskrivelse"
+        "locationPlaceholder": "Lokations beskrivelse",
+        "inspectionType": {
+            "label": "",
+            "placeholder": "",
+            "dataDriven": "",
+            "subjective": "",
+            "description": ""
+        }
     }
 }

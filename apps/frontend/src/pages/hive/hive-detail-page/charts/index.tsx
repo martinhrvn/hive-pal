@@ -1,7 +1,12 @@
 import { useState } from 'react';
-import { HiveScore } from 'shared-schemas';
-import { InspectionCharts } from './inspection-charts';
 import { FeedingChart } from './feeding-chart';
+import { FrameBreakdownChart } from './frame-breakdown-chart';
+import { BroodNestChart } from './brood-nest-chart';
+import { StoresChart } from './stores-chart';
+import { StrengthChart } from './strength-chart';
+import { QueenCellsChart } from './queen-cells-chart';
+import { BooleanEventsChart } from './boolean-events-chart';
+import { InspectionCharts } from './inspection-charts';
 import { HealthScoreChart } from './health-score-chart';
 import {
   Select,
@@ -14,16 +19,21 @@ import { Calendar } from 'lucide-react';
 
 export type ChartPeriod = '1month' | '3months' | '6months' | 'ytd' | 'all';
 
+import type { HiveScore } from 'shared-schemas';
+
 interface HiveChartsProps {
   hiveId: string | undefined;
+  inspectionType?: 'subjective' | 'data_driven';
   hiveScore?: HiveScore | null;
 }
 
 export const HiveCharts: React.FC<HiveChartsProps> = ({
   hiveId,
+  inspectionType,
   hiveScore,
 }) => {
   const [period, setPeriod] = useState<ChartPeriod>('6months');
+  const isSubjective = (inspectionType ?? 'data_driven') === 'subjective';
 
   if (!hiveId) return null;
 
@@ -48,15 +58,37 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <InspectionCharts hiveId={hiveId} period={period} />
-        <HealthScoreChart hiveScore={hiveScore} />
-        <FeedingChart hiveId={hiveId} period={period} />
-      </div>
+      {isSubjective ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <InspectionCharts hiveId={hiveId} period={period} />
+          <HealthScoreChart hiveScore={hiveScore} />
+          <FeedingChart hiveId={hiveId} period={period} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Frame composition — full width, toggle + field selector */}
+          <FrameBreakdownChart hiveId={hiveId} period={period} />
+
+          {/* Brood nest — full width */}
+          <BroodNestChart hiveId={hiveId} period={period} />
+
+          {/* Stores + Strength side by side */}
+          <StoresChart hiveId={hiveId} period={period} />
+          <StrengthChart hiveId={hiveId} period={period} />
+
+          {/* Queen cells */}
+          <QueenCellsChart hiveId={hiveId} period={period} />
+
+          {/* Boolean events */}
+          <BooleanEventsChart hiveId={hiveId} period={period} />
+
+          {/* Feeding */}
+          <FeedingChart hiveId={hiveId} period={period} />
+        </div>
+      )}
     </div>
   );
 };
 
-export { InspectionCharts } from './inspection-charts';
 export { FeedingChart } from './feeding-chart';
-export { HealthScoreChart } from './health-score-chart';
+export { FrameBreakdownChart } from './frame-breakdown-chart';

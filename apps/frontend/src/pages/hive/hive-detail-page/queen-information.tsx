@@ -145,6 +145,7 @@ const QueenMobileView: React.FC<{
     {activeQueen ? (
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Queen:</span>
           <QueenColorDot color={activeQueen.color} />
           {asLink ? (
             <Link to={`/queens/${activeQueen.id}`} className="text-sm font-medium hover:underline">
@@ -211,6 +212,7 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
         <div className="hidden sm:flex items-center gap-3">
           {activeQueen ? (
             <>
+              <span className="text-xs text-muted-foreground">Queen:</span>
               <QueenColorDot color={activeQueen.color} />
               <Link to={`/queens/${activeQueen.id}`} className="text-sm font-medium hover:underline">
                 {activeQueen.marking}

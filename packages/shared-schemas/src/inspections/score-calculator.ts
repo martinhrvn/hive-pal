@@ -68,17 +68,63 @@ export function calculateWeightedScore(values: WeightedValue[]): number | null {
   return weightedSum / totalWeight;
 }
 
-export function calculateScores(observations: ObservationSchemaType): ScoreResult {
-  const populationScore = calculateWeightedScore([
-    { value: observations.strength, weight: 2 },
-    { value: observations.cappedBrood, weight: 1 },
-    { value: observations.uncappedBrood, weight: 1 },
-  ]);
+function framePercentageToScore(frames: number, totalFrames: number): number {
+  if (totalFrames <= 0) return 0;
+  return Math.min(10, (frames / totalFrames) * 10);
+}
 
-  const storesScore = calculateWeightedScore([
-    { value: observations.honeyStores, weight: 2 },
-    { value: observations.pollenStores, weight: 1 },
-  ]);
+export function calculateScores(observations: ObservationSchemaType): ScoreResult {
+  const totalFrames = observations.totalFrames;
+  const hasFrameData =
+    totalFrames != null &&
+    totalFrames > 0 &&
+    (observations.eggsFrames != null ||
+      observations.uncappedBroodFrames != null ||
+      observations.cappedBroodFrames != null ||
+      observations.pollenFrames != null ||
+      observations.honeyFrames != null);
+
+  let populationScore: number | null;
+  let storesScore: number | null;
+
+  if (hasFrameData && totalFrames != null && totalFrames > 0) {
+    const broodFrames =
+      (observations.eggsFrames ?? 0) +
+      (observations.uncappedBroodFrames ?? 0) +
+      (observations.cappedBroodFrames ?? 0);
+    const storesFrames =
+      (observations.honeyFrames ?? 0) + (observations.pollenFrames ?? 0);
+
+    populationScore =
+      observations.eggsFrames != null ||
+      observations.uncappedBroodFrames != null ||
+      observations.cappedBroodFrames != null
+        ? framePercentageToScore(broodFrames, totalFrames)
+        : calculateWeightedScore([
+            { value: observations.strength, weight: 2 },
+            { value: observations.cappedBrood, weight: 1 },
+            { value: observations.uncappedBrood, weight: 1 },
+          ]);
+
+    storesScore =
+      observations.honeyFrames != null || observations.pollenFrames != null
+        ? framePercentageToScore(storesFrames, totalFrames)
+        : calculateWeightedScore([
+            { value: observations.honeyStores, weight: 2 },
+            { value: observations.pollenStores, weight: 1 },
+          ]);
+  } else {
+    populationScore = calculateWeightedScore([
+      { value: observations.strength, weight: 2 },
+      { value: observations.cappedBrood, weight: 1 },
+      { value: observations.uncappedBrood, weight: 1 },
+    ]);
+
+    storesScore = calculateWeightedScore([
+      { value: observations.honeyStores, weight: 2 },
+      { value: observations.pollenStores, weight: 1 },
+    ]);
+  }
 
   const queenScore = calculateWeightedScore([
     {

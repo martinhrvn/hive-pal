@@ -2,16 +2,22 @@ import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 
+import { z } from 'zod';
 import { Prisma } from '@/prisma/client';
 import {
   ActionFilter,
   ActionResponse,
   ActionType,
+  boxTypeSchema,
   CreateAction,
   CreateStandaloneAction,
   UpdateAction,
   UserPreferences,
 } from 'shared-schemas';
+
+const boxesSchema = z.array(
+  z.object({ type: boxTypeSchema, frameCount: z.number().int().min(0) }),
+).nullable();
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
@@ -32,6 +38,98 @@ export class ActionsService {
     private prisma: PrismaService,
     private usersService: UsersService,
   ) {}
+
+  /**
+   * Creates type-specific action details within a transaction
+   */
+  private async createActionDetails(
+    actionId: string,
+    details: CreateAction['details'],
+    tx: Prisma.TransactionClient,
+  ): Promise<void> {
+    if (!details) return;
+
+    switch (details.type) {
+      case ActionType.NOTE:
+        // Content is stored in notes field, no additional table needed
+        break;
+      case ActionType.FEEDING:
+        await tx.feedingAction.create({
+          data: {
+            actionId,
+            feedType: details.feedType,
+            amount: details.amount,
+            unit: details.unit,
+            concentration: details.concentration,
+          },
+        });
+        break;
+      case ActionType.FRAME:
+        await tx.frameAction.create({
+          data: {
+            actionId,
+            quantity: details.quantity,
+          },
+        });
+        break;
+      case ActionType.TREATMENT:
+        await tx.treatmentAction.create({
+          data: {
+            actionId,
+            product: details.product,
+            quantity: details.quantity,
+            unit: details.unit,
+            duration: details.duration,
+          },
+        });
+        break;
+      case ActionType.BOX_CONFIGURATION:
+        await tx.boxConfigurationAction.create({
+          data: {
+            actionId,
+            boxesAdded: details.boxesAdded,
+            boxesRemoved: details.boxesRemoved,
+            framesAdded: details.framesAdded,
+            framesRemoved: details.framesRemoved,
+            totalBoxes: details.totalBoxes,
+            totalFrames: details.totalFrames,
+            boxes: details.boxes ?? [],
+          },
+        });
+        break;
+      case ActionType.HARVEST:
+        await tx.harvestAction.create({
+          data: {
+            actionId,
+            amount: details.amount,
+            unit: details.unit,
+          },
+        });
+        break;
+      case ActionType.MAINTENANCE:
+        await tx.maintenanceAction.create({
+          data: {
+            actionId,
+            component: details.component,
+            status: details.status,
+          },
+        });
+        break;
+    }
+  }
+
+  /**
+   * Fetches user preferences with fallback to defaults
+   */
+  private async getUserPreferencesWithFallback(
+    userId: string,
+  ): Promise<UserPreferences | null> {
+    try {
+      return await this.usersService.getUserPreferences(userId);
+    } catch {
+      return null;
+    }
+  }
 
   /**
    * Convert volume from liters to user's preferred unit
@@ -161,61 +259,8 @@ export class ActionsService {
         },
       });
 
-      // Add type-specific details based on the action type
-      if (!details) continue;
-
-      if (details.type === ActionType.NOTE) {
-        // For NOTE type, the content is stored in the notes field
-        // No additional table needed
-      } else if (details.type === ActionType.FEEDING) {
-        const feedingDetails = details;
-        await tx.feedingAction.create({
-          data: {
-            actionId: createdAction.id,
-            feedType: feedingDetails.feedType,
-            amount: feedingDetails.amount,
-            unit: feedingDetails.unit,
-            concentration: feedingDetails.concentration,
-          },
-        });
-      } else if (details.type === ActionType.FRAME) {
-        await tx.frameAction.create({
-          data: {
-            actionId: createdAction.id,
-            quantity: details.quantity,
-          },
-        });
-      } else if (details.type === ActionType.TREATMENT) {
-        await tx.treatmentAction.create({
-          data: {
-            actionId: createdAction.id,
-            product: details.product,
-            quantity: details.quantity,
-            unit: details.unit,
-            duration: details.duration,
-          },
-        });
-      } else if (details.type === ActionType.BOX_CONFIGURATION) {
-        await tx.boxConfigurationAction.create({
-          data: {
-            actionId: createdAction.id,
-            boxesAdded: details.boxesAdded,
-            boxesRemoved: details.boxesRemoved,
-            framesAdded: details.framesAdded,
-            framesRemoved: details.framesRemoved,
-            totalBoxes: details.totalBoxes,
-            totalFrames: details.totalFrames,
-          },
-        });
-      } else if (details.type === ActionType.MAINTENANCE) {
-        await tx.maintenanceAction.create({
-          data: {
-            actionId: createdAction.id,
-            component: details.component,
-            status: details.status,
-          },
-        });
-      }
+      // Add type-specific details
+      await this.createActionDetails(createdAction.id, details, tx);
     }
   }
 
@@ -323,16 +368,9 @@ export class ActionsService {
     });
 
     // Get user preferences for unit conversion
-    let userPreferences: UserPreferences | null = null;
-    if (filter.userId) {
-      try {
-        userPreferences = await this.usersService.getUserPreferences(
-          filter.userId,
-        );
-      } catch {
-        // If we can't get preferences, use defaults
-      }
-    }
+    const userPreferences = filter.userId
+      ? await this.getUserPreferencesWithFallback(filter.userId)
+      : null;
 
     return actions.map((action) =>
       this.mapPrismaToDto(action, userPreferences),
@@ -381,61 +419,8 @@ export class ActionsService {
         },
       });
 
-      // Add type-specific details based on the action type
-      if (!details) return;
-
-      if (details.type === ActionType.NOTE) {
-        // For NOTE type, the content is stored in the notes field
-        // No additional table needed
-      } else if (details.type === ActionType.FEEDING) {
-        const feedingDetails = details;
-        await tx.feedingAction.create({
-          data: {
-            actionId: createdAction.id,
-            feedType: feedingDetails.feedType,
-            amount: feedingDetails.amount,
-            unit: feedingDetails.unit,
-            concentration: feedingDetails.concentration,
-          },
-        });
-      } else if (details.type === ActionType.FRAME) {
-        await tx.frameAction.create({
-          data: {
-            actionId: createdAction.id,
-            quantity: details.quantity,
-          },
-        });
-      } else if (details.type === ActionType.TREATMENT) {
-        await tx.treatmentAction.create({
-          data: {
-            actionId: createdAction.id,
-            product: details.product,
-            quantity: details.quantity,
-            unit: details.unit,
-            duration: details.duration,
-          },
-        });
-      } else if (details.type === ActionType.BOX_CONFIGURATION) {
-        await tx.boxConfigurationAction.create({
-          data: {
-            actionId: createdAction.id,
-            boxesAdded: details.boxesAdded,
-            boxesRemoved: details.boxesRemoved,
-            framesAdded: details.framesAdded,
-            framesRemoved: details.framesRemoved,
-            totalBoxes: details.totalBoxes,
-            totalFrames: details.totalFrames,
-          },
-        });
-      } else if (details.type === ActionType.MAINTENANCE) {
-        await tx.maintenanceAction.create({
-          data: {
-            actionId: createdAction.id,
-            component: details.component,
-            status: details.status,
-          },
-        });
-      }
+      // Add type-specific details
+      await this.createActionDetails(createdAction.id, details, tx);
 
       // Fetch the complete action with relations
       return await tx.action.findUnique({
@@ -457,12 +442,7 @@ export class ActionsService {
     }
 
     // Get user preferences for the response
-    let userPreferences: UserPreferences | null = null;
-    try {
-      userPreferences = await this.usersService.getUserPreferences(userId);
-    } catch {
-      // If we can't get preferences, use defaults
-    }
+    const userPreferences = await this.getUserPreferencesWithFallback(userId);
 
     return this.mapPrismaToDto(result, userPreferences);
   }
@@ -536,63 +516,7 @@ export class ActionsService {
         await this.deleteActionDetails(actionId, tx);
 
         // Create new details
-        if (details.type === ActionType.FEEDING) {
-          await tx.feedingAction.create({
-            data: {
-              actionId,
-              feedType: details.feedType,
-              amount: details.amount,
-              unit: details.unit,
-              concentration: details.concentration,
-            },
-          });
-        } else if (details.type === ActionType.FRAME) {
-          await tx.frameAction.create({
-            data: {
-              actionId,
-              quantity: details.quantity,
-            },
-          });
-        } else if (details.type === ActionType.TREATMENT) {
-          await tx.treatmentAction.create({
-            data: {
-              actionId,
-              product: details.product,
-              quantity: details.quantity,
-              unit: details.unit,
-              duration: details.duration,
-            },
-          });
-        } else if (details.type === ActionType.BOX_CONFIGURATION) {
-          await tx.boxConfigurationAction.create({
-            data: {
-              actionId,
-              boxesAdded: details.boxesAdded,
-              boxesRemoved: details.boxesRemoved,
-              framesAdded: details.framesAdded,
-              framesRemoved: details.framesRemoved,
-              totalBoxes: details.totalBoxes,
-              totalFrames: details.totalFrames,
-            },
-          });
-        } else if (details.type === ActionType.HARVEST) {
-          await tx.harvestAction.create({
-            data: {
-              actionId,
-              amount: details.amount,
-              unit: details.unit,
-            },
-          });
-        } else if (details.type === ActionType.MAINTENANCE) {
-          await tx.maintenanceAction.create({
-            data: {
-              actionId,
-              component: details.component,
-              status: details.status,
-            },
-          });
-        }
-        // NOTE type doesn't need additional details, content is in notes
+        await this.createActionDetails(actionId, details, tx);
       }
 
       // Fetch the complete updated action with relations
@@ -615,12 +539,7 @@ export class ActionsService {
     }
 
     // Get user preferences for the response
-    let userPreferences: UserPreferences | null = null;
-    try {
-      userPreferences = await this.usersService.getUserPreferences(userId);
-    } catch {
-      // If we can't get preferences, use defaults
-    }
+    const userPreferences = await this.getUserPreferencesWithFallback(userId);
 
     return this.mapPrismaToDto(result, userPreferences);
   }
@@ -883,6 +802,10 @@ export class ActionsService {
             framesRemoved: prismaAction.boxConfigurationAction.framesRemoved,
             totalBoxes: prismaAction.boxConfigurationAction.totalBoxes,
             totalFrames: prismaAction.boxConfigurationAction.totalFrames,
+            boxes: (() => {
+              const parsed = boxesSchema.safeParse(prismaAction.boxConfigurationAction.boxes);
+              return parsed.success ? (parsed.data ?? undefined) : undefined;
+            })(),
           },
         };
 

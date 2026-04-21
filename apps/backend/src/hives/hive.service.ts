@@ -29,7 +29,22 @@ import {
   AlertStatus,
   isVariantCompatible,
   calculateScores,
+  apiarySettingsSchema,
 } from 'shared-schemas';
+
+function parseJsonArray(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw) as string[];
+  } catch {
+    return [];
+  }
+}
+
+function parseApiaryInspectionType(raw: unknown): 'subjective' | 'data_driven' {
+  const result = apiarySettingsSchema.safeParse(raw);
+  return result.success ? (result.data?.inspectionType ?? 'data_driven') : 'data_driven';
+}
 
 @Injectable()
 export class HiveService {
@@ -157,12 +172,18 @@ export class HiveService {
         },
         select: {
           date: true,
+          overallScore: true,
+          scoreWarnings: true,
+          observations: {
+            where: { type: { in: ['strength', 'total_frames'] } },
+            select: { type: true, numericValue: true },
+          },
         },
         orderBy: {
           date: 'desc' as const,
         },
-        take: 1,
-      } as const,
+        take: 2,
+      },
       queens: {
         where: {
           status: 'ACTIVE' as const,
@@ -225,6 +246,11 @@ export class HiveService {
           notes: hive.notes || undefined,
           installationDate: hive.installationDate?.toISOString(),
           lastInspectionDate: hive.inspections[0]?.date?.toISOString(),
+          lastInspectionStrength: hive.inspections[0]?.observations?.find(o => o.type === 'strength')?.numericValue ?? null,
+          lastInspectionTotalFrames: hive.inspections[0]?.observations?.find(o => o.type === 'total_frames')?.numericValue ?? null,
+          lastInspectionOverallScore: hive.inspections[0]?.overallScore ?? null,
+          previousInspectionStrength: hive.inspections[1]?.observations?.find(o => o.type === 'strength')?.numericValue ?? null,
+          lastInspectionWarnings: parseJsonArray(hive.inspections[0]?.scoreWarnings),
           positionRow: hive.positionRow ?? undefined,
           positionCol: hive.positionCol ?? undefined,
           settings: (hive.settings as HiveSettings) || undefined,
@@ -295,7 +321,7 @@ export class HiveService {
         },
       },
       include: {
-        apiary: true,
+        apiary: { select: { settings: true } },
         queens: {
           where: {
             status: 'ACTIVE',
@@ -380,8 +406,8 @@ export class HiveService {
             populationScore: storedPopulation ?? calculated.populationScore,
             storesScore: storedStores ?? calculated.storesScore,
             queenScore: storedQueen ?? calculated.queenScore,
-            warnings: storedWarnings
-              ? (JSON.parse(storedWarnings) as string[])
+            warnings: parseJsonArray(storedWarnings).length > 0
+              ? parseJsonArray(storedWarnings)
               : calculated.warnings,
             confidence: storedConfidence ?? calculated.confidence,
           }
@@ -400,6 +426,7 @@ export class HiveService {
           : hive.installationDate?.toISOString(),
       lastInspectionDate: latestCompletedInspection?.date?.toISOString(),
       settings: (hive.settings as HiveSettings) || undefined,
+      inspectionType: parseApiaryInspectionType(hive.apiary?.settings),
       ...featurePhotoFields,
       boxes: hive.boxes.map((box) => ({
         id: box.id,

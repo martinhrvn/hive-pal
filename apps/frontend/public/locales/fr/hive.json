@@ -91,6 +91,8 @@
         "lastInspected": "Dernière inspection le {{date}}",
         "noInspection": "Aucune inspection",
         "score": "Score :",
+        "strength": "",
+        "inspectionWarnings": "",
         "feeding": "Nourrissement :"
     },
     "scores": {
@@ -178,7 +180,16 @@
             "extra": "En stock",
             "needed": "Requis",
             "status": "Statut",
-            "actions": "Actions"
+            "actions": "Actions",
+            "deleteItem": "Supprimer l’équipement",
+            "hideItem": "Masquer l’équipement",
+            "deleteConfirm": "Êtes-vous sûr de vouloir supprimer “{{name}}” ? Cette action est irréversible.",
+            "hideConfirm": "Cela masquera “{{name}}” de votre liste de matériel. Vous pourrez le restaurer plus tard.",
+            "cancel": "Annuler",
+            "delete": "Supprimer",
+            "hide": "Masquer",
+            "showHidden": "Afficher {{count}} élément(s) masqué(s)",
+            "restore": "Restaurer"
         }
     },
     "llmPrompt": {
@@ -254,7 +265,9 @@
             "addedFrames": "Ajouté {{quantity}} cadres",
             "frameManagement": "Gestion des cadres",
             "harvested": "Récolté {{amount}} {{unit}}",
-            "harvest": "Récolte"
+            "harvest": "Récolte",
+            "maintenance": "{{status}} {{component}}",
+            "maintenanceDefault": "Maintenance"
         },
         "title": "LLM Prompt pour {{hiveName}}",
         "description": "\"Copiez cette instruction et collez-la dans votre assistant IA préféré pour une évaluation de la santé de la ruche.\nVous pouvez modifier le texte avant de le copier.",

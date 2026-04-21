@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { StatisticCards } from './statistic-cards';
 import { BoxConfigurator } from './box-configurator';
 import { ActionSideBar } from '@/pages/hive/hive-detail-page/action-sidebar.tsx';
@@ -9,18 +10,22 @@ import { FeedingSection } from './feeding-section';
 import { HiveTimeline } from './hive-timeline';
 import { HiveSettings } from './hive-settings';
 import { HiveCharts } from './charts';
+import { HiveHeaderStats } from './hive-header-stats';
 import { useHive } from '@/api/hooks';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 import { QueenHistoryTab } from './queen-history-tab';
 import { HiveStatusButton } from './hive-status-button';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { useImageDisplayStore } from '@/stores/image-display-store';
+import { AlertTriangle } from 'lucide-react';
+import { WARNING_LABELS } from '@/utils/warning-labels';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
   const { data: hive, error, refetch } = useHive(hiveId as string);
   const { setHiveContext, clearContext } = useBreadcrumbStore();
   const { mode: imageMode } = useImageDisplayStore();
+  const [activeTab, setActiveTab] = useState('overview');
   const isSide = imageMode === 'side';
 
   // Set breadcrumb context when hive data is loaded
@@ -88,9 +93,9 @@ export const HiveDetailPage = () => {
 
             {/* Compact stats section */}
             <div className="border-t mt-3 pt-3">
-              {hive?.hiveScore && (
-                <StatisticCards score={hive.hiveScore} variant="inline" />
-              )}
+              {hive?.inspectionType === 'subjective'
+                ? hive.hiveScore && <StatisticCards score={hive.hiveScore} variant="inline" />
+                : hiveId && <HiveHeaderStats hiveId={hiveId} />}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3">
                 <QueenInformation
                   hiveId={hive?.id}
@@ -105,7 +110,7 @@ export const HiveDetailPage = () => {
           </div>
 
           {/* Tabs for different sections */}
-          <Tabs defaultValue="overview" className="mb-4 sm:mb-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-4 sm:mb-6">
             <TabsList className="mb-3 sm:mb-4 flex-wrap h-auto">
               <TabsTrigger value="overview" className="text-xs sm:text-sm">
                 Overview
@@ -125,11 +130,24 @@ export const HiveDetailPage = () => {
             </TabsList>
 
             <TabsContent value="overview">
+              {(hive?.hiveScore?.warnings?.length ?? 0) > 0 && (
+                <Alert className="mb-4 border-amber-400 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-100 dark:border-amber-600">
+                  <AlertTriangle className="h-4 w-4 !text-amber-600 dark:!text-amber-400" />
+                  <AlertTitle className="font-semibold">Inspection Warnings</AlertTitle>
+                  <AlertDescription>
+                    <ul className="mt-1 space-y-1">
+                      {hive!.hiveScore!.warnings.map((w) => (
+                        <li key={w}>{WARNING_LABELS[w] ?? w}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
               <HiveTimeline hiveId={hiveId} apiaryId={hive?.apiaryId} />
             </TabsContent>
 
             <TabsContent value="analytics">
-              <HiveCharts hiveId={hiveId} hiveScore={hive?.hiveScore} />
+              <HiveCharts hiveId={hiveId} inspectionType={hive?.inspectionType ?? 'data_driven'} hiveScore={hive?.hiveScore} />
             </TabsContent>
 
             <TabsContent value="boxes">

@@ -38,7 +38,7 @@ export const reminderObservationSchema = z.enum([
 ]);
 
 export const observationSchema = z.object({
-  strength: z.number().int().min(0).max(10).nullish(),
+  strength: z.number().int().min(0).nullish(),
   uncappedBrood: z.number().int().min(0).max(10).nullish(),
   cappedBrood: z.number().int().min(0).max(10).nullish(),
   honeyStores: z.number().int().min(0).max(10).nullish(),
@@ -47,7 +47,17 @@ export const observationSchema = z.object({
   swarmCells: z.boolean().nullish(),
   supersedureCells: z.boolean().nullish(),
   queenSeen: z.boolean().nullish(),
-  
+
+  // Frame count observations – actual number of frames of each type
+  totalFrames: z.number().int().min(0).nullish(),
+  eggsFrames: z.number().int().min(0).nullish(),
+  uncappedBroodFrames: z.number().int().min(0).nullish(),
+  cappedBroodFrames: z.number().int().min(0).nullish(),
+  droneBroodFrames: z.number().int().min(0).nullish(),
+  pollenFrames: z.number().int().min(0).nullish(),
+  honeyFrames: z.number().int().min(0).nullish(),
+  emptyFrames: z.number().int().min(0).nullish(),
+
   // New observation types
   broodPattern: broodPatternSchema,
   additionalObservations: z.array(additionalObservationSchema).optional(),

@@ -60,6 +60,16 @@ import {
   calculateScores,
 } from 'shared-schemas';
 
+const ACTION_INCLUDE = {
+  feedingAction: true,
+  treatmentAction: true,
+  frameAction: true,
+  harvestAction: true,
+  boxConfigurationAction: true,
+  maintenanceAction: true,
+  createdByUser: { select: { name: true, email: true } },
+};
+
 @Injectable()
 export class InspectionsService {
   constructor(
@@ -103,39 +113,16 @@ export class InspectionsService {
 
     return this.prisma.$transaction(
       async (tx): Promise<CreateInspectionResponse> => {
-        // Default status: future date -> PENDING, otherwise DONE
-        // If status was explicitly provided, use that instead
         const status =
           createInspectionDto.status ||
           (new Date(createInspectionDto.date) > new Date()
             ? 'SCHEDULED'
             : 'COMPLETED');
 
-        // Calculate scores from observations, or use overrides if provided
         const calculatedScore = observations
           ? calculateScores(observations)
           : null;
-        const finalScore = scoreOverride
-          ? {
-              overallScore: scoreOverride.overallScore,
-              populationScore: scoreOverride.populationScore,
-              storesScore: scoreOverride.storesScore,
-              queenScore: scoreOverride.queenScore,
-              warnings: calculatedScore?.warnings ?? [],
-              confidence: calculatedScore?.confidence ?? 0,
-            }
-          : calculatedScore;
-
-        const scoreData = finalScore
-          ? {
-              overallScore: finalScore.overallScore,
-              populationScore: finalScore.populationScore,
-              storesScore: finalScore.storesScore,
-              queenScore: finalScore.queenScore,
-              scoreWarnings: JSON.stringify(finalScore.warnings),
-              scoreConfidence: finalScore.confidence,
-            }
-          : {};
+        const scoreData = this.getScoreData(scoreOverride, calculatedScore);
 
         const inspection = await tx.inspection.create({
           data: {
@@ -144,50 +131,7 @@ export class InspectionsService {
             createdByUserId: filter.userId,
             ...scoreData,
             observations: {
-              create: [
-                { type: 'strength', numericValue: observations?.strength },
-                {
-                  type: 'capped_brood',
-                  numericValue: observations?.cappedBrood,
-                },
-                {
-                  type: 'uncapped_brood',
-                  numericValue: observations?.uncappedBrood,
-                },
-                {
-                  type: 'honey_stores',
-                  numericValue: observations?.honeyStores,
-                },
-                {
-                  type: 'pollen_stores',
-                  numericValue: observations?.pollenStores,
-                },
-                { type: 'queen_cells', numericValue: observations?.queenCells },
-                { type: 'swarm_cells', booleanValue: observations?.swarmCells },
-                {
-                  type: 'supersedure_cells',
-                  booleanValue: observations?.supersedureCells,
-                },
-                { type: 'queen_seen', booleanValue: observations?.queenSeen },
-
-                // New observation types
-                {
-                  type: 'brood_pattern',
-                  textValue: observations?.broodPattern,
-                },
-
-                // Additional observations (badges/tags)
-                ...(observations?.additionalObservations?.map((obs) => ({
-                  type: `additional_${obs}`,
-                  booleanValue: true,
-                })) || []),
-
-                // Reminder observations
-                ...(observations?.reminderObservations?.map((obs) => ({
-                  type: `reminder_${obs}`,
-                  booleanValue: true,
-                })) || []),
-              ],
+              create: observations ? this.buildObservationRecords(observations) : [],
             },
           },
         });
@@ -237,12 +181,10 @@ export class InspectionsService {
   async findAll(
     filter: InspectionFilter & Partial<ApiaryUserFilter>,
   ): Promise<InspectionResponse[]> {
-    // Update any overdue inspection statuses before fetching
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
     const whereClause: Prisma.InspectionWhereInput = {
       hiveId: filter.hiveId ?? undefined,
-      // Add date filtering
       ...(filter.startDate || filter.endDate
         ? {
             date: {
@@ -251,16 +193,8 @@ export class InspectionsService {
             },
           }
         : {}),
+      ...this.getApiaryFilter(filter),
     };
-
-    // Add apiary filter if provided
-    if (filter.apiaryId && filter.userId) {
-      whereClause.hive = {
-        apiary: {
-          id: filter.apiaryId,
-        },
-      };
-    }
 
     const inspections = await this.prisma.inspection.findMany({
       where: whereClause,
@@ -271,45 +205,18 @@ export class InspectionsService {
         observations: true,
         notes: true,
         actions: {
-          include: {
-            feedingAction: true,
-            treatmentAction: true,
-            frameAction: true,
-            harvestAction: true,
-            boxConfigurationAction: true,
-            maintenanceAction: true,
-            createdByUser: { select: { name: true, email: true } },
+          include: ACTION_INCLUDE,
+        },
+        hive: {
+          select: {
+            name: true,
           },
         },
         createdByUser: { select: { name: true, email: true } },
       },
     });
 
-    return inspections.map((inspection): InspectionResponse => {
-      const metrics = this.mapObservationsToDto(inspection.observations);
-      const score = this.getStoredOrCalculatedScore(inspection, metrics);
-
-      // Transform actions to DTOs - with explicit casting of the type
-      const actions = inspection.actions.map((action) =>
-        this.actionsService.mapPrismaToDto(action),
-      );
-
-      return {
-        id: inspection.id,
-        hiveId: inspection.hiveId,
-        date: inspection.date.toISOString(),
-        isAllDay: inspection.isAllDay,
-        temperature: inspection.temperature ?? null,
-        weatherConditions: inspection.weatherConditions ?? null,
-        notes: inspection.notes?.[0]?.text ?? null,
-        observations: metrics,
-        status: inspection.status as InspectionStatus,
-        score,
-        actions,
-        createdByUserName:
-          inspection.createdByUser?.name || inspection.createdByUser?.email,
-      };
-    });
+    return this.mapInspectionsToDto(inspections);
   }
 
   async findOne(
@@ -329,14 +236,11 @@ export class InspectionsService {
         observations: true,
         notes: true,
         actions: {
-          include: {
-            feedingAction: true,
-            treatmentAction: true,
-            frameAction: true,
-            harvestAction: true,
-            boxConfigurationAction: true,
-            maintenanceAction: true,
-            createdByUser: { select: { name: true, email: true } },
+          include: ACTION_INCLUDE,
+        },
+        hive: {
+          select: {
+            name: true,
           },
         },
         createdByUser: { select: { name: true, email: true } },
@@ -346,29 +250,7 @@ export class InspectionsService {
       return null;
     }
 
-    const metrics = this.mapObservationsToDto(inspection.observations);
-    const score = this.getStoredOrCalculatedScore(inspection, metrics);
-
-    // Transform actions to DTOs - with explicit casting of the type
-
-    const actions = inspection.actions.map((action) =>
-      this.actionsService.mapPrismaToDto(action),
-    );
-    return {
-      id: inspection.id,
-      hiveId: inspection.hiveId,
-      date: inspection.date.toISOString(),
-      isAllDay: inspection.isAllDay,
-      temperature: inspection.temperature ?? null,
-      weatherConditions: inspection.weatherConditions ?? null,
-      notes: inspection.notes?.[0]?.text ?? null,
-      observations: metrics,
-      status: inspection.status as InspectionStatus,
-      score,
-      actions,
-      createdByUserName:
-        inspection.createdByUser?.name || inspection.createdByUser?.email,
-    };
+    return this.mapInspectionsToDto([inspection])[0];
   }
 
   async update(
@@ -404,7 +286,6 @@ export class InspectionsService {
 
     return this.prisma.$transaction(
       async (tx): Promise<UpdateInspectionResponse> => {
-        // Handle observations update only if provided
         if (observations !== undefined) {
           await tx.observation.deleteMany({
             where: {
@@ -413,16 +294,13 @@ export class InspectionsService {
           });
         }
 
-        // Handle notes update
         if (notes !== undefined) {
-          // Delete existing notes
           await tx.inspectionNote.deleteMany({
             where: {
               inspectionId: id,
             },
           });
 
-          // Create new note if there's content
           if (notes) {
             await tx.inspectionNote.create({
               data: {
@@ -433,7 +311,6 @@ export class InspectionsService {
           }
         }
 
-        // Handle actions update if provided - use ActionsService
         if (actions !== undefined) {
           await this.actionsService.updateActions(
             id,
@@ -443,86 +320,21 @@ export class InspectionsService {
           );
         }
 
-        // Determine status based on explicit input or date-based default
         const status = updateInspectionDto.status;
-
-        // Calculate scores from observations, or use overrides if provided
         const calculatedScore = observations
           ? calculateScores(observations)
           : null;
-        const finalScore = scoreOverride
-          ? {
-              overallScore: scoreOverride.overallScore,
-              populationScore: scoreOverride.populationScore,
-              storesScore: scoreOverride.storesScore,
-              queenScore: scoreOverride.queenScore,
-              warnings: calculatedScore?.warnings ?? [],
-              confidence: calculatedScore?.confidence ?? 0,
-            }
-          : calculatedScore;
+        const scoreUpdateData = this.getScoreData(scoreOverride, calculatedScore);
 
-        const scoreUpdateData = finalScore
-          ? {
-              overallScore: finalScore.overallScore,
-              populationScore: finalScore.populationScore,
-              storesScore: finalScore.storesScore,
-              queenScore: finalScore.queenScore,
-              scoreWarnings: JSON.stringify(finalScore.warnings),
-              scoreConfidence: finalScore.confidence,
-            }
-          : {};
-
-        // Prepare update data - only include observations if they were provided
         const updateData: Prisma.InspectionUpdateInput = {
           ...inspectionData,
           status: status ?? inspection.status,
           ...scoreUpdateData,
         };
 
-        // Only add observations to update if they were provided
         if (observations !== undefined) {
           updateData.observations = {
-            create: [
-              { type: 'strength', numericValue: observations?.strength },
-              {
-                type: 'capped_brood',
-                numericValue: observations?.cappedBrood,
-              },
-              {
-                type: 'uncapped_brood',
-                numericValue: observations?.uncappedBrood,
-              },
-              {
-                type: 'honey_stores',
-                numericValue: observations?.honeyStores,
-              },
-              {
-                type: 'pollen_stores',
-                numericValue: observations?.pollenStores,
-              },
-              { type: 'queen_cells', numericValue: observations?.queenCells },
-              { type: 'swarm_cells', booleanValue: observations?.swarmCells },
-              {
-                type: 'supersedure_cells',
-                booleanValue: observations?.supersedureCells,
-              },
-              { type: 'queen_seen', booleanValue: observations?.queenSeen },
-
-              // New observation types
-              { type: 'brood_pattern', textValue: observations?.broodPattern },
-
-              // Additional observations (badges/tags)
-              ...(observations?.additionalObservations?.map((obs) => ({
-                type: `additional_${obs}`,
-                booleanValue: true,
-              })) || []),
-
-              // Reminder observations
-              ...(observations?.reminderObservations?.map((obs) => ({
-                type: `reminder_${obs}`,
-                booleanValue: true,
-              })) || []),
-            ],
+            create: this.buildObservationRecords(observations),
           };
         }
 
@@ -591,40 +403,23 @@ export class InspectionsService {
   async findOverdueInspections(
     filter: Partial<ApiaryUserFilter>,
   ): Promise<InspectionResponse[]> {
-    // Update any overdue inspection statuses before fetching
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
     const whereClause: Prisma.InspectionWhereInput = {
       status: InspectionStatus.OVERDUE,
+      ...this.getApiaryFilter(filter),
     };
-
-    // Add apiary filter if provided
-    if (filter.apiaryId && filter.userId) {
-      whereClause.hive = {
-        apiary: {
-          id: filter.apiaryId,
-        },
-      };
-    }
 
     const inspections = await this.prisma.inspection.findMany({
       where: whereClause,
       orderBy: {
-        date: 'asc', // Oldest overdue first
+        date: 'asc',
       },
       include: {
         observations: true,
         notes: true,
         actions: {
-          include: {
-            feedingAction: true,
-            treatmentAction: true,
-            frameAction: true,
-            harvestAction: true,
-            boxConfigurationAction: true,
-            maintenanceAction: true,
-            createdByUser: { select: { name: true, email: true } },
-          },
+          include: ACTION_INCLUDE,
         },
         hive: {
           select: {
@@ -641,7 +436,6 @@ export class InspectionsService {
   async findDueTodayInspections(
     filter: Partial<ApiaryUserFilter>,
   ): Promise<InspectionResponse[]> {
-    // Update any overdue inspection statuses before fetching
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
     const now = new Date();
@@ -658,16 +452,8 @@ export class InspectionsService {
         gte: today,
         lt: tomorrow,
       },
+      ...this.getApiaryFilter(filter),
     };
-
-    // Add apiary filter if provided
-    if (filter.apiaryId && filter.userId) {
-      whereClause.hive = {
-        apiary: {
-          id: filter.apiaryId,
-        },
-      };
-    }
 
     const inspections = await this.prisma.inspection.findMany({
       where: whereClause,
@@ -678,15 +464,7 @@ export class InspectionsService {
         observations: true,
         notes: true,
         actions: {
-          include: {
-            feedingAction: true,
-            treatmentAction: true,
-            frameAction: true,
-            harvestAction: true,
-            boxConfigurationAction: true,
-            maintenanceAction: true,
-            createdByUser: { select: { name: true, email: true } },
-          },
+          include: ACTION_INCLUDE,
         },
         hive: {
           select: {
@@ -700,6 +478,99 @@ export class InspectionsService {
     return this.mapInspectionsToDto(inspections);
   }
 
+  private buildObservationRecords(observations: ObservationSchemaType) {
+    return [
+      { type: 'strength', numericValue: observations?.strength },
+      {
+        type: 'capped_brood',
+        numericValue: observations?.cappedBrood,
+      },
+      {
+        type: 'uncapped_brood',
+        numericValue: observations?.uncappedBrood,
+      },
+      {
+        type: 'honey_stores',
+        numericValue: observations?.honeyStores,
+      },
+      {
+        type: 'pollen_stores',
+        numericValue: observations?.pollenStores,
+      },
+      { type: 'queen_cells', numericValue: observations?.queenCells },
+      { type: 'swarm_cells', booleanValue: observations?.swarmCells },
+      {
+        type: 'supersedure_cells',
+        booleanValue: observations?.supersedureCells,
+      },
+      { type: 'queen_seen', booleanValue: observations?.queenSeen },
+      { type: 'total_frames', numericValue: observations?.totalFrames },
+      { type: 'eggs_frames', numericValue: observations?.eggsFrames },
+      {
+        type: 'uncapped_brood_frames',
+        numericValue: observations?.uncappedBroodFrames,
+      },
+      {
+        type: 'capped_brood_frames',
+        numericValue: observations?.cappedBroodFrames,
+      },
+      {
+        type: 'drone_brood_frames',
+        numericValue: observations?.droneBroodFrames,
+      },
+      { type: 'pollen_frames', numericValue: observations?.pollenFrames },
+      { type: 'honey_frames', numericValue: observations?.honeyFrames },
+      { type: 'empty_frames', numericValue: observations?.emptyFrames },
+      { type: 'brood_pattern', textValue: observations?.broodPattern },
+      ...(observations?.additionalObservations?.map((obs) => ({
+        type: `additional_${obs}`,
+        booleanValue: true,
+      })) || []),
+      ...(observations?.reminderObservations?.map((obs) => ({
+        type: `reminder_${obs}`,
+        booleanValue: true,
+      })) || []),
+    ];
+  }
+
+  private getScoreData(
+    scoreOverride: Partial<ScoreResult> | undefined,
+    calculatedScore: ScoreResult | null,
+  ) {
+    const finalScore = scoreOverride
+      ? {
+          overallScore: scoreOverride.overallScore,
+          populationScore: scoreOverride.populationScore,
+          storesScore: scoreOverride.storesScore,
+          queenScore: scoreOverride.queenScore,
+          warnings: calculatedScore?.warnings ?? [],
+          confidence: calculatedScore?.confidence ?? 0,
+        }
+      : calculatedScore;
+
+    return finalScore
+      ? {
+          overallScore: finalScore.overallScore,
+          populationScore: finalScore.populationScore,
+          storesScore: finalScore.storesScore,
+          queenScore: finalScore.queenScore,
+          scoreWarnings: JSON.stringify(finalScore.warnings),
+          scoreConfidence: finalScore.confidence,
+        }
+      : {};
+  }
+
+  private getApiaryFilter(filter: Partial<ApiaryUserFilter>) {
+    if (!filter.apiaryId || !filter.userId) return {};
+    return {
+      hive: {
+        apiary: {
+          id: filter.apiaryId,
+        },
+      },
+    };
+  }
+
   private mapInspectionsToDto(
     inspections: InspectionWithIncludes[],
   ): InspectionResponse[] {
@@ -707,7 +578,6 @@ export class InspectionsService {
       const metrics = this.mapObservationsToDto(inspection.observations);
       const score = this.getStoredOrCalculatedScore(inspection, metrics);
 
-      // Transform actions to DTOs - with explicit casting of the type
       const actions = inspection.actions.map((action) =>
         this.actionsService.mapPrismaToDto(action),
       );
@@ -812,6 +682,19 @@ export class InspectionsService {
       supersedureCells:
         observationsByType.supersedure_cells?.booleanValue ?? null,
       queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
+
+      // Frame count observations
+      totalFrames: observationsByType.total_frames?.numericValue ?? null,
+      eggsFrames: observationsByType.eggs_frames?.numericValue ?? null,
+      uncappedBroodFrames:
+        observationsByType.uncapped_brood_frames?.numericValue ?? null,
+      cappedBroodFrames:
+        observationsByType.capped_brood_frames?.numericValue ?? null,
+      droneBroodFrames:
+        observationsByType.drone_brood_frames?.numericValue ?? null,
+      pollenFrames: observationsByType.pollen_frames?.numericValue ?? null,
+      honeyFrames: observationsByType.honey_frames?.numericValue ?? null,
+      emptyFrames: observationsByType.empty_frames?.numericValue ?? null,
 
       // New observation types
       broodPattern:

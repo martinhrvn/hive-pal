@@ -38,12 +38,16 @@
         "no": "Non"
     },
     "scores": {
-        "title": "Scores d'inspection",
+        "title": "Scores de santé",
         "population": "Population",
         "stores": "Réserves",
         "queen": "Reine",
         "overall": "Global",
-        "warnings": "Avertissements"
+        "warnings": "Avertissements",
+        "override": "Passer outre",
+        "resetToCalculated": "Réinitialiser au calcul",
+        "autoCalculated": "Auto-calculé",
+        "overridden": "Personnalisé"
     },
     "observations": {
         "title": "Observations",
@@ -55,7 +59,9 @@
         "pollenStores": "Réserves de pollen",
         "queenCells": "Cellules royales",
         "swarmCells": "Cellules d'essaimage",
+        "swarmCellsDescription": "",
         "supersedureCells": "Cellules de supersédure",
+        "supersedureCellsDescription": "",
         "clearRating": "Évaluation claire",
         "rateAs": "Noter comme {{value}}",
         "broodPattern": "Disposition du couvain",
@@ -290,6 +296,19 @@
                 "remove": "Supprimer",
                 "saveNote": "Enregistrer la note",
                 "edit": "Modifier"
+            },
+            "maintenance": "Maintenance",
+            "maintenance_section": {
+                "title": "Maintenance",
+                "component": "Composant",
+                "box": "Ruche",
+                "bottomBoard": "Fond de caisse",
+                "cover": "Couvre-cadres",
+                "status": "Statut",
+                "cleaned": "Nettoyé",
+                "replaced": "Remplacé",
+                "notesOptional": "Notes (optionnel)",
+                "notesPlaceholder": "Notes additionnelles sur l’entretien…"
             }
         },
         "audio": {

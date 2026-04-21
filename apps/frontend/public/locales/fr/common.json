@@ -307,7 +307,8 @@
         "queenNotSeen": "Reine non vue",
         "photos": "Photos",
         "documents": "Documents",
-        "fromInspection": "À partir de l’inspection"
+        "fromInspection": "À partir de l’inspection",
+        "maintenance": "Maintenance"
     },
     "reports": {
         "title": "Rapports",

@@ -59,7 +59,9 @@
     "pollenStores": "Pollen Stores",
     "queenCells": "Queen Cells",
     "swarmCells": "Swarm cells",
+    "swarmCellsDescription": "Built on the bottom or edges of frames. Multiple cells often present. Bees are preparing to swarm.",
     "supersedureCells": "Supersedure cells",
+    "supersedureCellsDescription": "Built in the middle of a frame face. Usually just one or two cells. Bees are replacing an old or failing queen.",
     "clearRating": "Clear rating",
     "rateAs": "Rate as {{value}}",
     "broodPattern": "Brood Pattern",
@@ -96,7 +98,19 @@
       "requires_treatment": "Requires Treatment",
       "low_stores": "Low Stores",
       "prepare_for_winter": "Prepare for Winter"
-    }
+    },
+    "frameCounts": {
+      "title": "Brood Nest Counts",
+      "totalFrames": "{{count}} frames total",
+      "framesOf": "/ {{total}} frames"
+    },
+    "eggsFrames": "Eggs",
+    "uncappedBroodFrames": "Uncapped Brood",
+    "cappedBroodFrames": "Capped Brood",
+    "droneBroodFrames": "Drone Brood",
+    "pollenFrames": "Pollen",
+    "honeyFrames": "Honey",
+    "emptyFrames": "Empty / Foundation"
   },
   "actions": {
     "details": "Details",

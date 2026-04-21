@@ -85,6 +85,13 @@
     },
     "form": {
         "namePlaceholder": "Назив пчелињака",
-        "locationPlaceholder": "Опис локације"
+        "locationPlaceholder": "Опис локације",
+        "inspectionType": {
+            "label": "",
+            "placeholder": "",
+            "dataDriven": "",
+            "subjective": "",
+            "description": ""
+        }
     }
 }

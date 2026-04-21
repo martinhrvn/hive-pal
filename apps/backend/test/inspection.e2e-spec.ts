@@ -144,6 +144,14 @@ it('should create an inspection with observations', async () => {
     swarmCells: false,
     supersedureCells: false,
     broodPattern: null,
+    cappedBroodFrames: null,
+    droneBroodFrames: null,
+    eggsFrames: null,
+    emptyFrames: null,
+    honeyFrames: null,
+    pollenFrames: null,
+    totalFrames: null,
+    uncappedBroodFrames: null,
   });
 
   // Verify scoring was calculated

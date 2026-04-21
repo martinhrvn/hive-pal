@@ -48,6 +48,7 @@ import { PhotosSection, PendingPhoto } from './photos-section';
 import { uploadPendingPhotos } from './upload-pending-photos';
 import { uploadPendingRecordings } from './upload-pending-recordings';
 import { ScorePreviewSection } from './score-preview';
+import { FrameCountSection } from './frame-counts';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
 
 interface PendingRecording {
@@ -144,6 +145,26 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     enabled: !!selectedHiveId,
   });
 
+  // Calculate total frames from brood boxes only (honey supers are excluded)
+  // If the user has recorded a box configuration action, use its updated boxes instead
+  const formActions = form.watch('actions') || [];
+  const boxConfigAction = formActions.find(a => a.type === 'BOX_CONFIGURATION') as
+    | import('./schema').BoxConfigurationActionData
+    | undefined;
+
+  const effectiveBoxes = boxConfigAction?.updatedBoxes ?? selectedHive?.boxes ?? [];
+
+  const totalFrames =
+    effectiveBoxes
+      .filter((box: { type: string }) => box.type === 'BROOD')
+      .reduce((sum: number, box: { frameCount: number }) => sum + box.frameCount, 0) || null;
+
+  const broodBoxCount =
+    effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD').length || null;
+
+  const inspectionType = selectedHive?.inspectionType ?? 'data_driven';
+  const isSubjective = inspectionType === 'subjective';
+
   // Format date for API call
   const dateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
   const isDateInFuture = selectedDate && selectedDate > new Date();
@@ -181,8 +202,20 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     },
   });
 
+  const validateSubjectiveStrength = (data: InspectionFormData): boolean => {
+    const strength = data.observations?.strength;
+    if (isSubjective && strength != null && strength > 10) {
+      form.setError('observations.strength', {
+        message: 'Must be between 0 and 10 in subjective mode',
+      });
+      return false;
+    }
+    return true;
+  };
+
   // Handler for regular save button
   const handleSave = form.handleSubmit(data => {
+    if (!validateSubjectiveStrength(data)) return;
     if (mode === 'batch' && onSubmitSuccess) {
       // In batch mode, call the custom success handler
       onSubmitSuccess(data);
@@ -195,6 +228,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
   // Handler for save and complete button
   const handleSaveAndComplete = form.handleSubmit(data => {
+    if (!validateSubjectiveStrength(data)) return;
     if (mode === 'batch' && onSubmitSuccess) {
       onSubmitSuccess(data);
     } else {
@@ -209,7 +243,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const isCompleted = inspection?.status === InspectionStatus.COMPLETED;
   const { isSubmitting } = form.formState;
   return (
-    <div className={'max-w-4xl ml-4'}>
+    <div className={'max-w-4xl mx-auto px-4'}>
       <h1 className={'text-lg font-bold'}>
         {isEdit ? t('inspection:form.editInspection') : t('inspection:form.newInspection')}
       </h1>
@@ -338,11 +372,22 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               <WeatherSection />
 
               <hr className={'border-t border-border'} />
-              <ObservationsSection />
+              <ObservationsSection
+                broodFrames={isSubjective ? null : totalFrames}
+                broodBoxCount={isSubjective ? null : broodBoxCount}
+                isSubjective={isSubjective}
+              />
               <hr className={'border-t border-border'} />
-              <ScorePreviewSection />
-              <hr className={'border-t border-border'} />
-              <ActionsSection />
+
+              {!isSubjective && (
+                <>
+                  <FrameCountSection totalFrames={totalFrames} />
+                  <hr className={'border-t border-border'} />
+                  <ScorePreviewSection />
+                  <hr className={'border-t border-border'} />
+                </>
+              )}
+              <ActionsSection hiveBoxes={selectedHive?.boxes ?? []} hiveId={selectedHive?.id} />
               <hr className={'border-t border-border'} />
               <NotesSection />
             </>
