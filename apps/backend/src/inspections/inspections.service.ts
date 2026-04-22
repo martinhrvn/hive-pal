@@ -681,7 +681,7 @@ export class InspectionsService {
       swarmCells: observationsByType.swarm_cells?.booleanValue ?? null,
       supersedureCells:
         observationsByType.supersedure_cells?.booleanValue ?? null,
-      queenSeen: observationsByType.queen_seen?.booleanValue ?? false,
+      queenSeen: observationsByType.queen_seen?.booleanValue ?? null,
 
       // Frame count observations
       totalFrames: observationsByType.total_frames?.numericValue ?? null,
