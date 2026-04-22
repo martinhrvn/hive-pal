@@ -38,13 +38,17 @@
         "stores": "Залихе",
         "queen": "Матица",
         "title": "Оцене прегледа",
-        "warnings": "Упозорења"
+        "warnings": "Упозорења",
+        "override": "Препиши",
+        "resetToCalculated": "Ресетуј на израчунато",
+        "autoCalculated": "Аутоматски израчунато",
+        "overridden": "Прилагођено"
     },
     "form": {
         "selectHive": "Изабери кошницу",
         "pickDate": "Изабери датум",
-    "allDay": "All day",
-    "specificTime": "Set specific time",
+        "allDay": "All day",
+        "specificTime": "Set specific time",
         "newInspection": "Нови преглед",
         "editInspection": "Измени преглед",
         "hive": "Кошница",

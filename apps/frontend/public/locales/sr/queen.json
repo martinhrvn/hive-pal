@@ -49,7 +49,8 @@
         "addQueen": "Додај Матицу",
         "editQueen": "Измени Матицу",
         "viewDetails": "Прикажи детаље",
-        "manageQueen": "Управљај Матицом"
+        "manageQueen": "Управљај Матицом",
+        "transferQueen": "Премести матицу"
     },
     "form": {
         "selectHive": "Изабери кошницу",
