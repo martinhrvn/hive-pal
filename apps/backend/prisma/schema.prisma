@@ -96,6 +96,8 @@ model Hive {
   positionRow      Int?         // Row position in apiary layout (0-based)
   positionCol      Int?         // Column position within row (0-based)
   settings         Json?        // JSON field for hive-specific settings (feeding, inspection frequency, etc.)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt @default(now())
   queens           Queen[]
   boxes            Box[]
   inspections      Inspection[]

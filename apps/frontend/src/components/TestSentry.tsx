@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import * as Sentry from '@sentry/react';
+import { safeJsonParse } from '@/utils/safe-json-parse';
+import { z } from 'zod';
 
 export function TestSentry() {
   const throwError = () => {
@@ -13,7 +15,10 @@ export function TestSentry() {
 
   const captureException = () => {
     try {
-      const result = JSON.parse('invalid json');
+      const result = safeJsonParse('invalid json', z.unknown(), 'Sentry test');
+      if (result === null) {
+        throw new Error('JSON parsing intentionally failed for Sentry test');
+      }
       console.log(result);
     } catch (error) {
       Sentry.captureException(error);

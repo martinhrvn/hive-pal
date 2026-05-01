@@ -2,7 +2,7 @@ import { z } from 'zod';
 import {
   createInspectionSchema,
   ActionType,
-  observationSchema,
+  observationBaseSchema,
 } from 'shared-schemas';
 import type { Box } from 'shared-schemas';
 
@@ -107,7 +107,7 @@ export const scoreFormSchema = z.object({
 export const subjectiveInspectionSchema = inspectionFormSchema.extend({
   actions: z.array(actionSchema).optional(),
   score: scoreFormSchema.optional(),
-  observations: observationSchema
+  observations: observationBaseSchema
     .extend({
       strength: z.number().int().min(0).max(10).nullish(),
     })
@@ -120,7 +120,7 @@ export const inspectionSchema = inspectionFormSchema.extend({
   score: scoreFormSchema.optional(),
 });
 
-export type ObservationFormData = z.infer<typeof observationSchema>;
+export type ObservationFormData = z.infer<typeof observationBaseSchema>;
 export type FeedingActionData = z.infer<typeof feedingActionSchema>;
 export type TreatmentActionData = z.infer<typeof treatmentActionSchema>;
 export type FramesActionData = z.infer<typeof framesActionSchema>;

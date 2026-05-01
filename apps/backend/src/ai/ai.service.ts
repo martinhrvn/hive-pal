@@ -2,8 +2,8 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import FormData from 'form-data';
 import axios from 'axios';
+const FormData = require('form-data');
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 

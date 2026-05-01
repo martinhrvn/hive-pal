@@ -76,3 +76,8 @@ packages/prisma/node_modules/.prisma
 .openspec/
 .codex/
 .github/
+
+#Dev tool directories
+openspec
+apps/backend/TEST_REPORT_GROUP_2.md
+.claude

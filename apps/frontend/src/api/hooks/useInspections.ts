@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import axios from 'axios';
 import { apiClient } from '../client';
 import {
   ActionType,
@@ -12,12 +13,14 @@ import {
   InspectionStatus,
   UpdateInspection,
   UpdateInspectionResponse,
+  HiveDetailResponse,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import type { InspectionFormData, BoxConfigurationActionData } from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useNavigate } from 'react-router-dom';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { useUpdateHiveBoxes } from './useHives';
+import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
 
 // Query keys
 const INSPECTIONS_KEYS = {
@@ -203,8 +206,10 @@ export const useUpsertInspection = (
   const { mutateAsync: createInspectionMutation } = useCreateInspection();
   const { mutateAsync: updateInspectionMutation } = useUpdateInspection();
   const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
+  const { addPendingUpdate, updateStatus, removePendingUpdate } = usePendingBoxUpdatesStore();
   const getUrl = (inspectionId?: string) => `/inspections/${inspectionId}`;
   const navigate = useNavigate();
+
   return async (data: InspectionFormData, status?: InspectionStatus) => {
     // Extract box configuration action so we can apply hive update on success
     const boxConfigAction = data.actions?.find(a => a.type === 'BOX_CONFIGURATION') as
@@ -301,37 +306,117 @@ export const useUpsertInspection = (
       score: scoreOverride,
     };
 
-    const applyBoxUpdate = async () => {
+    /**
+     * Performs the box update with optimistic pending state tracking.
+     * Adds a pending update to the store before attempting the API call,
+     * allowing tracking even if the user navigates away.
+     */
+    const performBoxUpdate = async (inspectionRes: CreateInspectionResponse | UpdateInspectionResponse) => {
+      // Check if there are box changes to apply
       if (
-        boxConfigAction?.updatedBoxes &&
-        boxConfigAction.updatedBoxes.length > 0 &&
-        data.hiveId
+        !boxConfigAction?.updatedBoxes ||
+        boxConfigAction.updatedBoxes.length === 0 ||
+        !data.hiveId
       ) {
-        await updateHiveBoxes({
-          id: data.hiveId,
-          boxes: boxConfigAction.updatedBoxes.map(box => ({
-            ...box,
-            id: box.id?.startsWith('temp-') ? undefined : box.id,
-          })),
-        });
+        return; // No box changes, skip box update
       }
-    };
 
-    const tryApplyBoxUpdate = async () => {
       try {
-        await applyBoxUpdate();
-      } catch {
-        toast.error(
-          'Inspection saved, but box configuration could not be updated. Please re-save box configuration.',
-        );
+        // Transform the box payload: strip temp IDs and prepare for API
+        const transformedBoxes = boxConfigAction.updatedBoxes.map(box => ({
+          ...box,
+          id: box.id?.startsWith('temp-') ? undefined : box.id,
+        }));
+
+        // Fetch current hive data to get updatedAt timestamp for staleness detection
+        // CRITICAL #3: Fail the entire box update if hive fetch fails - don't use fallback timestamp
+        let hiveLastModifiedAt: string;
+        try {
+          const hiveResponse = await apiClient.get<HiveDetailResponse>(
+            `/api/hives/${data.hiveId}`,
+          );
+          hiveLastModifiedAt = hiveResponse.data.updatedAt;
+        } catch (hiveError) {
+          // If we can't fetch hive data, abort box update and show warning
+          const errorMessage = 'Failed to fetch hive data for staleness detection. Box update skipped.';
+          toast.warning(
+            `Inspection saved, but box configuration could not be updated: ${errorMessage}`,
+          );
+          return; // Exit early, no pending update added
+        }
+
+        // Add pending update to store with 'in-progress' status BEFORE attempting box update
+        // This ensures the pending state is tracked even if user navigates away
+        addPendingUpdate({
+          inspectionId: inspectionRes.id,
+          hiveId: data.hiveId,
+          boxPayload: transformedBoxes,
+          hiveLastModifiedAt,
+          status: 'in-progress',
+        });
+
+        // Attempt the box update
+        try {
+          await updateHiveBoxes({
+            id: data.hiveId,
+            boxes: transformedBoxes,
+          });
+
+          // On success, remove the pending update from store
+          removePendingUpdate(inspectionRes.id);
+        } catch (boxUpdateError) {
+          // On failure, update the pending update status to 'failed' with error message
+          // HIGH #6: Extract actual API error message from AxiosError
+          let errorMessage = 'Failed to update box configuration. Please try again.';
+
+          if (axios.isAxiosError(boxUpdateError) && boxUpdateError.response?.data?.message) {
+            errorMessage = boxUpdateError.response.data.message;
+          } else if (boxUpdateError instanceof Error) {
+            errorMessage = boxUpdateError.message;
+          }
+
+          updateStatus(inspectionRes.id, 'failed', errorMessage);
+
+          // Show warning toast about the failure (banner will handle retry UI)
+          toast.warning(
+            `Inspection saved, but box configuration could not be updated: ${errorMessage}`,
+          );
+        }
+      } catch (unexpectedError) {
+        // MEDIUM #15: Handle unexpected errors and clean up stuck pending state
+        removePendingUpdate(inspectionRes.id);
+        console.error('[performBoxUpdate] Unexpected error:', unexpectedError);
+        toast.error('An unexpected error occurred during box update.');
       }
     };
 
-    if (!inspectionId) {
-      const res = await createInspectionMutation(formattedData);
-      await tryApplyBoxUpdate();
+    /**
+     * Handles post-save logic (showing success toast, performing box update, navigation)
+     * MEDIUM #11: Extract common logic to avoid duplication between create/update branches
+     */
+    const handlePostSave = async (res: CreateInspectionResponse | UpdateInspectionResponse) => {
+      // HIGH #5: Show appropriate success message based on whether box changes exist
+      // If there are box changes, show a simpler message since box update toast will follow
+      if (boxConfigAction?.updatedBoxes && boxConfigAction.updatedBoxes.length > 0) {
+        toast.success('Inspection saved');
+      } else {
+        toast.success('Inspection saved successfully');
+      }
+
+      // Perform box update in background (don't await, don't block navigation)
+      // CRITICAL #4: Add error logging for unhandled promise rejections
+      performBoxUpdate(res).catch((error) => {
+        console.error('[performBoxUpdate] Unhandled error in box update flow:', error);
+      });
+
       await options?.onBeforeNavigate?.(res.id);
       navigate(getUrl(res.id));
+    };
+
+    // Create or update the inspection, then perform box update in background
+    if (!inspectionId) {
+      const res = await createInspectionMutation(formattedData);
+      await handlePostSave(res);
     } else {
       const res = await updateInspectionMutation({
         id: inspectionId,
@@ -340,9 +425,7 @@ export const useUpsertInspection = (
           id: inspectionId,
         },
       });
-      await tryApplyBoxUpdate();
-      await options?.onBeforeNavigate?.(res.id);
-      navigate(getUrl(res.id));
+      await handlePostSave(res);
     }
   };
 };
