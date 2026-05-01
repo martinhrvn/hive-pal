@@ -29,10 +29,23 @@ import {
   AlertStatus,
   isVariantCompatible,
   calculateScores,
+  apiarySettingsSchema,
 } from 'shared-schemas';
+import { safeJsonParse } from '../utils/safe-json-parse';
+import { z } from 'zod';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Inject } from '@nestjs/common';
+
+function parseApiaryInspectionType(raw: unknown): 'subjective' | 'data_driven' {
+  const result = apiarySettingsSchema.safeParse(raw);
+  return result.success ? (result.data?.inspectionType ?? 'data_driven') : 'data_driven';
+}
 
 @Injectable()
 export class HiveService {
+  private readonly stringArraySchema = z.array(z.string());
+
   constructor(
     private prisma: PrismaService,
     private inspectionService: InspectionsService,
@@ -40,8 +53,13 @@ export class HiveService {
     private fileUpload: FileUploadService,
     private logger: CustomLoggerService,
     private eventEmitter: EventEmitter2,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly winstonLogger: Logger,
   ) {
     this.logger.setContext('HiveService');
+  }
+
+  private parseJsonArray(raw: string | null | undefined): string[] {
+    return safeJsonParse(raw, this.stringArraySchema, this.winstonLogger, 'box configuration') ?? [];
   }
 
   private resolveStatusFilter(filter: HiveFilter): HiveStatus | undefined {
@@ -163,12 +181,18 @@ export class HiveService {
         },
         select: {
           date: true,
+          overallScore: true,
+          scoreWarnings: true,
+          observations: {
+            where: { type: { in: ['strength', 'total_frames'] } },
+            select: { type: true, numericValue: true },
+          },
         },
         orderBy: {
           date: 'desc' as const,
         },
-        take: 1,
-      } as const,
+        take: 2,
+      },
       queens: {
         where: {
           status: 'ACTIVE' as const,
@@ -184,6 +208,11 @@ export class HiveService {
         },
         orderBy: {
           createdAt: 'desc' as const,
+        },
+      },
+      apiary: {
+        select: {
+          settings: true,
         },
       },
       ...(filter.includeBoxes && {
@@ -220,6 +249,7 @@ export class HiveService {
 
     return Promise.all(
       hives.map(async (hive): Promise<HiveResponse> => {
+        const inspectionType = parseApiaryInspectionType(hive.apiary?.settings);
         const featurePhotoFields = await this.mapFeaturePhotoUrl(
           hive.featurePhoto,
         );
@@ -228,9 +258,15 @@ export class HiveService {
           name: hive.name,
           apiaryId: hive.apiaryId || undefined,
           status: hive.status as HiveStatus,
+          updatedAt: hive.updatedAt.toISOString(),
           notes: hive.notes || undefined,
           installationDate: hive.installationDate?.toISOString(),
           lastInspectionDate: hive.inspections[0]?.date?.toISOString(),
+          lastInspectionStrength: hive.inspections[0]?.observations?.find(o => o.type === 'strength')?.numericValue ?? null,
+          lastInspectionTotalFrames: hive.inspections[0]?.observations?.find(o => o.type === 'total_frames')?.numericValue ?? null,
+          lastInspectionOverallScore: hive.inspections[0]?.overallScore ?? null,
+          previousInspectionStrength: hive.inspections[1]?.observations?.find(o => o.type === 'strength')?.numericValue ?? null,
+          lastInspectionWarnings: this.parseJsonArray(hive.inspections[0]?.scoreWarnings),
           positionRow: hive.positionRow ?? undefined,
           positionCol: hive.positionCol ?? undefined,
           settings: (hive.settings as HiveSettings) || undefined,
@@ -302,7 +338,7 @@ export class HiveService {
         },
       },
       include: {
-        apiary: true,
+        apiary: { select: { settings: true } },
         queens: {
           where: {
             status: 'ACTIVE',
@@ -358,41 +394,40 @@ export class HiveService {
     // Get the latest completed inspection (filtered at query level)
     const latestCompletedInspection = hive.inspections[0] ?? null;
 
-    const metrics = this.inspectionService.mapObservationsToDto(
-      latestCompletedInspection?.observations ?? [],
-    );
-    // Always calculate from observations, then overlay any stored overrides
-    const calculated = calculateScores(metrics);
-    const insp = latestCompletedInspection as Record<string, unknown> | null;
-    const storedOverall = insp?.['overallScore'] as number | null | undefined;
-    const storedPopulation = insp?.['populationScore'] as
-      | number
-      | null
-      | undefined;
-    const storedStores = insp?.['storesScore'] as number | null | undefined;
-    const storedQueen = insp?.['queenScore'] as number | null | undefined;
-    const storedWarnings = insp?.['scoreWarnings'] as string | null | undefined;
-    const storedConfidence = insp?.['scoreConfidence'] as
-      | number
-      | null
-      | undefined;
+    const inspectionType = parseApiaryInspectionType(hive.apiary?.settings);
+    const score = (() => {
+      if (inspectionType === 'subjective' || !latestCompletedInspection) {
+        return undefined;
+      }
 
-    const score =
-      storedOverall != null ||
-      storedPopulation != null ||
-      storedStores != null ||
-      storedQueen != null
+      const metrics = this.inspectionService.mapObservationsToDto(
+        latestCompletedInspection.observations,
+      );
+      const calculated = calculateScores(metrics);
+      const insp = latestCompletedInspection as Record<string, unknown>;
+      const storedOverall = insp['overallScore'] as number | null | undefined;
+      const storedPopulation = insp['populationScore'] as number | null | undefined;
+      const storedStores = insp['storesScore'] as number | null | undefined;
+      const storedQueen = insp['queenScore'] as number | null | undefined;
+      const storedWarnings = insp['scoreWarnings'] as string | null | undefined;
+      const storedConfidence = insp['scoreConfidence'] as number | null | undefined;
+
+      return storedOverall != null ||
+        storedPopulation != null ||
+        storedStores != null ||
+        storedQueen != null
         ? {
             overallScore: storedOverall ?? calculated.overallScore,
             populationScore: storedPopulation ?? calculated.populationScore,
             storesScore: storedStores ?? calculated.storesScore,
             queenScore: storedQueen ?? calculated.queenScore,
-            warnings: storedWarnings
-              ? (JSON.parse(storedWarnings) as string[])
+            warnings: this.parseJsonArray(storedWarnings).length > 0
+              ? this.parseJsonArray(storedWarnings)
               : calculated.warnings,
             confidence: storedConfidence ?? calculated.confidence,
           }
         : calculated;
+    })();
     const featurePhotoFields = await this.mapFeaturePhotoUrl(hive.featurePhoto);
 
     return {
@@ -400,6 +435,7 @@ export class HiveService {
       name: hive.name,
       apiaryId: hive.apiaryId || undefined,
       status: hive.status as HiveStatus,
+      updatedAt: hive.updatedAt.toISOString(),
       notes: hive.notes || undefined,
       installationDate:
         typeof hive.installationDate === 'string'
@@ -407,6 +443,7 @@ export class HiveService {
           : hive.installationDate?.toISOString(),
       lastInspectionDate: latestCompletedInspection?.date?.toISOString(),
       settings: (hive.settings as HiveSettings) || undefined,
+      inspectionType: parseApiaryInspectionType(hive.apiary?.settings),
       ...featurePhotoFields,
       boxes: hive.boxes.map((box) => ({
         id: box.id,
@@ -425,7 +462,14 @@ export class HiveService {
             : undefined,
         winterized: box.winterized,
       })),
-      hiveScore: score,
+      hiveScore: score ?? {
+        overallScore: null,
+        populationScore: null,
+        storesScore: null,
+        queenScore: null,
+        warnings: [],
+        confidence: 0,
+      },
       activeQueen: activeQueen
         ? {
             id: activeQueen.id,
@@ -538,6 +582,7 @@ export class HiveService {
     return {
       id: updatedHive.id,
       name: updatedHive.name,
+      updatedAt: updatedHive.updatedAt.toISOString(),
       apiaryId: updatedHive.apiaryId || undefined,
       status: updatedHive.status as HiveStatus,
       notes: updatedHive.notes || undefined,
@@ -793,6 +838,7 @@ export class HiveService {
     return {
       id: updatedHive.id,
       name: updatedHive.name,
+      updatedAt: updatedHive.updatedAt.toISOString(),
       apiaryId: updatedHive.apiaryId || undefined,
       status: updatedHive.status as HiveStatus,
       notes: updatedHive.notes || undefined,

@@ -12,6 +12,7 @@ import { AiBadge } from './ai-badge';
 import { AiSectionPreview } from './ai-section-preview';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 import { cn } from '@/lib/utils';
+import { getModeSpecificObservations } from './mode-behavior';
 
 type ScoreKey =
   | 'overallScore'
@@ -20,6 +21,7 @@ type ScoreKey =
   | 'queenScore';
 
 type ScorePreviewSectionProps = {
+  totalFrames?: number | null;
   isAiSuggested?: (field: keyof InspectionFormData) => boolean;
   aiMergeState?: AiMergeState | null;
   onAcceptSuggestion?: (field: keyof InspectionFormData) => void;
@@ -220,6 +222,7 @@ const ScoreItem: React.FC<{
 };
 
 export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
+  totalFrames,
   isAiSuggested,
   aiMergeState,
   onAcceptSuggestion,
@@ -231,8 +234,13 @@ export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
   const observations = useWatch({ name: 'observations', control });
   const scoreForm = useWatch({ name: 'score', control });
 
+  const dataDrivenObservations = useMemo(
+    () => getModeSpecificObservations(observations, false, totalFrames),
+    [observations, totalFrames],
+  );
+
   const calculated: ScoreResult = useMemo(() => {
-    if (!observations) {
+    if (!dataDrivenObservations) {
       return {
         overallScore: null,
         populationScore: null,
@@ -243,8 +251,8 @@ export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
       };
     }
 
-    return calculateScores(observations);
-  }, [observations]);
+    return calculateScores(dataDrivenObservations);
+  }, [dataDrivenObservations]);
 
   const hasAnyScore =
     calculated.overallScore !== null ||

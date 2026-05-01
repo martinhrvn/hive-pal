@@ -7,6 +7,14 @@ export function getRandomApiary({
   latitude = 40.7128, // New York latitude
   longitude = -74.006, // New York longitude
   userId = uuid(),
+  settings,
+}: {
+  name?: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+  userId?: string;
+  settings?: Prisma.InputJsonValue;
 } = {}): Prisma.ApiaryUncheckedCreateInput {
   return {
     id: uuid(),
@@ -15,5 +23,6 @@ export function getRandomApiary({
     latitude,
     longitude,
     userId,
+    settings,
   };
 }

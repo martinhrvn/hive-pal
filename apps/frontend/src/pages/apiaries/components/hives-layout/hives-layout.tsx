@@ -9,14 +9,19 @@ import { useHivesWithBoxes, useUpdateHive } from '@/api/hooks';
 
 interface HivesLayoutProps {
   apiaryId: string;
+  inspectionType?: 'subjective' | 'data_driven';
 }
 
 const INITIAL_ROWS = 5;
 const INITIAL_COLS = 5;
 
-export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
+export const HivesLayout = ({
+  apiaryId,
+  inspectionType = 'data_driven',
+}: HivesLayoutProps) => {
   const { t } = useTranslation('hive');
   const { data: rawHives = [], refetch } = useHivesWithBoxes({ apiaryId, includeInactive: true });
+  const isSubjective = inspectionType === 'subjective';
   // Only ARCHIVED hives are hidden from the grid — all other statuses remain placeable
   const allHives = rawHives.filter((h) => h.status !== 'ARCHIVED');
   const updateHiveMutation = useUpdateHive();
@@ -155,7 +160,11 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
           }}
           onDragEnd={handleDragEnd}
         >
-          <HiveCard hive={hive} isDragging={draggedHive?.id === hive.id} />
+          <HiveCard
+            hive={hive}
+            isSubjective={isSubjective}
+            isDragging={draggedHive?.id === hive.id}
+          />
           <Button
             variant="ghost"
             size="icon"
@@ -226,6 +235,7 @@ export const HivesLayout = ({ apiaryId }: HivesLayoutProps) => {
               >
                 <HiveCard
                   hive={hive}
+                  isSubjective={isSubjective}
                   isDragging={draggedHive?.id === hive.id}
                 />
               </div>

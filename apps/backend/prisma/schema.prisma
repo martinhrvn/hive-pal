@@ -79,6 +79,7 @@ model Apiary {
   featurePhoto          Photo?              @relation("ApiaryFeaturePhoto", fields: [featurePhotoId], references: [id], onDelete: SetNull)
   members               ApiaryMember[]
   invites               ApiaryInvite[]
+  settings              Json?
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -346,6 +347,7 @@ model BoxConfigurationAction {
   framesRemoved Int    @default(0) // Total number of frames removed
   totalBoxes    Int    // Total boxes after the change
   totalFrames   Int    // Total frames after the change
+  boxes         Json?  // Per-box summary: [{type, frameCount}]
 }
 
 model MaintenanceAction {

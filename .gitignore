@@ -1,3 +1,5 @@
+handover.md
+
 # Dependencies
 node_modules
 .pnp
@@ -68,4 +70,9 @@ packages/prisma/node_modules/.prisma
 # Local development SSL certificates
 *.pem
 .direnv
+
 /apps/backend/uploads
+.opencode/
+.openspec/
+.codex/
+.github/

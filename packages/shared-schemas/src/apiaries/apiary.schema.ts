@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+export const inspectionTypeEnum = z.enum(['subjective', 'data_driven']);
+export type InspectionType = z.infer<typeof inspectionTypeEnum>;
+
+export const apiarySettingsSchema = z
+  .object({
+    inspectionType: inspectionTypeEnum.default('data_driven'),
+  })
+  .optional();
+export type ApiarySettings = z.infer<typeof apiarySettingsSchema>;
+
 // Base schema for creating apiaries
 export const createApiarySchema = z.object({
   name: z.string(),
@@ -7,6 +17,7 @@ export const createApiarySchema = z.object({
   latitude: z.number().nullish(),
   longitude: z.number().nullish(),
   featurePhotoId: z.string().uuid().nullish(),
+  settings: apiarySettingsSchema,
 });
 
 // Schema for updating apiaries
@@ -21,6 +32,7 @@ export const apiaryResponseSchema = createApiarySchema.extend({
   featurePhotoUrl: z.string().nullish(),
   role: apiaryRoleEnum.optional(),
   isShared: z.boolean().optional(),
+  settings: apiarySettingsSchema,
 });
 
 // Schema for apiary map point (admin view)

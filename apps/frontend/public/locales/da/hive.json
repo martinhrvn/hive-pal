@@ -126,6 +126,8 @@
         "lastInspected": "Senest inspiceret {{date}}",
         "noInspection": "Endnu ikke inspiceret",
         "score": "Score:",
+        "strength": "",
+        "inspectionWarnings": "",
         "feeding": "Foder:"
     },
     "scores": {
