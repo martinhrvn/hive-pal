@@ -11,3 +11,4 @@ export * from './weather-card';
 export * from './inspection-status-card';
 export * from './scheduled-inspection-card';
 export * from './reschedule-dialog';
+export * from './pending-box-update-banner';

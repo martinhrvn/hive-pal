@@ -2,21 +2,26 @@
  * A utility to decode JWT tokens
  */
 
-interface DecodedToken {
-  sub: string;
-  email: string;
-  role: string;
-  passwordChangeRequired: boolean;
-  iat: number;
-  exp: number;
-}
+import { safeJsonParse } from './safe-json-parse';
+import { z } from 'zod';
+
+const jwtPayloadSchema = z.object({
+  exp: z.number(),
+  iat: z.number(),
+  sub: z.string(),
+  email: z.string().email(),
+  role: z.string().optional(),
+  passwordChangeRequired: z.boolean().optional(),
+});
+
+export type JwtPayload = z.infer<typeof jwtPayloadSchema>;
 
 /**
  * Decodes a JWT token to access its payload
  * @param token The JWT token to decode
  * @returns The decoded token payload or null if invalid
  */
-export function decodeJwt(token: string): DecodedToken | null {
+export function decodeJwt(token: string): JwtPayload | null {
   try {
     // JWT token has three parts separated by dots
     const parts = token.split('.');
@@ -28,7 +33,16 @@ export function decodeJwt(token: string): DecodedToken | null {
     const payload = parts[1];
 
     // Base64url decode and parse as JSON
-    const decodedPayload = JSON.parse(decodeBase64Url(payload));
+    const decodedPayload = safeJsonParse(
+      decodeBase64Url(payload),
+      jwtPayloadSchema,
+      'JWT payload'
+    );
+
+    if (!decodedPayload) {
+      console.error('Failed to decode JWT payload');
+      return null;
+    }
 
     return decodedPayload;
   } catch (error) {

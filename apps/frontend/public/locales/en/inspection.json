@@ -416,12 +416,26 @@
   "edit": {
     "completingFrom": "Completing scheduled inspection from {{date}}",
     "markedCompleted": "This inspection will be marked as completed when you save your changes."
-  },
-  "dashboard": {
-    "title": "Inspection Status",
-    "overdue": "Overdue",
-    "dueToday": "Due Today",
-    "overdueCount": "{{count}} inspection{{count, plural, one {} other{s}}} overdue",
-    "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} due today"
-  }
-}
+   },
+   "dashboard": {
+     "title": "Inspection Status",
+     "overdue": "Overdue",
+     "dueToday": "Due Today",
+     "overdueCount": "{{count}} inspection{{count, plural, one {} other{s}}} overdue",
+     "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} due today"
+   },
+   "pendingBoxUpdate": {
+     "updatingTitle": "Updating box configuration",
+     "updatingDescription": "Your inspection has been saved. The box configuration is being updated in the background.",
+     "failedTitle": "Box configuration update failed",
+     "failedDescription": "Failed to update the box configuration. Please retry or dismiss this message.",
+     "retry": "Retry",
+     "retrySuccess": "Box configuration updated successfully",
+     "retryFailed": "Retry request failed. Please try again.",
+     "retryDisabled": "Retries disabled (5 attempts reached)",
+     "dismiss": "Dismiss",
+     "stalePayload": "The hive configuration has changed. The box update cannot be retried.",
+     "stalePayloadMessage": "The hive configuration has changed since this update failed. Please refresh the page to see the current state.",
+     "maxRetriesReached": "Maximum retry attempts reached. Please contact support if the issue persists."
+   }
+ }
