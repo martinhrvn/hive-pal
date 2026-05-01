@@ -68,6 +68,13 @@
   },
   "form": {
     "namePlaceholder": "Nome apiario",
-    "locationPlaceholder": "Descrizione della posizione"
+    "locationPlaceholder": "Descrizione della posizione",
+    "inspectionType": {
+      "label": "",
+      "placeholder": "",
+      "dataDriven": "",
+      "subjective": "",
+      "description": ""
+    }
   }
 }

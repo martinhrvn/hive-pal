@@ -4,8 +4,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Area,
-  AreaChart,
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
@@ -34,13 +32,18 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
   hiveId,
   period,
 }) => {
-  const inspectionData = useInspectionChartData(hiveId, period, inspection => ({
-    date: format(parseISO(inspection.date), 'MMM dd'),
-    overallScore: inspection.score?.overallScore || 0,
-    populationScore: inspection.score?.populationScore || 0,
-    storesScore: inspection.score?.storesScore || 0,
-    queenScore: inspection.score?.queenScore || 0,
-  }));
+  const inspectionData = useInspectionChartData(
+    hiveId,
+    period,
+    inspection => ({
+      date: format(parseISO(inspection.date), 'MMM dd'),
+      overallScore: inspection.score?.overallScore ?? null,
+      populationScore: inspection.score?.populationScore ?? null,
+      storesScore: inspection.score?.storesScore ?? null,
+      queenScore: inspection.score?.queenScore ?? null,
+    }),
+    inspection => inspection.score != null,
+  );
 
   if (!hiveId || inspectionData.length === 0) {
     return (
@@ -80,45 +83,41 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
               },
             }}
           >
-            <AreaChart data={inspectionData}>
+            <LineChart data={inspectionData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis domain={[0, 10]} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <ChartLegend content={<ChartLegendContent />} />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="overallScore"
-                stackId="1"
                 stroke="var(--color-overallScore)"
-                fill="var(--color-overallScore)"
-                fillOpacity={0.6}
+                strokeWidth={2}
+                connectNulls
               />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="populationScore"
-                stackId="1"
                 stroke="var(--color-populationScore)"
-                fill="var(--color-populationScore)"
-                fillOpacity={0.6}
+                strokeWidth={2}
+                connectNulls
               />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="storesScore"
-                stackId="1"
                 stroke="var(--color-storesScore)"
-                fill="var(--color-storesScore)"
-                fillOpacity={0.6}
+                strokeWidth={2}
+                connectNulls
               />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="queenScore"
-                stackId="1"
                 stroke="var(--color-queenScore)"
-                fill="var(--color-queenScore)"
-                fillOpacity={0.6}
+                strokeWidth={2}
+                connectNulls
               />
-            </AreaChart>
+            </LineChart>
           </ChartContainer>
         </CardContent>
       </Card>

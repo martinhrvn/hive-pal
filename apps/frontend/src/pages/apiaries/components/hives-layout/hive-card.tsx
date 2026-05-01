@@ -6,11 +6,17 @@ import { AlertsPopover } from '@/components/alerts';
 
 interface HiveCardProps {
   hive: HiveWithBoxesResponse;
+  isSubjective?: boolean;
   isDragging?: boolean;
   className?: string;
 }
 
-export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
+export const HiveCard = ({
+  hive,
+  isSubjective = false,
+  isDragging,
+  className,
+}: HiveCardProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
@@ -79,12 +85,34 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
             )}
             <h4 className="font-medium text-sm truncate">{hive.name}</h4>
           </div>
-          <div
-            className={cn(
-              'w-2 h-2 rounded-full flex-shrink-0',
-              getStatusColor(hive.status),
-            )}
-          />
+          {isSubjective ? (
+            hive.lastInspectionOverallScore == null ? (
+              <div
+                className={cn(
+                  'w-2 h-2 rounded-full flex-shrink-0',
+                  getStatusColor(hive.status),
+                )}
+              />
+            ) : (
+              <span className="text-xs font-semibold tabular-nums text-muted-foreground flex-shrink-0">
+                {hive.lastInspectionOverallScore.toFixed(1)}/10
+              </span>
+            )
+          ) : hive.lastInspectionStrength == null ? (
+            <div
+              className={cn(
+                'w-2 h-2 rounded-full flex-shrink-0',
+                getStatusColor(hive.status),
+              )}
+            />
+          ) : (
+            <span className="text-xs font-semibold tabular-nums text-muted-foreground flex-shrink-0">
+              {hive.lastInspectionStrength}
+              {hive.lastInspectionTotalFrames != null && (
+                <span className="font-normal">/{hive.lastInspectionTotalFrames}</span>
+              )}
+            </span>
+          )}
         </div>
 
         {hive.lastInspectionDate && (

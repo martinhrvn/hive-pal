@@ -91,6 +91,8 @@
     "lastInspected": "Posledná prehliadka {{date}}",
     "noInspection": "Zatiaľ žiadna prehliadka",
     "score": "Skóre:",
+    "strength": "",
+    "inspectionWarnings": "",
     "feeding": "Kŕmenie:"
   },
   "scores": {

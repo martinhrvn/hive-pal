@@ -85,6 +85,13 @@
   },
   "form": {
     "namePlaceholder": "Názov včelnice",
-    "locationPlaceholder": "Popis polohy"
+    "locationPlaceholder": "Popis polohy",
+    "inspectionType": {
+      "label": "",
+      "placeholder": "",
+      "dataDriven": "",
+      "subjective": "",
+      "description": ""
+    }
   }
 }

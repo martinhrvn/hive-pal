@@ -85,6 +85,13 @@
     },
     "form": {
         "namePlaceholder": "Name des Bienenstands",
-        "locationPlaceholder": "Standortbeschreibung"
+        "locationPlaceholder": "Standortbeschreibung",
+        "inspectionType": {
+            "label": "",
+            "placeholder": "",
+            "dataDriven": "",
+            "subjective": "",
+            "description": ""
+        }
     }
 }

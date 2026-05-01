@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 interface HiveRowProps {
   rowIndex: number;
   hives: HiveWithBoxesResponse[];
+  isSubjective?: boolean;
   onRemoveRow?: (rowIndex: number) => void;
   onDropHive?: (hiveId: string, rowIndex: number, colIndex: number) => void;
   onDragStart?: (hive: HiveWithBoxesResponse) => void;
@@ -19,6 +20,7 @@ interface HiveRowProps {
 export const HiveRow = ({
   rowIndex,
   hives,
+  isSubjective = false,
   onRemoveRow,
   onDropHive,
   onDragStart,
@@ -81,7 +83,7 @@ export const HiveRow = ({
             onDragStart={e => handleDragStart(e, hive)}
             onDragEnd={handleDragEnd}
           >
-            <HiveCard hive={hive} />
+            <HiveCard hive={hive} isSubjective={isSubjective} />
           </div>
         ))}
 
