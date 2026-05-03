@@ -1,15 +1,13 @@
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
-import { ChartCard } from './chart-card';
+import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
-import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
 
 interface StoresChartProps {
@@ -28,32 +26,26 @@ function hasStoresData(inspection: InspectionResponse): boolean {
 }
 
 export const StoresChart: React.FC<StoresChartProps> = ({ hiveId, period }) => {
-  const chartData = useInspectionChartData(
-    hiveId,
-    period,
-    inspection => ({
-      date: format(parseISO(inspection.date), 'MMM dd'),
-      pollen: inspection.observations?.pollenFrames ?? null,
-      nectar: inspection.observations?.nectarFrames ?? null,
-      honey: inspection.observations?.honeyFrames ?? null,
-    }),
-    hasStoresData,
-  );
-
-  if (!hiveId || chartData.length === 0) return null;
-
   return (
-    <ChartCard
+    <BaseInspectionChart
+      hiveId={hiveId}
+      period={period}
       title="Store Trend"
       description="Pollen, nectar, and honey frame counts over time"
+      config={{
+        pollen: { label: 'Pollen', color: '#22c55e' },
+        nectar: { label: 'Nectar', color: '#f97316' },
+        honey:  { label: 'Honey',  color: '#eab308' },
+      }}
+      dataTransformer={inspection => ({
+        date: format(parseISO(inspection.date), 'MMM dd'),
+        pollen: inspection.observations?.pollenFrames ?? null,
+        nectar: inspection.observations?.nectarFrames ?? null,
+        honey: inspection.observations?.honeyFrames ?? null,
+      })}
+      filterFn={hasStoresData}
     >
-      <ChartContainer
-        config={{
-          pollen: { label: 'Pollen', color: '#22c55e' },
-          nectar: { label: 'Nectar', color: '#f97316' },
-          honey:  { label: 'Honey',  color: '#eab308' },
-        }}
-      >
+      {(chartData) => (
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
@@ -64,7 +56,7 @@ export const StoresChart: React.FC<StoresChartProps> = ({ hiveId, period }) => {
           <Line type="monotone" dataKey="nectar" stroke="var(--color-nectar)" strokeWidth={2} connectNulls />
           <Line type="monotone" dataKey="honey"  stroke="var(--color-honey)"  strokeWidth={2} connectNulls />
         </LineChart>
-      </ChartContainer>
-    </ChartCard>
+      )}
+    </BaseInspectionChart>
   );
 };

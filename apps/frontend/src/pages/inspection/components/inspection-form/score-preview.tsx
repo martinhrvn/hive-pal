@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { calculateScores, ScoreResult } from 'shared-schemas';
-import { Pencil, RotateCcw, X, BarChart, CrownIcon } from 'lucide-react';
+import { Pencil, RotateCcw, BarChart, CrownIcon } from 'lucide-react';
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { IconJarLogoIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { AiSectionPreview } from './ai-section-preview';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 import { cn } from '@/lib/utils';
 import { getModeSpecificObservations } from './mode-behavior';
+import { RatingSlider } from '@/components/common/rating-slider';
 
 type ScoreKey =
   | 'overallScore'
@@ -77,9 +78,7 @@ const ScoreItem: React.FC<{
   onOverride: (value: number | null) => void;
   onClear: () => void;
 }> = ({ label, icon, calculatedValue, overrideValue, onOverride, onClear }) => {
-  const { t } = useTranslation('inspection');
   const [editing, setEditing] = useState(false);
-  const [hoveredValue, setHoveredValue] = useState<number | null>(null);
 
   const isOverridden =
     overrideValue !== undefined &&
@@ -136,87 +135,30 @@ const ScoreItem: React.FC<{
       </div>
 
       {editing && (
-        <div className="flex items-center">
-          <button
-            type="button"
-            className={`mr-2 flex h-8 w-8 items-center justify-center rounded-lg ${
-              ratingValue === 0
-                ? 'bg-gray-600 text-white dark:bg-gray-300 dark:text-gray-900'
-                : 'bg-gray-100 dark:bg-gray-800'
-            }`}
-            onClick={e => {
-              e.preventDefault();
-              onOverride(0);
-            }}
-            aria-label={t('observations.rateAs', { value: 0 })}
-          >
-            0
-          </button>
+         <div className="flex items-center gap-2">
+           <RatingSlider
+             value={ratingValue}
+             onChange={onOverride}
+             showZeroButton={true}
+             onClear={() => onOverride(null)}
+           />
 
-          <div className="grid h-8 grow grid-cols-10 gap-1">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => {
-              let color = 'bg-gray-200 dark:bg-gray-700';
-
-              if (hoveredValue != null && hoveredValue >= fullValue) {
-                color = 'bg-amber-200 dark:bg-amber-800';
-              } else if (ratingValue != null && ratingValue >= fullValue) {
-                color = 'bg-amber-300 dark:bg-amber-700';
-              }
-
-              return (
-                <button
-                  key={fullValue}
-                  type="button"
-                  className={`w-full rounded text-xs transition-colors duration-300 ${color} ${
-                    hoveredValue === fullValue
-                      ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-transparent'
-                  }`}
-                  onMouseEnter={() => setHoveredValue(fullValue)}
-                  onMouseLeave={() => setHoveredValue(null)}
-                  onClick={e => {
-                    e.preventDefault();
-                    onOverride(fullValue);
-                    setHoveredValue(null);
-                  }}
-                  aria-label={t('observations.rateAs', { value: fullValue })}
-                >
-                  {hoveredValue === fullValue && hoveredValue}
-                </button>
-              );
-            })}
-          </div>
-
-          <Input
-            type="number"
-            min={0}
-            max={10}
-            step={0.1}
-            className="ml-2 h-8 w-16 text-center text-sm"
-            value={ratingValue ?? ''}
-            onChange={e => {
-              const val =
-                e.target.value === '' ? null : parseFloat(e.target.value);
-              if (val !== null && (val < 0 || val > 10)) return;
-              onOverride(val !== null ? Math.round(val * 100) / 100 : null);
-            }}
-          />
-
-          <Button
-            variant="ghost"
-            type="button"
-            disabled={ratingValue == null}
-            className="ml-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
-            onClick={e => {
-              e.preventDefault();
-              onOverride(null);
-            }}
-            aria-label={t('observations.clearRating')}
-          >
-            <X size={16} />
-          </Button>
-        </div>
-      )}
+           <Input
+             type="number"
+             min={0}
+             max={10}
+             step={0.1}
+             className="h-8 w-16 text-center text-sm"
+             value={ratingValue ?? ''}
+             onChange={e => {
+               const val =
+                 e.target.value === '' ? null : parseFloat(e.target.value);
+               if (val !== null && (val < 0 || val > 10)) return;
+               onOverride(val !== null ? Math.round(val * 100) / 100 : null);
+             }}
+           />
+         </div>
+       )}
     </div>
   );
 };

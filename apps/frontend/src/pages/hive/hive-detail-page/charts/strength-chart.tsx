@@ -1,13 +1,11 @@
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { ChartCard } from './chart-card';
+import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
-import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
 
 interface StrengthChartProps {
@@ -23,28 +21,22 @@ export const StrengthChart: React.FC<StrengthChartProps> = ({
   hiveId,
   period,
 }) => {
-  const chartData = useInspectionChartData(
-    hiveId,
-    period,
-    inspection => ({
-      date: format(parseISO(inspection.date), 'MMM dd'),
-      strength: inspection.observations?.strength ?? null,
-    }),
-    hasStrengthData,
-  );
-
-  if (!hiveId || chartData.length === 0) return null;
-
   return (
-    <ChartCard
+    <BaseInspectionChart
+      hiveId={hiveId}
+      period={period}
       title="Colony Strength"
       description="Occupied frame-space count recorded over time"
+      config={{
+        strength: { label: 'Strength', color: '#6366f1' },
+      }}
+      dataTransformer={inspection => ({
+        date: format(parseISO(inspection.date), 'MMM dd'),
+        strength: inspection.observations?.strength ?? null,
+      })}
+      filterFn={hasStrengthData}
     >
-      <ChartContainer
-        config={{
-          strength: { label: 'Strength', color: '#6366f1' },
-        }}
-      >
+      {(chartData) => (
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
@@ -59,7 +51,7 @@ export const StrengthChart: React.FC<StrengthChartProps> = ({
             dot={{ r: 3 }}
           />
         </LineChart>
-      </ChartContainer>
-    </ChartCard>
+      )}
+    </BaseInspectionChart>
   );
 };

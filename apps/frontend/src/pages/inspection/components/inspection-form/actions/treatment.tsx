@@ -10,7 +10,6 @@ import { useState } from 'react';
 import NumericInputField from '@/components/common/numeric-input-field.tsx';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -26,6 +25,7 @@ import {
   TREATMENT_UNITS,
   TreatmentProductId,
 } from 'shared-schemas';
+import { ActionViewRenderer } from './action-view-container';
 
 export type TreatmentActionType = {
   type: 'TREATMENT';
@@ -253,48 +253,30 @@ export const TreatmentView: React.FC<TreatmentActionProps> = ({
 
   const displayValue = getDisplayValue();
 
+  const handleSave = (updatedAction: TreatmentActionType) => {
+    onSave(updatedAction);
+    setIsEditing(false);
+  };
+
   return isEditing ? (
     <TreatmentForm
       action={action}
-      onSave={a => {
-        onSave(a);
-        setIsEditing(false);
-      }}
+      onSave={handleSave}
       onRemove={onRemove}
     />
   ) : (
-    <div
-      className={'flex justify-between items-center w-full mt-5'}
-      data-test={TEST_SELECTORS.TREATMENT_VIEW}
-    >
-      <div className={'flex flex-col gap-2'}>
-        <h3 className="font-medium">{t('inspection:form.actions.treatment_section.title')}</h3>
-        <div className={'flex gap-5 text-sm'}>
+    <ActionViewRenderer
+      title={t('inspection:form.actions.treatment_section.title')}
+      badges={
+        <>
           <Badge>{treatmentLabel}</Badge>
           {displayValue && <span>{displayValue}</span>}
-        </div>
-        {action.notes && (
-          <div className="text-sm text-gray-600 mt-1">
-            <span>Notes: {action.notes}</span>
-          </div>
-        )}
-      </div>
-      <div>
-        <Button
-          variant={'ghost'}
-          aria-label={'Edit'}
-          onClick={() => setIsEditing(true)}
-        >
-          <EditIcon />
-        </Button>
-        <Button
-          variant={'ghost'}
-          aria-label={'Delete'}
-          onClick={() => onRemove('TREATMENT')}
-        >
-          <TrashIcon />
-        </Button>
-      </div>
-    </div>
+        </>
+      }
+      notes={action.notes}
+      onEdit={() => setIsEditing(true)}
+      onRemove={() => onRemove('TREATMENT')}
+      data-test={TEST_SELECTORS.TREATMENT_VIEW}
+    />
   );
 };

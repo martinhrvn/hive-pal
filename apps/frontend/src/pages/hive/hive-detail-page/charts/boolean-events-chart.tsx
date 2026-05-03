@@ -8,15 +8,13 @@ import {
   Cell,
 } from 'recharts';
 import {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
-import { ChartCard } from './chart-card';
+import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
-import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
 
 interface BooleanEventsChartProps {
@@ -45,49 +43,44 @@ export const BooleanEventsChart: React.FC<BooleanEventsChartProps> = ({
   hiveId,
   period,
 }) => {
-  const rawData = useInspectionChartData(
-    hiveId,
-    period,
-    inspection => ({
-      date: format(parseISO(inspection.date), 'MMM dd'),
-      queenSeen: inspection.observations?.queenSeen ?? null,
-      swarmCells: inspection.observations?.swarmCells ?? null,
-      supersedureCells: inspection.observations?.supersedureCells ?? null,
-    }),
-    hasEventData,
-  );
-
-  if (!hiveId || rawData.length === 0) return null;
-
-  // Build one scatter point per (date, event) where the event is true
-  const scatterByEvent: Record<EventKey, { date: string; y: number }[]> = {
-    queenSeen: [],
-    swarmCells: [],
-    supersedureCells: [],
-  };
-
-  for (const row of rawData) {
-    for (const ev of EVENT_ROWS) {
-      if (row[ev.key] === true) {
-        scatterByEvent[ev.key].push({ date: row.date as string, y: ev.y });
-      }
-    }
-  }
-
-  const config = Object.fromEntries(
-    EVENT_ROWS.map(ev => [ev.key, { label: ev.label, color: ev.color }]),
-  );
-
-  const yTicks = EVENT_ROWS.map(ev => ev.y);
-  const yTickFormatter = (v: number) =>
-    EVENT_ROWS.find(ev => ev.y === v)?.label ?? '';
-
   return (
-    <ChartCard
+    <BaseInspectionChart
+      hiveId={hiveId}
+      period={period}
       title="Events"
       description="Boolean events recorded per inspection — dots indicate the event was observed"
+      config={Object.fromEntries(
+        EVENT_ROWS.map(ev => [ev.key, { label: ev.label, color: ev.color }]),
+      )}
+      dataTransformer={inspection => ({
+        date: format(parseISO(inspection.date), 'MMM dd'),
+        queenSeen: inspection.observations?.queenSeen ?? null,
+        swarmCells: inspection.observations?.swarmCells ?? null,
+        supersedureCells: inspection.observations?.supersedureCells ?? null,
+      })}
+      filterFn={hasEventData}
     >
-      <ChartContainer config={config}>
+      {(rawData) => {
+        // Build one scatter point per (date, event) where the event is true
+        const scatterByEvent: Record<EventKey, { date: string; y: number }[]> = {
+          queenSeen: [],
+          swarmCells: [],
+          supersedureCells: [],
+        };
+
+        for (const row of rawData) {
+          for (const ev of EVENT_ROWS) {
+            if (row[ev.key] === true) {
+              scatterByEvent[ev.key].push({ date: row.date as string, y: ev.y });
+            }
+          }
+        }
+
+        const yTicks = EVENT_ROWS.map(ev => ev.y);
+        const yTickFormatter = (v: number) =>
+          EVENT_ROWS.find(ev => ev.y === v)?.label ?? '';
+
+        return (
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" type="category" allowDuplicatedCategory={false} />
@@ -123,7 +116,8 @@ export const BooleanEventsChart: React.FC<BooleanEventsChartProps> = ({
               </Scatter>
             ))}
           </ScatterChart>
-        </ChartContainer>
-    </ChartCard>
+        );
+      }}
+    </BaseInspectionChart>
   );
 };
