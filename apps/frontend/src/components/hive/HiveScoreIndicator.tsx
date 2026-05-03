@@ -1,5 +1,6 @@
 import { HiveStatus } from 'shared-schemas';
 import { cn } from '@/lib/utils';
+import { getStatusColor } from '@/utils/status-colors';
 
 interface HiveScoreIndicatorProps {
   status: HiveStatus;
@@ -16,19 +17,6 @@ export const HiveScoreIndicator = ({
   strength,
   totalFrames,
 }: HiveScoreIndicatorProps) => {
-  const getStatusColor = (hiveStatus: HiveStatus) => {
-    switch (hiveStatus) {
-      case HiveStatus.ACTIVE:
-        return 'bg-green-500';
-      case HiveStatus.INACTIVE:
-        return 'bg-yellow-500';
-      case HiveStatus.DEAD:
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
   // If no score, show status dot indicator
   if (score == null) {
     return (

@@ -4,6 +4,7 @@ import { useInspections } from '@/api/hooks';
 import { InspectionStatus, ObservationSchemaType } from 'shared-schemas';
 import { TrendIndicator } from '@/components/common/trend-indicator';
 import { largestRemainder } from '@/utils/math';
+import { FRAME_FIELDS } from '@/constants/frame-fields';
 
 // ─── Field config ─────────────────────────────────────────────────────────────
 
@@ -22,16 +23,7 @@ type NumericObsKey = keyof Pick<
 >;
 
 // Keys used to compute the brood nest total (denominator for percentages)
-const FRAME_COUNT_KEYS: NumericObsKey[] = [
-  'eggsFrames',
-  'uncappedBroodFrames',
-  'cappedBroodFrames',
-  'droneBroodFrames',
-  'pollenFrames',
-  'nectarFrames',
-  'honeyFrames',
-  'emptyFrames',
-];
+const FRAME_COUNT_KEYS = FRAME_FIELDS.map(f => f.obsKey) as (typeof FRAME_FIELDS)[number]['obsKey'][];
 
 const TREND_FIELDS: {
   key: NumericObsKey;
@@ -40,14 +32,12 @@ const TREND_FIELDS: {
   isFrameCount: boolean;
 }[] = [
   { key: 'strength',            shortLabel: 'Strength', color: '#6366f1', isFrameCount: false },
-  { key: 'eggsFrames',          shortLabel: 'Eggs',     color: '#facc15', isFrameCount: true  },
-  { key: 'uncappedBroodFrames', shortLabel: 'Uncapped', color: '#fb923c', isFrameCount: true  },
-  { key: 'cappedBroodFrames',   shortLabel: 'Capped',   color: '#b45309', isFrameCount: true  },
-  { key: 'droneBroodFrames',    shortLabel: 'Drone',    color: '#92400e', isFrameCount: true  },
-  { key: 'pollenFrames',        shortLabel: 'Pollen',   color: '#22c55e', isFrameCount: true  },
-  { key: 'nectarFrames',        shortLabel: 'Nectar',   color: '#f97316', isFrameCount: true  },
-  { key: 'honeyFrames',         shortLabel: 'Honey',    color: '#eab308', isFrameCount: true  },
-  { key: 'emptyFrames',         shortLabel: 'Space',    color: '#cbd5e1', isFrameCount: true  },
+  ...FRAME_FIELDS.map(ff => ({
+    key: ff.obsKey as NumericObsKey,
+    shortLabel: ff.shortLabel,
+    color: ff.color,
+    isFrameCount: true as const,
+  })),
   { key: 'queenCells',          shortLabel: 'Q. Cells', color: '#f43f5e', isFrameCount: false },
 ];
 

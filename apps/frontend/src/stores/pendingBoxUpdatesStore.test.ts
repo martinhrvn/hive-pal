@@ -90,7 +90,7 @@ describe('PendingBoxUpdatesStore', () => {
   });
 
   describe('5.3: addPendingUpdate overwrites existing', () => {
-    it('should overwrite existing update with same inspectionId', () => {
+    it('should overwrite existing update with same inspectionId', async () => {
       const inspectionId = 'insp-123';
 
       // Add first update

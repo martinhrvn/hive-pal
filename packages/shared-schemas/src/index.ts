@@ -22,3 +22,6 @@ export * from './features';
 export * from './shares';
 export * from './photos';
 export * from './documents';
+
+// Export utility functions
+export * from './utils/inspection-type';

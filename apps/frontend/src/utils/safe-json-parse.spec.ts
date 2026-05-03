@@ -1,13 +1,14 @@
 import { safeJsonParse } from './safe-json-parse';
 import { z } from 'zod';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('safeJsonParse (Frontend)', () => {
-  let consoleSpy: { error: jest.SpyInstance; warn: jest.SpyInstance };
+  let consoleSpy: { error: ReturnType<typeof vi.spyOn>; warn: ReturnType<typeof vi.spyOn> };
 
   beforeEach(() => {
     consoleSpy = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      error: vi.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: vi.spyOn(console, 'warn').mockImplementation(() => {}),
     };
   });
 

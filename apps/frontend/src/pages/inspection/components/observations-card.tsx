@@ -2,6 +2,7 @@ import { ClipboardList } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
+import { FRAME_FIELDS } from '@/constants/frame-fields';
 
 type ObservationsCardProps = {
   observations?: {
@@ -82,16 +83,11 @@ export const ObservationsCard = ({
   const { t } = useTranslation('inspection');
 
   // Frame composition — sum of all 6 frame type values entered
-  const frameEntries: { key: keyof typeof observations; label: string; color: string }[] = [
-    { key: 'eggsFrames',           label: t('observations.eggsFrames'),           color: 'bg-yellow-400' },
-    { key: 'uncappedBroodFrames',  label: t('observations.uncappedBroodFrames'),  color: 'bg-orange-400' },
-    { key: 'cappedBroodFrames',    label: t('observations.cappedBroodFrames'),    color: 'bg-amber-600'  },
-    { key: 'droneBroodFrames',     label: t('observations.droneBroodFrames'),     color: 'bg-amber-800'  },
-    { key: 'pollenFrames',         label: t('observations.pollenFrames'),         color: 'bg-green-500'  },
-    { key: 'nectarFrames',         label: t('observations.nectarFrames'),         color: 'bg-orange-500' },
-    { key: 'honeyFrames',          label: t('observations.honeyFrames'),          color: 'bg-yellow-500' },
-    { key: 'emptyFrames',          label: t('observations.emptyFrames'),          color: 'bg-slate-300'  },
-  ];
+  const frameEntries = FRAME_FIELDS.map(ff => ({
+    key: ff.obsKey as keyof typeof observations,
+    label: t(`observations.${ff.obsKey}`),
+    color: ff.tailwindColor,
+  }));
 
   const allFramesSum = frameEntries.reduce(
     (sum, { key }) => sum + ((observations[key] as number | null | undefined) ?? 0),

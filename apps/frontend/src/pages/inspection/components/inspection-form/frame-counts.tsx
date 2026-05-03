@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InspectionFormData } from './schema';
 import { largestRemainder } from '@/utils/math';
+import { FRAME_FIELDS } from '@/constants/frame-fields';
 
 type FrameCounterProps<T> = {
   name: T;
@@ -150,50 +151,69 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
     control,
   });
 
-  // Watch all frame type values
-  const eggsFrames        = useWatch({ name: 'observations.eggsFrames',         control });
-  const uncappedBroodFrames = useWatch({ name: 'observations.uncappedBroodFrames', control });
-  const cappedBroodFrames = useWatch({ name: 'observations.cappedBroodFrames',  control });
-  const droneBroodFrames  = useWatch({ name: 'observations.droneBroodFrames',   control });
-  const pollenFrames      = useWatch({ name: 'observations.pollenFrames',       control });
-  const nectarFrames      = useWatch({ name: 'observations.nectarFrames',       control });
-  const honeyFrames       = useWatch({ name: 'observations.honeyFrames',        control });
-  const emptyFrames       = useWatch({ name: 'observations.emptyFrames',        control });
+  // Watch all frame type values - call hooks at top level, not in a map
+  const eggsFrames = useWatch({
+    name: 'observations.eggsFrames',
+    control,
+  });
+  const cappedBroodFrames = useWatch({
+    name: 'observations.cappedBroodFrames',
+    control,
+  });
+  const openBroodFrames = useWatch({
+    name: 'observations.openBroodFrames',
+    control,
+  });
+  const pollenFrames = useWatch({
+    name: 'observations.pollenFrames',
+    control,
+  });
+  const nectarFrames = useWatch({
+    name: 'observations.nectarFrames',
+    control,
+  });
+  const honeyFrames = useWatch({
+    name: 'observations.honeyFrames',
+    control,
+  });
+  const emptyFrames = useWatch({
+    name: 'observations.emptyFrames',
+    control,
+  });
+
+  const frameValues = [
+    eggsFrames,
+    cappedBroodFrames,
+    openBroodFrames,
+    pollenFrames,
+    nectarFrames,
+    honeyFrames,
+    emptyFrames,
+  ];
 
   const effectiveTotalFrames = frameTotalField ?? totalFrames ?? null;
 
-  // Ordered counts for all frame types — same order as frameTypes below
-  const frameCounts = [
-    eggsFrames ?? 0,
-    uncappedBroodFrames ?? 0,
-    cappedBroodFrames ?? 0,
-    droneBroodFrames ?? 0,
-    pollenFrames ?? 0,
-    nectarFrames ?? 0,
-    honeyFrames ?? 0,
-    emptyFrames ?? 0,
-  ];
+  // Ordered counts for all frame types — same order as FRAME_FIELDS
+  const frameCounts = frameValues.map(v => v ?? 0);
 
   // Calculate percentages based on the sum of all entered counts
   // Shows distribution: eggs=4, capped=4, sum=8 → each is 50%
   // Percentages always sum to exactly 100%
   const pcts: (number | null)[] =
     frameCounts.reduce((a, b) => a + b, 0) > 0
-      ? largestRemainder(frameCounts, frameCounts.reduce((a, b) => a + b, 0)).map((p, i) =>
-          frameCounts[i] > 0 ? p : null,
-        )
+      ? largestRemainder(
+          frameCounts,
+          frameCounts.reduce((a, b) => a + b, 0),
+        ).map((p, i) => (frameCounts[i] > 0 ? p : null))
       : frameCounts.map(() => null);
 
-  const frameTypes = [
-    { name: 'observations.eggsFrames' as const, color: 'bg-yellow-400' },
-    { name: 'observations.uncappedBroodFrames' as const, color: 'bg-orange-400' },
-    { name: 'observations.cappedBroodFrames' as const, color: 'bg-amber-600' },
-    { name: 'observations.droneBroodFrames' as const, color: 'bg-amber-800' },
-    { name: 'observations.pollenFrames' as const, color: 'bg-green-500' },
-    { name: 'observations.nectarFrames' as const, color: 'bg-orange-500' },
-    { name: 'observations.honeyFrames' as const, color: 'bg-yellow-500' },
-    { name: 'observations.emptyFrames' as const, color: 'bg-slate-300' },
-  ] as const satisfies readonly { name: FieldPath<InspectionFormData>; color: string }[];
+  const frameTypes = FRAME_FIELDS.map(ff => ({
+    name: `observations.${ff.obsKey}` as const,
+    color: ff.tailwindColor,
+  })) as const satisfies readonly {
+    name: FieldPath<InspectionFormData>;
+    color: string;
+  }[];
 
   return (
     <div className="space-y-4">
