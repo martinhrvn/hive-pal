@@ -1,15 +1,13 @@
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
-import { ChartCard } from './chart-card';
+import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
-import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
 
 interface BroodNestChartProps {
@@ -32,31 +30,28 @@ export const BroodNestChart: React.FC<BroodNestChartProps> = ({
   hiveId,
   period,
 }) => {
-  const chartData = useInspectionChartData(
-    hiveId,
-    period,
-    inspection => ({
-      date: format(parseISO(inspection.date), 'MMM dd'),
-      eggs: inspection.observations?.eggsFrames ?? null,
-      uncapped: inspection.observations?.uncappedBroodFrames ?? null,
-      capped: inspection.observations?.cappedBroodFrames ?? null,
-      drone: inspection.observations?.droneBroodFrames ?? null,
-    }),
-    hasBroodData,
-  );
-
-  if (!hiveId || chartData.length === 0) return null;
-
   return (
-    <ChartCard title="Brood Nest Trend" description="Frame counts over time">
-      <ChartContainer
-        config={{
-          eggs:    { label: 'Eggs',           color: '#facc15' },
-          uncapped:{ label: 'Uncapped Brood', color: '#fb923c' },
-          capped:  { label: 'Capped Brood',   color: '#b45309' },
-          drone:   { label: 'Drone Brood',    color: '#92400e' },
-        }}
-      >
+    <BaseInspectionChart
+      hiveId={hiveId}
+      period={period}
+      title="Brood Nest Trend"
+      description="Frame counts over time"
+      config={{
+        eggs:    { label: 'Eggs',           color: '#facc15' },
+        uncapped:{ label: 'Uncapped Brood', color: '#fb923c' },
+        capped:  { label: 'Capped Brood',   color: '#b45309' },
+        drone:   { label: 'Drone Brood',    color: '#92400e' },
+      }}
+      dataTransformer={inspection => ({
+        date: format(parseISO(inspection.date), 'MMM dd'),
+        eggs: inspection.observations?.eggsFrames ?? null,
+        uncapped: inspection.observations?.uncappedBroodFrames ?? null,
+        capped: inspection.observations?.cappedBroodFrames ?? null,
+        drone: inspection.observations?.droneBroodFrames ?? null,
+      })}
+      filterFn={hasBroodData}
+    >
+      {(chartData) => (
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
@@ -68,7 +63,7 @@ export const BroodNestChart: React.FC<BroodNestChartProps> = ({
           <Line type="monotone" dataKey="capped"   stroke="var(--color-capped)"   strokeWidth={2} connectNulls />
           <Line type="monotone" dataKey="drone"    stroke="var(--color-drone)"    strokeWidth={2} connectNulls />
         </LineChart>
-      </ChartContainer>
-    </ChartCard>
+      )}
+    </BaseInspectionChart>
   );
 };

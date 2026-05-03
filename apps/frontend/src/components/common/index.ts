@@ -5,3 +5,4 @@ export { Pill } from './pill';
 export { pillVariants } from './pill-variants';
 export { TimelineEventList } from './timeline-event-list';
 export { PhotoGallery } from './photo-gallery';
+export { RatingSlider } from './rating-slider';

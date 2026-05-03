@@ -17,6 +17,7 @@ import { AiFieldControls } from './ai-field-controls';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 import { cn } from '@/lib/utils';
 import { shouldUseAiPrefill } from '@/pages/inspection/lib/inspection-ai-merge';
+import { RatingSlider } from '@/components/common/rating-slider';
 
 type ObservationItemProps<TName extends FieldPath<InspectionFormData>> = {
   name: TName;
@@ -127,7 +128,6 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 }: ObservationItemProps<TName>) => {
   const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
-  const [hoveredValue, setHoveredValue] = React.useState<number | null>(null);
 
   return (
     <div
@@ -231,89 +231,13 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex flex-wrap items-center gap-2">
-                        <button
-                          type="button"
-                          className={cn(
-                            'flex h-8 w-8 items-center justify-center rounded-lg',
-                            displayValue === 0
-                              ? 'bg-gray-600 text-white dark:bg-gray-300 dark:text-gray-900'
-                              : 'bg-gray-100 dark:bg-gray-800',
-                          )}
-                          onClick={e => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            field.onChange(0);
-                          }}
-                          aria-label={t('observations.rateAs', { value: 0 })}
-                        >
-                          0
-                        </button>
-
-                        <div className="grid h-8 min-w-[220px] grow grid-cols-10 gap-1">
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => {
-                            let color = 'bg-gray-200 dark:bg-gray-700';
-
-                            if (hoveredValue != null && hoveredValue >= fullValue) {
-                              color = 'bg-amber-200 dark:bg-amber-800';
-                            } else if (
-                              displayValue != null &&
-                              displayValue >= fullValue
-                            ) {
-                              color = 'bg-amber-300 dark:bg-amber-700';
-                            }
-
-                            return (
-                              <button
-                                key={fullValue}
-                                type="button"
-                                className={cn(
-                                  'w-full rounded text-xs transition-colors duration-300',
-                                  color,
-                                  hoveredValue === fullValue
-                                    ? 'text-gray-700 dark:text-gray-300'
-                                    : 'text-transparent',
-                                )}
-                                onMouseEnter={() => setHoveredValue(fullValue)}
-                                onMouseLeave={() => setHoveredValue(null)}
-                                onClick={e => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  field.onChange(fullValue);
-                                  setHoveredValue(null);
-                                }}
-                                aria-label={t('observations.rateAs', {
-                                  value: fullValue,
-                                })}
-                              >
-                                {hoveredValue === fullValue && hoveredValue}
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        <div className="h-8 w-8 text-center">
-                          <span className="block h-8 rounded bg-gray-100 px-2 py-1 text-sm dark:bg-gray-800">
-                            {displayValue ?? '-'}
-                          </span>
-                        </div>
-
-                        <Button
-                          variant="ghost"
-                          type="button"
-                          disabled={displayValue == null}
-                          className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
-                          onClick={e => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            field.onChange(undefined);
-                          }}
-                          aria-label={t('observations.clearRating')}
-                        >
-                          <X size={16} />
-                        </Button>
-                      </div>
-                    )}
+                       <RatingSlider
+                         value={displayValue}
+                         onChange={field.onChange}
+                         showZeroButton={true}
+                         onClear={() => field.onChange(undefined)}
+                       />
+                     )}
 
                     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                       <AiValuePreview

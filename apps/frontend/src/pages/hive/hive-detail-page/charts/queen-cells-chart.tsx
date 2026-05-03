@@ -1,13 +1,11 @@
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { ChartCard } from './chart-card';
+import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
-import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
 
 interface QueenCellsChartProps {
@@ -23,25 +21,22 @@ export const QueenCellsChart: React.FC<QueenCellsChartProps> = ({
   hiveId,
   period,
 }) => {
-  const chartData = useInspectionChartData(
-    hiveId,
-    period,
-    inspection => ({
-      date: format(parseISO(inspection.date), 'MMM dd'),
-      queenCells: inspection.observations?.queenCells ?? null,
-    }),
-    hasQueenCellsData,
-  );
-
-  if (!hiveId || chartData.length === 0) return null;
-
   return (
-    <ChartCard title="Queen Cells" description="Count of queen cells recorded per inspection">
-      <ChartContainer
-        config={{
-          queenCells: { label: 'Queen Cells', color: '#f43f5e' },
-        }}
-      >
+    <BaseInspectionChart
+      hiveId={hiveId}
+      period={period}
+      title="Queen Cells"
+      description="Count of queen cells recorded per inspection"
+      config={{
+        queenCells: { label: 'Queen Cells', color: '#f43f5e' },
+      }}
+      dataTransformer={inspection => ({
+        date: format(parseISO(inspection.date), 'MMM dd'),
+        queenCells: inspection.observations?.queenCells ?? null,
+      })}
+      filterFn={hasQueenCellsData}
+    >
+      {(chartData) => (
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
@@ -53,7 +48,7 @@ export const QueenCellsChart: React.FC<QueenCellsChartProps> = ({
             radius={[3, 3, 0, 0]}
           />
         </BarChart>
-      </ChartContainer>
-    </ChartCard>
+      )}
+    </BaseInspectionChart>
   );
 };
