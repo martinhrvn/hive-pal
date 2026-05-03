@@ -336,7 +336,7 @@ export const useUpsertInspection = (
             `/api/hives/${data.hiveId}`,
           );
           hiveLastModifiedAt = hiveResponse.data.updatedAt;
-        } catch (hiveError) {
+        } catch {
           // If we can't fetch hive data, abort box update and show warning
           const errorMessage = 'Failed to fetch hive data for staleness detection. Box update skipped.';
           toast.warning(
