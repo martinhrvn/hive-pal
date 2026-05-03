@@ -114,7 +114,8 @@
         "reschedule": "Replanifier",
         "cancel": "Annuler",
         "completeInspection": "Terminer l'inspection",
-        "print": "Imprimer"
+        "print": "Imprimer",
+        "share": "Partager"
     },
     "sidebar": {
         "actions": "Actions",
@@ -315,6 +316,14 @@
             "title": "Notes audio",
             "pendingUpload": "{{count}} en attente d'envoi",
             "uploadWarning": "Les enregistrements audio seront envoyés lorsque vous enregistrerez l'inspection."
+        },
+        "photos": {
+            "title": "Photos",
+            "addPhoto": "Ajouter Photo",
+            "pendingUpload": "{{count}} Téléversement en attente",
+            "uploadWarning": "Les photos seront téléversées quand l'inspection sera sauvegardée",
+            "deleteConfirm": "Supprimer cette photo ?",
+            "maxReached": "Maximum {{max}} photos par inspection"
         }
     },
     "detailSidebar": {

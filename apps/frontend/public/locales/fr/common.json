@@ -210,7 +210,8 @@
         "quickCheck": "Contrôle rapide",
         "action": "Action",
         "photo": "Photo",
-        "document": "Document"
+        "document": "Document",
+        "inspection": "Inspection"
     },
     "photo": {
         "title": "Ajouter une photo",
@@ -437,5 +438,8 @@
         "fact3Description": "Les trois castes partagent le même stade d’œuf de 3 jours. La reine pond chaque œuf verticalement dans la cellule ; il s’incline progressivement avant l’éclosion.",
         "fact4Title": "Période d’operculation",
         "fact4Description": "Les ouvrières operculent les cellules royales au 8eme jour, les cellules d’ouvrières au 9eme jour et celles des faux-bourdons au 10eme jour. L’observation des cellules operculées permet d’identifier ce qui s’y développe."
+    },
+    "footer": {
+        "privacyPolicy": "Politique de confidentialité"
     }
 }
