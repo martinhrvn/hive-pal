@@ -18,7 +18,7 @@ const ObservationsWithForm = ({
   aiValue?: unknown;
 }) => {
   const form = ReactHookForm.useForm<InspectionFormData>({
-    defaultValues: defaultValues as InspectionFormData,
+    defaultValues: defaultValues,
   });
 
   return (

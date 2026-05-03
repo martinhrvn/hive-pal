@@ -47,7 +47,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     
     // Make a change to the inspection that would trigger box update
     // Example: Add a new box or modify box configuration
-    const addBoxButton = page.getByRole('button', { name: /add box|new box/i });
+    const addBoxButton = page.getByRole('button', { name: /(add|new) box/i });
     if (await addBoxButton.isVisible()) {
       await addBoxButton.click();
     }
@@ -61,10 +61,10 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     await saveButton.click();
     
     // Verify inspection save succeeds (success toast or navigation)
-    await expect(page.getByText(/inspection.*saved|saved successfully/i)).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/inspection.{0,30}?(saved|successfully)/i)).toBeVisible({ timeout: 5000 });
     
     // Verify warning banner appears with box update error
-    const warningBanner = page.getByRole('alert').filter({ hasText: /unable to update|box.*configuration|failed/i });
+    const warningBanner = page.getByRole('alert').filter({ hasText: /(unable to update|box.{0,50}?configuration|failed)/i });
     await expect(warningBanner).toBeVisible({ timeout: 5000 });
     
     // Verify banner contains error message
@@ -114,7 +114,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     });
     
     // Trigger inspection save with box changes (same as 6.2)
-    const addBoxButton = page.getByRole('button', { name: /add box|new box/i });
+    const addBoxButton = page.getByRole('button', { name: /(add|new) box/i });
     if (await addBoxButton.isVisible()) {
       await addBoxButton.click();
     }
@@ -124,7 +124,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     await saveButton.click();
     
     // Wait for warning banner to appear
-    const warningBanner = page.getByRole('alert').filter({ hasText: /unable to update|box.*configuration|failed/i });
+    const warningBanner = page.getByRole('alert').filter({ hasText: /(unable to update|box.{0,50}?configuration|failed)/i });
     await expect(warningBanner).toBeVisible({ timeout: 5000 });
     
     // Click retry button
@@ -173,7 +173,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     });
     
     // Trigger inspection save with box changes
-    const addBoxButton = page.getByRole('button', { name: /add box|new box/i });
+    const addBoxButton = page.getByRole('button', { name: /(add|new) box/i });
     if (await addBoxButton.isVisible()) {
       await addBoxButton.click();
     }
@@ -183,7 +183,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     await saveButton.click();
     
     // Wait for warning banner to appear
-    const warningBanner = page.getByRole('alert').filter({ hasText: /unable to update|box.*configuration|failed/i });
+    const warningBanner = page.getByRole('alert').filter({ hasText: /(unable to update|box.{0,50}?configuration|failed)/i });
     await expect(warningBanner).toBeVisible({ timeout: 5000 });
     
     // Click dismiss button
@@ -229,7 +229,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     });
     
     // Trigger inspection save with box changes
-    const addBoxButton = page.getByRole('button', { name: /add box|new box/i });
+    const addBoxButton = page.getByRole('button', { name: /(add|new) box/i });
     if (await addBoxButton.isVisible()) {
       await addBoxButton.click();
     }
@@ -239,7 +239,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     await saveButton.click();
     
     // Wait for warning banner to appear
-    const warningBanner = page.getByRole('alert').filter({ hasText: /unable to update|box.*configuration|failed/i });
+    const warningBanner = page.getByRole('alert').filter({ hasText: /(unable to update|box.{0,50}?configuration|failed)/i });
     await expect(warningBanner).toBeVisible({ timeout: 5000 });
     
     // Click retry button 5 times
@@ -263,7 +263,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     await expect(retryButton).toBeDisabled({ timeout: 5000 });
     
     // Verify error message indicates retry limit
-    const errorMessage = page.getByText(/unable to update.*5|5.*attempts|manually update/i);
+    const errorMessage = page.getByText(/(unable to update.{0,20}?5|5.{0,20}?attempts|manually update)/i);
     await expect(errorMessage).toBeVisible({ timeout: 5000 });
     
     // Verify dismiss button still works
@@ -302,7 +302,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     });
     
     // Trigger inspection save with box changes
-    const addBoxButton = page.getByRole('button', { name: /add box|new box/i });
+    const addBoxButton = page.getByRole('button', { name: /(add|new) box/i });
     if (await addBoxButton.isVisible()) {
       await addBoxButton.click();
     }
@@ -312,7 +312,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     await saveButton.click();
     
     // Wait briefly for inspection to save (should succeed)
-    await expect(page.getByText(/inspection.*saved|saved successfully/i)).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/inspection.{0,30}?(saved|successfully)/i)).toBeVisible({ timeout: 5000 });
     
     // Navigate away before box update completes (within 5 seconds)
     await page.goto('/apiaries/1/hives');
@@ -329,7 +329,7 @@ test.describe('Inspection Box Update Retry Mechanism', () => {
     // 2. Error banner (if box update completed with failure)
     
     const warningBanner = page.getByRole('alert').filter({ 
-      hasText: /unable to update|box.*configuration|failed|loading|retrying/i 
+      hasText: /(unable to update|box.{0,50}?configuration|failed|loading|retrying)/i 
     });
     
     // Give it time to either show banner or complete

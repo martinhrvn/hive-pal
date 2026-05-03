@@ -22,7 +22,9 @@ export class ApiariesService {
     this.logger.setContext('ApiariesService');
   }
 
-  private parseSettings(raw: Prisma.JsonValue | null | undefined): ApiarySettings {
+  private parseSettings(
+    raw: Prisma.JsonValue | null | undefined,
+  ): ApiarySettings {
     const result = apiarySettingsSchema.safeParse(raw);
     return result.success ? result.data : undefined;
   }

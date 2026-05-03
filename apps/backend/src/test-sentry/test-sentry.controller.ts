@@ -1,4 +1,10 @@
-import { Controller, Get, HttpException, HttpStatus, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Inject,
+} from '@nestjs/common';
 import * as Sentry from '@sentry/nestjs';
 import { safeJsonParse } from '../utils/safe-json-parse';
 import { z } from 'zod';
@@ -23,7 +29,7 @@ export class TestSentryController {
         'invalid json',
         z.unknown(),
         this.logger,
-        'Sentry test'
+        'Sentry test',
       );
       if (result === null) {
         throw new Error('JSON parsing intentionally failed for Sentry test');

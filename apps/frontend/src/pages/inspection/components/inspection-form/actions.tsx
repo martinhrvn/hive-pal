@@ -268,7 +268,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
 
   const existingBoxConfigAction = formActions.find(
     a => a.type === 'BOX_CONFIGURATION',
-  ) as BoxConfigurationActionData | undefined;
+  );
 
   const renderActionForm = useMemo(() => {
     if (!selectedAction) return null;

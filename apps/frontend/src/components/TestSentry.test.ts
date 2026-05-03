@@ -67,7 +67,8 @@ describe('TestSentry integration with safeJsonParse', () => {
         if (result === null) {
           throw new Error('JSON parsing intentionally failed for Sentry test');
         }
-      } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_) {
         errorCaught = true;
         // In the actual component, Sentry.captureException would be called here
       }
@@ -92,7 +93,8 @@ describe('TestSentry integration with safeJsonParse', () => {
         if (result === null) {
           throw new Error('JSON parsing intentionally failed for Sentry test');
         }
-      } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_) {
         errorThrown = true;
       }
 
@@ -110,7 +112,8 @@ describe('TestSentry integration with safeJsonParse', () => {
         if (result === null) {
           throw new Error('JSON parsing intentionally failed for Sentry test');
         }
-      } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_) {
         errorThrown = true;
       }
 
@@ -173,7 +176,8 @@ describe('TestSentry integration with safeJsonParse', () => {
       let oldResult = null;
       try {
         oldResult = JSON.parse('invalid json');
-      } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_) {
         oldResult = null;
       }
 

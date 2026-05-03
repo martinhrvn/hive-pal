@@ -16,7 +16,7 @@ import {
   HiveDetailResponse,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
-import type { InspectionFormData, BoxConfigurationActionData } from '@/pages/inspection/components/inspection-form/schema.ts';
+import type { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useNavigate } from 'react-router-dom';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { useUpdateHiveBoxes } from './useHives';
@@ -212,9 +212,7 @@ export const useUpsertInspection = (
 
   return async (data: InspectionFormData, status?: InspectionStatus) => {
     // Extract box configuration action so we can apply hive update on success
-    const boxConfigAction = data.actions?.find(a => a.type === 'BOX_CONFIGURATION') as
-      | BoxConfigurationActionData
-      | undefined;
+    const boxConfigAction = data.actions?.find(a => a.type === 'BOX_CONFIGURATION');
 
     // Transform actions to match API format
     const transformedActions = data.actions
@@ -336,8 +334,9 @@ export const useUpsertInspection = (
             `/api/hives/${data.hiveId}`,
           );
           hiveLastModifiedAt = hiveResponse.data.updatedAt;
-        } catch {
+        } catch (e) {
           // If we can't fetch hive data, abort box update and show warning
+          console.error('Failed to fetch hive data for box update staleness check:', e);
           const errorMessage = 'Failed to fetch hive data for staleness detection. Box update skipped.';
           toast.warning(
             `Inspection saved, but box configuration could not be updated: ${errorMessage}`,

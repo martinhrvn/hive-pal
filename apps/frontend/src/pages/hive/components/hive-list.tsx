@@ -63,7 +63,7 @@ const HiveCard: React.FC<{ hive: HiveResponse; isSubjective: boolean }> = ({ hiv
   const { mode: imageMode } = useImageDisplayStore();
   const isSide = imageMode === 'side';
 
-  const strengthDisplay = !isSubjective && hive.lastInspectionStrength != null ? (() => {
+  const strengthDisplay = isSubjective || hive.lastInspectionStrength == null ? null : (() => {
     const current = hive.lastInspectionStrength;
     const total   = hive.lastInspectionTotalFrames;
     const delta   = hive.previousInspectionStrength != null
@@ -78,7 +78,7 @@ const HiveCard: React.FC<{ hive: HiveResponse; isSubjective: boolean }> = ({ hiv
         <TrendIndicator delta={delta} iconSize="h-3.5 w-3.5" />
       </div>
     );
-  })() : null;
+  })();
 
   const imageElement = imageMode !== 'hidden' ? (
     featurePhotoUrl ? (

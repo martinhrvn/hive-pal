@@ -5,8 +5,7 @@ import axios from 'axios';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
-import { validatePayloadFreshness } from '@/utils/boxUpdateValidation';
-import { StalePayloadError } from '@/utils/boxUpdateValidation';
+import { validatePayloadFreshness, StalePayloadError } from '@/utils/boxUpdateValidation';
 import { useUpdateHiveBoxes } from '@/api/hooks/useHives';
 import { toast } from 'sonner';
 
@@ -46,16 +45,8 @@ export const PendingBoxUpdateBanner: React.FC<
     (state) => state.removePendingUpdate
   );
 
-  // Query pending update - use function reference to avoid stale closures
-  const pendingUpdate = getPendingUpdate(inspectionId);
-
   // API mutation for box update
   const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
-
-  // Early return if no pending update
-  if (!pendingUpdate) {
-    return null;
-  }
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -65,13 +56,6 @@ export const PendingBoxUpdateBanner: React.FC<
       }
     };
   }, []);
-
-  // Determine if retry is disabled (5 or more attempts)
-  const isRetryDisabled = pendingUpdate.retryCount >= 5;
-
-  // Check if error is due to staleness (permanent disable)
-  const isStalenessError =
-    pendingUpdate.error?.includes('changed since') ?? false;
 
   /**
    * Handle retry click with staleness validation and actual mutation call.
@@ -155,6 +139,21 @@ export const PendingBoxUpdateBanner: React.FC<
   const handleDismiss = useCallback(() => {
     removePendingUpdate(inspectionId);
   }, [inspectionId, removePendingUpdate]);
+
+  // Query pending update - use function reference to avoid stale closures
+  const pendingUpdate = getPendingUpdate(inspectionId);
+
+  // Early return if no pending update
+  if (!pendingUpdate) {
+    return null;
+  }
+
+  // Determine if retry is disabled (5 or more attempts)
+  const isRetryDisabled = pendingUpdate.retryCount >= 5;
+
+  // Check if error is due to staleness (permanent disable)
+  const isStalenessError =
+    pendingUpdate.error?.includes('changed since') ?? false;
 
   // In-progress loading state
   if (pendingUpdate.status === 'in-progress') {

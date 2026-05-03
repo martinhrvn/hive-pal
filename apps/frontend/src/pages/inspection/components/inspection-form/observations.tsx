@@ -46,9 +46,10 @@ const formatPreviewValue = (value: unknown): string => {
             typeof item === 'boolean'
           );
         })
-        .map(item =>
-          typeof item === 'boolean' ? (item ? 'Yes' : 'No') : String(item),
-        )
+        .map(item => {
+          const displayValue = typeof item === 'boolean' ? (item ? 'Yes' : 'No') : String(item);
+          return displayValue;
+        })
         .join(', ') || '—'
     );
   }

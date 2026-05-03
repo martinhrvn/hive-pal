@@ -7,7 +7,7 @@ import type { HiveDetailResponse } from 'shared-schemas';
  * Thrown when a pending box update's payload has become stale due to concurrent modifications.
  */
 export class StalePayloadError extends Error {
-  code: 'STALE_PAYLOAD' = 'STALE_PAYLOAD';
+  code = 'STALE_PAYLOAD' as const;
 
   constructor(message: string) {
     super(message);

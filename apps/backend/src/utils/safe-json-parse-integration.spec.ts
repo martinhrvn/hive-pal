@@ -27,9 +27,18 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
     const context = 'score warnings';
 
     it('PASS: should parse valid score warnings array', () => {
-      const validWarnings = JSON.stringify(['warning1', 'warning2', 'warning3']);
-      const result = safeJsonParse(validWarnings, stringArraySchema, mockLogger as any, context);
-      
+      const validWarnings = JSON.stringify([
+        'warning1',
+        'warning2',
+        'warning3',
+      ]);
+      const result = safeJsonParse(
+        validWarnings,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toEqual(['warning1', 'warning2', 'warning3']);
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -37,16 +46,26 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should return null for malformed JSON (fallback to calculated.warnings)', () => {
       const invalidJson = 'invalid json {[';
-      const result = safeJsonParse(invalidJson, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        invalidJson,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.error).toHaveBeenCalled();
       expect(mockLogger.error.mock.calls[0][0]).toContain('score warnings');
     });
 
     it('PASS: should return null for null input (use calculated.warnings)', () => {
-      const result = safeJsonParse(null, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        null,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -54,8 +73,13 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should return null for schema mismatch (numbers instead of strings)', () => {
       const wrongType = JSON.stringify([1, 2, 3]);
-      const result = safeJsonParse(wrongType, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        wrongType,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalled();
       expect(mockLogger.warn.mock.calls[0][0]).toContain('score warnings');
@@ -63,8 +87,13 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should handle empty array correctly', () => {
       const emptyArray = JSON.stringify([]);
-      const result = safeJsonParse(emptyArray, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        emptyArray,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toEqual([]);
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -72,9 +101,14 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: call site uses nullish coalescing to provide fallback', () => {
       // Simulating the actual call site pattern: ?? []
-      const nullResult = safeJsonParse(null, stringArraySchema, mockLogger as any, context);
+      const nullResult = safeJsonParse(
+        null,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
       const fallback = nullResult ?? ['fallback_warning'];
-      
+
       expect(fallback).toEqual(['fallback_warning']);
     });
   });
@@ -85,8 +119,13 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should parse valid box configuration array', () => {
       const validConfig = JSON.stringify(['box1', 'box2', 'box3']);
-      const result = safeJsonParse(validConfig, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        validConfig,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toEqual(['box1', 'box2', 'box3']);
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -94,16 +133,26 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should return null for malformed JSON', () => {
       const invalidJson = '{malformed';
-      const result = safeJsonParse(invalidJson, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        invalidJson,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.error).toHaveBeenCalled();
       expect(mockLogger.error.mock.calls[0][0]).toContain('box configuration');
     });
 
     it('PASS: should return null for undefined input', () => {
-      const result = safeJsonParse(undefined, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        undefined,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -111,17 +160,27 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should handle mixed content in array (validates type)', () => {
       const mixedArray = JSON.stringify(['string', 123, 'another']);
-      const result = safeJsonParse(mixedArray, stringArraySchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        mixedArray,
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalled();
     });
 
     it('PASS: parseJsonArray function returns empty array as fallback', () => {
       // Simulating the parseJsonArray function pattern: ?? []
-      const nullResult = safeJsonParse('', stringArraySchema, mockLogger as any, context);
+      const nullResult = safeJsonParse(
+        '',
+        stringArraySchema,
+        mockLogger as any,
+        context,
+      );
       const fallback = nullResult ?? [];
-      
+
       expect(fallback).toEqual([]);
     });
   });
@@ -132,8 +191,13 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should intentionally fail for invalid JSON', () => {
       const invalidJson = 'invalid json';
-      const result = safeJsonParse(invalidJson, unknownSchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        invalidJson,
+        unknownSchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.error).toHaveBeenCalled();
     });
@@ -141,23 +205,35 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
     it('PASS: should log error with Sentry test context', () => {
       const invalidJson = 'invalid json';
       safeJsonParse(invalidJson, unknownSchema, mockLogger as any, context);
-      
+
       expect(mockLogger.error.mock.calls[0][0]).toContain('Sentry test');
     });
 
     it('PASS: z.unknown() schema accepts any valid JSON', () => {
       const validJson = JSON.stringify({ anything: 'goes' });
-      const result = safeJsonParse(validJson, unknownSchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        validJson,
+        unknownSchema,
+        mockLogger as any,
+        context,
+      );
+
       expect(result).toEqual({ anything: 'goes' });
     });
 
     it('PASS: Sentry test controller pattern - check for null and throw', () => {
-      const result = safeJsonParse('invalid json', unknownSchema, mockLogger as any, context);
-      
+      const result = safeJsonParse(
+        'invalid json',
+        unknownSchema,
+        mockLogger as any,
+        context,
+      );
+
       // Simulating the controller logic
       if (result === null) {
-        const error = new Error('JSON parsing intentionally failed for Sentry test');
+        const error = new Error(
+          'JSON parsing intentionally failed for Sentry test',
+        );
         expect(error.message).toContain('intentionally failed');
       } else {
         fail('Expected result to be null');
@@ -170,24 +246,34 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: All call sites should handle null without logging', () => {
       const contexts = ['score warnings', 'box configuration', 'Sentry test'];
-      
-      contexts.forEach(context => {
-        const result = safeJsonParse(null, stringArraySchema, mockLogger as any, context);
+
+      contexts.forEach((context) => {
+        const result = safeJsonParse(
+          null,
+          stringArraySchema,
+          mockLogger as any,
+          context,
+        );
         expect(result).toBeNull();
       });
-      
+
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
     });
 
     it('PASS: All call sites should handle empty string without logging', () => {
       const contexts = ['score warnings', 'box configuration', 'Sentry test'];
-      
-      contexts.forEach(context => {
-        const result = safeJsonParse('', stringArraySchema, mockLogger as any, context);
+
+      contexts.forEach((context) => {
+        const result = safeJsonParse(
+          '',
+          stringArraySchema,
+          mockLogger as any,
+          context,
+        );
         expect(result).toBeNull();
       });
-      
+
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
     });
@@ -202,11 +288,16 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         { context: 'box configuration', invalid: '[malformed' },
         { context: 'Sentry test', invalid: 'not json at all' },
       ];
-      
+
       testCases.forEach(({ context, invalid }) => {
         mockLogger.error.mockClear();
-        const result = safeJsonParse(invalid, stringArraySchema, mockLogger as any, context);
-        
+        const result = safeJsonParse(
+          invalid,
+          stringArraySchema,
+          mockLogger as any,
+          context,
+        );
+
         expect(result).toBeNull();
         expect(mockLogger.error).toHaveBeenCalledTimes(1);
         expect(mockLogger.error.mock.calls[0][0]).toContain(context);
@@ -215,8 +306,13 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: Should truncate long strings to 100 characters in logs', () => {
       const longInvalidJson = '{invalid' + 'x'.repeat(200);
-      const result = safeJsonParse(longInvalidJson, stringArraySchema, mockLogger as any, 'test');
-      
+      const result = safeJsonParse(
+        longInvalidJson,
+        stringArraySchema,
+        mockLogger as any,
+        'test',
+      );
+
       expect(result).toBeNull();
       const metadata = mockLogger.error.mock.calls[0][1];
       expect(metadata.snippet).toHaveLength(100);
@@ -238,11 +334,16 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
           invalid: JSON.stringify({ not: 'array' }),
         },
       ];
-      
+
       testCases.forEach(({ context, schema, invalid }) => {
         mockLogger.warn.mockClear();
-        const result = safeJsonParse(invalid, schema, mockLogger as any, context);
-        
+        const result = safeJsonParse(
+          invalid,
+          schema,
+          mockLogger as any,
+          context,
+        );
+
         expect(result).toBeNull();
         expect(mockLogger.warn).toHaveBeenCalledTimes(1);
         expect(mockLogger.warn.mock.calls[0][0]).toContain(context);
@@ -260,7 +361,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         mockLogger as any,
         'test',
       );
-      
+
       if (result !== null) {
         // TypeScript should infer result as string[]
         const typedResult: string[] = result;
@@ -274,14 +375,14 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         name: z.string(),
         tags: z.array(z.string()),
       });
-      
+
       const result = safeJsonParse(
         JSON.stringify({ id: 1, name: 'test', tags: ['tag1'] }),
         complexSchema,
         mockLogger as any,
         'test',
       );
-      
+
       if (result !== null) {
         // TypeScript should infer the correct structure
         expect(result.id).toBe(1);
@@ -297,8 +398,13 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
     it('PASS: Should handle database NULL values gracefully', () => {
       // Simulating database returning null for scoreWarnings field
       const dbValue = null;
-      const result = safeJsonParse(dbValue, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const result = safeJsonParse(
+        dbValue,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
     });
@@ -306,40 +412,69 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
     it('PASS: Should handle corrupted data from database', () => {
       // Simulating corrupted JSON string in database
       const corruptedData = '["warning1", "warning2"'; // missing closing bracket
-      const result = safeJsonParse(corruptedData, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const result = safeJsonParse(
+        corruptedData,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).toBeNull();
       expect(mockLogger.error).toHaveBeenCalled();
     });
 
     it('PASS: Should handle Unicode characters in JSON', () => {
       const unicodeData = JSON.stringify(['警告', 'Achtung', '⚠️']);
-      const result = safeJsonParse(unicodeData, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const result = safeJsonParse(
+        unicodeData,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).toEqual(['警告', 'Achtung', '⚠️']);
     });
 
     it('PASS: Should handle special characters in strings', () => {
-      const specialChars = JSON.stringify(['warning\\nwith\\nnewlines', 'with\ttabs', 'with"quotes"']);
-      const result = safeJsonParse(specialChars, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const specialChars = JSON.stringify([
+        'warning\\nwith\\nnewlines',
+        'with\ttabs',
+        'with"quotes"',
+      ]);
+      const result = safeJsonParse(
+        specialChars,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).not.toBeNull();
       expect(Array.isArray(result)).toBe(true);
     });
 
     it('PASS: Should handle very large arrays', () => {
-      const largeArray = Array(1000).fill('warning');
+      const largeArray = new Array(1000).fill('warning');
       const largeJson = JSON.stringify(largeArray);
-      const result = safeJsonParse(largeJson, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const result = safeJsonParse(
+        largeJson,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).toEqual(largeArray);
       expect(result?.length).toBe(1000);
     });
 
     it('PASS: Should handle whitespace-padded JSON', () => {
       const paddedJson = '  \n\t  ["warning1", "warning2"]  \n\t  ';
-      const result = safeJsonParse(paddedJson, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const result = safeJsonParse(
+        paddedJson,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).toEqual(['warning1', 'warning2']);
     });
   });
@@ -349,24 +484,39 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: Should safely handle potential XSS payloads in JSON', () => {
       const xssPayload = JSON.stringify(['<script>alert("xss")</script>']);
-      const result = safeJsonParse(xssPayload, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const result = safeJsonParse(
+        xssPayload,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).toEqual(['<script>alert("xss")</script>']);
       // The utility doesn't sanitize - that's the caller's responsibility
     });
 
     it('PASS: Should safely handle potential SQL injection attempts', () => {
       const sqlPayload = JSON.stringify(["'; DROP TABLE inspections; --"]);
-      const result = safeJsonParse(sqlPayload, stringArraySchema, mockLogger as any, 'score warnings');
-      
+      const result = safeJsonParse(
+        sqlPayload,
+        stringArraySchema,
+        mockLogger as any,
+        'score warnings',
+      );
+
       expect(result).toEqual(["'; DROP TABLE inspections; --"]);
     });
 
     it('FAIL: Should prevent prototype pollution attempts', () => {
       const prototypePayload = '{"__proto__":{"polluted":"yes"}}';
       const anySchema = z.any();
-      const result = safeJsonParse(prototypePayload, anySchema, mockLogger as any, 'test');
-      
+      const result = safeJsonParse(
+        prototypePayload,
+        anySchema,
+        mockLogger as any,
+        'test',
+      );
+
       expect(result).toBeTruthy();
       // Verify prototype was not polluted
       expect((Object.prototype as any).polluted).toBeUndefined();

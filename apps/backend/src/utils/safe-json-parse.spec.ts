@@ -17,7 +17,12 @@ describe('safeJsonParse (Backend)', () => {
   describe('Null/Undefined/Empty Input Handling', () => {
     it('should return null for null input without logging', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse(null, schema, mockLogger as any, 'test context');
+      const result = safeJsonParse(
+        null,
+        schema,
+        mockLogger as any,
+        'test context',
+      );
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -25,7 +30,12 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should return null for undefined input without logging', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse(undefined, schema, mockLogger as any, 'test context');
+      const result = safeJsonParse(
+        undefined,
+        schema,
+        mockLogger as any,
+        'test context',
+      );
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -33,7 +43,12 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should return null for empty string without logging', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse('', schema, mockLogger as any, 'test context');
+      const result = safeJsonParse(
+        '',
+        schema,
+        mockLogger as any,
+        'test context',
+      );
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -41,7 +56,12 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should return null for whitespace-only string without logging', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse('   ', schema, mockLogger as any, 'test context');
+      const result = safeJsonParse(
+        '   ',
+        schema,
+        mockLogger as any,
+        'test context',
+      );
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -52,7 +72,12 @@ describe('safeJsonParse (Backend)', () => {
     it('should parse valid array of strings', () => {
       const schema = z.array(z.string());
       const input = JSON.stringify(['a', 'b', 'c']);
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test context');
+      const result = safeJsonParse(
+        input,
+        schema,
+        mockLogger as any,
+        'test context',
+      );
       expect(result).toEqual(['a', 'b', 'c']);
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -71,7 +96,12 @@ describe('safeJsonParse (Backend)', () => {
         sub: 'user123',
         email: 'user@example.com',
       });
-      const result = safeJsonParse(input, schema, mockLogger as any, 'JWT payload');
+      const result = safeJsonParse(
+        input,
+        schema,
+        mockLogger as any,
+        'JWT payload',
+      );
       expect(result).toEqual({
         exp: 1234567890,
         iat: 1234567890,
@@ -91,7 +121,12 @@ describe('safeJsonParse (Backend)', () => {
         { version: '1.0.0', dismissedAt: '2024-01-01' },
         { version: '2.0.0', dismissedAt: '2024-01-02' },
       ]);
-      const result = safeJsonParse(input, schema, mockLogger as any, 'dismissed releases');
+      const result = safeJsonParse(
+        input,
+        schema,
+        mockLogger as any,
+        'dismissed releases',
+      );
       expect(result).toEqual([
         { version: '1.0.0', dismissedAt: '2024-01-01' },
         { version: '2.0.0', dismissedAt: '2024-01-02' },
@@ -102,17 +137,29 @@ describe('safeJsonParse (Backend)', () => {
   describe('Malformed JSON Error Handling', () => {
     it('should return null and log error for invalid JSON syntax', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse('invalid json', schema, mockLogger as any, 'test context');
+      const result = safeJsonParse(
+        'invalid json',
+        schema,
+        mockLogger as any,
+        'test context',
+      );
       expect(result).toBeNull();
       expect(mockLogger.error).toHaveBeenCalled();
       const errorCall = mockLogger.error.mock.calls[0];
-      expect(String(errorCall[0])).toContain('Failed to parse JSON for "test context"');
+      expect(String(errorCall[0])).toContain(
+        'Failed to parse JSON for "test context"',
+      );
     });
 
     it('should include first 100 chars of input in error log', () => {
       const schema = z.array(z.string());
       const longInvalidJson = '{invalid' + 'x'.repeat(200);
-      const result = safeJsonParse(longInvalidJson, schema, mockLogger as any, 'test');
+      const result = safeJsonParse(
+        longInvalidJson,
+        schema,
+        mockLogger as any,
+        'test',
+      );
       expect(result).toBeNull();
       const errorCall = mockLogger.error.mock.calls[0];
       const metadata = errorCall[1];
@@ -122,7 +169,12 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should include original error in log', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse('invalid', schema, mockLogger as any, 'test');
+      const result = safeJsonParse(
+        'invalid',
+        schema,
+        mockLogger as any,
+        'test',
+      );
       expect(result).toBeNull();
       const errorCall = mockLogger.error.mock.calls[0];
       const metadata = errorCall[1];
@@ -134,11 +186,18 @@ describe('safeJsonParse (Backend)', () => {
     it('should return null and log warning for type mismatch', () => {
       const schema = z.array(z.string());
       const input = JSON.stringify([1, 2, 3]);
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test context');
+      const result = safeJsonParse(
+        input,
+        schema,
+        mockLogger as any,
+        'test context',
+      );
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalled();
       const warnCall = mockLogger.warn.mock.calls[0];
-      expect(String(warnCall[0])).toContain('Schema validation failed for "test context"');
+      expect(String(warnCall[0])).toContain(
+        'Schema validation failed for "test context"',
+      );
     });
 
     it('should return null and log warning for missing required fields', () => {
@@ -164,7 +223,12 @@ describe('safeJsonParse (Backend)', () => {
       const input = JSON.stringify({
         items: [{ id: 'invalid', name: 'test' }],
       });
-      const result = safeJsonParse(input, schema, mockLogger as any, 'nested test');
+      const result = safeJsonParse(
+        input,
+        schema,
+        mockLogger as any,
+        'nested test',
+      );
       expect(result).toBeNull();
       const warnCall = mockLogger.warn.mock.calls[0];
       const metadata = warnCall[1];
@@ -176,7 +240,12 @@ describe('safeJsonParse (Backend)', () => {
         email: z.string().email(),
       });
       const input = JSON.stringify({ email: 'not-an-email' });
-      const result = safeJsonParse(input, schema, mockLogger as any, 'email validation');
+      const result = safeJsonParse(
+        input,
+        schema,
+        mockLogger as any,
+        'email validation',
+      );
       expect(result).toBeNull();
       const warnCall = mockLogger.warn.mock.calls[0];
       const metadata = warnCall[1];
@@ -251,7 +320,12 @@ describe('safeJsonParse (Backend)', () => {
   describe('Context String Usage', () => {
     it('should include context string in error messages', () => {
       const schema = z.array(z.string());
-      safeJsonParse('invalid json', schema, mockLogger as any, 'score warnings');
+      safeJsonParse(
+        'invalid json',
+        schema,
+        mockLogger as any,
+        'score warnings',
+      );
       expect(mockLogger.error).toHaveBeenCalled();
       const errorCall = mockLogger.error.mock.calls[0];
       expect(String(errorCall[0])).toContain('score warnings');
