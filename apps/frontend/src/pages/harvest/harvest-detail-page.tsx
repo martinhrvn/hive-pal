@@ -45,6 +45,7 @@ import { useCreateShareLink } from '@/api/hooks/useShares';
 import { SharePromptDialog } from '@/components/share/share-prompt-dialog';
 import { isSharePromptDismissed } from '@/components/share/share-prompt-utils';
 import { ShareDialog } from '@/components/share/share-dialog';
+import { getStatusColor } from '@/utils/status-colors';
 
 export const HarvestDetailPage = () => {
   const { harvestId } = useParams<{ harvestId: string }>();
@@ -178,19 +179,6 @@ export const HarvestDetailPage = () => {
       setIsEditingHives(false);
     } catch {
       toast.error('Failed to update hives');
-    }
-  };
-
-  const getStatusColor = (status: HarvestStatus) => {
-    switch (status) {
-      case HarvestStatus.DRAFT:
-        return 'bg-gray-500';
-      case HarvestStatus.IN_PROGRESS:
-        return 'bg-yellow-500';
-      case HarvestStatus.COMPLETED:
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-500';
     }
   };
 

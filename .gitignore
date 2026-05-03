@@ -81,3 +81,4 @@ packages/prisma/node_modules/.prisma
 openspec
 apps/backend/TEST_REPORT_GROUP_2.md
 .claude
+.vscode/settings.json

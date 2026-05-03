@@ -29,20 +29,13 @@ import {
   AlertSeverity,
   AlertStatus,
   isVariantCompatible,
-  calculateScores,
-  apiarySettingsSchema,
+  parseApiaryInspectionType,
 } from 'shared-schemas';
 import { safeJsonParse } from '../utils/safe-json-parse';
+import { getStoredOrCalculatedScore } from '../utils/score-utils';
 import { z } from 'zod';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-
-function parseApiaryInspectionType(raw: unknown): 'subjective' | 'data_driven' {
-  const result = apiarySettingsSchema.safeParse(raw);
-  return result.success
-    ? (result.data?.inspectionType ?? 'data_driven')
-    : 'data_driven';
-}
 
 @Injectable()
 export class HiveService {
@@ -415,37 +408,11 @@ export class HiveService {
       const metrics = this.inspectionService.mapObservationsToDto(
         latestCompletedInspection.observations,
       );
-      const calculated = calculateScores(metrics);
       const insp = latestCompletedInspection as Record<string, unknown>;
-      const storedOverall = insp['overallScore'] as number | null | undefined;
-      const storedPopulation = insp['populationScore'] as
-        | number
-        | null
-        | undefined;
-      const storedStores = insp['storesScore'] as number | null | undefined;
-      const storedQueen = insp['queenScore'] as number | null | undefined;
-      const storedWarnings = insp['scoreWarnings'] as string | null | undefined;
-      const storedConfidence = insp['scoreConfidence'] as
-        | number
-        | null
-        | undefined;
 
-      return storedOverall != null ||
-        storedPopulation != null ||
-        storedStores != null ||
-        storedQueen != null
-        ? {
-            overallScore: storedOverall ?? calculated.overallScore,
-            populationScore: storedPopulation ?? calculated.populationScore,
-            storesScore: storedStores ?? calculated.storesScore,
-            queenScore: storedQueen ?? calculated.queenScore,
-            warnings:
-              this.parseJsonArray(storedWarnings).length > 0
-                ? this.parseJsonArray(storedWarnings)
-                : calculated.warnings,
-            confidence: storedConfidence ?? calculated.confidence,
-          }
-        : calculated;
+      return getStoredOrCalculatedScore(insp, metrics, (json: string) =>
+        this.parseJsonArray(json),
+      );
     })();
     const featurePhotoFields = await this.mapFeaturePhotoUrl(hive.featurePhoto);
 

@@ -17,6 +17,7 @@ import { HarvestStatus } from 'shared-schemas';
 import { useApiary } from '@/hooks/use-apiary';
 import { Droplets, Calendar, Droplet, Package2 } from 'lucide-react';
 import { useUnitFormat } from '@/hooks/use-unit-format';
+import { getStatusColor } from '@/utils/status-colors';
 
 export const HarvestListPage = () => {
   const navigate = useNavigate();
@@ -25,19 +26,6 @@ export const HarvestListPage = () => {
     apiaryId: activeApiaryId || undefined,
   });
   const { getWeightUnit } = useUnitFormat();
-
-  const getStatusColor = (status: HarvestStatus) => {
-    switch (status) {
-      case HarvestStatus.DRAFT:
-        return 'bg-gray-500';
-      case HarvestStatus.IN_PROGRESS:
-        return 'bg-yellow-500';
-      case HarvestStatus.COMPLETED:
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
 
   const getStatusIcon = (status: HarvestStatus) => {
     switch (status) {

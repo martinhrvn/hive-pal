@@ -16,6 +16,7 @@ import { InspectionStatusUpdaterService } from './inspection-status-updater.serv
 import { InspectionAudioService } from '../inspection-audio/inspection-audio.service';
 import { PhotosService } from '../photos/photos.service';
 import { safeJsonParse } from '../utils/safe-json-parse';
+import { getStoredOrCalculatedScore } from '../utils/score-utils';
 import { z } from 'zod';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -57,7 +58,6 @@ import {
   CreateInspection,
   CreateInspectionResponse,
   InspectionFilter,
-  InspectionType,
   InspectionResponse,
   InspectionStatus,
   ObservationSchemaType,
@@ -67,7 +67,7 @@ import {
   AdditionalObservationType,
   ReminderObservationType,
   ScoreResult,
-  apiarySettingsSchema,
+  parseApiaryInspectionType,
   calculateScores,
 } from 'shared-schemas';
 
@@ -80,13 +80,6 @@ const ACTION_INCLUDE = {
   maintenanceAction: true,
   createdByUser: { select: { name: true, email: true } },
 };
-
-function parseApiaryInspectionType(raw: unknown): InspectionType {
-  const result = apiarySettingsSchema.safeParse(raw);
-  return result.success
-    ? (result.data?.inspectionType ?? 'data_driven')
-    : 'data_driven';
-}
 
 @Injectable()
 export class InspectionsService {
@@ -667,7 +660,17 @@ export class InspectionsService {
       const score =
         inspectionType === 'subjective'
           ? undefined
-          : this.getStoredOrCalculatedScore(inspection, metrics);
+          : getStoredOrCalculatedScore(
+              inspection,
+              metrics,
+              (json: string) =>
+                safeJsonParse(
+                  json,
+                  this.stringArraySchema,
+                  this.winstonLogger,
+                  'score warnings',
+                ) ?? [],
+            );
 
       const actions = inspection.actions.map((action) =>
         this.actionsService.mapPrismaToDto(action),
@@ -689,58 +692,6 @@ export class InspectionsService {
           inspection.createdByUser?.name || inspection.createdByUser?.email,
       };
     });
-  }
-
-  private getStoredOrCalculatedScore(
-    inspection: Record<string, unknown>,
-    metrics: ObservationSchemaType,
-  ): ScoreResult {
-    const calculated = calculateScores(metrics);
-
-    // If scores are stored in DB, use stored values where present,
-    // falling back to calculated values for any that are null
-    const overallScore = inspection['overallScore'] as
-      | number
-      | null
-      | undefined;
-    const populationScore = inspection['populationScore'] as
-      | number
-      | null
-      | undefined;
-    const storesScore = inspection['storesScore'] as number | null | undefined;
-    const queenScore = inspection['queenScore'] as number | null | undefined;
-    const scoreWarnings = inspection['scoreWarnings'] as
-      | string
-      | null
-      | undefined;
-    const scoreConfidence = inspection['scoreConfidence'] as
-      | number
-      | null
-      | undefined;
-
-    if (
-      overallScore != null ||
-      populationScore != null ||
-      storesScore != null ||
-      queenScore != null
-    ) {
-      return {
-        overallScore: overallScore ?? calculated.overallScore,
-        populationScore: populationScore ?? calculated.populationScore,
-        storesScore: storesScore ?? calculated.storesScore,
-        queenScore: queenScore ?? calculated.queenScore,
-        warnings: scoreWarnings
-          ? (safeJsonParse(
-              scoreWarnings,
-              this.stringArraySchema,
-              this.winstonLogger,
-              'score warnings',
-            ) ?? calculated.warnings)
-          : calculated.warnings,
-        confidence: scoreConfidence ?? calculated.confidence,
-      };
-    }
-    return calculated;
   }
 
   mapObservationsToDto(observations: Observation[]): ObservationSchemaType {

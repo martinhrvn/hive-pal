@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
+import { HiveWithBoxesResponse } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { useHivesWithBoxes } from '@/api/hooks';
 import { Package, Snowflake, ArrowUpRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { getStatusColor } from '@/utils/status-colors';
+import { getBoxHeight, getBoxTypeLabel } from '@/utils/box-display';
 
 interface HiveMinimapProps {
   apiaryId?: string;
@@ -17,52 +19,6 @@ interface MinimapHiveProps {
 }
 
 const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-500';
-      case 'INACTIVE':
-        return 'bg-yellow-500';
-      case 'DEAD':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const getBoxHeight = (variant?: BoxVariantEnum) => {
-    if (!variant) return 'h-10';
-
-    const deepVariants = [
-      BoxVariantEnum.LANGSTROTH_DEEP,
-      BoxVariantEnum.B_DEEP,
-      BoxVariantEnum.NATIONAL_DEEP,
-      BoxVariantEnum.DADANT,
-    ];
-
-    const mediumVariants = [BoxVariantEnum.LANGSTROTH_MEDIUM];
-
-    const shallowVariants = [
-      BoxVariantEnum.LANGSTROTH_SHALLOW,
-      BoxVariantEnum.B_SHALLOW,
-      BoxVariantEnum.NATIONAL_SHALLOW,
-    ];
-
-    if (deepVariants.includes(variant)) return 'h-15';
-    if (mediumVariants.includes(variant)) return 'h-12';
-    if (shallowVariants.includes(variant)) return 'h-10';
-    return 'h-8'; // Default for WARRE, TOP_BAR, CUSTOM
-  };
-
-  const getBoxTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      BROOD: 'B',
-      HONEY: 'H',
-      FEEDER: 'F',
-    };
-    return labels[type] || type.charAt(0);
-  };
-
   // Sort boxes by position (bottom to top) and limit to show max 3 boxes for minimap
   const sortedBoxes = hive.boxes
     ? [...hive.boxes].sort((a, b) => b.position - a.position).slice(0, 3)

@@ -32,36 +32,26 @@ import {
 import { ChartPeriod } from './index';
 import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
+import { FRAME_FIELDS, FrameFieldKey } from '@/constants/frame-fields';
 
 interface FrameBreakdownChartProps {
   hiveId: string | undefined;
   period: ChartPeriod;
 }
 
-const FRAME_TYPES = [
-  { key: 'eggs',         label: 'Eggs',              obsKey: 'eggsFrames',          color: '#facc15' },
-  { key: 'uncappedBrood',label: 'Uncapped Brood',    obsKey: 'uncappedBroodFrames', color: '#fb923c' },
-  { key: 'cappedBrood',  label: 'Capped Brood',      obsKey: 'cappedBroodFrames',   color: '#b45309' },
-  { key: 'droneBrood',   label: 'Drone Brood',        obsKey: 'droneBroodFrames',    color: '#92400e' },
-  { key: 'pollen',       label: 'Pollen',             obsKey: 'pollenFrames',        color: '#22c55e' },
-  { key: 'nectar',       label: 'Nectar',             obsKey: 'nectarFrames',        color: '#f97316' },
-  { key: 'honey',        label: 'Honey',              obsKey: 'honeyFrames',         color: '#eab308' },
-  { key: 'empty',        label: 'Empty / Foundation', obsKey: 'emptyFrames',         color: '#cbd5e1' },
-] as const;
-
-type FrameKey = (typeof FRAME_TYPES)[number]['key'];
+type FrameKey = FrameFieldKey;
 
 function hasFrameData(inspection: InspectionResponse): boolean {
   const obs = inspection.observations;
   return (
     obs?.totalFrames != null &&
     obs.totalFrames > 0 &&
-    FRAME_TYPES.some(ft => obs[ft.obsKey] != null)
+    FRAME_FIELDS.some(ft => obs[ft.obsKey] != null)
   );
 }
 
 const chartConfig = Object.fromEntries(
-  FRAME_TYPES.map(ft => [ft.key, { label: ft.label, color: ft.color }]),
+  FRAME_FIELDS.map(ft => [ft.key, { label: ft.label, color: ft.color }]),
 );
 
 export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
@@ -69,7 +59,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
   period,
 }) => {
   const [selected, setSelected] = useState<Set<FrameKey>>(
-    new Set(FRAME_TYPES.map(ft => ft.key)),
+    new Set(FRAME_FIELDS.map(ft => ft.key)),
   );
 
   const transform = (inspection: InspectionResponse) => {
@@ -78,7 +68,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
       date: format(parseISO(inspection.date), 'MMM dd'),
     };
 
-    for (const ft of FRAME_TYPES) {
+    for (const ft of FRAME_FIELDS) {
       entry[ft.key] = obs?.[ft.obsKey] ?? null;
     }
 
@@ -101,7 +91,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
 
   if (!hiveId || chartData.length === 0) return null;
 
-  const activeTypes = FRAME_TYPES.filter(ft => selected.has(ft.key));
+  const activeTypes = FRAME_FIELDS.filter(ft => selected.has(ft.key));
 
   return (
     <Card className="lg:col-span-2">
@@ -120,9 +110,9 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
                   Fields
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-48 p-2" align="end">
-                <div className="space-y-1">
-                  {FRAME_TYPES.map(ft => (
+               <PopoverContent className="w-48 p-2" align="end">
+                 <div className="space-y-1">
+                   {FRAME_FIELDS.map(ft => (
                     <label
                       key={ft.key}
                       className="flex items-center gap-2 rounded px-2 py-1 cursor-pointer hover:bg-muted text-sm"

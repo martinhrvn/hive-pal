@@ -7,7 +7,6 @@ import {
   HiveResponse,
   InspectionResponse,
   InspectionStatus,
-  ObservationSchemaType,
 } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
 import { ScheduledInspectionCard } from './components/scheduled-inspection-card';
@@ -29,6 +28,7 @@ import {
 } from 'lucide-react';
 import { TrendIndicator } from '@/components/common/trend-indicator';
 import { largestRemainder } from '@/utils/math';
+import { FRAME_FIELDS } from '@/constants/frame-fields';
 
 import {
   MainContent,
@@ -262,16 +262,7 @@ export const InspectionListPage = () => {
   );
 };
 
-const FRAME_FIELDS: { key: keyof NonNullable<ObservationSchemaType>; label: string; color: string }[] = [
-  { key: 'eggsFrames',          label: 'Eggs',     color: '#facc15' },
-  { key: 'uncappedBroodFrames', label: 'Uncapped', color: '#fb923c' },
-  { key: 'cappedBroodFrames',   label: 'Capped',   color: '#b45309' },
-  { key: 'droneBroodFrames',    label: 'Drone',    color: '#92400e' },
-  { key: 'pollenFrames',        label: 'Pollen',   color: '#22c55e' },
-  { key: 'nectarFrames',        label: 'Nectar',   color: '#f97316' },
-  { key: 'honeyFrames',         label: 'Stores',   color: '#eab308' },
-  { key: 'emptyFrames',         label: 'Space',    color: '#cbd5e1' },
-];
+
 
 const getHiveName = (
   hiveId: string,
@@ -460,7 +451,7 @@ const InspectionTableRow = ({
   const prevStrength = prevInspection?.observations?.strength ?? null;
   const strengthDelta = strength != null && prevStrength != null ? strength - prevStrength : null;
 
-  const frameCounts = FRAME_FIELDS.map(f => (obs?.[f.key] as number | null | undefined) ?? 0);
+  const frameCounts = FRAME_FIELDS.map(f => (obs?.[f.obsKey] as number | null | undefined) ?? 0);
   const frameTotal  = frameCounts.reduce((a, b) => a + b, 0);
   const framePcts   = frameTotal > 0 ? largestRemainder(frameCounts, frameTotal) : null;
 
