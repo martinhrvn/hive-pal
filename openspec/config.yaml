@@ -1,13 +1,14 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Project context
+context: |
+  Tech stack: React 19, Vite, TypeScript, Tailwind CSS v4, shadcn/ui, React Query, Zustand, NestJS, Prisma ORM, PostgreSQL
+  Monorepo: PNPM workspaces + Turbo
+  Testing: Jest (backend unit), Testcontainers (integration), Playwright (E2E + component tests)
+  Conventions: Conventional commits, Zod schemas shared between frontend/backend
+  Domain: Beekeeping management application (apiaries, hives, inspections, queens)
+  Key patterns: JWT auth, apiary-level data isolation, React Hook Form + Zod validation
+  Testing commands: turbo lint, turbo format:check, pnpm typecheck (frontend), pnpm test:ct (frontend), pnpm test:e2e (backend)
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.

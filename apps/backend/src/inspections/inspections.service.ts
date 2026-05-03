@@ -83,7 +83,9 @@ const ACTION_INCLUDE = {
 
 function parseApiaryInspectionType(raw: unknown): InspectionType {
   const result = apiarySettingsSchema.safeParse(raw);
-  return result.success ? (result.data?.inspectionType ?? 'data_driven') : 'data_driven';
+  return result.success
+    ? (result.data?.inspectionType ?? 'data_driven')
+    : 'data_driven';
 }
 
 @Injectable()
@@ -146,7 +148,6 @@ export class InspectionsService {
             ? 'SCHEDULED'
             : 'COMPLETED');
 
-        const inspectionType = parseApiaryInspectionType(hive.apiary?.settings);
         const calculatedScore = observations
           ? calculateScores(observations)
           : null;
@@ -163,7 +164,9 @@ export class InspectionsService {
             createdByUserId: filter.userId,
             ...scoreData,
             observations: {
-              create: observations ? this.buildObservationRecords(observations) : [],
+              create: observations
+                ? this.buildObservationRecords(observations)
+                : [],
             },
           },
         });
@@ -376,9 +379,6 @@ export class InspectionsService {
         }
 
         const status = updateInspectionDto.status;
-        const inspectionType = parseApiaryInspectionType(
-          inspection.hive.apiary?.settings,
-        );
         const calculatedScore = observations
           ? calculateScores(observations)
           : null;
@@ -730,7 +730,12 @@ export class InspectionsService {
         storesScore: storesScore ?? calculated.storesScore,
         queenScore: queenScore ?? calculated.queenScore,
         warnings: scoreWarnings
-          ? (safeJsonParse(scoreWarnings, this.stringArraySchema, this.winstonLogger, 'score warnings') ?? calculated.warnings)
+          ? (safeJsonParse(
+              scoreWarnings,
+              this.stringArraySchema,
+              this.winstonLogger,
+              'score warnings',
+            ) ?? calculated.warnings)
           : calculated.warnings,
         confidence: scoreConfidence ?? calculated.confidence,
       };

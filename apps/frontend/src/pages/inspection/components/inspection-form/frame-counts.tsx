@@ -12,7 +12,6 @@ type FrameCounterProps<T> = {
   label: string;
   color: string;
   totalFrames: number | null | undefined;
-  allFramesSum: number;
   /** Pre-computed composition percentage (already rounded via largest-remainder) */
   pct: number | null;
 };
@@ -22,7 +21,6 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
   label,
   color,
   totalFrames,
-  allFramesSum,
   pct,
 }: FrameCounterProps<TName>) => {
   const { control } = useFormContext<InspectionFormData>();
@@ -175,14 +173,13 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
     honeyFrames ?? 0,
     emptyFrames ?? 0,
   ];
-  const allFramesSum = frameCounts.reduce((a, b) => a + b, 0);
 
   // Calculate percentages based on the sum of all entered counts
   // Shows distribution: eggs=4, capped=4, sum=8 → each is 50%
   // Percentages always sum to exactly 100%
   const pcts: (number | null)[] =
-    allFramesSum > 0
-      ? largestRemainder(frameCounts, allFramesSum).map((p, i) =>
+    frameCounts.reduce((a, b) => a + b, 0) > 0
+      ? largestRemainder(frameCounts, frameCounts.reduce((a, b) => a + b, 0)).map((p, i) =>
           frameCounts[i] > 0 ? p : null,
         )
       : frameCounts.map(() => null);
@@ -221,7 +218,6 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
             label={t(name)}
             color={color}
             totalFrames={effectiveTotalFrames}
-            allFramesSum={allFramesSum}
             pct={pcts[i]}
           />
         ))}

@@ -216,9 +216,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   // Calculate total frames from brood boxes only (honey supers are excluded)
   // If the user has recorded a box configuration action, use its updated boxes instead
   const formActions = form.watch('actions') || [];
-  const boxConfigAction = formActions.find(a => a.type === 'BOX_CONFIGURATION') as
-    | import('./schema').BoxConfigurationActionData
-    | undefined;
+  const boxConfigAction = formActions.find(a => a.type === 'BOX_CONFIGURATION');
 
   const summarizedBoxes = normalizeBoxSummary(
     boxConfigAction?.boxesSummary,

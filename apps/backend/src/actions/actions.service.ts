@@ -15,9 +15,9 @@ import {
   UserPreferences,
 } from 'shared-schemas';
 
-const boxesSchema = z.array(
-  z.object({ type: boxTypeSchema, frameCount: z.number().int().min(0) }),
-).nullable();
+const boxesSchema = z
+  .array(z.object({ type: boxTypeSchema, frameCount: z.number().int().min(0) }))
+  .nullable();
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
@@ -803,7 +803,9 @@ export class ActionsService {
             totalBoxes: prismaAction.boxConfigurationAction.totalBoxes,
             totalFrames: prismaAction.boxConfigurationAction.totalFrames,
             boxes: (() => {
-              const parsed = boxesSchema.safeParse(prismaAction.boxConfigurationAction.boxes);
+              const parsed = boxesSchema.safeParse(
+                prismaAction.boxConfigurationAction.boxes,
+              );
               return parsed.success ? (parsed.data ?? undefined) : undefined;
             })(),
           },

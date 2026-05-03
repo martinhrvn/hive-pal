@@ -96,7 +96,7 @@ export class EquipmentService {
     userId: string,
     data: CreateEquipmentItemDto,
   ): Promise<EquipmentItemWithCalculations> {
-    const defaultScope = SHARED_SCOPE_CATEGORIES.has(data.category as EquipmentCategory)
+    const defaultScope = SHARED_SCOPE_CATEGORIES.has(data.category)
       ? 'SHARED'
       : 'PER_HIVE';
 
@@ -236,7 +236,9 @@ export class EquipmentService {
         }
 
         const isShared = item.scope === EquipmentScope.SHARED;
-        const recommended = isShared ? item.perHive : targetHives * item.perHive;
+        const recommended = isShared
+          ? item.perHive
+          : targetHives * item.perHive;
         const needed = item.neededOverride ?? recommended;
 
         // Total available excludes damaged (not usable)

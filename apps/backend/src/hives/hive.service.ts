@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
@@ -35,11 +36,12 @@ import { safeJsonParse } from '../utils/safe-json-parse';
 import { z } from 'zod';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Inject } from '@nestjs/common';
 
 function parseApiaryInspectionType(raw: unknown): 'subjective' | 'data_driven' {
   const result = apiarySettingsSchema.safeParse(raw);
-  return result.success ? (result.data?.inspectionType ?? 'data_driven') : 'data_driven';
+  return result.success
+    ? (result.data?.inspectionType ?? 'data_driven')
+    : 'data_driven';
 }
 
 @Injectable()
@@ -59,7 +61,14 @@ export class HiveService {
   }
 
   private parseJsonArray(raw: string | null | undefined): string[] {
-    return safeJsonParse(raw, this.stringArraySchema, this.winstonLogger, 'box configuration') ?? [];
+    return (
+      safeJsonParse(
+        raw,
+        this.stringArraySchema,
+        this.winstonLogger,
+        'box configuration',
+      ) ?? []
+    );
   }
 
   private resolveStatusFilter(filter: HiveFilter): HiveStatus | undefined {
@@ -243,7 +252,6 @@ export class HiveService {
 
     return Promise.all(
       hives.map(async (hive): Promise<HiveResponse> => {
-        const inspectionType = parseApiaryInspectionType(hive.apiary?.settings);
         const featurePhotoFields = await this.mapFeaturePhotoUrl(
           hive.featurePhoto,
         );
@@ -256,11 +264,22 @@ export class HiveService {
           notes: hive.notes || undefined,
           installationDate: hive.installationDate?.toISOString(),
           lastInspectionDate: hive.inspections[0]?.date?.toISOString(),
-          lastInspectionStrength: hive.inspections[0]?.observations?.find(o => o.type === 'strength')?.numericValue ?? null,
-          lastInspectionTotalFrames: hive.inspections[0]?.observations?.find(o => o.type === 'total_frames')?.numericValue ?? null,
+          lastInspectionStrength:
+            hive.inspections[0]?.observations?.find(
+              (o) => o.type === 'strength',
+            )?.numericValue ?? null,
+          lastInspectionTotalFrames:
+            hive.inspections[0]?.observations?.find(
+              (o) => o.type === 'total_frames',
+            )?.numericValue ?? null,
           lastInspectionOverallScore: hive.inspections[0]?.overallScore ?? null,
-          previousInspectionStrength: hive.inspections[1]?.observations?.find(o => o.type === 'strength')?.numericValue ?? null,
-          lastInspectionWarnings: this.parseJsonArray(hive.inspections[0]?.scoreWarnings),
+          previousInspectionStrength:
+            hive.inspections[1]?.observations?.find(
+              (o) => o.type === 'strength',
+            )?.numericValue ?? null,
+          lastInspectionWarnings: this.parseJsonArray(
+            hive.inspections[0]?.scoreWarnings,
+          ),
           positionRow: hive.positionRow ?? undefined,
           positionCol: hive.positionCol ?? undefined,
           settings: (hive.settings as HiveSettings) || undefined,
@@ -399,11 +418,17 @@ export class HiveService {
       const calculated = calculateScores(metrics);
       const insp = latestCompletedInspection as Record<string, unknown>;
       const storedOverall = insp['overallScore'] as number | null | undefined;
-      const storedPopulation = insp['populationScore'] as number | null | undefined;
+      const storedPopulation = insp['populationScore'] as
+        | number
+        | null
+        | undefined;
       const storedStores = insp['storesScore'] as number | null | undefined;
       const storedQueen = insp['queenScore'] as number | null | undefined;
       const storedWarnings = insp['scoreWarnings'] as string | null | undefined;
-      const storedConfidence = insp['scoreConfidence'] as number | null | undefined;
+      const storedConfidence = insp['scoreConfidence'] as
+        | number
+        | null
+        | undefined;
 
       return storedOverall != null ||
         storedPopulation != null ||
@@ -414,9 +439,10 @@ export class HiveService {
             populationScore: storedPopulation ?? calculated.populationScore,
             storesScore: storedStores ?? calculated.storesScore,
             queenScore: storedQueen ?? calculated.queenScore,
-            warnings: this.parseJsonArray(storedWarnings).length > 0
-              ? this.parseJsonArray(storedWarnings)
-              : calculated.warnings,
+            warnings:
+              this.parseJsonArray(storedWarnings).length > 0
+                ? this.parseJsonArray(storedWarnings)
+                : calculated.warnings,
             confidence: storedConfidence ?? calculated.confidence,
           }
         : calculated;

@@ -65,12 +65,15 @@ function frameSum(obs: NonNullable<ObservationSchemaType>): number {
 }
 
 interface ChipData {
-  fieldKey: NumericObsKey;
   shortLabel: string;
   color: string;
   current: number;
   delta: number | null;
   unit: '%' | '';
+}
+
+interface ChipDataWithKey extends ChipData {
+  fieldKey: NumericObsKey;
 }
 
 // ─── Stat items ───────────────────────────────────────────────────────────────
@@ -102,7 +105,7 @@ const MobileStatItem = ({ shortLabel, color, current, delta, unit }: ChipData) =
 export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
   const { data: inspections } = useInspections({ hiveId });
 
-  const chips = useMemo<ChipData[]>(() => {
+  const chips = useMemo<ChipDataWithKey[]>(() => {
     if (!inspections) return [];
 
     const startDate = getStartDate();
@@ -115,7 +118,7 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    const result: ChipData[] = [];
+    const result: ChipDataWithKey[] = [];
 
     // ── Frame count fields: all anchored to the same two inspections ──
     // so percentages share a common denominator and can't exceed 100% in total.
@@ -164,8 +167,8 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
       const withData = eligible.filter(i => i.observations?.[field.key] != null);
       if (withData.length < 1) continue;
 
-      const current  = withData[0].observations![field.key] as number;
-      const previous = withData[1]?.observations?.[field.key] as number | undefined;
+      const current  = withData[0].observations![field.key];
+      const previous = withData[1]?.observations?.[field.key];
 
       result.push({
         fieldKey: field.key,
@@ -195,14 +198,28 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
       {/* Mobile: compact inline list — shown below md (768px) */}
       <div className="md:hidden flex items-center gap-x-3 gap-y-1 flex-wrap">
         {chips.map(chip => (
-          <MobileStatItem key={chip.fieldKey} {...chip} />
+          <MobileStatItem
+            key={chip.fieldKey}
+            shortLabel={chip.shortLabel}
+            color={chip.color}
+            current={chip.current}
+            delta={chip.delta}
+            unit={chip.unit}
+          />
         ))}
       </div>
 
       {/* Desktop: wraps to at most 2 rows before handing off to mobile view */}
       <div className="hidden md:flex md:flex-wrap gap-x-4 gap-y-3">
         {chips.map(chip => (
-          <CompactStatItem key={chip.fieldKey} {...chip} />
+          <CompactStatItem
+            key={chip.fieldKey}
+            shortLabel={chip.shortLabel}
+            color={chip.color}
+            current={chip.current}
+            delta={chip.delta}
+            unit={chip.unit}
+          />
         ))}
       </div>
     </div>

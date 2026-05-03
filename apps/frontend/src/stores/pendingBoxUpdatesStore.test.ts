@@ -6,10 +6,7 @@
  * If vitest is not available, use Jest with npm install vitest
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import {
-  usePendingBoxUpdatesStore,
-  type PendingBoxUpdate,
-} from './pendingBoxUpdatesStore';
+import { usePendingBoxUpdatesStore } from './pendingBoxUpdatesStore';
 
 describe('PendingBoxUpdatesStore', () => {
   // Helper to get current state
@@ -105,12 +102,7 @@ describe('PendingBoxUpdatesStore', () => {
         status: 'in-progress',
       });
 
-      const firstUpdate = getState().getPendingUpdate(inspectionId);
-      const firstTimestamp = firstUpdate?.attemptedAt;
-
       // Wait slightly to ensure different timestamp
-      const sleep = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
       // Small delay to ensure timestamp difference (if system is fast)
       await new Promise((resolve) => setImmediate(resolve));
 

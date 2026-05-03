@@ -3,6 +3,7 @@ import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { Package, Snowflake } from 'lucide-react';
 import { AlertsPopover } from '@/components/alerts';
+import { HiveScoreIndicator } from '@/components/hive';
 
 interface HiveCardProps {
   hive: HiveWithBoxesResponse;
@@ -17,19 +18,6 @@ export const HiveCard = ({
   isDragging,
   className,
 }: HiveCardProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-500';
-      case 'INACTIVE':
-        return 'bg-yellow-500';
-      case 'DEAD':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
   const getBoxHeight = (variant?: BoxVariantEnum) => {
     if (!variant) return 'h-8';
 
@@ -85,34 +73,13 @@ export const HiveCard = ({
             )}
             <h4 className="font-medium text-sm truncate">{hive.name}</h4>
           </div>
-          {isSubjective ? (
-            hive.lastInspectionOverallScore == null ? (
-              <div
-                className={cn(
-                  'w-2 h-2 rounded-full flex-shrink-0',
-                  getStatusColor(hive.status),
-                )}
-              />
-            ) : (
-              <span className="text-xs font-semibold tabular-nums text-muted-foreground flex-shrink-0">
-                {hive.lastInspectionOverallScore.toFixed(1)}/10
-              </span>
-            )
-          ) : hive.lastInspectionStrength == null ? (
-            <div
-              className={cn(
-                'w-2 h-2 rounded-full flex-shrink-0',
-                getStatusColor(hive.status),
-              )}
-            />
-          ) : (
-            <span className="text-xs font-semibold tabular-nums text-muted-foreground flex-shrink-0">
-              {hive.lastInspectionStrength}
-              {hive.lastInspectionTotalFrames != null && (
-                <span className="font-normal">/{hive.lastInspectionTotalFrames}</span>
-              )}
-            </span>
-          )}
+          <HiveScoreIndicator
+            status={hive.status}
+            score={isSubjective ? hive.lastInspectionOverallScore : hive.lastInspectionStrength}
+            inspectionType={isSubjective ? 'subjective' : 'data_driven'}
+            strength={hive.lastInspectionStrength}
+            totalFrames={hive.lastInspectionTotalFrames}
+          />
         </div>
 
         {hive.lastInspectionDate && (

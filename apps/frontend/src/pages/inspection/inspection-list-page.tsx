@@ -316,6 +316,122 @@ const getStatusBadge = (
   }
 };
 
+/**
+ * Renders the weather cell content: temperature and weather icon
+ */
+const renderWeatherCell = (inspection: InspectionResponse, t: (key: string) => string) => {
+  return (
+    <div className="flex items-center gap-2">
+      {inspection.temperature && (
+        <div className="flex items-center gap-1 text-muted-foreground">
+          <ThermometerIcon className="h-4 w-4" />
+          <span>{inspection.temperature}°</span>
+        </div>
+      )}
+      {inspection.weatherConditions ? (
+        <div className="flex items-center gap-1">
+          {getWeatherIcon(inspection.weatherConditions)}
+        </div>
+      ) : (
+        <span className="text-muted-foreground italic">
+          {t('inspection:fields.notRecorded')}
+        </span>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Renders the strength/frame cell with popover containing frame breakdown
+ */
+const renderStrengthCell = (
+  inspection: InspectionResponse,
+  activeTab: InspectionTab,
+  isSubjective: boolean,
+  strength: number | null,
+  totalFrames: number | null,
+  strengthDelta: number | null,
+  frameCounts: number[],
+  frameTotal: number,
+  framePcts: number[] | null,
+  obs: NonNullable<InspectionResponse['observations']> | undefined,
+  t: (key: string) => string,
+) => {
+  // If subjective, upcoming, or scheduled - show status badge instead
+  if (
+    isSubjective ||
+    activeTab === InspectionTab.UPCOMING ||
+    inspection.status === InspectionStatus.SCHEDULED
+  ) {
+    return getStatusBadge(inspection.status, t);
+  }
+
+  // Otherwise show strength with popover
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="sm" className="flex items-center gap-1 p-0 h-auto">
+          {strength == null ? (
+            <span className="text-muted-foreground text-sm">—</span>
+          ) : (
+            <>
+              <span className="font-medium tabular-nums">
+                {strength}{totalFrames != null ? `/${totalFrames}` : ''}
+              </span>
+              <TrendIndicator delta={strengthDelta} iconSize="h-3 w-3" />
+            </>
+          )}
+          <InfoIcon className="h-3 w-3 text-muted-foreground ml-1" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-60">
+        <div className="space-y-3">
+          <h4 className="font-medium text-sm">Brood Nest Stats</h4>
+
+          {framePcts ? (
+            <div className="space-y-1.5">
+              {FRAME_FIELDS.map((f, i) => {
+                if (frameCounts[i] === 0) return null;
+                return (
+                  <div key={f.key} className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: f.color }} />
+                    <span className="text-sm flex-1">{f.label}</span>
+                    <span className="text-sm font-medium tabular-nums">{framePcts[i]}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">No frame data recorded</p>
+          )}
+
+          {obs?.queenCells != null && obs.queenCells > 0 && (
+            <div className="flex items-center gap-2 pt-2 border-t">
+              <CrownIcon className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+              <span className="text-sm flex-1">Queen Cells</span>
+              <span className="text-sm font-medium tabular-nums">{obs.queenCells}</span>
+            </div>
+          )}
+
+          {inspection.score?.warnings && inspection.score.warnings.length > 0 && (
+            <div className="pt-2 border-t">
+              <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1 mb-1">
+                <ActivityIcon className="h-3 w-3" />
+                {t('inspection:scores.warnings')}
+              </h5>
+              <ul className="text-xs space-y-1">
+                {inspection.score.warnings.map(warning => (
+                  <li key={warning} className="text-muted-foreground">{warning}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
 const InspectionTableRow = ({
   inspection,
   index,
@@ -369,91 +485,21 @@ const InspectionTableRow = ({
       </TableCell>
       <TableCell>{getHiveName(inspection.hiveId, hives, t)}</TableCell>
       <TableCell>
-        <div className="flex items-center gap-2">
-          {inspection.temperature && (
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <ThermometerIcon className="h-4 w-4" />
-              <span>{inspection.temperature}°</span>
-            </div>
-          )}
-          {inspection.weatherConditions ? (
-            <div className="flex items-center gap-1">
-              {getWeatherIcon(inspection.weatherConditions)}
-            </div>
-          ) : (
-            <span className="text-muted-foreground italic">
-              {t('inspection:fields.notRecorded')}
-            </span>
-          )}
-        </div>
+        {renderWeatherCell(inspection, t)}
       </TableCell>
       <TableCell>
-        {isSubjective ||
-          activeTab === InspectionTab.UPCOMING ||
-          inspection.status === InspectionStatus.SCHEDULED ? (
-          getStatusBadge(inspection.status, t)
-        ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex items-center gap-1 p-0 h-auto">
-                {strength == null ? (
-                  <span className="text-muted-foreground text-sm">—</span>
-                ) : (
-                  <>
-                    <span className="font-medium tabular-nums">
-                      {strength}{totalFrames != null ? `/${totalFrames}` : ''}
-                    </span>
-                    <TrendIndicator delta={strengthDelta} iconSize="h-3 w-3" />
-                  </>
-                )}
-                <InfoIcon className="h-3 w-3 text-muted-foreground ml-1" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-60">
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Brood Nest Stats</h4>
-
-                {framePcts ? (
-                  <div className="space-y-1.5">
-                    {FRAME_FIELDS.map((f, i) => {
-                      if (frameCounts[i] === 0) return null;
-                      return (
-                        <div key={f.key} className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: f.color }} />
-                          <span className="text-sm flex-1">{f.label}</span>
-                          <span className="text-sm font-medium tabular-nums">{framePcts[i]}%</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">No frame data recorded</p>
-                )}
-
-                {obs?.queenCells != null && obs.queenCells > 0 && (
-                  <div className="flex items-center gap-2 pt-2 border-t">
-                    <CrownIcon className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                    <span className="text-sm flex-1">Queen Cells</span>
-                    <span className="text-sm font-medium tabular-nums">{obs.queenCells}</span>
-                  </div>
-                )}
-
-                {inspection.score?.warnings && inspection.score.warnings.length > 0 && (
-                  <div className="pt-2 border-t">
-                    <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1 mb-1">
-                      <ActivityIcon className="h-3 w-3" />
-                      {t('inspection:scores.warnings')}
-                    </h5>
-                    <ul className="text-xs space-y-1">
-                      {inspection.score.warnings.map(warning => (
-                        <li key={warning} className="text-muted-foreground">{warning}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+        {renderStrengthCell(
+          inspection,
+          activeTab,
+          isSubjective,
+          strength,
+          totalFrames,
+          strengthDelta,
+          frameCounts,
+          frameTotal,
+          framePcts,
+          obs,
+          t,
         )}
       </TableCell>
       <TableCell>

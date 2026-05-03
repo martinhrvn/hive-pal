@@ -77,7 +77,8 @@ export class InspectionAudioService {
   private aiApiKey: string;
 
   private resolveBackendBaseUrl(): string {
-    const backendPublicUrl = this.configService.get<string>('BACKEND_PUBLIC_URL');
+    const backendPublicUrl =
+      this.configService.get<string>('BACKEND_PUBLIC_URL');
 
     if (backendPublicUrl) {
       return backendPublicUrl.replace(/\/$/, '');
