@@ -1,28 +1,21 @@
 import { safeJsonParse } from './safe-json-parse';
 import { z } from 'zod';
+import { Logger } from 'winston';
 
 describe('safeJsonParse (Backend)', () => {
-  let mockLogger: {
-    error: jest.Mock;
-    warn: jest.Mock;
-  };
+  let mockLogger: Logger;
 
   beforeEach(() => {
     mockLogger = {
       error: jest.fn(),
       warn: jest.fn(),
-    };
+    } as unknown as Logger;
   });
 
   describe('Null/Undefined/Empty Input Handling', () => {
     it('should return null for null input without logging', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse(
-        null,
-        schema,
-        mockLogger as any,
-        'test context',
-      );
+      const result = safeJsonParse(null, schema, mockLogger, 'test context');
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -33,7 +26,7 @@ describe('safeJsonParse (Backend)', () => {
       const result = safeJsonParse(
         undefined,
         schema,
-        mockLogger as any,
+        mockLogger,
         'test context',
       );
       expect(result).toBeNull();
@@ -43,12 +36,7 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should return null for empty string without logging', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse(
-        '',
-        schema,
-        mockLogger as any,
-        'test context',
-      );
+      const result = safeJsonParse('', schema, mockLogger, 'test context');
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -56,12 +44,7 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should return null for whitespace-only string without logging', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse(
-        '   ',
-        schema,
-        mockLogger as any,
-        'test context',
-      );
+      const result = safeJsonParse('   ', schema, mockLogger, 'test context');
       expect(result).toBeNull();
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -72,12 +55,7 @@ describe('safeJsonParse (Backend)', () => {
     it('should parse valid array of strings', () => {
       const schema = z.array(z.string());
       const input = JSON.stringify(['a', 'b', 'c']);
-      const result = safeJsonParse(
-        input,
-        schema,
-        mockLogger as any,
-        'test context',
-      );
+      const result = safeJsonParse(input, schema, mockLogger, 'test context');
       expect(result).toEqual(['a', 'b', 'c']);
       expect(mockLogger.error).not.toHaveBeenCalled();
       expect(mockLogger.warn).not.toHaveBeenCalled();
@@ -96,12 +74,7 @@ describe('safeJsonParse (Backend)', () => {
         sub: 'user123',
         email: 'user@example.com',
       });
-      const result = safeJsonParse(
-        input,
-        schema,
-        mockLogger as any,
-        'JWT payload',
-      );
+      const result = safeJsonParse(input, schema, mockLogger, 'JWT payload');
       expect(result).toEqual({
         exp: 1234567890,
         iat: 1234567890,
@@ -124,7 +97,7 @@ describe('safeJsonParse (Backend)', () => {
       const result = safeJsonParse(
         input,
         schema,
-        mockLogger as any,
+        mockLogger,
         'dismissed releases',
       );
       expect(result).toEqual([
@@ -140,12 +113,13 @@ describe('safeJsonParse (Backend)', () => {
       const result = safeJsonParse(
         'invalid json',
         schema,
-        mockLogger as any,
+        mockLogger,
         'test context',
       );
       expect(result).toBeNull();
       expect(mockLogger.error).toHaveBeenCalled();
-      const errorCall = mockLogger.error.mock.calls[0];
+      const errorCall = (mockLogger.error as jest.Mock).mock
+        .calls[0] as unknown[];
       expect(String(errorCall[0])).toContain(
         'Failed to parse JSON for "test context"',
       );
@@ -154,30 +128,22 @@ describe('safeJsonParse (Backend)', () => {
     it('should include first 100 chars of input in error log', () => {
       const schema = z.array(z.string());
       const longInvalidJson = '{invalid' + 'x'.repeat(200);
-      const result = safeJsonParse(
-        longInvalidJson,
-        schema,
-        mockLogger as any,
-        'test',
-      );
+      const result = safeJsonParse(longInvalidJson, schema, mockLogger, 'test');
       expect(result).toBeNull();
-      const errorCall = mockLogger.error.mock.calls[0];
-      const metadata = errorCall[1];
+      const errorCall = (mockLogger.error as jest.Mock).mock
+        .calls[0] as unknown[];
+      const metadata = errorCall[1] as Record<string, unknown>;
       expect(metadata.snippet).toHaveLength(100);
       expect(metadata.snippet).toBe(longInvalidJson.substring(0, 100));
     });
 
     it('should include original error in log', () => {
       const schema = z.array(z.string());
-      const result = safeJsonParse(
-        'invalid',
-        schema,
-        mockLogger as any,
-        'test',
-      );
+      const result = safeJsonParse('invalid', schema, mockLogger, 'test');
       expect(result).toBeNull();
-      const errorCall = mockLogger.error.mock.calls[0];
-      const metadata = errorCall[1];
+      const errorCall = (mockLogger.error as jest.Mock).mock
+        .calls[0] as unknown[];
+      const metadata = errorCall[1] as Record<string, unknown>;
       expect(metadata.originalError).toBeInstanceOf(Error);
     });
   });
@@ -186,15 +152,11 @@ describe('safeJsonParse (Backend)', () => {
     it('should return null and log warning for type mismatch', () => {
       const schema = z.array(z.string());
       const input = JSON.stringify([1, 2, 3]);
-      const result = safeJsonParse(
-        input,
-        schema,
-        mockLogger as any,
-        'test context',
-      );
+      const result = safeJsonParse(input, schema, mockLogger, 'test context');
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalled();
-      const warnCall = mockLogger.warn.mock.calls[0];
+      const warnCall = (mockLogger.warn as jest.Mock).mock
+        .calls[0] as unknown[];
       expect(String(warnCall[0])).toContain(
         'Schema validation failed for "test context"',
       );
@@ -206,7 +168,7 @@ describe('safeJsonParse (Backend)', () => {
         age: z.number(),
       });
       const input = JSON.stringify({ email: 'user@example.com' });
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test');
+      const result = safeJsonParse(input, schema, mockLogger, 'test');
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalled();
     });
@@ -223,15 +185,11 @@ describe('safeJsonParse (Backend)', () => {
       const input = JSON.stringify({
         items: [{ id: 'invalid', name: 'test' }],
       });
-      const result = safeJsonParse(
-        input,
-        schema,
-        mockLogger as any,
-        'nested test',
-      );
+      const result = safeJsonParse(input, schema, mockLogger, 'nested test');
       expect(result).toBeNull();
-      const warnCall = mockLogger.warn.mock.calls[0];
-      const metadata = warnCall[1];
+      const warnCall = (mockLogger.warn as jest.Mock).mock
+        .calls[0] as unknown[];
+      const metadata = warnCall[1] as Record<string, unknown>;
       expect(metadata.validationErrors).toBeDefined();
     });
 
@@ -243,12 +201,13 @@ describe('safeJsonParse (Backend)', () => {
       const result = safeJsonParse(
         input,
         schema,
-        mockLogger as any,
+        mockLogger,
         'email validation',
       );
       expect(result).toBeNull();
-      const warnCall = mockLogger.warn.mock.calls[0];
-      const metadata = warnCall[1];
+      const warnCall = (mockLogger.warn as jest.Mock).mock
+        .calls[0] as unknown[];
+      const metadata = warnCall[1] as Record<string, unknown>;
       expect(Array.isArray(metadata.validationErrors)).toBe(true);
     });
   });
@@ -260,7 +219,7 @@ describe('safeJsonParse (Backend)', () => {
         age: z.number(),
       });
       const input = JSON.stringify({ name: 'John', age: 30 });
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test');
+      const result = safeJsonParse(input, schema, mockLogger, 'test');
       if (result !== null) {
         const name: string = result.name;
         const age: number = result.age;
@@ -272,7 +231,7 @@ describe('safeJsonParse (Backend)', () => {
     it('should infer correct type for array schema', () => {
       const schema = z.array(z.string());
       const input = JSON.stringify(['a', 'b', 'c']);
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test');
+      const result = safeJsonParse(input, schema, mockLogger, 'test');
       if (result !== null) {
         const items: string[] = result;
         expect(items).toEqual(['a', 'b', 'c']);
@@ -284,14 +243,14 @@ describe('safeJsonParse (Backend)', () => {
     it('should handle empty array', () => {
       const schema = z.array(z.string());
       const input = JSON.stringify([]);
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test');
+      const result = safeJsonParse(input, schema, mockLogger, 'test');
       expect(result).toEqual([]);
     });
 
     it('should handle empty object', () => {
       const schema = z.object({});
       const input = JSON.stringify({});
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test');
+      const result = safeJsonParse(input, schema, mockLogger, 'test');
       expect(result).toEqual({});
     });
 
@@ -300,19 +259,19 @@ describe('safeJsonParse (Backend)', () => {
         value: z.string().nullable(),
       });
       const input = JSON.stringify({ value: null });
-      const result = safeJsonParse(input, schema, mockLogger as any, 'test');
+      const result = safeJsonParse(input, schema, mockLogger, 'test');
       expect(result).toEqual({ value: null });
     });
 
     it('should handle boolean values', () => {
       const schema = z.boolean();
-      const result = safeJsonParse('true', schema, mockLogger as any, 'test');
+      const result = safeJsonParse('true', schema, mockLogger, 'test');
       expect(result).toBe(true);
     });
 
     it('should handle numeric values', () => {
       const schema = z.number();
-      const result = safeJsonParse('42', schema, mockLogger as any, 'test');
+      const result = safeJsonParse('42', schema, mockLogger, 'test');
       expect(result).toBe(42);
     });
   });
@@ -320,23 +279,20 @@ describe('safeJsonParse (Backend)', () => {
   describe('Context String Usage', () => {
     it('should include context string in error messages', () => {
       const schema = z.array(z.string());
-      safeJsonParse(
-        'invalid json',
-        schema,
-        mockLogger as any,
-        'score warnings',
-      );
+      safeJsonParse('invalid json', schema, mockLogger, 'score warnings');
       expect(mockLogger.error).toHaveBeenCalled();
-      const errorCall = mockLogger.error.mock.calls[0];
+      const errorCall = (mockLogger.error as jest.Mock).mock
+        .calls[0] as unknown[];
       expect(String(errorCall[0])).toContain('score warnings');
     });
 
     it('should include context string in warning messages', () => {
       const schema = z.array(z.number());
       const input = JSON.stringify(['not', 'numbers']);
-      safeJsonParse(input, schema, mockLogger as any, 'box configuration');
+      safeJsonParse(input, schema, mockLogger, 'box configuration');
       expect(mockLogger.warn).toHaveBeenCalled();
-      const warnCall = mockLogger.warn.mock.calls[0];
+      const warnCall = (mockLogger.warn as jest.Mock).mock
+        .calls[0] as unknown[];
       expect(String(warnCall[0])).toContain('box configuration');
     });
   });

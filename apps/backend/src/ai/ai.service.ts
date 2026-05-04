@@ -7,7 +7,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import axios from 'axios';
-const FormData = require('form-data');
+import FormData from 'form-data';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 
@@ -60,7 +60,7 @@ export class AiService {
       900,
     );
 
-    const audioResponse = await axios.get(downloadUrl, {
+    const audioResponse = await axios.get<ArrayBuffer>(downloadUrl, {
       responseType: 'arraybuffer',
     });
 

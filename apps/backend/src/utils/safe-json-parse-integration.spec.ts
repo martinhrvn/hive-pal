@@ -1,5 +1,6 @@
 import { safeJsonParse } from './safe-json-parse';
 import { z } from 'zod';
+import { Logger } from 'winston';
 
 /**
  * Integration tests for safe JSON parsing call sites
@@ -8,18 +9,14 @@ import { z } from 'zod';
  */
 
 describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
-  let mockLogger: {
-    error: jest.Mock;
-    warn: jest.Mock;
-    info: jest.Mock;
-  };
+  let mockLogger: Logger;
 
   beforeEach(() => {
     mockLogger = {
       error: jest.fn(),
       warn: jest.fn(),
       info: jest.fn(),
-    };
+    } as unknown as Logger;
   });
 
   describe('REQ-7: Backend Call Sites - Task 2.1 - Score Warnings (inspections.service.ts:728)', () => {
@@ -35,7 +32,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         validWarnings,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -49,7 +46,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         invalidJson,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -62,7 +59,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         null,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -76,7 +73,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         wrongType,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -90,7 +87,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         emptyArray,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -104,7 +101,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const nullResult = safeJsonParse(
         null,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
       const fallback = nullResult ?? ['fallback_warning'];
@@ -122,7 +119,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         validConfig,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -136,7 +133,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         invalidJson,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -149,7 +146,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         undefined,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -163,7 +160,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         mixedArray,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -176,7 +173,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const nullResult = safeJsonParse(
         '',
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
       const fallback = nullResult ?? [];
@@ -194,7 +191,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         invalidJson,
         unknownSchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -204,7 +201,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('PASS: should log error with Sentry test context', () => {
       const invalidJson = 'invalid json';
-      safeJsonParse(invalidJson, unknownSchema, mockLogger as any, context);
+      safeJsonParse(invalidJson, unknownSchema, mockLogger, context);
 
       expect(mockLogger.error.mock.calls[0][0]).toContain('Sentry test');
     });
@@ -214,7 +211,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         validJson,
         unknownSchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -225,7 +222,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         'invalid json',
         unknownSchema,
-        mockLogger as any,
+        mockLogger,
         context,
       );
 
@@ -251,7 +248,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         const result = safeJsonParse(
           null,
           stringArraySchema,
-          mockLogger as any,
+          mockLogger,
           context,
         );
         expect(result).toBeNull();
@@ -268,7 +265,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         const result = safeJsonParse(
           '',
           stringArraySchema,
-          mockLogger as any,
+          mockLogger,
           context,
         );
         expect(result).toBeNull();
@@ -294,7 +291,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         const result = safeJsonParse(
           invalid,
           stringArraySchema,
-          mockLogger as any,
+          mockLogger,
           context,
         );
 
@@ -309,12 +306,14 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         longInvalidJson,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'test',
       );
 
       expect(result).toBeNull();
-      const metadata = mockLogger.error.mock.calls[0][1];
+      const errorCall = (mockLogger.error as jest.Mock).mock
+        .calls[0] as unknown[];
+      const metadata = errorCall[1] as Record<string, unknown>;
       expect(metadata.snippet).toHaveLength(100);
       expect(metadata.snippet).toBe(longInvalidJson.substring(0, 100));
     });
@@ -337,12 +336,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
       testCases.forEach(({ context, schema, invalid }) => {
         mockLogger.warn.mockClear();
-        const result = safeJsonParse(
-          invalid,
-          schema,
-          mockLogger as any,
-          context,
-        );
+        const result = safeJsonParse(invalid, schema, mockLogger, context);
 
         expect(result).toBeNull();
         expect(mockLogger.warn).toHaveBeenCalledTimes(1);
@@ -358,7 +352,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         JSON.stringify(['a', 'b']),
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'test',
       );
 
@@ -379,7 +373,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         JSON.stringify({ id: 1, name: 'test', tags: ['tag1'] }),
         complexSchema,
-        mockLogger as any,
+        mockLogger,
         'test',
       );
 
@@ -401,7 +395,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         dbValue,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -415,7 +409,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         corruptedData,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -428,7 +422,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         unicodeData,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -444,7 +438,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         specialChars,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -458,7 +452,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         largeJson,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -471,7 +465,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         paddedJson,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -487,7 +481,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         xssPayload,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -500,7 +494,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       const result = safeJsonParse(
         sqlPayload,
         stringArraySchema,
-        mockLogger as any,
+        mockLogger,
         'score warnings',
       );
 
@@ -509,16 +503,17 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
 
     it('FAIL: Should prevent prototype pollution attempts', () => {
       const prototypePayload = '{"__proto__":{"polluted":"yes"}}';
-      const anySchema = z.any();
+      const anySchema = z.unknown();
       const result = safeJsonParse(
         prototypePayload,
         anySchema,
-        mockLogger as any,
+        mockLogger,
         'test',
       );
 
       expect(result).toBeTruthy();
       // Verify prototype was not polluted
+
       expect((Object.prototype as any).polluted).toBeUndefined();
     });
   });
