@@ -130,6 +130,17 @@ export class WeatherService {
       return;
     }
 
+    // Verify apiary exists before trying to save weather data
+    const apiaryExists = await this.prisma.apiary.findUnique({
+      where: { id: apiaryId },
+      select: { id: true },
+    });
+
+    if (!apiaryExists) {
+      this.logger.warn(`Apiary ${apiaryId} not found, skipping weather update`);
+      return;
+    }
+
     const {
       time,
       temperature_2m,
@@ -202,7 +213,8 @@ export class WeatherService {
         `Failed to save hourly weather for apiary ${apiaryId}:`,
         error,
       );
-      throw error;
+      // Don't re-throw - allow other apiaries to be processed
+      // Errors are already caught and handled at the caller level
     }
   }
 
@@ -216,6 +228,19 @@ export class WeatherService {
     if (!data.daily) {
       this.logger.warn(
         `No daily forecast data received for apiary ${apiaryId}`,
+      );
+      return;
+    }
+
+    // Verify apiary exists before trying to save weather data
+    const apiaryExists = await this.prisma.apiary.findUnique({
+      where: { id: apiaryId },
+      select: { id: true },
+    });
+
+    if (!apiaryExists) {
+      this.logger.warn(
+        `Apiary ${apiaryId} not found, skipping daily forecast update`,
       );
       return;
     }
