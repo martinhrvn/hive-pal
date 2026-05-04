@@ -7,6 +7,7 @@
  * Used across multiple components for consistency in frame display and charts.
  */
 
+// eslint-disable-next-line sonar/no-duplicate-string -- Intentional: declarative config with consistent structure for type safety and readability
 export const FRAME_FIELDS = [
   {
     key: 'eggsFrames' as const,

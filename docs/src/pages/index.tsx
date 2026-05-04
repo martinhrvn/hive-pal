@@ -77,6 +77,7 @@ function FeaturesSection() {
 }
 
 function ProjectStatsSection() {
+  // eslint-disable-next-line sonar/no-duplicate-string -- Intentional: Declarative stat card JSX structure
   return (
       <section className={styles.statsSection}>
         <div className="container">
