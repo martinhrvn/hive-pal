@@ -141,9 +141,11 @@ export class InspectionsService {
             ? 'SCHEDULED'
             : 'COMPLETED');
 
-        const calculatedScore = observations
-          ? calculateScores(observations)
-          : null;
+        const inspectionType = parseApiaryInspectionType(hive.apiary?.settings);
+        const calculatedScore =
+          observations && inspectionType !== 'subjective'
+            ? calculateScores(observations)
+            : null;
         const scoreData = this.getScoreData(
           scoreOverride,
           calculatedScore,
@@ -372,9 +374,13 @@ export class InspectionsService {
         }
 
         const status = updateInspectionDto.status;
-        const calculatedScore = observations
-          ? calculateScores(observations)
-          : null;
+        const inspectionType = parseApiaryInspectionType(
+          inspection.hive.apiary?.settings,
+        );
+        const calculatedScore =
+          observations && inspectionType !== 'subjective'
+            ? calculateScores(observations)
+            : null;
         const scoreUpdateData = this.getScoreData(
           scoreOverride,
           calculatedScore,
