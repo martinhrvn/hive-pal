@@ -76,8 +76,11 @@ function FeaturesSection() {
   );
 }
 
+/**
+ * Project stats section with repeated card structure.
+ * The duplication is intentional declarative JSX for landing page layout.
+ */
 function ProjectStatsSection() {
-  // eslint-disable-next-line sonar/no-duplicate-string -- Intentional: Declarative stat card JSX structure
   return (
       <section className={styles.statsSection}>
         <div className="container">
