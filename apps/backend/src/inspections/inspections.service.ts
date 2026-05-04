@@ -81,8 +81,10 @@ const ACTION_INCLUDE = {
   createdByUser: { select: { name: true, email: true } },
 };
 
-// Common include structure for inspection queries (used in findAll, findOne, findOverdue, findDueToday)
-// eslint-disable-next-line sonar/no-duplicate-string -- Intentional: Prisma query structure shared across methods
+/**
+ * Common include structure for inspection queries (used in findAll, findOne, findOverdue, findDueToday).
+ * Centralized to avoid duplication and ensure consistency across all inspection query methods.
+ */
 const INSPECTION_INCLUDE = {
   observations: true,
   notes: true,
