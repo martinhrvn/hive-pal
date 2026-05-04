@@ -4,6 +4,25 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { decodeJwt, isTokenExpired } from './jwt-utils';
 
+/**
+ * Helper function to create a mock JWT token for testing
+ * @param payload - The JWT payload object (can be any object, not validated here)
+ * @returns A mock JWT token string in the format header.payload.signature
+ */
+function createMockJwt(payload: unknown): string {
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const encodedPayload = btoa(
+    typeof payload === 'string' ? payload : JSON.stringify(payload),
+  )
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    // Security fix: Use bounded quantifier /={1,3}$/ instead of /=+$/ to prevent ReDoS.
+    // Base64 padding is always 0-3 '=' characters maximum, so bounded quantifier is safe.
+    .replace(/={1,3}$/, '');
+  const signature = 'fake-signature';
+  return `${header}.${encodedPayload}.${signature}`;
+}
+
 describe('jwt-utils integration with safeJsonParse', () => {
   let consoleSpy: {
     error: ReturnType<typeof vi.spyOn>;
@@ -24,24 +43,13 @@ describe('jwt-utils integration with safeJsonParse', () => {
 
   describe('decodeJwt', () => {
     it('should decode a valid JWT token', () => {
-      // Create a valid JWT payload
       const payload = {
         exp: Math.floor(Date.now() / 1000) + 3600,
         iat: Math.floor(Date.now() / 1000),
         sub: 'user123',
         email: 'user@example.com',
       };
-
-      // Manually encode a JWT (header.payload.signature)
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const encodedPayload = btoa(JSON.stringify(payload))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        // Security fix: Use bounded quantifier /={1,3}$/ instead of /=+$/ to prevent ReDoS.
-        // Base64 padding is always 0-3 '=' characters maximum, so bounded quantifier is safe.
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${encodedPayload}.${signature}`;
+      const token = createMockJwt(payload);
 
       const result = decodeJwt(token);
 
@@ -56,13 +64,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
     });
 
     it('should return null and log error for token with malformed JSON payload', () => {
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const malformedPayload = btoa('invalid json')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${malformedPayload}.${signature}`;
+      const token = createMockJwt('invalid json');
 
       const result = decodeJwt(token);
 
@@ -80,14 +82,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
         iat: Math.floor(Date.now() / 1000),
         sub: 'user123',
       };
-
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const encodedPayload = btoa(JSON.stringify(invalidPayload))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${encodedPayload}.${signature}`;
+      const token = createMockJwt(invalidPayload);
 
       const result = decodeJwt(token);
 
@@ -105,14 +100,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
         sub: 'user123',
         email: 'not-an-email',
       };
-
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const encodedPayload = btoa(JSON.stringify(invalidPayload))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${encodedPayload}.${signature}`;
+      const token = createMockJwt(invalidPayload);
 
       const result = decodeJwt(token);
 
@@ -129,14 +117,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
         sub: 'user123',
         email: 'user@example.com',
       };
-
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const encodedPayload = btoa(JSON.stringify(payload))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${encodedPayload}.${signature}`;
+      const token = createMockJwt(payload);
 
       const result = isTokenExpired(token);
 
@@ -150,14 +131,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
         sub: 'user123',
         email: 'user@example.com',
       };
-
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const encodedPayload = btoa(JSON.stringify(payload))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${encodedPayload}.${signature}`;
+      const token = createMockJwt(payload);
 
       const result = isTokenExpired(token);
 
@@ -176,14 +150,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
         sub: 'user123',
         email: 'user@example.com',
       };
-
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const encodedPayload = btoa(JSON.stringify(payload))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${encodedPayload}.${signature}`;
+      const token = createMockJwt(payload);
 
       const result = isTokenExpired(token);
 
@@ -193,13 +160,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
 
   describe('Edge cases', () => {
     it('should handle empty payload gracefully', () => {
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const emptyPayload = btoa('')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${emptyPayload}.${signature}`;
+      const token = createMockJwt('');
 
       const result = decodeJwt(token);
 
@@ -213,14 +174,7 @@ describe('jwt-utils integration with safeJsonParse', () => {
         sub: 'user123',
         email: 'user+test@example.com',
       };
-
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const encodedPayload = btoa(JSON.stringify(payload))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/={1,3}$/, '');
-      const signature = 'fake-signature';
-      const token = `${header}.${encodedPayload}.${signature}`;
+      const token = createMockJwt(payload);
 
       const result = decodeJwt(token);
 

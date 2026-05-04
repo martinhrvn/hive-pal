@@ -81,6 +81,27 @@ const ACTION_INCLUDE = {
   createdByUser: { select: { name: true, email: true } },
 };
 
+// Common include structure for inspection queries (used in findAll, findOne, findOverdue, findDueToday)
+// eslint-disable-next-line sonar/no-duplicate-string -- Intentional: Prisma query structure shared across methods
+const INSPECTION_INCLUDE = {
+  observations: true,
+  notes: true,
+  actions: {
+    include: ACTION_INCLUDE,
+  },
+  hive: {
+    select: {
+      name: true,
+      apiary: {
+        select: {
+          settings: true,
+        },
+      },
+    },
+  },
+  createdByUser: { select: { name: true, email: true } },
+} as const;
+
 @Injectable()
 export class InspectionsService {
   private readonly stringArraySchema = z.array(z.string());
@@ -231,24 +252,7 @@ export class InspectionsService {
       orderBy: {
         date: 'desc',
       },
-      include: {
-        observations: true,
-        notes: true,
-        actions: {
-          include: ACTION_INCLUDE,
-        },
-        hive: {
-          select: {
-            name: true,
-            apiary: {
-              select: {
-                settings: true,
-              },
-            },
-          },
-        },
-        createdByUser: { select: { name: true, email: true } },
-      },
+      include: INSPECTION_INCLUDE,
     });
 
     return this.mapInspectionsToDto(inspections);
@@ -267,24 +271,7 @@ export class InspectionsService {
           },
         },
       },
-      include: {
-        observations: true,
-        notes: true,
-        actions: {
-          include: ACTION_INCLUDE,
-        },
-        hive: {
-          select: {
-            name: true,
-            apiary: {
-              select: {
-                settings: true,
-              },
-            },
-          },
-        },
-        createdByUser: { select: { name: true, email: true } },
-      },
+      include: INSPECTION_INCLUDE,
     });
     if (!inspection) {
       return null;
@@ -476,24 +463,7 @@ export class InspectionsService {
       orderBy: {
         date: 'asc',
       },
-      include: {
-        observations: true,
-        notes: true,
-        actions: {
-          include: ACTION_INCLUDE,
-        },
-        hive: {
-          select: {
-            name: true,
-            apiary: {
-              select: {
-                settings: true,
-              },
-            },
-          },
-        },
-        createdByUser: { select: { name: true, email: true } },
-      },
+      include: INSPECTION_INCLUDE,
     });
 
     return this.mapInspectionsToDto(inspections);
@@ -526,24 +496,7 @@ export class InspectionsService {
       orderBy: {
         date: 'asc',
       },
-      include: {
-        observations: true,
-        notes: true,
-        actions: {
-          include: ACTION_INCLUDE,
-        },
-        hive: {
-          select: {
-            name: true,
-            apiary: {
-              select: {
-                settings: true,
-              },
-            },
-          },
-        },
-        createdByUser: { select: { name: true, email: true } },
-      },
+      include: INSPECTION_INCLUDE,
     });
 
     return this.mapInspectionsToDto(inspections);
