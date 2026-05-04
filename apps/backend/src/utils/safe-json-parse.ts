@@ -26,14 +26,14 @@ export function safeJsonParse<T>(
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
-  } catch (error) {
+  } catch (err: unknown) {
     // Log JSON syntax errors at ERROR level
     const snippet = raw.substring(0, 100);
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorMessage = err instanceof Error ? err.message : String(err);
     logger.error(`Failed to parse JSON for "${context}": ${errorMessage}`, {
       context: 'safeJsonParse',
       snippet,
-      originalError: error,
+      originalError: err,
     });
     return null;
   }
