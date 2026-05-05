@@ -37,7 +37,6 @@ import {
   PageAside,
   PageGrid,
 } from '@/components/layout/page-grid-layout';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -69,11 +68,6 @@ const formatDateTime = (value: string | null | undefined) => {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(value));
-};
-
-const isOnline = (lastSeenAt: string | null | undefined) => {
-  if (!lastSeenAt) return false;
-  return Date.now() - new Date(lastSeenAt).getTime() < 30 * 60 * 1000;
 };
 
 const latestMeasurement = (
