@@ -3,13 +3,17 @@ import {
   Injectable,
   InternalServerErrorException,
   HttpException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError, Method } from 'axios';
+import { UsersService } from '../users/users.service';
 
 export interface HiveScaleClaimDeviceDto {
   claim_code: string;
   display_name?: string;
+  scale_1_display_name?: string;
+  scale_2_display_name?: string;
 }
 
 export interface HiveScaleConfigPatchDto {
@@ -20,17 +24,37 @@ export interface HiveScaleConfigPatchDto {
   scale2_factor?: number;
 }
 
+export interface HiveScaleChannelsPatchDto {
+  scale_1_display_name?: string;
+  scale_2_display_name?: string;
+}
+
+export interface HiveScaleShareDeviceDto {
+  email: string;
+  role: 'admin' | 'viewer';
+}
+
 export interface HiveScaleMeasurementQuery {
   limit?: number;
   start_at?: string;
   end_at?: string;
 }
 
+interface HiveScaleMember {
+  user_id: string;
+  role: 'owner' | 'admin' | 'viewer';
+  invited_by: string | null;
+  created_at: string | null;
+}
+
 @Injectable()
 export class HiveScaleService {
   private readonly baseUrl: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+  ) {
     this.baseUrl = (this.configService.get<string>('HIVESCALE_API_BASE_URL') ?? '')
       .trim()
       .replace(/\/$/, '');
@@ -101,6 +125,10 @@ export class HiveScaleService {
     return this.request(userId, 'GET', '/api/v1/app/devices');
   }
 
+  removeDevice(userId: string, deviceId: string) {
+    return this.request(userId, 'DELETE', `/api/v1/app/devices/${deviceId}`);
+  }
+
   getDeviceConfig(userId: string, deviceId: string) {
     return this.request(userId, 'GET', `/api/v1/app/devices/${deviceId}/config`);
   }
@@ -111,6 +139,16 @@ export class HiveScaleService {
     payload: HiveScaleConfigPatchDto,
   ) {
     return this.request(userId, 'PATCH', `/api/v1/app/devices/${deviceId}/config`, {
+      data: payload,
+    });
+  }
+
+  updateDeviceChannels(
+    userId: string,
+    deviceId: string,
+    payload: HiveScaleChannelsPatchDto,
+  ) {
+    return this.request(userId, 'PATCH', `/api/v1/app/devices/${deviceId}/channels`, {
       data: payload,
     });
   }
@@ -134,6 +172,53 @@ export class HiveScaleService {
       'GET',
       `/api/v1/app/devices/${deviceId}/measurements/latest`,
       { params: { limit } },
+    );
+  }
+
+  async listMembers(userId: string, deviceId: string) {
+    const members = await this.request<HiveScaleMember[]>(
+      userId,
+      'GET',
+      `/api/v1/app/devices/${deviceId}/members`,
+    );
+
+    return Promise.all(
+      members.map(async member => {
+        const hivePalUser = await this.usersService.findById(member.user_id);
+        return {
+          ...member,
+          email: hivePalUser?.email ?? member.user_id,
+          name: hivePalUser?.name ?? null,
+        };
+      }),
+    );
+  }
+
+  async shareDevice(
+    ownerUserId: string,
+    deviceId: string,
+    payload: HiveScaleShareDeviceDto,
+  ) {
+    const email = payload.email.trim().toLowerCase();
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(`No HivePal user found for ${email}`);
+    }
+
+    return this.request(ownerUserId, 'POST', `/api/v1/app/devices/${deviceId}/members`, {
+      data: {
+        user_id: user.id,
+        role: payload.role,
+      },
+    });
+  }
+
+  revokeMember(ownerUserId: string, deviceId: string, memberUserId: string) {
+    return this.request(
+      ownerUserId,
+      'DELETE',
+      `/api/v1/app/devices/${deviceId}/members/${encodeURIComponent(memberUserId)}`,
     );
   }
 }

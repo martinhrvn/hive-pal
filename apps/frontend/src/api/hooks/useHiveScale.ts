@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 
+export interface HiveScaleChannel {
+  channel_number: 1 | 2;
+  name: string | null;
+}
+
 export interface HiveScaleDevice {
   device_id: string;
   display_name: string | null;
@@ -8,6 +13,7 @@ export interface HiveScaleDevice {
   last_seen_at: string | null;
   last_firmware_version: string | null;
   role: 'owner' | 'admin' | 'viewer';
+  channels: HiveScaleChannel[];
 }
 
 export interface HiveScaleMeasurement {
@@ -45,6 +51,8 @@ export interface HiveScaleDeviceConfig {
 export interface ClaimHiveScaleDeviceInput {
   claim_code: string;
   display_name?: string;
+  scale_1_display_name?: string;
+  scale_2_display_name?: string;
 }
 
 export interface HiveScaleConfigPatch {
@@ -53,6 +61,25 @@ export interface HiveScaleConfigPatch {
   scale1_factor?: number;
   scale2_offset?: number;
   scale2_factor?: number;
+}
+
+export interface HiveScaleChannelsPatch {
+  scale_1_display_name?: string;
+  scale_2_display_name?: string;
+}
+
+export interface HiveScaleShareInput {
+  email: string;
+  role: 'admin' | 'viewer';
+}
+
+export interface HiveScaleMember {
+  user_id: string;
+  email: string;
+  name: string | null;
+  role: 'owner' | 'admin' | 'viewer';
+  invited_by: string | null;
+  created_at: string | null;
 }
 
 export interface HiveScaleMeasurementQuery {
@@ -66,6 +93,8 @@ const HIVESCALE_KEYS = {
   devices: () => [...HIVESCALE_KEYS.all, 'devices'] as const,
   config: (deviceId: string | undefined) =>
     [...HIVESCALE_KEYS.all, 'config', deviceId] as const,
+  members: (deviceId: string | undefined) =>
+    [...HIVESCALE_KEYS.all, 'members', deviceId] as const,
   measurements: (
     deviceId: string | undefined,
     query: HiveScaleMeasurementQuery | undefined,
@@ -116,12 +145,42 @@ export const useHiveScaleMeasurements = (
   });
 };
 
+export const useHiveScaleMembers = (
+  deviceId: string | undefined,
+  enabled = true,
+) => {
+  return useQuery<HiveScaleMember[]>({
+    queryKey: HIVESCALE_KEYS.members(deviceId),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleMember[]>(
+        `/api/hivescale/devices/${deviceId}/members`,
+      );
+      return response.data;
+    },
+    enabled: !!deviceId && enabled,
+  });
+};
+
 export const useClaimHiveScaleDevice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: ClaimHiveScaleDeviceInput) => {
       const response = await apiClient.post('/api/hivescale/devices/claim', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+export const useRemoveHiveScaleDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (deviceId: string) => {
+      const response = await apiClient.delete(`/api/hivescale/devices/${deviceId}`);
       return response.data;
     },
     onSuccess: () => {
@@ -143,6 +202,56 @@ export const useUpdateHiveScaleConfig = (deviceId: string | undefined) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+    },
+  });
+};
+
+export const useUpdateHiveScaleChannels = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: HiveScaleChannelsPatch) => {
+      const response = await apiClient.patch(
+        `/api/hivescale/devices/${deviceId}/channels`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+export const useShareHiveScaleDevice = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: HiveScaleShareInput) => {
+      const response = await apiClient.post(
+        `/api/hivescale/devices/${deviceId}/members`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+    },
+  });
+};
+
+export const useRevokeHiveScaleMember = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (memberUserId: string) => {
+      const response = await apiClient.delete(
+        `/api/hivescale/devices/${deviceId}/members/${encodeURIComponent(memberUserId)}`,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
     },
   });
 };
