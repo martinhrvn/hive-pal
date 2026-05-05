@@ -257,24 +257,75 @@ function ClaimDeviceCard({ hiveNameOptions }: { hiveNameOptions: string[] }) {
   );
 }
 
-function DeviceConfigCard({ deviceId }: { deviceId: string | undefined }) {
+function DeviceConfigCard({
+  deviceId,
+  latest,
+}: {
+  deviceId: string | undefined;
+  latest: HiveScaleMeasurement | undefined;
+}) {
   const { data: config, isLoading } = useHiveScaleDeviceConfig(deviceId);
   const updateConfig = useUpdateHiveScaleConfig(deviceId);
   const [sendInterval, setSendInterval] = useState('');
+  const [scale1Offset, setScale1Offset] = useState('');
+  const [scale1Factor, setScale1Factor] = useState('');
+  const [scale2Offset, setScale2Offset] = useState('');
+  const [scale2Factor, setScale2Factor] = useState('');
 
   useEffect(() => {
-    if (config) setSendInterval(String(config.send_interval_seconds));
+    if (!config) return;
+    setSendInterval(String(config.send_interval_seconds));
+    setScale1Offset(String(config.scale1_offset));
+    setScale1Factor(String(config.scale1_factor));
+    setScale2Offset(String(config.scale2_offset));
+    setScale2Factor(String(config.scale2_factor));
   }, [config]);
 
-  const saveInterval = () => {
+  const saveConfig = () => {
     if (!deviceId) return;
-    const parsed = Number(sendInterval);
-    if (!Number.isFinite(parsed) || parsed < 60) {
-      toast.error('Use an interval of at least 60 seconds.');
+
+    const parsedSendInterval = Number(sendInterval);
+    if (
+      !Number.isFinite(parsedSendInterval) ||
+      !Number.isInteger(parsedSendInterval) ||
+      parsedSendInterval < 60
+    ) {
+      toast.error('Use a whole-number interval of at least 60 seconds.');
       return;
     }
+
+    const parsedScale1Offset = Number(scale1Offset);
+    const parsedScale2Offset = Number(scale2Offset);
+    if (
+      !Number.isFinite(parsedScale1Offset) ||
+      !Number.isInteger(parsedScale1Offset) ||
+      !Number.isFinite(parsedScale2Offset) ||
+      !Number.isInteger(parsedScale2Offset)
+    ) {
+      toast.error('Scale offsets must be whole raw-count numbers.');
+      return;
+    }
+
+    const parsedScale1Factor = Number(scale1Factor);
+    const parsedScale2Factor = Number(scale2Factor);
+    if (
+      !Number.isFinite(parsedScale1Factor) ||
+      parsedScale1Factor === 0 ||
+      !Number.isFinite(parsedScale2Factor) ||
+      parsedScale2Factor === 0
+    ) {
+      toast.error('Scale factors must be non-zero numbers.');
+      return;
+    }
+
     updateConfig.mutate(
-      { send_interval_seconds: parsed },
+      {
+        send_interval_seconds: parsedSendInterval,
+        scale1_offset: parsedScale1Offset,
+        scale1_factor: parsedScale1Factor,
+        scale2_offset: parsedScale2Offset,
+        scale2_factor: parsedScale2Factor,
+      },
       {
         onSuccess: () => toast.success('HiveScale config updated.'),
         onError: error => toast.error(error.message),
@@ -284,6 +335,9 @@ function DeviceConfigCard({ deviceId }: { deviceId: string | undefined }) {
 
   if (!deviceId) return null;
 
+  const latestScale1Raw = latest?.scale_1_raw;
+  const latestScale2Raw = latest?.scale_2_raw;
+
   return (
     <Card>
       <CardHeader>
@@ -292,9 +346,9 @@ function DeviceConfigCard({ deviceId }: { deviceId: string | undefined }) {
           Changes are read by the firmware during its next upload cycle.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         {isLoading ? (
-          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-48 w-full" />
         ) : config ? (
           <>
             <div className="space-y-2">
@@ -303,21 +357,106 @@ function DeviceConfigCard({ deviceId }: { deviceId: string | undefined }) {
                 id="send-interval"
                 type="number"
                 min={60}
+                step={1}
                 value={sendInterval}
                 onChange={event => setSendInterval(event.target.value)}
               />
             </div>
+
+            <div className="space-y-3 rounded-md border p-3">
+              <div>
+                <p className="font-medium">Scale 1 calibration</p>
+                <p className="text-xs text-muted-foreground">
+                  Latest raw: {numberOrDash(latestScale1Raw, 0)}. Weight is
+                  calculated as (raw - offset) / factor.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="scale-1-offset">
+                  Offset / empty raw reading
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="scale-1-offset"
+                    type="number"
+                    step={1}
+                    value={scale1Offset}
+                    onChange={event => setScale1Offset(event.target.value)}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={latestScale1Raw == null}
+                    onClick={() => setScale1Offset(String(latestScale1Raw))}
+                  >
+                    Use latest raw
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="scale-1-factor">Factor / raw counts per kg</Label>
+                <Input
+                  id="scale-1-factor"
+                  type="number"
+                  step="any"
+                  value={scale1Factor}
+                  onChange={event => setScale1Factor(event.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3 rounded-md border p-3">
+              <div>
+                <p className="font-medium">Scale 2 calibration</p>
+                <p className="text-xs text-muted-foreground">
+                  Latest raw: {numberOrDash(latestScale2Raw, 0)}. Weight is
+                  calculated as (raw - offset) / factor.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="scale-2-offset">
+                  Offset / empty raw reading
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="scale-2-offset"
+                    type="number"
+                    step={1}
+                    value={scale2Offset}
+                    onChange={event => setScale2Offset(event.target.value)}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={latestScale2Raw == null}
+                    onClick={() => setScale2Offset(String(latestScale2Raw))}
+                  >
+                    Use latest raw
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="scale-2-factor">Factor / raw counts per kg</Label>
+                <Input
+                  id="scale-2-factor"
+                  type="number"
+                  step="any"
+                  value={scale2Factor}
+                  onChange={event => setScale2Factor(event.target.value)}
+                />
+              </div>
+            </div>
+
             <Button
               className="w-full"
-              onClick={saveInterval}
+              onClick={saveConfig}
               disabled={updateConfig.isPending}
             >
-              {updateConfig.isPending ? 'Saving…' : 'Save interval'}
+              {updateConfig.isPending ? 'Saving…' : 'Save device config'}
             </Button>
             <div className="text-xs text-muted-foreground">
-              Config version {config.config_version}. Scale calibration factors
-              are still managed by the HiveScale backend/API and can be surfaced
-              here later.
+              Config version {config.config_version}. Use a negative factor if
+              the weight moves in the wrong direction.
             </div>
           </>
         ) : (
@@ -782,7 +921,7 @@ export function HiveScalePage() {
             selectedDevice={selectedDevice}
             hiveNameOptions={hiveNameOptions}
           />
-          <DeviceConfigCard deviceId={selectedDeviceId} />
+          <DeviceConfigCard deviceId={selectedDeviceId} latest={latest} />
         </div>
       </PageAside>
     </PageGrid>
