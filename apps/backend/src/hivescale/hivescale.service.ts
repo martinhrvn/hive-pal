@@ -50,6 +50,7 @@ interface HiveScaleMember {
 @Injectable()
 export class HiveScaleService {
   private readonly baseUrl: string;
+  private readonly serviceApiKey: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -58,6 +59,9 @@ export class HiveScaleService {
     this.baseUrl = (this.configService.get<string>('HIVESCALE_API_BASE_URL') ?? '')
       .trim()
       .replace(/\/$/, '');
+    this.serviceApiKey = (
+      this.configService.get<string>('HIVESCALE_SERVICE_API_KEY') ?? ''
+    ).trim();
   }
 
   private requireBaseUrl(): string {
@@ -67,6 +71,15 @@ export class HiveScaleService {
       );
     }
     return this.baseUrl;
+  }
+
+  private requireServiceApiKey(): string {
+    if (!this.serviceApiKey) {
+      throw new InternalServerErrorException(
+        'HIVESCALE_SERVICE_API_KEY is not configured on the HivePal backend',
+      );
+    }
+    return this.serviceApiKey;
   }
 
   private async request<T>(
@@ -86,6 +99,7 @@ export class HiveScaleService {
         headers: {
           'Content-Type': 'application/json',
           'X-User-Id': userId,
+          'X-HivePal-Service-Key': this.requireServiceApiKey(),
         },
       });
 
