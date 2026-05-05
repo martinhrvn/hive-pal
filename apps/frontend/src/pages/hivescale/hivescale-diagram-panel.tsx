@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import {
   Activity,
   Box,
@@ -22,7 +22,7 @@ import {
   LineChart,
   ReferenceLine,
   ResponsiveContainer,
-  Tooltip,
+  Tooltip as ChartTooltip,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -43,6 +43,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import type {
   HiveScaleDevice,
   HiveScaleMeasurement,
@@ -373,6 +378,33 @@ function MarkerReferenceLineLabel({
   );
 }
 
+function DiagramIconTooltip({
+  label,
+  description,
+  children,
+}: {
+  label: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="inline-flex shrink-0 cursor-help items-center"
+          aria-label={label}
+        >
+          {children}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs text-left">
+        <p className="font-medium">{label}</p>
+        <p>{description}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 function SeriesToggle({
   series,
   active,
@@ -413,7 +445,12 @@ function DateRangeSelector({
   return (
     <div className="space-y-3 rounded-md border p-3">
       <div className="flex items-center gap-2 text-sm font-medium">
-        <CalendarDays className="h-4 w-4" />
+        <DiagramIconTooltip
+          label="Date range"
+          description="Choose which measurement window is loaded into the diagram. Custom ranges are converted to UTC before querying HiveScale."
+        >
+          <CalendarDays className="h-4 w-4" />
+        </DiagramIconTooltip>
         Date range
       </div>
       <div className="flex flex-wrap gap-2">
@@ -708,7 +745,7 @@ export function HiveScaleDiagramPanel({
                     width={64}
                   />
                 )}
-                <Tooltip
+                <ChartTooltip
                   labelFormatter={value => formatDateTime(Number(value))}
                   formatter={(value, name) => [value, name]}
                 />
@@ -755,19 +792,40 @@ export function HiveScaleDiagramPanel({
             <div className="mb-2 font-medium text-foreground">Axis setup</div>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               <div className="flex items-center gap-2">
-                <HeartPulse className="h-4 w-4" /> Left: weight
+                <DiagramIconTooltip
+                  label="Weight axis"
+                  description="Left Y-axis for Scale 1 and Scale 2 weight readings in kg."
+                >
+                  <HeartPulse className="h-4 w-4" />
+                </DiagramIconTooltip>
+                Left: weight
               </div>
               <div className="flex items-center gap-2">
-                <Thermometer className="h-4 w-4" /> Right: temperature{' '}
-                {showTemperatureAxis ? '' : '(hidden)'}
+                <DiagramIconTooltip
+                  label="Temperature axis"
+                  description="Right Y-axis for hive and ambient temperature series in °C. It appears when a temperature series is selected."
+                >
+                  <Thermometer className="h-4 w-4" />
+                </DiagramIconTooltip>
+                Right: temperature {showTemperatureAxis ? '' : '(hidden)'}
               </div>
               <div className="flex items-center gap-2">
-                <Droplets className="h-4 w-4" /> Right: humidity{' '}
-                {showHumidityAxis ? '' : '(hidden)'}
+                <DiagramIconTooltip
+                  label="Humidity axis"
+                  description="Right Y-axis for ambient humidity in percent. It appears when ambient humidity is selected."
+                >
+                  <Droplets className="h-4 w-4" />
+                </DiagramIconTooltip>
+                Right: humidity {showHumidityAxis ? '' : '(hidden)'}
               </div>
               <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4" /> Right: battery{' '}
-                {showBatteryAxis ? '' : '(hidden)'}
+                <DiagramIconTooltip
+                  label="Battery axis"
+                  description="Right Y-axis for device battery voltage. It appears when battery voltage is selected."
+                >
+                  <Zap className="h-4 w-4" />
+                </DiagramIconTooltip>
+                Right: battery {showBatteryAxis ? '' : '(hidden)'}
               </div>
             </div>
           </div>
@@ -783,7 +841,14 @@ export function HiveScaleDiagramPanel({
                     const Icon = marker.Icon;
                     return (
                       <div key={marker.id} className="flex gap-2">
-                        <Icon className="mt-0.5 h-4 w-4 shrink-0" />
+                        <DiagramIconTooltip
+                          label={`${marker.label} marker`}
+                          description={`${marker.hiveName} · ${formatDateTime(
+                            marker.date,
+                          )} · ${marker.detail}`}
+                        >
+                          <Icon className="mt-0.5 h-4 w-4" />
+                        </DiagramIconTooltip>
                         <div className="min-w-0">
                           <p className="truncate font-medium">
                             {marker.label} · {marker.hiveName}

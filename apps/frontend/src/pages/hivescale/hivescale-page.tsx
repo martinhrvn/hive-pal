@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
+  ChevronDown,
   Clock,
   Droplets,
   Info,
@@ -33,12 +34,12 @@ import {
   measurementLimitForRange,
   type HiveScaleDateRange,
 } from './hivescale-diagram-panel';
-import {
-  MainContent,
-  PageAside,
-  PageGrid,
-} from '@/components/layout/page-grid-layout';
 import { Button } from '@/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   Card,
   CardContent,
@@ -343,6 +344,23 @@ function DeviceConfigCard({
 
   const latestScale1Raw = latest?.scale_1_raw;
   const latestScale2Raw = latest?.scale_2_raw;
+  const hasLatestScale1Raw =
+    typeof latestScale1Raw === 'number' && Number.isFinite(latestScale1Raw);
+  const hasLatestScale2Raw =
+    typeof latestScale2Raw === 'number' && Number.isFinite(latestScale2Raw);
+
+  const useLatestRawAsOffset = (
+    raw: number | null | undefined,
+    setOffset: (value: string) => void,
+    scaleName: string,
+  ) => {
+    if (typeof raw !== 'number' || !Number.isFinite(raw)) {
+      toast.error(`No latest raw reading available for ${scaleName} yet.`);
+      return;
+    }
+    setOffset(String(raw));
+    toast.success(`${scaleName} offset set to latest raw reading.`);
+  };
 
   return (
     <Card>
@@ -378,7 +396,7 @@ function DeviceConfigCard({
                   Empty the scale, wait for a fresh measurement, then use
                   latest raw as offset.
                 </li>
-                <li>Place a known weight on the scale.</li>
+                <li>Place a known weight on the scale. Wait for new measurement.</li>
                 <li>
                   Set factor to (latest raw - offset) / known weight in kg.
                 </li>
@@ -435,8 +453,14 @@ function DeviceConfigCard({
                   <Button
                     type="button"
                     variant="outline"
-                    disabled={latestScale1Raw == null}
-                    onClick={() => setScale1Offset(String(latestScale1Raw))}
+                    disabled={!hasLatestScale1Raw}
+                    onClick={() =>
+                      useLatestRawAsOffset(
+                        latestScale1Raw,
+                        setScale1Offset,
+                        'Scale 1',
+                      )
+                    }
                   >
                     Use latest raw
                   </Button>
@@ -477,8 +501,14 @@ function DeviceConfigCard({
                   <Button
                     type="button"
                     variant="outline"
-                    disabled={latestScale2Raw == null}
-                    onClick={() => setScale2Offset(String(latestScale2Raw))}
+                    disabled={!hasLatestScale2Raw}
+                    onClick={() =>
+                      useLatestRawAsOffset(
+                        latestScale2Raw,
+                        setScale2Offset,
+                        'Scale 2',
+                      )
+                    }
                   >
                     Use latest raw
                   </Button>
@@ -758,6 +788,83 @@ function DeviceStatusCard({
   );
 }
 
+function ScaleSetupPanel({
+  selectedDevice,
+  selectedDeviceId,
+  latest,
+  hiveNameOptions,
+  hasClaimedDevices,
+  isDeviceListLoading,
+}: {
+  selectedDevice: HiveScaleDevice | undefined;
+  selectedDeviceId: string | undefined;
+  latest: HiveScaleMeasurement | undefined;
+  hiveNameOptions: string[];
+  hasClaimedDevices: boolean;
+  isDeviceListLoading: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isDeviceListLoading && !hasClaimedDevices) {
+      setIsOpen(true);
+    }
+  }, [hasClaimedDevices, isDeviceListLoading]);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <CardTitle>Scale setup</CardTitle>
+              <CardDescription>
+                Claim devices, check status, map scales, and calibrate the raw
+                readings. Collapse this panel to give the diagram more space.
+              </CardDescription>
+            </div>
+            <CollapsibleTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-between md:w-auto md:min-w-40"
+              >
+                {isOpen ? 'Hide setup' : 'Show setup'}
+                <ChevronDown
+                  className={`ml-2 h-4 w-4 transition-transform ${
+                    isOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+        </CardHeader>
+        <CollapsibleContent>
+          <CardContent className="pt-0">
+            <div className="grid gap-4 xl:grid-cols-2">
+              <ClaimDeviceCard hiveNameOptions={hiveNameOptions} />
+              {selectedDevice && (
+                <DeviceStatusCard
+                  selectedDevice={selectedDevice}
+                  latest={latest}
+                />
+              )}
+              <ScaleMappingCard
+                selectedDevice={selectedDevice}
+                hiveNameOptions={hiveNameOptions}
+              />
+              <DeviceConfigCard
+                deviceId={selectedDeviceId}
+                latest={latest}
+              />
+            </div>
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
+  );
+}
+
 export function HiveScalePage() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>();
   const [dateRange, setDateRange] = useState<HiveScaleDateRange>(() =>
@@ -831,148 +938,140 @@ export function HiveScalePage() {
   };
 
   return (
-    <PageGrid>
-      <MainContent>
-        <div className="space-y-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">HiveScale</h1>
-              <p className="text-muted-foreground">
-                Live weight and temperature visualisation from your separate
-                HiveScale backend.
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => {
-                devices.refetch();
-                measurements.refetch();
-              }}
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Devices</CardTitle>
-              <CardDescription>
-                Select or remove a claimed HiveScale device.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {devices.isLoading ? (
-                <Skeleton className="h-10 w-full" />
-              ) : devices.data?.length ? (
-                <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                  <select
-                    className="h-10 flex-1 rounded-md border bg-background px-3 py-2 text-sm"
-                    value={selectedDeviceId}
-                    onChange={event => setSelectedDeviceId(event.target.value)}
-                  >
-                    {devices.data.map(device => (
-                      <option key={device.device_id} value={device.device_id}>
-                        {device.display_name || device.device_id}
-                      </option>
-                    ))}
-                  </select>
-                  <Button
-                    variant="outline"
-                    onClick={removeSelectedDevice}
-                    disabled={!selectedDevice || removeDevice.isPending}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Remove scale
-                  </Button>
-                </div>
-              ) : (
-                <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
-                  No HiveScale devices are claimed for your user yet. Use the
-                  claim form on the right.
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {selectedDevice && (
-            <div className="grid gap-4 md:grid-cols-3">
-              <LatestValuePanel
-                title={scale1Name}
-                description="Scale 1"
-                icon={Weight}
-                rows={[
-                  {
-                    label: 'Weight',
-                    value: `${numberOrDash(latest?.scale_1_weight_kg)} kg`,
-                  },
-                  {
-                    label: 'Hive temp',
-                    value: `${numberOrDash(latest?.hive_1_temp_c)} °C`,
-                  },
-                ]}
-              />
-              <LatestValuePanel
-                title={scale2Name}
-                description="Scale 2"
-                icon={Weight}
-                rows={[
-                  {
-                    label: 'Weight',
-                    value: `${numberOrDash(latest?.scale_2_weight_kg)} kg`,
-                  },
-                  {
-                    label: 'Hive temp',
-                    value: `${numberOrDash(latest?.hive_2_temp_c)} °C`,
-                  },
-                ]}
-              />
-              <LatestValuePanel
-                title="Ambient"
-                description="Outside sensor"
-                icon={Droplets}
-                rows={[
-                  {
-                    label: 'Temperature',
-                    value: `${numberOrDash(latest?.ambient_temp_c)} °C`,
-                  },
-                  {
-                    label: 'Humidity',
-                    value: `${numberOrDash(latest?.ambient_humidity_percent, 0)}%`,
-                  },
-                ]}
-              />
-            </div>
-          )}
-
-          {selectedDevice && (
-            <HiveScaleDiagramPanel
-              selectedDevice={selectedDevice}
-              measurements={measurements.data}
-              isLoading={measurements.isLoading}
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-              scale1Name={scale1Name}
-              scale2Name={scale2Name}
-              inspections={inspections.data}
-              hives={hives.data}
-            />
-          )}
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">HiveScale</h1>
+          <p className="text-muted-foreground">
+            Live weight and temperature visualisation from your separate
+            HiveScale backend.
+          </p>
         </div>
-      </MainContent>
-      <PageAside>
-        <div className="space-y-6">
-          <ClaimDeviceCard hiveNameOptions={hiveNameOptions} />
-          {selectedDevice && (
-            <DeviceStatusCard selectedDevice={selectedDevice} latest={latest} />
+        <Button
+          variant="outline"
+          onClick={() => {
+            devices.refetch();
+            measurements.refetch();
+          }}
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
+        </Button>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Devices</CardTitle>
+          <CardDescription>
+            Select or remove a claimed HiveScale device.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {devices.isLoading ? (
+            <Skeleton className="h-10 w-full" />
+          ) : devices.data?.length ? (
+            <div className="flex flex-col gap-3 md:flex-row md:items-center">
+              <select
+                className="h-10 flex-1 rounded-md border bg-background px-3 py-2 text-sm"
+                value={selectedDeviceId}
+                onChange={event => setSelectedDeviceId(event.target.value)}
+              >
+                {devices.data.map(device => (
+                  <option key={device.device_id} value={device.device_id}>
+                    {device.display_name || device.device_id}
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="outline"
+                onClick={removeSelectedDevice}
+                disabled={!selectedDevice || removeDevice.isPending}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Remove scale
+              </Button>
+            </div>
+          ) : (
+            <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+              No HiveScale devices are claimed for your user yet. Open the scale
+              setup panel and use the claim form.
+            </div>
           )}
-          <ScaleMappingCard
-            selectedDevice={selectedDevice}
-            hiveNameOptions={hiveNameOptions}
+        </CardContent>
+      </Card>
+
+      <ScaleSetupPanel
+        selectedDevice={selectedDevice}
+        selectedDeviceId={selectedDeviceId}
+        latest={latest}
+        hiveNameOptions={hiveNameOptions}
+        hasClaimedDevices={Boolean(devices.data?.length)}
+        isDeviceListLoading={devices.isLoading}
+      />
+
+      {selectedDevice && (
+        <div className="grid gap-4 md:grid-cols-3">
+          <LatestValuePanel
+            title={scale1Name}
+            description="Scale 1"
+            icon={Weight}
+            rows={[
+              {
+                label: 'Weight',
+                value: `${numberOrDash(latest?.scale_1_weight_kg)} kg`,
+              },
+              {
+                label: 'Hive temp',
+                value: `${numberOrDash(latest?.hive_1_temp_c)} °C`,
+              },
+            ]}
           />
-          <DeviceConfigCard deviceId={selectedDeviceId} latest={latest} />
+          <LatestValuePanel
+            title={scale2Name}
+            description="Scale 2"
+            icon={Weight}
+            rows={[
+              {
+                label: 'Weight',
+                value: `${numberOrDash(latest?.scale_2_weight_kg)} kg`,
+              },
+              {
+                label: 'Hive temp',
+                value: `${numberOrDash(latest?.hive_2_temp_c)} °C`,
+              },
+            ]}
+          />
+          <LatestValuePanel
+            title="Ambient"
+            description="Outside sensor"
+            icon={Droplets}
+            rows={[
+              {
+                label: 'Temperature',
+                value: `${numberOrDash(latest?.ambient_temp_c)} °C`,
+              },
+              {
+                label: 'Humidity',
+                value: `${numberOrDash(latest?.ambient_humidity_percent, 0)}%`,
+              },
+            ]}
+          />
         </div>
-      </PageAside>
-    </PageGrid>
+      )}
+
+      {selectedDevice && (
+        <HiveScaleDiagramPanel
+          selectedDevice={selectedDevice}
+          measurements={measurements.data}
+          isLoading={measurements.isLoading}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+          scale1Name={scale1Name}
+          scale2Name={scale2Name}
+          inspections={inspections.data}
+          hives={hives.data}
+        />
+      )}
+    </div>
   );
 }
