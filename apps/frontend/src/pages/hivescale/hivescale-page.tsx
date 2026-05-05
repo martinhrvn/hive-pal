@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
   Clock,
   Droplets,
+  Info,
   Plus,
   RefreshCw,
   Trash2,
@@ -56,6 +57,11 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
@@ -341,10 +347,53 @@ function DeviceConfigCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Device config</CardTitle>
-        <CardDescription>
-          Changes are read by the firmware during its next upload cycle.
-        </CardDescription>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle>Device config</CardTitle>
+            <CardDescription>
+              Changes are read by the firmware during its next upload cycle.
+            </CardDescription>
+          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0"
+                aria-label="Show scale calibration instructions"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="left"
+              align="start"
+              className="max-w-sm space-y-2 text-left"
+            >
+              <p className="font-medium">Scale calibration workflow</p>
+              <ol className="list-decimal space-y-1 pl-4">
+                <li>Set send interval to 60 seconds while testing.</li>
+                <li>
+                  Empty the scale, wait for a fresh measurement, then use
+                  latest raw as offset.
+                </li>
+                <li>Place a known weight on the scale.</li>
+                <li>
+                  Set factor to (latest raw - offset) / known weight in kg.
+                </li>
+                <li>
+                  Save, wait for the next device cycles, then verify empty reads
+                  about 0 kg and the known weight reads correctly.
+                </li>
+                <li>
+                  Use a negative factor if the weight moves in the wrong
+                  direction.
+                </li>
+              </ol>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </CardHeader>
       <CardContent className="space-y-5">
         {isLoading ? (
