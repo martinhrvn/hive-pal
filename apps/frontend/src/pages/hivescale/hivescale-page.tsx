@@ -349,7 +349,7 @@ function DeviceConfigCard({
   const hasLatestScale2Raw =
     typeof latestScale2Raw === 'number' && Number.isFinite(latestScale2Raw);
 
-  const useLatestRawAsOffset = (
+  const setLatestRawAsOffset = (
     raw: number | null | undefined,
     setOffset: (value: string) => void,
     scaleName: string,
@@ -455,7 +455,7 @@ function DeviceConfigCard({
                     variant="outline"
                     disabled={!hasLatestScale1Raw}
                     onClick={() =>
-                      useLatestRawAsOffset(
+                      setLatestRawAsOffset(
                         latestScale1Raw,
                         setScale1Offset,
                         'Scale 1',
@@ -503,7 +503,7 @@ function DeviceConfigCard({
                     variant="outline"
                     disabled={!hasLatestScale2Raw}
                     onClick={() =>
-                      useLatestRawAsOffset(
+                      setLatestRawAsOffset(
                         latestScale2Raw,
                         setScale2Offset,
                         'Scale 2',
