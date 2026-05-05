@@ -14,6 +14,7 @@ import {
   Crown,
   FolderOpen,
   Wrench,
+  Scale,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -120,6 +121,12 @@ const getNavData = (t: TFunction<'common'>) => ({
       title: t('navigation.reports', { defaultValue: 'Reports' }),
       url: '/reports',
       icon: BarChart3,
+      isActive: true,
+    },
+    {
+      title: t('navigation.hivescale', { defaultValue: 'HiveScale' }),
+      url: '/hivescale',
+      icon: Scale,
       isActive: true,
     },
     {

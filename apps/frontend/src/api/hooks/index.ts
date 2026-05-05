@@ -19,3 +19,4 @@ export * from './useShares';
 export * from './usePhotos';
 export * from './useDocuments';
 export * from './useInspectionAudioAi';
+export * from './useHiveScale';

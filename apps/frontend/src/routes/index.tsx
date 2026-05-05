@@ -143,6 +143,12 @@ const BroodTimelinePage = lazyWithRetry(() =>
   })),
 );
 
+const HiveScalePage = lazyWithRetry(() =>
+  import('@/pages/hivescale/hivescale-page').then(m => ({
+    default: m.HiveScalePage,
+  })),
+);
+
 // Loading fallback component
 function PageLoader() {
   return (
@@ -340,6 +346,14 @@ const router = createBrowserRouter([
         element: (
           <LazyPage>
             <ReportsPage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/hivescale',
+        element: (
+          <LazyPage>
+            <HiveScalePage />
           </LazyPage>
         ),
       },

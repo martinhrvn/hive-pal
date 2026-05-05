@@ -41,6 +41,7 @@ import { DocumentsModule } from './documents/documents.module';
 import { InspectionAudioModule } from './inspection-audio/inspection-audio.module';
 import { AiModule } from './ai/ai.module';
 import { ApiarySharingModule } from './apiary-sharing/apiary-sharing.module';
+import { HiveScaleModule } from './hivescale/hivescale.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { ApiarySharingModule } from './apiary-sharing/apiary-sharing.module';
     AiModule,
     InspectionAudioModule,
     ApiarySharingModule,
+    HiveScaleModule,
   ],
   controllers: [AppController, EnvController],
   providers: [
