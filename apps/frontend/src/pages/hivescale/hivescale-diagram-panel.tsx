@@ -107,15 +107,6 @@ const presetHours: Partial<Record<HiveScaleDateRangePreset, number>> = {
   '30d': 24 * 30,
 };
 
-const markerShortLabel: Record<ChartMarker['type'], string> = {
-  inspection: 'I',
-  maintenance: 'M',
-  feeding: 'F',
-  frames: 'R',
-  treatment: 'T',
-  box: 'B',
-};
-
 export const createPresetDateRange = (
   preset: Exclude<HiveScaleDateRangePreset, 'custom'> = '24h',
 ): HiveScaleDateRange => {
@@ -347,7 +338,40 @@ const buildBoxAddedMarkers = (
     );
 };
 
-const markerOffset = (index: number) => -8 - (index % 4) * 14;
+function MarkerReferenceLineLabel({
+  viewBox,
+  marker,
+  row,
+}: {
+  viewBox?: { x?: number; y?: number };
+  marker: ChartMarker;
+  row: number;
+}) {
+  const x = typeof viewBox?.x === 'number' ? viewBox.x : 0;
+  const chartTop = typeof viewBox?.y === 'number' ? viewBox.y : 0;
+  const Icon = marker.Icon;
+
+  return (
+    <g
+      color="var(--foreground)"
+      transform={`translate(${x - 10}, ${chartTop + 8 + row * 24})`}
+    >
+      <title>
+        {`${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`}
+      </title>
+      <rect
+        x={0}
+        y={0}
+        width={20}
+        height={20}
+        rx={5}
+        fill="var(--background)"
+        stroke="var(--border)"
+      />
+      <Icon x={3} y={3} width={14} height={14} strokeWidth={2} />
+    </g>
+  );
+}
 
 function SeriesToggle({
   series,
@@ -696,13 +720,12 @@ export function HiveScaleDiagramPanel({
                     yAxisId="weight"
                     stroke="var(--border)"
                     strokeDasharray="4 4"
-                    label={{
-                      value: markerShortLabel[marker.type],
-                      position: 'top',
-                      offset: markerOffset(index),
-                      fill: 'var(--foreground)',
-                      fontSize: 12,
-                    }}
+                    label={
+                      <MarkerReferenceLineLabel
+                        marker={marker}
+                        row={index % 6}
+                      />
+                    }
                   />
                 ))}
                 {activeSeries.map(item => (
