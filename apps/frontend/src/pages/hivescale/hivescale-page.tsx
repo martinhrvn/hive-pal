@@ -1,6 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
-  Activity,
   Clock,
   Droplets,
   Plus,
@@ -10,18 +9,9 @@ import {
   Weight,
   type LucideIcon,
 } from 'lucide-react';
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { toast } from 'sonner';
-import { useHives } from '@/api/hooks/useHives';
+import { useHivesWithBoxes } from '@/api/hooks/useHives';
+import { useInspections } from '@/api/hooks/useInspections';
 import {
   useClaimHiveScaleDevice,
   useHiveScaleDeviceConfig,
@@ -36,6 +26,12 @@ import {
   type HiveScaleDevice,
   type HiveScaleMeasurement,
 } from '@/api/hooks/useHiveScale';
+import {
+  createPresetDateRange,
+  HiveScaleDiagramPanel,
+  measurementLimitForRange,
+  type HiveScaleDateRange,
+} from './hivescale-diagram-panel';
 import {
   MainContent,
   PageAside,
@@ -52,21 +48,20 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
-  typeof value === 'number' && Number.isFinite(value) ? value.toFixed(digits) : '—';
+  typeof value === 'number' && Number.isFinite(value)
+    ? value.toFixed(digits)
+    : '—';
 
 const formatDateTime = (value: string | null | undefined) => {
   if (!value) return 'Never';
@@ -76,23 +71,18 @@ const formatDateTime = (value: string | null | undefined) => {
   }).format(new Date(value));
 };
 
-const formatChartTime = (value: string) =>
-  new Intl.DateTimeFormat(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value));
-
 const isOnline = (lastSeenAt: string | null | undefined) => {
   if (!lastSeenAt) return false;
   return Date.now() - new Date(lastSeenAt).getTime() < 30 * 60 * 1000;
 };
 
-const latestMeasurement = (measurements: HiveScaleMeasurement[] | undefined) => {
+const latestMeasurement = (
+  measurements: HiveScaleMeasurement[] | undefined,
+) => {
   if (!measurements?.length) return undefined;
   return [...measurements].sort(
-    (a, b) => new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
+    (a, b) =>
+      new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
   )[0];
 };
 
@@ -101,8 +91,8 @@ const channelName = (
   channelNumber: 1 | 2,
   fallback: string,
 ) =>
-  device?.channels?.find(channel => channel.channel_number === channelNumber)?.name ||
-  fallback;
+  device?.channels?.find(channel => channel.channel_number === channelNumber)
+    ?.name || fallback;
 
 function HiveNameInput({
   id,
@@ -163,8 +153,13 @@ function LatestValuePanel({
           </div>
           <div className="space-y-2">
             {rows.map(row => (
-              <div key={row.label} className="flex items-baseline justify-between gap-3">
-                <span className="text-xs text-muted-foreground">{row.label}</span>
+              <div
+                key={row.label}
+                className="flex items-baseline justify-between gap-3"
+              >
+                <span className="text-xs text-muted-foreground">
+                  {row.label}
+                </span>
                 <span className="text-xl font-semibold">{row.value}</span>
               </div>
             ))}
@@ -215,7 +210,8 @@ function ClaimDeviceCard({ hiveNameOptions }: { hiveNameOptions: string[] }) {
       <CardHeader>
         <CardTitle>Claim HiveScale device</CardTitle>
         <CardDescription>
-          Claim codes are sent by the firmware with measurements until the device is claimed.
+          Claim codes are sent by the firmware with measurements until the
+          device is claimed.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -254,7 +250,11 @@ function ClaimDeviceCard({ hiveNameOptions }: { hiveNameOptions: string[] }) {
             placeholder="Select or type a hive name"
             hiveNameOptions={hiveNameOptions}
           />
-          <Button type="submit" className="w-full" disabled={claimDevice.isPending}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={claimDevice.isPending}
+          >
             {claimDevice.isPending ? 'Claiming…' : 'Claim device'}
           </Button>
         </form>
@@ -294,7 +294,9 @@ function DeviceConfigCard({ deviceId }: { deviceId: string | undefined }) {
     <Card>
       <CardHeader>
         <CardTitle>Device config</CardTitle>
-        <CardDescription>Changes are read by the firmware during its next upload cycle.</CardDescription>
+        <CardDescription>
+          Changes are read by the firmware during its next upload cycle.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoading ? (
@@ -319,8 +321,9 @@ function DeviceConfigCard({ deviceId }: { deviceId: string | undefined }) {
               {updateConfig.isPending ? 'Saving…' : 'Save interval'}
             </Button>
             <div className="text-xs text-muted-foreground">
-              Config version {config.config_version}. Scale calibration factors are still managed
-              by the HiveScale backend/API and can be surfaced here later.
+              Config version {config.config_version}. Scale calibration factors
+              are still managed by the HiveScale backend/API and can be surfaced
+              here later.
             </div>
           </>
         ) : (
@@ -367,8 +370,8 @@ function ScaleMappingCard({
       <CardHeader>
         <CardTitle>Scale mapping</CardTitle>
         <CardDescription>
-          These labels stay in HiveScale. Later, this is the right place to map Scale 1/2 to
-          HivePal hive IDs for inspection markers.
+          These labels stay in HiveScale. Later, this is the right place to map
+          Scale 1/2 to HivePal hive IDs for inspection markers.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -410,7 +413,10 @@ function DeviceStatusCard({
   const [showShareForm, setShowShareForm] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'admin' | 'viewer'>('viewer');
-  const members = useHiveScaleMembers(selectedDevice.device_id, !!selectedDevice);
+  const members = useHiveScaleMembers(
+    selectedDevice.device_id,
+    !!selectedDevice,
+  );
   const shareDevice = useShareHiveScaleDevice(selectedDevice.device_id);
   const revokeMember = useRevokeHiveScaleMember(selectedDevice.device_id);
   const canManageMembers = selectedDevice.role === 'owner';
@@ -449,7 +455,9 @@ function DeviceStatusCard({
         <div className="space-y-2">
           <div className="flex justify-between gap-4">
             <span className="text-muted-foreground">Device ID</span>
-            <span className="text-right font-mono">{selectedDevice.device_id}</span>
+            <span className="text-right font-mono">
+              {selectedDevice.device_id}
+            </span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-muted-foreground">Role</span>
@@ -457,7 +465,9 @@ function DeviceStatusCard({
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-muted-foreground">Last measurement</span>
-            <span className="text-right">{formatDateTime(latest?.measured_at)}</span>
+            <span className="text-right">
+              {formatDateTime(latest?.measured_at)}
+            </span>
           </div>
         </div>
 
@@ -467,7 +477,9 @@ function DeviceStatusCard({
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="font-medium">Sharing</p>
-              <p className="text-xs text-muted-foreground">Grant admin or viewer access.</p>
+              <p className="text-xs text-muted-foreground">
+                Grant admin or viewer access.
+              </p>
             </div>
             {canManageMembers && (
               <Button
@@ -482,7 +494,10 @@ function DeviceStatusCard({
           </div>
 
           {showShareForm && canManageMembers && (
-            <form className="space-y-3 rounded-md border p-3" onSubmit={submitShare}>
+            <form
+              className="space-y-3 rounded-md border p-3"
+              onSubmit={submitShare}
+            >
               <div className="space-y-2">
                 <Label htmlFor="share-email">Mail-address</Label>
                 <Input
@@ -495,7 +510,10 @@ function DeviceStatusCard({
               </div>
               <div className="space-y-2">
                 <Label>Role</Label>
-                <Select value={role} onValueChange={value => setRole(value as 'admin' | 'viewer')}>
+                <Select
+                  value={role}
+                  onValueChange={value => setRole(value as 'admin' | 'viewer')}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -505,7 +523,11 @@ function DeviceStatusCard({
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" className="w-full" disabled={shareDevice.isPending}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={shareDevice.isPending}
+              >
                 <UserPlus className="mr-2 h-4 w-4" />
                 {shareDevice.isPending ? 'Sharing…' : 'Grant access'}
               </Button>
@@ -522,7 +544,9 @@ function DeviceStatusCard({
                   className="flex items-center justify-between gap-3 rounded-md border p-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium">{member.name || member.email}</p>
+                    <p className="truncate font-medium">
+                      {member.name || member.email}
+                    </p>
                     <p className="truncate text-xs text-muted-foreground">
                       {member.email} · {member.role}
                     </p>
@@ -554,13 +578,34 @@ function DeviceStatusCard({
 
 export function HiveScalePage() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>();
+  const [dateRange, setDateRange] = useState<HiveScaleDateRange>(() =>
+    createPresetDateRange('24h'),
+  );
   const devices = useHiveScaleDevices();
-  const measurements = useHiveScaleMeasurements(selectedDeviceId, { limit: 200 });
+  const measurementQuery = useMemo(
+    () => ({
+      limit: measurementLimitForRange(dateRange),
+      start_at: dateRange.startAt,
+      end_at: dateRange.endAt,
+    }),
+    [dateRange],
+  );
+  const measurements = useHiveScaleMeasurements(
+    selectedDeviceId,
+    measurementQuery,
+  );
   const removeDevice = useRemoveHiveScaleDevice();
-  const hives = useHives(undefined, { enabled: true });
+  const hives = useHivesWithBoxes(undefined, { enabled: true });
+  const inspections = useInspections({
+    startDate: dateRange.startAt,
+    endDate: dateRange.endAt,
+  });
 
   const hiveNameOptions = useMemo(
-    () => [...new Set((hives.data ?? []).map(hive => hive.name).filter(Boolean))].sort(),
+    () =>
+      [
+        ...new Set((hives.data ?? []).map(hive => hive.name).filter(Boolean)),
+      ].sort(),
     [hives.data],
   );
 
@@ -587,26 +632,6 @@ export function HiveScalePage() {
   const scale1Name = channelName(selectedDevice, 1, 'Scale 1');
   const scale2Name = channelName(selectedDevice, 2, 'Scale 2');
 
-  const chartData = useMemo(
-    () =>
-      [...(measurements.data ?? [])]
-        .sort(
-          (a, b) =>
-            new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime(),
-        )
-        .map(item => ({
-          time: formatChartTime(item.measured_at),
-          measuredAt: item.measured_at,
-          scale1: item.scale_1_weight_kg,
-          scale2: item.scale_2_weight_kg,
-          hiveTemp1: item.hive_1_temp_c,
-          hiveTemp2: item.hive_2_temp_c,
-          ambientTemp: item.ambient_temp_c,
-          humidity: item.ambient_humidity_percent,
-        })),
-    [measurements.data],
-  );
-
   const removeSelectedDevice = () => {
     if (!selectedDevice) return;
     const confirmed = window.confirm(
@@ -631,7 +656,8 @@ export function HiveScalePage() {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">HiveScale</h1>
               <p className="text-muted-foreground">
-                Live weight and temperature visualisation from your separate HiveScale backend.
+                Live weight and temperature visualisation from your separate
+                HiveScale backend.
               </p>
             </div>
             <Button
@@ -649,7 +675,9 @@ export function HiveScalePage() {
           <Card>
             <CardHeader>
               <CardTitle>Devices</CardTitle>
-              <CardDescription>Select or remove a claimed HiveScale device.</CardDescription>
+              <CardDescription>
+                Select or remove a claimed HiveScale device.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {devices.isLoading ? (
@@ -678,7 +706,8 @@ export function HiveScalePage() {
                 </div>
               ) : (
                 <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
-                  No HiveScale devices are claimed for your user yet. Use the claim form on the right.
+                  No HiveScale devices are claimed for your user yet. Use the
+                  claim form on the right.
                 </div>
               )}
             </CardContent>
@@ -691,8 +720,14 @@ export function HiveScalePage() {
                 description="Scale 1"
                 icon={Weight}
                 rows={[
-                  { label: 'Weight', value: `${numberOrDash(latest?.scale_1_weight_kg)} kg` },
-                  { label: 'Hive temp', value: `${numberOrDash(latest?.hive_1_temp_c)} °C` },
+                  {
+                    label: 'Weight',
+                    value: `${numberOrDash(latest?.scale_1_weight_kg)} kg`,
+                  },
+                  {
+                    label: 'Hive temp',
+                    value: `${numberOrDash(latest?.hive_1_temp_c)} °C`,
+                  },
                 ]}
               />
               <LatestValuePanel
@@ -700,8 +735,14 @@ export function HiveScalePage() {
                 description="Scale 2"
                 icon={Weight}
                 rows={[
-                  { label: 'Weight', value: `${numberOrDash(latest?.scale_2_weight_kg)} kg` },
-                  { label: 'Hive temp', value: `${numberOrDash(latest?.hive_2_temp_c)} °C` },
+                  {
+                    label: 'Weight',
+                    value: `${numberOrDash(latest?.scale_2_weight_kg)} kg`,
+                  },
+                  {
+                    label: 'Hive temp',
+                    value: `${numberOrDash(latest?.hive_2_temp_c)} °C`,
+                  },
                 ]}
               />
               <LatestValuePanel
@@ -709,135 +750,31 @@ export function HiveScalePage() {
                 description="Outside sensor"
                 icon={Droplets}
                 rows={[
-                  { label: 'Temperature', value: `${numberOrDash(latest?.ambient_temp_c)} °C` },
-                  { label: 'Humidity', value: `${numberOrDash(latest?.ambient_humidity_percent, 0)}%` },
+                  {
+                    label: 'Temperature',
+                    value: `${numberOrDash(latest?.ambient_temp_c)} °C`,
+                  },
+                  {
+                    label: 'Humidity',
+                    value: `${numberOrDash(latest?.ambient_humidity_percent, 0)}%`,
+                  },
                 ]}
               />
             </div>
           )}
 
           {selectedDevice && (
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <CardTitle>{selectedDevice.display_name || selectedDevice.device_id}</CardTitle>
-                    <CardDescription>
-                      Last seen {formatDateTime(selectedDevice.last_seen_at)} · Firmware{' '}
-                      {selectedDevice.last_firmware_version || 'unknown'}
-                    </CardDescription>
-                  </div>
-                  <Badge variant={isOnline(selectedDevice.last_seen_at) ? 'default' : 'secondary'}>
-                    {isOnline(selectedDevice.last_seen_at) ? 'Online' : 'Stale'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {measurements.isLoading ? (
-                  <Skeleton className="h-80 w-full" />
-                ) : chartData.length ? (
-                  <Tabs defaultValue="weight">
-                    <TabsList>
-                      <TabsTrigger value="weight">Weight</TabsTrigger>
-                      <TabsTrigger value="temperature">Temperature</TabsTrigger>
-                      <TabsTrigger value="table">Latest rows</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="weight" className="pt-6">
-                      <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="time" minTickGap={24} />
-                            <YAxis unit=" kg" />
-                            <Tooltip />
-                            <Legend />
-                            <Line
-                              type="monotone"
-                              dataKey="scale1"
-                              name={scale1Name}
-                              stroke="var(--primary)"
-                              connectNulls
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="scale2"
-                              name={scale2Name}
-                              stroke="var(--muted-foreground)"
-                              connectNulls
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="temperature" className="pt-6">
-                      <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="time" minTickGap={24} />
-                            <YAxis unit=" °C" />
-                            <Tooltip />
-                            <Legend />
-                            <Line
-                              type="monotone"
-                              dataKey="hiveTemp1"
-                              name={`${scale1Name} temp`}
-                              stroke="var(--primary)"
-                              connectNulls
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="hiveTemp2"
-                              name={`${scale2Name} temp`}
-                              stroke="var(--muted-foreground)"
-                              connectNulls
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="ambientTemp"
-                              name="Ambient"
-                              stroke="var(--border)"
-                              connectNulls
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="table" className="pt-6">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Measured</TableHead>
-                            <TableHead>{scale1Name}</TableHead>
-                            <TableHead>{scale2Name}</TableHead>
-                            <TableHead>Hive temp</TableHead>
-                            <TableHead>Humidity</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {[...(measurements.data ?? [])].slice(0, 10).map(row => (
-                            <TableRow key={row.id}>
-                              <TableCell>{formatDateTime(row.measured_at)}</TableCell>
-                              <TableCell>{numberOrDash(row.scale_1_weight_kg)} kg</TableCell>
-                              <TableCell>{numberOrDash(row.scale_2_weight_kg)} kg</TableCell>
-                              <TableCell>
-                                {numberOrDash(row.hive_1_temp_c)} / {numberOrDash(row.hive_2_temp_c)} °C
-                              </TableCell>
-                              <TableCell>{numberOrDash(row.ambient_humidity_percent, 0)}%</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TabsContent>
-                  </Tabs>
-                ) : (
-                  <div className="flex h-64 flex-col items-center justify-center gap-2 text-center text-muted-foreground">
-                    <Activity className="h-8 w-8" />
-                    <p>No measurements returned for this device yet.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <HiveScaleDiagramPanel
+              selectedDevice={selectedDevice}
+              measurements={measurements.data}
+              isLoading={measurements.isLoading}
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+              scale1Name={scale1Name}
+              scale2Name={scale2Name}
+              inspections={inspections.data}
+              hives={hives.data}
+            />
           )}
         </div>
       </MainContent>

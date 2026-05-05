@@ -117,6 +117,12 @@ export class HiveService {
             variant: box.variant,
             frameSizeId: box.frameSizeId ?? null,
             color: box.color,
+            addedAt:
+              box.addedAt instanceof Date
+                ? box.addedAt
+                : box.addedAt
+                  ? new Date(box.addedAt)
+                  : new Date(),
             winterized: box.winterized ?? false,
           })),
         });
@@ -270,6 +276,7 @@ export class HiveService {
               variant: box.variant as BoxVariantEnum,
               frameSizeId: box.frameSizeId ?? undefined,
               color: box.color ?? undefined,
+              addedAt: box.addedAt?.toISOString(),
               winterized: box.winterized,
             })),
           };
@@ -408,6 +415,7 @@ export class HiveService {
         maxFrameCount: box.maxFrameCount,
         hasExcluder: box.hasExcluder,
         color: box.color ?? undefined,
+        addedAt: box.addedAt?.toISOString(),
         type: box.type as BoxTypeEnum,
         variant: box.variant as BoxVariantEnum,
         frameSizeId: box.frameSizeId ?? undefined,
@@ -603,6 +611,11 @@ export class HiveService {
     const oldBoxes = hive.boxes || [];
     const newBoxes = updateHiveBoxesDto.boxes || [];
 
+    const oldBoxesById = new Map(oldBoxes.map((box) => [box.id, box]));
+    const oldBoxesByPosition = new Map(
+      oldBoxes.map((box) => [box.position, box]),
+    );
+
     const oldBoxCount = oldBoxes.length;
     const newBoxCount = newBoxes.length;
     const oldFrameCount = oldBoxes.reduce(
@@ -667,6 +680,24 @@ export class HiveService {
             variant: box.variant,
             frameSizeId: box.frameSizeId ?? null,
             color: box.color,
+            addedAt:
+              box.addedAt instanceof Date
+                ? box.addedAt
+                : box.addedAt
+                  ? new Date(box.addedAt)
+                  : ((box.id
+                      ? (
+                          oldBoxesById.get(box.id) as
+                            | { addedAt?: Date }
+                            | undefined
+                        )?.addedAt
+                      : undefined) ??
+                    (
+                      oldBoxesByPosition.get(box.position) as
+                        | { addedAt?: Date }
+                        | undefined
+                    )?.addedAt ??
+                    new Date()),
             winterized: box.winterized ?? false,
           },
         });

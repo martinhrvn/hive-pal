@@ -130,6 +130,7 @@ model Box {
   frameSize     FrameSize?  @relation(fields: [frameSizeId], references: [id], onDelete: SetNull)
   color         String? // Hex color code for visual representation
   lastSanitized DateTime? // When this box position was last replaced with a sanitized box
+  addedAt       DateTime    @default(now()) // When this physical/logical box was added to the hive
   winterized    Boolean     @default(false) // Whether this box is prepared for winter
 
   @@index([hiveId])
