@@ -99,6 +99,12 @@ interface ChartMarker {
   Icon: LucideIcon;
 }
 
+interface HoveredChartMarker {
+  marker: ChartMarker;
+  x: number;
+  y: number;
+}
+
 const presetLabels: Record<HiveScaleDateRangePreset, string> = {
   '24h': '24h',
   '7d': '7d',
@@ -343,27 +349,46 @@ const buildBoxAddedMarkers = (
     );
 };
 
+const markerTooltipText = (marker: ChartMarker) =>
+  `${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`;
+
 function MarkerReferenceLineLabel({
   viewBox,
   marker,
   row,
+  onMarkerHover,
+  onMarkerLeave,
 }: {
   viewBox?: { x?: number; y?: number };
   marker: ChartMarker;
   row: number;
+  onMarkerHover: (
+    marker: ChartMarker,
+    position: { x: number; y: number },
+  ) => void;
+  onMarkerLeave: () => void;
 }) {
   const x = typeof viewBox?.x === 'number' ? viewBox.x : 0;
   const chartTop = typeof viewBox?.y === 'number' ? viewBox.y : 0;
+  const y = chartTop + 8 + row * 24;
   const Icon = marker.Icon;
+  const tooltipText = markerTooltipText(marker);
+  const showTooltip = () => onMarkerHover(marker, { x: x + 10, y });
 
   return (
     <g
       color="var(--foreground)"
-      transform={`translate(${x - 10}, ${chartTop + 8 + row * 24})`}
+      transform={`translate(${x - 10}, ${y})`}
+      role="img"
+      aria-label={tooltipText}
+      tabIndex={0}
+      onMouseEnter={showTooltip}
+      onMouseLeave={onMarkerLeave}
+      onFocus={showTooltip}
+      onBlur={onMarkerLeave}
+      style={{ cursor: 'help', pointerEvents: 'all' }}
     >
-      <title>
-        {`${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`}
-      </title>
+      <title>{tooltipText}</title>
       <rect
         x={0}
         y={0}
@@ -536,6 +561,9 @@ export function HiveScaleDiagramPanel({
     batteryVoltage: false,
   });
 
+  const [hoveredChartMarker, setHoveredChartMarker] =
+    useState<HoveredChartMarker | null>(null);
+
   const series = useMemo<DiagramSeries[]>(
     () => [
       {
@@ -700,7 +728,10 @@ export function HiveScaleDiagramPanel({
         {isLoading ? (
           <Skeleton className="h-96 w-full" />
         ) : chartData.length ? (
-          <div className="h-[28rem]">
+          <div
+            className="relative h-[28rem]"
+            onMouseLeave={() => setHoveredChartMarker(null)}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
@@ -761,6 +792,13 @@ export function HiveScaleDiagramPanel({
                       <MarkerReferenceLineLabel
                         marker={marker}
                         row={index % 6}
+                        onMarkerHover={(hoveredMarker, position) =>
+                          setHoveredChartMarker({
+                            marker: hoveredMarker,
+                            ...position,
+                          })
+                        }
+                        onMarkerLeave={() => setHoveredChartMarker(null)}
                       />
                     }
                   />
@@ -779,6 +817,24 @@ export function HiveScaleDiagramPanel({
                 ))}
               </LineChart>
             </ResponsiveContainer>
+            {hoveredChartMarker && (
+              <div
+                className="pointer-events-none absolute z-20 max-w-xs translate-x-3 rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md"
+                style={{
+                  left: hoveredChartMarker.x,
+                  top: hoveredChartMarker.y,
+                }}
+              >
+                <p className="font-medium">
+                  {hoveredChartMarker.marker.label} ·{' '}
+                  {hoveredChartMarker.marker.hiveName}
+                </p>
+                <p className="text-muted-foreground">
+                  {formatDateTime(hoveredChartMarker.marker.date)}
+                </p>
+                <p>{hoveredChartMarker.marker.detail}</p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex h-64 flex-col items-center justify-center gap-2 text-center text-muted-foreground">
@@ -841,14 +897,7 @@ export function HiveScaleDiagramPanel({
                     const Icon = marker.Icon;
                     return (
                       <div key={marker.id} className="flex gap-2">
-                        <DiagramIconTooltip
-                          label={`${marker.label} marker`}
-                          description={`${marker.hiveName} · ${formatDateTime(
-                            marker.date,
-                          )} · ${marker.detail}`}
-                        >
-                          <Icon className="mt-0.5 h-4 w-4" />
-                        </DiagramIconTooltip>
+                        <Icon className="mt-0.5 h-4 w-4 shrink-0" />
                         <div className="min-w-0">
                           <p className="truncate font-medium">
                             {marker.label} · {marker.hiveName}
