@@ -40,6 +40,7 @@ import {
   HiveScaleDiagramPanel,
   measurementLimitForRange,
   type HiveScaleDateRange,
+  type HiveScaleDateRangePreset,
 } from './hivescale-diagram-panel';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -85,6 +86,59 @@ const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
     ? value.toFixed(digits)
     : '—';
+
+
+const HIVESCALE_DATE_RANGE_STORAGE_KEY = 'hivescale.diagram.dateRange';
+
+const hiveScaleDateRangePresets = [
+  '24h',
+  '7d',
+  '30d',
+  '365d',
+  'currentYear',
+  'all',
+  'custom',
+] as const satisfies readonly HiveScaleDateRangePreset[];
+
+const isHiveScaleDateRangePreset = (
+  value: unknown,
+): value is HiveScaleDateRangePreset =>
+  typeof value === 'string' &&
+  (hiveScaleDateRangePresets as readonly string[]).includes(value);
+
+const isValidDateString = (value: unknown): value is string =>
+  typeof value === 'string' && Number.isFinite(new Date(value).getTime());
+
+const readStoredDateRange = (): HiveScaleDateRange | undefined => {
+  if (typeof window === 'undefined') return undefined;
+
+  try {
+    const rawValue = window.localStorage.getItem(
+      HIVESCALE_DATE_RANGE_STORAGE_KEY,
+    );
+    if (!rawValue) return undefined;
+
+    const storedValue = JSON.parse(rawValue) as Partial<HiveScaleDateRange>;
+    if (!isHiveScaleDateRangePreset(storedValue.preset)) return undefined;
+
+    if (storedValue.preset === 'custom') {
+      const fallbackRange = createPresetDateRange('24h');
+      return {
+        preset: 'custom',
+        startAt: isValidDateString(storedValue.startAt)
+          ? storedValue.startAt
+          : fallbackRange.startAt,
+        endAt: isValidDateString(storedValue.endAt)
+          ? storedValue.endAt
+          : undefined,
+      };
+    }
+
+    return createPresetDateRange(storedValue.preset);
+  } catch {
+    return undefined;
+  }
+};
 
 const formatDateTime = (value: string | null | undefined) => {
   if (!value) return 'Never';
@@ -1505,8 +1559,8 @@ function ScaleSetupPanel({
 export function HiveScalePage() {
   const queryClient = useQueryClient();
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>();
-  const [dateRange, setDateRange] = useState<HiveScaleDateRange>(() =>
-    createPresetDateRange('24h'),
+  const [dateRange, setDateRange] = useState<HiveScaleDateRange>(
+    () => readStoredDateRange() ?? createPresetDateRange('24h'),
   );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCalibrationPolling, setIsCalibrationPolling] = useState(false);
@@ -1514,7 +1568,7 @@ export function HiveScalePage() {
   const measurementQuery = useMemo(
     () => ({
       limit: measurementLimitForRange(dateRange),
-      start_at: dateRange.startAt,
+      start_at: dateRange.preset === 'all' ? undefined : dateRange.startAt,
       end_at: dateRange.preset === 'custom' ? dateRange.endAt : undefined,
     }),
     [dateRange],
@@ -1527,7 +1581,7 @@ export function HiveScalePage() {
   const removeDevice = useRemoveHiveScaleDevice();
   const hives = useHivesWithBoxes(undefined, { enabled: true });
   const inspections = useInspections({
-    startDate: dateRange.startAt,
+    startDate: dateRange.preset === 'all' ? undefined : dateRange.startAt,
     endDate: dateRange.endAt,
   });
 
@@ -1544,6 +1598,20 @@ export function HiveScalePage() {
       setSelectedDeviceId(devices.data[0].device_id);
     }
   }, [devices.data, selectedDeviceId]);
+
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      window.localStorage.setItem(
+        HIVESCALE_DATE_RANGE_STORAGE_KEY,
+        JSON.stringify(dateRange),
+      );
+    } catch {
+      // Ignore storage failures, for example private mode or disabled storage.
+    }
+  }, [dateRange]);
 
   useEffect(() => {
     if (

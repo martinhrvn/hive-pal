@@ -42,17 +42,31 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import type {
   HiveScaleDevice,
   HiveScaleMeasurement,
 } from '@/api/hooks/useHiveScale';
 
-export type HiveScaleDateRangePreset = '24h' | '7d' | '30d' | 'custom';
+export type HiveScaleDateRangePreset =
+  | '24h'
+  | '7d'
+  | '30d'
+  | '365d'
+  | 'currentYear'
+  | 'all'
+  | 'custom';
 
 export interface HiveScaleDateRange {
   preset: HiveScaleDateRangePreset;
-  startAt: string;
+  startAt?: string;
   endAt?: string;
 }
 
@@ -96,31 +110,55 @@ interface ChartMarker {
 
 const presetLabels: Record<HiveScaleDateRangePreset, string> = {
   '24h': '24h',
-  '7d': '7d',
-  '30d': '30d',
+  '7d': '7 days',
+  '30d': '30 days',
+  '365d': '1 year',
+  currentYear: 'Current year',
+  all: 'All data',
   custom: 'Custom',
 };
+
+const presetOptions: Exclude<HiveScaleDateRangePreset, 'custom'>[] = [
+  '24h',
+  '7d',
+  '30d',
+  '365d',
+  'currentYear',
+  'all',
+];
 
 const presetHours: Partial<Record<HiveScaleDateRangePreset, number>> = {
   '24h': 24,
   '7d': 24 * 7,
   '30d': 24 * 30,
+  '365d': 24 * 365,
 };
 
 export const createPresetDateRange = (
   preset: Exclude<HiveScaleDateRangePreset, 'custom'> = '24h',
 ): HiveScaleDateRange => {
+  if (preset === 'all') {
+    return { preset };
+  }
+
+  if (preset === 'currentYear') {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    return { preset, startAt: start.toISOString() };
+  }
+
   const end = new Date();
   const start = new Date(
     end.getTime() - (presetHours[preset] ?? 24) * 60 * 60 * 1000,
   );
-  return { preset, startAt: start.toISOString(), endAt: end.toISOString() };
+  return { preset, startAt: start.toISOString() };
 };
 
 export const measurementLimitForRange = (range: HiveScaleDateRange) => {
-  if (range.preset === '30d') return 5000;
+  if (range.preset === '24h') return 750;
   if (range.preset === '7d') return 2500;
-  return 750;
+  if (range.preset === '30d') return 5000;
+  return 10000;
 };
 
 const formatChartTick = (value: number) =>
@@ -301,11 +339,13 @@ const buildInspectionMarkers = (
 const buildBoxAddedMarkers = (
   hives: HiveWithBoxesResponse[],
   mappedHiveIds: string[],
-  startAt: string,
+  startAt?: string,
   endAt?: string,
 ): ChartMarker[] => {
   const mappedHiveIdSet = new Set(mappedHiveIds);
-  const startMs = new Date(startAt).getTime();
+  const startMs = startAt
+    ? new Date(startAt).getTime()
+    : Number.NEGATIVE_INFINITY;
   const endMs = endAt ? new Date(endAt).getTime() : Date.now();
 
   return hives
@@ -404,9 +444,15 @@ function DateRangeSelector({
 }) {
   const setPreset = (preset: HiveScaleDateRangePreset) => {
     if (preset === 'custom') {
-      onChange({ ...value, preset: 'custom' });
+      const fallbackRange = createPresetDateRange('24h');
+      onChange({
+        preset: 'custom',
+        startAt: value.startAt ?? fallbackRange.startAt,
+        endAt: value.endAt ?? fallbackRange.endAt,
+      });
       return;
     }
+
     onChange(createPresetDateRange(preset));
   };
 
@@ -416,20 +462,31 @@ function DateRangeSelector({
         <CalendarDays className="h-4 w-4" />
         Date range
       </div>
-      <div className="flex flex-wrap gap-2">
-        {(Object.keys(presetLabels) as HiveScaleDateRangePreset[]).map(
-          preset => (
-            <Button
-              key={preset}
-              type="button"
-              size="sm"
-              variant={value.preset === preset ? 'default' : 'outline'}
-              onClick={() => setPreset(preset)}
-            >
-              {presetLabels[preset]}
-            </Button>
-          ),
-        )}
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Select
+          value={value.preset === 'custom' ? undefined : value.preset}
+          onValueChange={preset =>
+            setPreset(preset as Exclude<HiveScaleDateRangePreset, 'custom'>)
+          }
+        >
+          <SelectTrigger className="sm:flex-1">
+            <SelectValue placeholder="Preset range" />
+          </SelectTrigger>
+          <SelectContent>
+            {presetOptions.map(preset => (
+              <SelectItem key={preset} value={preset}>
+                {presetLabels[preset]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          type="button"
+          variant={value.preset === 'custom' ? 'default' : 'outline'}
+          onClick={() => setPreset('custom')}
+        >
+          {presetLabels.custom}
+        </Button>
       </div>
       {value.preset === 'custom' && (
         <div className="grid gap-3 md:grid-cols-2">
@@ -673,7 +730,9 @@ export function HiveScaleDiagramPanel({
                 <XAxis
                   dataKey="timestamp"
                   domain={[
-                    new Date(dateRange.startAt).getTime(),
+                    dateRange.startAt
+                      ? new Date(dateRange.startAt).getTime()
+                      : 'dataMin',
                     dateRange.endAt
                       ? new Date(dateRange.endAt).getTime()
                       : 'dataMax',
