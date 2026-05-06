@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
   ChevronDown,
@@ -268,19 +267,28 @@ function ClaimDeviceCard({ hiveNameOptions }: { hiveNameOptions: string[] }) {
 function DeviceConfigCard({
   deviceId,
   latest,
+  onRefreshMeasurements,
 }: {
   deviceId: string | undefined;
   latest: HiveScaleMeasurement | undefined;
+  onRefreshMeasurements: () => void;
 }) {
   const { data: config, isLoading } = useHiveScaleDeviceConfig(deviceId);
   const updateConfig = useUpdateHiveScaleConfig(deviceId);
   const [sendInterval, setSendInterval] = useState('');
   const [scale1Offset, setScale1Offset] = useState('');
   const [scale1Factor, setScale1Factor] = useState('');
-  const [scale1KnownWeightKg, setScale1KnownWeightKg] = useState('');
   const [scale2Offset, setScale2Offset] = useState('');
   const [scale2Factor, setScale2Factor] = useState('');
-  const [scale2KnownWeightKg, setScale2KnownWeightKg] = useState('');
+  const [wizardScale, setWizardScale] = useState<1 | 2>(1);
+  const [wizardStep, setWizardStep] = useState<
+    'idle' | 'capture_empty' | 'place_weight' | 'waiting_loaded' | 'ready'
+  >('idle');
+  const [wizardOffsetRaw, setWizardOffsetRaw] = useState<number | null>(null);
+  const [wizardOffsetMeasuredAt, setWizardOffsetMeasuredAt] = useState<string | null>(null);
+  const [wizardLoadedRaw, setWizardLoadedRaw] = useState<number | null>(null);
+  const [wizardKnownWeight, setWizardKnownWeight] = useState('');
+  const [wizardFactor, setWizardFactor] = useState<number | null>(null);
 
   useEffect(() => {
     if (!config) return;
@@ -291,21 +299,41 @@ function DeviceConfigCard({
     setScale2Factor(String(config.scale2_factor));
   }, [config]);
 
-  const saveConfig = () => {
-    if (!deviceId) return;
+  const latestScale1Raw = latest?.scale_1_raw;
+  const latestScale2Raw = latest?.scale_2_raw;
+  const latestRawForWizard = wizardScale === 1 ? latestScale1Raw : latestScale2Raw;
+  const hasLatestRawForWizard =
+    typeof latestRawForWizard === 'number' && Number.isFinite(latestRawForWizard);
+  const latestMeasuredAt = latest?.measured_at ?? null;
 
-    const parsedSendInterval = Number(sendInterval);
+  const resetWizard = () => {
+    setWizardStep('idle');
+    setWizardOffsetRaw(null);
+    setWizardOffsetMeasuredAt(null);
+    setWizardLoadedRaw(null);
+    setWizardKnownWeight('');
+    setWizardFactor(null);
+  };
+
+  const validateConfigValues = (override?: Partial<{
+    send_interval_seconds: number;
+    scale1_offset: number;
+    scale1_factor: number;
+    scale2_offset: number;
+    scale2_factor: number;
+  }>) => {
+    const parsedSendInterval = override?.send_interval_seconds ?? Number(sendInterval);
     if (
       !Number.isFinite(parsedSendInterval) ||
       !Number.isInteger(parsedSendInterval) ||
-      parsedSendInterval < 60
+      parsedSendInterval < 30
     ) {
-      toast.error('Use a whole-number interval of at least 60 seconds.');
-      return;
+      toast.error('Use a whole-number interval of at least 30 seconds.');
+      return null;
     }
 
-    const parsedScale1Offset = Number(scale1Offset);
-    const parsedScale2Offset = Number(scale2Offset);
+    const parsedScale1Offset = override?.scale1_offset ?? Number(scale1Offset);
+    const parsedScale2Offset = override?.scale2_offset ?? Number(scale2Offset);
     if (
       !Number.isFinite(parsedScale1Offset) ||
       !Number.isInteger(parsedScale1Offset) ||
@@ -313,11 +341,11 @@ function DeviceConfigCard({
       !Number.isInteger(parsedScale2Offset)
     ) {
       toast.error('Scale offsets must be whole raw-count numbers.');
-      return;
+      return null;
     }
 
-    const parsedScale1Factor = Number(scale1Factor);
-    const parsedScale2Factor = Number(scale2Factor);
+    const parsedScale1Factor = override?.scale1_factor ?? Number(scale1Factor);
+    const parsedScale2Factor = override?.scale2_factor ?? Number(scale2Factor);
     if (
       !Number.isFinite(parsedScale1Factor) ||
       parsedScale1Factor === 0 ||
@@ -325,100 +353,148 @@ function DeviceConfigCard({
       parsedScale2Factor === 0
     ) {
       toast.error('Scale factors must be non-zero numbers.');
-      return;
+      return null;
     }
 
+    return {
+      send_interval_seconds: parsedSendInterval,
+      scale1_offset: parsedScale1Offset,
+      scale1_factor: parsedScale1Factor,
+      scale2_offset: parsedScale2Offset,
+      scale2_factor: parsedScale2Factor,
+    };
+  };
+
+  const saveConfig = () => {
+    if (!deviceId) return;
+
+    const parsedConfig = validateConfigValues();
+    if (!parsedConfig) return;
+
+    updateConfig.mutate(parsedConfig, {
+      onSuccess: () => toast.success('HiveScale config updated.'),
+      onError: error => toast.error(error.message),
+    });
+  };
+
+  const startWizard = () => {
+    if (!deviceId) return;
+    resetWizard();
     updateConfig.mutate(
+      { send_interval_seconds: 30 },
       {
-        send_interval_seconds: parsedSendInterval,
-        scale1_offset: parsedScale1Offset,
-        scale1_factor: parsedScale1Factor,
-        scale2_offset: parsedScale2Offset,
-        scale2_factor: parsedScale2Factor,
-      },
-      {
-        onSuccess: () => toast.success('HiveScale config updated.'),
+        onSuccess: () => {
+          setSendInterval('30');
+          setWizardStep('capture_empty');
+          toast.success('Calibration started. Device interval set to 30 seconds.');
+        },
         onError: error => toast.error(error.message),
       },
     );
   };
 
+  const captureEmptyRaw = () => {
+    if (!hasLatestRawForWizard || !latestMeasuredAt) {
+      toast.error(`No latest raw reading available for Scale ${wizardScale} yet.`);
+      return;
+    }
+    const raw = Math.round(latestRawForWizard);
+    setWizardOffsetRaw(raw);
+    setWizardOffsetMeasuredAt(latestMeasuredAt);
+    setWizardLoadedRaw(null);
+    setWizardFactor(null);
+    if (wizardScale === 1) setScale1Offset(String(raw));
+    else setScale2Offset(String(raw));
+    setWizardStep('place_weight');
+    toast.success(`Scale ${wizardScale} empty raw captured as offset.`);
+  };
+
+  const waitForLoadedRaw = () => {
+    const knownWeight = Number(wizardKnownWeight);
+    if (!Number.isFinite(knownWeight) || knownWeight <= 0) {
+      toast.error('Enter a known weight greater than 0 kg.');
+      return;
+    }
+    if (wizardOffsetRaw === null || !wizardOffsetMeasuredAt) {
+      toast.error('Capture the empty raw offset first.');
+      return;
+    }
+    setWizardStep('waiting_loaded');
+    onRefreshMeasurements();
+    toast.message('Waiting for a newer raw reading with the known weight on the scale.');
+  };
+
+  useEffect(() => {
+    if (wizardStep !== 'waiting_loaded') return;
+    if (
+      !wizardOffsetMeasuredAt ||
+      !latestMeasuredAt ||
+      new Date(latestMeasuredAt).getTime() <= new Date(wizardOffsetMeasuredAt).getTime()
+    ) {
+      return;
+    }
+    if (!hasLatestRawForWizard || wizardOffsetRaw === null) return;
+
+    const knownWeight = Number(wizardKnownWeight);
+    if (!Number.isFinite(knownWeight) || knownWeight <= 0) return;
+
+    const loadedRaw = Math.round(latestRawForWizard);
+    const factor = (loadedRaw - wizardOffsetRaw) / knownWeight;
+    if (!Number.isFinite(factor) || factor === 0) {
+      toast.error('Could not calculate a non-zero factor from this reading.');
+      setWizardStep('place_weight');
+      return;
+    }
+
+    setWizardLoadedRaw(loadedRaw);
+    setWizardFactor(factor);
+    if (wizardScale === 1) setScale1Factor(String(factor));
+    else setScale2Factor(String(factor));
+    setWizardStep('ready');
+    toast.success(`Scale ${wizardScale} factor calculated.`);
+  }, [
+    hasLatestRawForWizard,
+    latestMeasuredAt,
+    latestRawForWizard,
+    wizardKnownWeight,
+    wizardOffsetMeasuredAt,
+    wizardOffsetRaw,
+    wizardScale,
+    wizardStep,
+  ]);
+
+  const saveWizardCalibration = () => {
+    if (!deviceId || wizardOffsetRaw === null || wizardFactor === null) return;
+
+    const overrides = wizardScale === 1
+      ? { send_interval_seconds: 600, scale1_offset: wizardOffsetRaw, scale1_factor: wizardFactor }
+      : { send_interval_seconds: 600, scale2_offset: wizardOffsetRaw, scale2_factor: wizardFactor };
+    const parsedConfig = validateConfigValues(overrides);
+    if (!parsedConfig) return;
+
+    updateConfig.mutate(parsedConfig, {
+      onSuccess: () => {
+        setSendInterval('600');
+        resetWizard();
+        toast.success('Calibration saved. Device interval reset to 600 seconds.');
+      },
+      onError: error => toast.error(error.message),
+    });
+  };
+
   if (!deviceId) return null;
 
-  const latestScale1Raw = latest?.scale_1_raw;
-  const latestScale2Raw = latest?.scale_2_raw;
-  const hasLatestScale1Raw =
-    typeof latestScale1Raw === 'number' && Number.isFinite(latestScale1Raw);
-  const hasLatestScale2Raw =
-    typeof latestScale2Raw === 'number' && Number.isFinite(latestScale2Raw);
-
-  const setLatestRawAsOffset = (
-    raw: number | null | undefined,
-    setOffset: (value: string) => void,
-    scaleName: string,
-  ) => {
-    if (typeof raw !== 'number' || !Number.isFinite(raw)) {
-      toast.error(`No latest raw reading available for ${scaleName} yet.`);
-      return;
-    }
-    setOffset(String(raw));
-    toast.success(`${scaleName} offset set to latest raw reading.`);
-  };
-
-  const calculateFactorFromKnownWeight = ({
-    raw,
-    offset,
-    knownWeightKg,
-    setFactor,
-    scaleName,
-  }: {
-    raw: number | null | undefined;
-    offset: string;
-    knownWeightKg: string;
-    setFactor: (value: string) => void;
-    scaleName: string;
-  }) => {
-    if (typeof raw !== 'number' || !Number.isFinite(raw)) {
-      toast.error(`No latest raw reading available for ${scaleName} yet.`);
-      return;
-    }
-
-    const parsedOffset = Number(offset);
-    if (!Number.isFinite(parsedOffset)) {
-      toast.error(`Enter a valid offset for ${scaleName} first.`);
-      return;
-    }
-
-    const parsedKnownWeightKg = Number(knownWeightKg);
-    if (
-      !Number.isFinite(parsedKnownWeightKg) ||
-      parsedKnownWeightKg <= 0
-    ) {
-      toast.error(`Enter a known weight greater than 0 kg for ${scaleName}.`);
-      return;
-    }
-
-    const factor = (raw - parsedOffset) / parsedKnownWeightKg;
-    if (!Number.isFinite(factor) || factor === 0) {
-      toast.error(
-        `${scaleName} factor could not be calculated. Check the latest raw, offset, and known weight.`,
-      );
-      return;
-    }
-
-    const formattedFactor = Number(factor.toPrecision(12)).toString();
-    setFactor(formattedFactor);
-    toast.success(`${scaleName} factor calculated: ${formattedFactor}`);
-  };
+  const latestScale1RawFormatted = numberOrDash(latestScale1Raw, 0);
+  const latestScale2RawFormatted = numberOrDash(latestScale2Raw, 0);
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <CardTitle>Device config</CardTitle>
+            <CardTitle>Calibration wizard</CardTitle>
             <CardDescription>
-              Changes are read by the firmware during its next upload cycle.
+              Guided raw-offset and known-weight calibration for each scale.
             </CardDescription>
           </div>
           <Tooltip>
@@ -438,26 +514,13 @@ function DeviceConfigCard({
               align="start"
               className="max-w-sm space-y-2 text-left"
             >
-              <p className="font-medium">Scale calibration workflow</p>
+              <p className="font-medium">Wizard workflow</p>
               <ol className="list-decimal space-y-1 pl-4">
-                <li>Set send interval to 60 seconds while testing.</li>
-                <li>
-                  Empty the scale, wait for a fresh measurement, then use
-                  latest raw as offset.
-                </li>
-                <li>Place a known weight on the scale. Wait for new measurement.</li>
-                <li>
-                  Enter the known weight in kg and calculate the factor from
-                  latest raw, offset, and known weight.
-                </li>
-                <li>
-                  Save, wait for the next device cycles, then verify empty reads
-                  about 0 kg and the known weight reads correctly.
-                </li>
-                <li>
-                  Use a negative factor if the weight moves in the wrong
-                  direction.
-                </li>
+                <li>Start calibration. The device interval is set to 30 seconds.</li>
+                <li>Leave the scale empty and capture the latest raw value as offset.</li>
+                <li>Place a known weight, enter its kg value, and wait for a newer raw reading.</li>
+                <li>The frontend calculates factor = (loaded raw - offset) / known weight.</li>
+                <li>Save calibration. The interval is reset to 600 seconds.</li>
               </ol>
             </TooltipContent>
           </Tooltip>
@@ -468,31 +531,148 @@ function DeviceConfigCard({
           <Skeleton className="h-48 w-full" />
         ) : config ? (
           <>
-            <div className="space-y-2">
-              <Label htmlFor="send-interval">Send interval seconds</Label>
-              <Input
-                id="send-interval"
-                type="number"
-                min={60}
-                step={1}
-                value={sendInterval}
-                onChange={event => setSendInterval(event.target.value)}
-              />
+            <div className="grid gap-3 text-sm md:grid-cols-3">
+              <div className="rounded-md border p-3">
+                <p className="text-xs text-muted-foreground">Current interval</p>
+                <p className="font-medium">{sendInterval || '—'} seconds</p>
+              </div>
+              <div className="rounded-md border p-3">
+                <p className="text-xs text-muted-foreground">Scale 1 latest raw</p>
+                <p className="font-medium">{latestScale1RawFormatted}</p>
+              </div>
+              <div className="rounded-md border p-3">
+                <p className="text-xs text-muted-foreground">Scale 2 latest raw</p>
+                <p className="font-medium">{latestScale2RawFormatted}</p>
+              </div>
             </div>
 
-            <div className="space-y-3 rounded-md border p-3">
-              <div>
-                <p className="font-medium">Scale 1 calibration</p>
-                <p className="text-xs text-muted-foreground">
-                  Latest raw: {numberOrDash(latestScale1Raw, 0)}. Weight is
-                  calculated as (raw - offset) / factor.
-                </p>
+            <div className="space-y-4 rounded-md border p-4">
+              <div className="grid gap-3 md:grid-cols-[160px_1fr] md:items-end">
+                <div className="space-y-2">
+                  <Label htmlFor="wizard-scale">Scale</Label>
+                  <Select
+                    value={String(wizardScale)}
+                    onValueChange={value => {
+                      setWizardScale(value === '2' ? 2 : 1);
+                      resetWizard();
+                    }}
+                    disabled={wizardStep !== 'idle'}
+                  >
+                    <SelectTrigger id="wizard-scale">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Scale 1</SelectItem>
+                      <SelectItem value="2">Scale 2</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Latest measurement: {formatDateTime(latestMeasuredAt)}. Keep the scale empty until the offset step is captured.
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="scale-1-offset">
-                  Offset / empty raw reading
-                </Label>
-                <div className="flex gap-2">
+
+              <div className="grid gap-3 lg:grid-cols-4">
+                <div className="rounded-md border p-3">
+                  <p className="font-medium">1. Start</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Temporarily switches upload interval to 30 seconds.
+                  </p>
+                  <Button
+                    type="button"
+                    className="mt-3 w-full"
+                    onClick={startWizard}
+                    disabled={updateConfig.isPending || wizardStep !== 'idle'}
+                  >
+                    Start calibration
+                  </Button>
+                </div>
+
+                <div className="rounded-md border p-3">
+                  <p className="font-medium">2. Empty scale</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Capture latest raw as offset: {wizardOffsetRaw ?? 'not captured'}.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-3 w-full"
+                    onClick={captureEmptyRaw}
+                    disabled={wizardStep !== 'capture_empty' || !hasLatestRawForWizard}
+                  >
+                    Capture empty raw
+                  </Button>
+                </div>
+
+                <div className="rounded-md border p-3">
+                  <p className="font-medium">3. Known weight</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Put the weight on the scale and enter kg.
+                  </p>
+                  <div className="mt-3 space-y-2">
+                    <Input
+                      type="number"
+                      min="0"
+                      step="any"
+                      placeholder="e.g. 10"
+                      value={wizardKnownWeight}
+                      onChange={event => setWizardKnownWeight(event.target.value)}
+                      disabled={wizardStep !== 'place_weight' && wizardStep !== 'waiting_loaded'}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={waitForLoadedRaw}
+                      disabled={wizardStep !== 'place_weight'}
+                    >
+                      {wizardStep === 'waiting_loaded' ? 'Waiting…' : 'Wait for new raw'}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="rounded-md border p-3">
+                  <p className="font-medium">4. Save</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Loaded raw: {wizardLoadedRaw ?? '—'} · Factor:{' '}
+                    {wizardFactor === null ? '—' : wizardFactor.toFixed(4)}
+                  </p>
+                  <Button
+                    type="button"
+                    className="mt-3 w-full"
+                    onClick={saveWizardCalibration}
+                    disabled={wizardStep !== 'ready' || updateConfig.isPending}
+                  >
+                    Save & reset to 600s
+                  </Button>
+                </div>
+              </div>
+
+              {wizardStep !== 'idle' && (
+                <Button type="button" variant="ghost" size="sm" onClick={resetWizard}>
+                  Cancel wizard
+                </Button>
+              )}
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <p className="font-medium">Manual config</p>
+              <div className="grid gap-3 md:grid-cols-5">
+                <div className="space-y-2">
+                  <Label htmlFor="send-interval">Interval seconds</Label>
+                  <Input
+                    id="send-interval"
+                    type="number"
+                    min={30}
+                    step={1}
+                    value={sendInterval}
+                    onChange={event => setSendInterval(event.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="scale-1-offset">Scale 1 offset</Label>
                   <Input
                     id="scale-1-offset"
                     type="number"
@@ -500,80 +680,19 @@ function DeviceConfigCard({
                     value={scale1Offset}
                     onChange={event => setScale1Offset(event.target.value)}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={!hasLatestScale1Raw}
-                    onClick={() =>
-                      setLatestRawAsOffset(
-                        latestScale1Raw,
-                        setScale1Offset,
-                        'Scale 1',
-                      )
-                    }
-                  >
-                    Use latest raw
-                  </Button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="scale-1-known-weight">Known weight / kg</Label>
-                <div className="flex gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="scale-1-factor">Scale 1 factor</Label>
                   <Input
-                    id="scale-1-known-weight"
+                    id="scale-1-factor"
                     type="number"
                     step="any"
-                    value={scale1KnownWeightKg}
-                    onChange={event =>
-                      setScale1KnownWeightKg(event.target.value)
-                    }
-                    placeholder="e.g. 10"
+                    value={scale1Factor}
+                    onChange={event => setScale1Factor(event.target.value)}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={!hasLatestScale1Raw}
-                    onClick={() =>
-                      calculateFactorFromKnownWeight({
-                        raw: latestScale1Raw,
-                        offset: scale1Offset,
-                        knownWeightKg: scale1KnownWeightKg,
-                        setFactor: setScale1Factor,
-                        scaleName: 'Scale 1',
-                      })
-                    }
-                  >
-                    Calculate factor
-                  </Button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="scale-1-factor">
-                  Calculated factor / raw counts per kg
-                </Label>
-                <Input
-                  id="scale-1-factor"
-                  type="number"
-                  step="any"
-                  value={scale1Factor}
-                  onChange={event => setScale1Factor(event.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3 rounded-md border p-3">
-              <div>
-                <p className="font-medium">Scale 2 calibration</p>
-                <p className="text-xs text-muted-foreground">
-                  Latest raw: {numberOrDash(latestScale2Raw, 0)}. Weight is
-                  calculated as (raw - offset) / factor.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="scale-2-offset">
-                  Offset / empty raw reading
-                </Label>
-                <div className="flex gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="scale-2-offset">Scale 2 offset</Label>
                   <Input
                     id="scale-2-offset"
                     type="number"
@@ -581,64 +700,17 @@ function DeviceConfigCard({
                     value={scale2Offset}
                     onChange={event => setScale2Offset(event.target.value)}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={!hasLatestScale2Raw}
-                    onClick={() =>
-                      setLatestRawAsOffset(
-                        latestScale2Raw,
-                        setScale2Offset,
-                        'Scale 2',
-                      )
-                    }
-                  >
-                    Use latest raw
-                  </Button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="scale-2-known-weight">Known weight / kg</Label>
-                <div className="flex gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="scale-2-factor">Scale 2 factor</Label>
                   <Input
-                    id="scale-2-known-weight"
+                    id="scale-2-factor"
                     type="number"
                     step="any"
-                    value={scale2KnownWeightKg}
-                    onChange={event =>
-                      setScale2KnownWeightKg(event.target.value)
-                    }
-                    placeholder="e.g. 10"
+                    value={scale2Factor}
+                    onChange={event => setScale2Factor(event.target.value)}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={!hasLatestScale2Raw}
-                    onClick={() =>
-                      calculateFactorFromKnownWeight({
-                        raw: latestScale2Raw,
-                        offset: scale2Offset,
-                        knownWeightKg: scale2KnownWeightKg,
-                        setFactor: setScale2Factor,
-                        scaleName: 'Scale 2',
-                      })
-                    }
-                  >
-                    Calculate factor
-                  </Button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="scale-2-factor">
-                  Calculated factor / raw counts per kg
-                </Label>
-                <Input
-                  id="scale-2-factor"
-                  type="number"
-                  step="any"
-                  value={scale2Factor}
-                  onChange={event => setScale2Factor(event.target.value)}
-                />
               </div>
             </div>
 
@@ -647,11 +719,10 @@ function DeviceConfigCard({
               onClick={saveConfig}
               disabled={updateConfig.isPending}
             >
-              {updateConfig.isPending ? 'Saving…' : 'Save device config'}
+              {updateConfig.isPending ? 'Saving…' : 'Save manual config'}
             </Button>
             <div className="text-xs text-muted-foreground">
-              Config version {config.config_version}. The calculated factor is
-              still editable if you need to flip the sign or fine tune it.
+              Config version {config.config_version}. A negative factor is valid if the raw value decreases when weight is added.
             </div>
           </>
         ) : (
@@ -911,6 +982,7 @@ function ScaleSetupPanel({
   hiveNameOptions,
   hasClaimedDevices,
   isDeviceListLoading,
+  onRefreshMeasurements,
 }: {
   selectedDevice: HiveScaleDevice | undefined;
   selectedDeviceId: string | undefined;
@@ -918,6 +990,7 @@ function ScaleSetupPanel({
   hiveNameOptions: string[];
   hasClaimedDevices: boolean;
   isDeviceListLoading: boolean;
+  onRefreshMeasurements: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -972,6 +1045,7 @@ function ScaleSetupPanel({
               <DeviceConfigCard
                 deviceId={selectedDeviceId}
                 latest={latest}
+                onRefreshMeasurements={onRefreshMeasurements}
               />
             </div>
           </CardContent>
@@ -983,11 +1057,11 @@ function ScaleSetupPanel({
 
 export function HiveScalePage() {
   const queryClient = useQueryClient();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>();
   const [dateRange, setDateRange] = useState<HiveScaleDateRange>(() =>
     createPresetDateRange('24h'),
   );
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const devices = useHiveScaleDevices();
   const measurementQuery = useMemo(
     () => ({
@@ -1039,25 +1113,19 @@ export function HiveScalePage() {
   const scale1Name = channelName(selectedDevice, 1, 'Scale 1');
   const scale2Name = channelName(selectedDevice, 2, 'Scale 2');
 
-  const refreshHiveScaleData = async () => {
+  const refreshHiveScale = async () => {
     setIsRefreshing(true);
-
     try {
       if (dateRange.preset !== 'custom') {
         setDateRange(createPresetDateRange(dateRange.preset));
       }
-
       await Promise.all([
+        devices.refetch(),
+        measurements.refetch(),
+        hives.refetch(),
+        inspections.refetch(),
         queryClient.invalidateQueries({ queryKey: ['hivescale'] }),
-        queryClient.invalidateQueries({ queryKey: ['hives'] }),
-        queryClient.invalidateQueries({ queryKey: ['inspections'] }),
       ]);
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Could not refresh HiveScale data.',
-      );
     } finally {
       setIsRefreshing(false);
     }
@@ -1090,14 +1158,11 @@ export function HiveScalePage() {
           </p>
         </div>
         <Button
-          type="button"
           variant="outline"
-          onClick={refreshHiveScaleData}
+          onClick={refreshHiveScale}
           disabled={isRefreshing}
         >
-          <RefreshCw
-            className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
-          />
+          <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           {isRefreshing ? 'Refreshing…' : 'Refresh'}
         </Button>
       </div>
@@ -1150,6 +1215,7 @@ export function HiveScalePage() {
         hiveNameOptions={hiveNameOptions}
         hasClaimedDevices={Boolean(devices.data?.length)}
         isDeviceListLoading={devices.isLoading}
+        onRefreshMeasurements={() => measurements.refetch()}
       />
 
       {selectedDevice && (
