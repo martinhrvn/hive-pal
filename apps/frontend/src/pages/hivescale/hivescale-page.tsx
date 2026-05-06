@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
   ChevronDown,
@@ -276,8 +277,10 @@ function DeviceConfigCard({
   const [sendInterval, setSendInterval] = useState('');
   const [scale1Offset, setScale1Offset] = useState('');
   const [scale1Factor, setScale1Factor] = useState('');
+  const [scale1KnownWeightKg, setScale1KnownWeightKg] = useState('');
   const [scale2Offset, setScale2Offset] = useState('');
   const [scale2Factor, setScale2Factor] = useState('');
+  const [scale2KnownWeightKg, setScale2KnownWeightKg] = useState('');
 
   useEffect(() => {
     if (!config) return;
@@ -362,6 +365,52 @@ function DeviceConfigCard({
     toast.success(`${scaleName} offset set to latest raw reading.`);
   };
 
+  const calculateFactorFromKnownWeight = ({
+    raw,
+    offset,
+    knownWeightKg,
+    setFactor,
+    scaleName,
+  }: {
+    raw: number | null | undefined;
+    offset: string;
+    knownWeightKg: string;
+    setFactor: (value: string) => void;
+    scaleName: string;
+  }) => {
+    if (typeof raw !== 'number' || !Number.isFinite(raw)) {
+      toast.error(`No latest raw reading available for ${scaleName} yet.`);
+      return;
+    }
+
+    const parsedOffset = Number(offset);
+    if (!Number.isFinite(parsedOffset)) {
+      toast.error(`Enter a valid offset for ${scaleName} first.`);
+      return;
+    }
+
+    const parsedKnownWeightKg = Number(knownWeightKg);
+    if (
+      !Number.isFinite(parsedKnownWeightKg) ||
+      parsedKnownWeightKg <= 0
+    ) {
+      toast.error(`Enter a known weight greater than 0 kg for ${scaleName}.`);
+      return;
+    }
+
+    const factor = (raw - parsedOffset) / parsedKnownWeightKg;
+    if (!Number.isFinite(factor) || factor === 0) {
+      toast.error(
+        `${scaleName} factor could not be calculated. Check the latest raw, offset, and known weight.`,
+      );
+      return;
+    }
+
+    const formattedFactor = Number(factor.toPrecision(12)).toString();
+    setFactor(formattedFactor);
+    toast.success(`${scaleName} factor calculated: ${formattedFactor}`);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -398,7 +447,8 @@ function DeviceConfigCard({
                 </li>
                 <li>Place a known weight on the scale. Wait for new measurement.</li>
                 <li>
-                  Set factor to (latest raw - offset) / known weight in kg.
+                  Enter the known weight in kg and calculate the factor from
+                  latest raw, offset, and known weight.
                 </li>
                 <li>
                   Save, wait for the next device cycles, then verify empty reads
@@ -467,7 +517,40 @@ function DeviceConfigCard({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="scale-1-factor">Factor / raw counts per kg</Label>
+                <Label htmlFor="scale-1-known-weight">Known weight / kg</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="scale-1-known-weight"
+                    type="number"
+                    step="any"
+                    value={scale1KnownWeightKg}
+                    onChange={event =>
+                      setScale1KnownWeightKg(event.target.value)
+                    }
+                    placeholder="e.g. 10"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={!hasLatestScale1Raw}
+                    onClick={() =>
+                      calculateFactorFromKnownWeight({
+                        raw: latestScale1Raw,
+                        offset: scale1Offset,
+                        knownWeightKg: scale1KnownWeightKg,
+                        setFactor: setScale1Factor,
+                        scaleName: 'Scale 1',
+                      })
+                    }
+                  >
+                    Calculate factor
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="scale-1-factor">
+                  Calculated factor / raw counts per kg
+                </Label>
                 <Input
                   id="scale-1-factor"
                   type="number"
@@ -515,7 +598,40 @@ function DeviceConfigCard({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="scale-2-factor">Factor / raw counts per kg</Label>
+                <Label htmlFor="scale-2-known-weight">Known weight / kg</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="scale-2-known-weight"
+                    type="number"
+                    step="any"
+                    value={scale2KnownWeightKg}
+                    onChange={event =>
+                      setScale2KnownWeightKg(event.target.value)
+                    }
+                    placeholder="e.g. 10"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={!hasLatestScale2Raw}
+                    onClick={() =>
+                      calculateFactorFromKnownWeight({
+                        raw: latestScale2Raw,
+                        offset: scale2Offset,
+                        knownWeightKg: scale2KnownWeightKg,
+                        setFactor: setScale2Factor,
+                        scaleName: 'Scale 2',
+                      })
+                    }
+                  >
+                    Calculate factor
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="scale-2-factor">
+                  Calculated factor / raw counts per kg
+                </Label>
                 <Input
                   id="scale-2-factor"
                   type="number"
@@ -534,8 +650,8 @@ function DeviceConfigCard({
               {updateConfig.isPending ? 'Saving…' : 'Save device config'}
             </Button>
             <div className="text-xs text-muted-foreground">
-              Config version {config.config_version}. Use a negative factor if
-              the weight moves in the wrong direction.
+              Config version {config.config_version}. The calculated factor is
+              still editable if you need to flip the sign or fine tune it.
             </div>
           </>
         ) : (
@@ -841,7 +957,7 @@ function ScaleSetupPanel({
         </CardHeader>
         <CollapsibleContent>
           <CardContent className="pt-0">
-            <div className="grid gap-4 xl:grid-cols-2">
+            <div className="grid gap-4 xl:grid-cols-4">
               <ClaimDeviceCard hiveNameOptions={hiveNameOptions} />
               {selectedDevice && (
                 <DeviceStatusCard
@@ -866,10 +982,12 @@ function ScaleSetupPanel({
 }
 
 export function HiveScalePage() {
+  const queryClient = useQueryClient();
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>();
   const [dateRange, setDateRange] = useState<HiveScaleDateRange>(() =>
     createPresetDateRange('24h'),
   );
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const devices = useHiveScaleDevices();
   const measurementQuery = useMemo(
     () => ({
@@ -921,6 +1039,30 @@ export function HiveScalePage() {
   const scale1Name = channelName(selectedDevice, 1, 'Scale 1');
   const scale2Name = channelName(selectedDevice, 2, 'Scale 2');
 
+  const refreshHiveScaleData = async () => {
+    setIsRefreshing(true);
+
+    try {
+      if (dateRange.preset !== 'custom') {
+        setDateRange(createPresetDateRange(dateRange.preset));
+      }
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['hivescale'] }),
+        queryClient.invalidateQueries({ queryKey: ['hives'] }),
+        queryClient.invalidateQueries({ queryKey: ['inspections'] }),
+      ]);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Could not refresh HiveScale data.',
+      );
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const removeSelectedDevice = () => {
     if (!selectedDevice) return;
     const confirmed = window.confirm(
@@ -948,14 +1090,15 @@ export function HiveScalePage() {
           </p>
         </div>
         <Button
+          type="button"
           variant="outline"
-          onClick={() => {
-            devices.refetch();
-            measurements.refetch();
-          }}
+          onClick={refreshHiveScaleData}
+          disabled={isRefreshing}
         >
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Refresh
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
+          />
+          {isRefreshing ? 'Refreshing…' : 'Refresh'}
         </Button>
       </div>
 
