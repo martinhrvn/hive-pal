@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import { useHivesWithBoxes } from '@/api/hooks/useHives';
 import { useInspections } from '@/api/hooks/useInspections';
 import {
