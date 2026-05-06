@@ -40,6 +40,11 @@ export interface HiveScaleMeasurementQuery {
   end_at?: string;
 }
 
+export interface HiveScaleCalibrationModeStartDto {
+  interval_seconds?: number;
+  timeout_seconds?: number;
+}
+
 interface HiveScaleMember {
   user_id: string;
   role: 'owner' | 'admin' | 'viewer';
@@ -56,7 +61,9 @@ export class HiveScaleService {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
-    this.baseUrl = (this.configService.get<string>('HIVESCALE_API_BASE_URL') ?? '')
+    this.baseUrl = (
+      this.configService.get<string>('HIVESCALE_API_BASE_URL') ?? ''
+    )
       .trim()
       .replace(/\/$/, '');
     this.serviceApiKey = (
@@ -121,7 +128,9 @@ export class HiveScaleService {
       const message =
         typeof responseData === 'string'
           ? responseData
-          : responseData?.detail || responseData?.message || 'HiveScale backend error';
+          : responseData?.detail ||
+            responseData?.message ||
+            'HiveScale backend error';
 
       throw new HttpException(message, error.response.status);
     }
@@ -144,7 +153,11 @@ export class HiveScaleService {
   }
 
   getDeviceConfig(userId: string, deviceId: string) {
-    return this.request(userId, 'GET', `/api/v1/app/devices/${deviceId}/config`);
+    return this.request(
+      userId,
+      'GET',
+      `/api/v1/app/devices/${deviceId}/config`,
+    );
   }
 
   updateDeviceConfig(
@@ -152,9 +165,14 @@ export class HiveScaleService {
     deviceId: string,
     payload: HiveScaleConfigPatchDto,
   ) {
-    return this.request(userId, 'PATCH', `/api/v1/app/devices/${deviceId}/config`, {
-      data: payload,
-    });
+    return this.request(
+      userId,
+      'PATCH',
+      `/api/v1/app/devices/${deviceId}/config`,
+      {
+        data: payload,
+      },
+    );
   }
 
   updateDeviceChannels(
@@ -162,9 +180,35 @@ export class HiveScaleService {
     deviceId: string,
     payload: HiveScaleChannelsPatchDto,
   ) {
-    return this.request(userId, 'PATCH', `/api/v1/app/devices/${deviceId}/channels`, {
-      data: payload,
-    });
+    return this.request(
+      userId,
+      'PATCH',
+      `/api/v1/app/devices/${deviceId}/channels`,
+      {
+        data: payload,
+      },
+    );
+  }
+
+  startCalibrationMode(
+    userId: string,
+    deviceId: string,
+    payload: HiveScaleCalibrationModeStartDto,
+  ) {
+    return this.request(
+      userId,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/calibration/start`,
+      { data: payload },
+    );
+  }
+
+  stopCalibrationMode(userId: string, deviceId: string) {
+    return this.request(
+      userId,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/calibration/stop`,
+    );
   }
 
   listMeasurements(
@@ -197,7 +241,7 @@ export class HiveScaleService {
     );
 
     return Promise.all(
-      members.map(async member => {
+      members.map(async (member) => {
         const hivePalUser = await this.usersService.findById(member.user_id);
         return {
           ...member,
@@ -220,12 +264,17 @@ export class HiveScaleService {
       throw new NotFoundException(`No HivePal user found for ${email}`);
     }
 
-    return this.request(ownerUserId, 'POST', `/api/v1/app/devices/${deviceId}/members`, {
-      data: {
-        user_id: user.id,
-        role: payload.role,
+    return this.request(
+      ownerUserId,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/members`,
+      {
+        data: {
+          user_id: user.id,
+          role: payload.role,
+        },
       },
-    });
+    );
   }
 
   revokeMember(ownerUserId: string, deviceId: string, memberUserId: string) {

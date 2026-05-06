@@ -36,6 +36,7 @@ export interface HiveScaleMeasurement {
   sht_ok: boolean | null;
   scale_1_raw: number | null;
   scale_2_raw: number | null;
+  calibration_mode?: boolean | null;
 }
 
 export interface HiveScaleDeviceConfig {
@@ -88,6 +89,24 @@ export interface HiveScaleMeasurementQuery {
   end_at?: string;
 }
 
+export interface HiveScaleMeasurementsOptions {
+  refetchInterval?: number | false;
+}
+
+export interface HiveScaleCalibrationModeInput {
+  interval_seconds?: number;
+  timeout_seconds?: number;
+}
+
+export interface HiveScaleCalibrationModeResult {
+  status: string;
+  device_id: string;
+  command_id: number;
+  calibration_mode: boolean;
+  interval_seconds?: number;
+  timeout_seconds?: number;
+}
+
 const HIVESCALE_KEYS = {
   all: ['hivescale'] as const,
   devices: () => [...HIVESCALE_KEYS.all, 'devices'] as const,
@@ -130,6 +149,7 @@ export const useHiveScaleDeviceConfig = (deviceId: string | undefined) => {
 export const useHiveScaleMeasurements = (
   deviceId: string | undefined,
   query: HiveScaleMeasurementQuery = { limit: 200 },
+  options: HiveScaleMeasurementsOptions = {},
 ) => {
   return useQuery<HiveScaleMeasurement[]>({
     queryKey: HIVESCALE_KEYS.measurements(deviceId, query),
@@ -141,7 +161,7 @@ export const useHiveScaleMeasurements = (
       return response.data;
     },
     enabled: !!deviceId,
-    refetchInterval: 60000,
+    refetchInterval: options.refetchInterval ?? 60000,
   });
 };
 
@@ -166,7 +186,10 @@ export const useClaimHiveScaleDevice = () => {
 
   return useMutation({
     mutationFn: async (data: ClaimHiveScaleDeviceInput) => {
-      const response = await apiClient.post('/api/hivescale/devices/claim', data);
+      const response = await apiClient.post(
+        '/api/hivescale/devices/claim',
+        data,
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -180,7 +203,9 @@ export const useRemoveHiveScaleDevice = () => {
 
   return useMutation({
     mutationFn: async (deviceId: string) => {
-      const response = await apiClient.delete(`/api/hivescale/devices/${deviceId}`);
+      const response = await apiClient.delete(
+        `/api/hivescale/devices/${deviceId}`,
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -201,7 +226,46 @@ export const useUpdateHiveScaleConfig = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.config(deviceId),
+      });
+    },
+  });
+};
+
+export const useStartHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: HiveScaleCalibrationModeInput = {}) => {
+      const response = await apiClient.post<HiveScaleCalibrationModeResult>(
+        `/api/hivescale/devices/${deviceId}/calibration/start`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
+    },
+  });
+};
+
+export const useStopHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.post<HiveScaleCalibrationModeResult>(
+        `/api/hivescale/devices/${deviceId}/calibration/stop`,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
     },
   });
 };
@@ -235,7 +299,9 @@ export const useShareHiveScaleDevice = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.members(deviceId),
+      });
     },
   });
 };
@@ -251,7 +317,9 @@ export const useRevokeHiveScaleMember = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.members(deviceId),
+      });
     },
   });
 };

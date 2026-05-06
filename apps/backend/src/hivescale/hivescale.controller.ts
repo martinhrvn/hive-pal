@@ -14,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
 import {
+  HiveScaleCalibrationModeStartDto,
   HiveScaleChannelsPatchDto,
   HiveScaleClaimDeviceDto,
   HiveScaleConfigPatchDto,
@@ -83,6 +84,27 @@ export class HiveScaleController {
     );
   }
 
+  @Post('devices/:deviceId/calibration/start')
+  startCalibrationMode(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @Body() payload: HiveScaleCalibrationModeStartDto,
+  ) {
+    return this.hiveScaleService.startCalibrationMode(
+      req.user.id,
+      deviceId,
+      payload,
+    );
+  }
+
+  @Post('devices/:deviceId/calibration/stop')
+  stopCalibrationMode(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.hiveScaleService.stopCalibrationMode(req.user.id, deviceId);
+  }
+
   @Get('devices/:deviceId/measurements')
   listMeasurements(
     @Req() req: RequestWithUser,
@@ -98,7 +120,11 @@ export class HiveScaleController {
     @Param('deviceId') deviceId: string,
     @Query('limit') limit?: number,
   ) {
-    return this.hiveScaleService.latestMeasurements(req.user.id, deviceId, limit);
+    return this.hiveScaleService.latestMeasurements(
+      req.user.id,
+      deviceId,
+      limit,
+    );
   }
 
   @Get('devices/:deviceId/members')
