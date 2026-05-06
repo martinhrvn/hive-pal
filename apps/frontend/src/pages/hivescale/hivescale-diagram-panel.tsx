@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Activity,
   Box,
@@ -6,7 +6,7 @@ import {
   ClipboardCheck,
   Droplets,
   Frame,
-  HeartPulse,
+  Scale,
   PackagePlus,
   Pill,
   Thermometer,
@@ -22,7 +22,7 @@ import {
   LineChart,
   ReferenceLine,
   ResponsiveContainer,
-  Tooltip as ChartTooltip,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -43,11 +43,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import type {
   HiveScaleDevice,
   HiveScaleMeasurement,
@@ -97,12 +92,6 @@ interface ChartMarker {
   detail: string;
   hiveName: string;
   Icon: LucideIcon;
-}
-
-interface HoveredChartMarker {
-  marker: ChartMarker;
-  x: number;
-  y: number;
 }
 
 const presetLabels: Record<HiveScaleDateRangePreset, string> = {
@@ -349,46 +338,27 @@ const buildBoxAddedMarkers = (
     );
 };
 
-const markerTooltipText = (marker: ChartMarker) =>
-  `${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`;
-
 function MarkerReferenceLineLabel({
   viewBox,
   marker,
   row,
-  onMarkerHover,
-  onMarkerLeave,
 }: {
   viewBox?: { x?: number; y?: number };
   marker: ChartMarker;
   row: number;
-  onMarkerHover: (
-    marker: ChartMarker,
-    position: { x: number; y: number },
-  ) => void;
-  onMarkerLeave: () => void;
 }) {
   const x = typeof viewBox?.x === 'number' ? viewBox.x : 0;
   const chartTop = typeof viewBox?.y === 'number' ? viewBox.y : 0;
-  const y = chartTop + 8 + row * 24;
   const Icon = marker.Icon;
-  const tooltipText = markerTooltipText(marker);
-  const showTooltip = () => onMarkerHover(marker, { x: x + 10, y });
 
   return (
     <g
       color="var(--foreground)"
-      transform={`translate(${x - 10}, ${y})`}
-      role="img"
-      aria-label={tooltipText}
-      tabIndex={0}
-      onMouseEnter={showTooltip}
-      onMouseLeave={onMarkerLeave}
-      onFocus={showTooltip}
-      onBlur={onMarkerLeave}
-      style={{ cursor: 'help', pointerEvents: 'all' }}
+      transform={`translate(${x - 10}, ${chartTop + 8 + row * 24})`}
     >
-      <title>{tooltipText}</title>
+      <title>
+        {`${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`}
+      </title>
       <rect
         x={0}
         y={0}
@@ -400,33 +370,6 @@ function MarkerReferenceLineLabel({
       />
       <Icon x={3} y={3} width={14} height={14} strokeWidth={2} />
     </g>
-  );
-}
-
-function DiagramIconTooltip({
-  label,
-  description,
-  children,
-}: {
-  label: string;
-  description: string;
-  children: ReactNode;
-}) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span
-          className="inline-flex shrink-0 cursor-help items-center"
-          aria-label={label}
-        >
-          {children}
-        </span>
-      </TooltipTrigger>
-      <TooltipContent className="max-w-xs text-left">
-        <p className="font-medium">{label}</p>
-        <p>{description}</p>
-      </TooltipContent>
-    </Tooltip>
   );
 }
 
@@ -470,12 +413,7 @@ function DateRangeSelector({
   return (
     <div className="space-y-3 rounded-md border p-3">
       <div className="flex items-center gap-2 text-sm font-medium">
-        <DiagramIconTooltip
-          label="Date range"
-          description="Choose which measurement window is loaded into the diagram. Custom ranges are converted to UTC before querying HiveScale."
-        >
-          <CalendarDays className="h-4 w-4" />
-        </DiagramIconTooltip>
+        <CalendarDays className="h-4 w-4" />
         Date range
       </div>
       <div className="flex flex-wrap gap-2">
@@ -560,9 +498,6 @@ export function HiveScaleDiagramPanel({
     ambientHumidity: false,
     batteryVoltage: false,
   });
-
-  const [hoveredChartMarker, setHoveredChartMarker] =
-    useState<HoveredChartMarker | null>(null);
 
   const series = useMemo<DiagramSeries[]>(
     () => [
@@ -728,10 +663,7 @@ export function HiveScaleDiagramPanel({
         {isLoading ? (
           <Skeleton className="h-96 w-full" />
         ) : chartData.length ? (
-          <div
-            className="relative h-[28rem]"
-            onMouseLeave={() => setHoveredChartMarker(null)}
-          >
+          <div className="h-[28rem]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
@@ -776,7 +708,7 @@ export function HiveScaleDiagramPanel({
                     width={64}
                   />
                 )}
-                <ChartTooltip
+                <Tooltip
                   labelFormatter={value => formatDateTime(Number(value))}
                   formatter={(value, name) => [value, name]}
                 />
@@ -792,13 +724,6 @@ export function HiveScaleDiagramPanel({
                       <MarkerReferenceLineLabel
                         marker={marker}
                         row={index % 6}
-                        onMarkerHover={(hoveredMarker, position) =>
-                          setHoveredChartMarker({
-                            marker: hoveredMarker,
-                            ...position,
-                          })
-                        }
-                        onMarkerLeave={() => setHoveredChartMarker(null)}
                       />
                     }
                   />
@@ -817,24 +742,6 @@ export function HiveScaleDiagramPanel({
                 ))}
               </LineChart>
             </ResponsiveContainer>
-            {hoveredChartMarker && (
-              <div
-                className="pointer-events-none absolute z-20 max-w-xs translate-x-3 rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md"
-                style={{
-                  left: hoveredChartMarker.x,
-                  top: hoveredChartMarker.y,
-                }}
-              >
-                <p className="font-medium">
-                  {hoveredChartMarker.marker.label} ·{' '}
-                  {hoveredChartMarker.marker.hiveName}
-                </p>
-                <p className="text-muted-foreground">
-                  {formatDateTime(hoveredChartMarker.marker.date)}
-                </p>
-                <p>{hoveredChartMarker.marker.detail}</p>
-              </div>
-            )}
           </div>
         ) : (
           <div className="flex h-64 flex-col items-center justify-center gap-2 text-center text-muted-foreground">
@@ -843,82 +750,23 @@ export function HiveScaleDiagramPanel({
           </div>
         )}
 
-        <div className="grid gap-4 lg:grid-cols-[1fr_18rem]">
-          <div className="rounded-md border p-3 text-xs text-muted-foreground">
-            <div className="mb-2 font-medium text-foreground">Axis setup</div>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex items-center gap-2">
-                <DiagramIconTooltip
-                  label="Weight axis"
-                  description="Left Y-axis for Scale 1 and Scale 2 weight readings in kg."
-                >
-                  <HeartPulse className="h-4 w-4" />
-                </DiagramIconTooltip>
-                Left: weight
-              </div>
-              <div className="flex items-center gap-2">
-                <DiagramIconTooltip
-                  label="Temperature axis"
-                  description="Right Y-axis for hive and ambient temperature series in °C. It appears when a temperature series is selected."
-                >
-                  <Thermometer className="h-4 w-4" />
-                </DiagramIconTooltip>
-                Right: temperature {showTemperatureAxis ? '' : '(hidden)'}
-              </div>
-              <div className="flex items-center gap-2">
-                <DiagramIconTooltip
-                  label="Humidity axis"
-                  description="Right Y-axis for ambient humidity in percent. It appears when ambient humidity is selected."
-                >
-                  <Droplets className="h-4 w-4" />
-                </DiagramIconTooltip>
-                Right: humidity {showHumidityAxis ? '' : '(hidden)'}
-              </div>
-              <div className="flex items-center gap-2">
-                <DiagramIconTooltip
-                  label="Battery axis"
-                  description="Right Y-axis for device battery voltage. It appears when battery voltage is selected."
-                >
-                  <Zap className="h-4 w-4" />
-                </DiagramIconTooltip>
-                Right: battery {showBatteryAxis ? '' : '(hidden)'}
-              </div>
+        <div className="rounded-md border p-3 text-xs text-muted-foreground">
+          <div className="mb-2 font-medium text-foreground">Axis setup</div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="flex items-center gap-2">
+              <Scale className="h-4 w-4" /> Left: weight
             </div>
-          </div>
-
-          <div className="rounded-md border p-3 text-xs">
-            <div className="mb-2 font-medium">Markers</div>
-            <div className="space-y-2">
-              {markers.length ? (
-                markers
-                  .slice(-6)
-                  .reverse()
-                  .map(marker => {
-                    const Icon = marker.Icon;
-                    return (
-                      <div key={marker.id} className="flex gap-2">
-                        <Icon className="mt-0.5 h-4 w-4 shrink-0" />
-                        <div className="min-w-0">
-                          <p className="truncate font-medium">
-                            {marker.label} · {marker.hiveName}
-                          </p>
-                          <p className="truncate text-muted-foreground">
-                            {formatDateTime(marker.date)} · {marker.detail}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })
-              ) : mappedHives.length ? (
-                <p className="text-muted-foreground">
-                  No inspection or box markers in this range.
-                </p>
-              ) : (
-                <p className="text-muted-foreground">
-                  Map Scale 1/2 names to existing HivePal hive names to show
-                  inspection markers.
-                </p>
-              )}
+            <div className="flex items-center gap-2">
+              <Thermometer className="h-4 w-4" /> Right: temperature{' '}
+              {showTemperatureAxis ? '' : '(hidden)'}
+            </div>
+            <div className="flex items-center gap-2">
+              <Droplets className="h-4 w-4" /> Right: humidity{' '}
+              {showHumidityAxis ? '' : '(hidden)'}
+            </div>
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4" /> Right: battery{' '}
+              {showBatteryAxis ? '' : '(hidden)'}
             </div>
           </div>
         </div>
