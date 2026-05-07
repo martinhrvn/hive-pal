@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type MouseEvent } from 'react';
 import {
   Activity,
   Box,
@@ -106,6 +106,12 @@ interface ChartMarker {
   detail: string;
   hiveName: string;
   Icon: LucideIcon;
+}
+
+interface MarkerTooltipState {
+  marker: ChartMarker;
+  x: number;
+  y: number;
 }
 
 const presetLabels: Record<HiveScaleDateRangePreset, string> = {
@@ -217,6 +223,9 @@ const detailText = (details: unknown, keys: string[]) => {
 
 const getHiveName = (hives: HiveWithBoxesResponse[], hiveId: string) =>
   hives.find(hive => hive.id === hiveId)?.name ?? 'Hive';
+
+const markerTooltipTitle = (marker: ChartMarker) =>
+  `${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`;
 
 const actionMarkerFromInspection = (
   inspection: InspectionResponse,
@@ -382,23 +391,46 @@ function MarkerReferenceLineLabel({
   viewBox,
   marker,
   row,
+  onHover,
+  onLeave,
 }: {
   viewBox?: { x?: number; y?: number };
   marker: ChartMarker;
   row: number;
+  onHover: (marker: ChartMarker, event: MouseEvent<SVGGElement>) => void;
+  onLeave: () => void;
 }) {
   const x = typeof viewBox?.x === 'number' ? viewBox.x : 0;
   const chartTop = typeof viewBox?.y === 'number' ? viewBox.y : 0;
   const Icon = marker.Icon;
+  const title = markerTooltipTitle(marker);
+
+  const handleHover = (event: MouseEvent<SVGGElement>) => {
+    onHover(marker, event);
+  };
 
   return (
     <g
+      aria-label={title}
       color="var(--foreground)"
+      role="img"
+      style={{ cursor: 'help', pointerEvents: 'all' }}
       transform={`translate(${x - 10}, ${chartTop + 8 + row * 24})`}
+      onMouseEnter={handleHover}
+      onMouseMove={handleHover}
+      onMouseLeave={onLeave}
     >
-      <title>
-        {`${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`}
-      </title>
+      <title>{title}</title>
+      <rect
+        x={-4}
+        y={-4}
+        width={28}
+        height={28}
+        rx={7}
+        fill="transparent"
+        pointerEvents="all"
+        stroke="none"
+      />
       <rect
         x={0}
         y={0}
@@ -555,6 +587,8 @@ export function HiveScaleDiagramPanel({
     ambientHumidity: false,
     batteryVoltage: false,
   });
+  const [hoveredMarker, setHoveredMarker] =
+    useState<MarkerTooltipState | null>(null);
 
   const series = useMemo<DiagramSeries[]>(
     () => [
@@ -681,6 +715,21 @@ export function HiveScaleDiagramPanel({
     setVisibleSeries(current => ({ ...current, [key]: !current[key] }));
   };
 
+  const showMarkerTooltip = (
+    marker: ChartMarker,
+    event: MouseEvent<SVGGElement>,
+  ) => {
+    setHoveredMarker({
+      marker,
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const hideMarkerTooltip = () => {
+    setHoveredMarker(null);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -720,7 +769,7 @@ export function HiveScaleDiagramPanel({
         {isLoading ? (
           <Skeleton className="h-96 w-full" />
         ) : chartData.length ? (
-          <div className="h-[28rem]">
+          <div className="h-[28rem]" onMouseLeave={hideMarkerTooltip}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
@@ -783,6 +832,8 @@ export function HiveScaleDiagramPanel({
                       <MarkerReferenceLineLabel
                         marker={marker}
                         row={index % 6}
+                        onHover={showMarkerTooltip}
+                        onLeave={hideMarkerTooltip}
                       />
                     }
                   />
@@ -801,6 +852,24 @@ export function HiveScaleDiagramPanel({
                 ))}
               </LineChart>
             </ResponsiveContainer>
+            {hoveredMarker && (
+              <div
+                className="pointer-events-none fixed z-50 max-w-xs rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md"
+                style={{
+                  left: hoveredMarker.x + 12,
+                  top: hoveredMarker.y + 12,
+                }}
+              >
+                <div className="font-medium">{hoveredMarker.marker.label}</div>
+                <div className="mt-1 text-muted-foreground">
+                  {hoveredMarker.marker.hiveName} ·{' '}
+                  {formatDateTime(hoveredMarker.marker.date)}
+                </div>
+                {hoveredMarker.marker.detail && (
+                  <div className="mt-1">{hoveredMarker.marker.detail}</div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex h-64 flex-col items-center justify-center gap-2 text-center text-muted-foreground">
