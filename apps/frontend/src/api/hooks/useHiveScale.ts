@@ -84,6 +84,11 @@ export interface HiveScaleChannelsPatch {
   scale_2_display_name?: string;
 }
 
+export interface HiveScaleCalibrationModeStartInput {
+  interval_seconds?: number;
+  timeout_seconds?: number;
+}
+
 export interface HiveScaleShareInput {
   email: string;
   role: 'admin' | 'viewer';
@@ -236,6 +241,43 @@ export const useUpdateHiveScaleChannels = (deviceId: string | undefined) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+export const useStartHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: HiveScaleCalibrationModeStartInput) => {
+      const response = await apiClient.post(
+        `/api/hivescale/devices/${deviceId}/calibration/start`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
+    },
+  });
+};
+
+export const useStopHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.post(
+        `/api/hivescale/devices/${deviceId}/calibration/stop`,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
     },
   });
 };
