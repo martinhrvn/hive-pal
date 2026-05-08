@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
+  Battery,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -8,8 +9,10 @@ import {
   Info,
   Play,
   Plus,
+  Radio,
   RefreshCw,
   Square,
+  Sun,
   Trash2,
   UserPlus,
   Weight,
@@ -86,6 +89,25 @@ const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
     ? value.toFixed(digits)
     : '—';
+
+const hasTelemetryValue = (...values: unknown[]) =>
+  values.some(value => value !== null && value !== undefined && value !== '');
+
+const statusOrDash = (
+  value: boolean | null | undefined,
+  trueLabel = 'OK',
+  falseLabel = 'No',
+) => {
+  if (value === null || value === undefined) return '—';
+  return value ? trueLabel : falseLabel;
+};
+
+const transportLabel = (value: string | null | undefined) => {
+  if (!value) return '—';
+  if (value === 'sim7080g') return 'SIM7080G';
+  if (value === 'wifi') return 'WiFi';
+  return value;
+};
 
 
 const HIVESCALE_DATE_RANGE_STORAGE_KEY = 'hivescale.diagram.dateRange';
@@ -1627,6 +1649,22 @@ export function HiveScalePage() {
     device => device.device_id === selectedDeviceId,
   );
   const latest = latestMeasurement(measurements.data);
+  const latestBatteryVoltage = latest?.battery_voltage_v ?? latest?.battery_voltage;
+  const hasBatteryTelemetry = hasTelemetryValue(
+    latestBatteryVoltage,
+    latest?.battery_soc_percent,
+    latest?.battery_monitor_ok,
+    latest?.battery_alert,
+  );
+  const hasSolarTelemetry = hasTelemetryValue(
+    latest?.solar_monitor_ok,
+    latest?.solar_load_voltage_v,
+    latest?.solar_current_ma,
+    latest?.solar_power_mw,
+  );
+  const hasCellularTelemetry =
+    latest?.network_transport === 'sim7080g' ||
+    hasTelemetryValue(latest?.cellular_ok, latest?.cellular_csq);
 
   useEffect(() => {
     if (latest?.calibration_mode === false && isCalibrationPolling) {
@@ -1798,6 +1836,69 @@ export function HiveScalePage() {
               },
             ]}
           />
+          {hasBatteryTelemetry && (
+            <LatestValuePanel
+              title="Battery"
+              description="MAX17048 fuel gauge"
+              icon={Battery}
+              rows={[
+                {
+                  label: 'Voltage',
+                  value: `${numberOrDash(latestBatteryVoltage, 2)} V`,
+                },
+                {
+                  label: 'Charge',
+                  value: `${numberOrDash(latest?.battery_soc_percent, 0)}%`,
+                },
+                {
+                  label: 'Alert',
+                  value: statusOrDash(latest?.battery_alert, 'Alert', 'No alert'),
+                },
+              ]}
+            />
+          )}
+          {hasSolarTelemetry && (
+            <LatestValuePanel
+              title="Solar input"
+              description="INA219 panel monitor"
+              icon={Sun}
+              rows={[
+                {
+                  label: 'Load voltage',
+                  value: `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`,
+                },
+                {
+                  label: 'Current',
+                  value: `${numberOrDash(latest?.solar_current_ma, 0)} mA`,
+                },
+                {
+                  label: 'Power',
+                  value: `${numberOrDash(latest?.solar_power_mw, 0)} mW`,
+                },
+              ]}
+            />
+          )}
+          {hasCellularTelemetry && (
+            <LatestValuePanel
+              title="Cellular"
+              description="SIM7080G transport"
+              icon={Radio}
+              rows={[
+                {
+                  label: 'Transport',
+                  value: transportLabel(latest?.network_transport),
+                },
+                {
+                  label: 'Connected',
+                  value: statusOrDash(latest?.cellular_ok),
+                },
+                {
+                  label: 'Signal',
+                  value: `${numberOrDash(latest?.cellular_csq, 0)} CSQ`,
+                },
+              ]}
+            />
+          )}
         </div>
       )}
 

@@ -1,6 +1,7 @@
 import { useMemo, useState, type MouseEvent } from 'react';
 import {
   Activity,
+  Battery,
   Box,
   CalendarDays,
   ClipboardCheck,
@@ -9,6 +10,8 @@ import {
   Scale,
   PackagePlus,
   Pill,
+  Radio,
+  Sun,
   Thermometer,
   Utensils,
   Wrench,
@@ -70,7 +73,15 @@ export interface HiveScaleDateRange {
   endAt?: string;
 }
 
-type SeriesAxis = 'weight' | 'temperature' | 'humidity' | 'battery';
+type SeriesAxis =
+  | 'weight'
+  | 'temperature'
+  | 'humidity'
+  | 'voltage'
+  | 'percent'
+  | 'current'
+  | 'power'
+  | 'signal';
 
 type SeriesKey =
   | 'scale1Weight'
@@ -79,7 +90,12 @@ type SeriesKey =
   | 'scale2Temperature'
   | 'ambientTemperature'
   | 'ambientHumidity'
-  | 'batteryVoltage';
+  | 'batteryVoltage'
+  | 'batterySoc'
+  | 'solarLoadVoltage'
+  | 'solarCurrent'
+  | 'solarPower'
+  | 'cellularCsq';
 
 interface DiagramSeries {
   key: SeriesKey;
@@ -586,6 +602,11 @@ export function HiveScaleDiagramPanel({
     ambientTemperature: false,
     ambientHumidity: false,
     batteryVoltage: false,
+    batterySoc: false,
+    solarLoadVoltage: false,
+    solarCurrent: false,
+    solarPower: false,
+    cellularCsq: false,
   });
   const [hoveredMarker, setHoveredMarker] =
     useState<MarkerTooltipState | null>(null);
@@ -650,10 +671,55 @@ export function HiveScaleDiagramPanel({
         key: 'batteryVoltage',
         label: 'Battery voltage',
         dataKey: 'batteryVoltage',
-        axis: 'battery',
+        axis: 'voltage',
         unit: 'V',
         stroke: 'var(--destructive)',
-        group: 'Device',
+        group: 'Off-grid',
+      },
+      {
+        key: 'batterySoc',
+        label: 'Battery charge',
+        dataKey: 'batterySoc',
+        axis: 'percent',
+        unit: '%',
+        stroke: 'var(--chart-1)',
+        group: 'Off-grid',
+      },
+      {
+        key: 'solarLoadVoltage',
+        label: 'Solar voltage',
+        dataKey: 'solarLoadVoltage',
+        axis: 'voltage',
+        unit: 'V',
+        stroke: 'var(--chart-2)',
+        group: 'Off-grid',
+      },
+      {
+        key: 'solarCurrent',
+        label: 'Solar current',
+        dataKey: 'solarCurrent',
+        axis: 'current',
+        unit: 'mA',
+        stroke: 'var(--chart-3)',
+        group: 'Off-grid',
+      },
+      {
+        key: 'solarPower',
+        label: 'Solar power',
+        dataKey: 'solarPower',
+        axis: 'power',
+        unit: 'mW',
+        stroke: 'var(--chart-4)',
+        group: 'Off-grid',
+      },
+      {
+        key: 'cellularCsq',
+        label: 'Cellular signal',
+        dataKey: 'cellularCsq',
+        axis: 'signal',
+        unit: 'CSQ',
+        stroke: 'var(--chart-5)',
+        group: 'Off-grid',
       },
     ],
     [scale1Name, scale2Name],
@@ -664,7 +730,11 @@ export function HiveScaleDiagramPanel({
     item => item.axis === 'temperature',
   );
   const showHumidityAxis = activeSeries.some(item => item.axis === 'humidity');
-  const showBatteryAxis = activeSeries.some(item => item.axis === 'battery');
+  const showVoltageAxis = activeSeries.some(item => item.axis === 'voltage');
+  const showPercentAxis = activeSeries.some(item => item.axis === 'percent');
+  const showCurrentAxis = activeSeries.some(item => item.axis === 'current');
+  const showPowerAxis = activeSeries.some(item => item.axis === 'power');
+  const showSignalAxis = activeSeries.some(item => item.axis === 'signal');
 
   const chartData = useMemo(
     () =>
@@ -683,7 +753,12 @@ export function HiveScaleDiagramPanel({
           scale2Temperature: cleanTemperature(item.hive_2_temp_c),
           ambientTemperature: cleanTemperature(item.ambient_temp_c),
           ambientHumidity: item.ambient_humidity_percent,
-          batteryVoltage: item.battery_voltage,
+          batteryVoltage: item.battery_voltage_v ?? item.battery_voltage,
+          batterySoc: item.battery_soc_percent,
+          solarLoadVoltage: item.solar_load_voltage_v,
+          solarCurrent: item.solar_current_ma,
+          solarPower: item.solar_power_mw,
+          cellularCsq: item.cellular_csq,
         }))
         .filter(item => Number.isFinite(item.timestamp)),
     [measurements],
@@ -808,12 +883,44 @@ export function HiveScaleDiagramPanel({
                     width={64}
                   />
                 )}
-                {showBatteryAxis && (
+                {showVoltageAxis && (
                   <YAxis
-                    yAxisId="battery"
+                    yAxisId="voltage"
                     orientation="right"
                     unit=" V"
                     width={64}
+                  />
+                )}
+                {showPercentAxis && (
+                  <YAxis
+                    yAxisId="percent"
+                    orientation="right"
+                    unit=" %"
+                    width={64}
+                  />
+                )}
+                {showCurrentAxis && (
+                  <YAxis
+                    yAxisId="current"
+                    orientation="right"
+                    unit=" mA"
+                    width={72}
+                  />
+                )}
+                {showPowerAxis && (
+                  <YAxis
+                    yAxisId="power"
+                    orientation="right"
+                    unit=" mW"
+                    width={76}
+                  />
+                )}
+                {showSignalAxis && (
+                  <YAxis
+                    yAxisId="signal"
+                    orientation="right"
+                    unit=" CSQ"
+                    width={76}
                   />
                 )}
                 <Tooltip
@@ -880,7 +987,7 @@ export function HiveScaleDiagramPanel({
 
         <div className="rounded-md border p-3 text-xs text-muted-foreground">
           <div className="mb-2 font-medium text-foreground">Axis setup</div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
             <div className="flex items-center gap-2">
               <Scale className="h-4 w-4" /> Left: weight
             </div>
@@ -893,8 +1000,20 @@ export function HiveScaleDiagramPanel({
               {showHumidityAxis ? '' : '(hidden)'}
             </div>
             <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4" /> Right: battery{' '}
-              {showBatteryAxis ? '' : '(hidden)'}
+              <Zap className="h-4 w-4" /> Right: voltage{' '}
+              {showVoltageAxis ? '' : '(hidden)'}
+            </div>
+            <div className="flex items-center gap-2">
+              <Battery className="h-4 w-4" /> Right: battery %{' '}
+              {showPercentAxis ? '' : '(hidden)'}
+            </div>
+            <div className="flex items-center gap-2">
+              <Sun className="h-4 w-4" /> Right: solar mA/mW{' '}
+              {showCurrentAxis || showPowerAxis ? '' : '(hidden)'}
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio className="h-4 w-4" /> Right: cellular CSQ{' '}
+              {showSignalAxis ? '' : '(hidden)'}
             </div>
           </div>
         </div>
