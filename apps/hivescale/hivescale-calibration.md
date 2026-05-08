@@ -90,3 +90,16 @@ The latest raw counts for both scales are shown below the badge and update autom
 ## Stopping calibration mode early
 
 Click **Stop fast mode** inside the wizard at any time. The device returns to normal deep sleep on its next cycle. If you forget, calibration mode stops automatically after its timeout (default 10 minutes, maximum 30 minutes).
+---
+
+## Off-grid devices
+
+Off-grid HiveScale devices may use SIM7080G cellular transport instead of Wi-Fi. Calibration still works the same way, but the command round-trip depends on the device's next wake cycle and cellular attach time.
+
+For off-grid hardware, verify these status cards before starting a calibration session:
+
+- **Battery state-of-charge** is high enough for repeated wake cycles.
+- **Cellular status** is healthy and `cellular_csq` is reasonable at the installation site.
+- **Solar/current telemetry** is present if you rely on the solar charger during long calibration sessions.
+
+Keep calibration sessions short. Stop fast mode when finished so the device returns to normal deep sleep and modem shutdown behavior.

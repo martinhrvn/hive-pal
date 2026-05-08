@@ -19,6 +19,7 @@ Hive-Pal is a self-hostable application built to help beekeepers manage their op
 - **Inspection Workflows**: Record detailed inspections with observations and actions
 - **Queen Management**: Track queen lineage and replacement history
 - **Mobile-First Design**: Optimized for field use with easy data entry
+- **HiveScale Integration**: View live hive weight, temperature, battery, solar, and cellular telemetry from self-hosted HiveScale devices
 
 ## Why Hive-Pal?
 
@@ -28,6 +29,7 @@ Beekeeping requires careful observation and record-keeping. Hive-Pal simplifies 
 - **Historical Tracking**: Review past inspections and colony development
 - **Informed Decision Making**: Use data to improve your beekeeping practices
 - **Self-Hosted**: Maintain control of your data by hosting the application yourself
+- **Hardware-Friendly**: Pair HiveScale devices with your Hive-Pal account and correlate scale data with inspections
 
 ## Project Status
 

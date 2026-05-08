@@ -1,4 +1,4 @@
-~~# Hive Pal Checklist
+# Hive Pal Checklist
 
 ## Hive Management
 
@@ -56,3 +56,17 @@
 - [x] Timeline view of inspection history
 - [ ] Quick-add buttons for common actions
 - [ ] Compact, single-column layouts for mobile
+
+
+## HiveScale Integration
+
+- [x] Proxy HiveScale backend routes through the HivePal backend
+- [x] Add HiveScale page for claiming devices and viewing latest measurements
+- [x] Add scale channel naming for mapping Scale 1 / Scale 2 to hive names
+- [x] Display off-grid telemetry fields from HiveScale measurements
+- [x] Chart battery, solar, and cellular telemetry when available
+- [ ] Verify HivePal calibration-mode controls against the deployed HiveScale backend routes
+- [ ] Add user-facing screenshots to the HiveScale documentation
+- [ ] Add explicit empty states for partially configured off-grid devices
+- [ ] Add alerts for low battery, missing solar monitor, and poor cellular signal
+- [ ] swarm alert integration

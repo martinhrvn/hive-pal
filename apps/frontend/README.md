@@ -1,50 +1,57 @@
-# React + TypeScript + Vite
+# Hive Pal frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite frontend for Hive Pal.
 
-Currently, two official plugins are available:
+## Main stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- Tailwind CSS v4
+- shadcn/ui components
 
-## Expanding the ESLint configuration
+## Development
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+pnpm install
+pnpm dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+The frontend talks to the HivePal backend API. In local development, configure the backend URL through the existing frontend environment settings used by the app.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## HiveScale frontend integration
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+HiveScale UI lives under `apps/frontend/src/pages/hivescale/` and is reachable from the `/hivescale` route.
+
+Important files:
+
+| File | Purpose |
+|---|---|
+| `src/api/hooks/useHiveScale.ts` | TanStack Query hooks and TypeScript types for HiveScale proxy APIs |
+| `src/pages/hivescale/hivescale-page.tsx` | Main device list, claim form, latest readings, config, calibration, sharing, and off-grid status UI |
+| `src/pages/hivescale/hivescale-diagram-panel.tsx` | Historical charts for weight, temperature, battery, solar, and cellular telemetry |
+| `src/routes/index.tsx` | Route registration for `/hivescale` |
+
+The frontend never calls the HiveScale FastAPI service directly. All calls go through the HivePal backend under `/api/hivescale/...`, where the backend attaches `X-HivePal-Service-Key` and `X-User-Id`.
+
+### Displayed HiveScale telemetry
+
+Core telemetry:
+
+- Scale 1 and scale 2 weight
+- Hive 1 and hive 2 temperature
+- Ambient temperature and humidity
+- Sensor status, firmware version, config version, boot count, and time source
+- Calibration-mode state and raw HX711 readings
+
+Off-grid telemetry:
+
+- Battery voltage and state-of-charge
+- Battery alert and monitor status
+- Solar/load voltage, current, and power
+- Solar monitor status
+- Network transport, cellular status, cellular CSQ, and RSSI
+
+See `apps/hivescale/hivescale-integration.md` and `docs/docs/user-guide/hivescale.md` for user/admin documentation.
