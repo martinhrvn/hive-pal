@@ -330,23 +330,44 @@ const fromLocalDateTimeInput = (value: string) => {
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 };
 
-const cleanTemperature = (value: number | null | undefined) => {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+const toFiniteNumber = (value: unknown) => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+};
+
+const cleanTemperature = (value: unknown) => {
+  const numericValue = toFiniteNumber(value);
+  if (numericValue === null) return null;
   // DS18B20 reports -127 C when the sensor is disconnected/unreadable.
-  if (value <= -100) return null;
-  return value;
+  if (numericValue <= -100) return null;
+  return numericValue;
 };
 
 const roundDownAxisBound = (value: number) => {
-  if (!Number.isFinite(value)) return 'dataMin';
+  if (!Number.isFinite(value)) return 0;
   if (value === 0) return 0;
-  return value > 0 ? Math.floor(value) : Math.floor(value);
+  const absValue = Math.abs(value);
+  const step = absValue >= 1000 ? 100 : absValue >= 100 ? 10 : 1;
+  return Math.floor(value / step) * step;
 };
 
 const roundUpAxisBound = (value: number) => {
-  if (!Number.isFinite(value)) return 'dataMax';
-  if (value === 0) return 0;
-  return value > 0 ? Math.ceil(value) : Math.ceil(value);
+  if (!Number.isFinite(value)) return 1;
+  if (value === 0) return 1;
+  const absValue = Math.abs(value);
+  const step = absValue >= 1000 ? 100 : absValue >= 10 ? 10 : 1;
+  return Math.ceil(value / step) * step;
+};
+
+const padEqualAxisBounds = (min: number, max: number): [number, number] => {
+  if (min < max) return [min, max];
+  const absValue = Math.max(Math.abs(min), Math.abs(max));
+  const padding = absValue >= 1000 ? 100 : absValue >= 100 ? 10 : 1;
+  return [min - padding, max + padding];
 };
 
 const readNumberInput = (value: string) => {
@@ -355,31 +376,37 @@ const readNumberInput = (value: string) => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
+type AxisDomain = [number | string, number | string];
+
 const getAxisDomain = (
   settings: AxisSettings,
-  values: Array<number | null | undefined>,
-): [number | string, number | string] => {
+  values: Array<unknown>,
+): AxisDomain | undefined => {
   if (settings.scaleMode === 'custom') {
     const min = readNumberInput(settings.customMin);
     const max = readNumberInput(settings.customMax);
     if (min !== undefined && max !== undefined && min < max) return [min, max];
-    return ['dataMin', 'dataMax'];
+    return undefined;
   }
 
-  const finiteValues = values.filter(
-    (value): value is number =>
-      typeof value === 'number' && Number.isFinite(value),
-  );
+  const finiteValues = values
+    .map(toFiniteNumber)
+    .filter((value): value is number => value !== null);
 
-  if (!finiteValues.length) return ['dataMin', 'dataMax'];
+  if (!finiteValues.length) return undefined;
 
   const dataMin = Math.min(...finiteValues);
   const dataMax = Math.max(...finiteValues);
-  const max = roundUpAxisBound(dataMax);
 
-  if (settings.scaleMode === 'zeroToMax') return [0, max];
+  if (settings.scaleMode === 'zeroToMax') {
+    const max = roundUpAxisBound(dataMax);
+    return padEqualAxisBounds(0, max);
+  }
 
-  return [roundDownAxisBound(dataMin), max];
+  return padEqualAxisBounds(
+    roundDownAxisBound(dataMin),
+    roundUpAxisBound(dataMax),
+  );
 };
 
 const mergeAxisSettings = (value: unknown): AxisSettingsMap => {
@@ -959,18 +986,20 @@ export function HiveScaleDiagramPanel({
         .map(item => ({
           timestamp: new Date(item.measured_at).getTime(),
           measuredAt: item.measured_at,
-          scale1Weight: item.scale_1_weight_kg,
-          scale2Weight: item.scale_2_weight_kg,
+          scale1Weight: toFiniteNumber(item.scale_1_weight_kg),
+          scale2Weight: toFiniteNumber(item.scale_2_weight_kg),
           scale1Temperature: cleanTemperature(item.hive_1_temp_c),
           scale2Temperature: cleanTemperature(item.hive_2_temp_c),
           ambientTemperature: cleanTemperature(item.ambient_temp_c),
-          ambientHumidity: item.ambient_humidity_percent,
-          batteryVoltage: item.battery_voltage_v ?? item.battery_voltage,
-          batterySoc: item.battery_soc_percent,
-          solarLoadVoltage: item.solar_load_voltage_v,
-          solarCurrent: item.solar_current_ma,
-          solarPower: item.solar_power_mw,
-          cellularCsq: item.cellular_csq,
+          ambientHumidity: toFiniteNumber(item.ambient_humidity_percent),
+          batteryVoltage: toFiniteNumber(
+            item.battery_voltage_v ?? item.battery_voltage,
+          ),
+          batterySoc: toFiniteNumber(item.battery_soc_percent),
+          solarLoadVoltage: toFiniteNumber(item.solar_load_voltage_v),
+          solarCurrent: toFiniteNumber(item.solar_current_ma),
+          solarPower: toFiniteNumber(item.solar_power_mw),
+          cellularCsq: toFiniteNumber(item.cellular_csq),
         }))
         .filter(item => Number.isFinite(item.timestamp)),
     [measurements],
@@ -980,17 +1009,38 @@ export function HiveScaleDiagramPanel({
     return axisOrder.reduce(
       (acc, axis) => {
         const dataKeys = series
-          .filter(item => item.axis === axis)
+          .filter(item => item.axis === axis && visibleSeries[item.key])
           .map(item => item.dataKey as keyof (typeof chartData)[number]);
         const values = chartData.flatMap(item =>
-          dataKeys.map(dataKey => item[dataKey] as number | null | undefined),
+          dataKeys.map(dataKey => item[dataKey]),
         );
         acc[axis] = getAxisDomain(axisSettings[axis], values);
         return acc;
       },
-      {} as Record<SeriesAxis, [number | string, number | string]>,
+      {} as Record<SeriesAxis, AxisDomain | undefined>,
     );
-  }, [axisSettings, chartData, series]);
+  }, [axisSettings, chartData, series, visibleSeries]);
+
+  const chartTimeDomain = useMemo((): [number | string, number | string] => {
+    const timestamps = chartData
+      .map(item => item.timestamp)
+      .filter((value): value is number => Number.isFinite(value));
+    const dataMin = timestamps.length ? Math.min(...timestamps) : undefined;
+    const dataMax = timestamps.length ? Math.max(...timestamps) : undefined;
+    let min = dateRange.startAt
+      ? new Date(dateRange.startAt).getTime()
+      : dataMin;
+    let max = dateRange.endAt ? new Date(dateRange.endAt).getTime() : dataMax;
+
+    if (typeof min !== 'number' || !Number.isFinite(min)) min = undefined;
+    if (typeof max !== 'number' || !Number.isFinite(max)) max = undefined;
+
+    if (typeof min === 'number' && typeof max === 'number' && min === max) {
+      return [min - 60 * 60 * 1000, max + 60 * 60 * 1000];
+    }
+
+    return [min ?? 'dataMin', max ?? 'dataMax'];
+  }, [chartData, dateRange.endAt, dateRange.startAt]);
 
   useEffect(() => {
     setDiagramSettings(loadStoredDiagramSettings(storageKey));
@@ -1000,7 +1050,11 @@ export function HiveScaleDiagramPanel({
   useEffect(() => {
     if (typeof window === 'undefined' || loadedStorageKey !== storageKey)
       return;
-    window.localStorage.setItem(storageKey, JSON.stringify(diagramSettings));
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(diagramSettings));
+    } catch {
+      // Ignore storage failures, for example private mode or disabled storage.
+    }
   }, [diagramSettings, loadedStorageKey, storageKey]);
 
   const mappedHives = useMemo(() => {
@@ -1119,14 +1173,7 @@ export function HiveScaleDiagramPanel({
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="timestamp"
-                  domain={[
-                    dateRange.startAt
-                      ? new Date(dateRange.startAt).getTime()
-                      : 'dataMin',
-                    dateRange.endAt
-                      ? new Date(dateRange.endAt).getTime()
-                      : 'dataMax',
-                  ]}
+                  domain={chartTimeDomain}
                   minTickGap={24}
                   scale="time"
                   tickFormatter={formatChartTick}
@@ -1134,15 +1181,16 @@ export function HiveScaleDiagramPanel({
                 />
                 {renderedAxes.map(axis => {
                   const presentation = axisPresentation[axis];
+                  const settings = axisSettings[axis];
                   return (
                     <YAxis
                       key={axis}
                       yAxisId={axis}
-                      orientation={axisSettings[axis].orientation}
+                      orientation={settings.orientation}
                       unit={presentation.unit}
                       width={presentation.width}
                       domain={axisDomains[axis]}
-                      allowDataOverflow
+                      allowDataOverflow={settings.scaleMode === 'custom'}
                     />
                   );
                 })}
