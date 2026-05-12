@@ -1,4 +1,4 @@
-import { useMemo, useState, type MouseEvent } from 'react';
+import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import {
   Activity,
   Battery,
@@ -124,6 +124,123 @@ interface ChartMarker {
   Icon: LucideIcon;
 }
 
+type AxisScaleMode = 'maxRange' | 'zeroToMax' | 'custom';
+type AxisOrientation = 'left' | 'right';
+
+interface AxisSettings {
+  orientation: AxisOrientation;
+  scaleMode: AxisScaleMode;
+  customMin: string;
+  customMax: string;
+}
+
+type AxisSettingsMap = Record<SeriesAxis, AxisSettings>;
+type VisibleSeriesMap = Record<SeriesKey, boolean>;
+
+interface StoredDiagramSettings {
+  version: 1;
+  visibleSeries: VisibleSeriesMap;
+  axes: AxisSettingsMap;
+}
+
+const diagramSettingsStoragePrefix = 'hivepal:hivescale-diagram:';
+
+const defaultVisibleSeries: VisibleSeriesMap = {
+  scale1Weight: true,
+  scale1Temperature: false,
+  scale2Weight: true,
+  scale2Temperature: false,
+  ambientTemperature: false,
+  ambientHumidity: false,
+  batteryVoltage: false,
+  batterySoc: false,
+  solarLoadVoltage: false,
+  solarCurrent: false,
+  solarPower: false,
+  cellularCsq: false,
+};
+
+const defaultAxisSettings: AxisSettingsMap = {
+  weight: {
+    orientation: 'left',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+  temperature: {
+    orientation: 'right',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+  humidity: {
+    orientation: 'right',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+  voltage: {
+    orientation: 'right',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+  percent: {
+    orientation: 'right',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+  current: {
+    orientation: 'right',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+  power: {
+    orientation: 'right',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+  signal: {
+    orientation: 'right',
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+  },
+};
+
+const axisPresentation: Record<
+  SeriesAxis,
+  { label: string; unit: string; Icon: LucideIcon; width?: number }
+> = {
+  weight: { label: 'weight', unit: ' kg', Icon: Scale },
+  temperature: {
+    label: 'temperature',
+    unit: ' °C',
+    Icon: Thermometer,
+    width: 64,
+  },
+  humidity: { label: 'humidity', unit: ' %', Icon: Droplets, width: 64 },
+  voltage: { label: 'voltage', unit: ' V', Icon: Zap, width: 64 },
+  percent: { label: 'battery %', unit: ' %', Icon: Battery, width: 64 },
+  current: { label: 'solar mA', unit: ' mA', Icon: Sun, width: 72 },
+  power: { label: 'solar mW', unit: ' mW', Icon: Sun, width: 76 },
+  signal: { label: 'cellular CSQ', unit: ' CSQ', Icon: Radio, width: 76 },
+};
+
+const axisOrder: SeriesAxis[] = [
+  'weight',
+  'temperature',
+  'humidity',
+  'voltage',
+  'percent',
+  'current',
+  'power',
+  'signal',
+];
+
 interface MarkerTooltipState {
   marker: ChartMarker;
   x: number;
@@ -218,6 +335,113 @@ const cleanTemperature = (value: number | null | undefined) => {
   // DS18B20 reports -127 C when the sensor is disconnected/unreadable.
   if (value <= -100) return null;
   return value;
+};
+
+const roundDownAxisBound = (value: number) => {
+  if (!Number.isFinite(value)) return 'dataMin';
+  if (value === 0) return 0;
+  return value > 0 ? Math.floor(value) : Math.floor(value);
+};
+
+const roundUpAxisBound = (value: number) => {
+  if (!Number.isFinite(value)) return 'dataMax';
+  if (value === 0) return 0;
+  return value > 0 ? Math.ceil(value) : Math.ceil(value);
+};
+
+const readNumberInput = (value: string) => {
+  if (value.trim() === '') return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const getAxisDomain = (
+  settings: AxisSettings,
+  values: Array<number | null | undefined>,
+): [number | string, number | string] => {
+  if (settings.scaleMode === 'custom') {
+    const min = readNumberInput(settings.customMin);
+    const max = readNumberInput(settings.customMax);
+    if (min !== undefined && max !== undefined && min < max) return [min, max];
+    return ['dataMin', 'dataMax'];
+  }
+
+  const finiteValues = values.filter(
+    (value): value is number =>
+      typeof value === 'number' && Number.isFinite(value),
+  );
+
+  if (!finiteValues.length) return ['dataMin', 'dataMax'];
+
+  const dataMin = Math.min(...finiteValues);
+  const dataMax = Math.max(...finiteValues);
+  const max = roundUpAxisBound(dataMax);
+
+  if (settings.scaleMode === 'zeroToMax') return [0, max];
+
+  return [roundDownAxisBound(dataMin), max];
+};
+
+const mergeAxisSettings = (value: unknown): AxisSettingsMap => {
+  const record =
+    value && typeof value === 'object'
+      ? (value as Partial<AxisSettingsMap>)
+      : {};
+  return axisOrder.reduce((acc, axis) => {
+    const current = record[axis] ?? defaultAxisSettings[axis];
+    acc[axis] = {
+      orientation: current.orientation === 'left' ? 'left' : 'right',
+      scaleMode:
+        current.scaleMode === 'zeroToMax' || current.scaleMode === 'custom'
+          ? current.scaleMode
+          : 'maxRange',
+      customMin: String(current.customMin ?? ''),
+      customMax: String(current.customMax ?? ''),
+    };
+    return acc;
+  }, {} as AxisSettingsMap);
+};
+
+const mergeVisibleSeries = (value: unknown): VisibleSeriesMap => ({
+  ...defaultVisibleSeries,
+  ...(value && typeof value === 'object'
+    ? (value as Partial<VisibleSeriesMap>)
+    : {}),
+});
+
+const loadStoredDiagramSettings = (
+  storageKey: string,
+): StoredDiagramSettings => {
+  if (typeof window === 'undefined') {
+    return {
+      version: 1,
+      visibleSeries: defaultVisibleSeries,
+      axes: defaultAxisSettings,
+    };
+  }
+
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) {
+      return {
+        version: 1,
+        visibleSeries: defaultVisibleSeries,
+        axes: defaultAxisSettings,
+      };
+    }
+    const parsed = JSON.parse(raw) as Partial<StoredDiagramSettings>;
+    return {
+      version: 1,
+      visibleSeries: mergeVisibleSeries(parsed.visibleSeries),
+      axes: mergeAxisSettings(parsed.axes),
+    };
+  } catch {
+    return {
+      version: 1,
+      visibleSeries: defaultVisibleSeries,
+      axes: defaultAxisSettings,
+    };
+  }
 };
 
 const normalizeName = (value: string | null | undefined) =>
@@ -592,24 +816,15 @@ export function HiveScaleDiagramPanel({
   inspections: InspectionResponse[] | undefined;
   hives: HiveWithBoxesResponse[] | undefined;
 }) {
-  const [visibleSeries, setVisibleSeries] = useState<
-    Record<SeriesKey, boolean>
-  >({
-    scale1Weight: true,
-    scale1Temperature: false,
-    scale2Weight: true,
-    scale2Temperature: false,
-    ambientTemperature: false,
-    ambientHumidity: false,
-    batteryVoltage: false,
-    batterySoc: false,
-    solarLoadVoltage: false,
-    solarCurrent: false,
-    solarPower: false,
-    cellularCsq: false,
-  });
-  const [hoveredMarker, setHoveredMarker] =
-    useState<MarkerTooltipState | null>(null);
+  const storageKey = `${diagramSettingsStoragePrefix}${selectedDevice.device_id}`;
+  const [loadedStorageKey, setLoadedStorageKey] = useState(storageKey);
+  const [diagramSettings, setDiagramSettings] = useState<StoredDiagramSettings>(
+    () => loadStoredDiagramSettings(storageKey),
+  );
+  const { visibleSeries, axes: axisSettings } = diagramSettings;
+  const [hoveredMarker, setHoveredMarker] = useState<MarkerTooltipState | null>(
+    null,
+  );
 
   const series = useMemo<DiagramSeries[]>(
     () => [
@@ -726,15 +941,12 @@ export function HiveScaleDiagramPanel({
   );
 
   const activeSeries = series.filter(item => visibleSeries[item.key]);
-  const showTemperatureAxis = activeSeries.some(
-    item => item.axis === 'temperature',
+  const activeAxes = axisOrder.filter(axis =>
+    activeSeries.some(item => item.axis === axis),
   );
-  const showHumidityAxis = activeSeries.some(item => item.axis === 'humidity');
-  const showVoltageAxis = activeSeries.some(item => item.axis === 'voltage');
-  const showPercentAxis = activeSeries.some(item => item.axis === 'percent');
-  const showCurrentAxis = activeSeries.some(item => item.axis === 'current');
-  const showPowerAxis = activeSeries.some(item => item.axis === 'power');
-  const showSignalAxis = activeSeries.some(item => item.axis === 'signal');
+  const renderedAxes = activeAxes.length
+    ? activeAxes
+    : (['weight'] as SeriesAxis[]);
 
   const chartData = useMemo(
     () =>
@@ -764,6 +976,33 @@ export function HiveScaleDiagramPanel({
     [measurements],
   );
 
+  const axisDomains = useMemo(() => {
+    return axisOrder.reduce(
+      (acc, axis) => {
+        const dataKeys = series
+          .filter(item => item.axis === axis)
+          .map(item => item.dataKey as keyof (typeof chartData)[number]);
+        const values = chartData.flatMap(item =>
+          dataKeys.map(dataKey => item[dataKey] as number | null | undefined),
+        );
+        acc[axis] = getAxisDomain(axisSettings[axis], values);
+        return acc;
+      },
+      {} as Record<SeriesAxis, [number | string, number | string]>,
+    );
+  }, [axisSettings, chartData, series]);
+
+  useEffect(() => {
+    setDiagramSettings(loadStoredDiagramSettings(storageKey));
+    setLoadedStorageKey(storageKey);
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || loadedStorageKey !== storageKey)
+      return;
+    window.localStorage.setItem(storageKey, JSON.stringify(diagramSettings));
+  }, [diagramSettings, loadedStorageKey, storageKey]);
+
   const mappedHives = useMemo(() => {
     const hiveList = hives ?? [];
     const names = [normalizeName(scale1Name), normalizeName(scale2Name)].filter(
@@ -787,7 +1026,34 @@ export function HiveScaleDiagramPanel({
   }, [dateRange.endAt, dateRange.startAt, hives, inspections, mappedHives]);
 
   const toggleSeries = (key: SeriesKey) => {
-    setVisibleSeries(current => ({ ...current, [key]: !current[key] }));
+    setDiagramSettings(current => ({
+      ...current,
+      visibleSeries: {
+        ...current.visibleSeries,
+        [key]: !current.visibleSeries[key],
+      },
+    }));
+  };
+
+  const updateAxisSettings = (
+    axis: SeriesAxis,
+    updates: Partial<AxisSettings>,
+  ) => {
+    setDiagramSettings(current => ({
+      ...current,
+      axes: {
+        ...current.axes,
+        [axis]: { ...current.axes[axis], ...updates },
+      },
+    }));
+  };
+
+  const resetAxisLayout = () => {
+    setDiagramSettings({
+      version: 1,
+      visibleSeries: defaultVisibleSeries,
+      axes: defaultAxisSettings,
+    });
   };
 
   const showMarkerTooltip = (
@@ -848,7 +1114,7 @@ export function HiveScaleDiagramPanel({
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
-                margin={{ top: 32, right: 24, bottom: 8, left: 0 }}
+                margin={{ top: 32, right: 36, bottom: 8, left: 12 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
@@ -866,63 +1132,20 @@ export function HiveScaleDiagramPanel({
                   tickFormatter={formatChartTick}
                   type="number"
                 />
-                <YAxis yAxisId="weight" orientation="left" unit=" kg" />
-                {showTemperatureAxis && (
-                  <YAxis
-                    yAxisId="temperature"
-                    orientation="right"
-                    unit=" °C"
-                    width={64}
-                  />
-                )}
-                {showHumidityAxis && (
-                  <YAxis
-                    yAxisId="humidity"
-                    orientation="right"
-                    unit=" %"
-                    width={64}
-                  />
-                )}
-                {showVoltageAxis && (
-                  <YAxis
-                    yAxisId="voltage"
-                    orientation="right"
-                    unit=" V"
-                    width={64}
-                  />
-                )}
-                {showPercentAxis && (
-                  <YAxis
-                    yAxisId="percent"
-                    orientation="right"
-                    unit=" %"
-                    width={64}
-                  />
-                )}
-                {showCurrentAxis && (
-                  <YAxis
-                    yAxisId="current"
-                    orientation="right"
-                    unit=" mA"
-                    width={72}
-                  />
-                )}
-                {showPowerAxis && (
-                  <YAxis
-                    yAxisId="power"
-                    orientation="right"
-                    unit=" mW"
-                    width={76}
-                  />
-                )}
-                {showSignalAxis && (
-                  <YAxis
-                    yAxisId="signal"
-                    orientation="right"
-                    unit=" CSQ"
-                    width={76}
-                  />
-                )}
+                {renderedAxes.map(axis => {
+                  const presentation = axisPresentation[axis];
+                  return (
+                    <YAxis
+                      key={axis}
+                      yAxisId={axis}
+                      orientation={axisSettings[axis].orientation}
+                      unit={presentation.unit}
+                      width={presentation.width}
+                      domain={axisDomains[axis]}
+                      allowDataOverflow
+                    />
+                  );
+                })}
                 <Tooltip
                   labelFormatter={value => formatDateTime(Number(value))}
                   formatter={(value, name) => [value, name]}
@@ -932,7 +1155,7 @@ export function HiveScaleDiagramPanel({
                   <ReferenceLine
                     key={marker.id}
                     x={marker.timestamp}
-                    yAxisId="weight"
+                    yAxisId={renderedAxes[0]}
                     stroke="var(--border)"
                     strokeDasharray="4 4"
                     label={
@@ -985,36 +1208,120 @@ export function HiveScaleDiagramPanel({
           </div>
         )}
 
-        <div className="rounded-md border p-3 text-xs text-muted-foreground">
-          <div className="mb-2 font-medium text-foreground">Axis setup</div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
-            <div className="flex items-center gap-2">
-              <Scale className="h-4 w-4" /> Left: weight
+        <div className="space-y-3 rounded-md border p-3 text-xs text-muted-foreground">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="font-medium text-foreground">Axis setup</div>
+              <div>
+                Choose side and scaling per vertical axis. Saved in this
+                browser.
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Thermometer className="h-4 w-4" /> Right: temperature{' '}
-              {showTemperatureAxis ? '' : '(hidden)'}
-            </div>
-            <div className="flex items-center gap-2">
-              <Droplets className="h-4 w-4" /> Right: humidity{' '}
-              {showHumidityAxis ? '' : '(hidden)'}
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4" /> Right: voltage{' '}
-              {showVoltageAxis ? '' : '(hidden)'}
-            </div>
-            <div className="flex items-center gap-2">
-              <Battery className="h-4 w-4" /> Right: battery %{' '}
-              {showPercentAxis ? '' : '(hidden)'}
-            </div>
-            <div className="flex items-center gap-2">
-              <Sun className="h-4 w-4" /> Right: solar mA/mW{' '}
-              {showCurrentAxis || showPowerAxis ? '' : '(hidden)'}
-            </div>
-            <div className="flex items-center gap-2">
-              <Radio className="h-4 w-4" /> Right: cellular CSQ{' '}
-              {showSignalAxis ? '' : '(hidden)'}
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={resetAxisLayout}
+            >
+              Reset axis to default layout
+            </Button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {axisOrder.map(axis => {
+              const presentation = axisPresentation[axis];
+              const Icon = presentation.Icon;
+              const isVisible = activeAxes.includes(axis);
+              const settings = axisSettings[axis];
+              return (
+                <div
+                  key={axis}
+                  className="space-y-2 rounded-md border bg-background p-3"
+                >
+                  <div className="flex items-center gap-2 font-medium text-foreground">
+                    <Icon className="h-4 w-4" />
+                    <span className="capitalize">{presentation.label}</span>
+                    {!isVisible && (
+                      <span className="text-muted-foreground">(hidden)</span>
+                    )}
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <Label htmlFor={`axis-side-${axis}`}>Side</Label>
+                      <Select
+                        value={settings.orientation}
+                        onValueChange={value =>
+                          updateAxisSettings(axis, {
+                            orientation: value as AxisOrientation,
+                          })
+                        }
+                      >
+                        <SelectTrigger id={`axis-side-${axis}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="left">Left</SelectItem>
+                          <SelectItem value="right">Right</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor={`axis-scale-${axis}`}>Scaling</Label>
+                      <Select
+                        value={settings.scaleMode}
+                        onValueChange={value =>
+                          updateAxisSettings(axis, {
+                            scaleMode: value as AxisScaleMode,
+                          })
+                        }
+                      >
+                        <SelectTrigger id={`axis-scale-${axis}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="maxRange">Max range</SelectItem>
+                          <SelectItem value="zeroToMax">0 to max</SelectItem>
+                          <SelectItem value="custom">Custom values</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {settings.scaleMode === 'custom' && (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="space-y-1">
+                        <Label htmlFor={`axis-min-${axis}`}>Min</Label>
+                        <Input
+                          id={`axis-min-${axis}`}
+                          type="number"
+                          inputMode="decimal"
+                          value={settings.customMin}
+                          onChange={event =>
+                            updateAxisSettings(axis, {
+                              customMin: event.target.value,
+                            })
+                          }
+                          placeholder="-3"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor={`axis-max-${axis}`}>Max</Label>
+                        <Input
+                          id={`axis-max-${axis}`}
+                          type="number"
+                          inputMode="decimal"
+                          value={settings.customMax}
+                          onChange={event =>
+                            updateAxisSettings(axis, {
+                              customMax: event.target.value,
+                            })
+                          }
+                          placeholder="126"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </CardContent>
