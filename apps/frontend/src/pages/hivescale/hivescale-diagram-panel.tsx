@@ -409,10 +409,8 @@ const getAxisDomain = (
   const dataMax = Math.max(...values);
 
   if (settings.scaleMode === 'zeroToMax') {
-    return padEqualAxisBounds(
-      roundDownAxisBound(Math.min(0, dataMin)),
-      roundUpAxisBound(Math.max(0, dataMax)),
-    );
+    const roundedMax = roundUpAxisBound(Math.max(0, dataMax));
+    return [0, roundedMax > 0 ? roundedMax : 1];
   }
 
   return padEqualAxisBounds(
@@ -420,6 +418,9 @@ const getAxisDomain = (
     roundUpAxisBound(dataMax),
   );
 };
+
+const shouldAllowAxisDataOverflow = (settings: AxisScaleSettings) =>
+  settings.scaleMode === 'custom' || settings.scaleMode === 'zeroToMax';
 
 const mergeVisibleSeries = (value: unknown): VisibleSeriesMap => ({
   ...defaultVisibleSeries,
@@ -1236,9 +1237,9 @@ export function HiveScaleDiagramPanel({
                   orientation="left"
                   unit=" kg"
                   domain={axisDomains.weight}
-                  allowDataOverflow={
-                    axisScaleSettings.weight.scaleMode === 'custom'
-                  }
+                  allowDataOverflow={shouldAllowAxisDataOverflow(
+                    axisScaleSettings.weight,
+                  )}
                 />
                 {showTemperatureAxis && (
                   <YAxis
@@ -1247,9 +1248,9 @@ export function HiveScaleDiagramPanel({
                     unit=" °C"
                     width={64}
                     domain={axisDomains.temperature}
-                    allowDataOverflow={
-                      axisScaleSettings.temperature.scaleMode === 'custom'
-                    }
+                    allowDataOverflow={shouldAllowAxisDataOverflow(
+                      axisScaleSettings.temperature,
+                    )}
                   />
                 )}
                 {showHumidityAxis && (
@@ -1259,9 +1260,9 @@ export function HiveScaleDiagramPanel({
                     unit=" %"
                     width={64}
                     domain={axisDomains.humidity}
-                    allowDataOverflow={
-                      axisScaleSettings.humidity.scaleMode === 'custom'
-                    }
+                    allowDataOverflow={shouldAllowAxisDataOverflow(
+                      axisScaleSettings.humidity,
+                    )}
                   />
                 )}
                 {showVoltageAxis && (
@@ -1271,9 +1272,9 @@ export function HiveScaleDiagramPanel({
                     unit=" V"
                     width={64}
                     domain={axisDomains.voltage}
-                    allowDataOverflow={
-                      axisScaleSettings.voltage.scaleMode === 'custom'
-                    }
+                    allowDataOverflow={shouldAllowAxisDataOverflow(
+                      axisScaleSettings.voltage,
+                    )}
                   />
                 )}
                 {showPercentAxis && (
@@ -1283,9 +1284,9 @@ export function HiveScaleDiagramPanel({
                     unit=" %"
                     width={64}
                     domain={axisDomains.percent}
-                    allowDataOverflow={
-                      axisScaleSettings.percent.scaleMode === 'custom'
-                    }
+                    allowDataOverflow={shouldAllowAxisDataOverflow(
+                      axisScaleSettings.percent,
+                    )}
                   />
                 )}
                 {showCurrentAxis && (
@@ -1295,9 +1296,9 @@ export function HiveScaleDiagramPanel({
                     unit=" mA"
                     width={72}
                     domain={axisDomains.current}
-                    allowDataOverflow={
-                      axisScaleSettings.current.scaleMode === 'custom'
-                    }
+                    allowDataOverflow={shouldAllowAxisDataOverflow(
+                      axisScaleSettings.current,
+                    )}
                   />
                 )}
                 {showPowerAxis && (
@@ -1307,9 +1308,9 @@ export function HiveScaleDiagramPanel({
                     unit=" mW"
                     width={76}
                     domain={axisDomains.power}
-                    allowDataOverflow={
-                      axisScaleSettings.power.scaleMode === 'custom'
-                    }
+                    allowDataOverflow={shouldAllowAxisDataOverflow(
+                      axisScaleSettings.power,
+                    )}
                   />
                 )}
                 {showSignalAxis && (
@@ -1319,9 +1320,9 @@ export function HiveScaleDiagramPanel({
                     unit=" CSQ"
                     width={76}
                     domain={axisDomains.signal}
-                    allowDataOverflow={
-                      axisScaleSettings.signal.scaleMode === 'custom'
-                    }
+                    allowDataOverflow={shouldAllowAxisDataOverflow(
+                      axisScaleSettings.signal,
+                    )}
                   />
                 )}
                 <Tooltip
