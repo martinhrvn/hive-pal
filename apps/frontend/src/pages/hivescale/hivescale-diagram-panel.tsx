@@ -125,22 +125,22 @@ interface ChartMarker {
 }
 
 type AxisScaleMode = 'maxRange' | 'zeroToMax' | 'custom';
-type AxisOrientation = 'left' | 'right';
+type AxisDomain = [number, number];
 
-interface AxisSettings {
-  orientation: AxisOrientation;
+type VisibleSeriesMap = Record<SeriesKey, boolean>;
+
+interface AxisScaleSettings {
   scaleMode: AxisScaleMode;
   customMin: string;
   customMax: string;
 }
 
-type AxisSettingsMap = Record<SeriesAxis, AxisSettings>;
-type VisibleSeriesMap = Record<SeriesKey, boolean>;
+type AxisScaleSettingsMap = Record<SeriesAxis, AxisScaleSettings>;
 
 interface StoredDiagramSettings {
-  version: 1;
+  version: 2;
   visibleSeries: VisibleSeriesMap;
-  axes: AxisSettingsMap;
+  axes: AxisScaleSettingsMap;
 }
 
 const diagramSettingsStoragePrefix = 'hivepal:hivescale-diagram:';
@@ -160,74 +160,47 @@ const defaultVisibleSeries: VisibleSeriesMap = {
   cellularCsq: false,
 };
 
-const defaultAxisSettings: AxisSettingsMap = {
+const defaultAxisScaleSettings: AxisScaleSettingsMap = {
   weight: {
-    orientation: 'left',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
   temperature: {
-    orientation: 'right',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
   humidity: {
-    orientation: 'right',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
   voltage: {
-    orientation: 'right',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
   percent: {
-    orientation: 'right',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
   current: {
-    orientation: 'right',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
   power: {
-    orientation: 'right',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
   signal: {
-    orientation: 'right',
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
   },
-};
-
-const axisPresentation: Record<
-  SeriesAxis,
-  { label: string; unit: string; Icon: LucideIcon; width?: number }
-> = {
-  weight: { label: 'weight', unit: ' kg', Icon: Scale },
-  temperature: {
-    label: 'temperature',
-    unit: ' °C',
-    Icon: Thermometer,
-    width: 64,
-  },
-  humidity: { label: 'humidity', unit: ' %', Icon: Droplets, width: 64 },
-  voltage: { label: 'voltage', unit: ' V', Icon: Zap, width: 64 },
-  percent: { label: 'battery %', unit: ' %', Icon: Battery, width: 64 },
-  current: { label: 'solar mA', unit: ' mA', Icon: Sun, width: 72 },
-  power: { label: 'solar mW', unit: ' mW', Icon: Sun, width: 76 },
-  signal: { label: 'cellular CSQ', unit: ' CSQ', Icon: Radio, width: 76 },
 };
 
 const axisOrder: SeriesAxis[] = [
@@ -240,6 +213,25 @@ const axisOrder: SeriesAxis[] = [
   'power',
   'signal',
 ];
+
+const axisPresentation: Record<
+  SeriesAxis,
+  { label: string; unit: string; side: 'left' | 'right'; Icon: LucideIcon }
+> = {
+  weight: { label: 'Weight', unit: 'kg', side: 'left', Icon: Scale },
+  temperature: {
+    label: 'Temperature',
+    unit: '°C',
+    side: 'right',
+    Icon: Thermometer,
+  },
+  humidity: { label: 'Humidity', unit: '%', side: 'right', Icon: Droplets },
+  voltage: { label: 'Voltage', unit: 'V', side: 'right', Icon: Zap },
+  percent: { label: 'Battery %', unit: '%', side: 'right', Icon: Battery },
+  current: { label: 'Solar mA', unit: 'mA', side: 'right', Icon: Sun },
+  power: { label: 'Solar mW', unit: 'mW', side: 'right', Icon: Sun },
+  signal: { label: 'Cellular CSQ', unit: 'CSQ', side: 'right', Icon: Radio },
+};
 
 interface MarkerTooltipState {
   marker: ChartMarker;
@@ -330,6 +322,13 @@ const fromLocalDateTimeInput = (value: string) => {
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 };
 
+const cleanTemperature = (value: number | null | undefined) => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  // DS18B20 reports -127 C when the sensor is disconnected/unreadable.
+  if (value <= -100) return null;
+  return value;
+};
+
 const toFiniteNumber = (value: unknown) => {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
   if (typeof value === 'string' && value.trim() !== '') {
@@ -339,94 +338,62 @@ const toFiniteNumber = (value: unknown) => {
   return null;
 };
 
-const cleanTemperature = (value: unknown) => {
-  const numericValue = toFiniteNumber(value);
-  if (numericValue === null) return null;
-  // DS18B20 reports -127 C when the sensor is disconnected/unreadable.
-  if (numericValue <= -100) return null;
-  return numericValue;
-};
-
-const roundDownAxisBound = (value: number) => {
-  if (!Number.isFinite(value)) return 0;
-  if (value === 0) return 0;
-  const absValue = Math.abs(value);
-  const step = absValue >= 1000 ? 100 : absValue >= 100 ? 10 : 1;
-  return Math.floor(value / step) * step;
-};
-
-const roundUpAxisBound = (value: number) => {
-  if (!Number.isFinite(value)) return 1;
-  if (value === 0) return 1;
-  const absValue = Math.abs(value);
-  const step = absValue >= 1000 ? 100 : absValue >= 10 ? 10 : 1;
-  return Math.ceil(value / step) * step;
-};
-
-const padEqualAxisBounds = (min: number, max: number): [number, number] => {
-  if (min < max) return [min, max];
-  const absValue = Math.max(Math.abs(min), Math.abs(max));
-  const padding = absValue >= 1000 ? 100 : absValue >= 100 ? 10 : 1;
-  return [min - padding, max + padding];
-};
-
-const readNumberInput = (value: string) => {
+const parseCustomAxisValue = (value: string) => {
   if (value.trim() === '') return undefined;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
-type AxisDomain = [number | string, number | string];
+const padEqualAxisBounds = (min: number, max: number): AxisDomain => {
+  if (min !== max) return [min, max];
+  const padding = Math.max(Math.abs(min) * 0.1, 1);
+  return [min - padding, max + padding];
+};
+
+const roundDownAxisBound = (value: number) => {
+  if (value === 0) return 0;
+  const magnitude = 10 ** Math.floor(Math.log10(Math.abs(value)));
+  const step = magnitude >= 10 ? magnitude / 10 : 1;
+  return Math.floor(value / step) * step;
+};
+
+const roundUpAxisBound = (value: number) => {
+  if (value === 0) return 0;
+  const magnitude = 10 ** Math.floor(Math.log10(Math.abs(value)));
+  const step = magnitude >= 10 ? magnitude / 10 : 1;
+  return Math.ceil(value / step) * step;
+};
 
 const getAxisDomain = (
-  settings: AxisSettings,
-  values: Array<unknown>,
+  settings: AxisScaleSettings,
+  rawValues: unknown[],
 ): AxisDomain | undefined => {
   if (settings.scaleMode === 'custom') {
-    const min = readNumberInput(settings.customMin);
-    const max = readNumberInput(settings.customMax);
-    if (min !== undefined && max !== undefined && min < max) return [min, max];
-    return undefined;
+    const customMin = parseCustomAxisValue(settings.customMin);
+    const customMax = parseCustomAxisValue(settings.customMax);
+    if (customMin === undefined || customMax === undefined) return undefined;
+    return padEqualAxisBounds(
+      Math.min(customMin, customMax),
+      Math.max(customMin, customMax),
+    );
   }
 
-  const finiteValues = values
-    .map(toFiniteNumber)
-    .filter((value): value is number => value !== null);
+  const values = rawValues.filter(
+    (value): value is number => typeof value === 'number' && Number.isFinite(value),
+  );
+  if (!values.length) return undefined;
 
-  if (!finiteValues.length) return undefined;
-
-  const dataMin = Math.min(...finiteValues);
-  const dataMax = Math.max(...finiteValues);
+  const dataMin = Math.min(...values);
+  const dataMax = Math.max(...values);
 
   if (settings.scaleMode === 'zeroToMax') {
-    const max = roundUpAxisBound(dataMax);
-    return padEqualAxisBounds(0, max);
+    return padEqualAxisBounds(0, Math.max(0, roundUpAxisBound(dataMax)));
   }
 
   return padEqualAxisBounds(
     roundDownAxisBound(dataMin),
     roundUpAxisBound(dataMax),
   );
-};
-
-const mergeAxisSettings = (value: unknown): AxisSettingsMap => {
-  const record =
-    value && typeof value === 'object'
-      ? (value as Partial<AxisSettingsMap>)
-      : {};
-  return axisOrder.reduce((acc, axis) => {
-    const current = record[axis] ?? defaultAxisSettings[axis];
-    acc[axis] = {
-      orientation: current.orientation === 'left' ? 'left' : 'right',
-      scaleMode:
-        current.scaleMode === 'zeroToMax' || current.scaleMode === 'custom'
-          ? current.scaleMode
-          : 'maxRange',
-      customMin: String(current.customMin ?? ''),
-      customMax: String(current.customMax ?? ''),
-    };
-    return acc;
-  }, {} as AxisSettingsMap);
 };
 
 const mergeVisibleSeries = (value: unknown): VisibleSeriesMap => ({
@@ -436,38 +403,49 @@ const mergeVisibleSeries = (value: unknown): VisibleSeriesMap => ({
     : {}),
 });
 
+const mergeAxisScaleSettings = (value: unknown): AxisScaleSettingsMap => {
+  const record =
+    value && typeof value === 'object'
+      ? (value as Partial<Record<SeriesAxis, Partial<AxisScaleSettings>>>)
+      : {};
+
+  return axisOrder.reduce((acc, axis) => {
+    const current = record[axis] ?? {};
+    acc[axis] = {
+      scaleMode:
+        current.scaleMode === 'zeroToMax' || current.scaleMode === 'custom'
+          ? current.scaleMode
+          : 'maxRange',
+      customMin: String(current.customMin ?? ''),
+      customMax: String(current.customMax ?? ''),
+    };
+    return acc;
+  }, {} as AxisScaleSettingsMap);
+};
+
+const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
+  version: 2,
+  visibleSeries: defaultVisibleSeries,
+  axes: defaultAxisScaleSettings,
+});
+
 const loadStoredDiagramSettings = (
   storageKey: string,
 ): StoredDiagramSettings => {
-  if (typeof window === 'undefined') {
-    return {
-      version: 1,
-      visibleSeries: defaultVisibleSeries,
-      axes: defaultAxisSettings,
-    };
-  }
+  if (typeof window === 'undefined') return getDefaultDiagramSettings();
 
   try {
     const raw = window.localStorage.getItem(storageKey);
-    if (!raw) {
-      return {
-        version: 1,
-        visibleSeries: defaultVisibleSeries,
-        axes: defaultAxisSettings,
-      };
-    }
+    if (!raw) return getDefaultDiagramSettings();
+
     const parsed = JSON.parse(raw) as Partial<StoredDiagramSettings>;
     return {
-      version: 1,
+      version: 2,
       visibleSeries: mergeVisibleSeries(parsed.visibleSeries),
-      axes: mergeAxisSettings(parsed.axes),
+      axes: mergeAxisScaleSettings(parsed.axes),
     };
   } catch {
-    return {
-      version: 1,
-      visibleSeries: defaultVisibleSeries,
-      axes: defaultAxisSettings,
-    };
+    return getDefaultDiagramSettings();
   }
 };
 
@@ -848,10 +826,9 @@ export function HiveScaleDiagramPanel({
   const [diagramSettings, setDiagramSettings] = useState<StoredDiagramSettings>(
     () => loadStoredDiagramSettings(storageKey),
   );
-  const { visibleSeries, axes: axisSettings } = diagramSettings;
-  const [hoveredMarker, setHoveredMarker] = useState<MarkerTooltipState | null>(
-    null,
-  );
+  const { visibleSeries, axes: axisScaleSettings } = diagramSettings;
+  const [hoveredMarker, setHoveredMarker] =
+    useState<MarkerTooltipState | null>(null);
 
   const series = useMemo<DiagramSeries[]>(
     () => [
@@ -968,12 +945,15 @@ export function HiveScaleDiagramPanel({
   );
 
   const activeSeries = series.filter(item => visibleSeries[item.key]);
-  const activeAxes = axisOrder.filter(axis =>
-    activeSeries.some(item => item.axis === axis),
+  const showTemperatureAxis = activeSeries.some(
+    item => item.axis === 'temperature',
   );
-  const renderedAxes = activeAxes.length
-    ? activeAxes
-    : (['weight'] as SeriesAxis[]);
+  const showHumidityAxis = activeSeries.some(item => item.axis === 'humidity');
+  const showVoltageAxis = activeSeries.some(item => item.axis === 'voltage');
+  const showPercentAxis = activeSeries.some(item => item.axis === 'percent');
+  const showCurrentAxis = activeSeries.some(item => item.axis === 'current');
+  const showPowerAxis = activeSeries.some(item => item.axis === 'power');
+  const showSignalAxis = activeSeries.some(item => item.axis === 'signal');
 
   const chartData = useMemo(
     () =>
@@ -1014,33 +994,12 @@ export function HiveScaleDiagramPanel({
         const values = chartData.flatMap(item =>
           dataKeys.map(dataKey => item[dataKey]),
         );
-        acc[axis] = getAxisDomain(axisSettings[axis], values);
+        acc[axis] = getAxisDomain(axisScaleSettings[axis], values);
         return acc;
       },
       {} as Record<SeriesAxis, AxisDomain | undefined>,
     );
-  }, [axisSettings, chartData, series, visibleSeries]);
-
-  const chartTimeDomain = useMemo((): [number | string, number | string] => {
-    const timestamps = chartData
-      .map(item => item.timestamp)
-      .filter((value): value is number => Number.isFinite(value));
-    const dataMin = timestamps.length ? Math.min(...timestamps) : undefined;
-    const dataMax = timestamps.length ? Math.max(...timestamps) : undefined;
-    let min = dateRange.startAt
-      ? new Date(dateRange.startAt).getTime()
-      : dataMin;
-    let max = dateRange.endAt ? new Date(dateRange.endAt).getTime() : dataMax;
-
-    if (typeof min !== 'number' || !Number.isFinite(min)) min = undefined;
-    if (typeof max !== 'number' || !Number.isFinite(max)) max = undefined;
-
-    if (typeof min === 'number' && typeof max === 'number' && min === max) {
-      return [min - 60 * 60 * 1000, max + 60 * 60 * 1000];
-    }
-
-    return [min ?? 'dataMin', max ?? 'dataMax'];
-  }, [chartData, dateRange.endAt, dateRange.startAt]);
+  }, [axisScaleSettings, chartData, series, visibleSeries]);
 
   useEffect(() => {
     setDiagramSettings(loadStoredDiagramSettings(storageKey));
@@ -1050,6 +1009,7 @@ export function HiveScaleDiagramPanel({
   useEffect(() => {
     if (typeof window === 'undefined' || loadedStorageKey !== storageKey)
       return;
+
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(diagramSettings));
     } catch {
@@ -1089,9 +1049,9 @@ export function HiveScaleDiagramPanel({
     }));
   };
 
-  const updateAxisSettings = (
+  const updateAxisScaleSettings = (
     axis: SeriesAxis,
-    updates: Partial<AxisSettings>,
+    updates: Partial<AxisScaleSettings>,
   ) => {
     setDiagramSettings(current => ({
       ...current,
@@ -1103,11 +1063,7 @@ export function HiveScaleDiagramPanel({
   };
 
   const resetAxisLayout = () => {
-    setDiagramSettings({
-      version: 1,
-      visibleSeries: defaultVisibleSeries,
-      axes: defaultAxisSettings,
-    });
+    setDiagramSettings(getDefaultDiagramSettings());
   };
 
   const showMarkerTooltip = (
@@ -1168,32 +1124,117 @@ export function HiveScaleDiagramPanel({
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
-                margin={{ top: 32, right: 36, bottom: 8, left: 12 }}
+                margin={{ top: 32, right: 24, bottom: 8, left: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="timestamp"
-                  domain={chartTimeDomain}
+                  domain={[
+                    dateRange.startAt
+                      ? new Date(dateRange.startAt).getTime()
+                      : 'dataMin',
+                    dateRange.endAt
+                      ? new Date(dateRange.endAt).getTime()
+                      : 'dataMax',
+                  ]}
                   minTickGap={24}
                   scale="time"
                   tickFormatter={formatChartTick}
                   type="number"
                 />
-                {renderedAxes.map(axis => {
-                  const presentation = axisPresentation[axis];
-                  const settings = axisSettings[axis];
-                  return (
-                    <YAxis
-                      key={axis}
-                      yAxisId={axis}
-                      orientation={settings.orientation}
-                      unit={presentation.unit}
-                      width={presentation.width}
-                      domain={axisDomains[axis]}
-                      allowDataOverflow={settings.scaleMode === 'custom'}
-                    />
-                  );
-                })}
+                <YAxis
+                  yAxisId="weight"
+                  orientation="left"
+                  unit=" kg"
+                  domain={axisDomains.weight}
+                  allowDataOverflow={
+                    axisScaleSettings.weight.scaleMode === 'custom'
+                  }
+                />
+                {showTemperatureAxis && (
+                  <YAxis
+                    yAxisId="temperature"
+                    orientation="right"
+                    unit=" °C"
+                    width={64}
+                    domain={axisDomains.temperature}
+                    allowDataOverflow={
+                      axisScaleSettings.temperature.scaleMode === 'custom'
+                    }
+                  />
+                )}
+                {showHumidityAxis && (
+                  <YAxis
+                    yAxisId="humidity"
+                    orientation="right"
+                    unit=" %"
+                    width={64}
+                    domain={axisDomains.humidity}
+                    allowDataOverflow={
+                      axisScaleSettings.humidity.scaleMode === 'custom'
+                    }
+                  />
+                )}
+                {showVoltageAxis && (
+                  <YAxis
+                    yAxisId="voltage"
+                    orientation="right"
+                    unit=" V"
+                    width={64}
+                    domain={axisDomains.voltage}
+                    allowDataOverflow={
+                      axisScaleSettings.voltage.scaleMode === 'custom'
+                    }
+                  />
+                )}
+                {showPercentAxis && (
+                  <YAxis
+                    yAxisId="percent"
+                    orientation="right"
+                    unit=" %"
+                    width={64}
+                    domain={axisDomains.percent}
+                    allowDataOverflow={
+                      axisScaleSettings.percent.scaleMode === 'custom'
+                    }
+                  />
+                )}
+                {showCurrentAxis && (
+                  <YAxis
+                    yAxisId="current"
+                    orientation="right"
+                    unit=" mA"
+                    width={72}
+                    domain={axisDomains.current}
+                    allowDataOverflow={
+                      axisScaleSettings.current.scaleMode === 'custom'
+                    }
+                  />
+                )}
+                {showPowerAxis && (
+                  <YAxis
+                    yAxisId="power"
+                    orientation="right"
+                    unit=" mW"
+                    width={76}
+                    domain={axisDomains.power}
+                    allowDataOverflow={
+                      axisScaleSettings.power.scaleMode === 'custom'
+                    }
+                  />
+                )}
+                {showSignalAxis && (
+                  <YAxis
+                    yAxisId="signal"
+                    orientation="right"
+                    unit=" CSQ"
+                    width={76}
+                    domain={axisDomains.signal}
+                    allowDataOverflow={
+                      axisScaleSettings.signal.scaleMode === 'custom'
+                    }
+                  />
+                )}
                 <Tooltip
                   labelFormatter={value => formatDateTime(Number(value))}
                   formatter={(value, name) => [value, name]}
@@ -1203,7 +1244,7 @@ export function HiveScaleDiagramPanel({
                   <ReferenceLine
                     key={marker.id}
                     x={marker.timestamp}
-                    yAxisId={renderedAxes[0]}
+                    yAxisId="weight"
                     stroke="var(--border)"
                     strokeDasharray="4 4"
                     label={
@@ -1261,8 +1302,8 @@ export function HiveScaleDiagramPanel({
             <div>
               <div className="font-medium text-foreground">Axis setup</div>
               <div>
-                Choose side and scaling per vertical axis. Saved in this
-                browser.
+                Choose scaling per vertical axis. Axis side is temporarily fixed
+                while rendering is being troubleshot. Saved in this browser.
               </div>
             </div>
             <Button
@@ -1278,8 +1319,17 @@ export function HiveScaleDiagramPanel({
             {axisOrder.map(axis => {
               const presentation = axisPresentation[axis];
               const Icon = presentation.Icon;
-              const isVisible = activeAxes.includes(axis);
-              const settings = axisSettings[axis];
+              const isVisible =
+                axis === 'weight' ||
+                (axis === 'temperature' && showTemperatureAxis) ||
+                (axis === 'humidity' && showHumidityAxis) ||
+                (axis === 'voltage' && showVoltageAxis) ||
+                (axis === 'percent' && showPercentAxis) ||
+                (axis === 'current' && showCurrentAxis) ||
+                (axis === 'power' && showPowerAxis) ||
+                (axis === 'signal' && showSignalAxis);
+              const settings = axisScaleSettings[axis];
+
               return (
                 <div
                   key={axis}
@@ -1287,37 +1337,26 @@ export function HiveScaleDiagramPanel({
                 >
                   <div className="flex items-center gap-2 font-medium text-foreground">
                     <Icon className="h-4 w-4" />
-                    <span className="capitalize">{presentation.label}</span>
+                    <span>{presentation.label}</span>
                     {!isVisible && (
                       <span className="text-muted-foreground">(hidden)</span>
                     )}
                   </div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     <div className="space-y-1">
-                      <Label htmlFor={`axis-side-${axis}`}>Side</Label>
-                      <Select
-                        value={settings.orientation}
-                        onValueChange={value =>
-                          updateAxisSettings(axis, {
-                            orientation: value as AxisOrientation,
-                          })
-                        }
-                      >
-                        <SelectTrigger id={`axis-side-${axis}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="left">Left</SelectItem>
-                          <SelectItem value="right">Right</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="text-[0.7rem] font-medium uppercase tracking-wide text-muted-foreground">
+                        Side
+                      </div>
+                      <div className="rounded-md border px-3 py-2 text-sm text-foreground">
+                        {presentation.side === 'left' ? 'Left' : 'Right'}
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor={`axis-scale-${axis}`}>Scaling</Label>
                       <Select
                         value={settings.scaleMode}
                         onValueChange={value =>
-                          updateAxisSettings(axis, {
+                          updateAxisScaleSettings(axis, {
                             scaleMode: value as AxisScaleMode,
                           })
                         }
@@ -1343,7 +1382,7 @@ export function HiveScaleDiagramPanel({
                           inputMode="decimal"
                           value={settings.customMin}
                           onChange={event =>
-                            updateAxisSettings(axis, {
+                            updateAxisScaleSettings(axis, {
                               customMin: event.target.value,
                             })
                           }
@@ -1358,7 +1397,7 @@ export function HiveScaleDiagramPanel({
                           inputMode="decimal"
                           value={settings.customMax}
                           onChange={event =>
-                            updateAxisSettings(axis, {
+                            updateAxisScaleSettings(axis, {
                               customMax: event.target.value,
                             })
                           }
