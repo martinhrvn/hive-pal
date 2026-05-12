@@ -41,6 +41,21 @@ export class UsersService {
     return users.map(({ password: _, ...userData }) => userData);
   }
 
+  /**
+   * Returns a lightweight list of all users (id, email, name).
+   * Used by the swarm alert scheduler to iterate over users that
+   * may have swarm alerts configured.
+   */
+  async getAllUsers(): Promise<Array<{ id: string; email: string; name: string | null }>> {
+    return this.prismaService.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+  }
+
   async resetPassword(
     userId: string,
     tempPassword: string,

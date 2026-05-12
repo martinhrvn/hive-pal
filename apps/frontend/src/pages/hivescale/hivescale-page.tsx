@@ -84,6 +84,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { HiveScaleSwarmAlertCard } from './hivescale-swarm-alert-card';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
@@ -1570,6 +1571,8 @@ function ScaleSetupPanel({
                 latest={latest}
                 onCalibrationPollingChange={onCalibrationPollingChange}
               />
+              {/* Swarm Alert */}
+              <HiveScaleSwarmAlertCard />
             </div>
           </CardContent>
         </CollapsibleContent>
