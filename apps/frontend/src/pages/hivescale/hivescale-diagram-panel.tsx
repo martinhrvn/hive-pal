@@ -5,6 +5,7 @@ import {
   Box,
   CalendarDays,
   ClipboardCheck,
+  Download,
   Droplets,
   Frame,
   Scale,
@@ -308,6 +309,26 @@ const formatDateTime = (value: string | number | null | undefined) => {
   }).format(new Date(value));
 };
 
+const escapeCsvValue = (value: unknown) => {
+  if (value === null || value === undefined) return '';
+
+  const text = String(value);
+  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+};
+
+const safeFilenameSegment = (value: string) => {
+  const safeValue = value
+    .trim()
+    .replace(/[^a-z0-9_-]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+
+  return safeValue || 'device';
+};
+
+const formatCsvFilenameDate = (date: Date) =>
+  date.toISOString().slice(0, 19).replace(/[T:]/g, '-');
+
 const toLocalDateTimeInput = (value: string | undefined) => {
   if (!value) return '';
   const date = new Date(value);
@@ -379,7 +400,8 @@ const getAxisDomain = (
   }
 
   const values = rawValues.filter(
-    (value): value is number => typeof value === 'number' && Number.isFinite(value),
+    (value): value is number =>
+      typeof value === 'number' && Number.isFinite(value),
   );
   if (!values.length) return undefined;
 
@@ -387,7 +409,10 @@ const getAxisDomain = (
   const dataMax = Math.max(...values);
 
   if (settings.scaleMode === 'zeroToMax') {
-    return padEqualAxisBounds(0, Math.max(0, roundUpAxisBound(dataMax)));
+    return padEqualAxisBounds(
+      roundDownAxisBound(Math.min(0, dataMin)),
+      roundUpAxisBound(Math.max(0, dataMax)),
+    );
   }
 
   return padEqualAxisBounds(
@@ -985,13 +1010,28 @@ export function HiveScaleDiagramPanel({
     [measurements],
   );
 
+  const visibleChartData = useMemo(() => {
+    const startMs = dateRange.startAt
+      ? new Date(dateRange.startAt).getTime()
+      : Number.NEGATIVE_INFINITY;
+    const endMs = dateRange.endAt
+      ? new Date(dateRange.endAt).getTime()
+      : Number.POSITIVE_INFINITY;
+
+    return chartData.filter(
+      item =>
+        (!Number.isFinite(startMs) || item.timestamp >= startMs) &&
+        (!Number.isFinite(endMs) || item.timestamp <= endMs),
+    );
+  }, [chartData, dateRange.endAt, dateRange.startAt]);
+
   const axisDomains = useMemo(() => {
     return axisOrder.reduce(
       (acc, axis) => {
         const dataKeys = series
           .filter(item => item.axis === axis && visibleSeries[item.key])
           .map(item => item.dataKey as keyof (typeof chartData)[number]);
-        const values = chartData.flatMap(item =>
+        const values = visibleChartData.flatMap(item =>
           dataKeys.map(dataKey => item[dataKey]),
         );
         acc[axis] = getAxisDomain(axisScaleSettings[axis], values);
@@ -999,7 +1039,7 @@ export function HiveScaleDiagramPanel({
       },
       {} as Record<SeriesAxis, AxisDomain | undefined>,
     );
-  }, [axisScaleSettings, chartData, series, visibleSeries]);
+  }, [axisScaleSettings, series, visibleChartData, visibleSeries]);
 
   useEffect(() => {
     setDiagramSettings(loadStoredDiagramSettings(storageKey));
@@ -1066,6 +1106,43 @@ export function HiveScaleDiagramPanel({
     setDiagramSettings(getDefaultDiagramSettings());
   };
 
+  const downloadVisibleDataCsv = () => {
+    if (!visibleChartData.length || !activeSeries.length) return;
+
+    const headers = [
+      'measured_at',
+      'timestamp',
+      ...activeSeries.map(item => `${item.label} (${item.unit})`),
+    ];
+    const rows = visibleChartData.map(item => [
+      item.measuredAt,
+      new Date(item.timestamp).toISOString(),
+      ...activeSeries.map(seriesItem => {
+        const value = item[seriesItem.dataKey as keyof typeof item];
+        return typeof value === 'number' && Number.isFinite(value) ? value : '';
+      }),
+    ]);
+
+    const csv = [headers, ...rows]
+      .map(row => row.map(escapeCsvValue).join(','))
+      .join('\r\n');
+    const blob = new Blob([`\ufeff${csv}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const deviceName = safeFilenameSegment(
+      selectedDevice.display_name || selectedDevice.device_id,
+    );
+
+    link.href = url;
+    link.download = `hivepal-${deviceName}-visible-data-${formatCsvFilenameDate(new Date())}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   const showMarkerTooltip = (
     marker: ChartMarker,
     event: MouseEvent<SVGGElement>,
@@ -1102,7 +1179,19 @@ export function HiveScaleDiagramPanel({
       <CardContent className="space-y-5">
         <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
           <div className="space-y-3 rounded-md border p-3">
-            <div className="text-sm font-medium">Displayed data</div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-sm font-medium">Displayed data</div>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={downloadVisibleDataCsv}
+                disabled={!visibleChartData.length || !activeSeries.length}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Download visible data .csv
+              </Button>
+            </div>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {series.map(item => (
                 <SeriesToggle
@@ -1119,11 +1208,11 @@ export function HiveScaleDiagramPanel({
 
         {isLoading ? (
           <Skeleton className="h-96 w-full" />
-        ) : chartData.length ? (
+        ) : visibleChartData.length ? (
           <div className="h-[28rem]" onMouseLeave={hideMarkerTooltip}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={chartData}
+                data={visibleChartData}
                 margin={{ top: 32, right: 24, bottom: 8, left: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
