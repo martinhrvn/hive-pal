@@ -134,12 +134,13 @@ interface AxisScaleSettings {
   scaleMode: AxisScaleMode;
   customMin: string;
   customMax: string;
+  side: 'left' | 'right';
 }
 
 type AxisScaleSettingsMap = Record<SeriesAxis, AxisScaleSettings>;
 
 interface StoredDiagramSettings {
-  version: 2;
+  version: 3;
   visibleSeries: VisibleSeriesMap;
   axes: AxisScaleSettingsMap;
 }
@@ -166,41 +167,49 @@ const defaultAxisScaleSettings: AxisScaleSettingsMap = {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'left',
   },
   temperature: {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'right',
   },
   humidity: {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'right',
   },
   voltage: {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'right',
   },
   percent: {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'right',
   },
   current: {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'right',
   },
   power: {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'right',
   },
   signal: {
     scaleMode: 'maxRange',
     customMin: '',
     customMax: '',
+    side: 'right',
   },
 };
 
@@ -437,6 +446,7 @@ const mergeAxisScaleSettings = (value: unknown): AxisScaleSettingsMap => {
 
   return axisOrder.reduce((acc, axis) => {
     const current = record[axis] ?? {};
+    const defaultSide = axisPresentation[axis].side;
     acc[axis] = {
       scaleMode:
         current.scaleMode === 'zeroToMax' || current.scaleMode === 'custom'
@@ -444,13 +454,14 @@ const mergeAxisScaleSettings = (value: unknown): AxisScaleSettingsMap => {
           : 'maxRange',
       customMin: String(current.customMin ?? ''),
       customMax: String(current.customMax ?? ''),
+      side: current.side === 'left' || current.side === 'right' ? current.side : defaultSide,
     };
     return acc;
   }, {} as AxisScaleSettingsMap);
 };
 
 const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
-  version: 2,
+  version: 3,
   visibleSeries: defaultVisibleSeries,
   axes: defaultAxisScaleSettings,
 });
@@ -465,8 +476,9 @@ const loadStoredDiagramSettings = (
     if (!raw) return getDefaultDiagramSettings();
 
     const parsed = JSON.parse(raw) as Partial<StoredDiagramSettings>;
+    // Version 2 → 3: side was not persisted; fall back to axisPresentation defaults (handled in mergeAxisScaleSettings).
     return {
-      version: 2,
+      version: 3,
       visibleSeries: mergeVisibleSeries(parsed.visibleSeries),
       axes: mergeAxisScaleSettings(parsed.axes),
     };
@@ -970,16 +982,14 @@ export function HiveScaleDiagramPanel({
     [scale1Name, scale2Name],
   );
 
-  const activeSeries = series.filter(item => visibleSeries[item.key]);
-  const showTemperatureAxis = activeSeries.some(
-    item => item.axis === 'temperature',
+  const activeSeries = useMemo(
+    () => series.filter(item => visibleSeries[item.key]),
+    [series, visibleSeries],
   );
-  const showHumidityAxis = activeSeries.some(item => item.axis === 'humidity');
-  const showVoltageAxis = activeSeries.some(item => item.axis === 'voltage');
-  const showPercentAxis = activeSeries.some(item => item.axis === 'percent');
-  const showCurrentAxis = activeSeries.some(item => item.axis === 'current');
-  const showPowerAxis = activeSeries.some(item => item.axis === 'power');
-  const showSignalAxis = activeSeries.some(item => item.axis === 'signal');
+  const activeAxes = useMemo(
+    () => new Set(activeSeries.map(item => item.axis)),
+    [activeSeries],
+  );
 
   const chartData = useMemo(
     () =>
@@ -1214,7 +1224,12 @@ export function HiveScaleDiagramPanel({
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={visibleChartData}
-                margin={{ top: 32, right: 24, bottom: 8, left: 0 }}
+                margin={{
+                  top: 32,
+                  right: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'right') ? 80 : 24,
+                  bottom: 8,
+                  left: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'left') ? 64 : 0,
+                }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
@@ -1232,121 +1247,52 @@ export function HiveScaleDiagramPanel({
                   tickFormatter={formatChartTick}
                   type="number"
                 />
-                <YAxis
-                  yAxisId="weight"
-                  orientation="left"
-                  unit=" kg"
-                  domain={axisDomains.weight}
-                  allowDataOverflow={shouldAllowAxisDataOverflow(
-                    axisScaleSettings.weight,
-                  )}
-                />
-                {showTemperatureAxis && (
-                  <YAxis
-                    yAxisId="temperature"
-                    orientation="right"
-                    unit=" °C"
-                    width={64}
-                    domain={axisDomains.temperature}
-                    allowDataOverflow={shouldAllowAxisDataOverflow(
-                      axisScaleSettings.temperature,
-                    )}
-                  />
-                )}
-                {showHumidityAxis && (
-                  <YAxis
-                    yAxisId="humidity"
-                    orientation="right"
-                    unit=" %"
-                    width={64}
-                    domain={axisDomains.humidity}
-                    allowDataOverflow={shouldAllowAxisDataOverflow(
-                      axisScaleSettings.humidity,
-                    )}
-                  />
-                )}
-                {showVoltageAxis && (
-                  <YAxis
-                    yAxisId="voltage"
-                    orientation="right"
-                    unit=" V"
-                    width={64}
-                    domain={axisDomains.voltage}
-                    allowDataOverflow={shouldAllowAxisDataOverflow(
-                      axisScaleSettings.voltage,
-                    )}
-                  />
-                )}
-                {showPercentAxis && (
-                  <YAxis
-                    yAxisId="percent"
-                    orientation="right"
-                    unit=" %"
-                    width={64}
-                    domain={axisDomains.percent}
-                    allowDataOverflow={shouldAllowAxisDataOverflow(
-                      axisScaleSettings.percent,
-                    )}
-                  />
-                )}
-                {showCurrentAxis && (
-                  <YAxis
-                    yAxisId="current"
-                    orientation="right"
-                    unit=" mA"
-                    width={72}
-                    domain={axisDomains.current}
-                    allowDataOverflow={shouldAllowAxisDataOverflow(
-                      axisScaleSettings.current,
-                    )}
-                  />
-                )}
-                {showPowerAxis && (
-                  <YAxis
-                    yAxisId="power"
-                    orientation="right"
-                    unit=" mW"
-                    width={76}
-                    domain={axisDomains.power}
-                    allowDataOverflow={shouldAllowAxisDataOverflow(
-                      axisScaleSettings.power,
-                    )}
-                  />
-                )}
-                {showSignalAxis && (
-                  <YAxis
-                    yAxisId="signal"
-                    orientation="right"
-                    unit=" CSQ"
-                    width={76}
-                    domain={axisDomains.signal}
-                    allowDataOverflow={shouldAllowAxisDataOverflow(
-                      axisScaleSettings.signal,
-                    )}
-                  />
-                )}
+                {axisOrder.map(axis => {
+                  if (!activeAxes.has(axis)) return null;
+                  const { unit } = axisPresentation[axis];
+                  const settings = axisScaleSettings[axis];
+                  const unitWidths: Partial<Record<SeriesAxis, number>> = {
+                    current: 72,
+                    power: 76,
+                    signal: 76,
+                  };
+                  return (
+                    <YAxis
+                      key={axis}
+                      yAxisId={axis}
+                      orientation={settings.side}
+                      unit={` ${unit}`}
+                      width={unitWidths[axis] ?? 64}
+                      domain={axisDomains[axis]}
+                      allowDataOverflow={shouldAllowAxisDataOverflow(settings)}
+                    />
+                  );
+                })}
                 <Tooltip
                   labelFormatter={value => formatDateTime(Number(value))}
                   formatter={(value, name) => [value, name]}
                 />
                 <Legend />
-                {markers.map((marker, index) => (
-                  <ReferenceLine
-                    key={marker.id}
-                    x={marker.timestamp}
-                    yAxisId="weight"
-                    stroke="var(--border)"
-                    strokeDasharray="4 4"
-                    label={
-                      <MarkerReferenceLineLabel
-                        marker={marker}
-                        row={index % 6}
-                        onHover={showMarkerTooltip}
-                        onLeave={hideMarkerTooltip}
-                      />
-                    }
-                  />
-                ))}
+                {markers.map((marker, index) => {
+                  const refAxisId = activeSeries[0]?.axis ?? 'weight';
+                  return (
+                    <ReferenceLine
+                      key={marker.id}
+                      x={marker.timestamp}
+                      yAxisId={refAxisId}
+                      stroke="var(--border)"
+                      strokeDasharray="4 4"
+                      label={
+                        <MarkerReferenceLineLabel
+                          marker={marker}
+                          row={index % 6}
+                          onHover={showMarkerTooltip}
+                          onLeave={hideMarkerTooltip}
+                        />
+                      }
+                    />
+                  );
+                })}
                 {activeSeries.map(item => (
                   <Line
                     key={item.key}
@@ -1392,8 +1338,7 @@ export function HiveScaleDiagramPanel({
             <div>
               <div className="font-medium text-foreground">Axis setup</div>
               <div>
-                Choose scaling per vertical axis. Axis side is temporarily fixed
-                while rendering is being troubleshot. Saved in this browser.
+                Choose scaling and side (left/right) per vertical axis. Saved in this browser.
               </div>
             </div>
             <Button
@@ -1409,15 +1354,7 @@ export function HiveScaleDiagramPanel({
             {axisOrder.map(axis => {
               const presentation = axisPresentation[axis];
               const Icon = presentation.Icon;
-              const isVisible =
-                axis === 'weight' ||
-                (axis === 'temperature' && showTemperatureAxis) ||
-                (axis === 'humidity' && showHumidityAxis) ||
-                (axis === 'voltage' && showVoltageAxis) ||
-                (axis === 'percent' && showPercentAxis) ||
-                (axis === 'current' && showCurrentAxis) ||
-                (axis === 'power' && showPowerAxis) ||
-                (axis === 'signal' && showSignalAxis);
+              const isVisible = activeAxes.has(axis);
               const settings = axisScaleSettings[axis];
 
               return (
@@ -1434,12 +1371,23 @@ export function HiveScaleDiagramPanel({
                   </div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     <div className="space-y-1">
-                      <div className="text-[0.7rem] font-medium uppercase tracking-wide text-muted-foreground">
-                        Side
-                      </div>
-                      <div className="rounded-md border px-3 py-2 text-sm text-foreground">
-                        {presentation.side === 'left' ? 'Left' : 'Right'}
-                      </div>
+                      <Label htmlFor={`axis-side-${axis}`}>Side</Label>
+                      <Select
+                        value={settings.side}
+                        onValueChange={value =>
+                          updateAxisScaleSettings(axis, {
+                            side: value as 'left' | 'right',
+                          })
+                        }
+                      >
+                        <SelectTrigger id={`axis-side-${axis}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="left">Left</SelectItem>
+                          <SelectItem value="right">Right</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor={`axis-scale-${axis}`}>Scaling</Label>
