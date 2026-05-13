@@ -147,9 +147,7 @@ export class PhotosService {
       where: { inspectionId },
     });
     if (existingCount >= 5) {
-      throw new BadRequestException(
-        'Maximum 5 photos per inspection',
-      );
+      throw new BadRequestException('Maximum 5 photos per inspection');
     }
 
     const { id, storageKey } = await this.fileUpload.uploadFile(

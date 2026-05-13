@@ -9,12 +9,20 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   useApiary,
   useCreateApiary,
@@ -67,6 +75,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
     defaultValues: {
       name: '',
       location: '',
+      settings: { inspectionType: 'data_driven' },
     },
   });
 
@@ -77,6 +86,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
         location: existingApiary.location || '',
         latitude: existingApiary.latitude ?? undefined,
         longitude: existingApiary.longitude ?? undefined,
+        settings: { inspectionType: existingApiary.settings?.inspectionType ?? 'data_driven' },
       });
       if (existingApiary.featurePhotoUrl) {
         setFeaturePhotoUrl(existingApiary.featurePhotoUrl);
@@ -98,6 +108,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
             location: data.location,
             latitude: data.latitude,
             longitude: data.longitude,
+            settings: data.settings,
           },
         });
 
@@ -125,6 +136,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           location: data.location,
           latitude: data.latitude,
           longitude: data.longitude,
+          settings: data.settings,
         });
 
         // If there's a pending file, upload it and link as feature photo
@@ -214,6 +226,32 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
             }}
           />
         </Suspense>
+
+        <FormField
+          control={form.control}
+          name="settings.inspectionType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('apiary:form.inspectionType.label')}</FormLabel>
+              <Select key={field.value} onValueChange={field.onChange} value={field.value ?? 'data_driven'}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t('apiary:form.inspectionType.placeholder')} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="data_driven">{t('apiary:form.inspectionType.dataDriven')}</SelectItem>
+                  <SelectItem value="subjective">{t('apiary:form.inspectionType.subjective')}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                {t('apiary:form.inspectionType.description')}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex justify-end">
           <Button
             type="button"

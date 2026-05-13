@@ -1,59 +1,24 @@
 import { Card } from '@/components/ui/card';
-import { HiveWithBoxesResponse, BoxVariantEnum } from 'shared-schemas';
+import { HiveWithBoxesResponse } from 'shared-schemas';
 import { cn } from '@/lib/utils';
 import { Package, Snowflake } from 'lucide-react';
 import { AlertsPopover } from '@/components/alerts';
+import { HiveScoreIndicator } from '@/components/hive';
+import { getBoxHeight, getBoxTypeLabel } from '@/utils/box-display';
 
 interface HiveCardProps {
   hive: HiveWithBoxesResponse;
+  isSubjective?: boolean;
   isDragging?: boolean;
   className?: string;
 }
 
-export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-500';
-      case 'INACTIVE':
-        return 'bg-yellow-500';
-      case 'DEAD':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const getBoxHeight = (variant?: BoxVariantEnum) => {
-    if (!variant) return 'h-8';
-
-    const deepVariants = [
-      BoxVariantEnum.LANGSTROTH_DEEP,
-      BoxVariantEnum.B_DEEP,
-      BoxVariantEnum.NATIONAL_DEEP,
-      BoxVariantEnum.DADANT,
-    ];
-
-    const shallowVariants = [
-      BoxVariantEnum.LANGSTROTH_SHALLOW,
-      BoxVariantEnum.B_SHALLOW,
-      BoxVariantEnum.NATIONAL_SHALLOW,
-    ];
-
-    if (deepVariants.includes(variant)) return 'h-12';
-    if (shallowVariants.includes(variant)) return 'h-8';
-    return 'h-10'; // Default for WARRE, TOP_BAR, CUSTOM
-  };
-
-  const getBoxTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      BROOD: 'B',
-      HONEY: 'H',
-      FEEDER: 'F',
-    };
-    return labels[type] || type.charAt(0);
-  };
-
+export const HiveCard = ({
+  hive,
+  isSubjective = false,
+  isDragging,
+  className,
+}: HiveCardProps) => {
   // Sort boxes by position (bottom to top) and limit to show max 4-5 boxes
   const sortedBoxes = hive.boxes
     ? [...hive.boxes].sort((a, b) => b.position - a.position).slice(0, 4)
@@ -79,11 +44,12 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
             )}
             <h4 className="font-medium text-sm truncate">{hive.name}</h4>
           </div>
-          <div
-            className={cn(
-              'w-2 h-2 rounded-full flex-shrink-0',
-              getStatusColor(hive.status),
-            )}
+          <HiveScoreIndicator
+            status={hive.status}
+            score={isSubjective ? hive.lastInspectionOverallScore : hive.lastInspectionStrength}
+            inspectionType={isSubjective ? 'subjective' : 'data_driven'}
+            strength={hive.lastInspectionStrength}
+            totalFrames={hive.lastInspectionTotalFrames}
           />
         </div>
 
@@ -101,9 +67,9 @@ export const HiveCard = ({ hive, isDragging, className }: HiveCardProps) => {
       {sortedBoxes.length > 0 ? (
         <div className="px-2 ">
           <div className="flex flex-col items-center space-y-0.5">
-            {sortedBoxes.map((box, index) => {
-              const height = getBoxHeight(box.variant);
-              const defaultColor = '#CD853F';
+             {sortedBoxes.map((box, index) => {
+               const height = getBoxHeight(box.variant, 'hive-card');
+               const defaultColor = '#CD853F';
 
               return (
                 <div

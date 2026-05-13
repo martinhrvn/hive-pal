@@ -3,6 +3,7 @@ import { hiveStatusSchema } from './status';
 import { boxSchema } from './box.schema';
 import { activeQueenSchema } from '../queens';
 import { alertResponseSchema } from '../alerts';
+import { inspectionTypeEnum } from '../apiaries';
 
 // Schema for hive settings
 export const hiveSettingsSchema = z.object({
@@ -53,6 +54,7 @@ export const updateHiveResponseSchema = z.object({
   settings: hiveSettingsSchema,
   featurePhotoId: z.string().uuid().nullish(),
   featurePhotoUrl: z.string().nullish(),
+  updatedAt: z.string().datetime(),
 });
 
 export const hiveScoreSchema = z.object({
@@ -69,12 +71,14 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   id: z.string().uuid(),
   status: hiveStatusSchema,
   boxes: z.array(boxSchema),
-  hiveScore: hiveScoreSchema,
+  hiveScore: hiveScoreSchema.nullish(),
   activeQueen: activeQueenSchema.nullish(),
   lastInspectionDate: z.string().datetime().or(z.date()).optional(),
   settings: hiveSettingsSchema,
   alerts: z.array(alertResponseSchema).default([]),
   featurePhotoUrl: z.string().nullish(),
+  inspectionType: inspectionTypeEnum.optional(),
+  updatedAt: z.string().datetime(),
 });
 
 // Schema for basic hive response
@@ -86,6 +90,11 @@ export const hiveResponseSchema = z.object({
   notes: z.string().optional(),
   installationDate: z.string().datetime().optional(),
   lastInspectionDate: z.string().datetime().optional(),
+  lastInspectionStrength: z.number().nullish(),
+  lastInspectionTotalFrames: z.number().nullish(),
+  lastInspectionOverallScore: z.number().nullish(),
+  previousInspectionStrength: z.number().nullish(),
+  lastInspectionWarnings: z.array(z.string()).default([]),
   activeQueen: activeQueenSchema.nullish(),
   positionRow: z.number().int().min(0).optional(),
   positionCol: z.number().int().min(0).optional(),
@@ -94,6 +103,7 @@ export const hiveResponseSchema = z.object({
   alerts: z.array(alertResponseSchema).default([]),
   featurePhotoId: z.string().uuid().nullish(),
   featurePhotoUrl: z.string().nullish(),
+  updatedAt: z.string().datetime(),
 });
 
 // Schema for hive response with boxes (for apiary layout)

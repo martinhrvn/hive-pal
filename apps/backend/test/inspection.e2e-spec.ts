@@ -3,6 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { setupApiary, setupApp, setupHive, setupUser } from './fixtures/setup';
 import { ActionType, CreateInspection } from 'shared-schemas';
+import { getRandomApiary } from './fixtures/apiary';
+import { getRandomHive } from './fixtures/hive';
 
 let app: INestApplication;
 let prisma: PrismaService;
@@ -10,37 +12,52 @@ let authToken: string;
 let userId: string;
 let apiaryId: string;
 let testHiveId: string;
+const cleanupHiveIds = new Set<string>();
 
 beforeAll(async () => {
   ({ app, prisma } = await setupApp());
   ({ userId, authToken } = await setupUser(app));
   apiaryId = await setupApiary(app, userId);
   testHiveId = await setupHive(app, apiaryId);
+  cleanupHiveIds.add(testHiveId);
 });
 
 afterAll(async () => {
   // Clean up test data
   // Delete in the correct order to avoid foreign key constraints
+  const hiveIds = [...cleanupHiveIds];
   await prisma.observation.deleteMany({
-    where: { inspection: { hiveId: testHiveId } },
+    where: { inspection: { hiveId: { in: hiveIds } } },
   });
   await prisma.inspectionNote.deleteMany({
-    where: { inspection: { hiveId: testHiveId } },
+    where: { inspection: { hiveId: { in: hiveIds } } },
   });
   await prisma.frameAction.deleteMany({
-    where: { action: { inspection: { hiveId: testHiveId } } },
+    where: { action: { inspection: { hiveId: { in: hiveIds } } } },
   });
   await prisma.feedingAction.deleteMany({
-    where: { action: { inspection: { hiveId: testHiveId } } },
+    where: { action: { inspection: { hiveId: { in: hiveIds } } } },
   });
   await prisma.treatmentAction.deleteMany({
-    where: { action: { inspection: { hiveId: testHiveId } } },
+    where: { action: { inspection: { hiveId: { in: hiveIds } } } },
+  });
+  await prisma.boxConfigurationAction.deleteMany({
+    where: { action: { inspection: { hiveId: { in: hiveIds } } } },
   });
   await prisma.action.deleteMany({
-    where: { inspection: { hiveId: testHiveId } },
+    where: { inspection: { hiveId: { in: hiveIds } } },
   });
   await prisma.inspection.deleteMany({
-    where: { hiveId: testHiveId },
+    where: { hiveId: { in: hiveIds } },
+  });
+  await prisma.box.deleteMany({
+    where: { hiveId: { in: hiveIds } },
+  });
+  await prisma.hive.deleteMany({
+    where: { id: { in: hiveIds } },
+  });
+  await prisma.apiary.deleteMany({
+    where: { userId },
   });
   await app.close();
 });
@@ -144,6 +161,15 @@ it('should create an inspection with observations', async () => {
     swarmCells: false,
     supersedureCells: false,
     broodPattern: null,
+    cappedBroodFrames: null,
+    droneBroodFrames: null,
+    eggsFrames: null,
+    emptyFrames: null,
+    honeyFrames: null,
+    nectarFrames: null,
+    pollenFrames: null,
+    totalFrames: null,
+    uncappedBroodFrames: null,
   });
 
   // Verify scoring was calculated
@@ -156,6 +182,58 @@ it('should create an inspection with observations', async () => {
     storesScore: 4.67,
     warnings: [],
   });
+});
+
+it('should not return or persist scores for subjective apiaries', async () => {
+  const subjectiveApiary = await prisma.apiary.create({
+    data: getRandomApiary({
+      userId,
+      settings: { inspectionType: 'subjective' },
+    }),
+  });
+  const subjectiveHive = await prisma.hive.create({
+    data: getRandomHive({ apiaryId: subjectiveApiary.id }),
+  });
+  cleanupHiveIds.add(subjectiveHive.id);
+
+  const req: CreateInspection = {
+    date: new Date().toISOString(),
+    hiveId: subjectiveHive.id,
+    observations: {
+      strength: 7,
+      cappedBrood: 6,
+      uncappedBrood: 4,
+      honeyStores: 5,
+      pollenStores: 3,
+      queenSeen: true,
+    },
+  };
+
+  const createResponse = await request(app.getHttpServer())
+    .post('/inspections')
+    .set('Authorization', `Bearer ${authToken}`)
+    .set('x-apiary-id', subjectiveApiary.id)
+    .send(req)
+    .expect(201);
+
+  const storedInspection = await prisma.inspection.findUnique({
+    where: { id: createResponse.body.id },
+  });
+
+  expect(storedInspection?.overallScore).toBeNull();
+  expect(storedInspection?.populationScore).toBeNull();
+  expect(storedInspection?.storesScore).toBeNull();
+  expect(storedInspection?.queenScore).toBeNull();
+  expect(storedInspection?.scoreWarnings).toBeNull();
+  expect(storedInspection?.scoreConfidence).toBeNull();
+
+  const getResponse = await request(app.getHttpServer())
+    .get(`/inspections/${createResponse.body.id}`)
+    .set('Authorization', `Bearer ${authToken}`)
+    .set('x-apiary-id', subjectiveApiary.id)
+    .expect(200);
+
+  expect(getResponse.body.score).toBeUndefined();
 });
 
 describe('Create status', () => {

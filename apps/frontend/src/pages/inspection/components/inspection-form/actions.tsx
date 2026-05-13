@@ -26,15 +26,20 @@ import {
   MaintenanceForm,
   MaintenanceView,
 } from '@/pages/inspection/components/inspection-form/actions/maintenance.tsx';
+import {
+  BoxConfigurationAction,
+  BoxConfigurationView,
+} from '@/pages/inspection/components/inspection-form/actions/box-configuration.tsx';
 import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { useFormContext } from 'react-hook-form';
-import { ActionData, InspectionFormData } from './schema.ts';
+import { ActionData, BoxConfigurationActionData, InspectionFormData } from './schema.ts';
 import { AiBadge } from './ai-badge';
 import { AiSectionPreview } from './ai-section-preview';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 import { cn } from '@/lib/utils';
 import { shouldUseAiPrefill } from '@/pages/inspection/lib/inspection-ai-merge';
+import type { Box } from 'shared-schemas';
 
 const actionTypes = [
   { id: 'FEEDING', label: 'Feeding', Icon: Droplet },
@@ -55,7 +60,8 @@ export type ActionType =
   | FramesActionType
   | MaintenanceActionType
   | NoteActionType
-  | OtherActionType;
+  | OtherActionType
+  | BoxConfigurationActionData;
 
 interface ActionsSectionProps {
   editMode?: boolean;
@@ -63,6 +69,10 @@ interface ActionsSectionProps {
   aiMergeState?: AiMergeState | null;
   onAcceptSuggestion?: (field: keyof InspectionFormData) => void;
   onDismissSuggestion?: (field: keyof InspectionFormData) => void;
+  /** Current hive boxes — needed to seed the box configurator */
+  hiveBoxes?: Box[];
+  /** The hive's id — passed through to the box configurator */
+  hiveId?: string;
 }
 
 const formatActionTypeLabel = (
@@ -80,6 +90,8 @@ const formatActionTypeLabel = (
       return t('inspection:form.actions.maintenance');
     case 'NOTE':
       return t('inspection:form.actions.note');
+    case 'BOX_CONFIGURATION':
+      return 'Box Configuration';
     case 'OTHER':
       return t('inspection:form.actions.other', 'Other');
     default:
@@ -176,6 +188,8 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
   aiMergeState,
   onAcceptSuggestion,
   onDismissSuggestion,
+  hiveBoxes = [],
+  hiveId,
 }) => {
   const { t } = useTranslation('inspection');
   const { setValue, getValues, watch, formState } =
@@ -187,6 +201,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
     FRAME: t('inspection:form.actions.frames'),
     MAINTENANCE: t('inspection:form.actions.maintenance'),
     NOTE: t('inspection:form.actions.note'),
+    BOX_CONFIGURATION: 'Box Configuration',
   };
 
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -241,6 +256,18 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
       );
     },
     [getValues, setValue],
+  );
+
+  // Specific save handler for box configuration — same logic but typed
+  const handleBoxConfigSave = useCallback(
+    (action: BoxConfigurationActionData) => {
+      handleSave(action);
+    },
+    [handleSave],
+  );
+
+  const existingBoxConfigAction = formActions.find(
+    a => a.type === 'BOX_CONFIGURATION',
   );
 
   const renderActionForm = useMemo(() => {
@@ -318,6 +345,14 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             onRemove={() => handleRemove('OTHER')}
           />
         );
+      case 'BOX_CONFIGURATION':
+        return (
+          <BoxConfigurationView
+            key="box-configuration"
+            action={action as BoxConfigurationActionData}
+            onRemove={() => handleRemove('BOX_CONFIGURATION')}
+          />
+        );
       default:
         return null;
     }
@@ -384,6 +419,15 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
               </Button>
             );
           })}
+
+          {/* Box Configuration — always visible; opens the sheet */}
+          <BoxConfigurationAction
+            initialBoxes={hiveBoxes}
+            hiveId={hiveId}
+            onSave={handleBoxConfigSave}
+            onRemove={() => handleRemove('BOX_CONFIGURATION')}
+            existingAction={existingBoxConfigAction}
+          />
         </div>
       )}
 
@@ -409,11 +453,13 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
         className="flex flex-col divide-y"
         data-test={TEST_SELECTORS.SELECTED_ACTIONS}
       >
-        {formActions.map((action, index) => (
-          <div key={`${action.type}-${index}`}>
-            {renderActionView(action as ActionType)}
-          </div>
-        ))}
+        {formActions
+          .filter(a => a.type !== 'BOX_CONFIGURATION') // rendered via BoxConfigurationAction above
+          .map((action, index) => (
+            <div key={`${action.type}-${index}`}>
+              {renderActionView(action as ActionType)}
+            </div>
+          ))}
       </div>
     </div>
   );

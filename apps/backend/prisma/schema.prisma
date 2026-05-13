@@ -79,6 +79,7 @@ model Apiary {
   featurePhoto          Photo?              @relation("ApiaryFeaturePhoto", fields: [featurePhotoId], references: [id], onDelete: SetNull)
   members               ApiaryMember[]
   invites               ApiaryInvite[]
+  settings              Json?
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -95,6 +96,8 @@ model Hive {
   positionRow      Int?         // Row position in apiary layout (0-based)
   positionCol      Int?         // Column position within row (0-based)
   settings         Json?        // JSON field for hive-specific settings (feeding, inspection frequency, etc.)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt @default(now())
   queens           Queen[]
   boxes            Box[]
   inspections      Inspection[]
@@ -345,6 +348,7 @@ model BoxConfigurationAction {
   framesRemoved Int    @default(0) // Total number of frames removed
   totalBoxes    Int    // Total boxes after the change
   totalFrames   Int    // Total frames after the change
+  boxes         Json?  // Per-box summary: [{type, frameCount}]
 }
 
 model MaintenanceAction {

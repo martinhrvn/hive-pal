@@ -1,8 +1,9 @@
-import { Box, BoxVariantEnum } from 'shared-schemas';
+import { Box } from 'shared-schemas';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronUp, ChevronDown, X, Package, Snowflake } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getBoxHeight, getBoxTypeLabel } from '@/utils/box-display';
 
 interface BoxItemProps {
   box: Box;
@@ -17,48 +18,6 @@ interface BoxItemProps {
   frameSizeName?: string;
 }
 
-const getBoxHeight = (variant?: BoxVariantEnum) => {
-  if (!variant) return 'h-20';
-
-  const deepVariants = [
-    BoxVariantEnum.LANGSTROTH_DEEP,
-    BoxVariantEnum.B_DEEP,
-    BoxVariantEnum.NATIONAL_DEEP,
-    BoxVariantEnum.DADANT,
-  ];
-
-  const mediumVariants = [BoxVariantEnum.LANGSTROTH_MEDIUM];
-
-  const shallowVariants = [
-    BoxVariantEnum.LANGSTROTH_SHALLOW,
-    BoxVariantEnum.B_SHALLOW,
-    BoxVariantEnum.NATIONAL_SHALLOW,
-  ];
-
-  if (deepVariants.includes(variant)) return 'h-28';
-  if (mediumVariants.includes(variant)) return 'h-24';
-  if (shallowVariants.includes(variant)) return 'h-20';
-  return 'h-24'; // Default for WARRE, TOP_BAR, CUSTOM
-};
-
-const getBoxTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    BROOD: 'Brood',
-    HONEY: 'Honey',
-    FEEDER: 'Feeder',
-  };
-  return labels[type] || type;
-};
-
-const getBoxTypeBadgeClass = (type: string) => {
-  const classes: Record<string, string> = {
-    BROOD: 'bg-green-100 text-green-800 border-green-200',
-    HONEY: 'bg-amber-100 text-amber-800 border-amber-200',
-    FEEDER: 'bg-blue-100 text-blue-800 border-blue-200',
-  };
-  return classes[type] || 'bg-gray-100 text-gray-800 border-gray-200';
-};
-
 export const BoxItem = ({
   box,
   isSelected,
@@ -71,8 +30,17 @@ export const BoxItem = ({
   isEditing,
   frameSizeName,
 }: BoxItemProps) => {
-  const height = getBoxHeight(box.variant);
+  const height = getBoxHeight(box.variant, 'detail');
   const defaultColor = '#CD853F'; // Default wood color
+
+  const getBoxTypeBadgeClass = (type: string) => {
+    const classes: Record<string, string> = {
+      BROOD: 'bg-green-100 text-green-800 border-green-200',
+      HONEY: 'bg-amber-100 text-amber-800 border-amber-200',
+      FEEDER: 'bg-blue-100 text-blue-800 border-blue-200',
+    };
+    return classes[type] || 'bg-gray-100 text-gray-800 border-gray-200';
+  };
 
   return (
     <div
@@ -97,12 +65,12 @@ export const BoxItem = ({
 
       {/* Type badge in upper right */}
       <div className="absolute top-2 right-2">
-        <Badge
-          variant="secondary"
-          className={cn('font-semibold border', getBoxTypeBadgeClass(box.type))}
-        >
-          {getBoxTypeLabel(box.type)}
-        </Badge>
+       <Badge
+           variant="secondary"
+           className={cn('font-semibold border', getBoxTypeBadgeClass(box.type))}
+         >
+           {getBoxTypeLabel(box.type, 'long')}
+         </Badge>
       </div>
 
       {/* Frame count in bottom left */}

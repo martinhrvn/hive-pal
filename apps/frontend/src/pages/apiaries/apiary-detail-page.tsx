@@ -153,7 +153,10 @@ export const ApiaryDetailPage = () => {
           </TabsContent>
 
           <TabsContent value="hives">
-            <HivesLayout apiaryId={apiary.id} />
+            <HivesLayout
+              apiaryId={apiary.id}
+              inspectionType={apiary.settings?.inspectionType ?? 'data_driven'}
+            />
           </TabsContent>
 
           {isOwner && (

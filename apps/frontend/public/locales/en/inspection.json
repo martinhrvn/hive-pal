@@ -59,7 +59,9 @@
     "pollenStores": "Pollen Stores",
     "queenCells": "Queen Cells",
     "swarmCells": "Swarm cells",
+    "swarmCellsDescription": "Built on the bottom or edges of frames. Multiple cells often present. Bees are preparing to swarm.",
     "supersedureCells": "Supersedure cells",
+    "supersedureCellsDescription": "Built in the middle of a frame face. Usually just one or two cells. Bees are replacing an old or failing queen.",
     "clearRating": "Clear rating",
     "rateAs": "Rate as {{value}}",
     "broodPattern": "Brood Pattern",
@@ -96,7 +98,20 @@
       "requires_treatment": "Requires Treatment",
       "low_stores": "Low Stores",
       "prepare_for_winter": "Prepare for Winter"
-    }
+    },
+    "frameCounts": {
+      "title": "Brood Nest Counts",
+      "totalFrames": "{{count}} frames total",
+      "framesOf": "/ {{total}} frames"
+    },
+    "eggsFrames": "Eggs",
+    "uncappedBroodFrames": "Uncapped Brood",
+    "cappedBroodFrames": "Capped Brood",
+    "droneBroodFrames": "Drone Brood",
+    "pollenFrames": "Pollen",
+    "nectarFrames": "Nectar",
+    "honeyFrames": "Honey",
+    "emptyFrames": "Empty / Foundation"
   },
   "actions": {
     "details": "Details",
@@ -401,12 +416,26 @@
   "edit": {
     "completingFrom": "Completing scheduled inspection from {{date}}",
     "markedCompleted": "This inspection will be marked as completed when you save your changes."
-  },
-  "dashboard": {
-    "title": "Inspection Status",
-    "overdue": "Overdue",
-    "dueToday": "Due Today",
-    "overdueCount": "{{count}} inspection{{count, plural, one {} other{s}}} overdue",
-    "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} due today"
-  }
-}
+   },
+   "dashboard": {
+     "title": "Inspection Status",
+     "overdue": "Overdue",
+     "dueToday": "Due Today",
+     "overdueCount": "{{count}} inspection{{count, plural, one {} other{s}}} overdue",
+     "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} due today"
+   },
+   "pendingBoxUpdate": {
+     "updatingTitle": "Updating box configuration",
+     "updatingDescription": "Your inspection has been saved. The box configuration is being updated in the background.",
+     "failedTitle": "Box configuration update failed",
+     "failedDescription": "Failed to update the box configuration. Please retry or dismiss this message.",
+     "retry": "Retry",
+     "retrySuccess": "Box configuration updated successfully",
+     "retryFailed": "Retry request failed. Please try again.",
+     "retryDisabled": "Retries disabled (5 attempts reached)",
+     "dismiss": "Dismiss",
+     "stalePayload": "The hive configuration has changed. The box update cannot be retried.",
+     "stalePayloadMessage": "The hive configuration has changed since this update failed. Please refresh the page to see the current state.",
+     "maxRetriesReached": "Maximum retry attempts reached. Please contact support if the issue persists."
+   }
+ }

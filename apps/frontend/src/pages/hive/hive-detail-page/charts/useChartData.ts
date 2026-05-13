@@ -42,7 +42,6 @@ export function useInspectionChartData<R>(
       .filter(inspection => {
         // Base filters
         if (inspection.status === InspectionStatus.SCHEDULED) return false;
-        if (!inspection.score) return false;
 
         // Date filter
         if (startDate && new Date(inspection.date) < startDate) return false;

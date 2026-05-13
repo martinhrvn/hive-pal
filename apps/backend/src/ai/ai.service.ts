@@ -1,9 +1,13 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import FormData from 'form-data';
 import axios from 'axios';
+import FormData from 'form-data';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 
@@ -56,7 +60,7 @@ export class AiService {
       900,
     );
 
-    const audioResponse = await axios.get(downloadUrl, {
+    const audioResponse = await axios.get<ArrayBuffer>(downloadUrl, {
       responseType: 'arraybuffer',
     });
 

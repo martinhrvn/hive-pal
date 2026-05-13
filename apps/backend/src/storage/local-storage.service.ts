@@ -57,29 +57,25 @@ export class LocalStorageService
       'Upload URLs are not supported with local storage. Use uploadObject instead.',
     );
   }
-  // eslint-disable-next-line @typescript-eslint/require-await
 
-generateDownloadUrl(
-  key: string,
-  expiresIn: number = 3600,
-): Promise<string> {
-  const expires = Math.floor(Date.now() / 1000) + expiresIn;
-  const token = this.signToken(key, expires);
-  const encodedKey = encodeURIComponent(key);
+  generateDownloadUrl(key: string, expiresIn: number = 3600): Promise<string> {
+    const expires = Math.floor(Date.now() / 1000) + expiresIn;
+    const token = this.signToken(key, expires);
+    const encodedKey = encodeURIComponent(key);
 
-  const backendPublicUrl =
-    this.configService.get<string>('BACKEND_PUBLIC_URL') || '';
+    const backendPublicUrl =
+      this.configService.get<string>('BACKEND_PUBLIC_URL') || '';
 
-  const relativePath = `/api/storage/files/${encodedKey}?token=${token}&expires=${expires}`;
+    const relativePath = `/api/storage/files/${encodedKey}?token=${token}&expires=${expires}`;
 
-  if (!backendPublicUrl) {
-    return Promise.resolve(relativePath);
+    if (!backendPublicUrl) {
+      return Promise.resolve(relativePath);
+    }
+
+    return Promise.resolve(
+      `${backendPublicUrl.replace(/\/$/, '')}${relativePath}`,
+    );
   }
-
-  return Promise.resolve(
-    `${backendPublicUrl.replace(/\/$/, '')}${relativePath}`,
-  );
-}
 
   async deleteObject(key: string): Promise<void> {
     const filePath = this.getFilePath(key);

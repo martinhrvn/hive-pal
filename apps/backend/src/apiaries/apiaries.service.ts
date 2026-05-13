@@ -8,6 +8,8 @@ import {
   ApiaryListResponse,
   CreateApiary,
   UpdateApiary,
+  apiarySettingsSchema,
+  ApiarySettings,
 } from 'shared-schemas';
 
 @Injectable()
@@ -18,6 +20,13 @@ export class ApiariesService {
     private fileUpload: FileUploadService,
   ) {
     this.logger.setContext('ApiariesService');
+  }
+
+  private parseSettings(
+    raw: Prisma.JsonValue | null | undefined,
+  ): ApiarySettings {
+    const result = apiarySettingsSchema.safeParse(raw);
+    return result.success ? result.data : undefined;
   }
 
   private async mapFeaturePhotoUrl(
@@ -39,6 +48,40 @@ export class ApiariesService {
     }
   }
 
+  private async mapApiaryToResponse(
+    apiary: {
+      id: string;
+      name: string;
+      location: string | null;
+      latitude: number | null;
+      longitude: number | null;
+      settings: Prisma.JsonValue;
+      featurePhoto: { id: string; storageKey: string } | null;
+      userId: string;
+      members?: Array<{ role: 'OWNER' | 'EDITOR' | 'VIEWER' }>;
+    },
+    userId: string,
+  ): Promise<ApiaryResponse> {
+    const featurePhotoFields = await this.mapFeaturePhotoUrl(
+      apiary.featurePhoto,
+    );
+    const isOwner = apiary.userId === userId;
+
+    return {
+      id: apiary.id,
+      name: apiary.name,
+      location: apiary.location,
+      latitude: apiary.latitude,
+      longitude: apiary.longitude,
+      settings: this.parseSettings(apiary.settings),
+      ...featurePhotoFields,
+      ...(apiary.members && {
+        role: isOwner ? ('OWNER' as const) : apiary.members[0]?.role,
+        isShared: !isOwner,
+      }),
+    };
+  }
+
   async create(
     createApiaryDto: CreateApiary,
     userId: string,
@@ -52,6 +95,7 @@ export class ApiariesService {
       latitude: createApiaryDto.latitude,
       longitude: createApiaryDto.longitude,
       featurePhotoId: createApiaryDto.featurePhotoId ?? null,
+      settings: createApiaryDto.settings ?? undefined,
       userId,
     };
     const apiary = await this.prisma.apiary.create({
@@ -62,18 +106,7 @@ export class ApiariesService {
     });
 
     this.logger.log(`Apiary created with ID: ${apiary.id}`);
-    const featurePhotoFields = await this.mapFeaturePhotoUrl(
-      apiary.featurePhoto,
-    );
-
-    return {
-      id: apiary.id,
-      name: apiary.name,
-      location: apiary.location,
-      latitude: apiary.latitude,
-      longitude: apiary.longitude,
-      ...featurePhotoFields,
-    };
+    return this.mapApiaryToResponse(apiary, userId);
   }
 
   async findAll(userId: string): Promise<ApiaryListResponse> {
@@ -99,22 +132,7 @@ export class ApiariesService {
 
     this.logger.log(`Found ${apiaries.length} apiaries for user ${userId}`);
     const apiaryResponses = await Promise.all(
-      apiaries.map(async (apiary) => {
-        const featurePhotoFields = await this.mapFeaturePhotoUrl(
-          apiary.featurePhoto,
-        );
-        const isOwner = apiary.userId === userId;
-        return {
-          id: apiary.id,
-          name: apiary.name,
-          location: apiary.location,
-          latitude: apiary.latitude,
-          longitude: apiary.longitude,
-          ...featurePhotoFields,
-          role: isOwner ? ('OWNER' as const) : apiary.members[0]?.role,
-          isShared: !isOwner,
-        };
-      }),
+      apiaries.map((apiary) => this.mapApiaryToResponse(apiary, userId)),
     );
 
     return { apiaries: apiaryResponses, pendingMemberships };
@@ -144,21 +162,7 @@ export class ApiariesService {
       this.logger.debug(`Found apiary: ${apiary.name}`);
     }
 
-    const featurePhotoFields = await this.mapFeaturePhotoUrl(
-      apiary.featurePhoto,
-    );
-    const isOwner = apiary.userId === userId;
-
-    return {
-      id: apiary.id,
-      name: apiary.name,
-      location: apiary.location,
-      latitude: apiary.latitude,
-      longitude: apiary.longitude,
-      ...featurePhotoFields,
-      role: isOwner ? ('OWNER' as const) : apiary.members[0]?.role,
-      isShared: !isOwner,
-    };
+    return this.mapApiaryToResponse(apiary, userId);
   }
 
   async update(
@@ -179,18 +183,7 @@ export class ApiariesService {
       });
 
       this.logger.log(`Apiary ${id} updated successfully`);
-      const featurePhotoFields = await this.mapFeaturePhotoUrl(
-        updatedApiary.featurePhoto,
-      );
-
-      return {
-        id: updatedApiary.id,
-        name: updatedApiary.name,
-        location: updatedApiary.location,
-        latitude: updatedApiary.latitude,
-        longitude: updatedApiary.longitude,
-        ...featurePhotoFields,
-      };
+      return this.mapApiaryToResponse(updatedApiary, userId);
     } catch (error: unknown) {
       this.logger.error(
         `Failed to update apiary ${id}`,

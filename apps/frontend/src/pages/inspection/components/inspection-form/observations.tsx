@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { X } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import { InspectionFormData } from './schema';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { AiBadge } from './ai-badge';
@@ -17,10 +17,14 @@ import { AiFieldControls } from './ai-field-controls';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 import { cn } from '@/lib/utils';
 import { shouldUseAiPrefill } from '@/pages/inspection/lib/inspection-ai-merge';
+import { RatingSlider } from '@/components/common/rating-slider';
 
 type ObservationItemProps<TName extends FieldPath<InspectionFormData>> = {
   name: TName;
   label: string;
+  description?: string;
+  inputMode?: 'rating' | 'counter';
+  max?: number;
   showAi?: boolean;
   aiValue?: unknown;
   useAiPrefill?: boolean;
@@ -34,16 +38,21 @@ type ObservationItemProps<TName extends FieldPath<InspectionFormData>> = {
 const formatPreviewValue = (value: unknown): string => {
   if (value === null || value === undefined) return '—';
   if (Array.isArray(value)) {
-    return value
-      .filter((item): item is string | number | boolean => {
-        return (
-          typeof item === 'string' ||
-          typeof item === 'number' ||
-          typeof item === 'boolean'
-        );
-      })
-      .map(item => (typeof item === 'boolean' ? (item ? 'Yes' : 'No') : String(item)))
-      .join(', ') || '—';
+    return (
+      value
+        .filter((item): item is string | number | boolean => {
+          return (
+            typeof item === 'string' ||
+            typeof item === 'number' ||
+            typeof item === 'boolean'
+          );
+        })
+        .map(item => {
+          const displayValue = typeof item === 'boolean' ? (item ? 'Yes' : 'No') : String(item);
+          return displayValue;
+        })
+        .join(', ') || '—'
+    );
   }
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (typeof value === 'string') return value === '' ? '—' : value;
@@ -105,6 +114,9 @@ const AiValuePreview: React.FC<{
 const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
   name,
   label,
+  description,
+  inputMode = 'rating',
+  max,
   showAi = false,
   aiValue,
   useAiPrefill = false,
@@ -116,7 +128,6 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 }: ObservationItemProps<TName>) => {
   const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
-  const [hoveredValue, setHoveredValue] = React.useState<number | null>(null);
 
   return (
     <div
@@ -149,88 +160,84 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                   </div>
 
                   <div className="flex-1 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        className={cn(
-                          'flex h-8 w-8 items-center justify-center rounded-lg',
-                          displayValue === 0
-                            ? 'bg-gray-600 text-white dark:bg-gray-300 dark:text-gray-900'
-                            : 'bg-gray-100 dark:bg-gray-800',
-                        )}
-                        onClick={e => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          field.onChange(0);
-                        }}
-                        aria-label={t('observations.rateAs', { value: 0 })}
-                      >
-                        0
-                      </button>
+                    {description && (
+                      <p className="text-xs text-muted-foreground">
+                        {description}
+                      </p>
+                    )}
 
-                      <div className="grid h-8 min-w-[220px] grow grid-cols-10 gap-1">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => {
-                          let color = 'bg-gray-200 dark:bg-gray-700';
+                    {inputMode === 'counter' ? (
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Button
+                          variant="outline"
+                          type="button"
+                          size="icon"
+                          className="h-12 w-12 rounded-xl"
+                          disabled={displayValue == null || displayValue <= 0}
+                          onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            field.onChange(Math.max(0, (displayValue ?? 0) - 1));
+                          }}
+                          aria-label={`Decrease ${label}`}
+                        >
+                          <Minus className="h-5 w-5" />
+                        </Button>
 
-                          if (hoveredValue != null && hoveredValue >= fullValue) {
-                            color = 'bg-amber-200 dark:bg-amber-800';
-                          } else if (
-                            displayValue != null &&
-                            displayValue >= fullValue
-                          ) {
-                            color = 'bg-amber-300 dark:bg-amber-700';
-                          }
+                        <div className="flex min-w-20 flex-col items-center rounded-lg bg-gray-100 px-3 py-2 text-sm dark:bg-gray-800">
+                          <span className="text-2xl font-semibold leading-none">
+                            {displayValue ?? '—'}
+                          </span>
+                          {max != null && (
+                            <span className="mt-1 text-xs text-muted-foreground">
+                              / {max}
+                            </span>
+                          )}
+                        </div>
 
-                          return (
-                            <button
-                              key={fullValue}
-                              type="button"
-                              className={cn(
-                                'w-full rounded text-xs transition-colors duration-300',
-                                color,
-                                hoveredValue === fullValue
-                                  ? 'text-gray-700 dark:text-gray-300'
-                                  : 'text-transparent',
-                              )}
-                              onMouseEnter={() => setHoveredValue(fullValue)}
-                              onMouseLeave={() => setHoveredValue(null)}
-                              onClick={e => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                field.onChange(fullValue);
-                                setHoveredValue(null);
-                              }}
-                              aria-label={t('observations.rateAs', {
-                                value: fullValue,
-                              })}
-                            >
-                              {hoveredValue === fullValue && hoveredValue}
-                            </button>
-                          );
-                        })}
+                        <Button
+                          variant="outline"
+                          type="button"
+                          size="icon"
+                          className="h-12 w-12 rounded-xl"
+                          disabled={max != null && displayValue === max}
+                          onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            const nextValue = (displayValue ?? 0) + 1;
+                            field.onChange(
+                              max == null ? nextValue : Math.min(max, nextValue),
+                            );
+                          }}
+                          aria-label={`Increase ${label}`}
+                        >
+                          <Plus className="h-5 w-5" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          type="button"
+                          disabled={displayValue == null}
+                          className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+                          onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            field.onChange(undefined);
+                          }}
+                          aria-label={t('observations.clearRating')}
+                        >
+                          <X size={16} />
+                        </Button>
                       </div>
-
-                      <div className="h-8 w-8 text-center">
-                        <span className="block h-8 rounded bg-gray-100 px-2 py-1 text-sm dark:bg-gray-800">
-                          {displayValue ?? '-'}
-                        </span>
-                      </div>
-
-                      <Button
-                        variant="ghost"
-                        type="button"
-                        disabled={displayValue == null}
-                        className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
-                        onClick={e => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          field.onChange(undefined);
-                        }}
-                        aria-label={t('observations.clearRating')}
-                      >
-                        <X size={16} />
-                      </Button>
-                    </div>
+                    ) : (
+                       <RatingSlider
+                         value={displayValue}
+                         onChange={field.onChange}
+                         showZeroButton={true}
+                         onClear={() => field.onChange(undefined)}
+                       />
+                     )}
 
                     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                       <AiValuePreview
@@ -265,6 +272,9 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 };
 
 type ObservationsSectionProps = {
+  broodFrames?: number | null;
+  broodBoxCount?: number | null;
+  isSubjective?: boolean;
   isAiSuggested?: (field: string) => boolean;
   aiMergeState?: AiMergeState | null;
   onAcceptSuggestion?: (field: string) => void;
@@ -272,6 +282,9 @@ type ObservationsSectionProps = {
 };
 
 export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
+  broodFrames,
+  broodBoxCount,
+  isSubjective = false,
   isAiSuggested,
   aiMergeState,
   onAcceptSuggestion,
@@ -280,15 +293,23 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
   const { t } = useTranslation('inspection');
   const form = useFormContext<InspectionFormData>();
   const { control, formState } = form;
-
   const queenCells = useWatch({ name: 'observations.queenCells', control });
   const currentObservations = useWatch({ name: 'observations', control });
+
+  const strengthMax =
+    broodFrames == null
+      ? undefined
+      : broodBoxCount == null
+        ? broodFrames
+        : broodFrames + broodBoxCount;
 
   const getObservationSuggestion = (
     key: keyof NonNullable<InspectionFormData['observations']>,
   ) => {
     const fieldPath = `observations.${key}`;
-    return isAiSuggested?.(fieldPath) ? aiMergeState?.suggestions[fieldPath] : undefined;
+    return isAiSuggested?.(fieldPath)
+      ? aiMergeState?.suggestions[fieldPath]
+      : undefined;
   };
 
   const queenSeenSuggestion = getObservationSuggestion('queenSeen');
@@ -352,9 +373,7 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
     'supersedureCells',
     'additionalObservations',
     'reminderObservations',
-  ].some(key =>
-    isAiSuggested?.(`observations.${key}`),
-  );
+  ].some(key => isAiSuggested?.(`observations.${key}`));
 
   return (
     <div
@@ -415,9 +434,7 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                     isVisible={Boolean(queenSeenSuggestion)}
                     hasConflict={queenSeenSuggestion?.hasConflict}
                     status={queenSeenSuggestion?.status}
-                    onAccept={() =>
-                      onAcceptSuggestion?.('observations.queenSeen')
-                    }
+                    onAccept={() => onAcceptSuggestion?.('observations.queenSeen')}
                     onDismiss={() =>
                       onDismissSuggestion?.('observations.queenSeen')
                     }
@@ -434,50 +451,67 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
           <ObservationItem
             name="observations.strength"
             label={t('observations.strength')}
+            description={
+              isSubjective
+                ? undefined
+                : 'Count the number of spaces between the frames that you can see are full of bees'
+            }
+            inputMode={isSubjective ? 'rating' : 'counter'}
+            max={isSubjective ? undefined : strengthMax}
             showAi={Boolean(strengthSuggestion)}
             aiValue={strengthSuggestion?.aiValue}
             useAiPrefill={shouldPrefillNumericField(
               'strength',
               currentObservations?.strength,
             )}
-            suggestionField={strengthSuggestion ? 'observations.strength' : undefined}
+            suggestionField={
+              strengthSuggestion ? 'observations.strength' : undefined
+            }
             suggestionStatus={strengthSuggestion?.status}
             suggestionConflict={strengthSuggestion?.hasConflict}
             onAcceptSuggestion={onAcceptSuggestion}
             onDismissSuggestion={onDismissSuggestion}
           />
 
-          <ObservationItem
-            name="observations.cappedBrood"
-            label={t('observations.cappedBrood')}
-            showAi={Boolean(cappedBroodSuggestion)}
-            aiValue={cappedBroodSuggestion?.aiValue}
-            useAiPrefill={shouldPrefillNumericField(
-              'cappedBrood',
-              currentObservations?.cappedBrood,
-            )}
-            suggestionField={cappedBroodSuggestion ? 'observations.cappedBrood' : undefined}
-            suggestionStatus={cappedBroodSuggestion?.status}
-            suggestionConflict={cappedBroodSuggestion?.hasConflict}
-            onAcceptSuggestion={onAcceptSuggestion}
-            onDismissSuggestion={onDismissSuggestion}
-          />
+          {isSubjective && (
+            <>
+              <ObservationItem
+                name="observations.cappedBrood"
+                label={t('observations.cappedBrood')}
+                showAi={Boolean(cappedBroodSuggestion)}
+                aiValue={cappedBroodSuggestion?.aiValue}
+                useAiPrefill={shouldPrefillNumericField(
+                  'cappedBrood',
+                  currentObservations?.cappedBrood,
+                )}
+                suggestionField={
+                  cappedBroodSuggestion ? 'observations.cappedBrood' : undefined
+                }
+                suggestionStatus={cappedBroodSuggestion?.status}
+                suggestionConflict={cappedBroodSuggestion?.hasConflict}
+                onAcceptSuggestion={onAcceptSuggestion}
+                onDismissSuggestion={onDismissSuggestion}
+              />
 
-          <ObservationItem
-            name="observations.uncappedBrood"
-            label={t('observations.uncappedBrood')}
-            showAi={Boolean(uncappedBroodSuggestion)}
-            aiValue={uncappedBroodSuggestion?.aiValue}
-            useAiPrefill={shouldPrefillNumericField(
-              'uncappedBrood',
-              currentObservations?.uncappedBrood,
-            )}
-            suggestionField={uncappedBroodSuggestion ? 'observations.uncappedBrood' : undefined}
-            suggestionStatus={uncappedBroodSuggestion?.status}
-            suggestionConflict={uncappedBroodSuggestion?.hasConflict}
-            onAcceptSuggestion={onAcceptSuggestion}
-            onDismissSuggestion={onDismissSuggestion}
-          />
+              <ObservationItem
+                name="observations.uncappedBrood"
+                label={t('observations.uncappedBrood')}
+                showAi={Boolean(uncappedBroodSuggestion)}
+                aiValue={uncappedBroodSuggestion?.aiValue}
+                useAiPrefill={shouldPrefillNumericField(
+                  'uncappedBrood',
+                  currentObservations?.uncappedBrood,
+                )}
+                suggestionField={
+                  uncappedBroodSuggestion ? 'observations.uncappedBrood' : undefined
+                }
+                suggestionStatus={uncappedBroodSuggestion?.status}
+                suggestionConflict={uncappedBroodSuggestion?.hasConflict}
+                onAcceptSuggestion={onAcceptSuggestion}
+                onDismissSuggestion={onDismissSuggestion}
+              />
+            </>
+          )}
 
           <div
             className={cn(
@@ -563,12 +597,10 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                             onClick={() => selectPattern(option)}
                           >
                             <div className="flex items-center justify-center gap-2">
-                              <span>
-                                {t(
-                                  `observations.broodPatternOptions.${option}`,
-                                )}
-                              </span>
-                              {broodPatternSuggestion && isAiRecommended && <AiBadge />}
+                              <span>{t(`observations.broodPatternOptions.${option}`)}</span>
+                              {broodPatternSuggestion && isAiRecommended && (
+                                <AiBadge />
+                              )}
                             </div>
                           </div>
                         );
@@ -581,48 +613,59 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
             />
           </div>
 
-          <ObservationItem
-            name="observations.honeyStores"
-            label={t('observations.honeyStores')}
-            showAi={Boolean(honeyStoresSuggestion)}
-            aiValue={honeyStoresSuggestion?.aiValue}
-            useAiPrefill={shouldPrefillNumericField(
-              'honeyStores',
-              currentObservations?.honeyStores,
-            )}
-            suggestionField={honeyStoresSuggestion ? 'observations.honeyStores' : undefined}
-            suggestionStatus={honeyStoresSuggestion?.status}
-            suggestionConflict={honeyStoresSuggestion?.hasConflict}
-            onAcceptSuggestion={onAcceptSuggestion}
-            onDismissSuggestion={onDismissSuggestion}
-          />
+          {isSubjective && (
+            <>
+              <ObservationItem
+                name="observations.honeyStores"
+                label={t('observations.honeyStores')}
+                showAi={Boolean(honeyStoresSuggestion)}
+                aiValue={honeyStoresSuggestion?.aiValue}
+                useAiPrefill={shouldPrefillNumericField(
+                  'honeyStores',
+                  currentObservations?.honeyStores,
+                )}
+                suggestionField={
+                  honeyStoresSuggestion ? 'observations.honeyStores' : undefined
+                }
+                suggestionStatus={honeyStoresSuggestion?.status}
+                suggestionConflict={honeyStoresSuggestion?.hasConflict}
+                onAcceptSuggestion={onAcceptSuggestion}
+                onDismissSuggestion={onDismissSuggestion}
+              />
 
-          <ObservationItem
-            name="observations.pollenStores"
-            label={t('observations.pollenStores')}
-            showAi={Boolean(pollenStoresSuggestion)}
-            aiValue={pollenStoresSuggestion?.aiValue}
-            useAiPrefill={shouldPrefillNumericField(
-              'pollenStores',
-              currentObservations?.pollenStores,
-            )}
-            suggestionField={pollenStoresSuggestion ? 'observations.pollenStores' : undefined}
-            suggestionStatus={pollenStoresSuggestion?.status}
-            suggestionConflict={pollenStoresSuggestion?.hasConflict}
-            onAcceptSuggestion={onAcceptSuggestion}
-            onDismissSuggestion={onDismissSuggestion}
-          />
+              <ObservationItem
+                name="observations.pollenStores"
+                label={t('observations.pollenStores')}
+                showAi={Boolean(pollenStoresSuggestion)}
+                aiValue={pollenStoresSuggestion?.aiValue}
+                useAiPrefill={shouldPrefillNumericField(
+                  'pollenStores',
+                  currentObservations?.pollenStores,
+                )}
+                suggestionField={
+                  pollenStoresSuggestion ? 'observations.pollenStores' : undefined
+                }
+                suggestionStatus={pollenStoresSuggestion?.status}
+                suggestionConflict={pollenStoresSuggestion?.hasConflict}
+                onAcceptSuggestion={onAcceptSuggestion}
+                onDismissSuggestion={onDismissSuggestion}
+              />
+            </>
+          )}
 
           <ObservationItem
             name="observations.queenCells"
             label={t('observations.queenCells')}
+            inputMode="counter"
             showAi={Boolean(queenCellsSuggestion)}
             aiValue={queenCellsSuggestion?.aiValue}
             useAiPrefill={shouldPrefillNumericField(
               'queenCells',
               currentObservations?.queenCells,
             )}
-            suggestionField={queenCellsSuggestion ? 'observations.queenCells' : undefined}
+            suggestionField={
+              queenCellsSuggestion ? 'observations.queenCells' : undefined
+            }
             suggestionStatus={queenCellsSuggestion?.status}
             suggestionConflict={queenCellsSuggestion?.hasConflict}
             onAcceptSuggestion={onAcceptSuggestion}
@@ -659,15 +702,19 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                         />
                       </FormControl>
 
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <FormLabel className="flex items-center gap-2">
-                          <span>{t('observations.swarmCells')}</span>
-                          {swarmCellsSuggestion && <AiBadge />}
-                        </FormLabel>
+                       <div className="min-w-0 flex-1 space-y-2">
+                         <FormLabel className="flex items-center gap-2">
+                           <span>{t('observations.swarmCells')}</span>
+                           {swarmCellsSuggestion && <AiBadge />}
+                         </FormLabel>
 
-                        <AiValuePreview
-                          isVisible={Boolean(swarmCellsSuggestion)}
-                          hasConflict={swarmCellsSuggestion?.hasConflict}
+                         <p className="text-xs text-muted-foreground">
+                           {t('observations.swarmCellsDescription')}
+                         </p>
+
+                         <AiValuePreview
+                           isVisible={Boolean(swarmCellsSuggestion)}
+                           hasConflict={swarmCellsSuggestion?.hasConflict}
                           currentValue={currentValue}
                           aiValue={aiValue}
                         />
@@ -719,15 +766,19 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                         />
                       </FormControl>
 
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <FormLabel className="flex items-center gap-2">
-                          <span>{t('observations.supersedureCells')}</span>
-                          {supersedureCellsSuggestion && <AiBadge />}
-                        </FormLabel>
+                       <div className="min-w-0 flex-1 space-y-2">
+                         <FormLabel className="flex items-center gap-2">
+                           <span>{t('observations.supersedureCells')}</span>
+                           {supersedureCellsSuggestion && <AiBadge />}
+                         </FormLabel>
 
-                        <AiValuePreview
-                          isVisible={Boolean(supersedureCellsSuggestion)}
-                          hasConflict={supersedureCellsSuggestion?.hasConflict}
+                         <p className="text-xs text-muted-foreground">
+                           {t('observations.supersedureCellsDescription')}
+                         </p>
+
+                         <AiValuePreview
+                           isVisible={Boolean(supersedureCellsSuggestion)}
+                           hasConflict={supersedureCellsSuggestion?.hasConflict}
                           currentValue={currentValue}
                           aiValue={aiValue}
                         />
@@ -737,14 +788,10 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                           hasConflict={supersedureCellsSuggestion?.hasConflict}
                           status={supersedureCellsSuggestion?.status}
                           onAccept={() =>
-                            onAcceptSuggestion?.(
-                              'observations.supersedureCells',
-                            )
+                            onAcceptSuggestion?.('observations.supersedureCells')
                           }
                           onDismiss={() =>
-                            onDismissSuggestion?.(
-                              'observations.supersedureCells',
-                            )
+                            onDismissSuggestion?.('observations.supersedureCells')
                           }
                         />
                       </div>
@@ -856,9 +903,7 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                             onClick={() => toggleObservation(option)}
                           >
                             <div className="flex items-center justify-center gap-2">
-                              <span>
-                                {t(`observations.additional.${option}`)}
-                              </span>
+                              <span>{t(`observations.additional.${option}`)}</span>
                               {isAiRecommended && <AiBadge />}
                             </div>
                           </div>

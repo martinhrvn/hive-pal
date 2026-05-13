@@ -76,6 +76,10 @@ function FeaturesSection() {
   );
 }
 
+/**
+ * Project stats section with repeated card structure.
+ * The duplication is intentional declarative JSX for landing page layout.
+ */
 function ProjectStatsSection() {
   return (
       <section className={styles.statsSection}>

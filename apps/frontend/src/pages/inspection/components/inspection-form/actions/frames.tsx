@@ -3,9 +3,9 @@ import { useState } from 'react';
 import NumericInputField from '@/components/common/numeric-input-field.tsx';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
+import { ActionViewRenderer } from './action-view-container';
 
 export type FramesActionType = {
   type: 'FRAME';
@@ -95,47 +95,25 @@ export const FramesView: React.FC<FramesActionProps> = ({
   const framesDisplay =
     action.frames > 0 ? `+${action.frames} frames` : `${action.frames} frames`;
 
+  const handleSave = (updatedAction: FramesActionType) => {
+    onSave(updatedAction);
+    setIsEditing(false);
+  };
+
   return isEditing ? (
     <FramesForm
       action={action}
-      onSave={a => {
-        onSave(a);
-        setIsEditing(false);
-      }}
+      onSave={handleSave}
       onRemove={onRemove}
     />
   ) : (
-    <div
-      className={'flex justify-between items-center w-full mt-5'}
+    <ActionViewRenderer
+      title={t('inspection:form.actions.frames_section.title')}
+      badges={<Badge>{framesDisplay}</Badge>}
+      notes={action.notes}
+      onEdit={() => setIsEditing(true)}
+      onRemove={() => onRemove('FRAME')}
       data-test={TEST_SELECTORS.FRAMES_VIEW}
-    >
-      <div className={'flex flex-col gap-2'}>
-        <h3 className="font-medium">{t('inspection:form.actions.frames_section.title')}</h3>
-        <div className={'flex gap-5 text-sm'}>
-          <Badge>{framesDisplay}</Badge>
-        </div>
-        {action.notes && (
-          <div className="text-sm text-gray-600 mt-1">
-            <span>Notes: {action.notes}</span>
-          </div>
-        )}
-      </div>
-      <div>
-        <Button
-          variant={'ghost'}
-          aria-label={'Edit'}
-          onClick={() => setIsEditing(true)}
-        >
-          <EditIcon />
-        </Button>
-        <Button
-          variant={'ghost'}
-          aria-label={'Delete'}
-          onClick={() => onRemove('FRAME')}
-        >
-          <TrashIcon />
-        </Button>
-      </div>
-    </div>
+    />
   );
 };

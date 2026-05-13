@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { Pill } from '@/components/common';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { EditIcon, TrashIcon } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { useFormContext } from 'react-hook-form';
 import { InspectionFormData } from '../schema';
+import { ActionViewRenderer } from './action-view-container';
 
 export type MaintenanceActionType = {
   type: 'MAINTENANCE';
@@ -176,47 +176,29 @@ export const MaintenanceView: React.FC<MaintenanceActionProps> = ({
     t(`inspection:form.actions.maintenance_section.${action.status === 'CLEANED' ? 'cleaned' : 'replaced'}`) ||
     getMaintenanceStatusLabel(action.status);
 
+  const handleSave = (updatedAction: MaintenanceActionType) => {
+    onSave(updatedAction);
+    setIsEditing(false);
+  };
+
   return isEditing ? (
     <MaintenanceForm
       action={action}
-      onSave={a => {
-        onSave(a);
-        setIsEditing(false);
-      }}
+      onSave={handleSave}
       onRemove={onRemove}
     />
   ) : (
-    <div className={'flex justify-between items-center w-full mt-5'}>
-      <div className={'flex flex-col gap-2'}>
-        <h3 className="font-medium">
-          {t('inspection:form.actions.maintenance_section.title')}
-        </h3>
-        <div className={'flex gap-5 text-sm'}>
+    <ActionViewRenderer
+      title={t('inspection:form.actions.maintenance_section.title')}
+      badges={
+        <>
           <Badge>{componentLabel}</Badge>
           <Badge variant="outline">{statusLabel}</Badge>
-        </div>
-        {action.notes && (
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            <span>Notes: {action.notes}</span>
-          </div>
-        )}
-      </div>
-      <div>
-        <Button
-          variant={'ghost'}
-          aria-label={'Edit'}
-          onClick={() => setIsEditing(true)}
-        >
-          <EditIcon />
-        </Button>
-        <Button
-          variant={'ghost'}
-          aria-label={'Delete'}
-          onClick={() => onRemove('MAINTENANCE')}
-        >
-          <TrashIcon />
-        </Button>
-      </div>
-    </div>
+        </>
+      }
+      notes={action.notes}
+      onEdit={() => setIsEditing(true)}
+      onRemove={() => onRemove('MAINTENANCE')}
+    />
   );
 };

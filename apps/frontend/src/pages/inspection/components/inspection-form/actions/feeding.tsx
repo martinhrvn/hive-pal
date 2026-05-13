@@ -11,12 +11,12 @@ import { Pill } from '@/components/common';
 import NumericInputField from '@/components/common/numeric-input-field.tsx';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { EditIcon, TrashIcon } from 'lucide-react';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import { parseVolume } from '@/utils/unit-conversion';
+import { ActionViewRenderer } from './action-view-container';
 
 export type FeedType = 'SYRUP' | 'HONEY' | 'CANDY' | 'PROTEIN_CANDY' | 'POLLEN_PATTY' | 'OTHER';
 
@@ -265,51 +265,34 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
       return formatWeight(weightInKg).label;
     }
   };
+
+  const handleSave = (updatedAction: FeedingActionType) => {
+    onSave(updatedAction);
+    setIsEditing(false);
+  };
+
   return isEditing ? (
     <FeedingForm
       action={action}
-      onSave={a => {
-        onSave(a);
-        setIsEditing(false);
-      }}
+      onSave={handleSave}
       onRemove={onRemove}
     />
   ) : (
-    <div
-      className={'flex justify-between items-center w-full mt-5'}
-      data-test={TEST_SELECTORS.FEEDING_VIEW}
-    >
-      <div className={'flex flex-col gap-2'}>
-        <h3 className="font-medium">{t('inspection:form.actions.feeding_section.title')}</h3>
-        <div className={'flex gap-5 text-sm'}>
+    <ActionViewRenderer
+      title={t('inspection:form.actions.feeding_section.title')}
+      badges={
+        <>
           <Badge>{getFeedTypeLabel(action.feedType)}</Badge>
           <span>{getDisplayValue()}</span>
           {action.feedType === 'SYRUP' && action.concentration && (
             <span>{action.concentration}</span>
           )}
-        </div>
-        {action.notes && (
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            <span>Notes: {action.notes}</span>
-          </div>
-        )}
-      </div>
-      <div>
-        <Button
-          variant={'ghost'}
-          aria-label={'Edit'}
-          onClick={() => setIsEditing(true)}
-        >
-          <EditIcon />
-        </Button>
-        <Button
-          variant={'ghost'}
-          aria-label={'Delete'}
-          onClick={() => onRemove('FEEDING')}
-        >
-          <TrashIcon />
-        </Button>
-      </div>
-    </div>
+        </>
+      }
+      notes={action.notes}
+      onEdit={() => setIsEditing(true)}
+      onRemove={() => onRemove('FEEDING')}
+      data-test={TEST_SELECTORS.FEEDING_VIEW}
+    />
   );
 };

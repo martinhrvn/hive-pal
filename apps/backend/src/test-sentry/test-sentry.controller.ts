@@ -1,8 +1,21 @@
-import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Inject,
+} from '@nestjs/common';
 import * as Sentry from '@sentry/nestjs';
+import { safeJsonParse } from '../utils/safe-json-parse';
+import { z } from 'zod';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Controller('test-sentry')
 export class TestSentryController {
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {}
   @Get('message')
   testMessage() {
     Sentry.captureMessage('Test message from backend', 'info');
@@ -12,7 +25,15 @@ export class TestSentryController {
   @Get('exception')
   testException() {
     try {
-      JSON.parse('invalid json');
+      const result = safeJsonParse(
+        'invalid json',
+        z.unknown(),
+        this.logger,
+        'Sentry test',
+      );
+      if (result === null) {
+        throw new Error('JSON parsing intentionally failed for Sentry test');
+      }
     } catch (error) {
       Sentry.captureException(error);
       throw new HttpException(

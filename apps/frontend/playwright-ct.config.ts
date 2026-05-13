@@ -10,6 +10,8 @@ const __dirname = dirname(__filename);
  */
 export default defineConfig({
   testDir: './',
+  testMatch: '**/*.spec.tsx',
+  testIgnore: ['**/*.spec.ts', '**/*.test.{ts,tsx}', 'node_modules'],
   /* The base directory, relative to the config file, for snapshot files created with toMatchSnapshot and toHaveScreenshot. */
   snapshotDir: './__snapshots__',
   /* Maximum time one test can run for. */

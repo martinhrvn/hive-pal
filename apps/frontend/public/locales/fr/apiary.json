@@ -87,6 +87,13 @@
   },
   "form": {
     "namePlaceholder": "Nom du rucher",
-    "locationPlaceholder": "Description de la localisation"
+    "locationPlaceholder": "Description de la localisation",
+    "inspectionType": {
+      "label": "",
+      "placeholder": "",
+      "dataDriven": "",
+      "subjective": "",
+      "description": ""
+    }
   }
 }

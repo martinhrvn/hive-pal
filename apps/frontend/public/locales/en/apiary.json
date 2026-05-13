@@ -87,6 +87,13 @@
   },
   "form": {
     "namePlaceholder": "Apiary name",
-    "locationPlaceholder": "Location description"
+    "locationPlaceholder": "Location description",
+    "inspectionType": {
+      "label": "Inspection Type",
+      "placeholder": "Select inspection type",
+      "dataDriven": "Data Driven",
+      "subjective": "Subjective",
+      "description": "Data Driven uses frame counts and auto-scoring. Subjective uses qualitative 0–10 ratings."
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ActionType } from './types';
+import { boxTypeSchema } from '../hives/box.schema';
 
 // Treatment product configuration with default units and quantity requirements
 export const TREATMENT_PRODUCTS = {
@@ -58,6 +59,11 @@ export const boxConfigurationActionDetailsSchema = z.object({
   framesRemoved: z.number().min(0),
   totalBoxes: z.number().min(0),
   totalFrames: z.number().min(0),
+  /** Per-box summary of the resulting hive configuration */
+  boxes: z.array(z.object({
+    type: boxTypeSchema,
+    frameCount: z.number().int().min(0),
+  })).optional(),
 });
 
 export const maintenanceComponentSchema = z.enum(['BOX', 'BOTTOM_BOARD', 'COVER']);

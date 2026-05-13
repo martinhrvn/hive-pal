@@ -2,8 +2,17 @@ import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { DismissedRelease, ParsedReleaseNote } from '@/types/release-notes';
 import { loadAllReleaseNotes, compareVersions } from '@/utils/release-notes';
+import { safeJsonParse } from '@/utils/safe-json-parse';
+import { z } from 'zod';
 
 const RELEASE_NOTES_STORAGE_KEY = 'hivepal-dismissed-releases';
+
+const dismissedReleaseSchema = z.array(
+  z.object({
+    version: z.string(),
+    dismissedAt: z.string(),
+  })
+);
 
 interface ReleaseNotesState {
   releaseNotes: ParsedReleaseNote[];
@@ -17,13 +26,9 @@ interface ReleaseNotesState {
 }
 
 const loadDismissedReleases = (): DismissedRelease[] => {
-  try {
-    const stored = localStorage.getItem(RELEASE_NOTES_STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (error) {
-    console.warn('Failed to load dismissed releases from localStorage:', error);
+  const stored = localStorage.getItem(RELEASE_NOTES_STORAGE_KEY);
+  if (stored) {
+    return safeJsonParse(stored, dismissedReleaseSchema, 'dismissed releases') ?? [];
   }
   return [];
 };

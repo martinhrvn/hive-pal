@@ -48,9 +48,39 @@ import { PhotosSection, PendingPhoto } from './photos-section';
 import { ScorePreviewSection } from './score-preview';
 import { AiMergeBanner } from '@/pages/inspection/components/inspection-form/ai-merge-banner';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
+import { FrameCountSection } from './frame-counts';
 import { uploadPendingPhotos } from './upload-pending-photos';
 import { uploadPendingRecordings } from './upload-pending-recordings';
 import { useInspectionAiMerge } from './use-inspection-ai-merge';
+import { applyInspectionModeToFormData } from './mode-behavior';
+import type { Box } from 'shared-schemas';
+
+const normalizeBoxSummary = (
+  boxesSummary:
+    | Array<{ type: string; frameCount: number }>
+    | undefined,
+  fallbackBoxes: Box[] = [],
+): Box[] | undefined => {
+  if (!boxesSummary?.length) return undefined;
+
+  return boxesSummary.map((summaryBox, index) => {
+    const fallbackBox = fallbackBoxes[index];
+
+    return {
+      ...fallbackBox,
+      hasExcluder: fallbackBox?.hasExcluder ?? false,
+      maxFrameCount:
+        fallbackBox?.maxFrameCount ?? Math.max(summaryBox.frameCount, 1),
+      variant: fallbackBox?.variant,
+      frameSizeId: fallbackBox?.frameSizeId ?? null,
+      color: fallbackBox?.color,
+      winterized: fallbackBox?.winterized ?? false,
+      type: summaryBox.type as Box['type'],
+      frameCount: summaryBox.frameCount,
+      position: index,
+    };
+  });
+};
 
 interface PendingRecording {
   id: string;
@@ -154,6 +184,20 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             };
           }
 
+          if (action.details.type === ActionType.BOX_CONFIGURATION) {
+            const details = action.details;
+            return {
+              type: ActionType.BOX_CONFIGURATION,
+              boxesAdded: details.boxesAdded,
+              boxesRemoved: details.boxesRemoved,
+              framesAdded: details.framesAdded,
+              framesRemoved: details.framesRemoved,
+              totalBoxes: details.totalBoxes,
+              totalFrames: details.totalFrames,
+              boxesSummary: details.boxes,
+            };
+          }
+
           return {
             type: ActionType.OTHER,
             notes: action.notes || '',
@@ -169,6 +213,31 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     enabled: !!selectedHiveId,
   });
 
+  // Calculate total frames from brood boxes only (honey supers are excluded)
+  // If the user has recorded a box configuration action, use its updated boxes instead
+  const formActions = form.watch('actions') || [];
+  const boxConfigAction = formActions.find(a => a.type === 'BOX_CONFIGURATION');
+
+  const summarizedBoxes = normalizeBoxSummary(
+    boxConfigAction?.boxesSummary,
+    selectedHive?.boxes ?? [],
+  );
+
+  const effectiveBoxes =
+    boxConfigAction?.updatedBoxes ?? summarizedBoxes ?? selectedHive?.boxes ?? [];
+
+  const totalFrames =
+    effectiveBoxes
+      .filter((box: { type: string }) => box.type === 'BROOD')
+      .reduce((sum: number, box: { frameCount: number }) => sum + box.frameCount, 0) || null;
+
+  const broodBoxCount =
+    effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD').length || null;
+
+  const inspectionType = selectedHive?.inspectionType ?? 'data_driven';
+  const isSubjective = inspectionType === 'subjective';
+
+  // Format date for API call
   const dateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
   const isDateInFuture = selectedDate && selectedDate > new Date();
 
@@ -218,20 +287,46 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     },
   });
 
+  const validateSubjectiveStrength = (data: InspectionFormData): boolean => {
+    const strength = data.observations?.strength;
+    if (isSubjective && strength != null && strength > 10) {
+      form.setError('observations.strength', {
+        message: 'Must be between 0 and 10 in subjective mode',
+      });
+      return false;
+    }
+    return true;
+  };
+
+  // Handler for regular save button
   const handleSave = form.handleSubmit(data => {
+    if (!validateSubjectiveStrength(data)) return;
+    const formattedData = applyInspectionModeToFormData(
+      data,
+      isSubjective,
+      totalFrames,
+    );
+
     if (mode === 'batch' && onSubmitSuccess) {
-      onSubmitSuccess(data);
+      onSubmitSuccess(formattedData);
     } else {
       const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
-      onSubmit(data, status);
+      onSubmit(formattedData, status);
     }
   });
 
   const handleSaveAndComplete = form.handleSubmit(data => {
+    if (!validateSubjectiveStrength(data)) return;
+    const formattedData = applyInspectionModeToFormData(
+      data,
+      isSubjective,
+      totalFrames,
+    );
+
     if (mode === 'batch' && onSubmitSuccess) {
-      onSubmitSuccess(data);
+      onSubmitSuccess(formattedData);
     } else {
-      onSubmit(data, InspectionStatus.COMPLETED);
+      onSubmit(formattedData, InspectionStatus.COMPLETED);
     }
   });
 
@@ -243,7 +338,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const { isSubmitting } = form.formState;
 
   return (
-    <div className="ml-4 max-w-4xl">
+    <div className="max-w-4xl mx-auto px-4">
       <h1 className="text-lg font-bold">
         {isEdit
           ? t('inspection:form.editInspection')
@@ -398,6 +493,9 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
               <hr className="border-t border-border" />
               <ObservationsSection
+                broodFrames={isSubjective ? null : totalFrames}
+                broodBoxCount={isSubjective ? null : broodBoxCount}
+                isSubjective={isSubjective}
                 isAiSuggested={isAiSuggested}
                 aiMergeState={aiMergeState}
                 onAcceptSuggestion={acceptAiSuggestion}
@@ -405,15 +503,25 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               />
 
               <hr className="border-t border-border" />
-              <ScorePreviewSection
-                isAiSuggested={isAiSuggested}
-                aiMergeState={aiMergeState}
-                onAcceptSuggestion={acceptAiSuggestion}
-                onDismissSuggestion={dismissAiSuggestion}
-              />
+              {!isSubjective && (
+                <>
+                  <FrameCountSection totalFrames={totalFrames} />
+                  <hr className="border-t border-border" />
+                  <ScorePreviewSection
+                    totalFrames={totalFrames}
+                    isAiSuggested={isAiSuggested}
+                    aiMergeState={aiMergeState}
+                    onAcceptSuggestion={acceptAiSuggestion}
+                    onDismissSuggestion={dismissAiSuggestion}
+                  />
+                  <hr className="border-t border-border" />
+                </>
+              )}
 
               <hr className="border-t border-border" />
               <ActionsSection
+                hiveBoxes={selectedHive?.boxes ?? []}
+                hiveId={selectedHive?.id}
                 isAiSuggested={isAiSuggested}
                 aiMergeState={aiMergeState}
                 onAcceptSuggestion={acceptAiSuggestion}

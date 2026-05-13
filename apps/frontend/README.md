@@ -48,3 +48,55 @@ export default tseslint.config({
   },
 })
 ```
+
+## Testing
+
+This project uses two complementary testing frameworks:
+
+### Vitest (Unit Tests)
+
+Vitest is used for unit testing pure logic, utilities, hooks, and stores. Test files follow the pattern `**/*.{test,spec}.{ts,tsx}`.
+
+**When to use Vitest:**
+- Pure functions and utility modules
+- Custom React hooks (without complex DOM interactions)
+- State management stores (Zustand stores)
+- Business logic and data transformations
+- Type utilities and helper functions
+
+**Running Vitest:**
+```bash
+pnpm test           # Run tests once
+pnpm test:watch     # Watch mode for development
+```
+
+**Configuration:** `vitest.config.ts`
+- Explicit imports required (`import { describe, it, expect } from 'vitest'`)
+- JSDOM environment for DOM-dependent tests
+- Inherits path aliases from Vite config
+
+### Playwright Component Testing
+
+Playwright Component Testing is used for testing React components with full DOM rendering and user interactions. Test files follow the pattern `**/*.ct.{ts,tsx}`.
+
+**When to use Playwright CT:**
+- React components requiring DOM rendering
+- User interaction flows (clicks, form inputs, etc.)
+- Visual regression testing
+- Components with complex lifecycle behavior
+- Integration tests between multiple components
+
+**Running Playwright CT:**
+```bash
+pnpm test:ct        # Run component tests
+```
+
+### Testing Strategy
+
+Choose the appropriate framework based on what you are testing:
+
+- **Vitest**: Fast, lightweight tests for isolated logic
+- **Playwright CT**: Comprehensive component tests with real browser behavior
+
+Both frameworks coexist and complement each other to provide complete test coverage.
+
