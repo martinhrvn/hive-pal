@@ -1,1 +1,99 @@
-{}
+{
+    "title": "Bijenstanden",
+    "singular": "Bijenstand",
+    "plural": "Bijenstanden",
+    "list": {
+        "title": "Bijenstanden Lijst",
+        "caption": "Een lijst van al je bijenstanden",
+        "searchPlaceholder": "Zoek bijenstanden...",
+        "noApiaries": "Geen bijenstanden gevonden",
+        "noApiariesMatching": "Geen bijenstanden gevonden die matchen met \"{{searchTerm}}\"",
+        "clearFilters": "Wis filters"
+    },
+    "create": {
+        "title": "Maak Bijenstand",
+        "button": "Maak nieuwe bijenstand",
+        "success": "Bijenstand succesvol aangemaakt"
+    },
+    "edit": {
+        "title": "Bijenstand bewerken",
+        "success": "Bijenstand succesvol bewerkt"
+    },
+    "delete": {
+        "confirm": "Ben je zeker dat je deze bijenstand wil verwijderen?",
+        "success": "Bijenstand succesvol verwijderd"
+    },
+    "detail": {
+        "notFound": "Bijenstand niet gevonden",
+        "noLocationSpecified": "Geen locatie gespecificeerd",
+        "tabs": {
+            "overview": "Overzicht",
+            "hives": "Kasten",
+            "location": "Locatie"
+        },
+        "apiaryInformation": "Bijenstand informatie",
+        "locationMap": "Locatie kaart",
+        "apiaryLocation": "Bijenstand Locatie",
+        "noCoordinates": "Geen locatie coordinaten beschikbaar voor deze bijenstand"
+    },
+    "fields": {
+        "name": "Naam",
+        "location": "Locatie",
+        "locationDescription": "Locatie omschrijving",
+        "coordinates": "Coordinaten",
+        "hivesCount": "Kasten Aantal",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "notSpecified": "Niet gespecifeerd",
+        "noLocation": "Geen locatie",
+        "noCoordinates": "Geen coordinaten"
+    },
+    "actions": {
+        "details": "Details",
+        "refreshData": "Data verversen",
+        "exportCSV": "Exporteren naar CSV",
+        "print": "Print Bijenstand lijst",
+        "share": "Deel bijenstand lijst",
+        "dataOptions": "Gegevens opties"
+    },
+    "messages": {
+        "exportComingSoon": "Exporteren binnenkort beschikbaar",
+        "shareComingSoon": "Delen binnenkort beschikbaar"
+    },
+    "switcher": {
+        "teams": "Teams",
+        "addApiary": "Bijenstal toevoegen",
+        "noApiarySelected": "Geen bijenstal geselecteerd",
+        "selectOrCreate": "Selecteer of maak een bijenstal"
+    },
+    "map": {
+        "selectLocation": "Selecteer Bijenstal Locatie",
+        "selectedLocation": "Selecteer Locatie",
+        "apiaryLocation": "Bijenstal Locatie"
+    },
+    "calendarSubscription": {
+        "title": "Kalender Abonnement",
+        "description": "Abonneer op deze bijenstal's inspectie kalender in uw kalender app",
+        "addToCalendar": "Toevoegen aan Kalender",
+        "regenerateUrl": "Genereer URL",
+        "regenerated": "Abonnement URL gegenereerd",
+        "regenerateFailed": "Probleem tijdens het genereren van uw abonnement URL",
+        "copied": "Abonnement URL gekopierd naar plakbord",
+        "copyFailed": "Plakken van plakbord mislukt",
+        "readOnlyNote": "Deze URL geeft \"read-only\" toegang tot up inspectie kalender. Hergenereren van deze URL maakt de vorige onbruikbaar.",
+        "copyUrl": "Kopier URL",
+        "includeScheduledInspections": "Auto-gegenereerde inspecties bijvoegen",
+        "updateFailed": "Fout tijdens het updaten van kalender instellingen"
+    },
+    "form": {
+        "namePlaceholder": "Bijenstal naam",
+        "locationPlaceholder": "Locatie omschrijving",
+        "inspectionType": {
+            "label": "Inspectie Type",
+            "placeholder": "Selecteer inspectie type",
+            "dataDriven": "Data gestuurd",
+            "subjective": "Subjectief",
+            "description": "Data gestuurd gebruikt aantal ramen en auto-scoring. Subjectief gebruikt kwalitatieve rating 0-10."
+        }
+    }
+}
