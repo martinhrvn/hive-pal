@@ -1,1 +1,30 @@
-{}
+{
+    "title": "Gebruikersbeheer",
+    "description": "Beheer gebruikers en reset wachtwoorden",
+    "table": {
+        "email": "Email",
+        "name": "Naam",
+        "role": "Rol",
+        "passwordChangeRequired": "Wachtwoord wijzigen nodig",
+        "createdAt": "Gemaakt op",
+        "actions": "Acties",
+        "apiaries": "Bijenstanden",
+        "hives": "Kasten",
+        "inspections": "Inspecties",
+        "lastActivity": "Laatste activiteit"
+    },
+    "actions": {
+        "resetPassword": "Wachtwoord resetten"
+    },
+    "resetPasswordDialog": {
+        "title": "Reset gebruikers wachtwoord",
+        "description": "Stel een tijdelijk wachtwoord in voor {email}. De gebruiker zal zijn wachtwoord moeten aanpassen de volgende keer als hij aanmeld.",
+        "tempPasswordLabel": "Tijdelijk wachtwoord",
+        "tempPasswordPlaceholder": "Voer tijdelijk wachtwoord in",
+        "minCharacters": "Minimaal 6 karakters",
+        "submit": "Wachtwoord resetten"
+    },
+    "messages": {
+        "loading": "Laden..."
+    }
+}
