@@ -1,1 +1,45 @@
-{}
+{
+    "list": {
+        "clearFilters": "Wis filters",
+        "title": "Kast lijst",
+        "caption": "Een lijst van al uw kasten",
+        "captionFiltered": "Toont {{count}} {{status}} kast",
+        "captionFilteredPlural": "Toont {{count}} {{status}} kasten",
+        "searchPlaceholder": "Zoek kasten...",
+        "filterByStatus": "Filter volgens status",
+        "allStatuses": "Alle statussen",
+        "noHives": "Geen kasten gevonden",
+        "noHivesMatchingBoth": "Geen {{status}} kasten gevonden die voldoen aan \"{{searchTerm}}\"",
+        "noHivesMatchingSearch": "Geen kasten gevonden die voldoen aan \"{{searchTerm}}\"",
+        "noHivesWithStatus": "Geen {{status}} kasten gevonden",
+        "createFirst": "Maak uw eerste bijenkast"
+    },
+    "fields": {
+        "name": "Naam",
+        "location": "Locatie",
+        "notSpecified": "Niet gespecifeerd",
+        "status": "Status",
+        "installationDate": "Installatie Datum"
+    },
+    "actions": {
+        "details": "Details",
+        "refreshData": "Data verversen",
+        "exportCSV": "Exporteren naar CSV",
+        "dataOptions": "Gegevens opties"
+    },
+    "messages": {
+        "exportComingSoon": "Exporteren binnenkort beschikbaar",
+        "shareComingSoon": "Delen binnenkort beschikbaar"
+    },
+    "title": "Kasten",
+    "singular": "Kast",
+    "plural": "Kasten",
+    "create": {
+        "title": "Maak nieuwe bijenkast",
+        "success": "Bijenkast successvol aangemaakt"
+    },
+    "edit": {
+        "title": "Bijenkast bewerken",
+        "success": "Bijenkast successvol aangepast"
+    }
+}
