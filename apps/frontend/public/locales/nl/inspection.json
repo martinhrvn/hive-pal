@@ -1,1 +1,42 @@
-{}
+{
+    "actions": {
+        "details": "Details",
+        "refreshData": "Data verversen",
+        "exportCSV": "Exporteren naar CSV",
+        "dataOptions": "Gegevens opties"
+    },
+    "messages": {
+        "exportComingSoon": "Exporteren binnenkort beschikbaar",
+        "shareComingSoon": "Delen binnenkort beschikbaar"
+    },
+    "title": "Inspecties",
+    "singular": "Inspectie",
+    "plural": "Inspecties",
+    "tabs": {
+        "all": "Alle",
+        "recent": "Recent",
+        "upcoming": "Binnenkort"
+    },
+    "list": {
+        "title": "Inspectie lijst",
+        "allInspections": "Alle inspecties",
+        "recentInspections": "Recente inspecties",
+        "upcomingInspections": "Aankomende inspecties",
+        "searchPlaceholder": "Zoek inspecties...",
+        "filterByHive": "Filter per kast",
+        "allHives": "Alle Kasten",
+        "noInspections": "Geen inspecties gevonden",
+        "unknownHive": "Onbekende Kast"
+    },
+    "fields": {
+        "hive": "Kast",
+        "status": "Status",
+        "dateTime": "Datum & Tijd"
+    },
+    "status": {
+        "scheduled": "Gepland",
+        "completed": "Afgerond",
+        "overdue": "Overtijd",
+        "cancelled": "Geannuleerd"
+    }
+}
