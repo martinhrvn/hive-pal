@@ -1,1 +1,30 @@
-{}
+{
+    "title": "Koninginnen",
+    "singular": "Koningin",
+    "plural": "Koningingen",
+    "create": {
+        "title": "Nieuwe Koningin",
+        "button": "Maak Koningin",
+        "success": "Koningin succesvol aangemaakt"
+    },
+    "edit": {
+        "title": "Bewerk koningin",
+        "button": "Wijzigingen opslaan",
+        "success": "Koningin succesvol aangepast"
+    },
+    "delete": {
+        "confirm": "Bent u zeker dat u deze koningin wil verwijderen?",
+        "success": "Koningin succesvol verwijderd"
+    },
+    "fields": {
+        "hive": "Kast",
+        "year": "Jaar",
+        "color": "Kleur",
+        "marking": "Markering",
+        "source": "Bron",
+        "status": "Status",
+        "installationDate": "Installatie Datum",
+        "replacedDate": "Datum vervanging (Optioneel)",
+        "installedOn": "Geinstalleerd op {{date}}"
+    }
+}
