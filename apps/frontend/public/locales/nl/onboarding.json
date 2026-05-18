@@ -1,1 +1,29 @@
-{}
+{
+    "title": "Welkom bij Hive-Pal!",
+    "subtitle": "Laten we uw imkeromgeving instellen",
+    "steps": {
+        "welcome": "Welkom",
+        "createApiary": "Maak Bijenstand",
+        "addHive": "Eerste Kast Toevoegen",
+        "complete": "Volledig"
+    },
+    "welcome": {
+        "title": "Begin uw imker reis",
+        "description": "Welkom bij Hive-Pal, uw digitale imker assistent! We helpen u bij het opzetten van uw eerste bijenstand en kast om te beginnen.",
+        "action": "Laten we beginnen"
+    },
+    "apiary": {
+        "title": "Maak Uw Eerste Bijenstand",
+        "description": "Een bijenstand is een locatie waar uw bijenkasten staan. Laten we eerste maken."
+    },
+    "hive": {
+        "title": "Voeg je eerste bijenkast toe",
+        "description": "Laten we nu uw eerste bijenkast toevoegen aan uw nieuwe bijenstand:{{apiaryName}}.",
+        "skip": "Nu overslaan"
+    },
+    "complete": {
+        "title": "Proficiat!",
+        "description": "Je hebt je eerste bijenstand en bijenkorf succesvol opgezet. Je bent klaar om je imkeractiviteiten te registreren met Hive-Pal!",
+        "action": "Ga naar Dashboard"
+    }
+}
