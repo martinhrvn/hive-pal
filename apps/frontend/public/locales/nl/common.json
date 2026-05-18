@@ -1,1 +1,29 @@
-{}
+{
+    "actions": {
+        "refreshData": "Data verversen"
+    },
+    "navigation": {
+        "home": "Thuis",
+        "dashboard": "Dashboard",
+        "apiaries": "Bijenstanden",
+        "hives": "Kasten",
+        "inspections": "Inspecties",
+        "queens": "Koninginnen",
+        "allQueens": "Alle Koninginnen",
+        "settings": "Instellingen",
+        "admin": "Administratie",
+        "users": "Gebruikers",
+        "feedback": "Feedback",
+        "logout": "Uitloggen",
+        "allApiaries": "Alle Bijenstanden",
+        "createApiary": "Maak Bijenstand",
+        "allHives": "Alle Kasten",
+        "allInspections": "Alle inspecites",
+        "schedule": "Planning",
+        "recent": "Recent",
+        "upcoming": "Aankomende"
+    },
+    "status": {
+        "completed": "Afgerond"
+    }
+}
