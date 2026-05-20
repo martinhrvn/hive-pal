@@ -89,11 +89,11 @@
         "namePlaceholder": "Назив пчелињака",
         "locationPlaceholder": "Опис локације",
         "inspectionType": {
-            "label": "",
-            "placeholder": "",
-            "dataDriven": "",
-            "subjective": "",
-            "description": ""
+            "label": "Тип прегледа",
+            "placeholder": "Изаберите тип прегледа",
+            "dataDriven": "На основу података",
+            "subjective": "Субјективни",
+            "description": "Тип 'На основу података' користи број рамова и аутоматско оцењивање. Субјективни тип користи квалитативне оцене од 0 до 10."
         }
     }
 }
