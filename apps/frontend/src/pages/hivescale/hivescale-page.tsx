@@ -1568,7 +1568,6 @@ function ScaleSetupPanel({
         </CardHeader>
         <CollapsibleContent>
           <CardContent className="pt-0">
-            </div>
           </CardContent>
         </CollapsibleContent>
       </Card>
