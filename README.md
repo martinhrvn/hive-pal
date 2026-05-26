@@ -86,11 +86,14 @@ The application will be available at http://localhost.
 
 | Variable | Description |
 |----------|-------------|
+| `MAIL_PROVIDER` | Force a specific provider: `resend`, `smtp`, or `none` (auto-selects if unset) |
+| `RESEND_API_KEY` | API key for Resend email provider |
 | `SMTP_HOST` | SMTP server hostname |
 | `SMTP_PORT` | SMTP server port |
 | `SMTP_USER` | SMTP username |
 | `SMTP_PASS` | SMTP password |
 | `SMTP_SECURE` | Use TLS (`true` for port 465, `false` for 587) |
+| `SMTP_REJECT_UNAUTHORIZED` | Reject invalid TLS certificates (default `true`; set `false` for self-signed) |
 | `FROM_EMAIL` | Sender email address |
 | `STORAGE_TYPE` | `s3` (default) or `local` for filesystem storage |
 | `STORAGE_LOCAL_PATH` | Directory for local file storage (default: `/data/uploads`) |
