@@ -1565,9 +1565,29 @@ function ScaleSetupPanel({
                 />
               </Button>
             </CollapsibleTrigger>
+          </div>
         </CardHeader>
         <CollapsibleContent>
           <CardContent className="pt-0">
+            <div className="grid gap-4 xl:grid-cols-3">
+              <ClaimDeviceCard hiveNameOptions={hiveNameOptions} />
+              {selectedDevice && (
+                <DeviceStatusCard
+                  selectedDevice={selectedDevice}
+                  latest={latest}
+                />
+              )}
+              <ScaleMappingCard
+                selectedDevice={selectedDevice}
+                hiveNameOptions={hiveNameOptions}
+              />
+              <DeviceConfigCard
+                selectedDevice={selectedDevice}
+                deviceId={selectedDeviceId}
+                latest={latest}
+                onCalibrationPollingChange={onCalibrationPollingChange}
+              />
+            </div>
           </CardContent>
         </CollapsibleContent>
       </Card>
