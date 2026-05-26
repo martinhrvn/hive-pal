@@ -270,7 +270,7 @@ export function HiveScaleInsightsCard({
                     href={INSIGHTS_DOCS_URL}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 pt-1 text-xs font-medium text-primary hover:underline"
+                    className="inline-flex items-center gap-1 pt-1 text-xs font-medium text-blue-400 hover:text-blue-300 hover:underline"
                   >
                     Full documentation
                     <ExternalLink className="h-3 w-3" />
