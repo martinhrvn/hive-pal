@@ -92,7 +92,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { HiveScaleSwarmAlertCard } from './hivescale-swarm-alert-card';
 import {
   HiveScaleInsightsCard,
   HiveScaleSeverityPill,
@@ -1566,30 +1565,9 @@ function ScaleSetupPanel({
                 />
               </Button>
             </CollapsibleTrigger>
-          </div>
         </CardHeader>
         <CollapsibleContent>
           <CardContent className="pt-0">
-            <div className="grid gap-4 xl:grid-cols-4">
-              <ClaimDeviceCard hiveNameOptions={hiveNameOptions} />
-              {selectedDevice && (
-                <DeviceStatusCard
-                  selectedDevice={selectedDevice}
-                  latest={latest}
-                />
-              )}
-              <ScaleMappingCard
-                selectedDevice={selectedDevice}
-                hiveNameOptions={hiveNameOptions}
-              />
-              <DeviceConfigCard
-                selectedDevice={selectedDevice}
-                deviceId={selectedDeviceId}
-                latest={latest}
-                onCalibrationPollingChange={onCalibrationPollingChange}
-              />
-              {/* Swarm Alert */}
-              <HiveScaleSwarmAlertCard />
             </div>
           </CardContent>
         </CollapsibleContent>

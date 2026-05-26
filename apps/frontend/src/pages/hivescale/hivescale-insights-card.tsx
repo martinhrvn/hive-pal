@@ -3,6 +3,7 @@ import {
   AlertOctagon,
   AlertTriangle,
   CheckCircle2,
+  ExternalLink,
   Eye,
   Info,
   Loader2,
@@ -20,6 +21,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import {
   HiveScaleInsightAlert,
@@ -33,6 +39,76 @@ interface HiveScaleInsightsCardProps {
   scale2Name: string;
   lookbackDays?: number;
 }
+
+/**
+ * Public link to the long-form description of every detector. Lives in the
+ * HiveScale backend repo because the algorithms (and their thresholds) live
+ * there too.
+ */
+const INSIGHTS_DOCS_URL =
+  'https://github.com/MacNite/HiveScale/tree/main/docs/insights.md';
+
+/**
+ * Short, human-readable summary of every detector currently implemented in
+ * `server/insights.py`. Kept here (not fetched) so the tooltip is instant
+ * and works offline. Keep this list in sync with `docs/insights.md` and
+ * with the detectors in `compute_insights()`.
+ */
+const DETECTOR_SUMMARIES: Array<{
+  title: string;
+  detail: string;
+}> = [
+  {
+    title: 'Pre-swarm watch (Phase 1)',
+    detail:
+      '24h brood-nest temperature std-dev ≥ 1.5× the 7-day baseline → watch.',
+  },
+  {
+    title: 'Imminent swarm (Phase 2)',
+    detail:
+      'Brood temp ≥ 1.5 °C above 4h baseline, still rising ≥ 0.5 °C/h, above 36.5 °C → warning.',
+  },
+  {
+    title: 'Swarm event (Phase 3)',
+    detail:
+      'Weight drop ≥ 1.5 kg within ≤ 30 min. Daytime (09–17) → critical, otherwise warning.',
+  },
+  {
+    title: 'Queenlessness (fallback, no audio)',
+    detail:
+      'Active season + 7d hive-temp std-dev > 1.0 °C AND |weight change| < 0.2 kg → warning.',
+  },
+  {
+    title: 'Robbing',
+    detail:
+      'Sustained weight loss ≥ 0.4 kg/h for ≥ 30 min, no swarm signature. Late afternoon (15–19) → warning, else watch.',
+  },
+  {
+    title: 'Foraging intensity',
+    detail:
+      '24h weight delta: ≥ 1.0 kg = strong flow (info), ≥ 0.2 kg = moderate (info), ≤ −0.2 kg = negative (watch).',
+  },
+  {
+    title: 'Brood cycle / colony state',
+    detail:
+      '24h hive-temp std-dev < 0.5 °C around 34–35 °C = active brood (info); > 2.0 °C = broodless / weak (watch).',
+  },
+  {
+    title: 'Absconding / collapse trend',
+    detail:
+      '14d weight loss > 100 g/day AND widening daily temp std-dev (positive slope) → watch.',
+  },
+  {
+    title: 'Winter survival risk (Oct–Feb)',
+    detail:
+      'Min hive temp 7d < ambient mean + 2 °C, or weight loss > 300 g/week. Both → warning, one → watch.',
+  },
+  {
+    title: 'Harvest window',
+    detail:
+      'Earlier 7d gain > 2 kg/week, now < 0.3 kg/week for ≥ 4 days → info.',
+  },
+];
 
 /**
  * Visual config per severity. Mirrors the four levels emitted by the
@@ -152,6 +228,55 @@ export function HiveScaleInsightsCard({
               {insights.isFetching && !insights.isLoading && (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
+              {/*
+                Info tooltip: lists every detector currently active, plus a
+                link to the long-form documentation. Hover/focus on the icon
+                opens the tooltip; the link inside is a regular <a> so it
+                stays clickable on touch devices too.
+              */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 shrink-0"
+                    aria-label="Which tests are performed?"
+                  >
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  align="start"
+                  className="max-w-md space-y-2 text-left"
+                >
+                  <p className="font-medium">Tests performed</p>
+                  <p className="text-xs text-muted-foreground">
+                    Each detector runs on every measurement pass against the
+                    last 14 days of weight and hive-temperature data.
+                  </p>
+                  <ul className="space-y-1.5 text-xs">
+                    {DETECTOR_SUMMARIES.map(d => (
+                      <li key={d.title}>
+                        <span className="font-medium">{d.title}:</span>{' '}
+                        <span className="text-muted-foreground">
+                          {d.detail}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href={INSIGHTS_DOCS_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 pt-1 text-xs font-medium text-primary hover:underline"
+                  >
+                    Full documentation
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </TooltipContent>
+              </Tooltip>
             </CardTitle>
             <CardDescription>
               Sensor-based alerts derived from weight and temperature trends.
