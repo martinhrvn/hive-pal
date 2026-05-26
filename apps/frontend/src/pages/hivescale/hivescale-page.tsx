@@ -1,5 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import {
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   Battery,
   CheckCircle2,
@@ -37,6 +43,8 @@ import {
   useUpdateHiveScaleConfig,
   type HiveScaleDevice,
   type HiveScaleMeasurement,
+  useHiveScaleInsights,
+  HiveScaleInsightSeverity,
 } from '@/api/hooks/useHiveScale';
 import {
   createPresetDateRange,
@@ -85,6 +93,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { HiveScaleSwarmAlertCard } from './hivescale-swarm-alert-card';
+import {
+  HiveScaleInsightsCard,
+  HiveScaleSeverityPill,
+} from './hivescale-insights-card';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
@@ -229,11 +241,13 @@ function LatestValuePanel({
   description,
   icon: Icon,
   rows,
+  badge,
 }: {
   title: string;
   description: string;
   icon: LucideIcon;
   rows: { label: string; value: string }[];
+  badge?: ReactNode;
 }) {
   return (
     <Card>
@@ -243,7 +257,10 @@ function LatestValuePanel({
         </div>
         <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <p className="text-sm text-muted-foreground">{title}</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm text-muted-foreground">{title}</p>
+              {badge}
+            </div>
             <p className="text-xs text-muted-foreground">{description}</p>
           </div>
           <div className="space-y-2">
@@ -1603,6 +1620,38 @@ export function HiveScalePage() {
     measurementQuery,
     { refetchInterval: isCalibrationPolling ? 5000 : 60000 },
   );
+  const insights = useHiveScaleInsights(selectedDeviceId, { lookbackDays: 14 });
+
+  // Highest active severity per scale channel, used to drive the per-hive
+  // pills on the LatestValuePanel headers. The full alert list is rendered
+  // by the HiveScaleInsightsCard further down.
+  const channelSeverity = useMemo(() => {
+    const severityRank: Record<HiveScaleInsightSeverity, number> = {
+      critical: 4,
+      warning: 3,
+      watch: 2,
+      info: 1,
+    };
+    const out: Record<
+      1 | 2,
+      { severity: HiveScaleInsightSeverity | null; count: number }
+    > = {
+      1: { severity: null, count: 0 },
+      2: { severity: null, count: 0 },
+    };
+    for (const alert of insights.data?.alerts ?? []) {
+      const slot = out[alert.channel as 1 | 2];
+      if (!slot) continue;
+      slot.count += 1;
+      if (
+        !slot.severity ||
+        severityRank[alert.severity] > severityRank[slot.severity]
+      ) {
+        slot.severity = alert.severity;
+      }
+    }
+    return out;
+  }, [insights.data?.alerts]);
   const removeDevice = useRemoveHiveScaleDevice();
   const hives = useHivesWithBoxes(undefined, { enabled: true });
   const inspections = useInspections({
@@ -1798,6 +1847,12 @@ export function HiveScalePage() {
             title={scale1Name}
             description="Scale 1"
             icon={Weight}
+            badge={
+              <HiveScaleSeverityPill
+                severity={channelSeverity[1].severity}
+                count={channelSeverity[1].count}
+              />
+            }
             rows={[
               {
                 label: 'Weight',
@@ -1813,6 +1868,12 @@ export function HiveScalePage() {
             title={scale2Name}
             description="Scale 2"
             icon={Weight}
+            badge={
+              <HiveScaleSeverityPill
+                severity={channelSeverity[2].severity}
+                count={channelSeverity[2].count}
+              />
+            }
             rows={[
               {
                 label: 'Weight',
@@ -1903,6 +1964,15 @@ export function HiveScalePage() {
             />
           )}
         </div>
+      )}
+
+      {selectedDevice && (
+        <HiveScaleInsightsCard
+          deviceId={selectedDevice.device_id}
+          scale1Name={scale1Name}
+          scale2Name={scale2Name}
+          lookbackDays={14}
+        />
       )}
 
       {selectedDevice && (

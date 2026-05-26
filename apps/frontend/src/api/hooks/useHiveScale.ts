@@ -120,6 +120,13 @@ const HIVESCALE_KEYS = {
     deviceId: string | undefined,
     query: HiveScaleMeasurementQuery | undefined,
   ) => [...HIVESCALE_KEYS.all, 'measurements', deviceId, query] as const,
+  // NEW:
+  insights: (
+    deviceId: string | undefined,
+    query: HiveScaleInsightsQuery | undefined,
+  ) => [...HIVESCALE_KEYS.all, 'insights', deviceId, query] as const,
+  insightsSummary: (deviceId: string | undefined) =>
+    [...HIVESCALE_KEYS.all, 'insightsSummary', deviceId] as const,
 };
 
 export const useHiveScaleDevices = () => {
@@ -182,6 +189,103 @@ export const useHiveScaleMembers = (
     enabled: !!deviceId && enabled,
   });
 };
+
+export const useHiveScaleInsights = (
+  deviceId: string | undefined,
+  query: HiveScaleInsightsQuery = {},
+  options: { refetchInterval?: number | false } = {},
+) => {
+  return useQuery<HiveScaleInsightsResponse>({
+    queryKey: HIVESCALE_KEYS.insights(deviceId, query),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleInsightsResponse>(
+        `/api/hivescale/devices/${deviceId}/insights`,
+        {
+          params:
+            query.lookbackDays !== undefined
+              ? { lookback_days: query.lookbackDays }
+              : undefined,
+        },
+      );
+      return response.data;
+    },
+    enabled: !!deviceId,
+    // Insights are computed from time-series; recomputing more than once a
+    // minute is wasteful. Five minutes matches the typical scale send rate.
+    refetchInterval: options.refetchInterval ?? 5 * 60 * 1000,
+    staleTime: 60 * 1000,
+  });
+};
+
+export const useHiveScaleInsightsSummary = (
+  deviceId: string | undefined,
+  options: { refetchInterval?: number | false } = {},
+) => {
+  return useQuery<HiveScaleInsightsSummaryResponse>({
+    queryKey: HIVESCALE_KEYS.insightsSummary(deviceId),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleInsightsSummaryResponse>(
+        `/api/hivescale/devices/${deviceId}/insights/summary`,
+      );
+      return response.data;
+    },
+    enabled: !!deviceId,
+    refetchInterval: options.refetchInterval ?? 5 * 60 * 1000,
+    staleTime: 60 * 1000,
+  });
+};
+
+export type HiveScaleInsightSeverity =
+  | 'info'
+  | 'watch'
+  | 'warning'
+  | 'critical';
+
+export type HiveScaleInsightCategory =
+  | 'swarm'
+  | 'queenless'
+  | 'robbing'
+  | 'foraging'
+  | 'brood'
+  | 'decline'
+  | 'winter'
+  | 'harvest';
+
+export interface HiveScaleInsightAlert {
+  id: string;
+  category: HiveScaleInsightCategory;
+  severity: HiveScaleInsightSeverity;
+  channel: 1 | 2;
+  title: string;
+  description: string;
+  window_start: string | null;
+  window_end: string | null;
+  confidence: number;
+  evidence: Record<string, unknown>;
+  source: string;
+}
+
+export interface HiveScaleInsightsResponse {
+  device_id: string;
+  computed_at: string;
+  lookback_days: number;
+  measurement_count: number;
+  alerts: HiveScaleInsightAlert[];
+}
+
+export interface HiveScaleInsightsSummaryResponse {
+  device_id: string;
+  computed_at: string;
+  alert_count: number;
+  highest_severity: HiveScaleInsightSeverity | null;
+  highest_alert: HiveScaleInsightAlert | null;
+  categories: HiveScaleInsightCategory[];
+}
+
+export interface HiveScaleInsightsQuery {
+  lookbackDays?: number;
+}
+
 
 export const useClaimHiveScaleDevice = () => {
   const queryClient = useQueryClient();

@@ -127,6 +127,30 @@ export class HiveScaleController {
     );
   }
 
+  @Get('devices/:deviceId/insights')
+  getInsights(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @Query('lookback_days') lookbackDays?: number,
+  ) {
+    return this.hiveScaleService.getDeviceInsights(
+      req.user.id,
+      deviceId,
+      lookbackDays !== undefined ? Number(lookbackDays) : undefined,
+    );
+  }
+
+  @Get('devices/:deviceId/insights/summary')
+  getInsightsSummary(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.hiveScaleService.getDeviceInsightsSummary(
+      req.user.id,
+      deviceId,
+    );
+  }
+
   @Get('devices/:deviceId/members')
   listMembers(
     @Req() req: RequestWithUser,

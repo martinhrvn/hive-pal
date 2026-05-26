@@ -233,6 +233,32 @@ export class HiveScaleService {
     );
   }
 
+  getDeviceInsights(
+    userId: string,
+    deviceId: string,
+    lookbackDays?: number,
+  ) {
+    return this.request(
+      userId,
+      'GET',
+      `/api/v1/app/devices/${deviceId}/insights`,
+      {
+        params:
+          lookbackDays !== undefined
+            ? { lookback_days: lookbackDays }
+            : undefined,
+      },
+    );
+  }
+
+  getDeviceInsightsSummary(userId: string, deviceId: string) {
+    return this.request(
+      userId,
+      'GET',
+      `/api/v1/app/devices/${deviceId}/insights/summary`,
+    );
+  }
+
   async listMembers(userId: string, deviceId: string) {
     const members = await this.request<HiveScaleMember[]>(
       userId,
