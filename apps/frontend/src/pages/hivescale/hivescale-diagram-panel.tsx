@@ -11,7 +11,6 @@ import {
   Scale,
   PackagePlus,
   Pill,
-  Radio,
   Sun,
   Thermometer,
   Utensils,
@@ -81,8 +80,7 @@ type SeriesAxis =
   | 'voltage'
   | 'percent'
   | 'current'
-  | 'power'
-  | 'signal';
+  | 'power';
 
 type SeriesKey =
   | 'scale1Weight'
@@ -95,8 +93,7 @@ type SeriesKey =
   | 'batterySoc'
   | 'solarLoadVoltage'
   | 'solarCurrent'
-  | 'solarPower'
-  | 'cellularCsq';
+  | 'solarPower';
 
 interface DiagramSeries {
   key: SeriesKey;
@@ -159,7 +156,6 @@ const defaultVisibleSeries: VisibleSeriesMap = {
   solarLoadVoltage: false,
   solarCurrent: false,
   solarPower: false,
-  cellularCsq: false,
 };
 
 const defaultAxisScaleSettings: AxisScaleSettingsMap = {
@@ -205,12 +201,6 @@ const defaultAxisScaleSettings: AxisScaleSettingsMap = {
     customMax: '',
     side: 'right',
   },
-  signal: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
 };
 
 const axisOrder: SeriesAxis[] = [
@@ -221,7 +211,6 @@ const axisOrder: SeriesAxis[] = [
   'percent',
   'current',
   'power',
-  'signal',
 ];
 
 const axisPresentation: Record<
@@ -240,7 +229,6 @@ const axisPresentation: Record<
   percent: { label: 'Battery %', unit: '%', side: 'right', Icon: Battery },
   current: { label: 'Solar mA', unit: 'mA', side: 'right', Icon: Sun },
   power: { label: 'Solar mW', unit: 'mW', side: 'right', Icon: Sun },
-  signal: { label: 'Cellular CSQ', unit: 'CSQ', side: 'right', Icon: Radio },
 };
 
 interface MarkerTooltipState {
@@ -322,62 +310,35 @@ const escapeCsvValue = (value: unknown) => {
   if (value === null || value === undefined) return '';
 
   const text = String(value);
-  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 };
 
-const safeFilenameSegment = (value: string) => {
-  const safeValue = value
-    .trim()
-    .replace(/[^a-z0-9_-]+/gi, '-')
-    .replace(/^-+|-+$/g, '')
-    .toLowerCase();
-
-  return safeValue || 'device';
-};
+const safeFilenameSegment = (value: string) =>
+  value.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
 
 const formatCsvFilenameDate = (date: Date) =>
-  date.toISOString().slice(0, 19).replace(/[T:]/g, '-');
+  date.toISOString().slice(0, 10);
 
-const toLocalDateTimeInput = (value: string | undefined) => {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const offsetMs = date.getTimezoneOffset() * 60 * 1000;
-  return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
-};
-
-const fromLocalDateTimeInput = (value: string) => {
-  if (!value) return undefined;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
-};
-
-const cleanTemperature = (value: number | null | undefined) => {
+const toFiniteNumber = (value: number | null | undefined): number | null => {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-  // DS18B20 reports -127 C when the sensor is disconnected/unreadable.
-  if (value <= -100) return null;
   return value;
 };
 
-const toFiniteNumber = (value: unknown) => {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
-  if (typeof value === 'string' && value.trim() !== '') {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-};
-
-const parseCustomAxisValue = (value: string) => {
-  if (value.trim() === '') return undefined;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
+const cleanTemperature = (value: number | null | undefined): number | null => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  // Reject obviously bogus DS18B20 readings (e.g. 85 °C power-on default, -127 °C disconnect)
+  if (value <= -55 || value >= 85) return null;
+  return value;
 };
 
 const padEqualAxisBounds = (min: number, max: number): AxisDomain => {
-  if (min !== max) return [min, max];
-  const padding = Math.max(Math.abs(min) * 0.1, 1);
-  return [min - padding, max + padding];
+  if (min === max) return [min - 1, max + 1];
+  return [min, max];
+};
+
+const parseCustomAxisValue = (value: string): number | undefined => {
+  const parsed = parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 };
 
 const roundDownAxisBound = (value: number) => {
@@ -505,225 +466,117 @@ const detailText = (details: unknown, keys: string[]) => {
 };
 
 const getHiveName = (hives: HiveWithBoxesResponse[], hiveId: string) =>
-  hives.find(hive => hive.id === hiveId)?.name ?? 'Hive';
-
-const markerTooltipTitle = (marker: ChartMarker) =>
-  `${marker.label} · ${marker.hiveName} · ${formatDateTime(marker.date)} · ${marker.detail}`;
-
-const actionMarkerFromInspection = (
-  inspection: InspectionResponse,
-  action: InspectionResponse['actions'][number],
-  hiveName: string,
-): ChartMarker | null => {
-  const base = {
-    id: `${inspection.id}-${action.id}`,
-    timestamp: new Date(inspection.date).getTime(),
-    date: inspection.date,
-    hiveName,
-  };
-
-  switch (action.type) {
-    case ActionType.MAINTENANCE:
-      return {
-        ...base,
-        type: 'maintenance',
-        label: 'Maintenance',
-        detail:
-          detailText(action.details, ['component', 'status']) ||
-          action.notes ||
-          'Maintenance action',
-        Icon: Wrench,
-      };
-    case ActionType.FEEDING:
-      return {
-        ...base,
-        type: 'feeding',
-        label: 'Feeding',
-        detail:
-          detailText(action.details, [
-            'amount',
-            'unit',
-            'feedType',
-            'concentration',
-          ]) ||
-          action.notes ||
-          'Feeding action',
-        Icon: Utensils,
-      };
-    case ActionType.FRAME:
-      return {
-        ...base,
-        type: 'frames',
-        label: 'Frames changed',
-        detail:
-          detailText(action.details, ['quantity']) ||
-          action.notes ||
-          'Frame action',
-        Icon: Frame,
-      };
-    case ActionType.TREATMENT:
-      return {
-        ...base,
-        type: 'treatment',
-        label: 'Treatment',
-        detail:
-          detailText(action.details, ['product', 'quantity', 'unit']) ||
-          action.notes ||
-          'Treatment action',
-        Icon: Pill,
-      };
-    case ActionType.BOX_CONFIGURATION:
-      return {
-        ...base,
-        type: 'box',
-        label: 'Box configuration',
-        detail:
-          detailText(action.details, [
-            'boxesAdded',
-            'boxesRemoved',
-            'framesAdded',
-            'framesRemoved',
-            'totalBoxes',
-          ]) ||
-          action.notes ||
-          'Box configuration changed',
-        Icon: PackagePlus,
-      };
-    default:
-      return null;
-  }
-};
+  hives.find(hive => hive.id === hiveId)?.name ?? hiveId;
 
 const buildInspectionMarkers = (
   inspections: InspectionResponse[] | undefined,
   hives: HiveWithBoxesResponse[],
   mappedHiveIds: string[],
 ): ChartMarker[] => {
-  if (!inspections?.length || mappedHiveIds.length === 0) return [];
-  const mappedHiveIdSet = new Set(mappedHiveIds);
-
+  if (!inspections) return [];
   return inspections
-    .filter(inspection => mappedHiveIdSet.has(inspection.hiveId))
-    .flatMap(inspection => {
-      const hiveName = getHiveName(hives, inspection.hiveId);
-      const actionMarkers = inspection.actions
-        .map(action => actionMarkerFromInspection(inspection, action, hiveName))
-        .filter((marker): marker is ChartMarker => Boolean(marker));
+    .filter(inspection => mappedHiveIds.includes(inspection.hiveId))
+    .map(inspection => {
+      const type = inspection.type ?? 'inspection';
+      const markerType = ((): ChartMarker['type'] => {
+        if (type === ActionType.FEEDING) return 'feeding';
+        if (type === ActionType.FRAME_MANIPULATION) return 'frames';
+        if (type === ActionType.TREATMENT) return 'treatment';
+        if (
+          type === ActionType.BOX_CONFIGURATION ||
+          type === ActionType.HARVEST
+        )
+          return 'maintenance';
+        return 'inspection';
+      })();
 
-      if (actionMarkers.length) return actionMarkers;
+      const Icon = ((): LucideIcon => {
+        if (markerType === 'feeding') return Utensils;
+        if (markerType === 'frames') return Frame;
+        if (markerType === 'treatment') return Pill;
+        if (markerType === 'maintenance') return Wrench;
+        return ClipboardCheck;
+      })();
 
-      return [
-        {
-          id: inspection.id,
-          timestamp: new Date(inspection.date).getTime(),
-          date: inspection.date,
-          type: 'inspection' as const,
-          label: 'Inspection',
-          detail: inspection.notes || 'Inspection recorded',
-          hiveName,
-          Icon: ClipboardCheck,
-        },
-      ];
-    })
-    .filter(marker => Number.isFinite(marker.timestamp));
+      return {
+        id: inspection.id,
+        timestamp: new Date(inspection.date).getTime(),
+        date: inspection.date,
+        type: markerType,
+        label: type ?? 'Inspection',
+        detail: detailText(inspection.details, ['notes']),
+        hiveName: getHiveName(hives, inspection.hiveId),
+        Icon,
+      };
+    });
 };
 
 const buildBoxAddedMarkers = (
   hives: HiveWithBoxesResponse[],
   mappedHiveIds: string[],
-  startAt?: string,
-  endAt?: string,
+  startAt: string | undefined,
+  endAt: string | undefined,
 ): ChartMarker[] => {
-  const mappedHiveIdSet = new Set(mappedHiveIds);
-  const startMs = startAt
-    ? new Date(startAt).getTime()
-    : Number.NEGATIVE_INFINITY;
-  const endMs = endAt ? new Date(endAt).getTime() : Date.now();
+  const startMs = startAt ? new Date(startAt).getTime() : 0;
+  const endMs = endAt ? new Date(endAt).getTime() : Infinity;
 
   return hives
-    .filter(hive => mappedHiveIdSet.has(hive.id))
+    .filter(hive => mappedHiveIds.includes(hive.id))
     .flatMap(hive =>
       (hive.boxes ?? [])
-        .map(box => {
-          const addedAt =
-            'addedAt' in box ? (box.addedAt as string | undefined) : undefined;
-          if (!addedAt) return null;
-          const timestamp = new Date(addedAt).getTime();
-          if (
-            !Number.isFinite(timestamp) ||
-            timestamp < startMs ||
-            timestamp > endMs
-          )
-            return null;
-          return {
-            id: `box-${box.id ?? hive.id}-${timestamp}`,
-            timestamp,
-            date: addedAt,
-            type: 'box' as const,
-            label: 'Box added',
-            detail: `${box.type.toLowerCase().replace('_', ' ')} box${box.variant ? ` · ${box.variant.toLowerCase().replaceAll('_', ' ')}` : ''}`,
-            hiveName: hive.name,
-            Icon: Box,
-          };
+        .filter(box => {
+          if (!box.addedAt) return false;
+          const ts = new Date(box.addedAt).getTime();
+          return ts >= startMs && ts <= endMs;
         })
-        .filter((marker): marker is ChartMarker => Boolean(marker)),
+        .map(box => ({
+          id: `box-${hive.id}-${box.addedAt}`,
+          timestamp: new Date(box.addedAt!).getTime(),
+          date: box.addedAt!,
+          type: 'box' as const,
+          label: 'Box added',
+          detail: box.type ?? '',
+          hiveName: hive.name,
+          Icon: PackagePlus,
+        })),
     );
 };
 
 function MarkerReferenceLineLabel({
-  viewBox,
   marker,
   row,
   onHover,
   onLeave,
 }: {
-  viewBox?: { x?: number; y?: number };
   marker: ChartMarker;
   row: number;
   onHover: (marker: ChartMarker, event: MouseEvent<SVGGElement>) => void;
   onLeave: () => void;
 }) {
-  const x = typeof viewBox?.x === 'number' ? viewBox.x : 0;
-  const chartTop = typeof viewBox?.y === 'number' ? viewBox.y : 0;
-  const Icon = marker.Icon;
-  const title = markerTooltipTitle(marker);
-
-  const handleHover = (event: MouseEvent<SVGGElement>) => {
-    onHover(marker, event);
-  };
+  const { Icon } = marker;
+  const offsetY = -24 - row * 18;
 
   return (
     <g
-      aria-label={title}
-      color="var(--foreground)"
-      role="img"
-      style={{ cursor: 'help', pointerEvents: 'all' }}
-      transform={`translate(${x - 10}, ${chartTop + 8 + row * 24})`}
-      onMouseEnter={handleHover}
-      onMouseMove={handleHover}
+      transform={`translate(0, ${offsetY})`}
+      style={{ cursor: 'default' }}
+      onMouseEnter={event => onHover(marker, event)}
       onMouseLeave={onLeave}
     >
-      <title>{title}</title>
-      <rect
-        x={-4}
-        y={-4}
-        width={28}
-        height={28}
-        rx={7}
-        fill="transparent"
-        pointerEvents="all"
-        stroke="none"
-      />
-      <rect
-        x={0}
-        y={0}
-        width={20}
-        height={20}
-        rx={5}
-        fill="var(--background)"
-        stroke="var(--border)"
-      />
-      <Icon x={3} y={3} width={14} height={14} strokeWidth={2} />
+      <foreignObject x={-10} y={-10} width={20} height={20}>
+        <div
+          xmlns="http://www.w3.org/1999/xhtml"
+          style={{ display: 'flex', alignItems: 'center' }}
+        >
+          <Icon
+            style={{
+              width: 14,
+              height: 14,
+              color: 'var(--muted-foreground)',
+            }}
+          />
+        </div>
+      </foreignObject>
     </g>
   );
 }
@@ -738,15 +591,17 @@ function SeriesToggle({
   onToggle: () => void;
 }) {
   return (
-    <Button
+    <button
       type="button"
-      size="sm"
-      variant={active ? 'default' : 'outline'}
       onClick={onToggle}
-      className="justify-start"
+      className={`rounded-md border px-3 py-2 text-left text-sm transition-colors ${
+        active
+          ? 'border-foreground bg-foreground text-background'
+          : 'border-border bg-background text-foreground hover:bg-muted'
+      }`}
     >
       {series.label}
-    </Button>
+    </button>
   );
 }
 
@@ -755,37 +610,26 @@ function DateRangeSelector({
   onChange,
 }: {
   value: HiveScaleDateRange;
-  onChange: (value: HiveScaleDateRange) => void;
+  onChange: (range: HiveScaleDateRange) => void;
 }) {
-  const setPreset = (preset: HiveScaleDateRangePreset) => {
-    if (preset === 'custom') {
-      const fallbackRange = createPresetDateRange('24h');
-      onChange({
-        preset: 'custom',
-        startAt: value.startAt ?? fallbackRange.startAt,
-        endAt: value.endAt ?? fallbackRange.endAt,
-      });
-      return;
-    }
-
-    onChange(createPresetDateRange(preset));
-  };
-
   return (
     <div className="space-y-3 rounded-md border p-3">
-      <div className="flex items-center gap-2 text-sm font-medium">
-        <CalendarDays className="h-4 w-4" />
-        Date range
-      </div>
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="text-sm font-medium">Date range</div>
+      <div className="flex gap-2">
         <Select
-          value={value.preset === 'custom' ? undefined : value.preset}
-          onValueChange={preset =>
-            setPreset(preset as Exclude<HiveScaleDateRangePreset, 'custom'>)
-          }
+          value={value.preset === 'custom' ? 'custom' : value.preset}
+          onValueChange={preset => {
+            if (preset !== 'custom') {
+              onChange(
+                createPresetDateRange(
+                  preset as Exclude<HiveScaleDateRangePreset, 'custom'>,
+                ),
+              );
+            }
+          }}
         >
-          <SelectTrigger className="sm:flex-1">
-            <SelectValue placeholder="Preset range" />
+          <SelectTrigger className="flex-1">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {presetOptions.map(preset => (
@@ -798,36 +642,46 @@ function DateRangeSelector({
         <Button
           type="button"
           variant={value.preset === 'custom' ? 'default' : 'outline'}
-          onClick={() => setPreset('custom')}
+          size="sm"
+          onClick={() =>
+            onChange({
+              preset: 'custom',
+              startAt: value.startAt,
+              endAt: value.endAt ?? new Date().toISOString(),
+            })
+          }
         >
-          {presetLabels.custom}
+          Custom
         </Button>
       </div>
       {value.preset === 'custom' && (
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="hivescale-range-start">Start</Label>
+        <div className="grid gap-2">
+          <div className="space-y-1">
+            <Label>From</Label>
             <Input
-              id="hivescale-range-start"
               type="datetime-local"
-              value={toLocalDateTimeInput(value.startAt)}
-              onChange={event => {
-                const startAt = fromLocalDateTimeInput(event.target.value);
-                if (startAt) onChange({ ...value, startAt, preset: 'custom' });
-              }}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="hivescale-range-end">End</Label>
-            <Input
-              id="hivescale-range-end"
-              type="datetime-local"
-              value={toLocalDateTimeInput(value.endAt)}
-              onChange={event =>
+              value={value.startAt ? value.startAt.slice(0, 16) : ''}
+              onChange={e =>
                 onChange({
                   ...value,
-                  endAt: fromLocalDateTimeInput(event.target.value),
-                  preset: 'custom',
+                  startAt: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                })
+              }
+            />
+          </div>
+          <div className="space-y-1">
+            <Label>To</Label>
+            <Input
+              type="datetime-local"
+              value={value.endAt ? value.endAt.slice(0, 16) : ''}
+              onChange={e =>
+                onChange({
+                  ...value,
+                  endAt: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
                 })
               }
             />
@@ -837,6 +691,19 @@ function DateRangeSelector({
     </div>
   );
 }
+
+export const readStoredDateRange = (): HiveScaleDateRange | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem('hivepal:hivescale-date-range');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as HiveScaleDateRange;
+    if (!parsed.preset) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+};
 
 export function HiveScaleDiagramPanel({
   selectedDevice,
@@ -853,7 +720,7 @@ export function HiveScaleDiagramPanel({
   measurements: HiveScaleMeasurement[] | undefined;
   isLoading: boolean;
   dateRange: HiveScaleDateRange;
-  onDateRangeChange: (value: HiveScaleDateRange) => void;
+  onDateRangeChange: (range: HiveScaleDateRange) => void;
   scale1Name: string;
   scale2Name: string;
   inspections: InspectionResponse[] | undefined;
@@ -969,15 +836,6 @@ export function HiveScaleDiagramPanel({
         stroke: 'var(--chart-4)',
         group: 'Off-grid',
       },
-      {
-        key: 'cellularCsq',
-        label: 'Cellular signal',
-        dataKey: 'cellularCsq',
-        axis: 'signal',
-        unit: 'CSQ',
-        stroke: 'var(--chart-5)',
-        group: 'Off-grid',
-      },
     ],
     [scale1Name, scale2Name],
   );
@@ -1015,7 +873,6 @@ export function HiveScaleDiagramPanel({
           solarLoadVoltage: toFiniteNumber(item.solar_load_voltage_v),
           solarCurrent: toFiniteNumber(item.solar_current_ma),
           solarPower: toFiniteNumber(item.solar_power_mw),
-          cellularCsq: toFiniteNumber(item.cellular_csq),
         }))
         .filter(item => Number.isFinite(item.timestamp)),
     [measurements],
@@ -1067,6 +924,18 @@ export function HiveScaleDiagramPanel({
       // Ignore storage failures, for example private mode or disabled storage.
     }
   }, [diagramSettings, loadedStorageKey, storageKey]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(
+        'hivepal:hivescale-date-range',
+        JSON.stringify(dateRange),
+      );
+    } catch {
+      // Ignore storage failures.
+    }
+  }, [dateRange]);
 
   const mappedHives = useMemo(() => {
     const hiveList = hives ?? [];
@@ -1254,7 +1123,6 @@ export function HiveScaleDiagramPanel({
                   const unitWidths: Partial<Record<SeriesAxis, number>> = {
                     current: 58,
                     power: 62,
-                    signal: 62,
                   };
                   return (
                     <YAxis
@@ -1338,7 +1206,8 @@ export function HiveScaleDiagramPanel({
             <div>
               <div className="font-medium text-foreground">Axis setup</div>
               <div>
-                Choose scaling and side (left/right) per vertical axis. Saved in this browser.
+                Choose scaling and side (left/right) per vertical axis.
+                Saved in this browser.
               </div>
             </div>
             <Button
@@ -1390,7 +1259,7 @@ export function HiveScaleDiagramPanel({
                       </Select>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor={`axis-scale-${axis}`}>Scaling</Label>
+                      <Label htmlFor={`axis-scale-${axis}`}>Scale</Label>
                       <Select
                         value={settings.scaleMode}
                         onValueChange={value =>
@@ -1403,9 +1272,9 @@ export function HiveScaleDiagramPanel({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="maxRange">Max range</SelectItem>
-                          <SelectItem value="zeroToMax">0 to max</SelectItem>
-                          <SelectItem value="custom">Custom values</SelectItem>
+                          <SelectItem value="maxRange">Auto range</SelectItem>
+                          <SelectItem value="zeroToMax">Zero to max</SelectItem>
+                          <SelectItem value="custom">Custom</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1417,14 +1286,13 @@ export function HiveScaleDiagramPanel({
                         <Input
                           id={`axis-min-${axis}`}
                           type="number"
-                          inputMode="decimal"
+                          placeholder="Auto"
                           value={settings.customMin}
-                          onChange={event =>
+                          onChange={e =>
                             updateAxisScaleSettings(axis, {
-                              customMin: event.target.value,
+                              customMin: e.target.value,
                             })
                           }
-                          placeholder="-3"
                         />
                       </div>
                       <div className="space-y-1">
@@ -1432,14 +1300,13 @@ export function HiveScaleDiagramPanel({
                         <Input
                           id={`axis-max-${axis}`}
                           type="number"
-                          inputMode="decimal"
+                          placeholder="Auto"
                           value={settings.customMax}
-                          onChange={event =>
+                          onChange={e =>
                             updateAxisScaleSettings(axis, {
-                              customMax: event.target.value,
+                              customMax: e.target.value,
                             })
                           }
-                          placeholder="126"
                         />
                       </div>
                     </div>

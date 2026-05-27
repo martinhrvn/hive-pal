@@ -15,7 +15,6 @@ import {
   Info,
   Play,
   Plus,
-  Radio,
   RefreshCw,
   Square,
   Sun,
@@ -113,14 +112,6 @@ const statusOrDash = (
   if (value === null || value === undefined) return '—';
   return value ? trueLabel : falseLabel;
 };
-
-const transportLabel = (value: string | null | undefined) => {
-  if (!value) return '—';
-  if (value === 'sim7080g') return 'SIM7080G';
-  if (value === 'wifi') return 'WiFi';
-  return value;
-};
-
 
 const HIVESCALE_DATE_RANGE_STORAGE_KEY = 'hivescale.diagram.dateRange';
 
@@ -1711,9 +1702,6 @@ export function HiveScalePage() {
     latest?.solar_current_ma,
     latest?.solar_power_mw,
   );
-  const hasCellularTelemetry =
-    latest?.network_transport === 'sim7080g' ||
-    hasTelemetryValue(latest?.cellular_ok, latest?.cellular_csq);
 
   useEffect(() => {
     if (latest?.calibration_mode === false && isCalibrationPolling) {
@@ -1935,27 +1923,6 @@ export function HiveScalePage() {
                 {
                   label: 'Power',
                   value: `${numberOrDash(latest?.solar_power_mw, 0)} mW`,
-                },
-              ]}
-            />
-          )}
-          {hasCellularTelemetry && (
-            <LatestValuePanel
-              title="Cellular"
-              description="SIM7080G transport"
-              icon={Radio}
-              rows={[
-                {
-                  label: 'Transport',
-                  value: transportLabel(latest?.network_transport),
-                },
-                {
-                  label: 'Connected',
-                  value: statusOrDash(latest?.cellular_ok),
-                },
-                {
-                  label: 'Signal',
-                  value: `${numberOrDash(latest?.cellular_csq, 0)} CSQ`,
                 },
               ]}
             />

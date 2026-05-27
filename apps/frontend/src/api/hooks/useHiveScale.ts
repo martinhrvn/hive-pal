@@ -38,13 +38,9 @@ export interface HiveScaleMeasurement {
   solar_load_voltage_v: number | null;
   solar_current_ma: number | null;
   solar_power_mw: number | null;
-  network_transport: string | null;
-  cellular_ok: boolean | null;
-  cellular_csq: number | null;
   calibration_mode: boolean | null;
   boot_count: number | null;
   time_source: string | null;
-  rssi_dbm: number | null;
   firmware_version: string | null;
   config_version: number | null;
   sd_ok: boolean | null;
@@ -52,6 +48,29 @@ export interface HiveScaleMeasurement {
   sht_ok: boolean | null;
   scale_1_raw: number | null;
   scale_2_raw: number | null;
+  // Microphone (INMP441 stereo)
+  mic_ok: boolean | null;
+  mic_sample_rate_hz: number | null;
+  mic_sample_frames: number | null;
+  mic_left_ok: boolean | null;
+  mic_left_rms_dbfs: number | null;
+  mic_left_peak_dbfs: number | null;
+  mic_left_rms_normalized: number | null;
+  mic_right_ok: boolean | null;
+  mic_right_rms_dbfs: number | null;
+  mic_right_peak_dbfs: number | null;
+  mic_right_rms_normalized: number | null;
+  // FFT band energy per channel (dBFS, arduinoFFT)
+  mic_left_band_sub_bass_dbfs: number | null;   //   50–150 Hz
+  mic_left_band_hum_dbfs: number | null;         // 150–300 Hz  (colony hum ~200 Hz)
+  mic_left_band_piping_dbfs: number | null;      // 300–550 Hz  (queen piping)
+  mic_left_band_stress_dbfs: number | null;      // 550–1500 Hz (agitated / robbing)
+  mic_left_band_high_dbfs: number | null;        // 1500–3000 Hz (harmonic overtones)
+  mic_right_band_sub_bass_dbfs: number | null;
+  mic_right_band_hum_dbfs: number | null;
+  mic_right_band_piping_dbfs: number | null;
+  mic_right_band_stress_dbfs: number | null;
+  mic_right_band_high_dbfs: number | null;
 }
 
 export interface HiveScaleDeviceConfig {
@@ -120,7 +139,6 @@ const HIVESCALE_KEYS = {
     deviceId: string | undefined,
     query: HiveScaleMeasurementQuery | undefined,
   ) => [...HIVESCALE_KEYS.all, 'measurements', deviceId, query] as const,
-  // NEW:
   insights: (
     deviceId: string | undefined,
     query: HiveScaleInsightsQuery | undefined,
@@ -285,7 +303,6 @@ export interface HiveScaleInsightsSummaryResponse {
 export interface HiveScaleInsightsQuery {
   lookbackDays?: number;
 }
-
 
 export const useClaimHiveScaleDevice = () => {
   const queryClient = useQueryClient();
