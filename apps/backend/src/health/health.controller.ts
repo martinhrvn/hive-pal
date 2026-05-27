@@ -6,13 +6,19 @@ import {
   MemoryHealthIndicator,
   HealthCheck,
 } from '@nestjs/terminus';
+import { ConfigService } from '@nestjs/config';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PrismaHealthIndicator } from './prisma/prisma.health';
 
+const MB = 1024 * 1024;
+
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
+  private readonly heapThreshold: number;
+  private readonly rssThreshold: number;
+
   constructor(
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
@@ -20,8 +26,13 @@ export class HealthController {
     private memory: MemoryHealthIndicator,
     private prismaHealth: PrismaHealthIndicator,
     private readonly logger: CustomLoggerService,
+    config: ConfigService,
   ) {
     this.logger.setContext('HealthController');
+    this.heapThreshold =
+      Number(config.get<string>('HEALTH_HEAP_MB')) * MB || 512 * MB;
+    this.rssThreshold =
+      Number(config.get<string>('HEALTH_RSS_MB')) * MB || 1024 * MB;
   }
 
   @Get()
@@ -40,8 +51,8 @@ export class HealthController {
         this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.9 }),
 
       // Check if the memory usage is below thresholds
-      () => this.memory.checkHeap('memory_heap', 300 * 1024 * 1024), // 300MB
-      () => this.memory.checkRSS('memory_rss', 300 * 1024 * 1024), // 300MB
+      () => this.memory.checkHeap('memory_heap', this.heapThreshold),
+      () => this.memory.checkRSS('memory_rss', this.rssThreshold),
 
       // Check database connection
       () => this.prismaHealth.isHealthy('database'),
