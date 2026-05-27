@@ -75,7 +75,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
     defaultValues: {
       name: '',
       location: '',
-      settings: { inspectionType: 'data_driven' },
+      settings: { inspectionType: 'subjective' },
     },
   });
 
