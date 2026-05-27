@@ -23,6 +23,7 @@ export * from './shares';
 export * from './photos';
 export * from './documents';
 export * from './worker-tokens';
+export * from './admin-media';
 
 // Export utility functions
 export * from './utils/inspection-type';

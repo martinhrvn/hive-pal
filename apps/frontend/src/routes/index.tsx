@@ -55,6 +55,9 @@ const FrameSizeReviewPage = lazyWithRetry(
 const WorkerTokensPage = lazyWithRetry(
   () => import('@/pages/admin/worker-tokens/worker-tokens-page'),
 );
+const AdminMediaPage = lazyWithRetry(
+  () => import('@/pages/admin/media/media-page'),
+);
 
 // Heavy feature pages (named exports)
 const ReportsPage = lazyWithRetry(() =>
@@ -434,6 +437,16 @@ const router = createBrowserRouter([
           <AdminProtectedRoute>
             <LazyPage>
               <WorkerTokensPage />
+            </LazyPage>
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/media',
+        element: (
+          <AdminProtectedRoute>
+            <LazyPage>
+              <AdminMediaPage />
             </LazyPage>
           </AdminProtectedRoute>
         ),

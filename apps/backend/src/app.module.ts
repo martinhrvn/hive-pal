@@ -43,6 +43,7 @@ import { AiModule } from './ai/ai.module';
 import { ApiarySharingModule } from './apiary-sharing/apiary-sharing.module';
 import { WorkerTokensModule } from './worker-tokens/worker-tokens.module';
 import { WorkerJobsModule } from './worker-jobs/worker-jobs.module';
+import { AdminMediaModule } from './admin-media/admin-media.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { WorkerJobsModule } from './worker-jobs/worker-jobs.module';
     ApiarySharingModule,
     WorkerTokensModule,
     WorkerJobsModule,
+    AdminMediaModule,
   ],
   controllers: [AppController, EnvController],
   providers: [
