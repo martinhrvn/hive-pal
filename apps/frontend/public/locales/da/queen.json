@@ -23,7 +23,7 @@
         "marking": "Markering",
         "source": "Ophav",
         "status": "Status",
-        "installationDate": "Dato for tilsætning",
+        "installationDate": "Dato for etablering",
         "replacedDate": "Udskiftet den (Frivilligt)",
         "installedOn": "Tilsat den {{date}}",
         "via": "fra {{source}}"
