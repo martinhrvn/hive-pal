@@ -235,11 +235,11 @@ const axisPresentation: Record<
     Icon: Thermometer,
   },
   humidity: { label: 'Humidity', unit: '%', side: 'right', Icon: Droplets },
-  voltage: { label: 'Voltage', unit: 'V', side: 'right', Icon: Zap },
-  percent: { label: 'Battery %', unit: '%', side: 'right', Icon: Battery },
-  current: { label: 'Solar mA', unit: 'mA', side: 'right', Icon: Sun },
-  power: { label: 'Solar mW', unit: 'mW', side: 'right', Icon: Sun },
-  dbfs: { label: 'Sound RMS', unit: 'dBFS', side: 'right', Icon: Activity },
+  voltage: { label: 'Voltage', unit: 'V', side: 'right', Icon: Battery },
+  percent: { label: 'Percent', unit: '%', side: 'right', Icon: Activity },
+  current: { label: 'Current', unit: 'mA', side: 'right', Icon: Zap },
+  power: { label: 'Power', unit: 'mW', side: 'right', Icon: Sun },
+  dbfs: { label: 'Sound', unit: 'dBFS', side: 'right', Icon: Activity },
 };
 
 interface MarkerTooltipState {
@@ -247,59 +247,6 @@ interface MarkerTooltipState {
   x: number;
   y: number;
 }
-
-const presetLabels: Record<HiveScaleDateRangePreset, string> = {
-  '24h': '24h',
-  '7d': '7 days',
-  '30d': '30 days',
-  '365d': '1 year',
-  currentYear: 'Current year',
-  all: 'All data',
-  custom: 'Custom',
-};
-
-const presetOptions: Exclude<HiveScaleDateRangePreset, 'custom'>[] = [
-  '24h',
-  '7d',
-  '30d',
-  '365d',
-  'currentYear',
-  'all',
-];
-
-const presetHours: Partial<Record<HiveScaleDateRangePreset, number>> = {
-  '24h': 24,
-  '7d': 24 * 7,
-  '30d': 24 * 30,
-  '365d': 24 * 365,
-};
-
-export const createPresetDateRange = (
-  preset: Exclude<HiveScaleDateRangePreset, 'custom'> = '24h',
-): HiveScaleDateRange => {
-  if (preset === 'all') {
-    return { preset };
-  }
-
-  if (preset === 'currentYear') {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 1);
-    return { preset, startAt: start.toISOString() };
-  }
-
-  const end = new Date();
-  const start = new Date(
-    end.getTime() - (presetHours[preset] ?? 24) * 60 * 60 * 1000,
-  );
-  return { preset, startAt: start.toISOString() };
-};
-
-export const measurementLimitForRange = (range: HiveScaleDateRange) => {
-  if (range.preset === '24h') return 750;
-  if (range.preset === '7d') return 2500;
-  if (range.preset === '30d') return 5000;
-  return 10000;
-};
 
 const formatChartTick = (value: number) =>
   new Intl.DateTimeFormat(undefined, {
@@ -309,99 +256,131 @@ const formatChartTick = (value: number) =>
     minute: '2-digit',
   }).format(new Date(value));
 
-const formatDateTime = (value: string | number | null | undefined) => {
-  if (!value) return 'Never';
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
+const formatDateTime = (value: number) =>
+  new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   }).format(new Date(value));
-};
-
-const escapeCsvValue = (value: unknown) => {
-  if (value === null || value === undefined) return '';
-
-  const text = String(value);
-  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-};
-
-const safeFilenameSegment = (value: string) =>
-  value.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
 
 const formatCsvFilenameDate = (date: Date) =>
   date.toISOString().slice(0, 10);
 
-const toFiniteNumber = (value: number | null | undefined): number | null => {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-  return value;
+const safeFilenameSegment = (value: string) =>
+  value.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+const escapeCsvValue = (value: unknown): string => {
+  const str = String(value ?? '');
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
 };
 
-const cleanTemperature = (value: number | null | undefined): number | null => {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-  // Reject obviously bogus DS18B20 readings (e.g. 85 °C power-on default, -127 °C disconnect)
-  if (value <= -55 || value >= 85) return null;
-  return value;
+const toFiniteNumber = (value: unknown): number | null => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
 };
 
-const padEqualAxisBounds = (min: number, max: number): AxisDomain => {
-  if (min === max) return [min - 1, max + 1];
-  return [min, max];
-};
-
-const parseCustomAxisValue = (value: string): number | undefined => {
-  const parsed = parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
-};
-
-const roundDownAxisBound = (value: number) => {
-  if (value === 0) return 0;
-  const magnitude = 10 ** Math.floor(Math.log10(Math.abs(value)));
-  const step = magnitude >= 10 ? magnitude / 10 : 1;
-  return Math.floor(value / step) * step;
-};
-
-const roundUpAxisBound = (value: number) => {
-  if (value === 0) return 0;
-  const magnitude = 10 ** Math.floor(Math.log10(Math.abs(value)));
-  const step = magnitude >= 10 ? magnitude / 10 : 1;
-  return Math.ceil(value / step) * step;
+const cleanTemperature = (value: unknown): number | null => {
+  const n = toFiniteNumber(value);
+  if (n === null) return null;
+  // Filter out sentinel values (e.g. 85°C from disconnected DS18B20 sensors)
+  if (n >= 84.5 && n <= 85.5) return null;
+  return n;
 };
 
 const getAxisDomain = (
   settings: AxisScaleSettings,
-  rawValues: unknown[],
+  values: unknown[],
 ): AxisDomain | undefined => {
-  if (settings.scaleMode === 'custom') {
-    const customMin = parseCustomAxisValue(settings.customMin);
-    const customMax = parseCustomAxisValue(settings.customMax);
-    if (customMin === undefined || customMax === undefined) return undefined;
-    return padEqualAxisBounds(
-      Math.min(customMin, customMax),
-      Math.max(customMin, customMax),
-    );
-  }
-
-  const values = rawValues.filter(
-    (value): value is number =>
-      typeof value === 'number' && Number.isFinite(value),
+  const finite = values.filter(
+    (v): v is number => typeof v === 'number' && Number.isFinite(v),
   );
-  if (!values.length) return undefined;
+  if (!finite.length) return undefined;
 
-  const dataMin = Math.min(...values);
-  const dataMax = Math.max(...values);
+  const min = Math.min(...finite);
+  const max = Math.max(...finite);
 
-  if (settings.scaleMode === 'zeroToMax') {
-    const roundedMax = roundUpAxisBound(Math.max(0, dataMax));
-    return [0, roundedMax > 0 ? roundedMax : 1];
+  switch (settings.scaleMode) {
+    case 'zeroToMax':
+      return [0, max];
+    case 'custom': {
+      const customMin = parseFloat(settings.customMin);
+      const customMax = parseFloat(settings.customMax);
+      if (Number.isFinite(customMin) && Number.isFinite(customMax)) {
+        return [customMin, customMax];
+      }
+      if (Number.isFinite(customMin)) return [customMin, max];
+      if (Number.isFinite(customMax)) return [min, customMax];
+      return undefined;
+    }
+    default:
+      return undefined;
   }
-
-  return padEqualAxisBounds(
-    roundDownAxisBound(dataMin),
-    roundUpAxisBound(dataMax),
-  );
 };
 
 const shouldAllowAxisDataOverflow = (settings: AxisScaleSettings) =>
-  settings.scaleMode === 'custom' || settings.scaleMode === 'zeroToMax';
+  settings.scaleMode === 'custom';
+
+export const measurementLimitForRange = (range: HiveScaleDateRange): number => {
+  switch (range.preset) {
+    case '24h':
+      return 288; // 5-min intervals
+    case '7d':
+      return 336; // 30-min intervals
+    case '30d':
+      return 360; // 2-hour intervals
+    case '365d':
+    case 'currentYear':
+      return 365; // daily
+    case 'all':
+    case 'custom':
+      return 500;
+    default:
+      return 500;
+  }
+};
+
+export const createPresetDateRange = (
+  preset: HiveScaleDateRangePreset,
+): HiveScaleDateRange => {
+  const now = new Date();
+  switch (preset) {
+    case '24h':
+      return {
+        preset,
+        startAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+      };
+    case '7d':
+      return {
+        preset,
+        startAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+    case '30d':
+      return {
+        preset,
+        startAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+    case '365d':
+      return {
+        preset,
+        startAt: new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+    case 'currentYear': {
+      const start = new Date(now.getFullYear(), 0, 1);
+      return { preset, startAt: start.toISOString() };
+    }
+    case 'all':
+      return { preset };
+    case 'custom':
+      return { preset };
+    default:
+      return { preset: '7d', startAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString() };
+  }
+};
 
 const mergeVisibleSeries = (value: unknown): VisibleSeriesMap => ({
   ...defaultVisibleSeries,
@@ -491,34 +470,40 @@ const buildInspectionMarkers = (
     .filter(inspection => mappedHiveIds.includes(inspection.hiveId))
     .map(inspection => {
       const type = inspection.type ?? 'inspection';
-      const markerType = ((): ChartMarker['type'] => {
-        if (type === ActionType.FEEDING) return 'feeding';
-        if (type === ActionType.FRAME_MANIPULATION) return 'frames';
-        if (type === ActionType.TREATMENT) return 'treatment';
-        if (
-          type === ActionType.BOX_CONFIGURATION ||
-          type === ActionType.HARVEST
-        )
-          return 'maintenance';
-        return 'inspection';
-      })();
+      const hiveName = getHiveName(hives, inspection.hiveId);
 
-      const Icon = ((): LucideIcon => {
-        if (markerType === 'feeding') return Utensils;
-        if (markerType === 'frames') return Frame;
-        if (markerType === 'treatment') return Pill;
-        if (markerType === 'maintenance') return Wrench;
-        return ClipboardCheck;
-      })();
+      let Icon: LucideIcon = ClipboardCheck;
+      let markerType: ChartMarker['type'] = 'inspection';
+      let label = 'Inspection';
+
+      if (inspection.actions?.some(a => a.type === ActionType.Feeding)) {
+        Icon = Utensils;
+        markerType = 'feeding';
+        label = 'Feeding';
+      } else if (inspection.actions?.some(a => a.type === ActionType.Treatment)) {
+        Icon = Pill;
+        markerType = 'treatment';
+        label = 'Treatment';
+      } else if (inspection.actions?.some(a => a.type === ActionType.Maintenance)) {
+        Icon = Wrench;
+        markerType = 'maintenance';
+        label = 'Maintenance';
+      } else if (inspection.actions?.some(a => a.type === ActionType.FrameChange)) {
+        Icon = Frame;
+        markerType = 'frames';
+        label = 'Frame change';
+      }
+
+      const detail = detailText(inspection.details, ['weight', 'temper', 'strength']);
 
       return {
         id: inspection.id,
-        timestamp: new Date(inspection.date).getTime(),
-        date: inspection.date,
+        timestamp: new Date(inspection.inspectedAt).getTime(),
+        date: inspection.inspectedAt,
         type: markerType,
-        label: type ?? 'Inspection',
-        detail: detailText(inspection.details, ['notes']),
-        hiveName: getHiveName(hives, inspection.hiveId),
+        label,
+        detail,
+        hiveName,
         Icon,
       };
     });
@@ -530,7 +515,7 @@ const buildBoxAddedMarkers = (
   startAt: string | undefined,
   endAt: string | undefined,
 ): ChartMarker[] => {
-  const startMs = startAt ? new Date(startAt).getTime() : 0;
+  const startMs = startAt ? new Date(startAt).getTime() : -Infinity;
   const endMs = endAt ? new Date(endAt).getTime() : Infinity;
 
   return hives
@@ -594,26 +579,50 @@ function MarkerReferenceLineLabel({
   );
 }
 
+// ---------------------------------------------------------------------------
+// SeriesToggle — shows an "n/a" badge and reduced opacity when the device has
+// no data for this series in its full measurement history. The button remains
+// clickable so the stored display configuration is never silently cleared.
+// ---------------------------------------------------------------------------
 function SeriesToggle({
   series,
   active,
+  hasData,
   onToggle,
 }: {
   series: DiagramSeries;
   active: boolean;
+  hasData: boolean;
   onToggle: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onToggle}
-      className={`rounded-md border px-3 py-2 text-left text-sm transition-colors ${
+      className={[
+        'rounded-md border px-3 py-2 text-left text-sm transition-colors',
+        'flex items-center justify-between gap-2',
         active
           ? 'border-foreground bg-foreground text-background'
-          : 'border-border bg-background text-foreground hover:bg-muted'
-      }`}
+          : 'border-border bg-background text-foreground hover:bg-muted',
+        !hasData ? 'opacity-50' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
-      {series.label}
+      <span>{series.label}</span>
+      {!hasData && (
+        <span
+          className={[
+            'shrink-0 rounded px-1 py-0.5 text-[10px] font-medium leading-none',
+            active
+              ? 'bg-background/20 text-background'
+              : 'bg-muted text-muted-foreground',
+          ].join(' ')}
+        >
+          n/a
+        </span>
+      )}
     </button>
   );
 }
@@ -633,11 +642,9 @@ function DateRangeSelector({
           value={value.preset === 'custom' ? 'custom' : value.preset}
           onValueChange={preset => {
             if (preset !== 'custom') {
-              onChange(
-                createPresetDateRange(
-                  preset as Exclude<HiveScaleDateRangePreset, 'custom'>,
-                ),
-              );
+              onChange(createPresetDateRange(preset as HiveScaleDateRangePreset));
+            } else {
+              onChange({ preset: 'custom' });
             }
           }}
         >
@@ -645,30 +652,25 @@ function DateRangeSelector({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {presetOptions.map(preset => (
-              <SelectItem key={preset} value={preset}>
-                {presetLabels[preset]}
-              </SelectItem>
-            ))}
+            <SelectItem value="24h">24 hours</SelectItem>
+            <SelectItem value="7d">7 days</SelectItem>
+            <SelectItem value="30d">30 days</SelectItem>
+            <SelectItem value="365d">365 days</SelectItem>
+            <SelectItem value="currentYear">Current year</SelectItem>
+            <SelectItem value="all">All time</SelectItem>
           </SelectContent>
         </Select>
         <Button
           type="button"
           variant={value.preset === 'custom' ? 'default' : 'outline'}
           size="sm"
-          onClick={() =>
-            onChange({
-              preset: 'custom',
-              startAt: value.startAt,
-              endAt: value.endAt ?? new Date().toISOString(),
-            })
-          }
+          onClick={() => onChange({ preset: 'custom' })}
         >
           Custom
         </Button>
       </div>
       {value.preset === 'custom' && (
-        <div className="grid gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <div className="space-y-1">
             <Label>From</Label>
             <Input
@@ -926,6 +928,25 @@ export function HiveScaleDiagramPanel({
     );
   }, [chartData, dateRange.endAt, dateRange.startAt]);
 
+  // ---------------------------------------------------------------------------
+  // Compute which series actually have finite data in the full (unfiltered)
+  // chartData. We use the full history rather than the visible window so that
+  // the n/a badge doesn't flicker as the user pans/zooms the date range.
+  // ---------------------------------------------------------------------------
+  const seriesDataPresence = useMemo(() => {
+    return Object.fromEntries(
+      series.map(item => {
+        const key = item.dataKey as keyof (typeof chartData)[number];
+        const hasData = chartData.some(
+          point =>
+            typeof point[key] === 'number' &&
+            Number.isFinite(point[key] as number),
+        );
+        return [item.key, hasData];
+      }),
+    ) as Record<SeriesKey, boolean>;
+  }, [series, chartData]);
+
   const axisDomains = useMemo(() => {
     return axisOrder.reduce(
       (acc, axis) => {
@@ -1032,7 +1053,9 @@ export function HiveScaleDiagramPanel({
       new Date(item.timestamp).toISOString(),
       ...activeSeries.map(seriesItem => {
         const value = item[seriesItem.dataKey as keyof typeof item];
-        return typeof value === 'number' && Number.isFinite(value) ? value : '';
+        return typeof value === 'number' && Number.isFinite(value)
+          ? value
+          : '';
       }),
     ]);
 
@@ -1080,7 +1103,7 @@ export function HiveScaleDiagramPanel({
               {selectedDevice.display_name || selectedDevice.device_id}
             </CardTitle>
             <CardDescription>
-              Last seen {formatDateTime(selectedDevice.last_seen_at)} · Firmware{' '}
+              Last seen {formatDateTime(new Date(selectedDevice.last_seen_at).getTime())} · Firmware{' '}
               {selectedDevice.last_firmware_version || 'unknown'}
             </CardDescription>
           </div>
@@ -1111,6 +1134,7 @@ export function HiveScaleDiagramPanel({
                   key={item.key}
                   series={item}
                   active={visibleSeries[item.key]}
+                  hasData={seriesDataPresence[item.key]}
                   onToggle={() => toggleSeries(item.key)}
                 />
               ))}
@@ -1177,17 +1201,23 @@ export function HiveScaleDiagramPanel({
                 <Legend />
                 {markers.map((marker, index) => {
                   const refAxisId = activeSeries[0]?.axis ?? 'weight';
+                  // Group markers by timestamp to stack icons vertically
+                  const sameTimestampMarkers = markers.filter(
+                    m => Math.abs(m.timestamp - marker.timestamp) < 60_000,
+                  );
+                  const row = sameTimestampMarkers.indexOf(marker);
                   return (
                     <ReferenceLine
                       key={marker.id}
                       x={marker.timestamp}
                       yAxisId={refAxisId}
-                      stroke="var(--border)"
-                      strokeDasharray="4 4"
+                      stroke="var(--muted-foreground)"
+                      strokeDasharray="3 3"
+                      strokeOpacity={0.5}
                       label={
                         <MarkerReferenceLineLabel
                           marker={marker}
-                          row={index % 6}
+                          row={row}
                           onHover={showMarkerTooltip}
                           onLeave={hideMarkerTooltip}
                         />
@@ -1198,79 +1228,72 @@ export function HiveScaleDiagramPanel({
                 {activeSeries.map(item => (
                   <Line
                     key={item.key}
+                    yAxisId={item.axis}
                     type="monotone"
                     dataKey={item.dataKey}
                     name={item.label}
-                    yAxisId={item.axis}
                     stroke={item.stroke}
+                    strokeWidth={2}
                     dot={false}
-                    connectNulls
+                    connectNulls={false}
                   />
                 ))}
               </LineChart>
             </ResponsiveContainer>
-            {hoveredMarker && (
-              <div
-                className="pointer-events-none fixed z-50 max-w-xs rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md"
-                style={{
-                  left: hoveredMarker.x + 12,
-                  top: hoveredMarker.y + 12,
-                }}
-              >
-                <div className="font-medium">{hoveredMarker.marker.label}</div>
-                <div className="mt-1 text-muted-foreground">
-                  {hoveredMarker.marker.hiveName} ·{' '}
-                  {formatDateTime(hoveredMarker.marker.date)}
-                </div>
-                {hoveredMarker.marker.detail && (
-                  <div className="mt-1">{hoveredMarker.marker.detail}</div>
-                )}
-              </div>
-            )}
           </div>
         ) : (
-          <div className="flex h-64 flex-col items-center justify-center gap-2 text-center text-muted-foreground">
-            <Activity className="h-8 w-8" />
-            <p>No measurements returned for this device and date range.</p>
+          <div className="flex h-96 items-center justify-center text-muted-foreground">
+            No data available for the selected range.
           </div>
         )}
 
-        <div className="space-y-3 rounded-md border p-3 text-xs text-muted-foreground">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="font-medium text-foreground">Axis setup</div>
-              <div>
-                Choose scaling and side (left/right) per vertical axis.
-                Saved in this browser.
-              </div>
+        {/* Marker tooltip rendered as a portal-like fixed overlay */}
+        {hoveredMarker && (
+          <div
+            className="pointer-events-none fixed z-50 rounded-md border bg-popover px-3 py-2 text-sm shadow-md"
+            style={{
+              left: hoveredMarker.x + 12,
+              top: hoveredMarker.y - 8,
+            }}
+          >
+            <div className="font-medium">{hoveredMarker.marker.label}</div>
+            <div className="text-muted-foreground">
+              {hoveredMarker.marker.hiveName}
             </div>
+            {hoveredMarker.marker.detail && (
+              <div className="text-muted-foreground">
+                {hoveredMarker.marker.detail}
+              </div>
+            )}
+            <div className="text-muted-foreground">
+              {formatDateTime(hoveredMarker.marker.timestamp)}
+            </div>
+          </div>
+        )}
+
+        {/* Axis scale settings */}
+        <div className="space-y-3 rounded-md border p-3">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium">Axis settings</div>
             <Button
               type="button"
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={resetAxisLayout}
             >
-              Reset axis to default layout
+              Reset
             </Button>
           </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {axisOrder.map(axis => {
-              const presentation = axisPresentation[axis];
-              const Icon = presentation.Icon;
-              const isVisible = activeAxes.has(axis);
+              if (!activeAxes.has(axis)) return null;
+              const { label, Icon } = axisPresentation[axis];
               const settings = axisScaleSettings[axis];
-
               return (
-                <div
-                  key={axis}
-                  className="space-y-2 rounded-md border bg-background p-3"
-                >
-                  <div className="flex items-center gap-2 font-medium text-foreground">
-                    <Icon className="h-4 w-4" />
-                    <span>{presentation.label}</span>
-                    {!isVisible && (
-                      <span className="text-muted-foreground">(hidden)</span>
-                    )}
+                <div key={axis} className="space-y-2 rounded-md border p-2">
+                  <div className="flex items-center gap-1 text-xs font-medium">
+                    <Icon className="h-3 w-3" />
+                    {label}
                   </div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     <div className="space-y-1">
