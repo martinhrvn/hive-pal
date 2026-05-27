@@ -1226,9 +1226,9 @@ export function HiveScaleDiagramPanel({
                 data={visibleChartData}
                 margin={{
                   top: 32,
-                  right: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'right') ? 80 : 24,
+                  right: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'right') ? 48 : 8,
                   bottom: 8,
-                  left: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'left') ? 64 : 0,
+                  left: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'left') ? 8 : 0,
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -1252,9 +1252,9 @@ export function HiveScaleDiagramPanel({
                   const { unit } = axisPresentation[axis];
                   const settings = axisScaleSettings[axis];
                   const unitWidths: Partial<Record<SeriesAxis, number>> = {
-                    current: 72,
-                    power: 76,
-                    signal: 76,
+                    current: 58,
+                    power: 62,
+                    signal: 62,
                   };
                   return (
                     <YAxis
@@ -1262,7 +1262,7 @@ export function HiveScaleDiagramPanel({
                       yAxisId={axis}
                       orientation={settings.side}
                       unit={` ${unit}`}
-                      width={unitWidths[axis] ?? 64}
+                      width={unitWidths[axis] ?? 52}
                       domain={axisDomains[axis]}
                       allowDataOverflow={shouldAllowAxisDataOverflow(settings)}
                     />
