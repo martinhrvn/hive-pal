@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import {
   Activity,
   Battery,
-  Box,
-  CalendarDays,
   ClipboardCheck,
   Download,
   Droplets,
