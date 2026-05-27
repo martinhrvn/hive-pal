@@ -52,6 +52,7 @@ import {
   type HiveScaleDateRange,
   type HiveScaleDateRangePreset,
 } from './hivescale-diagram-panel';
+import { HiveScaleSoundPanel } from './hivescale-sound-panel';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -538,7 +539,7 @@ function DeviceConfigCard({
       }
     }
 
-    return { raw: latestRaw, measuredAt: latest.measured_at };
+    return { raw: latestRaw as number, measuredAt: latest.measured_at };
   };
 
   const captureEmptyRaw = () => {
@@ -655,7 +656,7 @@ function DeviceConfigCard({
       toast.error(`No latest raw reading available for ${scaleName} yet.`);
       return;
     }
-    setOffset(String(raw));
+    setOffset(String(raw as number));
     toast.success(`${scaleName} offset set to latest raw reading.`);
   };
 
@@ -689,7 +690,7 @@ function DeviceConfigCard({
       return;
     }
 
-    const factor = (raw - parsedOffset) / parsedKnownWeightKg;
+    const factor = ((raw as number) - parsedOffset) / parsedKnownWeightKg;
     if (!Number.isFinite(factor) || factor === 0) {
       toast.error(
         `${scaleName} factor could not be calculated. Check the latest raw, offset, and known weight.`,
@@ -1950,6 +1951,16 @@ export function HiveScalePage() {
           scale2Name={scale2Name}
           inspections={inspections.data}
           hives={hives.data}
+        />
+      )}
+
+      {selectedDevice && (
+        <HiveScaleSoundPanel
+          measurements={measurements.data}
+          isLoading={measurements.isLoading}
+          dateRange={dateRange}
+          scale1Name={scale1Name}
+          scale2Name={scale2Name}
         />
       )}
     </div>

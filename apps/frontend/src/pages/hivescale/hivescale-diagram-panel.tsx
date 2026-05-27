@@ -80,7 +80,8 @@ type SeriesAxis =
   | 'voltage'
   | 'percent'
   | 'current'
-  | 'power';
+  | 'power'
+  | 'dbfs';
 
 type SeriesKey =
   | 'scale1Weight'
@@ -93,7 +94,9 @@ type SeriesKey =
   | 'batterySoc'
   | 'solarLoadVoltage'
   | 'solarCurrent'
-  | 'solarPower';
+  | 'solarPower'
+  | 'micLeftRms'
+  | 'micRightRms';
 
 interface DiagramSeries {
   key: SeriesKey;
@@ -137,7 +140,7 @@ interface AxisScaleSettings {
 type AxisScaleSettingsMap = Record<SeriesAxis, AxisScaleSettings>;
 
 interface StoredDiagramSettings {
-  version: 3;
+  version: 4;
   visibleSeries: VisibleSeriesMap;
   axes: AxisScaleSettingsMap;
 }
@@ -156,6 +159,8 @@ const defaultVisibleSeries: VisibleSeriesMap = {
   solarLoadVoltage: false,
   solarCurrent: false,
   solarPower: false,
+  micLeftRms: false,
+  micRightRms: false,
 };
 
 const defaultAxisScaleSettings: AxisScaleSettingsMap = {
@@ -201,6 +206,12 @@ const defaultAxisScaleSettings: AxisScaleSettingsMap = {
     customMax: '',
     side: 'right',
   },
+  dbfs: {
+    scaleMode: 'maxRange',
+    customMin: '',
+    customMax: '',
+    side: 'right',
+  },
 };
 
 const axisOrder: SeriesAxis[] = [
@@ -211,6 +222,7 @@ const axisOrder: SeriesAxis[] = [
   'percent',
   'current',
   'power',
+  'dbfs',
 ];
 
 const axisPresentation: Record<
@@ -229,6 +241,7 @@ const axisPresentation: Record<
   percent: { label: 'Battery %', unit: '%', side: 'right', Icon: Battery },
   current: { label: 'Solar mA', unit: 'mA', side: 'right', Icon: Sun },
   power: { label: 'Solar mW', unit: 'mW', side: 'right', Icon: Sun },
+  dbfs: { label: 'Sound RMS', unit: 'dBFS', side: 'right', Icon: Activity },
 };
 
 interface MarkerTooltipState {
@@ -422,7 +435,7 @@ const mergeAxisScaleSettings = (value: unknown): AxisScaleSettingsMap => {
 };
 
 const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
-  version: 3,
+  version: 4,
   visibleSeries: defaultVisibleSeries,
   axes: defaultAxisScaleSettings,
 });
@@ -437,9 +450,11 @@ const loadStoredDiagramSettings = (
     if (!raw) return getDefaultDiagramSettings();
 
     const parsed = JSON.parse(raw) as Partial<StoredDiagramSettings>;
-    // Version 2 → 3: side was not persisted; fall back to axisPresentation defaults (handled in mergeAxisScaleSettings).
+    // Version 2 → 3: side was not persisted.
+    // Version 3 → 4: added micLeftRms / micRightRms series and dbfs axis.
+    // mergeVisibleSeries and mergeAxisScaleSettings handle missing keys gracefully.
     return {
-      version: 3,
+      version: 4,
       visibleSeries: mergeVisibleSeries(parsed.visibleSeries),
       axes: mergeAxisScaleSettings(parsed.axes),
     };
@@ -836,6 +851,24 @@ export function HiveScaleDiagramPanel({
         stroke: 'var(--chart-4)',
         group: 'Off-grid',
       },
+      {
+        key: 'micLeftRms',
+        label: 'Mic left RMS',
+        dataKey: 'micLeftRms',
+        axis: 'dbfs',
+        unit: 'dBFS',
+        stroke: 'var(--chart-1)',
+        group: 'Sound',
+      },
+      {
+        key: 'micRightRms',
+        label: 'Mic right RMS',
+        dataKey: 'micRightRms',
+        axis: 'dbfs',
+        unit: 'dBFS',
+        stroke: 'var(--chart-2)',
+        group: 'Sound',
+      },
     ],
     [scale1Name, scale2Name],
   );
@@ -873,6 +906,8 @@ export function HiveScaleDiagramPanel({
           solarLoadVoltage: toFiniteNumber(item.solar_load_voltage_v),
           solarCurrent: toFiniteNumber(item.solar_current_ma),
           solarPower: toFiniteNumber(item.solar_power_mw),
+          micLeftRms: toFiniteNumber(item.mic_left_rms_dbfs),
+          micRightRms: toFiniteNumber(item.mic_right_rms_dbfs),
         }))
         .filter(item => Number.isFinite(item.timestamp)),
     [measurements],
@@ -1123,6 +1158,7 @@ export function HiveScaleDiagramPanel({
                   const unitWidths: Partial<Record<SeriesAxis, number>> = {
                     current: 58,
                     power: 62,
+                    dbfs: 68,
                   };
                   return (
                     <YAxis
