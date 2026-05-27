@@ -469,7 +469,6 @@ const buildInspectionMarkers = (
   return inspections
     .filter(inspection => mappedHiveIds.includes(inspection.hiveId))
     .map(inspection => {
-      const type = inspection.type ?? 'inspection';
       const hiveName = getHiveName(hives, inspection.hiveId);
 
       let Icon: LucideIcon = ClipboardCheck;
@@ -1199,7 +1198,7 @@ export function HiveScaleDiagramPanel({
                   formatter={(value, name) => [value, name]}
                 />
                 <Legend />
-                {markers.map((marker, index) => {
+                {markers.map((marker) => {
                   const refAxisId = activeSeries[0]?.axis ?? 'weight';
                   // Group markers by timestamp to stack icons vertically
                   const sameTimestampMarkers = markers.filter(
