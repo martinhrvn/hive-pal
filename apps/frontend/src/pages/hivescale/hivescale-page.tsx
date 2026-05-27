@@ -1596,14 +1596,22 @@ export function HiveScalePage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCalibrationPolling, setIsCalibrationPolling] = useState(false);
   const devices = useHiveScaleDevices();
-  const measurementQuery = useMemo(
-    () => ({
+  const measurementQuery = useMemo(() => {
+    // For non-custom presets recompute startAt live on every render so a stale
+    // timestamp stored from a previous session never gets sent to the API.
+    const effectiveStartAt =
+      dateRange.preset === 'all'
+        ? undefined
+        : dateRange.preset === 'custom'
+          ? dateRange.startAt
+          : createPresetDateRange(dateRange.preset).startAt;
+
+    return {
       limit: measurementLimitForRange(dateRange),
-      start_at: dateRange.preset === 'all' ? undefined : dateRange.startAt,
+      start_at: effectiveStartAt,
       end_at: dateRange.preset === 'custom' ? dateRange.endAt : undefined,
-    }),
-    [dateRange],
-  );
+    };
+  }, [dateRange]);
   const measurements = useHiveScaleMeasurements(
     selectedDeviceId,
     measurementQuery,
