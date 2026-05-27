@@ -13,6 +13,7 @@ import {
   useInspectionAudioAiStatus,
   useInspectionAudioAiResult,
 } from '@/api/hooks/useInspectionAudioAi';
+import { useWorkerStatus } from '@/api/hooks/useWorkerTokens';
 import { useNavigate } from 'react-router-dom';
 
 interface AudioCardProps {
@@ -44,11 +45,28 @@ interface RecordingRowProps {
     fileName: string;
     duration?: number | null;
     transcriptionStatus?: RecordingAiStatus;
+    analysisStatus?: RecordingAiStatus;
     transcription?: string | null;
   };
   getDownloadUrl: (audioId: string) => Promise<string>;
   onDelete: (audioId: string) => Promise<void>;
   isDeleting: boolean;
+}
+
+function deriveStageLabel(
+  transcriptionStatus: RecordingAiStatus,
+  analysisStatus: RecordingAiStatus,
+): string {
+  if (transcriptionStatus === 'FAILED') return 'Transcription failed';
+  if (analysisStatus === 'FAILED') return 'Analysis failed';
+  if (transcriptionStatus === 'PENDING') return 'Waiting to transcribe';
+  if (transcriptionStatus === 'PROCESSING') return 'Transcribing...';
+  if (analysisStatus === 'PENDING') return 'Waiting to analyze';
+  if (analysisStatus === 'PROCESSING') return 'Analyzing...';
+  if (analysisStatus === 'COMPLETED') return 'Completed';
+  if (transcriptionStatus === 'COMPLETED' && analysisStatus === 'NONE')
+    return 'Transcribed';
+  return 'Idle';
 }
 
 function getAnalyzeButtonLabel(
@@ -71,6 +89,8 @@ function scheduleCopyStateReset(setter: (value: CopyState) => void) {
 
 function AiPanel({
   effectiveStatus,
+  stageLabel,
+  showWaitingForWorker,
   showAiOutput,
   setShowAiOutput,
   aiResult,
@@ -83,6 +103,8 @@ function AiPanel({
   isLoadingResult,
 }: {
   effectiveStatus: RecordingAiStatus;
+  stageLabel: string;
+  showWaitingForWorker: boolean;
   showAiOutput: boolean;
   setShowAiOutput: React.Dispatch<React.SetStateAction<boolean>>;
   aiResult: InspectionAiResult | undefined;
@@ -116,8 +138,15 @@ function AiPanel({
       </div>
 
       <div className="text-sm text-muted-foreground">
-        Status: {effectiveStatus}
+        Status: {stageLabel}
       </div>
+
+      {showWaitingForWorker && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
+          No worker online — job will be picked up when a worker connects.
+        </div>
+      )}
 
       {effectiveStatus === 'FAILED' && (
         <div className="text-sm text-red-600">
@@ -230,15 +259,40 @@ function RecordingRow({
     isPollingEnabled,
   );
 
-  const effectiveStatus: RecordingAiStatus =
+  const transcriptionStatus: RecordingAiStatus =
     statusQuery.data?.transcriptionStatus ??
     recording.transcriptionStatus ??
     'NONE';
+  const analysisStatus: RecordingAiStatus =
+    statusQuery.data?.analysisStatus ??
+    recording.analysisStatus ??
+    'NONE';
+
+  // Combined status — what the rest of the UI cares about. COMPLETED only when
+  // both stages are done.
+  const effectiveStatus: RecordingAiStatus =
+    transcriptionStatus === 'FAILED' || analysisStatus === 'FAILED'
+      ? 'FAILED'
+      : analysisStatus === 'COMPLETED'
+        ? 'COMPLETED'
+        : transcriptionStatus === 'PROCESSING' ||
+            analysisStatus === 'PROCESSING'
+          ? 'PROCESSING'
+          : transcriptionStatus === 'PENDING' || analysisStatus === 'PENDING'
+            ? 'PENDING'
+            : transcriptionStatus;
+
+  const stageLabel = deriveStageLabel(transcriptionStatus, analysisStatus);
+
+  const { data: workerStatus } = useWorkerStatus();
+  const showWaitingForWorker =
+    (transcriptionStatus === 'PENDING' || analysisStatus === 'PENDING') &&
+    (workerStatus?.workersOnline ?? 0) === 0;
 
   const resultQuery = useInspectionAudioAiResult(
     inspectionId,
     recording.id,
-    effectiveStatus === 'COMPLETED',
+    analysisStatus === 'COMPLETED',
   );
 
   const navigate = useNavigate();
@@ -403,6 +457,8 @@ function RecordingRow({
       {shouldShowAiPanel && (
         <AiPanel
           effectiveStatus={effectiveStatus}
+          stageLabel={stageLabel}
+          showWaitingForWorker={showWaitingForWorker}
           showAiOutput={showAiOutput}
           setShowAiOutput={setShowAiOutput}
           aiResult={aiResult}

@@ -30,8 +30,12 @@ export const useInspectionAudioAiStatus = (
     },
     enabled,
     refetchInterval: query => {
-      const status = query.state.data?.transcriptionStatus;
-      return status === 'PENDING' || status === 'PROCESSING' ? 3000 : false;
+      const data = query.state.data;
+      const transcription = data?.transcriptionStatus;
+      const analysis = data?.analysisStatus;
+      const active = (s: string | undefined) =>
+        s === 'PENDING' || s === 'PROCESSING';
+      return active(transcription) || active(analysis) ? 3000 : false;
     },
   });
 };
