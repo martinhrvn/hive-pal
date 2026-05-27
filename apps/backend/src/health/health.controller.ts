@@ -3,8 +3,8 @@ import {
   HealthCheckService,
   HttpHealthIndicator,
   DiskHealthIndicator,
-  MemoryHealthIndicator,
   HealthCheck,
+  HealthIndicatorResult,
 } from '@nestjs/terminus';
 import { ConfigService } from '@nestjs/config';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -23,7 +23,6 @@ export class HealthController {
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
     private disk: DiskHealthIndicator,
-    private memory: MemoryHealthIndicator,
     private prismaHealth: PrismaHealthIndicator,
     private readonly logger: CustomLoggerService,
     config: ConfigService,
@@ -50,12 +49,40 @@ export class HealthController {
       () =>
         this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.9 }),
 
-      // Check if the memory usage is below thresholds
-      () => this.memory.checkHeap('memory_heap', this.heapThreshold),
-      () => this.memory.checkRSS('memory_rss', this.rssThreshold),
+      // Memory is reported but never fails the health check — high memory is
+      // a warning, not "service unavailable". Watch /metrics for trends.
+      () => this.memoryReport(),
 
       // Check database connection
       () => this.prismaHealth.isHealthy('database'),
     ]);
+  }
+
+  private memoryReport(): HealthIndicatorResult {
+    const { heapUsed, rss } = process.memoryUsage();
+    const heapOver = heapUsed > this.heapThreshold;
+    const rssOver = rss > this.rssThreshold;
+
+    if (heapOver || rssOver) {
+      this.logger.warn({
+        message: 'Memory usage over threshold (not failing health)',
+        heapUsed,
+        heapThreshold: this.heapThreshold,
+        rss,
+        rssThreshold: this.rssThreshold,
+      });
+    }
+
+    return {
+      memory: {
+        status: 'up',
+        heapUsed,
+        heapThreshold: this.heapThreshold,
+        heapOverThreshold: heapOver,
+        rss,
+        rssThreshold: this.rssThreshold,
+        rssOverThreshold: rssOver,
+      },
+    };
   }
 }
