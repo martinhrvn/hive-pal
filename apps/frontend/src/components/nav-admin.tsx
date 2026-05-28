@@ -153,6 +153,62 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           </svg>
           {!collapsed && <span>{t('navigation.metrics')}</span>}
         </Link>
+        <Link
+          to="/admin/media"
+          onClick={handleMobileClose}
+          className={cn(
+            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            {
+              'justify-center': collapsed,
+              'bg-accent': isActive('/admin/media'),
+            },
+          )}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn('h-4 w-4', {
+              'mr-2': !collapsed,
+            })}
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+          </svg>
+          {!collapsed && <span>Media</span>}
+        </Link>
+        <Link
+          to="/admin/worker-tokens"
+          onClick={handleMobileClose}
+          className={cn(
+            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            {
+              'justify-center': collapsed,
+              'bg-accent': isActive('/admin/worker-tokens'),
+            },
+          )}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn('h-4 w-4', {
+              'mr-2': !collapsed,
+            })}
+          >
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+          </svg>
+          {!collapsed && <span>Worker Tokens</span>}
+        </Link>
       </div>
     </div>
   );
