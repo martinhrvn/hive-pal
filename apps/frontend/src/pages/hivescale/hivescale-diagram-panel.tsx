@@ -79,7 +79,8 @@ type SeriesAxis =
   | 'percent'
   | 'current'
   | 'power'
-  | 'dbfs';
+  | 'dbfs'
+  | 'beecount';
 
 type SeriesKey =
   | 'scale1Weight'
@@ -94,7 +95,13 @@ type SeriesKey =
   | 'solarCurrent'
   | 'solarPower'
   | 'micLeftRms'
-  | 'micRightRms';
+  | 'micRightRms'
+  | 'beeCounter1In'
+  | 'beeCounter1Out'
+  | 'beeCounter1Net'
+  | 'beeCounter2In'
+  | 'beeCounter2Out'
+  | 'beeCounter2Net';
 
 interface DiagramSeries {
   key: SeriesKey;
@@ -138,7 +145,7 @@ interface AxisScaleSettings {
 type AxisScaleSettingsMap = Record<SeriesAxis, AxisScaleSettings>;
 
 interface StoredDiagramSettings {
-  version: 4;
+  version: 5;
   visibleSeries: VisibleSeriesMap;
   axes: AxisScaleSettingsMap;
 }
@@ -147,9 +154,9 @@ const diagramSettingsStoragePrefix = 'hivepal:hivescale-diagram:';
 
 const defaultVisibleSeries: VisibleSeriesMap = {
   scale1Weight: true,
-  scale1Temperature: false,
+  scale1Temperature: true,
   scale2Weight: true,
-  scale2Temperature: false,
+  scale2Temperature: true,
   ambientTemperature: false,
   ambientHumidity: false,
   batteryVoltage: false,
@@ -159,58 +166,36 @@ const defaultVisibleSeries: VisibleSeriesMap = {
   solarPower: false,
   micLeftRms: false,
   micRightRms: false,
+  beeCounter1In: false,
+  beeCounter1Out: false,
+  beeCounter1Net: false,
+  beeCounter2In: false,
+  beeCounter2Out: false,
+  beeCounter2Net: false,
 };
 
-const defaultAxisScaleSettings: AxisScaleSettingsMap = {
-  weight: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'left',
-  },
-  temperature: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
-  humidity: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
-  voltage: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
-  percent: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
-  current: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
-  power: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
-  dbfs: {
-    scaleMode: 'maxRange',
-    customMin: '',
-    customMax: '',
-    side: 'right',
-  },
+const defaultAxisSettings: AxisScaleSettings = {
+  scaleMode: 'maxRange',
+  customMin: '',
+  customMax: '',
+  side: 'left',
 };
+
+const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
+  version: 5,
+  visibleSeries: { ...defaultVisibleSeries },
+  axes: {
+    weight: { ...defaultAxisSettings, side: 'left' },
+    temperature: { ...defaultAxisSettings, side: 'right' },
+    humidity: { ...defaultAxisSettings, side: 'right' },
+    voltage: { ...defaultAxisSettings, side: 'right' },
+    percent: { ...defaultAxisSettings, side: 'right' },
+    current: { ...defaultAxisSettings, side: 'right' },
+    power: { ...defaultAxisSettings, side: 'right' },
+    dbfs: { ...defaultAxisSettings, side: 'right' },
+    beecount: { ...defaultAxisSettings, scaleMode: 'zeroToMax', side: 'right' },
+  },
+});
 
 const axisOrder: SeriesAxis[] = [
   'weight',
@@ -221,32 +206,27 @@ const axisOrder: SeriesAxis[] = [
   'current',
   'power',
   'dbfs',
+  'beecount',
 ];
 
 const axisPresentation: Record<
   SeriesAxis,
-  { label: string; unit: string; side: 'left' | 'right'; Icon: LucideIcon }
+  { label: string; unit: string; Icon: LucideIcon }
 > = {
-  weight: { label: 'Weight', unit: 'kg', side: 'left', Icon: Scale },
-  temperature: {
-    label: 'Temperature',
-    unit: '°C',
-    side: 'right',
-    Icon: Thermometer,
-  },
-  humidity: { label: 'Humidity', unit: '%', side: 'right', Icon: Droplets },
-  voltage: { label: 'Voltage', unit: 'V', side: 'right', Icon: Battery },
-  percent: { label: 'Percent', unit: '%', side: 'right', Icon: Activity },
-  current: { label: 'Current', unit: 'mA', side: 'right', Icon: Zap },
-  power: { label: 'Power', unit: 'mW', side: 'right', Icon: Sun },
-  dbfs: { label: 'Sound', unit: 'dBFS', side: 'right', Icon: Activity },
+  weight: { label: 'Weight', unit: 'kg', Icon: Scale },
+  temperature: { label: 'Temperature', unit: '°C', Icon: Thermometer },
+  humidity: { label: 'Humidity', unit: '%', Icon: Droplets },
+  voltage: { label: 'Voltage', unit: 'V', Icon: Battery },
+  percent: { label: 'Percent', unit: '%', Icon: Battery },
+  current: { label: 'Current', unit: 'mA', Icon: Zap },
+  power: { label: 'Power', unit: 'mW', Icon: Sun },
+  dbfs: { label: 'Sound', unit: 'dBFS', Icon: Activity },
+  beecount: { label: 'Bee count', unit: 'bees', Icon: Activity },
 };
 
-interface MarkerTooltipState {
-  marker: ChartMarker;
-  x: number;
-  y: number;
-}
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 const formatChartTick = (value: number) =>
   new Intl.DateTimeFormat(undefined, {
@@ -265,14 +245,7 @@ const formatDateTime = (value: number) =>
     minute: '2-digit',
   }).format(new Date(value));
 
-const formatCsvFilenameDate = (date: Date) =>
-  date.toISOString().slice(0, 10);
-
-const safeFilenameSegment = (value: string) =>
-  value.replace(/[^a-zA-Z0-9_-]/g, '_');
-
-const escapeCsvValue = (value: unknown): string => {
-  const str = String(value ?? '');
+const escapeCsvField = (str: string): string => {
   if (str.includes(',') || str.includes('"') || str.includes('\n')) {
     return `"${str.replace(/"/g, '""')}"`;
   }
@@ -378,87 +351,96 @@ export const createPresetDateRange = (
     case 'custom':
       return { preset };
     default:
-      return { preset: '7d', startAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString() };
+      return {
+        preset: '7d',
+        startAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      };
   }
 };
 
 const mergeVisibleSeries = (value: unknown): VisibleSeriesMap => ({
   ...defaultVisibleSeries,
   ...(value && typeof value === 'object'
-    ? (value as Partial<VisibleSeriesMap>)
+    ? Object.fromEntries(
+        Object.entries(value as Record<string, unknown>).filter(
+          ([k]) => k in defaultVisibleSeries,
+        ),
+      )
     : {}),
 });
 
-const mergeAxisScaleSettings = (value: unknown): AxisScaleSettingsMap => {
-  const record =
-    value && typeof value === 'object'
-      ? (value as Partial<Record<SeriesAxis, Partial<AxisScaleSettings>>>)
-      : {};
-
-  return axisOrder.reduce((acc, axis) => {
-    const current = record[axis] ?? {};
-    const defaultSide = axisPresentation[axis].side;
-    acc[axis] = {
-      scaleMode:
-        current.scaleMode === 'zeroToMax' || current.scaleMode === 'custom'
-          ? current.scaleMode
-          : 'maxRange',
-      customMin: String(current.customMin ?? ''),
-      customMax: String(current.customMax ?? ''),
-      side: current.side === 'left' || current.side === 'right' ? current.side : defaultSide,
-    };
-    return acc;
-  }, {} as AxisScaleSettingsMap);
+const mergeAxisSettings = (value: unknown): AxisScaleSettingsMap => {
+  const defaults = getDefaultDiagramSettings().axes;
+  if (!value || typeof value !== 'object') return defaults;
+  const patch = value as Record<string, unknown>;
+  return Object.fromEntries(
+    axisOrder.map(axis => [
+      axis,
+      {
+        ...defaults[axis],
+        ...(patch[axis] && typeof patch[axis] === 'object' ? patch[axis] : {}),
+      },
+    ]),
+  ) as AxisScaleSettingsMap;
 };
 
-const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
-  version: 4,
-  visibleSeries: defaultVisibleSeries,
-  axes: defaultAxisScaleSettings,
-});
-
-const loadStoredDiagramSettings = (
-  storageKey: string,
-): StoredDiagramSettings => {
-  if (typeof window === 'undefined') return getDefaultDiagramSettings();
-
+const loadDiagramSettings = (deviceId: string): StoredDiagramSettings => {
   try {
-    const raw = window.localStorage.getItem(storageKey);
+    const raw = localStorage.getItem(
+      `${diagramSettingsStoragePrefix}${deviceId}`,
+    );
     if (!raw) return getDefaultDiagramSettings();
-
     const parsed = JSON.parse(raw) as Partial<StoredDiagramSettings>;
-    // Version 2 → 3: side was not persisted.
-    // Version 3 → 4: added micLeftRms / micRightRms series and dbfs axis.
-    // mergeVisibleSeries and mergeAxisScaleSettings handle missing keys gracefully.
+    // version 5 adds beecount series — reset if older
+    if (parsed.version !== 5) return getDefaultDiagramSettings();
     return {
-      version: 4,
+      version: 5,
       visibleSeries: mergeVisibleSeries(parsed.visibleSeries),
-      axes: mergeAxisScaleSettings(parsed.axes),
+      axes: mergeAxisSettings(parsed.axes),
     };
   } catch {
     return getDefaultDiagramSettings();
   }
 };
 
-const normalizeName = (value: string | null | undefined) =>
-  (value ?? '').trim().toLowerCase();
-
-const detailText = (details: unknown, keys: string[]) => {
-  if (!details || typeof details !== 'object') return '';
-  const record = details as Record<string, unknown>;
-  return keys
-    .map(key => {
-      const value = record[key];
-      if (value === undefined || value === null || value === '')
-        return undefined;
-      return `${key}: ${String(value)}`;
-    })
-    .filter(Boolean)
-    .join(' · ');
+const saveDiagramSettings = (
+  deviceId: string,
+  settings: StoredDiagramSettings,
+) => {
+  try {
+    localStorage.setItem(
+      `${diagramSettingsStoragePrefix}${deviceId}`,
+      JSON.stringify(settings),
+    );
+  } catch {
+    // localStorage unavailable; silently ignore
+  }
 };
 
-const getHiveName = (hives: HiveWithBoxesResponse[], hiveId: string) =>
-  hives.find(hive => hive.id === hiveId)?.name ?? hiveId;
+// ---------------------------------------------------------------------------
+// Inspection / box markers
+// ---------------------------------------------------------------------------
+
+const ACTION_MARKER_MAP: Partial<
+  Record<ActionType, ChartMarker['type']>
+> = {
+  [ActionType.MAINTENANCE]: 'maintenance',
+  [ActionType.FEEDING]: 'feeding',
+  [ActionType.FRAME_ADDED]: 'frames',
+  [ActionType.FRAME_REMOVED]: 'frames',
+  [ActionType.TREATMENT]: 'treatment',
+};
+
+const ACTION_ICON_MAP: Partial<Record<ActionType, LucideIcon>> = {
+  [ActionType.MAINTENANCE]: Wrench,
+  [ActionType.FEEDING]: Utensils,
+  [ActionType.FRAME_ADDED]: Frame,
+  [ActionType.FRAME_REMOVED]: Frame,
+  [ActionType.TREATMENT]: Pill,
+};
+
+const normalizeName = (name: string | null | undefined) =>
+  (name ?? '').trim().toLowerCase();
 
 const buildInspectionMarkers = (
   inspections: InspectionResponse[] | undefined,
@@ -467,287 +449,119 @@ const buildInspectionMarkers = (
 ): ChartMarker[] => {
   if (!inspections) return [];
   return inspections
-    .filter(inspection => mappedHiveIds.includes(inspection.hiveId))
-    .map(inspection => {
-      const hiveName = getHiveName(hives, inspection.hiveId);
-
-      let Icon: LucideIcon = ClipboardCheck;
-      let markerType: ChartMarker['type'] = 'inspection';
-      let label = 'Inspection';
-
-      if (inspection.actions?.some(a => a.type === ActionType.Feeding)) {
-        Icon = Utensils;
-        markerType = 'feeding';
-        label = 'Feeding';
-      } else if (inspection.actions?.some(a => a.type === ActionType.Treatment)) {
-        Icon = Pill;
-        markerType = 'treatment';
-        label = 'Treatment';
-      } else if (inspection.actions?.some(a => a.type === ActionType.Maintenance)) {
-        Icon = Wrench;
-        markerType = 'maintenance';
-        label = 'Maintenance';
-      } else if (inspection.actions?.some(a => a.type === ActionType.FrameChange)) {
-        Icon = Frame;
-        markerType = 'frames';
-        label = 'Frame change';
-      }
-
-      const detail = detailText(inspection.details, ['weight', 'temper', 'strength']);
-
-      return {
-        id: inspection.id,
-        timestamp: new Date(inspection.inspectedAt).getTime(),
-        date: inspection.inspectedAt,
-        type: markerType,
-        label,
-        detail,
+    .filter(ins => mappedHiveIds.includes(ins.hiveId))
+    .flatMap(ins => {
+      const hive = hives.find(h => h.id === ins.hiveId);
+      const hiveName = hive?.name ?? ins.hiveId;
+      const base: ChartMarker = {
+        id: `ins-${ins.id}`,
+        timestamp: new Date(ins.date).getTime(),
+        date: ins.date,
+        type: 'inspection',
+        label: 'Inspection',
+        detail: '',
         hiveName,
-        Icon,
+        Icon: ClipboardCheck,
       };
+      const actionMarkers: ChartMarker[] = (ins.actions ?? [])
+        .filter(a => ACTION_MARKER_MAP[a.actionType as ActionType])
+        .map(a => ({
+          id: `act-${ins.id}-${a.actionType}`,
+          timestamp: new Date(ins.date).getTime(),
+          date: ins.date,
+          type: ACTION_MARKER_MAP[a.actionType as ActionType]!,
+          label:
+            a.actionType.charAt(0) +
+            a.actionType.slice(1).toLowerCase().replace(/_/g, ' '),
+          detail: '',
+          hiveName,
+          Icon: ACTION_ICON_MAP[a.actionType as ActionType] ?? Wrench,
+        }));
+      return [base, ...actionMarkers];
     });
 };
 
 const buildBoxAddedMarkers = (
   hives: HiveWithBoxesResponse[],
   mappedHiveIds: string[],
-  startAt: string | undefined,
-  endAt: string | undefined,
+  startAt?: string,
+  endAt?: string,
 ): ChartMarker[] => {
-  const startMs = startAt ? new Date(startAt).getTime() : -Infinity;
+  const startMs = startAt ? new Date(startAt).getTime() : 0;
   const endMs = endAt ? new Date(endAt).getTime() : Infinity;
-
   return hives
-    .filter(hive => mappedHiveIds.includes(hive.id))
-    .flatMap(hive =>
-      (hive.boxes ?? [])
+    .filter(h => mappedHiveIds.includes(h.id))
+    .flatMap(h =>
+      (h.boxes ?? [])
         .filter(box => {
-          if (!box.addedAt) return false;
           const ts = new Date(box.addedAt).getTime();
           return ts >= startMs && ts <= endMs;
         })
         .map(box => ({
-          id: `box-${hive.id}-${box.addedAt}`,
-          timestamp: new Date(box.addedAt!).getTime(),
-          date: box.addedAt!,
+          id: `box-${h.id}-${box.id}`,
+          timestamp: new Date(box.addedAt).getTime(),
+          date: box.addedAt,
           type: 'box' as const,
           label: 'Box added',
           detail: box.type ?? '',
-          hiveName: hive.name,
+          hiveName: h.name,
           Icon: PackagePlus,
         })),
     );
 };
 
-function MarkerReferenceLineLabel({
-  marker,
-  row,
-  onHover,
-  onLeave,
-}: {
-  marker: ChartMarker;
-  row: number;
-  onHover: (marker: ChartMarker, event: MouseEvent<SVGGElement>) => void;
-  onLeave: () => void;
-}) {
-  const { Icon } = marker;
-  const offsetY = -24 - row * 18;
-
-  return (
-    <g
-      transform={`translate(0, ${offsetY})`}
-      style={{ cursor: 'default' }}
-      onMouseEnter={event => onHover(marker, event)}
-      onMouseLeave={onLeave}
-    >
-      <foreignObject x={-10} y={-10} width={20} height={20}>
-        <div
-          xmlns="http://www.w3.org/1999/xhtml"
-          style={{ display: 'flex', alignItems: 'center' }}
-        >
-          <Icon
-            style={{
-              width: 14,
-              height: 14,
-              color: 'var(--muted-foreground)',
-            }}
-          />
-        </div>
-      </foreignObject>
-    </g>
-  );
-}
-
 // ---------------------------------------------------------------------------
-// SeriesToggle — shows an "n/a" badge and reduced opacity when the device has
-// no data for this series in its full measurement history. The button remains
-// clickable so the stored display configuration is never silently cleared.
+// Component props
 // ---------------------------------------------------------------------------
-function SeriesToggle({
-  series,
-  active,
-  hasData,
-  onToggle,
-}: {
-  series: DiagramSeries;
-  active: boolean;
-  hasData: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className={[
-        'rounded-md border px-3 py-2 text-left text-sm transition-colors',
-        'flex items-center justify-between gap-2',
-        active
-          ? 'border-foreground bg-foreground text-background'
-          : 'border-border bg-background text-foreground hover:bg-muted',
-        !hasData ? 'opacity-50' : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      <span>{series.label}</span>
-      {!hasData && (
-        <span
-          className={[
-            'shrink-0 rounded px-1 py-0.5 text-[10px] font-medium leading-none',
-            active
-              ? 'bg-background/20 text-background'
-              : 'bg-muted text-muted-foreground',
-          ].join(' ')}
-        >
-          n/a
-        </span>
-      )}
-    </button>
-  );
-}
 
-function DateRangeSelector({
-  value,
-  onChange,
-}: {
-  value: HiveScaleDateRange;
-  onChange: (range: HiveScaleDateRange) => void;
-}) {
-  return (
-    <div className="space-y-3 rounded-md border p-3">
-      <div className="text-sm font-medium">Date range</div>
-      <div className="flex gap-2">
-        <Select
-          value={value.preset === 'custom' ? 'custom' : value.preset}
-          onValueChange={preset => {
-            if (preset !== 'custom') {
-              onChange(createPresetDateRange(preset as HiveScaleDateRangePreset));
-            } else {
-              onChange({ preset: 'custom' });
-            }
-          }}
-        >
-          <SelectTrigger className="flex-1">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="24h">24 hours</SelectItem>
-            <SelectItem value="7d">7 days</SelectItem>
-            <SelectItem value="30d">30 days</SelectItem>
-            <SelectItem value="365d">365 days</SelectItem>
-            <SelectItem value="currentYear">Current year</SelectItem>
-            <SelectItem value="all">All time</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          type="button"
-          variant={value.preset === 'custom' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => onChange({ preset: 'custom' })}
-        >
-          Custom
-        </Button>
-      </div>
-      {value.preset === 'custom' && (
-        <div className="grid gap-2 sm:grid-cols-2">
-          <div className="space-y-1">
-            <Label>From</Label>
-            <Input
-              type="datetime-local"
-              value={value.startAt ? value.startAt.slice(0, 16) : ''}
-              onChange={e =>
-                onChange({
-                  ...value,
-                  startAt: e.target.value
-                    ? new Date(e.target.value).toISOString()
-                    : undefined,
-                })
-              }
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>To</Label>
-            <Input
-              type="datetime-local"
-              value={value.endAt ? value.endAt.slice(0, 16) : ''}
-              onChange={e =>
-                onChange({
-                  ...value,
-                  endAt: e.target.value
-                    ? new Date(e.target.value).toISOString()
-                    : undefined,
-                })
-              }
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export const readStoredDateRange = (): HiveScaleDateRange | null => {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = window.localStorage.getItem('hivepal:hivescale-date-range');
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as HiveScaleDateRange;
-    if (!parsed.preset) return null;
-    return parsed;
-  } catch {
-    return null;
-  }
-};
-
-export function HiveScaleDiagramPanel({
-  selectedDevice,
-  measurements,
-  isLoading,
-  dateRange,
-  onDateRangeChange,
-  scale1Name,
-  scale2Name,
-  inspections,
-  hives,
-}: {
-  selectedDevice: HiveScaleDevice;
+interface HiveScaleDiagramPanelProps {
+  device: HiveScaleDevice;
   measurements: HiveScaleMeasurement[] | undefined;
   isLoading: boolean;
   dateRange: HiveScaleDateRange;
   onDateRangeChange: (range: HiveScaleDateRange) => void;
-  scale1Name: string;
-  scale2Name: string;
-  inspections: InspectionResponse[] | undefined;
-  hives: HiveWithBoxesResponse[] | undefined;
-}) {
-  const storageKey = `${diagramSettingsStoragePrefix}${selectedDevice.device_id}`;
-  const [loadedStorageKey, setLoadedStorageKey] = useState(storageKey);
+  hives?: HiveWithBoxesResponse[];
+  inspections?: InspectionResponse[];
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+export const HiveScaleDiagramPanel = ({
+  device,
+  measurements,
+  isLoading,
+  dateRange,
+  onDateRangeChange,
+  hives,
+  inspections,
+}: HiveScaleDiagramPanelProps) => {
+  const scale1Name =
+    device.channels.find(c => c.channel_number === 1)?.name ?? 'Hive 1';
+  const scale2Name =
+    device.channels.find(c => c.channel_number === 2)?.name ?? 'Hive 2';
+
   const [diagramSettings, setDiagramSettings] = useState<StoredDiagramSettings>(
-    () => loadStoredDiagramSettings(storageKey),
+    () => loadDiagramSettings(device.device_id),
   );
+
   const { visibleSeries, axes: axisScaleSettings } = diagramSettings;
-  const [hoveredMarker, setHoveredMarker] =
-    useState<MarkerTooltipState | null>(null);
+
+  const [hoveredMarker, setHoveredMarker] = useState<{
+    marker: ChartMarker;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  useEffect(() => {
+    saveDiagramSettings(device.device_id, diagramSettings);
+  }, [device.device_id, diagramSettings]);
+
+  // If device changes, reload settings
+  useEffect(() => {
+    setDiagramSettings(loadDiagramSettings(device.device_id));
+  }, [device.device_id]);
 
   const series = useMemo<DiagramSeries[]>(
     () => [
@@ -868,6 +682,62 @@ export function HiveScaleDiagramPanel({
         stroke: 'var(--chart-2)',
         group: 'Sound',
       },
+      // BeeCounter — channel 1
+      {
+        key: 'beeCounter1In',
+        label: `${scale1Name} bees in`,
+        dataKey: 'beeCounter1In',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-1)',
+        group: `${scale1Name} BeeCounter`,
+      },
+      {
+        key: 'beeCounter1Out',
+        label: `${scale1Name} bees out`,
+        dataKey: 'beeCounter1Out',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-2)',
+        group: `${scale1Name} BeeCounter`,
+      },
+      {
+        key: 'beeCounter1Net',
+        label: `${scale1Name} net flow`,
+        dataKey: 'beeCounter1Net',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-3)',
+        group: `${scale1Name} BeeCounter`,
+      },
+      // BeeCounter — channel 2
+      {
+        key: 'beeCounter2In',
+        label: `${scale2Name} bees in`,
+        dataKey: 'beeCounter2In',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-4)',
+        group: `${scale2Name} BeeCounter`,
+      },
+      {
+        key: 'beeCounter2Out',
+        label: `${scale2Name} bees out`,
+        dataKey: 'beeCounter2Out',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-5)',
+        group: `${scale2Name} BeeCounter`,
+      },
+      {
+        key: 'beeCounter2Net',
+        label: `${scale2Name} net flow`,
+        dataKey: 'beeCounter2Net',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--primary)',
+        group: `${scale2Name} BeeCounter`,
+      },
     ],
     [scale1Name, scale2Name],
   );
@@ -889,25 +759,45 @@ export function HiveScaleDiagramPanel({
             new Date(a.measured_at).getTime() -
             new Date(b.measured_at).getTime(),
         )
-        .map(item => ({
-          timestamp: new Date(item.measured_at).getTime(),
-          measuredAt: item.measured_at,
-          scale1Weight: toFiniteNumber(item.scale_1_weight_kg),
-          scale2Weight: toFiniteNumber(item.scale_2_weight_kg),
-          scale1Temperature: cleanTemperature(item.hive_1_temp_c),
-          scale2Temperature: cleanTemperature(item.hive_2_temp_c),
-          ambientTemperature: cleanTemperature(item.ambient_temp_c),
-          ambientHumidity: toFiniteNumber(item.ambient_humidity_percent),
-          batteryVoltage: toFiniteNumber(
-            item.battery_voltage_v ?? item.battery_voltage,
-          ),
-          batterySoc: toFiniteNumber(item.battery_soc_percent),
-          solarLoadVoltage: toFiniteNumber(item.solar_load_voltage_v),
-          solarCurrent: toFiniteNumber(item.solar_current_ma),
-          solarPower: toFiniteNumber(item.solar_power_mw),
-          micLeftRms: toFiniteNumber(item.mic_left_rms_dbfs),
-          micRightRms: toFiniteNumber(item.mic_right_rms_dbfs),
-        }))
+        .map(item => {
+          const bc1In = toFiniteNumber(item.bee_counter_1_interval_in);
+          const bc1Out = toFiniteNumber(item.bee_counter_1_interval_out);
+          const bc2In = toFiniteNumber(item.bee_counter_2_interval_in);
+          const bc2Out = toFiniteNumber(item.bee_counter_2_interval_out);
+          // Only emit net if both in and out are available
+          const bc1Net =
+            bc1In !== null && bc1Out !== null ? bc1In - bc1Out : null;
+          const bc2Net =
+            bc2In !== null && bc2Out !== null ? bc2In - bc2Out : null;
+          // Zero-counts from an ok counter are valid; only suppress if counter is not ok
+          const counter1Ok = item.bee_counter_1_ok !== false;
+          const counter2Ok = item.bee_counter_2_ok !== false;
+          return {
+            timestamp: new Date(item.measured_at).getTime(),
+            measuredAt: item.measured_at,
+            scale1Weight: toFiniteNumber(item.scale_1_weight_kg),
+            scale2Weight: toFiniteNumber(item.scale_2_weight_kg),
+            scale1Temperature: cleanTemperature(item.hive_1_temp_c),
+            scale2Temperature: cleanTemperature(item.hive_2_temp_c),
+            ambientTemperature: cleanTemperature(item.ambient_temp_c),
+            ambientHumidity: toFiniteNumber(item.ambient_humidity_percent),
+            batteryVoltage: toFiniteNumber(
+              item.battery_voltage_v ?? item.battery_voltage,
+            ),
+            batterySoc: toFiniteNumber(item.battery_soc_percent),
+            solarLoadVoltage: toFiniteNumber(item.solar_load_voltage_v),
+            solarCurrent: toFiniteNumber(item.solar_current_ma),
+            solarPower: toFiniteNumber(item.solar_power_mw),
+            micLeftRms: toFiniteNumber(item.mic_left_rms_dbfs),
+            micRightRms: toFiniteNumber(item.mic_right_rms_dbfs),
+            beeCounter1In: counter1Ok ? bc1In : null,
+            beeCounter1Out: counter1Ok ? bc1Out : null,
+            beeCounter1Net: counter1Ok ? bc1Net : null,
+            beeCounter2In: counter2Ok ? bc2In : null,
+            beeCounter2Out: counter2Ok ? bc2Out : null,
+            beeCounter2Net: counter2Ok ? bc2Net : null,
+          };
+        })
         .filter(item => Number.isFinite(item.timestamp)),
     [measurements],
   );
@@ -915,80 +805,30 @@ export function HiveScaleDiagramPanel({
   const visibleChartData = useMemo(() => {
     const startMs = dateRange.startAt
       ? new Date(dateRange.startAt).getTime()
-      : Number.NEGATIVE_INFINITY;
-    const endMs = dateRange.endAt
-      ? new Date(dateRange.endAt).getTime()
-      : Number.POSITIVE_INFINITY;
-
-    return chartData.filter(
-      item =>
-        (!Number.isFinite(startMs) || item.timestamp >= startMs) &&
-        (!Number.isFinite(endMs) || item.timestamp <= endMs),
-    );
-  }, [chartData, dateRange.endAt, dateRange.startAt]);
-
-  // ---------------------------------------------------------------------------
-  // Compute which series actually have finite data in the full (unfiltered)
-  // chartData. We use the full history rather than the visible window so that
-  // the n/a badge doesn't flicker as the user pans/zooms the date range.
-  // ---------------------------------------------------------------------------
-  const seriesDataPresence = useMemo(() => {
-    return Object.fromEntries(
-      series.map(item => {
-        const key = item.dataKey as keyof (typeof chartData)[number];
-        const hasData = chartData.some(
-          point =>
-            typeof point[key] === 'number' &&
-            Number.isFinite(point[key] as number),
-        );
-        return [item.key, hasData];
-      }),
-    ) as Record<SeriesKey, boolean>;
-  }, [series, chartData]);
+      : null;
+    const endMs = dateRange.endAt ? new Date(dateRange.endAt).getTime() : null;
+    if (!startMs && !endMs) return chartData;
+    return chartData.filter(item => {
+      if (startMs && item.timestamp < startMs) return false;
+      if (endMs && item.timestamp > endMs) return false;
+      return true;
+    });
+  }, [chartData, dateRange]);
 
   const axisDomains = useMemo(() => {
-    return axisOrder.reduce(
-      (acc, axis) => {
-        const dataKeys = series
-          .filter(item => item.axis === axis && visibleSeries[item.key])
-          .map(item => item.dataKey as keyof (typeof chartData)[number]);
-        const values = visibleChartData.flatMap(item =>
-          dataKeys.map(dataKey => item[dataKey]),
-        );
-        acc[axis] = getAxisDomain(axisScaleSettings[axis], values);
-        return acc;
-      },
-      {} as Record<SeriesAxis, AxisDomain | undefined>,
-    );
-  }, [axisScaleSettings, series, visibleChartData, visibleSeries]);
-
-  useEffect(() => {
-    setDiagramSettings(loadStoredDiagramSettings(storageKey));
-    setLoadedStorageKey(storageKey);
-  }, [storageKey]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || loadedStorageKey !== storageKey)
-      return;
-
-    try {
-      window.localStorage.setItem(storageKey, JSON.stringify(diagramSettings));
-    } catch {
-      // Ignore storage failures, for example private mode or disabled storage.
-    }
-  }, [diagramSettings, loadedStorageKey, storageKey]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.setItem(
-        'hivepal:hivescale-date-range',
-        JSON.stringify(dateRange),
+    const domains: Partial<Record<SeriesAxis, AxisDomain | undefined>> = {};
+    for (const axis of axisOrder) {
+      if (!activeAxes.has(axis)) continue;
+      const axisSeriesKeys = activeSeries
+        .filter(s => s.axis === axis)
+        .map(s => s.dataKey);
+      const values = visibleChartData.flatMap(d =>
+        axisSeriesKeys.map(k => d[k as keyof typeof d]),
       );
-    } catch {
-      // Ignore storage failures.
+      domains[axis] = getAxisDomain(axisScaleSettings[axis], values);
     }
-  }, [dateRange]);
+    return domains;
+  }, [activeAxes, activeSeries, axisScaleSettings, visibleChartData]);
 
   const mappedHives = useMemo(() => {
     const hiveList = hives ?? [];
@@ -1053,95 +893,153 @@ export function HiveScaleDiagramPanel({
       ...activeSeries.map(seriesItem => {
         const value = item[seriesItem.dataKey as keyof typeof item];
         return typeof value === 'number' && Number.isFinite(value)
-          ? value
+          ? value.toString()
           : '';
       }),
     ]);
 
     const csv = [headers, ...rows]
-      .map(row => row.map(escapeCsvValue).join(','))
-      .join('\r\n');
-    const blob = new Blob([`\ufeff${csv}`], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    const deviceName = safeFilenameSegment(
-      selectedDevice.display_name || selectedDevice.device_id,
-    );
+      .map(row => row.map(escapeCsvField).join(','))
+      .join('\n');
 
-    link.href = url;
-    link.download = `hivepal-${deviceName}-visible-data-${formatCsvFilenameDate(new Date())}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hivescale-${device.device_id}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
-  const showMarkerTooltip = (
+  const hideMarkerTooltip = () => setHoveredMarker(null);
+
+  const handleMarkerMouseEnter = (
     marker: ChartMarker,
-    event: MouseEvent<SVGGElement>,
+    e: MouseEvent<SVGElement>,
   ) => {
-    setHoveredMarker({
-      marker,
-      x: event.clientX,
-      y: event.clientY,
-    });
+    setHoveredMarker({ marker, x: e.clientX, y: e.clientY });
   };
 
-  const hideMarkerTooltip = () => {
-    setHoveredMarker(null);
-  };
+  const seriesByGroup = useMemo(() => {
+    const groups: Record<string, DiagramSeries[]> = {};
+    for (const s of series) {
+      if (!groups[s.group]) groups[s.group] = [];
+      groups[s.group].push(s);
+    }
+    return groups;
+  }, [series]);
 
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-start justify-between gap-2">
           <div>
-            <CardTitle>
-              {selectedDevice.display_name || selectedDevice.device_id}
-            </CardTitle>
+            <CardTitle>Measurements</CardTitle>
             <CardDescription>
-              Last seen {formatDateTime(new Date(selectedDevice.last_seen_at).getTime())} · Firmware{' '}
-              {selectedDevice.last_firmware_version || 'unknown'}
+              Weight, temperature, and entrance activity over time
             </CardDescription>
           </div>
-          <Badge variant="secondary">
-            {activeSeries.length} series selected
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
-          <div className="space-y-3 rounded-md border p-3">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-sm font-medium">Displayed data</div>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={downloadVisibleDataCsv}
-                disabled={!visibleChartData.length || !activeSeries.length}
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Download visible data .csv
-              </Button>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {series.map(item => (
-                <SeriesToggle
-                  key={item.key}
-                  series={item}
-                  active={visibleSeries[item.key]}
-                  hasData={seriesDataPresence[item.key]}
-                  onToggle={() => toggleSeries(item.key)}
-                />
-              ))}
-            </div>
-          </div>
-          <DateRangeSelector value={dateRange} onChange={onDateRangeChange} />
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={downloadVisibleDataCsv}
+            disabled={!visibleChartData.length || !activeSeries.length}
+          >
+            <Download className="mr-1 h-3.5 w-3.5" />
+            CSV
+          </Button>
         </div>
 
+        {/* Date range */}
+        <div className="flex flex-wrap items-end gap-2 pt-2">
+          <div className="flex flex-wrap gap-1">
+            {(
+              ['24h', '7d', '30d', '365d', 'currentYear', 'all'] as HiveScaleDateRangePreset[]
+            ).map(preset => (
+              <Button
+                key={preset}
+                type="button"
+                size="sm"
+                variant={
+                  dateRange.preset === preset && dateRange.preset !== 'custom'
+                    ? 'default'
+                    : 'outline'
+                }
+                onClick={() => onDateRangeChange(createPresetDateRange(preset))}
+              >
+                {preset === 'currentYear'
+                  ? new Date().getFullYear().toString()
+                  : preset === 'all'
+                    ? 'All'
+                    : preset}
+              </Button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1">
+            <Label className="text-xs">From</Label>
+            <Input
+              type="datetime-local"
+              className="h-8 w-44 text-xs"
+              value={dateRange.startAt?.slice(0, 16) ?? ''}
+              onChange={e =>
+                onDateRangeChange({
+                  preset: 'custom',
+                  startAt: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                  endAt: dateRange.endAt,
+                })
+              }
+            />
+            <Label className="text-xs">To</Label>
+            <Input
+              type="datetime-local"
+              className="h-8 w-44 text-xs"
+              value={dateRange.endAt?.slice(0, 16) ?? ''}
+              onChange={e =>
+                onDateRangeChange({
+                  preset: 'custom',
+                  startAt: dateRange.startAt,
+                  endAt: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                })
+              }
+            />
+          </div>
+        </div>
+
+        {/* Series toggles grouped */}
+        <div className="space-y-2 pt-2">
+          {Object.entries(seriesByGroup).map(([group, groupSeries]) => (
+            <div key={group} className="space-y-1">
+              <div className="text-xs font-medium text-muted-foreground">
+                {group}
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {groupSeries.map(s => (
+                  <Badge
+                    key={s.key}
+                    variant={visibleSeries[s.key] ? 'default' : 'outline'}
+                    className="cursor-pointer select-none"
+                    style={
+                      visibleSeries[s.key]
+                        ? { backgroundColor: s.stroke, borderColor: s.stroke }
+                        : { borderColor: s.stroke, color: s.stroke }
+                    }
+                    onClick={() => toggleSeries(s.key)}
+                  >
+                    {s.label}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
         {isLoading ? (
           <Skeleton className="h-96 w-full" />
         ) : visibleChartData.length ? (
@@ -1151,9 +1049,20 @@ export function HiveScaleDiagramPanel({
                 data={visibleChartData}
                 margin={{
                   top: 32,
-                  right: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'right') ? 48 : 8,
+                  right: axisOrder.some(
+                    a =>
+                      activeAxes.has(a) &&
+                      axisScaleSettings[a].side === 'right',
+                  )
+                    ? 48
+                    : 8,
                   bottom: 8,
-                  left: axisOrder.some(a => activeAxes.has(a) && axisScaleSettings[a].side === 'left') ? 8 : 0,
+                  left: axisOrder.some(
+                    a =>
+                      activeAxes.has(a) && axisScaleSettings[a].side === 'left',
+                  )
+                    ? 8
+                    : 0,
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -1180,6 +1089,7 @@ export function HiveScaleDiagramPanel({
                     current: 58,
                     power: 62,
                     dbfs: 68,
+                    beecount: 62,
                   };
                   return (
                     <YAxis
@@ -1198,51 +1108,60 @@ export function HiveScaleDiagramPanel({
                   formatter={(value, name) => [value, name]}
                 />
                 <Legend />
-                {markers.map((marker) => {
+                {markers.map(marker => {
                   const refAxisId = activeSeries[0]?.axis ?? 'weight';
-                  // Group markers by timestamp to stack icons vertically
-                  const sameTimestampMarkers = markers.filter(
-                    m => Math.abs(m.timestamp - marker.timestamp) < 60_000,
-                  );
-                  const row = sameTimestampMarkers.indexOf(marker);
                   return (
                     <ReferenceLine
                       key={marker.id}
                       x={marker.timestamp}
                       yAxisId={refAxisId}
-                      stroke="var(--muted-foreground)"
-                      strokeDasharray="3 3"
-                      strokeOpacity={0.5}
-                      label={
-                        <MarkerReferenceLineLabel
-                          marker={marker}
-                          row={row}
-                          onHover={showMarkerTooltip}
-                          onLeave={hideMarkerTooltip}
-                        />
-                      }
+                      stroke="var(--border)"
+                      strokeDasharray="4 2"
+                      label={props => {
+                        const Icon = marker.Icon;
+                        return (
+                          <g
+                            transform={`translate(${props.viewBox?.x ?? 0},${
+                              (props.viewBox?.y ?? 0) - 20
+                            })`}
+                            onMouseEnter={e =>
+                              handleMarkerMouseEnter(marker, e)
+                            }
+                            onMouseLeave={hideMarkerTooltip}
+                            style={{ cursor: 'default' }}
+                          >
+                            <Icon
+                              size={14}
+                              x={-7}
+                              y={-7}
+                              color="var(--muted-foreground)"
+                            />
+                          </g>
+                        );
+                      }}
                     />
                   );
                 })}
-                {activeSeries.map(item => (
+                {activeSeries.map(s => (
                   <Line
-                    key={item.key}
-                    yAxisId={item.axis}
+                    key={s.key}
+                    yAxisId={s.axis}
                     type="monotone"
-                    dataKey={item.dataKey}
-                    name={item.label}
-                    stroke={item.stroke}
-                    strokeWidth={2}
+                    dataKey={s.dataKey}
+                    name={s.label}
+                    stroke={s.stroke}
                     dot={false}
                     connectNulls={false}
+                    strokeWidth={1.5}
+                    unit={` ${s.unit}`}
                   />
                 ))}
               </LineChart>
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="flex h-96 items-center justify-center text-muted-foreground">
-            No data available for the selected range.
+          <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+            No measurements for the selected range.
           </div>
         )}
 
@@ -1291,58 +1210,61 @@ export function HiveScaleDiagramPanel({
               return (
                 <div key={axis} className="space-y-2 rounded-md border p-2">
                   <div className="flex items-center gap-1 text-xs font-medium">
-                    <Icon className="h-3 w-3" />
+                    <Icon className="h-3.5 w-3.5" />
                     {label}
                   </div>
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    <div className="space-y-1">
-                      <Label htmlFor={`axis-side-${axis}`}>Side</Label>
-                      <Select
-                        value={settings.side}
-                        onValueChange={value =>
-                          updateAxisScaleSettings(axis, {
-                            side: value as 'left' | 'right',
-                          })
-                        }
-                      >
-                        <SelectTrigger id={`axis-side-${axis}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="left">Left</SelectItem>
-                          <SelectItem value="right">Right</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor={`axis-scale-${axis}`}>Scale</Label>
-                      <Select
-                        value={settings.scaleMode}
-                        onValueChange={value =>
-                          updateAxisScaleSettings(axis, {
-                            scaleMode: value as AxisScaleMode,
-                          })
-                        }
-                      >
-                        <SelectTrigger id={`axis-scale-${axis}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="maxRange">Auto range</SelectItem>
-                          <SelectItem value="zeroToMax">Zero to max</SelectItem>
-                          <SelectItem value="custom">Custom</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="flex items-center gap-1">
+                    <Label className="w-8 text-xs text-muted-foreground">
+                      Side
+                    </Label>
+                    <Select
+                      value={settings.side}
+                      onValueChange={value =>
+                        updateAxisScaleSettings(axis, {
+                          side: value as 'left' | 'right',
+                        })
+                      }
+                    >
+                      <SelectTrigger className="h-7 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="left">Left</SelectItem>
+                        <SelectItem value="right">Right</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Label className="w-8 text-xs text-muted-foreground">
+                      Scale
+                    </Label>
+                    <Select
+                      value={settings.scaleMode}
+                      onValueChange={value =>
+                        updateAxisScaleSettings(axis, {
+                          scaleMode: value as AxisScaleMode,
+                        })
+                      }
+                    >
+                      <SelectTrigger className="h-7 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="maxRange">Auto</SelectItem>
+                        <SelectItem value="zeroToMax">0 to max</SelectItem>
+                        <SelectItem value="custom">Custom</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   {settings.scaleMode === 'custom' && (
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="space-y-1">
-                        <Label htmlFor={`axis-min-${axis}`}>Min</Label>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1">
+                        <Label className="w-8 text-xs text-muted-foreground">
+                          Min
+                        </Label>
                         <Input
-                          id={`axis-min-${axis}`}
-                          type="number"
-                          placeholder="Auto"
+                          className="h-7 text-xs"
+                          placeholder="auto"
                           value={settings.customMin}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {
@@ -1351,12 +1273,13 @@ export function HiveScaleDiagramPanel({
                           }
                         />
                       </div>
-                      <div className="space-y-1">
-                        <Label htmlFor={`axis-max-${axis}`}>Max</Label>
+                      <div className="flex items-center gap-1">
+                        <Label className="w-8 text-xs text-muted-foreground">
+                          Max
+                        </Label>
                         <Input
-                          id={`axis-max-${axis}`}
-                          type="number"
-                          placeholder="Auto"
+                          className="h-7 text-xs"
+                          placeholder="auto"
                           value={settings.customMax}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {
@@ -1375,4 +1298,4 @@ export function HiveScaleDiagramPanel({
       </CardContent>
     </Card>
   );
-}
+};

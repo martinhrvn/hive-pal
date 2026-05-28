@@ -71,6 +71,36 @@ export interface HiveScaleMeasurement {
   mic_right_band_piping_dbfs: number | null;
   mic_right_band_stress_dbfs: number | null;
   mic_right_band_high_dbfs: number | null;
+  // BeeCounter entrance counter — channel 1
+  bee_counter_1_ok: boolean | null;
+  bee_counter_1_protocol_version: number | null;
+  bee_counter_1_status_flags: number | null;
+  bee_counter_1_uptime_s: number | null;
+  bee_counter_1_num_gates: number | null;
+  bee_counter_1_gates_healthy: number | null;
+  bee_counter_1_total_in: number | null;
+  bee_counter_1_total_out: number | null;
+  bee_counter_1_interval_in: number | null;
+  bee_counter_1_interval_out: number | null;
+  bee_counter_1_glitch_count: number | null;
+  bee_counter_1_busy_retries: number | null;
+  bee_counter_1_read_attempts: number | null;
+  bee_counter_1_latch_succeeded: boolean | null;
+  // BeeCounter entrance counter — channel 2
+  bee_counter_2_ok: boolean | null;
+  bee_counter_2_protocol_version: number | null;
+  bee_counter_2_status_flags: number | null;
+  bee_counter_2_uptime_s: number | null;
+  bee_counter_2_num_gates: number | null;
+  bee_counter_2_gates_healthy: number | null;
+  bee_counter_2_total_in: number | null;
+  bee_counter_2_total_out: number | null;
+  bee_counter_2_interval_in: number | null;
+  bee_counter_2_interval_out: number | null;
+  bee_counter_2_glitch_count: number | null;
+  bee_counter_2_busy_retries: number | null;
+  bee_counter_2_read_attempts: number | null;
+  bee_counter_2_latch_succeeded: boolean | null;
 }
 
 export interface HiveScaleDeviceConfig {
@@ -228,8 +258,6 @@ export const useHiveScaleInsights = (
       return response.data;
     },
     enabled: !!deviceId,
-    // Insights are computed from time-series; recomputing more than once a
-    // minute is wasteful. Five minutes matches the typical scale send rate.
     refetchInterval: options.refetchInterval ?? 5 * 60 * 1000,
     staleTime: 60 * 1000,
   });
@@ -366,43 +394,6 @@ export const useUpdateHiveScaleChannels = (deviceId: string | undefined) => {
   });
 };
 
-export const useStartHiveScaleCalibrationMode = (
-  deviceId: string | undefined,
-) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: HiveScaleCalibrationModeStartInput) => {
-      const response = await apiClient.post(
-        `/api/hivescale/devices/${deviceId}/calibration/start`,
-        data,
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
-    },
-  });
-};
-
-export const useStopHiveScaleCalibrationMode = (
-  deviceId: string | undefined,
-) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      const response = await apiClient.post(
-        `/api/hivescale/devices/${deviceId}/calibration/stop`,
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
-    },
-  });
-};
-
 export const useShareHiveScaleDevice = (deviceId: string | undefined) => {
   const queryClient = useQueryClient();
 
@@ -426,12 +417,45 @@ export const useRevokeHiveScaleMember = (deviceId: string | undefined) => {
   return useMutation({
     mutationFn: async (memberUserId: string) => {
       const response = await apiClient.delete(
-        `/api/hivescale/devices/${deviceId}/members/${encodeURIComponent(memberUserId)}`,
+        `/api/hivescale/devices/${deviceId}/members/${memberUserId}`,
       );
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+    },
+  });
+};
+
+export const useStartHiveScaleCalibrationMode = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: HiveScaleCalibrationModeStartInput = {}) => {
+      const response = await apiClient.post(
+        `/api/hivescale/devices/${deviceId}/calibration/start`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+    },
+  });
+};
+
+export const useStopHiveScaleCalibrationMode = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.post(
+        `/api/hivescale/devices/${deviceId}/calibration/stop`,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
     },
   });
 };
