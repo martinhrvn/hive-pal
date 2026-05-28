@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Mic, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { AudioPlayer } from '@/components/audio';
 import {
   useInspectionAudio,
@@ -12,7 +13,9 @@ import {
   useStartInspectionAudioAi,
   useInspectionAudioAiStatus,
   useInspectionAudioAiResult,
+  useUpdateInspectionAudioTranscription,
 } from '@/api/hooks/useInspectionAudioAi';
+import { useWorkerStatus } from '@/api/hooks/useWorkerTokens';
 import { useNavigate } from 'react-router-dom';
 
 interface AudioCardProps {
@@ -44,11 +47,28 @@ interface RecordingRowProps {
     fileName: string;
     duration?: number | null;
     transcriptionStatus?: RecordingAiStatus;
+    analysisStatus?: RecordingAiStatus;
     transcription?: string | null;
   };
   getDownloadUrl: (audioId: string) => Promise<string>;
   onDelete: (audioId: string) => Promise<void>;
   isDeleting: boolean;
+}
+
+function deriveStageLabel(
+  transcriptionStatus: RecordingAiStatus,
+  analysisStatus: RecordingAiStatus,
+): string {
+  if (transcriptionStatus === 'FAILED') return 'Transcription failed';
+  if (analysisStatus === 'FAILED') return 'Analysis failed';
+  if (transcriptionStatus === 'PENDING') return 'Waiting to transcribe';
+  if (transcriptionStatus === 'PROCESSING') return 'Transcribing...';
+  if (analysisStatus === 'PENDING') return 'Waiting to analyze';
+  if (analysisStatus === 'PROCESSING') return 'Analyzing...';
+  if (analysisStatus === 'COMPLETED') return 'Completed';
+  if (transcriptionStatus === 'COMPLETED' && analysisStatus === 'NONE')
+    return 'Transcribed';
+  return 'Idle';
 }
 
 function getAnalyzeButtonLabel(
@@ -71,6 +91,8 @@ function scheduleCopyStateReset(setter: (value: CopyState) => void) {
 
 function AiPanel({
   effectiveStatus,
+  stageLabel,
+  showWaitingForWorker,
   showAiOutput,
   setShowAiOutput,
   aiResult,
@@ -81,8 +103,18 @@ function AiPanel({
   handleCopyJson,
   statusQueryError,
   isLoadingResult,
+  isEditing,
+  editValue,
+  setEditValue,
+  startEditing,
+  cancelEditing,
+  saveEditing,
+  isSaving,
+  saveError,
 }: {
   effectiveStatus: RecordingAiStatus;
+  stageLabel: string;
+  showWaitingForWorker: boolean;
   showAiOutput: boolean;
   setShowAiOutput: React.Dispatch<React.SetStateAction<boolean>>;
   aiResult: InspectionAiResult | undefined;
@@ -93,6 +125,14 @@ function AiPanel({
   handleCopyJson: () => Promise<void>;
   statusQueryError?: string | null;
   isLoadingResult: boolean;
+  isEditing: boolean;
+  editValue: string;
+  setEditValue: (value: string) => void;
+  startEditing: () => void;
+  cancelEditing: () => void;
+  saveEditing: () => Promise<void>;
+  isSaving: boolean;
+  saveError: string | null;
 }) {
   const shouldShowLoading =
     showAiOutput && effectiveStatus === 'COMPLETED' && isLoadingResult;
@@ -116,8 +156,15 @@ function AiPanel({
       </div>
 
       <div className="text-sm text-muted-foreground">
-        Status: {effectiveStatus}
+        Status: {stageLabel}
       </div>
+
+      {showWaitingForWorker && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
+          No worker online — job will be picked up when a worker connects.
+        </div>
+      )}
 
       {effectiveStatus === 'FAILED' && (
         <div className="text-sm text-red-600">
@@ -136,24 +183,75 @@ function AiPanel({
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h5 className="text-sm font-medium">Transcript</h5>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleCopyTranscript}
-                disabled={!transcriptText}
-              >
-                {copyTranscriptState === 'copied'
-                  ? 'Copied'
-                  : copyTranscriptState === 'error'
-                  ? 'Copy failed'
-                  : 'Copy Transcript'}
-              </Button>
+              <div className="flex gap-2">
+                {!isEditing && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={startEditing}
+                    disabled={
+                      effectiveStatus === 'PENDING' ||
+                      effectiveStatus === 'PROCESSING' ||
+                      !transcriptText
+                    }
+                  >
+                    Edit transcript
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyTranscript}
+                  disabled={!transcriptText || isEditing}
+                >
+                  {copyTranscriptState === 'copied'
+                    ? 'Copied'
+                    : copyTranscriptState === 'error'
+                      ? 'Copy failed'
+                      : 'Copy Transcript'}
+                </Button>
+              </div>
             </div>
 
-            <div className="whitespace-pre-wrap rounded bg-muted p-3 text-sm">
-              {transcriptText || 'No transcript returned.'}
-            </div>
+            {isEditing ? (
+              <div className="space-y-2">
+                <Textarea
+                  value={editValue}
+                  onChange={e => setEditValue(e.target.value)}
+                  rows={8}
+                  disabled={isSaving}
+                  className="text-sm"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => void saveEditing()}
+                    disabled={isSaving || !editValue.trim()}
+                  >
+                    {isSaving ? 'Saving...' : 'Save & re-analyze'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={cancelEditing}
+                    disabled={isSaving}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                {saveError && (
+                  <div className="text-sm text-red-600">{saveError}</div>
+                )}
+              </div>
+            ) : (
+              <div className="whitespace-pre-wrap rounded bg-muted p-3 text-sm">
+                {transcriptText || 'No transcript returned.'}
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -218,8 +316,16 @@ function RecordingRow({
     useState<CopyState>('idle');
   const [prefillMessage, setPrefillMessage] =
     useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState('');
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const startAiMutation = useStartInspectionAudioAi(
+    inspectionId,
+    recording.id,
+  );
+
+  const updateTranscriptionMutation = useUpdateInspectionAudioTranscription(
     inspectionId,
     recording.id,
   );
@@ -230,15 +336,40 @@ function RecordingRow({
     isPollingEnabled,
   );
 
-  const effectiveStatus: RecordingAiStatus =
+  const transcriptionStatus: RecordingAiStatus =
     statusQuery.data?.transcriptionStatus ??
     recording.transcriptionStatus ??
     'NONE';
+  const analysisStatus: RecordingAiStatus =
+    statusQuery.data?.analysisStatus ??
+    recording.analysisStatus ??
+    'NONE';
+
+  // Combined status — what the rest of the UI cares about. COMPLETED only when
+  // both stages are done.
+  const effectiveStatus: RecordingAiStatus =
+    transcriptionStatus === 'FAILED' || analysisStatus === 'FAILED'
+      ? 'FAILED'
+      : analysisStatus === 'COMPLETED'
+        ? 'COMPLETED'
+        : transcriptionStatus === 'PROCESSING' ||
+            analysisStatus === 'PROCESSING'
+          ? 'PROCESSING'
+          : transcriptionStatus === 'PENDING' || analysisStatus === 'PENDING'
+            ? 'PENDING'
+            : transcriptionStatus;
+
+  const stageLabel = deriveStageLabel(transcriptionStatus, analysisStatus);
+
+  const { data: workerStatus } = useWorkerStatus();
+  const showWaitingForWorker =
+    (transcriptionStatus === 'PENDING' || analysisStatus === 'PENDING') &&
+    (workerStatus?.workersOnline ?? 0) === 0;
 
   const resultQuery = useInspectionAudioAiResult(
     inspectionId,
     recording.id,
-    effectiveStatus === 'COMPLETED',
+    analysisStatus === 'COMPLETED',
   );
 
   const navigate = useNavigate();
@@ -337,6 +468,37 @@ function RecordingRow({
     }
   };
 
+  const startEditing = () => {
+    setEditValue(transcriptText);
+    setSaveError(null);
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setEditValue('');
+    setSaveError(null);
+  };
+
+  const saveEditing = async () => {
+    const trimmed = editValue.trim();
+    if (!trimmed) {
+      setSaveError('Transcript must not be empty.');
+      return;
+    }
+    try {
+      await updateTranscriptionMutation.mutateAsync(trimmed);
+      setIsEditing(false);
+      setEditValue('');
+      setSaveError(null);
+      setIsPollingEnabled(true);
+      setShowAiOutput(true);
+    } catch (error) {
+      console.error('Failed to save transcript:', error);
+      setSaveError('Failed to save transcript. Please try again.');
+    }
+  };
+
   const handleAnalyze = async () => {
     try {
       await startAiMutation.mutateAsync();
@@ -403,6 +565,8 @@ function RecordingRow({
       {shouldShowAiPanel && (
         <AiPanel
           effectiveStatus={effectiveStatus}
+          stageLabel={stageLabel}
+          showWaitingForWorker={showWaitingForWorker}
           showAiOutput={showAiOutput}
           setShowAiOutput={setShowAiOutput}
           aiResult={aiResult}
@@ -413,6 +577,14 @@ function RecordingRow({
           handleCopyJson={handleCopyJson}
           statusQueryError={statusQuery.data?.analysisError}
           isLoadingResult={resultQuery.isLoading}
+          isEditing={isEditing}
+          editValue={editValue}
+          setEditValue={setEditValue}
+          startEditing={startEditing}
+          cancelEditing={cancelEditing}
+          saveEditing={saveEditing}
+          isSaving={updateTranscriptionMutation.isPending}
+          saveError={saveError}
         />
       )}
     </div>

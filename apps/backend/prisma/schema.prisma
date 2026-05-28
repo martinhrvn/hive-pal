@@ -32,6 +32,7 @@ model User {
   createdInspections     Inspection[]           @relation("InspectionCreator")
   createdActions         Action[]               @relation("ActionCreator")
   createdQuickChecks     QuickCheck[]           @relation("QuickCheckCreator")
+  createdWorkerTokens    WorkerToken[]          @relation("WorkerTokenCreator")
 
   // GDPR consent fields
   privacyPolicyConsent   Boolean                @default(false)
@@ -236,17 +237,30 @@ model InspectionAudio {
   fileSize      Int                 // Size in bytes
   duration      Float?              // Duration in seconds (optional)
 
-  // Transcription support (future-ready)
-  transcription       String?             @db.Text
-  transcriptionStatus TranscriptionStatus @default(NONE)
+  // Transcription stage (audio -> text)
+  transcription              String?             @db.Text
+  transcriptionStatus        TranscriptionStatus @default(NONE)
+  transcriptionError         String?             @db.Text
+  transcriptionClaimedAt     DateTime?
+  transcriptionLeaseUntil    DateTime?
+  transcriptionWorkerTokenId String?
+  transcriptionRetries       Int                 @default(0)
 
-  analysisResult      Json?
-  analysisError       String? @db.Text
-  analysisCompletedAt DateTime?
+  // Analysis stage (text -> structured JSON)
+  analysisStatus        TranscriptionStatus @default(NONE)
+  analysisResult        Json?
+  analysisError         String?             @db.Text
+  analysisCompletedAt   DateTime?
+  analysisClaimedAt     DateTime?
+  analysisLeaseUntil    DateTime?
+  analysisWorkerTokenId String?
+  analysisRetries       Int                 @default(0)
 
   createdAt     DateTime            @default(now())
 
   @@index([inspectionId])
+  @@index([transcriptionStatus])
+  @@index([analysisStatus])
 }
 
 enum TranscriptionStatus {
@@ -514,6 +528,16 @@ model WeatherForecast {
   @@index([apiaryId])
   @@index([date])
   @@index([apiaryId, date])
+}
+
+// Log of weather API fetches (used for admin metrics)
+model WeatherFetchLog {
+  id        String   @id @default(uuid())
+  endpoint  String   // 'hourly' or 'daily'
+  outcome   String   // 'success' or 'error'
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 // Alert system for hive management notifications
@@ -861,6 +885,21 @@ model ApiaryInvite {
   @@index([apiaryId])
 }
 
+// Long-lived API tokens for pull-based transcription/analysis workers
+model WorkerToken {
+  id          String    @id @default(uuid())
+  name        String
+  tokenHash   String    @unique
+  prefix      String
+  createdAt   DateTime  @default(now())
+  createdById String
+  createdBy   User      @relation("WorkerTokenCreator", fields: [createdById], references: [id])
+  lastSeenAt  DateTime?
+  revokedAt   DateTime?
+
+  @@index([revokedAt])
+}
+
 // Platform metrics snapshot for admin observability
 model PlatformMetricsSnapshot {
   id                  String   @id @default(uuid())
@@ -875,6 +914,8 @@ model PlatformMetricsSnapshot {
   totalEquipmentItems Int
   activeUsers7Days    Int      // Users with activity in last 7 days
   activeUsers30Days   Int      // Users with activity in last 30 days
+  weatherFetches24h      Int @default(0) // Weather API fetches in last 24h
+  weatherFetchErrors24h  Int @default(0) // Weather fetch errors in last 24h
   createdAt           DateTime @default(now())
 
   @@index([date])

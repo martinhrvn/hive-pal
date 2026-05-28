@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Delete,
   Param,
   Body,
@@ -13,6 +14,7 @@ import {
   UploadedFile,
   BadRequestException,
 } from '@nestjs/common';
+import { updateTranscriptionSchema } from 'shared-schemas';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
@@ -150,6 +152,30 @@ export class InspectionAudioController {
       apiaryId: req.apiaryId,
       userId: req.user.id,
     });
+  }
+
+  @Put(':audioId/transcription')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updateTranscription(
+    @Param('inspectionId') inspectionId: string,
+    @Param('audioId') audioId: string,
+    @Body() body: unknown,
+    @Req() req: RequestWithApiary,
+  ) {
+    const parsed = updateTranscriptionSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten());
+    }
+
+    return this.audioService.updateTranscriptionAndReanalyze(
+      inspectionId,
+      audioId,
+      parsed.data.transcription,
+      {
+        apiaryId: req.apiaryId,
+        userId: req.user.id,
+      },
+    );
   }
 
   @Get(':audioId/ai/result')

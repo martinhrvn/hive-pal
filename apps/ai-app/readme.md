@@ -113,3 +113,78 @@ You can process all audio files in the "incoming" folder with
 curl -X POST http://serverip:8008/process_incoming
 ```
 
+## Running as a pull worker (recommended for occasionally-on machines)
+
+Instead of exposing this service over HTTP so the HivePal backend can push
+audio to it, you can run `worker.py` which polls the HivePal server for
+pending jobs and pushes results back. This works well when the AI box is on
+your home network and your HivePal instance is hosted elsewhere — only
+outbound HTTP from the AI box is required.
+
+### Setup
+
+1. In the HivePal backend `.env`, set:
+   ```
+   AI_PROCESSING_MODE=pull     # or "auto" (pull with push fallback after AI_PULL_FALLBACK_MINUTES)
+   ```
+   Restart the backend.
+
+2. Log into HivePal as an admin, go to **Admin → Worker Tokens**, click
+   **New token**, give it a name (e.g. `home-desktop`), and **copy the
+   plaintext token immediately** — it will not be shown again.
+
+3. Run the worker. Either directly with Python:
+   ```bash
+   HIVEPAL_URL=https://your-hivepal-instance.com \
+   WORKER_TOKEN=hpw_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
+   OLLAMA_URL=http://localhost:11434/api/chat \
+   OLLAMA_MODEL=qwen2.5:3b \
+   WHISPER_MODEL=small \
+   WHISPER_COMPUTE_TYPE=int8 \
+   python worker.py
+   ```
+
+   Or with Docker Compose (recommended — also runs Ollama for you):
+   ```bash
+   cp .env.worker.example .env
+   # edit .env with your HIVEPAL_URL and WORKER_TOKEN
+   docker compose -f docker-compose.worker.yml up -d --build
+   # one-time: pull the model into the ollama container
+   docker compose -f docker-compose.worker.yml exec ollama ollama pull qwen2.5:3b
+   # follow worker logs
+   docker compose -f docker-compose.worker.yml logs -f hivepal-worker
+   ```
+
+   On startup, `whisper` will load (no model download is needed if it was
+   previously cached). The worker will print one line per poll cycle when
+   idle and detailed progress when it claims a job.
+
+4. Verify in `/admin/worker-tokens` — the row for your token should turn
+   green ("Online") within ~30 seconds.
+
+### Environment variables
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `HIVEPAL_URL` | yes | — | Base URL of your HivePal backend, e.g. `https://hivepal.example.com` |
+| `WORKER_TOKEN` | yes | — | The `hpw_…` token from the admin UI |
+| `POLL_INTERVAL_SECONDS` | no | `5` | Sleep between polls when idle |
+| `OLLAMA_URL` | no | `http://ollama:11434/api/chat` | Ollama chat endpoint |
+| `OLLAMA_MODEL` | no | `qwen3:8b` | Ollama model name (must be pulled locally) |
+| `WHISPER_MODEL` | no | `small` | faster-whisper model size |
+| `WHISPER_COMPUTE_TYPE` | no | `int8` | faster-whisper compute type |
+| `DOWNLOAD_TIMEOUT_SECONDS` | no | `300` | Max time to download an audio file |
+
+### Notes
+
+- **One process handles both stages.** The loop first asks for a
+  transcription job; if none, it asks for an analysis job; if still none, it
+  sends a heartbeat and sleeps.
+- **Lease expiry.** The server gives each claim a 5-minute lease by default
+  (`WORKER_JOB_LEASE_MS`). If Whisper takes longer than that on a long
+  recording, the server will requeue the job and another worker (or the
+  same one on retry) will pick it up. Increase `WORKER_JOB_LEASE_MS` on the
+  backend if you regularly process long recordings.
+- **Stopping.** `Ctrl+C` exits cleanly. Any in-flight job will simply
+  lease-expire on the server within a minute or two and be retried.
+

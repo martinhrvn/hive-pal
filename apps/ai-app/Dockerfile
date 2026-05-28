@@ -17,6 +17,7 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY app.py /app/app.py
+COPY worker.py /app/worker.py
 
 RUN mkdir -p /data/incoming /data/transcripts /data/processed \
     && chown -R appuser:appgroup /app /data

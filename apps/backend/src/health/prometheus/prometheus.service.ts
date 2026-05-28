@@ -19,6 +19,7 @@ export class PrometheusService {
   private readonly apiariesTotal: Gauge;
   private readonly queensTotal: Gauge;
   private readonly inspectionsTotal: Gauge;
+  private readonly weatherFetchesCounter: Counter;
 
   constructor(private readonly logger: CustomLoggerService) {
     this.logger.setContext('PrometheusService');
@@ -65,6 +66,12 @@ export class PrometheusService {
     this.inspectionsTotal = new Gauge({
       name: 'hivepal_inspections_total',
       help: 'Total number of inspections',
+    });
+
+    this.weatherFetchesCounter = new Counter({
+      name: 'hivepal_weather_fetches_total',
+      help: 'Total number of weather API fetches to Open-Meteo',
+      labelNames: ['endpoint', 'outcome'],
     });
 
     this.init();
@@ -122,6 +129,13 @@ export class PrometheusService {
 
   setInspectionsCount(count: number): void {
     this.inspectionsTotal.set(count);
+  }
+
+  incrementWeatherFetches(
+    endpoint: 'hourly' | 'daily',
+    outcome: 'success' | 'error',
+  ): void {
+    this.weatherFetchesCounter.inc({ endpoint, outcome });
   }
 
   async getMetrics(): Promise<string> {
