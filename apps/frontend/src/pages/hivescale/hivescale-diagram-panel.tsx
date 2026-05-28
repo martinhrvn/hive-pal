@@ -489,19 +489,27 @@ const buildInspectionMarkers = (
         Icon: ClipboardCheck,
       };
       const actionMarkers: ChartMarker[] = (ins.actions ?? [])
-        .filter(a => ACTION_MARKER_MAP[a.actionType as ActionType])
-        .map(a => ({
-          id: `act-${ins.id}-${a.actionType}`,
-          timestamp: new Date(ins.date).getTime(),
-          date: ins.date,
-          type: ACTION_MARKER_MAP[a.actionType as ActionType]!,
-          label:
-            a.actionType.charAt(0) +
-            a.actionType.slice(1).toLowerCase().replace(/_/g, ' '),
-          detail: '',
-          hiveName,
-          Icon: ACTION_ICON_MAP[a.actionType as ActionType] ?? Wrench,
-        }));
+        .filter(
+          a =>
+            typeof a.actionType === 'string' &&
+            a.actionType.length > 0 &&
+            ACTION_MARKER_MAP[a.actionType as ActionType],
+        )
+        .map(a => {
+          const actionType = a.actionType as string;
+          return {
+            id: `act-${ins.id}-${actionType}`,
+            timestamp: new Date(ins.date).getTime(),
+            date: ins.date,
+            type: ACTION_MARKER_MAP[actionType as ActionType]!,
+            label:
+              actionType.charAt(0) +
+              actionType.slice(1).toLowerCase().replace(/_/g, ' '),
+            detail: '',
+            hiveName,
+            Icon: ACTION_ICON_MAP[actionType as ActionType] ?? Wrench,
+          };
+        });
       return [base, ...actionMarkers];
     });
 };
