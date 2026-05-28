@@ -188,9 +188,11 @@ const channelName = (
   device: HiveScaleDevice | undefined,
   channelNumber: 1 | 2,
   fallback: string,
-) =>
-  device?.channels?.find(channel => channel.channel_number === channelNumber)
-    ?.name || fallback;
+) => {
+  const name =
+    channelNumber === 1 ? device?.channels?.scale_1 : device?.channels?.scale_2;
+  return name?.trim() || fallback;
+};
 
 function HiveNameInput({
   id,
