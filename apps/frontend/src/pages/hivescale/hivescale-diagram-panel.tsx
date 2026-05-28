@@ -108,6 +108,10 @@ interface DiagramSeries {
   unit: string;
   stroke: string;
   group: string;
+  // Layout: which of the three toggle columns this series belongs to, and the
+  // sub-heading it sits under within that column.
+  column: 1 | 2 | 3;
+  subgroup: string;
 }
 
 interface ChartMarker {
@@ -241,6 +245,30 @@ const formatDateTime = (value: number) =>
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value));
+
+const formatRelativeTime = (value: string | null | undefined): string => {
+  if (!value) return '—';
+  const ts = new Date(value).getTime();
+  if (!Number.isFinite(ts)) return '—';
+  const diffMs = Date.now() - ts;
+  const absSec = Math.abs(diffMs) / 1000;
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ['year', 60 * 60 * 24 * 365],
+    ['month', 60 * 60 * 24 * 30],
+    ['day', 60 * 60 * 24],
+    ['hour', 60 * 60],
+    ['minute', 60],
+    ['second', 1],
+  ];
+  for (const [unit, secondsInUnit] of units) {
+    if (absSec >= secondsInUnit || unit === 'second') {
+      const valueInUnit = Math.round(-diffMs / 1000 / secondsInUnit);
+      return rtf.format(valueInUnit, unit);
+    }
+  }
+  return '—';
+};
 
 const escapeCsvField = (str: string): string => {
   if (str.includes(',') || str.includes('"') || str.includes('\n')) {
@@ -561,6 +589,9 @@ export const HiveScaleDiagramPanel = ({
 
   const series = useMemo<DiagramSeries[]>(
     () => [
+      // -------------------------------------------------------------------
+      // Column 1 — Hive 1 (scale 1). Mic LEFT is always hive 1.
+      // -------------------------------------------------------------------
       {
         key: 'scale1Weight',
         label: `${scale1Name} weight`,
@@ -569,6 +600,8 @@ export const HiveScaleDiagramPanel = ({
         unit: 'kg',
         stroke: 'var(--primary)',
         group: scale1Name,
+        column: 1,
+        subgroup: scale1Name,
       },
       {
         key: 'scale1Temperature',
@@ -578,7 +611,56 @@ export const HiveScaleDiagramPanel = ({
         unit: '°C',
         stroke: 'var(--chart-2)',
         group: scale1Name,
+        column: 1,
+        subgroup: scale1Name,
       },
+      {
+        key: 'micLeftRms',
+        label: `${scale1Name} mic RMS`,
+        dataKey: 'micLeftRms',
+        axis: 'dbfs',
+        unit: 'dBFS',
+        stroke: 'var(--chart-1)',
+        group: scale1Name,
+        column: 1,
+        subgroup: scale1Name,
+      },
+      {
+        key: 'beeCounter1In',
+        label: `${scale1Name} bees in`,
+        dataKey: 'beeCounter1In',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-3)',
+        group: scale1Name,
+        column: 1,
+        subgroup: scale1Name,
+      },
+      {
+        key: 'beeCounter1Out',
+        label: `${scale1Name} bees out`,
+        dataKey: 'beeCounter1Out',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-4)',
+        group: scale1Name,
+        column: 1,
+        subgroup: scale1Name,
+      },
+      {
+        key: 'beeCounter1Net',
+        label: `${scale1Name} net flow`,
+        dataKey: 'beeCounter1Net',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-5)',
+        group: scale1Name,
+        column: 1,
+        subgroup: scale1Name,
+      },
+      // -------------------------------------------------------------------
+      // Column 2 — Hive 2 (scale 2). Mic RIGHT is always hive 2.
+      // -------------------------------------------------------------------
       {
         key: 'scale2Weight',
         label: `${scale2Name} weight`,
@@ -587,6 +669,8 @@ export const HiveScaleDiagramPanel = ({
         unit: 'kg',
         stroke: 'var(--muted-foreground)',
         group: scale2Name,
+        column: 2,
+        subgroup: scale2Name,
       },
       {
         key: 'scale2Temperature',
@@ -596,7 +680,56 @@ export const HiveScaleDiagramPanel = ({
         unit: '°C',
         stroke: 'var(--chart-4)',
         group: scale2Name,
+        column: 2,
+        subgroup: scale2Name,
       },
+      {
+        key: 'micRightRms',
+        label: `${scale2Name} mic RMS`,
+        dataKey: 'micRightRms',
+        axis: 'dbfs',
+        unit: 'dBFS',
+        stroke: 'var(--chart-2)',
+        group: scale2Name,
+        column: 2,
+        subgroup: scale2Name,
+      },
+      {
+        key: 'beeCounter2In',
+        label: `${scale2Name} bees in`,
+        dataKey: 'beeCounter2In',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-3)',
+        group: scale2Name,
+        column: 2,
+        subgroup: scale2Name,
+      },
+      {
+        key: 'beeCounter2Out',
+        label: `${scale2Name} bees out`,
+        dataKey: 'beeCounter2Out',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--chart-5)',
+        group: scale2Name,
+        column: 2,
+        subgroup: scale2Name,
+      },
+      {
+        key: 'beeCounter2Net',
+        label: `${scale2Name} net flow`,
+        dataKey: 'beeCounter2Net',
+        axis: 'beecount',
+        unit: 'bees',
+        stroke: 'var(--primary)',
+        group: scale2Name,
+        column: 2,
+        subgroup: scale2Name,
+      },
+      // -------------------------------------------------------------------
+      // Column 3 — Ambient + Off-grid.
+      // -------------------------------------------------------------------
       {
         key: 'ambientTemperature',
         label: 'Ambient temp',
@@ -605,6 +738,8 @@ export const HiveScaleDiagramPanel = ({
         unit: '°C',
         stroke: 'var(--chart-5)',
         group: 'Ambient',
+        column: 3,
+        subgroup: 'Ambient',
       },
       {
         key: 'ambientHumidity',
@@ -614,6 +749,8 @@ export const HiveScaleDiagramPanel = ({
         unit: '%',
         stroke: 'var(--chart-3)',
         group: 'Ambient',
+        column: 3,
+        subgroup: 'Ambient',
       },
       {
         key: 'batteryVoltage',
@@ -623,6 +760,8 @@ export const HiveScaleDiagramPanel = ({
         unit: 'V',
         stroke: 'var(--destructive)',
         group: 'Off-grid',
+        column: 3,
+        subgroup: 'Off-grid',
       },
       {
         key: 'batterySoc',
@@ -632,6 +771,8 @@ export const HiveScaleDiagramPanel = ({
         unit: '%',
         stroke: 'var(--chart-1)',
         group: 'Off-grid',
+        column: 3,
+        subgroup: 'Off-grid',
       },
       {
         key: 'solarLoadVoltage',
@@ -641,6 +782,8 @@ export const HiveScaleDiagramPanel = ({
         unit: 'V',
         stroke: 'var(--chart-2)',
         group: 'Off-grid',
+        column: 3,
+        subgroup: 'Off-grid',
       },
       {
         key: 'solarCurrent',
@@ -650,6 +793,8 @@ export const HiveScaleDiagramPanel = ({
         unit: 'mA',
         stroke: 'var(--chart-3)',
         group: 'Off-grid',
+        column: 3,
+        subgroup: 'Off-grid',
       },
       {
         key: 'solarPower',
@@ -659,80 +804,8 @@ export const HiveScaleDiagramPanel = ({
         unit: 'mW',
         stroke: 'var(--chart-4)',
         group: 'Off-grid',
-      },
-      {
-        key: 'micLeftRms',
-        label: 'Mic left RMS',
-        dataKey: 'micLeftRms',
-        axis: 'dbfs',
-        unit: 'dBFS',
-        stroke: 'var(--chart-1)',
-        group: 'Sound',
-      },
-      {
-        key: 'micRightRms',
-        label: 'Mic right RMS',
-        dataKey: 'micRightRms',
-        axis: 'dbfs',
-        unit: 'dBFS',
-        stroke: 'var(--chart-2)',
-        group: 'Sound',
-      },
-      // BeeCounter — channel 1
-      {
-        key: 'beeCounter1In',
-        label: `${scale1Name} bees in`,
-        dataKey: 'beeCounter1In',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-1)',
-        group: `${scale1Name} BeeCounter`,
-      },
-      {
-        key: 'beeCounter1Out',
-        label: `${scale1Name} bees out`,
-        dataKey: 'beeCounter1Out',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-2)',
-        group: `${scale1Name} BeeCounter`,
-      },
-      {
-        key: 'beeCounter1Net',
-        label: `${scale1Name} net flow`,
-        dataKey: 'beeCounter1Net',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-3)',
-        group: `${scale1Name} BeeCounter`,
-      },
-      // BeeCounter — channel 2
-      {
-        key: 'beeCounter2In',
-        label: `${scale2Name} bees in`,
-        dataKey: 'beeCounter2In',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-4)',
-        group: `${scale2Name} BeeCounter`,
-      },
-      {
-        key: 'beeCounter2Out',
-        label: `${scale2Name} bees out`,
-        dataKey: 'beeCounter2Out',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-5)',
-        group: `${scale2Name} BeeCounter`,
-      },
-      {
-        key: 'beeCounter2Net',
-        label: `${scale2Name} net flow`,
-        dataKey: 'beeCounter2Net',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--primary)',
-        group: `${scale2Name} BeeCounter`,
+        column: 3,
+        subgroup: 'Off-grid',
       },
     ],
     [scale1Name, scale2Name],
@@ -916,14 +989,37 @@ export const HiveScaleDiagramPanel = ({
     setHoveredMarker({ marker, x: e.clientX, y: e.clientY });
   };
 
-  const seriesByGroup = useMemo(() => {
-    const groups: Record<string, DiagramSeries[]> = {};
+  // Group series into the three fixed columns, preserving series order and
+  // splitting each column into its sub-headed sections.
+  const columns = useMemo(() => {
+    const byColumn: Record<1 | 2 | 3, { subgroup: string; items: DiagramSeries[] }[]> = {
+      1: [],
+      2: [],
+      3: [],
+    };
     for (const s of series) {
-      if (!groups[s.group]) groups[s.group] = [];
-      groups[s.group].push(s);
+      const colSections = byColumn[s.column];
+      let section = colSections[colSections.length - 1];
+      if (!section || section.subgroup !== s.subgroup) {
+        section = { subgroup: s.subgroup, items: [] };
+        colSections.push(section);
+      }
+      section.items.push(s);
     }
-    return groups;
+    return byColumn;
   }, [series]);
+
+  // Timestamp of the most recent measurement in the loaded range, used for the
+  // "last data" line in the header.
+  const lastDataAt = useMemo<string | null>(() => {
+    if (!measurements?.length) return null;
+    let latest = -Infinity;
+    for (const m of measurements) {
+      const ts = new Date(m.measured_at).getTime();
+      if (Number.isFinite(ts) && ts > latest) latest = ts;
+    }
+    return latest === -Infinity ? null : new Date(latest).toISOString();
+  }, [measurements]);
 
   return (
     <Card>
@@ -934,6 +1030,24 @@ export const HiveScaleDiagramPanel = ({
             <CardDescription>
               Weight, temperature, and entrance activity over time
             </CardDescription>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              <span>
+                <span className="font-medium text-foreground">Device:</span>{' '}
+                {selectedDevice.display_name ?? selectedDevice.device_id}
+              </span>
+              <span>
+                <span className="font-medium text-foreground">Last seen:</span>{' '}
+                {formatRelativeTime(selectedDevice.last_seen_at)}
+              </span>
+              <span>
+                <span className="font-medium text-foreground">Last data:</span>{' '}
+                {formatRelativeTime(lastDataAt)}
+              </span>
+              <span>
+                <span className="font-medium text-foreground">Firmware:</span>{' '}
+                {selectedDevice.last_firmware_version ?? '—'}
+              </span>
+            </div>
           </div>
           <Button
             type="button"
@@ -1006,30 +1120,34 @@ export const HiveScaleDiagramPanel = ({
           </div>
         </div>
 
-        {/* Series toggles grouped */}
-        <div className="space-y-2 pt-2">
-          {Object.entries(seriesByGroup).map(([group, groupSeries]) => (
-            <div key={group} className="space-y-1">
-              <div className="text-xs font-medium text-muted-foreground">
-                {group}
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {groupSeries.map(s => (
-                  <Badge
-                    key={s.key}
-                    variant={visibleSeries[s.key] ? 'default' : 'outline'}
-                    className="cursor-pointer select-none"
-                    style={
-                      visibleSeries[s.key]
-                        ? { backgroundColor: s.stroke, borderColor: s.stroke }
-                        : { borderColor: s.stroke, color: s.stroke }
-                    }
-                    onClick={() => toggleSeries(s.key)}
-                  >
-                    {s.label}
-                  </Badge>
-                ))}
-              </div>
+        {/* Series toggles — fixed 3-column layout */}
+        <div className="grid gap-4 pt-2 md:grid-cols-3">
+          {([1, 2, 3] as const).map(column => (
+            <div key={column} className="space-y-3">
+              {columns[column].map(section => (
+                <div key={section.subgroup} className="space-y-1">
+                  <div className="text-xs font-medium text-muted-foreground">
+                    {section.subgroup}
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {section.items.map(s => (
+                      <Badge
+                        key={s.key}
+                        variant={visibleSeries[s.key] ? 'default' : 'outline'}
+                        className="cursor-pointer select-none"
+                        style={
+                          visibleSeries[s.key]
+                            ? { backgroundColor: s.stroke, borderColor: s.stroke }
+                            : { borderColor: s.stroke, color: s.stroke }
+                        }
+                        onClick={() => toggleSeries(s.key)}
+                      >
+                        {s.label}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           ))}
         </div>

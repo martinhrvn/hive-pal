@@ -1516,6 +1516,10 @@ function ScaleSetupPanel({
   hasClaimedDevices,
   isDeviceListLoading,
   onCalibrationPollingChange,
+  devices,
+  onSelectDevice,
+  onRemoveDevice,
+  isRemovingDevice,
 }: {
   selectedDevice: HiveScaleDevice | undefined;
   selectedDeviceId: string | undefined;
@@ -1524,6 +1528,10 @@ function ScaleSetupPanel({
   hasClaimedDevices: boolean;
   isDeviceListLoading: boolean;
   onCalibrationPollingChange: (enabled: boolean) => void;
+  devices: HiveScaleDevice[] | undefined;
+  onSelectDevice: (deviceId: string) => void;
+  onRemoveDevice: () => void;
+  isRemovingDevice: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -1536,34 +1544,67 @@ function ScaleSetupPanel({
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <CardHeader className="space-y-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <CardTitle>Scale setup</CardTitle>
+              <CardTitle>Devices</CardTitle>
               <CardDescription>
-                Claim devices, check status, map scales, and calibrate the raw
-                readings. Collapse this panel to give the diagram more space.
+                Select or remove a claimed HiveScale device. Expand the setup to
+                claim devices, check status, map scales, and calibrate the raw
+                readings.
               </CardDescription>
             </div>
-            <CollapsibleTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full justify-between md:w-auto md:min-w-40"
-              >
-                {isOpen ? 'Hide setup' : 'Show setup'}
-                <ChevronDown
-                  className={`ml-2 h-4 w-4 transition-transform ${
-                    isOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </Button>
-            </CollapsibleTrigger>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center lg:justify-end">
+              {isDeviceListLoading ? (
+                <Skeleton className="h-10 w-full sm:w-64" />
+              ) : devices?.length ? (
+                <>
+                  <select
+                    className="h-10 w-full rounded-md border bg-background px-3 py-2 text-sm sm:w-64"
+                    value={selectedDeviceId}
+                    onChange={event => onSelectDevice(event.target.value)}
+                  >
+                    {devices.map(device => (
+                      <option key={device.device_id} value={device.device_id}>
+                        {device.display_name || device.device_id}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="outline"
+                    onClick={onRemoveDevice}
+                    disabled={!selectedDevice || isRemovingDevice}
+                    className="w-full sm:w-auto"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Remove scale
+                  </Button>
+                </>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  No devices claimed yet — open the setup to add one.
+                </span>
+              )}
+              <CollapsibleTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-between sm:w-auto sm:min-w-40"
+                >
+                  {isOpen ? 'Hide setup' : 'Show setup'}
+                  <ChevronDown
+                    className={`ml-2 h-4 w-4 transition-transform ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+            </div>
           </div>
         </CardHeader>
         <CollapsibleContent>
           <CardContent className="pt-0">
-            <div className="grid gap-4 xl:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <ClaimDeviceCard hiveNameOptions={hiveNameOptions} />
               {selectedDevice && (
                 <DeviceStatusCard
@@ -1786,47 +1827,6 @@ export function HiveScalePage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Devices</CardTitle>
-          <CardDescription>
-            Select or remove a claimed HiveScale device.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {devices.isLoading ? (
-            <Skeleton className="h-10 w-full" />
-          ) : devices.data?.length ? (
-            <div className="flex flex-col gap-3 md:flex-row md:items-center">
-              <select
-                className="h-10 flex-1 rounded-md border bg-background px-3 py-2 text-sm"
-                value={selectedDeviceId}
-                onChange={event => setSelectedDeviceId(event.target.value)}
-              >
-                {devices.data.map(device => (
-                  <option key={device.device_id} value={device.device_id}>
-                    {device.display_name || device.device_id}
-                  </option>
-                ))}
-              </select>
-              <Button
-                variant="outline"
-                onClick={removeSelectedDevice}
-                disabled={!selectedDevice || removeDevice.isPending}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Remove scale
-              </Button>
-            </div>
-          ) : (
-            <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
-              No HiveScale devices are claimed for your user yet. Open the scale
-              setup panel and use the claim form.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       <ScaleSetupPanel
         selectedDevice={selectedDevice}
         selectedDeviceId={selectedDeviceId}
@@ -1835,6 +1835,10 @@ export function HiveScalePage() {
         hasClaimedDevices={Boolean(devices.data?.length)}
         isDeviceListLoading={devices.isLoading}
         onCalibrationPollingChange={setIsCalibrationPolling}
+        devices={devices.data}
+        onSelectDevice={setSelectedDeviceId}
+        onRemoveDevice={removeSelectedDevice}
+        isRemovingDevice={removeDevice.isPending}
       />
 
       {selectedDevice && (
