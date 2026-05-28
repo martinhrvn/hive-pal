@@ -53,16 +53,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import type { HiveScaleDevice, HiveScaleMeasurement } from '@/api/hooks/useHiveScale';
 
-// Resolve a channel display name from the device's channels object
-const resolveChannelName = (
-  device: HiveScaleDevice,
-  channel: 1 | 2,
-  fallback: string,
-): string => {
-  const name = channel === 1 ? device.channels?.scale_1 : device.channels?.scale_2;
-  return name?.trim() || fallback;
-};
-
 export type HiveScaleDateRangePreset =
   | '24h'
   | '7d'
@@ -522,11 +512,13 @@ const buildBoxAddedMarkers = (
 // ---------------------------------------------------------------------------
 
 interface HiveScaleDiagramPanelProps {
-  device: HiveScaleDevice;
+  selectedDevice: HiveScaleDevice;
   measurements: HiveScaleMeasurement[] | undefined;
   isLoading: boolean;
   dateRange: HiveScaleDateRange;
   onDateRangeChange: (range: HiveScaleDateRange) => void;
+  scale1Name: string;
+  scale2Name: string;
   hives?: HiveWithBoxesResponse[];
   inspections?: InspectionResponse[];
 }
@@ -536,19 +528,18 @@ interface HiveScaleDiagramPanelProps {
 // ---------------------------------------------------------------------------
 
 export const HiveScaleDiagramPanel = ({
-  device,
+  selectedDevice,
   measurements,
   isLoading,
   dateRange,
   onDateRangeChange,
+  scale1Name,
+  scale2Name,
   hives,
   inspections,
 }: HiveScaleDiagramPanelProps) => {
-  const scale1Name = resolveChannelName(device, 1, 'Hive 1');
-  const scale2Name = resolveChannelName(device, 2, 'Hive 2');
-
   const [diagramSettings, setDiagramSettings] = useState<StoredDiagramSettings>(
-    () => loadDiagramSettings(device.device_id),
+    () => loadDiagramSettings(selectedDevice.device_id),
   );
 
   const { visibleSeries, axes: axisScaleSettings } = diagramSettings;
@@ -560,13 +551,13 @@ export const HiveScaleDiagramPanel = ({
   } | null>(null);
 
   useEffect(() => {
-    saveDiagramSettings(device.device_id, diagramSettings);
-  }, [device.device_id, diagramSettings]);
+    saveDiagramSettings(selectedDevice.device_id, diagramSettings);
+  }, [selectedDevice.device_id, diagramSettings]);
 
   // If device changes, reload settings
   useEffect(() => {
-    setDiagramSettings(loadDiagramSettings(device.device_id));
-  }, [device.device_id]);
+    setDiagramSettings(loadDiagramSettings(selectedDevice.device_id));
+  }, [selectedDevice.device_id]);
 
   const series = useMemo<DiagramSeries[]>(
     () => [
@@ -911,7 +902,7 @@ export const HiveScaleDiagramPanel = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hivescale-${device.device_id}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `hivescale-${selectedDevice.device_id}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };

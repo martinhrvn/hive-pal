@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/collapsible';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import type { HiveScaleMeasurement, HiveScaleDevice } from '@/api/hooks/useHiveScale';
+import type { HiveScaleMeasurement } from '@/api/hooks/useHiveScale';
 import type { HiveScaleDateRange } from './hivescale-diagram-panel';
 
 // ---------------------------------------------------------------------------
@@ -167,10 +167,11 @@ const StatCard = ({ label, value, sub, trend }: StatCardProps) => (
 // ---------------------------------------------------------------------------
 
 interface HiveScaleBeeCounterPanelProps {
-  device: HiveScaleDevice;
   measurements: HiveScaleMeasurement[] | undefined;
   isLoading: boolean;
   dateRange: HiveScaleDateRange;
+  scale1Name: string;
+  scale2Name: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -178,18 +179,16 @@ interface HiveScaleBeeCounterPanelProps {
 // ---------------------------------------------------------------------------
 
 export const HiveScaleBeeCounterPanel = ({
-  device,
   measurements,
   isLoading,
   dateRange,
+  scale1Name,
+  scale2Name,
 }: HiveScaleBeeCounterPanelProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const [activeView, setActiveView] = useState<'activity' | 'flow' | 'cumulative'>(
     'activity',
   );
-
-  const scale1Name = device.channels?.scale_1?.trim() || 'Hive 1';
-  const scale2Name = device.channels?.scale_2?.trim() || 'Hive 2';
 
   // Determine which channels have counter data at all
   const hasCounter1 = useMemo(
