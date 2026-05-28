@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { WeatherForecast } from '@/components/weather';
+import { ActionSidebarContainer } from './action-sidebar-section';
 
 interface WeatherForecastSectionProps {
   apiaryId?: string;
@@ -20,13 +20,13 @@ export const WeatherForecastSection: React.FC<WeatherForecastSectionProps> = ({
   if (!apiaryId) return null;
 
   return (
-    <div className="border rounded-md">
-      <SidebarGroup>
-        <SidebarGroupLabel className="px-2 pt-2">
+    <ActionSidebarContainer>
+      <div className="px-3 py-3">
+        <h3 className="font-overline text-stone-500 dark:text-stone-400 mb-2 px-2">
           {t(titleKey)}
-        </SidebarGroupLabel>
+        </h3>
         <WeatherForecast apiaryId={apiaryId} compact={compact} />
-      </SidebarGroup>
-    </div>
+      </div>
+    </ActionSidebarContainer>
   );
 };

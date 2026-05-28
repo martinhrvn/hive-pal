@@ -140,7 +140,6 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
         {canEdit && (
           <ActionSidebarGroup
             title={t('hive:manage.title', { defaultValue: 'Manage Hive' })}
-            className="mt-4"
           >
             <MenuItemButton
               icon={<EditIcon className="h-4 w-4" />}
