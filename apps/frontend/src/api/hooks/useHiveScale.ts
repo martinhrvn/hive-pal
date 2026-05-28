@@ -1,11 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 
-export interface HiveScaleChannel {
-  channel_number: 1 | 2;
-  name: string | null;
-}
-
 export interface HiveScaleDevice {
   device_id: string;
   display_name: string | null;
@@ -13,7 +8,10 @@ export interface HiveScaleDevice {
   last_seen_at: string | null;
   last_firmware_version: string | null;
   role: 'owner' | 'admin' | 'viewer';
-  channels: HiveScaleChannel[];
+  channels: {
+    scale_1: string | null;
+    scale_2: string | null;
+  };
 }
 
 export interface HiveScaleMeasurement {

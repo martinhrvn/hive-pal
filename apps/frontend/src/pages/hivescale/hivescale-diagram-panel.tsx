@@ -51,10 +51,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import type {
-  HiveScaleDevice,
-  HiveScaleMeasurement,
-} from '@/api/hooks/useHiveScale';
+import type { HiveScaleDevice, HiveScaleMeasurement } from '@/api/hooks/useHiveScale';
+
+// Resolve a channel display name from the device's channels object
+const resolveChannelName = (
+  device: HiveScaleDevice,
+  channel: 1 | 2,
+  fallback: string,
+): string => {
+  const name = channel === 1 ? device.channels?.scale_1 : device.channels?.scale_2;
+  return name?.trim() || fallback;
+};
 
 export type HiveScaleDateRangePreset =
   | '24h'
@@ -537,10 +544,8 @@ export const HiveScaleDiagramPanel = ({
   hives,
   inspections,
 }: HiveScaleDiagramPanelProps) => {
-  const scale1Name =
-    device.channels.find(c => c.channel_number === 1)?.name ?? 'Hive 1';
-  const scale2Name =
-    device.channels.find(c => c.channel_number === 2)?.name ?? 'Hive 2';
+  const scale1Name = resolveChannelName(device, 1, 'Hive 1');
+  const scale2Name = resolveChannelName(device, 2, 'Hive 2');
 
   const [diagramSettings, setDiagramSettings] = useState<StoredDiagramSettings>(
     () => loadDiagramSettings(device.device_id),

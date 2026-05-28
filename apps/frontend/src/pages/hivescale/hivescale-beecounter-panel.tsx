@@ -188,10 +188,8 @@ export const HiveScaleBeeCounterPanel = ({
     'activity',
   );
 
-  const scale1Name =
-    device.channels.find(c => c.channel_number === 1)?.name ?? 'Hive 1';
-  const scale2Name =
-    device.channels.find(c => c.channel_number === 2)?.name ?? 'Hive 2';
+  const scale1Name = device.channels?.scale_1?.trim() || 'Hive 1';
+  const scale2Name = device.channels?.scale_2?.trim() || 'Hive 2';
 
   // Determine which channels have counter data at all
   const hasCounter1 = useMemo(
