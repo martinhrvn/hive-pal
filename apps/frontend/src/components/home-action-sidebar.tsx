@@ -70,13 +70,13 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
           </ActionSidebarGroup>
         )}
 
-        <ActionSidebarGroup title={t('actions.navigate')} className="mt-4">
+        <ActionSidebarGroup title={t('actions.navigate')}>
           <MenuItemButton
             icon={<Home className="h-4 w-4" />}
             label={t('navigation.home')}
             onClick={() => navigate('/')}
             tooltip={t('navigation.home')}
-            className="bg-accent"
+            isActive
           />
           <MenuItemButton
             icon={<Home className="h-4 w-4" />}
@@ -98,7 +98,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
           />
         </ActionSidebarGroup>
 
-        <ActionSidebarGroup title={t('actions.actions')} className="mt-4">
+        <ActionSidebarGroup title={t('actions.actions')}>
           <MenuItemButton
             icon={<RefreshCw className="h-4 w-4" />}
             label={t('actions.refreshData')}

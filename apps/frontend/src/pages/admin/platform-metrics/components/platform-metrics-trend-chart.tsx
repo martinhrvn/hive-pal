@@ -73,41 +73,41 @@ export const PlatformMetricsTrendChart: React.FC<
         return {
           totalUsers: {
             label: 'Users',
-            color: 'hsl(var(--chart-1))',
+            color: '#3b82f6', // Blue
           },
           totalApiaries: {
             label: 'Apiaries',
-            color: 'hsl(var(--chart-2))',
+            color: '#10b981', // Green
           },
           totalHives: {
             label: 'Hives',
-            color: 'hsl(var(--chart-3))',
+            color: '#f59e0b', // Amber
           },
           totalInspections: {
             label: 'Inspections',
-            color: 'hsl(var(--chart-4))',
+            color: '#a855f7', // Purple
           },
         };
       case 'activity':
         return {
           activeUsers7Days: {
             label: 'Active (7 days)',
-            color: 'hsl(var(--chart-1))',
+            color: '#3b82f6', // Blue
           },
           activeUsers30Days: {
             label: 'Active (30 days)',
-            color: 'hsl(var(--chart-2))',
+            color: '#10b981', // Green
           },
         };
       case 'weather':
         return {
           weatherFetches24h: {
             label: 'Weather Fetches',
-            color: 'hsl(var(--chart-1))',
+            color: '#3b82f6', // Blue
           },
           weatherFetchErrors24h: {
             label: 'Errors',
-            color: 'hsl(var(--chart-5))',
+            color: '#ef4444', // Red
           },
         };
       default:

@@ -78,7 +78,6 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
       {canEdit && apiaryId && (
         <ActionSidebarGroup
           title={t('apiary:manage.title', { defaultValue: 'Manage Apiary' })}
-          className="mt-4"
         >
           <MenuItemButton
             icon={<PencilIcon className="h-4 w-4" />}
@@ -103,7 +102,7 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
         </ActionSidebarGroup>
       )}
 
-      <DataOptionsSection i18nNamespace="apiary" className="mt-4" />
+      <DataOptionsSection i18nNamespace="apiary" />
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>

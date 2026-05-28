@@ -53,7 +53,6 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
 
         <DataOptionsSection
           i18nNamespace="hive"
-          className="mt-4"
           additionalItems={
             <MenuItemButton
               icon={<QrCode className="h-4 w-4" />}

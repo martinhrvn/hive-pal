@@ -67,36 +67,32 @@ export const InspectionActionSidebar: React.FC<
         />
       </ActionSidebarGroup>
 
-      <ActionSidebarGroup
-        title={t('inspection:sidebar.views')}
-        className="mt-4"
-      >
+      <ActionSidebarGroup title={t('inspection:sidebar.views')}>
         <MenuItemButton
           icon={<ClipboardCheckIcon className="h-4 w-4" />}
           label={t('inspection:sidebar.allInspections')}
           onClick={() => onChangeView('all')}
           tooltip={t('inspection:sidebar.allInspections')}
-          className={currentView === 'all' ? 'bg-accent' : ''}
+          isActive={currentView === 'all'}
         />
         <MenuItemButton
           icon={<HistoryIcon className="h-4 w-4" />}
           label={t('inspection:sidebar.recentInspections')}
           onClick={() => onChangeView('recent')}
           tooltip={t('inspection:sidebar.recentInspections')}
-          className={currentView === 'recent' ? 'bg-accent' : ''}
+          isActive={currentView === 'recent'}
         />
         <MenuItemButton
           icon={<CalendarClockIcon className="h-4 w-4" />}
           label={t('inspection:sidebar.upcomingInspections')}
           onClick={() => onChangeView('upcoming')}
           tooltip={t('inspection:sidebar.upcomingInspections')}
-          className={currentView === 'upcoming' ? 'bg-accent' : ''}
+          isActive={currentView === 'upcoming'}
         />
       </ActionSidebarGroup>
 
       <DataOptionsSection
         i18nNamespace="inspection"
-        className="mt-4"
         onPrint={() => window.print()}
       />
     </ActionSidebarContainer>

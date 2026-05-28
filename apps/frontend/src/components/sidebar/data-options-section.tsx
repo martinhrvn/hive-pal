@@ -2,11 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileDown, Printer, Share2 } from 'lucide-react';
 
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-} from '@/components/ui/sidebar';
+import { ActionSidebarGroup } from './action-sidebar-section';
 import { MenuItemButton } from './menu-item-button';
 
 interface DataOptionsSectionProps {
@@ -35,31 +31,29 @@ export const DataOptionsSection: React.FC<DataOptionsSectionProps> = ({
     onShare || (() => alert(t(`${i18nNamespace}:messages.shareComingSoon`)));
 
   return (
-    <SidebarGroup className={className}>
-      <SidebarGroupLabel>
-        {t(`${i18nNamespace}:actions.dataOptions`)}
-      </SidebarGroupLabel>
-      <SidebarMenu>
-        <MenuItemButton
-          icon={<FileDown className="h-4 w-4" />}
-          label={t(`${i18nNamespace}:actions.exportCSV`)}
-          onClick={handleExport}
-          tooltip={t(`${i18nNamespace}:actions.exportCSV`)}
-        />
-        <MenuItemButton
-          icon={<Printer className="h-4 w-4" />}
-          label={t(`${i18nNamespace}:actions.print`)}
-          onClick={handlePrint}
-          tooltip={t(`${i18nNamespace}:actions.print`)}
-        />
-        {additionalItems}
-        <MenuItemButton
-          icon={<Share2 className="h-4 w-4" />}
-          label={t(`${i18nNamespace}:actions.share`)}
-          onClick={handleShare}
-          tooltip={t(`${i18nNamespace}:actions.share`)}
-        />
-      </SidebarMenu>
-    </SidebarGroup>
+    <ActionSidebarGroup
+      title={t(`${i18nNamespace}:actions.dataOptions`)}
+      className={className}
+    >
+      <MenuItemButton
+        icon={<FileDown />}
+        label={t(`${i18nNamespace}:actions.exportCSV`)}
+        onClick={handleExport}
+        tooltip={t(`${i18nNamespace}:actions.exportCSV`)}
+      />
+      <MenuItemButton
+        icon={<Printer />}
+        label={t(`${i18nNamespace}:actions.print`)}
+        onClick={handlePrint}
+        tooltip={t(`${i18nNamespace}:actions.print`)}
+      />
+      {additionalItems}
+      <MenuItemButton
+        icon={<Share2 />}
+        label={t(`${i18nNamespace}:actions.share`)}
+        onClick={handleShare}
+        tooltip={t(`${i18nNamespace}:actions.share`)}
+      />
+    </ActionSidebarGroup>
   );
 };

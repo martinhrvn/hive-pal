@@ -9,11 +9,14 @@ type NavAdminProps = {
   collapsed?: boolean;
 };
 
-export function NavAdmin({ collapsed = false }: NavAdminProps) {
+export function NavAdmin({ collapsed: collapsedProp }: NavAdminProps) {
   const { t } = useTranslation('common');
   const { token } = useAuth();
   const location = useLocation();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile, setOpenMobile, state } = useSidebar();
+  // Honor explicit prop if provided, otherwise derive from the sidebar's own
+  // collapsed state (icon-only variant sets state === 'collapsed').
+  const collapsed = collapsedProp ?? (!isMobile && state === 'collapsed');
 
   const handleMobileClose = () => {
     if (isMobile) setOpenMobile(false);
@@ -30,20 +33,24 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
-    <div className="px-3 py-2">
-      <h2
-        className={cn('mb-2 px-4 text-lg font-semibold tracking-tight', {
-          'text-center': collapsed,
-        })}
-      >
-        {!collapsed ? t('navigation.admin') : 'A'}
-      </h2>
+    <div
+      className={cn(
+        'py-2',
+        collapsed ? 'px-1 mt-2 border-t border-sidebar-border pt-3' : 'px-3',
+      )}
+    >
+      {!collapsed && (
+        <h2 className="mb-2 px-4 text-xs font-semibold tracking-wider uppercase text-sidebar-foreground/60">
+          {t('navigation.admin')}
+        </h2>
+      )}
       <div className="space-y-1">
         <Link
           to="/admin/users"
           onClick={handleMobileClose}
           className={cn(
-            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            'flex items-center justify-start w-full rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            collapsed ? 'h-8 w-8 mx-auto p-0' : 'px-3 py-2',
             {
               'justify-center': collapsed,
               'bg-accent': isActive('/admin/users'),
@@ -73,7 +80,8 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           to="/admin/feedback"
           onClick={handleMobileClose}
           className={cn(
-            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            'flex items-center justify-start w-full rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            collapsed ? 'h-8 w-8 mx-auto p-0' : 'px-3 py-2',
             {
               'justify-center': collapsed,
               'bg-accent': isActive('/admin/feedback'),
@@ -100,7 +108,8 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           to="/admin/frame-sizes"
           onClick={handleMobileClose}
           className={cn(
-            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            'flex items-center justify-start w-full rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            collapsed ? 'h-8 w-8 mx-auto p-0' : 'px-3 py-2',
             {
               'justify-center': collapsed,
               'bg-accent': isActive('/admin/frame-sizes'),
@@ -129,7 +138,8 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           to="/admin/metrics"
           onClick={handleMobileClose}
           className={cn(
-            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            'flex items-center justify-start w-full rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            collapsed ? 'h-8 w-8 mx-auto p-0' : 'px-3 py-2',
             {
               'justify-center': collapsed,
               'bg-accent': isActive('/admin/metrics'),
@@ -157,7 +167,8 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           to="/admin/media"
           onClick={handleMobileClose}
           className={cn(
-            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            'flex items-center justify-start w-full rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            collapsed ? 'h-8 w-8 mx-auto p-0' : 'px-3 py-2',
             {
               'justify-center': collapsed,
               'bg-accent': isActive('/admin/media'),
@@ -186,7 +197,8 @@ export function NavAdmin({ collapsed = false }: NavAdminProps) {
           to="/admin/worker-tokens"
           onClick={handleMobileClose}
           className={cn(
-            'flex items-center justify-start w-full rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            'flex items-center justify-start w-full rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
+            collapsed ? 'h-8 w-8 mx-auto p-0' : 'px-3 py-2',
             {
               'justify-center': collapsed,
               'bg-accent': isActive('/admin/worker-tokens'),
