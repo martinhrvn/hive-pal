@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { WeatherCondition, Prisma } from '@/prisma/client';
 import axios from 'axios';
 
@@ -32,7 +33,10 @@ const ACTIVE_USER_THRESHOLD_DAYS = 5;
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly prometheus: PrometheusService,
+  ) {}
 
   /**
    * Map Open-Meteo weather codes to our simplified conditions
@@ -76,8 +80,10 @@ export class WeatherService {
         },
       });
 
+      this.prometheus.incrementWeatherFetches('hourly', 'success');
       return response.data as OpenMeteoResponse;
     } catch (error) {
+      this.prometheus.incrementWeatherFetches('hourly', 'error');
       this.logger.error(
         `Failed to fetch hourly weather for ${latitude},${longitude}:`,
         error,
@@ -107,8 +113,10 @@ export class WeatherService {
         },
       });
 
+      this.prometheus.incrementWeatherFetches('daily', 'success');
       return response.data as OpenMeteoResponse;
     } catch (error) {
+      this.prometheus.incrementWeatherFetches('daily', 'error');
       this.logger.error(
         `Failed to fetch daily forecast for ${latitude},${longitude}:`,
         error,
