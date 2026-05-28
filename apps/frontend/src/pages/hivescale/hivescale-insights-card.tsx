@@ -114,7 +114,7 @@ const DETECTOR_SUMMARIES: Array<{
  * Visual config per severity. Mirrors the four levels emitted by the
  * HiveScale backend's `insights.py` (see server/insights.py for sources).
  */
-const severityConfig: Record<
+export const severityConfig: Record<
   HiveScaleInsightSeverity,
   {
     label: string;
@@ -167,11 +167,11 @@ const severityConfig: Record<
   },
 };
 
-function severityRank(severity: HiveScaleInsightSeverity): number {
+export function severityRank(severity: HiveScaleInsightSeverity): number {
   return severityConfig[severity]?.rank ?? 0;
 }
 
-function channelLabel(
+export function channelLabel(
   channel: number,
   scale1Name: string,
   scale2Name: string,
@@ -179,6 +179,153 @@ function channelLabel(
   if (channel === 1) return scale1Name;
   if (channel === 2) return scale2Name;
   return `Hive ${channel}`;
+}
+
+/**
+ * Sort alerts by severity (highest first), then by most recent window end.
+ */
+export function sortAlerts(
+  alerts: HiveScaleInsightAlert[] | undefined,
+): HiveScaleInsightAlert[] {
+  if (!alerts) return [];
+  return [...alerts].sort((a, b) => {
+    const sev = severityRank(b.severity) - severityRank(a.severity);
+    if (sev !== 0) return sev;
+    const ta = a.window_end ? new Date(a.window_end).getTime() : 0;
+    const tb = b.window_end ? new Date(b.window_end).getTime() : 0;
+    return tb - ta;
+  });
+}
+
+/**
+ * Info tooltip listing every active detector plus a link to the full docs.
+ * Extracted so it can be reused outside the standalone insights card.
+ */
+export function InsightsInfoTooltip() {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 shrink-0"
+          aria-label="Which tests are performed?"
+        >
+          <Info className="h-4 w-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent
+        side="bottom"
+        align="start"
+        className="max-w-md space-y-2 text-left"
+      >
+        <p className="font-medium">Tests performed</p>
+        <p className="text-xs text-muted-foreground">
+          Each detector runs on every measurement pass against the last 14 days
+          of weight and hive-temperature data.
+        </p>
+        <ul className="space-y-1.5 text-xs">
+          {DETECTOR_SUMMARIES.map(d => (
+            <li key={d.title}>
+              <span className="font-medium">{d.title}:</span>{' '}
+              <span className="text-muted-foreground">{d.detail}</span>
+            </li>
+          ))}
+        </ul>
+        <a
+          href={INSIGHTS_DOCS_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1 pt-1 text-xs font-medium text-blue-400 hover:text-blue-300 hover:underline"
+        >
+          Full documentation
+          <ExternalLink className="h-3 w-3" />
+        </a>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+/**
+ * Renders a list of insight alerts using the shared severity styling.
+ * `showHive` controls whether the per-row hive label is shown (useful when
+ * the list is already scoped to a single hive).
+ */
+export function HiveScaleAlertList({
+  alerts,
+  scale1Name,
+  scale2Name,
+  showHive = true,
+}: {
+  alerts: HiveScaleInsightAlert[];
+  scale1Name: string;
+  scale2Name: string;
+  showHive?: boolean;
+}) {
+  return (
+    <ul className="space-y-2">
+      {alerts.map(alert => {
+        const cfg = severityConfig[alert.severity];
+        const Icon = cfg.icon;
+        const windowEnd = alert.window_end ? new Date(alert.window_end) : null;
+        const hiveName = channelLabel(alert.channel, scale1Name, scale2Name);
+
+        return (
+          <li
+            key={alert.id}
+            className={cn(
+              'rounded-md border p-3 transition-colors',
+              cfg.rowClass,
+            )}
+          >
+            <div className="flex items-start gap-3">
+              <Icon
+                className={cn('mt-0.5 h-5 w-5 shrink-0', cfg.iconClass)}
+                aria-hidden
+              />
+              <div className="min-w-0 flex-1 space-y-1">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                  <p className="font-medium leading-tight">{alert.title}</p>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className={cn('text-xs', cfg.badgeClass)}
+                    >
+                      {cfg.label}
+                    </Badge>
+                    {showHive && (
+                      <span className="text-xs text-muted-foreground">
+                        {hiveName}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {alert.description}
+                </p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <span>
+                    Confidence {Math.round((alert.confidence ?? 0) * 100)}%
+                  </span>
+                  {windowEnd && (
+                    <span>
+                      {formatDistanceToNowStrict(windowEnd, {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  )}
+                  {alert.source && (
+                    <span className="truncate">Source: {alert.source}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 export function HiveScaleInsightsCard({
@@ -189,17 +336,10 @@ export function HiveScaleInsightsCard({
 }: HiveScaleInsightsCardProps) {
   const insights = useHiveScaleInsights(deviceId, { lookbackDays });
 
-  const sortedAlerts = useMemo<HiveScaleInsightAlert[]>(() => {
-    if (!insights.data?.alerts) return [];
-    return [...insights.data.alerts].sort((a, b) => {
-      const sev = severityRank(b.severity) - severityRank(a.severity);
-      if (sev !== 0) return sev;
-      // newer window_end first as tiebreaker
-      const ta = a.window_end ? new Date(a.window_end).getTime() : 0;
-      const tb = b.window_end ? new Date(b.window_end).getTime() : 0;
-      return tb - ta;
-    });
-  }, [insights.data?.alerts]);
+  const sortedAlerts = useMemo<HiveScaleInsightAlert[]>(
+    () => sortAlerts(insights.data?.alerts),
+    [insights.data?.alerts],
+  );
 
   const severityCounts = useMemo(() => {
     const counts: Record<HiveScaleInsightSeverity, number> = {
@@ -228,55 +368,7 @@ export function HiveScaleInsightsCard({
               {insights.isFetching && !insights.isLoading && (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
-              {/*
-                Info tooltip: lists every detector currently active, plus a
-                link to the long-form documentation. Hover/focus on the icon
-                opens the tooltip; the link inside is a regular <a> so it
-                stays clickable on touch devices too.
-              */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 shrink-0"
-                    aria-label="Which tests are performed?"
-                  >
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="bottom"
-                  align="start"
-                  className="max-w-md space-y-2 text-left"
-                >
-                  <p className="font-medium">Tests performed</p>
-                  <p className="text-xs text-muted-foreground">
-                    Each detector runs on every measurement pass against the
-                    last 14 days of weight and hive-temperature data.
-                  </p>
-                  <ul className="space-y-1.5 text-xs">
-                    {DETECTOR_SUMMARIES.map(d => (
-                      <li key={d.title}>
-                        <span className="font-medium">{d.title}:</span>{' '}
-                        <span className="text-muted-foreground">
-                          {d.detail}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href={INSIGHTS_DOCS_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 pt-1 text-xs font-medium text-blue-400 hover:text-blue-300 hover:underline"
-                  >
-                    Full documentation
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </TooltipContent>
-              </Tooltip>
+              <InsightsInfoTooltip />
             </CardTitle>
             <CardDescription>
               Sensor-based alerts derived from weight and temperature trends.
@@ -348,79 +440,11 @@ export function HiveScaleInsightsCard({
             </div>
 
             {/* Alert list */}
-            <ul className="space-y-2">
-              {sortedAlerts.map(alert => {
-                const cfg = severityConfig[alert.severity];
-                const Icon = cfg.icon;
-                const windowEnd = alert.window_end
-                  ? new Date(alert.window_end)
-                  : null;
-                const hiveName = channelLabel(
-                  alert.channel,
-                  scale1Name,
-                  scale2Name,
-                );
-
-                return (
-                  <li
-                    key={alert.id}
-                    className={cn(
-                      'rounded-md border p-3 transition-colors',
-                      cfg.rowClass,
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      <Icon
-                        className={cn(
-                          'mt-0.5 h-5 w-5 shrink-0',
-                          cfg.iconClass,
-                        )}
-                        aria-hidden
-                      />
-                      <div className="min-w-0 flex-1 space-y-1">
-                        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                          <p className="font-medium leading-tight">
-                            {alert.title}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant="outline"
-                              className={cn('text-xs', cfg.badgeClass)}
-                            >
-                              {cfg.label}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {hiveName}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {alert.description}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                          <span>
-                            Confidence{' '}
-                            {Math.round((alert.confidence ?? 0) * 100)}%
-                          </span>
-                          {windowEnd && (
-                            <span>
-                              {formatDistanceToNowStrict(windowEnd, {
-                                addSuffix: true,
-                              })}
-                            </span>
-                          )}
-                          {alert.source && (
-                            <span className="truncate">
-                              Source: {alert.source}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+            <HiveScaleAlertList
+              alerts={sortedAlerts}
+              scale1Name={scale1Name}
+              scale2Name={scale2Name}
+            />
           </>
         )}
       </CardContent>

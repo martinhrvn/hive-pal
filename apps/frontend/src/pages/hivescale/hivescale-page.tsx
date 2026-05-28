@@ -44,6 +44,7 @@ import {
   type HiveScaleMeasurement,
   useHiveScaleInsights,
   HiveScaleInsightSeverity,
+  type HiveScaleInsightAlert,
 } from '@/api/hooks/useHiveScale';
 import {
   createPresetDateRange,
@@ -93,8 +94,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import {
-  HiveScaleInsightsCard,
+  HiveScaleAlertList,
   HiveScaleSeverityPill,
+  severityConfig,
 } from './hivescale-insights-card';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
@@ -235,28 +237,53 @@ function LatestValuePanel({
   icon: Icon,
   rows,
   badge,
+  insight,
 }: {
   title: string;
   description: string;
   icon: LucideIcon;
   rows: { label: string; value: string }[];
   badge?: ReactNode;
+  insight?: {
+    severity: HiveScaleInsightSeverity | null;
+    count: number;
+    alerts: HiveScaleInsightAlert[];
+    scale1Name: string;
+    scale2Name: string;
+    isLoading?: boolean;
+    isError?: boolean;
+  };
 }) {
+  const [showAlerts, setShowAlerts] = useState(false);
+  const hasAlerts = (insight?.alerts.length ?? 0) > 0;
+
+  const insightSummary = (() => {
+    if (!insight) return null;
+    if (insight.isLoading) return 'Loading…';
+    if (insight.isError) return 'Unavailable';
+    if (!hasAlerts) return 'All clear';
+    return `${severityConfig[insight.severity ?? 'info'].label}${
+      insight.count > 1 ? ` · ${insight.count}` : ''
+    }`;
+  })();
+
   return (
     <Card>
-      <CardContent className="flex gap-4 pt-6">
-        <div className="rounded-full bg-muted p-3">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div className="min-w-0 flex-1 space-y-3">
-          <div>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-sm text-muted-foreground">{title}</p>
-              {badge}
-            </div>
+      <CardContent className="space-y-3 pt-6">
+        {/* Name on top */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">{title}</p>
             <p className="text-xs text-muted-foreground">{description}</p>
           </div>
-          <div className="space-y-2">
+          {badge}
+        </div>
+
+        <div className="flex gap-4">
+          <div className="h-fit rounded-full bg-muted p-3">
+            <Icon className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
             {rows.map(row => (
               <div
                 key={row.label}
@@ -268,8 +295,47 @@ function LatestValuePanel({
                 <span className="text-xl font-semibold">{row.value}</span>
               </div>
             ))}
+
+            {insight && (
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-xs text-muted-foreground">Insight</span>
+                {hasAlerts ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAlerts(open => !open)}
+                    className="flex items-center gap-1 text-sm font-medium hover:underline"
+                    aria-expanded={showAlerts}
+                  >
+                    <HiveScaleSeverityPill
+                      severity={insight.severity}
+                      count={insight.count}
+                    />
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${
+                        showAlerts ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                ) : (
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {insightSummary}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
+
+        {insight && hasAlerts && showAlerts && (
+          <div className="pt-1">
+            <HiveScaleAlertList
+              alerts={insight.alerts}
+              scale1Name={insight.scale1Name}
+              scale2Name={insight.scale2Name}
+              showHive={false}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -1662,9 +1728,9 @@ export function HiveScalePage() {
   );
   const insights = useHiveScaleInsights(selectedDeviceId, { lookbackDays: 14 });
 
-  // Highest active severity per scale channel, used to drive the per-hive
-  // pills on the LatestValuePanel headers. The full alert list is rendered
-  // by the HiveScaleInsightsCard further down.
+  // Highest active severity, count, and full alert list per scale channel.
+  // Drives the per-hive Insight rows (summary pill + expandable detail) on the
+  // LatestValuePanel cards.
   const channelSeverity = useMemo(() => {
     const severityRank: Record<HiveScaleInsightSeverity, number> = {
       critical: 4,
@@ -1674,21 +1740,32 @@ export function HiveScalePage() {
     };
     const out: Record<
       1 | 2,
-      { severity: HiveScaleInsightSeverity | null; count: number }
+      {
+        severity: HiveScaleInsightSeverity | null;
+        count: number;
+        alerts: HiveScaleInsightAlert[];
+      }
     > = {
-      1: { severity: null, count: 0 },
-      2: { severity: null, count: 0 },
+      1: { severity: null, count: 0, alerts: [] },
+      2: { severity: null, count: 0, alerts: [] },
     };
     for (const alert of insights.data?.alerts ?? []) {
       const slot = out[alert.channel as 1 | 2];
       if (!slot) continue;
       slot.count += 1;
+      slot.alerts.push(alert);
       if (
         !slot.severity ||
         severityRank[alert.severity] > severityRank[slot.severity]
       ) {
         slot.severity = alert.severity;
       }
+    }
+    // Sort each channel's alerts by severity (highest first).
+    for (const channel of [1, 2] as const) {
+      out[channel].alerts.sort(
+        (a, b) => severityRank[b.severity] - severityRank[a.severity],
+      );
     }
     return out;
   }, [insights.data?.alerts]);
@@ -1862,7 +1939,20 @@ export function HiveScalePage() {
                 label: 'Hive temp',
                 value: `${numberOrDash(latest?.hive_1_temp_c)} °C`,
               },
+              {
+                label: 'RMS sound',
+                value: `${numberOrDash(latest?.mic_left_rms_dbfs)} dBFS`,
+              },
             ]}
+            insight={{
+              severity: channelSeverity[1].severity,
+              count: channelSeverity[1].count,
+              alerts: channelSeverity[1].alerts,
+              scale1Name,
+              scale2Name,
+              isLoading: insights.isLoading,
+              isError: insights.isError,
+            }}
           />
           <LatestValuePanel
             title={scale2Name}
@@ -1883,7 +1973,20 @@ export function HiveScalePage() {
                 label: 'Hive temp',
                 value: `${numberOrDash(latest?.hive_2_temp_c)} °C`,
               },
+              {
+                label: 'RMS sound',
+                value: `${numberOrDash(latest?.mic_right_rms_dbfs)} dBFS`,
+              },
             ]}
+            insight={{
+              severity: channelSeverity[2].severity,
+              count: channelSeverity[2].count,
+              alerts: channelSeverity[2].alerts,
+              scale1Name,
+              scale2Name,
+              isLoading: insights.isLoading,
+              isError: insights.isError,
+            }}
           />
           <LatestValuePanel
             title="Ambient"
@@ -1943,15 +2046,6 @@ export function HiveScalePage() {
             />
           )}
         </div>
-      )}
-
-      {selectedDevice && (
-        <HiveScaleInsightsCard
-          deviceId={selectedDevice.device_id}
-          scale1Name={scale1Name}
-          scale2Name={scale2Name}
-          lookbackDays={14}
-        />
       )}
 
       {selectedDevice && (
