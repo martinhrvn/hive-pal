@@ -530,6 +530,16 @@ model WeatherForecast {
   @@index([apiaryId, date])
 }
 
+// Log of weather API fetches (used for admin metrics)
+model WeatherFetchLog {
+  id        String   @id @default(uuid())
+  endpoint  String   // 'hourly' or 'daily'
+  outcome   String   // 'success' or 'error'
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // Alert system for hive management notifications
 model Alert {
   id        String        @id @default(uuid())
@@ -904,6 +914,8 @@ model PlatformMetricsSnapshot {
   totalEquipmentItems Int
   activeUsers7Days    Int      // Users with activity in last 7 days
   activeUsers30Days   Int      // Users with activity in last 30 days
+  weatherFetches24h      Int @default(0) // Weather API fetches in last 24h
+  weatherFetchErrors24h  Int @default(0) // Weather fetch errors in last 24h
   createdAt           DateTime @default(now())
 
   @@index([date])

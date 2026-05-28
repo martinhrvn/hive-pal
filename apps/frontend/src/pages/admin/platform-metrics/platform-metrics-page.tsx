@@ -28,6 +28,7 @@ import {
   Hexagon,
   ClipboardList,
   MapPin,
+  Cloud,
 } from 'lucide-react';
 import { format, subDays, subMonths } from 'date-fns';
 import { PlatformMetricsTrendChart } from './components/platform-metrics-trend-chart';
@@ -233,6 +234,36 @@ const PlatformMetricsPage: React.FC = () => {
               <p className="text-sm text-muted-foreground">Equipment Items</p>
               <p className="text-xl font-semibold">
                 {latestSnapshot?.totalEquipmentItems ?? '-'}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Weather Fetches Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Cloud className="h-5 w-5" />
+            Weather Fetches
+          </CardTitle>
+          <CardDescription>
+            Open-Meteo API calls in the last 24 hours (as of the latest
+            snapshot)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <p className="text-sm text-muted-foreground">Total fetches</p>
+              <p className="text-3xl font-bold">
+                {latestSnapshot?.weatherFetches24h ?? '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Errors</p>
+              <p className="text-3xl font-bold">
+                {latestSnapshot?.weatherFetchErrors24h ?? '-'}
               </p>
             </div>
           </div>

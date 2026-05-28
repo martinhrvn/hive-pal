@@ -23,6 +23,9 @@ export class PlatformMetricsService {
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
     // Run all counts in parallel for efficiency
     const [
       totalUsers,
@@ -35,6 +38,8 @@ export class PlatformMetricsService {
       totalEquipmentItems,
       activeUsers7Days,
       activeUsers30Days,
+      weatherFetches24h,
+      weatherFetchErrors24h,
     ] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.apiary.count(),
@@ -46,6 +51,15 @@ export class PlatformMetricsService {
       this.prisma.equipmentItem.count(),
       this.countActiveUsers(sevenDaysAgo),
       this.countActiveUsers(thirtyDaysAgo),
+      this.prisma.weatherFetchLog.count({
+        where: { createdAt: { gte: oneDayAgo } },
+      }),
+      this.prisma.weatherFetchLog.count({
+        where: {
+          createdAt: { gte: oneDayAgo },
+          outcome: 'error',
+        },
+      }),
     ]);
 
     return {
@@ -60,6 +74,8 @@ export class PlatformMetricsService {
       totalEquipmentItems,
       activeUsers7Days,
       activeUsers30Days,
+      weatherFetches24h,
+      weatherFetchErrors24h,
     };
   }
 
@@ -107,6 +123,8 @@ export class PlatformMetricsService {
         totalEquipmentItems: metrics.totalEquipmentItems,
         activeUsers7Days: metrics.activeUsers7Days,
         activeUsers30Days: metrics.activeUsers30Days,
+        weatherFetches24h: metrics.weatherFetches24h,
+        weatherFetchErrors24h: metrics.weatherFetchErrors24h,
       },
     });
   }

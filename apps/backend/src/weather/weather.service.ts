@@ -81,14 +81,31 @@ export class WeatherService {
       });
 
       this.prometheus.incrementWeatherFetches('hourly', 'success');
+      void this.recordFetchLog('hourly', 'success');
       return response.data as OpenMeteoResponse;
     } catch (error) {
       this.prometheus.incrementWeatherFetches('hourly', 'error');
+      void this.recordFetchLog('hourly', 'error');
       this.logger.error(
         `Failed to fetch hourly weather for ${latitude},${longitude}:`,
         error,
       );
       throw error;
+    }
+  }
+
+  private async recordFetchLog(
+    endpoint: 'hourly' | 'daily',
+    outcome: 'success' | 'error',
+  ): Promise<void> {
+    try {
+      await this.prisma.weatherFetchLog.create({
+        data: { endpoint, outcome },
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Failed to record weather fetch log: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
@@ -114,9 +131,11 @@ export class WeatherService {
       });
 
       this.prometheus.incrementWeatherFetches('daily', 'success');
+      void this.recordFetchLog('daily', 'success');
       return response.data as OpenMeteoResponse;
     } catch (error) {
       this.prometheus.incrementWeatherFetches('daily', 'error');
+      void this.recordFetchLog('daily', 'error');
       this.logger.error(
         `Failed to fetch daily forecast for ${latitude},${longitude}:`,
         error,
