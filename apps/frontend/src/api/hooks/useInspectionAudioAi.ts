@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 
 export const useStartInspectionAudioAi = (
@@ -36,6 +36,30 @@ export const useInspectionAudioAiStatus = (
       const active = (s: string | undefined) =>
         s === 'PENDING' || s === 'PROCESSING';
       return active(transcription) || active(analysis) ? 3000 : false;
+    },
+  });
+};
+
+export const useUpdateInspectionAudioTranscription = (
+  inspectionId: string,
+  audioId: string,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (transcription: string) => {
+      const response = await apiClient.put(
+        `/api/inspections/${inspectionId}/audio/${audioId}/transcription`,
+        { transcription },
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ['inspection-audio-ai-status', inspectionId, audioId],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ['inspection-audio-ai-result', inspectionId, audioId],
+      });
     },
   });
 };

@@ -166,7 +166,13 @@ export class AdminMediaService {
         }),
       },
       include: {
-        apiary: { select: { id: true, name: true, user: { select: { id: true, email: true } } } },
+        apiary: {
+          select: {
+            id: true,
+            name: true,
+            user: { select: { id: true, email: true } },
+          },
+        },
       },
     });
     return rows.map((p) => ({
@@ -206,7 +212,13 @@ export class AdminMediaService {
         }),
       },
       include: {
-        apiary: { select: { id: true, name: true, user: { select: { id: true, email: true } } } },
+        apiary: {
+          select: {
+            id: true,
+            name: true,
+            user: { select: { id: true, email: true } },
+          },
+        },
       },
     });
     return rows.map((d) => ({

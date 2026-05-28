@@ -29,6 +29,10 @@ interface AiProcessUploadResponse {
   };
 }
 
+interface AiRecommendResponse {
+  [key: string]: unknown;
+}
+
 export interface AudioResponse {
   id: string;
   inspectionId: string;
@@ -419,6 +423,141 @@ export class InspectionAudioService {
     // scheduled job (`runPullFallbackSweep`) after AI_PULL_FALLBACK_MINUTES.
 
     return { status: 'PENDING' };
+  }
+
+  async updateTranscriptionAndReanalyze(
+    inspectionId: string,
+    audioId: string,
+    text: string,
+    filter: ApiaryUserFilter,
+  ): Promise<{ status: 'PENDING' }> {
+    const audio = await this.prisma.inspectionAudio.findFirst({
+      where: {
+        id: audioId,
+        inspectionId,
+        inspection: {
+          hive: {
+            apiary: {
+              id: filter.apiaryId,
+              userId: filter.userId,
+            },
+          },
+        },
+      },
+    });
+
+    if (!audio) {
+      throw new NotFoundException(`Audio with ID ${audioId} not found`);
+    }
+
+    if (audio.transcriptionStatus !== 'COMPLETED') {
+      throw new BadRequestException(
+        'Transcription must be COMPLETED before it can be edited',
+      );
+    }
+
+    if (
+      audio.analysisStatus === 'PENDING' ||
+      audio.analysisStatus === 'PROCESSING'
+    ) {
+      throw new BadRequestException(
+        'Analysis is already in progress for this recording',
+      );
+    }
+
+    const trimmed = text.trim();
+    if (!trimmed) {
+      throw new BadRequestException('Transcription must not be empty');
+    }
+
+    await this.prisma.inspectionAudio.update({
+      where: { id: audioId },
+      data: {
+        transcription: trimmed,
+        analysisStatus: 'PENDING',
+        analysisResult: Prisma.JsonNull,
+        analysisError: null,
+        analysisCompletedAt: null,
+        analysisRetries: 0,
+        analysisClaimedAt: null,
+        analysisLeaseUntil: null,
+        analysisWorkerTokenId: null,
+      },
+    });
+
+    if (this.aiProcessingMode === 'push') {
+      if (!this.hasPushConfig()) {
+        this.logger.warn({
+          message:
+            'AI_PROCESSING_MODE=push but AI service not configured; leaving analysis PENDING',
+          audioId,
+        });
+      } else {
+        void this.runAnalysisOnlyInBackground(audioId, trimmed);
+      }
+    }
+    // pull / auto: leave PENDING for a worker to claim via claimAnalysis.
+
+    this.logger.log({
+      message: 'Transcription edited and analysis re-queued',
+      audioId,
+      length: trimmed.length,
+    });
+
+    return { status: 'PENDING' };
+  }
+
+  private async runAnalysisOnlyInBackground(
+    audioId: string,
+    transcript: string,
+  ): Promise<void> {
+    try {
+      await this.prisma.inspectionAudio.update({
+        where: { id: audioId },
+        data: { analysisStatus: 'PROCESSING' },
+      });
+
+      const response = await fetch(`${this.aiServiceBaseUrl}/recommend`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.aiApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transcript }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI service returned ${response.status}`);
+      }
+
+      const rawResult: unknown = await response.json();
+      const result = rawResult as AiRecommendResponse;
+
+      await this.prisma.inspectionAudio.update({
+        where: { id: audioId },
+        data: {
+          analysisStatus: 'COMPLETED',
+          analysisResult: result as Prisma.InputJsonValue,
+          analysisError: null,
+          analysisCompletedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await this.prisma.inspectionAudio.update({
+        where: { id: audioId },
+        data: {
+          analysisStatus: 'FAILED',
+          analysisError: message,
+        },
+      });
+
+      this.logger.error({
+        message: 'Analysis-only re-run failed',
+        audioId,
+        error: message,
+      });
+    }
   }
 
   /**

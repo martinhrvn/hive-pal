@@ -47,7 +47,9 @@ export class AdminMediaController {
   }
 
   @Get(':type/:id/download-url')
-  @ApiOperation({ summary: 'Signed download/preview URL for a media item (admin)' })
+  @ApiOperation({
+    summary: 'Signed download/preview URL for a media item (admin)',
+  })
   downloadUrl(
     @Param('type', new ZodValidationPipe(adminMediaTypeSchema))
     type: AdminMediaType,
