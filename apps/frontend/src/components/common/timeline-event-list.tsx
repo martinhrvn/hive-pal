@@ -1028,18 +1028,11 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
     return (
       <div
         className={cn(
-          'relative grid grid-cols-[28px_1fr] gap-x-3 sm:gap-x-4',
-          isFirst ? 'pb-2 pt-0' : 'pb-2 pt-3',
+          'sticky top-0 z-20 grid grid-cols-[28px_1fr] gap-x-3 sm:gap-x-4 bg-background/80 backdrop-blur-md',
+          isFirst ? 'pb-2 pt-1' : 'pb-2 pt-3',
         )}
       >
-        {/* spine continues through */}
-        <div className="relative flex justify-center">
-          <div
-            className="absolute top-0 bottom-0 left-1/2 -translate-x-px w-px border-l border-dashed border-stone-200 dark:border-stone-800"
-            aria-hidden
-          />
-        </div>
-        {/* inline label + hairline */}
+        <div aria-hidden />
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="font-overline text-stone-500 dark:text-stone-400 shrink-0 tabular-nums">
             {parts.context}
