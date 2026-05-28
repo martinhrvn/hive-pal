@@ -309,7 +309,12 @@
     "queenNotSeen": "Queen not seen",
     "photos": "Photos",
     "documents": "Documents",
-    "fromInspection": "From inspection"
+    "fromInspection": "From inspection",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "filterEventType": "Type",
+    "filterDateRange": "Range",
+    "filterHive": "Hive"
   },
   "syrupCalculator": {
     "title": "Syrup Calculator",
