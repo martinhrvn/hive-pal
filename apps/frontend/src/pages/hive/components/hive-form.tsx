@@ -278,8 +278,13 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           hiveId={hiveId}
           currentPhotoUrl={featurePhotoUrl}
           currentPhotoId={form.watch('featurePhotoId') ?? undefined}
-          onPhotoUploaded={(photoId) => form.setValue('featurePhotoId', photoId)}
-          onPhotoRemoved={() => form.setValue('featurePhotoId', null)}
+          onPhotoUploaded={(photoId) =>
+            form.setValue('featurePhotoId', photoId, { shouldDirty: true })
+          }
+          onPhotoRemoved={() => {
+            form.setValue('featurePhotoId', null, { shouldDirty: true });
+            setFeaturePhotoUrl(null);
+          }}
         />
 
         <FormField
