@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   HttpException,
@@ -7,7 +8,14 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError, Method } from 'axios';
+import FormData from 'form-data';
 import { UsersService } from '../users/users.service';
+
+export interface HiveScaleFirmwareUploadDto {
+  version: string;
+  target?: 'hivescale' | 'beecounter';
+  active?: boolean;
+}
 
 export interface HiveScaleClaimDeviceDto {
   claim_code: string;
@@ -209,6 +217,61 @@ export class HiveScaleService {
       'POST',
       `/api/v1/app/devices/${deviceId}/calibration/stop`,
     );
+  }
+
+  async uploadFirmware(
+    userId: string,
+    deviceId: string,
+    file: Express.Multer.File,
+    dto: HiveScaleFirmwareUploadDto,
+  ) {
+    const version = (dto.version ?? '').trim();
+    if (!version) {
+      throw new BadRequestException('version is required');
+    }
+
+    const target = dto.target ?? 'hivescale';
+    if (target !== 'hivescale' && target !== 'beecounter') {
+      throw new BadRequestException(
+        "target must be 'hivescale' or 'beecounter'",
+      );
+    }
+
+    const form = new FormData();
+    form.append('file', file.buffer, {
+      filename: file.originalname,
+      contentType: file.mimetype || 'application/octet-stream',
+      knownLength: file.size,
+    });
+    form.append('version', version);
+    form.append('target', target);
+    // FastAPI Form(bool) accepts the string "true"/"false".
+    form.append('active', String(dto.active ?? true));
+
+    try {
+      const response = await axios.request({
+        baseURL: this.requireBaseUrl(),
+        url: `/api/v1/app/devices/${deviceId}/firmware`,
+        method: 'POST',
+        data: form,
+        // Firmware images can be a few MB; allow a generous timeout and no
+        // body-size cap on the proxy hop.
+        timeout: 120000,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+        headers: {
+          ...form.getHeaders(),
+          'X-User-Id': userId,
+          'X-HivePal-Service-Key': this.requireServiceApiKey(),
+        },
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.handleAxiosError(error);
+      }
+      throw new BadGatewayException('HiveScale firmware upload failed');
+    }
   }
 
   listMeasurements(

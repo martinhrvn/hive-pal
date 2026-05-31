@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,8 +9,11 @@ import {
   Post,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
@@ -103,6 +107,32 @@ export class HiveScaleController {
     @Param('deviceId') deviceId: string,
   ) {
     return this.hiveScaleService.stopCalibrationMode(req.user.id, deviceId);
+  }
+
+  @Post('devices/:deviceId/firmware')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFirmware(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { version?: string; target?: string; active?: string },
+  ) {
+    if (!file) {
+      throw new BadRequestException('No firmware file provided');
+    }
+
+    const target =
+      body.target === 'beecounter' || body.target === 'hivescale'
+        ? body.target
+        : undefined;
+
+    return this.hiveScaleService.uploadFirmware(req.user.id, deviceId, file, {
+      version: body.version ?? '',
+      target,
+      // Multipart fields arrive as strings; treat anything but "false" as true,
+      // and default to true when omitted.
+      active: body.active === undefined ? true : body.active !== 'false',
+    });
   }
 
   @Get('devices/:deviceId/measurements')

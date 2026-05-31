@@ -19,6 +19,7 @@ import {
   Square,
   Sun,
   Trash2,
+  Upload,
   UserPlus,
   Weight,
   Zap,
@@ -40,7 +41,9 @@ import {
   useStopHiveScaleCalibrationMode,
   useUpdateHiveScaleChannels,
   useUpdateHiveScaleConfig,
+  useUploadHiveScaleFirmware,
   type HiveScaleDevice,
+  type HiveScaleFirmwareTarget,
   type HiveScaleMeasurement,
   useHiveScaleInsights,
   HiveScaleInsightSeverity,
@@ -1574,6 +1577,140 @@ function DeviceStatusCard({
   );
 }
 
+function FirmwareUploadCard({
+  selectedDevice,
+  deviceId,
+}: {
+  selectedDevice: HiveScaleDevice | undefined;
+  deviceId: string | undefined;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [version, setVersion] = useState('');
+  const [target, setTarget] = useState<HiveScaleFirmwareTarget>('hivescale');
+  // Reset key lets us clear the native file input after a successful upload.
+  const [fileInputKey, setFileInputKey] = useState(0);
+
+  const uploadFirmware = useUploadHiveScaleFirmware(deviceId);
+
+  const role = selectedDevice?.role;
+  const canManage = role === 'owner' || role === 'admin';
+  const disabled = !selectedDevice || !canManage;
+
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    if (disabled) return;
+
+    if (!file) {
+      toast.error('Choose a firmware binary (.bin) to upload.');
+      return;
+    }
+    const normalizedVersion = version.trim();
+    if (!normalizedVersion) {
+      toast.error('Enter a version, e.g. 0.6.3.');
+      return;
+    }
+
+    uploadFirmware.mutate(
+      { file, version: normalizedVersion, target, active: true },
+      {
+        onSuccess: result => {
+          setFile(null);
+          setVersion('');
+          setFileInputKey(key => key + 1);
+          toast.success(
+            `Firmware ${result.version} (${result.target}) uploaded and registered.`,
+          );
+        },
+        onError: error => toast.error(error.message),
+      },
+    );
+  };
+
+  return (
+    <Card className={disabled ? 'opacity-60' : undefined}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Upload className="h-5 w-5" />
+          Firmware upload
+        </CardTitle>
+        <CardDescription>
+          Upload a firmware binary and register it as a release. New devices of
+          the matching type pick it up on their next update check.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {!selectedDevice ? (
+          <p className="text-sm text-muted-foreground">
+            Select a claimed device to upload firmware.
+          </p>
+        ) : !canManage ? (
+          <p className="text-sm text-muted-foreground">
+            Only device owners and admins can upload firmware. Your role is
+            “{role}”.
+          </p>
+        ) : null}
+
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <div className="space-y-2">
+            <Label htmlFor="firmware-target">Firmware type</Label>
+            <Select
+              value={target}
+              onValueChange={value =>
+                setTarget(value as HiveScaleFirmwareTarget)
+              }
+              disabled={disabled || uploadFirmware.isPending}
+            >
+              <SelectTrigger id="firmware-target">
+                <SelectValue placeholder="Select firmware type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="hivescale">HiveScale</SelectItem>
+                <SelectItem value="beecounter">BeeCounter</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="firmware-version">Version</Label>
+            <Input
+              id="firmware-version"
+              value={version}
+              onChange={event => setVersion(event.target.value)}
+              placeholder="0.6.3"
+              disabled={disabled || uploadFirmware.isPending}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="firmware-file">Firmware binary</Label>
+            <Input
+              key={fileInputKey}
+              id="firmware-file"
+              type="file"
+              accept=".bin,application/octet-stream"
+              onChange={event => setFile(event.target.files?.[0] ?? null)}
+              disabled={disabled || uploadFirmware.isPending}
+            />
+            {file && (
+              <p className="text-xs text-muted-foreground">
+                {file.name} ({(file.size / 1024).toFixed(0)} KB)
+              </p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={disabled || uploadFirmware.isPending}
+          >
+            {uploadFirmware.isPending ? 'Uploading…' : 'Upload firmware'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
 function ScaleSetupPanel({
   selectedDevice,
   selectedDeviceId,
@@ -1687,6 +1824,10 @@ function ScaleSetupPanel({
                 deviceId={selectedDeviceId}
                 latest={latest}
                 onCalibrationPollingChange={onCalibrationPollingChange}
+              />
+              <FirmwareUploadCard
+                selectedDevice={selectedDevice}
+                deviceId={selectedDeviceId}
               />
             </div>
           </CardContent>

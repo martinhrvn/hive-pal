@@ -457,3 +457,49 @@ export const useStopHiveScaleCalibrationMode = (deviceId: string | undefined) =>
     },
   });
 };
+
+export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter';
+
+export interface HiveScaleFirmwareUploadInput {
+  file: File;
+  version: string;
+  target: HiveScaleFirmwareTarget;
+  active?: boolean;
+}
+
+export interface HiveScaleFirmwareUploadResult {
+  status: string;
+  version: string;
+  filename: string;
+  target: HiveScaleFirmwareTarget;
+  active: boolean;
+  size_bytes: number;
+  crc32: number;
+}
+
+export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<HiveScaleFirmwareUploadResult, Error, HiveScaleFirmwareUploadInput>({
+    mutationFn: async ({ file, version, target, active = true }) => {
+      const formData = new FormData();
+      // Field order/names must match the FastAPI File()/Form() parameters.
+      formData.append('file', file);
+      formData.append('version', version);
+      formData.append('target', target);
+      formData.append('active', String(active));
+
+      // The apiClient request interceptor strips Content-Type for FormData so
+      // the browser sets the multipart boundary itself.
+      const response = await apiClient.post<HiveScaleFirmwareUploadResult>(
+        `/api/hivescale/devices/${deviceId}/firmware`,
+        formData,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      // last_firmware_version is surfaced in the devices list, so refresh it.
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
