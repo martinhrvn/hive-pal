@@ -17,6 +17,16 @@ export interface HiveScaleFirmwareUploadDto {
   active?: boolean;
 }
 
+export interface HiveScaleFirmwareUploadResult {
+  status: string;
+  version: string;
+  filename: string;
+  target: 'hivescale' | 'beecounter';
+  active: boolean;
+  size_bytes: number;
+  crc32: number;
+}
+
 export interface HiveScaleClaimDeviceDto {
   claim_code: string;
   display_name?: string;
@@ -224,7 +234,7 @@ export class HiveScaleService {
     deviceId: string,
     file: Express.Multer.File,
     dto: HiveScaleFirmwareUploadDto,
-  ) {
+  ): Promise<HiveScaleFirmwareUploadResult> {
     const version = (dto.version ?? '').trim();
     if (!version) {
       throw new BadRequestException('version is required');
@@ -249,7 +259,7 @@ export class HiveScaleService {
     form.append('active', String(dto.active ?? true));
 
     try {
-      const response = await axios.request({
+      const response = await axios.request<HiveScaleFirmwareUploadResult>({
         baseURL: this.requireBaseUrl(),
         url: `/api/v1/app/devices/${deviceId}/firmware`,
         method: 'POST',
