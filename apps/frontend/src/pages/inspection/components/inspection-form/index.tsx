@@ -505,7 +505,13 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               <hr className="border-t border-border" />
               {!isSubjective && (
                 <>
-                  <FrameCountSection totalFrames={totalFrames} />
+                  <FrameCountSection
+                    totalFrames={totalFrames}
+                    isAiSuggested={isAiSuggested}
+                    aiMergeState={aiMergeState}
+                    onAcceptSuggestion={acceptAiSuggestion}
+                    onDismissSuggestion={dismissAiSuggestion}
+                  />
                   <hr className="border-t border-border" />
                   <ScorePreviewSection
                     totalFrames={totalFrames}

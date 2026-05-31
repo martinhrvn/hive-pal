@@ -7,6 +7,8 @@ import { FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InspectionFormData } from './schema';
 import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
+import { AiFieldControls } from './ai-field-controls';
+import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 
 type FrameCounterProps<T> = {
   name: T;
@@ -15,6 +17,11 @@ type FrameCounterProps<T> = {
   totalFrames: number | null | undefined;
   /** Pre-computed composition percentage (already rounded via largest-remainder) */
   pct: number | null;
+  // AI merge wiring (optional so the component still works without AI context)
+  isAiSuggested?: (field: string) => boolean;
+  aiMergeState?: AiMergeState | null;
+  onAcceptSuggestion?: (field: string) => void;
+  onDismissSuggestion?: (field: string) => void;
 };
 
 const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
@@ -23,9 +30,18 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
   color,
   totalFrames,
   pct,
+  isAiSuggested,
+  aiMergeState,
+  onAcceptSuggestion,
+  onDismissSuggestion,
 }: FrameCounterProps<TName>) => {
   const { control } = useFormContext<InspectionFormData>();
   const hasTotalFrames = totalFrames != null && totalFrames > 0;
+
+  const fieldPath = name as string;
+  const suggestion = isAiSuggested?.(fieldPath)
+    ? aiMergeState?.suggestions[fieldPath]
+    : undefined;
 
   return (
     <FormField
@@ -61,7 +77,7 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
         };
 
         return (
-          <FormItem>
+          <FormItem data-ai-field={fieldPath}>
             <div className="flex flex-col gap-1.5 p-3 rounded-xl border bg-card">
               {/* Label row */}
               <div className="flex items-center justify-between">
@@ -78,6 +94,17 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
                   </Button>
                 )}
               </div>
+
+              {/* AI suggestion controls */}
+              {suggestion && (
+                <AiFieldControls
+                  isVisible
+                  hasConflict={suggestion.hasConflict}
+                  status={suggestion.status}
+                  onAccept={() => onAcceptSuggestion?.(fieldPath)}
+                  onDismiss={() => onDismissSuggestion?.(fieldPath)}
+                />
+              )}
 
               {/* Counter row */}
               <div className="flex items-center gap-3">
@@ -138,10 +165,18 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
 
 type FrameCountSectionProps = {
   totalFrames?: number | null;
+  isAiSuggested?: (field: string) => boolean;
+  aiMergeState?: AiMergeState | null;
+  onAcceptSuggestion?: (field: string) => void;
+  onDismissSuggestion?: (field: string) => void;
 };
 
 export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
   totalFrames,
+  isAiSuggested,
+  aiMergeState,
+  onAcceptSuggestion,
+  onDismissSuggestion,
 }) => {
   const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
@@ -220,19 +255,37 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
     color: string;
   }[];
 
+  // totalFrames is shown only as the header (not a counter), so surface its
+  // AI suggestion there.
+  const totalFramesPath = 'observations.totalFrames';
+  const totalFramesSuggestion = isAiSuggested?.(totalFramesPath)
+    ? aiMergeState?.suggestions[totalFramesPath]
+    : undefined;
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center" data-ai-field={totalFramesPath}>
         <h3 className="text-lg font-medium">
           {t('observations.frameCounts.title')}
         </h3>
-        {effectiveTotalFrames != null && (
-          <span className="text-sm text-muted-foreground">
-            {t('observations.frameCounts.totalFrames', {
-              count: effectiveTotalFrames,
-            })}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {effectiveTotalFrames != null && (
+            <span className="text-sm text-muted-foreground">
+              {t('observations.frameCounts.totalFrames', {
+                count: effectiveTotalFrames,
+              })}
+            </span>
+          )}
+          {totalFramesSuggestion && (
+            <AiFieldControls
+              isVisible
+              hasConflict={totalFramesSuggestion.hasConflict}
+              status={totalFramesSuggestion.status}
+              onAccept={() => onAcceptSuggestion?.(totalFramesPath)}
+              onDismiss={() => onDismissSuggestion?.(totalFramesPath)}
+            />
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -244,6 +297,10 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
             color={color}
             totalFrames={effectiveTotalFrames}
             pct={pcts[i]}
+            isAiSuggested={isAiSuggested}
+            aiMergeState={aiMergeState}
+            onAcceptSuggestion={onAcceptSuggestion}
+            onDismissSuggestion={onDismissSuggestion}
           />
         ))}
       </div>
