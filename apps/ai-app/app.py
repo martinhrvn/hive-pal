@@ -56,11 +56,20 @@ SCHEMA = {
         "observations": {
             "type": "object",
             "properties": {
-                "strength": {"type": ["integer", "null"], "minimum": 0, "maximum": 10},
+                "strength": {"type": ["integer", "null"], "minimum": 0},
                 "uncappedBrood": {"type": ["integer", "null"], "minimum": 0, "maximum": 10},
                 "cappedBrood": {"type": ["integer", "null"], "minimum": 0, "maximum": 10},
                 "honeyStores": {"type": ["integer", "null"], "minimum": 0, "maximum": 10},
                 "pollenStores": {"type": ["integer", "null"], "minimum": 0, "maximum": 10},
+                "totalFrames": {"type": ["integer", "null"], "minimum": 0},
+                "eggsFrames": {"type": ["integer", "null"], "minimum": 0},
+                "uncappedBroodFrames": {"type": ["integer", "null"], "minimum": 0},
+                "cappedBroodFrames": {"type": ["integer", "null"], "minimum": 0},
+                "droneBroodFrames": {"type": ["integer", "null"], "minimum": 0},
+                "pollenFrames": {"type": ["integer", "null"], "minimum": 0},
+                "nectarFrames": {"type": ["integer", "null"], "minimum": 0},
+                "honeyFrames": {"type": ["integer", "null"], "minimum": 0},
+                "emptyFrames": {"type": ["integer", "null"], "minimum": 0},
                 "queenCells": {"type": ["integer", "null"], "minimum": 0},
                 "swarmCells": {"type": ["boolean", "null"]},
                 "supersedureCells": {"type": ["boolean", "null"]},
@@ -111,6 +120,15 @@ SCHEMA = {
                 "cappedBrood",
                 "honeyStores",
                 "pollenStores",
+                "totalFrames",
+                "eggsFrames",
+                "uncappedBroodFrames",
+                "cappedBroodFrames",
+                "droneBroodFrames",
+                "pollenFrames",
+                "nectarFrames",
+                "honeyFrames",
+                "emptyFrames",
                 "queenCells",
                 "swarmCells",
                 "supersedureCells",
@@ -199,6 +217,15 @@ def empty_form_draft():
             "cappedBrood": None,
             "honeyStores": None,
             "pollenStores": None,
+            "totalFrames": None,
+            "eggsFrames": None,
+            "uncappedBroodFrames": None,
+            "cappedBroodFrames": None,
+            "droneBroodFrames": None,
+            "pollenFrames": None,
+            "nectarFrames": None,
+            "honeyFrames": None,
+            "emptyFrames": None,
             "queenCells": None,
             "swarmCells": None,
             "supersedureCells": None,
@@ -291,11 +318,31 @@ Field mapping rules:
   - keep it short and factual
 
 Observations object:
-- strength: hive/population strength rating 0-10 if clearly stated or strongly implied, else null
-- uncappedBrood: 0-10 if stated/implied, else null
-- cappedBrood: 0-10 if stated/implied, else null
-- honeyStores: 0-10 if stated/implied, else null
-- pollenStores: 0-10 if stated/implied, else null
+This app supports two inspection styles. Fill whichever the transcript supports;
+fill both if both are mentioned. Leave anything unstated as null.
+
+Subjective 0-10 ratings (only if the beekeeper gives a rating/impression, not a frame count):
+- strength: hive/population strength. If given as a 0-10 rating use that. If given as a
+  number of occupied/covered frames, put that frame count here (no upper bound).
+- uncappedBrood: 0-10 rating if stated/implied, else null
+- cappedBrood: 0-10 rating if stated/implied, else null
+- honeyStores: 0-10 rating if stated/implied, else null
+- pollenStores: 0-10 rating if stated/implied, else null
+
+Frame counts (only if the beekeeper states an actual number of frames):
+These are independent, non-negative integer counts and may overlap (one frame can
+hold both eggs and pollen), so they need not sum to totalFrames.
+- totalFrames: total number of frames in the hive/box, else null
+- eggsFrames: frames containing eggs, else null
+- uncappedBroodFrames: frames of uncapped/open brood, else null
+- cappedBroodFrames: frames of capped/sealed brood, else null
+- droneBroodFrames: frames of drone brood, else null
+- pollenFrames: frames of pollen, else null
+- nectarFrames: frames of nectar, else null
+- honeyFrames: frames of capped honey, else null
+- emptyFrames: empty/undrawn frames, else null
+
+Other observations:
 - queenCells: integer count if stated; if explicitly none, use 0; if unknown, null
 - swarmCells: true/false/null
 - supersedureCells: true/false/null
@@ -471,6 +518,15 @@ def normalize_recommendation(data: dict) -> dict:
         "cappedBrood": observations.get("cappedBrood"),
         "honeyStores": observations.get("honeyStores"),
         "pollenStores": observations.get("pollenStores"),
+        "totalFrames": observations.get("totalFrames"),
+        "eggsFrames": observations.get("eggsFrames"),
+        "uncappedBroodFrames": observations.get("uncappedBroodFrames"),
+        "cappedBroodFrames": observations.get("cappedBroodFrames"),
+        "droneBroodFrames": observations.get("droneBroodFrames"),
+        "pollenFrames": observations.get("pollenFrames"),
+        "nectarFrames": observations.get("nectarFrames"),
+        "honeyFrames": observations.get("honeyFrames"),
+        "emptyFrames": observations.get("emptyFrames"),
         "queenCells": observations.get("queenCells"),
         "swarmCells": observations.get("swarmCells"),
         "supersedureCells": observations.get("supersedureCells"),
@@ -576,6 +632,15 @@ def map_ai_to_form_draft(ai: dict) -> dict:
         "cappedBrood": observations.get("cappedBrood"),
         "honeyStores": observations.get("honeyStores"),
         "pollenStores": observations.get("pollenStores"),
+        "totalFrames": observations.get("totalFrames"),
+        "eggsFrames": observations.get("eggsFrames"),
+        "uncappedBroodFrames": observations.get("uncappedBroodFrames"),
+        "cappedBroodFrames": observations.get("cappedBroodFrames"),
+        "droneBroodFrames": observations.get("droneBroodFrames"),
+        "pollenFrames": observations.get("pollenFrames"),
+        "nectarFrames": observations.get("nectarFrames"),
+        "honeyFrames": observations.get("honeyFrames"),
+        "emptyFrames": observations.get("emptyFrames"),
         "queenCells": observations.get("queenCells"),
         "swarmCells": observations.get("swarmCells"),
         "supersedureCells": observations.get("supersedureCells"),
