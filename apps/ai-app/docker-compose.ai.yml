@@ -27,3 +27,23 @@ services:
     restart: unless-stopped
     volumes:
       - /YOUR-PATH/AI/ollama:/root/.ollama
+
+  # Pull-mode worker. Uncomment to use instead of (or in addition to) the
+  # `hivepal-ai` Flask service above. Requires AI_PROCESSING_MODE=pull (or auto)
+  # on the HivePal backend, and a worker token from /admin/worker-tokens.
+  #
+  # hivepal-worker:
+  #   image: ghcr.io/YOUR_GITHUB_USER_OR_ORG/hivepal-ai:latest
+  #   container_name: hivepal-worker
+  #   command: ["python", "worker.py"]
+  #   depends_on:
+  #     - ollama
+  #   environment:
+  #     HIVEPAL_URL: https://your-hivepal-instance.com
+  #     WORKER_TOKEN: ${HIVEPAL_WORKER_TOKEN}
+  #     POLL_INTERVAL_SECONDS: "5"
+  #     OLLAMA_URL: http://ollama:11434/api/chat
+  #     OLLAMA_MODEL: qwen2.5:3b
+  #     WHISPER_MODEL: small
+  #     WHISPER_COMPUTE_TYPE: int8
+  #   restart: unless-stopped

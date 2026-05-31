@@ -10,7 +10,7 @@ import { CalendarDays, MoreHorizontal } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { buttonVariants } from '@/components/ui/button.tsx';
+import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,8 +65,15 @@ const QueenActionsMenu: React.FC<{
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <MoreHorizontal className="h-4 w-4 text-muted-foreground cursor-pointer" />
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 -my-1 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 hover:bg-stone-200/60 dark:hover:bg-stone-800/60"
+          aria-label={t('actions.queenActions', { defaultValue: 'Queen actions' })}
+        >
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => navigate(`/queens/${queen.id}`)}>
@@ -226,15 +233,17 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
                   </span>
                 </>
               )}
-              <QueenActionsMenu
-                queen={activeQueen}
-                hiveId={hiveId}
-                onTransferClick={() => setTransferOpen(true)}
-                onQueenUpdated={onQueenUpdated}
-              />
+              <div className="ml-auto">
+                <QueenActionsMenu
+                  queen={activeQueen}
+                  hiveId={hiveId}
+                  onTransferClick={() => setTransferOpen(true)}
+                  onQueenUpdated={onQueenUpdated}
+                />
+              </div>
             </>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
               <NoActiveQueenPrompt hiveId={hiveId} />
             </div>
           )}

@@ -224,6 +224,8 @@
     "uploading": "Uploading...",
     "uploadSuccess": "Photo uploaded",
     "uploadFailed": "Failed to upload photo",
+    "replace": "Replace",
+    "featurePhoto": "Feature Photo",
     "deleteTitle": "Delete Photo?",
     "deleteDescription": "This action cannot be undone. This will permanently delete this photo.",
     "deleted": "Photo deleted",
@@ -309,7 +311,12 @@
     "queenNotSeen": "Queen not seen",
     "photos": "Photos",
     "documents": "Documents",
-    "fromInspection": "From inspection"
+    "fromInspection": "From inspection",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "filterEventType": "Type",
+    "filterDateRange": "Range",
+    "filterHive": "Hive"
   },
   "syrupCalculator": {
     "title": "Syrup Calculator",

@@ -18,11 +18,12 @@ import {
 import type { PlatformMetricsSnapshot } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
 
-type MetricType = 'entities' | 'activity';
+type MetricType = 'entities' | 'activity' | 'weather';
 
 const METRIC_OPTIONS: { value: MetricType; label: string }[] = [
   { value: 'entities', label: 'Entity Counts' },
   { value: 'activity', label: 'Active Users' },
+  { value: 'weather', label: 'Weather Fetches (24h)' },
 ];
 
 interface PlatformMetricsTrendChartProps {
@@ -61,6 +62,8 @@ export const PlatformMetricsTrendChart: React.FC<
     totalInspections: snapshot.totalInspections,
     activeUsers7Days: snapshot.activeUsers7Days,
     activeUsers30Days: snapshot.activeUsers30Days,
+    weatherFetches24h: snapshot.weatherFetches24h ?? 0,
+    weatherFetchErrors24h: snapshot.weatherFetchErrors24h ?? 0,
   }));
 
   // Get config based on selected metric
@@ -70,30 +73,41 @@ export const PlatformMetricsTrendChart: React.FC<
         return {
           totalUsers: {
             label: 'Users',
-            color: 'hsl(var(--chart-1))',
+            color: '#3b82f6', // Blue
           },
           totalApiaries: {
             label: 'Apiaries',
-            color: 'hsl(var(--chart-2))',
+            color: '#10b981', // Green
           },
           totalHives: {
             label: 'Hives',
-            color: 'hsl(var(--chart-3))',
+            color: '#f59e0b', // Amber
           },
           totalInspections: {
             label: 'Inspections',
-            color: 'hsl(var(--chart-4))',
+            color: '#a855f7', // Purple
           },
         };
       case 'activity':
         return {
           activeUsers7Days: {
             label: 'Active (7 days)',
-            color: 'hsl(var(--chart-1))',
+            color: '#3b82f6', // Blue
           },
           activeUsers30Days: {
             label: 'Active (30 days)',
-            color: 'hsl(var(--chart-2))',
+            color: '#10b981', // Green
+          },
+        };
+      case 'weather':
+        return {
+          weatherFetches24h: {
+            label: 'Weather Fetches',
+            color: '#3b82f6', // Blue
+          },
+          weatherFetchErrors24h: {
+            label: 'Errors',
+            color: '#ef4444', // Red
           },
         };
       default:
@@ -102,66 +116,6 @@ export const PlatformMetricsTrendChart: React.FC<
   };
 
   const chartConfig = getChartConfig();
-
-  // Get lines to render based on selected metric
-  const renderLines = () => {
-    switch (selectedMetric) {
-      case 'entities':
-        return (
-          <>
-            <Line
-              type="monotone"
-              dataKey="totalUsers"
-              stroke="var(--color-totalUsers)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="totalApiaries"
-              stroke="var(--color-totalApiaries)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="totalHives"
-              stroke="var(--color-totalHives)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="totalInspections"
-              stroke="var(--color-totalInspections)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-            />
-          </>
-        );
-      case 'activity':
-        return (
-          <>
-            <Line
-              type="monotone"
-              dataKey="activeUsers7Days"
-              stroke="var(--color-activeUsers7Days)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="activeUsers30Days"
-              stroke="var(--color-activeUsers30Days)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-            />
-          </>
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -191,7 +145,78 @@ export const PlatformMetricsTrendChart: React.FC<
           <YAxis />
           <ChartTooltip content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
-          {renderLines()}
+          {selectedMetric === 'entities' && (
+            <Line
+              type="monotone"
+              dataKey="totalUsers"
+              stroke="var(--color-totalUsers)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
+          {selectedMetric === 'entities' && (
+            <Line
+              type="monotone"
+              dataKey="totalApiaries"
+              stroke="var(--color-totalApiaries)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
+          {selectedMetric === 'entities' && (
+            <Line
+              type="monotone"
+              dataKey="totalHives"
+              stroke="var(--color-totalHives)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
+          {selectedMetric === 'entities' && (
+            <Line
+              type="monotone"
+              dataKey="totalInspections"
+              stroke="var(--color-totalInspections)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
+          {selectedMetric === 'activity' && (
+            <Line
+              type="monotone"
+              dataKey="activeUsers7Days"
+              stroke="var(--color-activeUsers7Days)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
+          {selectedMetric === 'activity' && (
+            <Line
+              type="monotone"
+              dataKey="activeUsers30Days"
+              stroke="var(--color-activeUsers30Days)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
+          {selectedMetric === 'weather' && (
+            <Line
+              type="monotone"
+              dataKey="weatherFetches24h"
+              stroke="var(--color-weatherFetches24h)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
+          {selectedMetric === 'weather' && (
+            <Line
+              type="monotone"
+              dataKey="weatherFetchErrors24h"
+              stroke="var(--color-weatherFetchErrors24h)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
         </LineChart>
       </ChartContainer>
     </div>

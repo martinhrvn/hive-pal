@@ -2,10 +2,12 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   format,
-  formatDistanceToNow,
   subMonths,
   isPast,
   parseISO,
+  isToday,
+  isYesterday,
+  startOfDay,
 } from 'date-fns';
 import {
   CalendarIcon,
@@ -18,8 +20,6 @@ import {
   Frame,
   Droplet,
   Crown,
-  CircleIcon,
-  Filter,
   X,
   StickyNote,
   AlertCircle,
@@ -105,22 +105,164 @@ export interface TimelineEventListProps {
   headerSlot?: React.ReactNode;
 }
 
-const formatDate = (date: string) => {
-  const parsedDate = new Date(date);
-  const now = new Date();
-  const diffInDays = Math.floor(
-    (now.getTime() - parsedDate.getTime()) / (1000 * 60 * 60 * 24),
-  );
-
-  if (diffInDays < 14) {
-    return formatDistanceToNow(parsedDate, { addSuffix: true });
-  }
-  return format(parsedDate, 'MMM d, yyyy');
-};
-
 const formatTime = (date: string) => {
   return format(new Date(date), 'h:mm a');
 };
+
+const formatEntryDate = (
+  date: string,
+  t: (key: string) => string,
+): string => {
+  const d = new Date(date);
+  if (isToday(d)) return t('common:timeline.today');
+  if (isYesterday(d)) return t('common:timeline.yesterday');
+  const now = new Date();
+  return format(d, d.getFullYear() === now.getFullYear() ? 'MMM d' : 'MMM d, yyyy');
+};
+
+type DayHeaderParts = {
+  day: string;
+  month: string;
+  year: string;
+  context: string;
+};
+
+const formatDayHeaderParts = (
+  date: Date,
+  t: (key: string) => string,
+): DayHeaderParts => {
+  const day = format(date, 'd');
+  const month = format(date, 'MMM');
+  const year = format(date, 'yyyy');
+  let context: string;
+  if (isToday(date)) {
+    context = t('common:timeline.today');
+  } else if (isYesterday(date)) {
+    context = t('common:timeline.yesterday');
+  } else {
+    context = format(date, 'EEEE');
+  }
+  return { day, month, year, context };
+};
+
+const HEXAGON_CLIP =
+  'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)';
+
+type MarkerTone =
+  | 'amber'
+  | 'emerald'
+  | 'rose'
+  | 'sky'
+  | 'violet'
+  | 'orange'
+  | 'yellow'
+  | 'stone'
+  | 'red'
+  | 'scheduled';
+
+const markerToneClasses: Record<
+  MarkerTone,
+  { fill: string; ring: string; dot: string }
+> = {
+  amber: {
+    fill: 'bg-amber-500 dark:bg-amber-400',
+    ring: 'bg-amber-200/60 dark:bg-amber-500/20',
+    dot: 'bg-amber-50 dark:bg-amber-950',
+  },
+  emerald: {
+    fill: 'bg-emerald-500 dark:bg-emerald-400',
+    ring: 'bg-emerald-200/60 dark:bg-emerald-500/20',
+    dot: 'bg-emerald-50 dark:bg-emerald-950',
+  },
+  rose: {
+    fill: 'bg-rose-500 dark:bg-rose-400',
+    ring: 'bg-rose-200/60 dark:bg-rose-500/20',
+    dot: 'bg-rose-50 dark:bg-rose-950',
+  },
+  sky: {
+    fill: 'bg-sky-600 dark:bg-sky-400',
+    ring: 'bg-sky-200/60 dark:bg-sky-500/20',
+    dot: 'bg-sky-50 dark:bg-sky-950',
+  },
+  violet: {
+    fill: 'bg-violet-500 dark:bg-violet-400',
+    ring: 'bg-violet-200/60 dark:bg-violet-500/20',
+    dot: 'bg-violet-50 dark:bg-violet-950',
+  },
+  orange: {
+    fill: 'bg-orange-500 dark:bg-orange-400',
+    ring: 'bg-orange-200/60 dark:bg-orange-500/20',
+    dot: 'bg-orange-50 dark:bg-orange-950',
+  },
+  yellow: {
+    fill: 'bg-yellow-600 dark:bg-yellow-400',
+    ring: 'bg-yellow-200/60 dark:bg-yellow-500/20',
+    dot: 'bg-yellow-50 dark:bg-yellow-950',
+  },
+  stone: {
+    fill: 'bg-stone-400 dark:bg-stone-500',
+    ring: 'bg-stone-200/70 dark:bg-stone-700/40',
+    dot: 'bg-stone-50 dark:bg-stone-900',
+  },
+  red: {
+    fill: 'bg-red-500 dark:bg-red-400',
+    ring: 'bg-red-200/70 dark:bg-red-500/25',
+    dot: 'bg-red-50 dark:bg-red-950',
+  },
+  scheduled: {
+    fill: 'bg-stone-50 dark:bg-stone-900 ring-1 ring-amber-500/70 ring-inset',
+    ring: 'bg-amber-100/50 dark:bg-amber-500/15',
+    dot: 'bg-amber-500 dark:bg-amber-400',
+  },
+};
+
+const Hexagon: React.FC<{ tone: MarkerTone; pulse?: boolean }> = ({
+  tone,
+  pulse,
+}) => {
+  const cls = markerToneClasses[tone];
+  return (
+    <span className="relative inline-flex items-center justify-center w-4 h-4 shrink-0">
+      <span
+        className={cn(
+          'absolute inset-[-4px]',
+          cls.ring,
+          pulse && 'animate-pulse',
+        )}
+        style={{ clipPath: HEXAGON_CLIP }}
+        aria-hidden
+      />
+      <span
+        className={cn('relative w-full h-full', cls.fill)}
+        style={{ clipPath: HEXAGON_CLIP }}
+        aria-hidden
+      />
+      <span
+        className={cn(
+          'absolute w-1 h-1 rounded-full',
+          cls.dot,
+        )}
+        aria-hidden
+      />
+    </span>
+  );
+};
+
+const pillTriggerClass = (active: boolean) =>
+  cn(
+    'h-8 w-auto rounded-full border bg-white/70 dark:bg-stone-900/40 backdrop-blur-sm gap-1.5 px-2.5 text-xs font-medium transition-colors focus:ring-amber-400/40',
+    active
+      ? 'border-amber-400/80 text-stone-900 dark:text-stone-50 ring-1 ring-amber-400/20'
+      : 'border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-200 hover:border-stone-300 dark:hover:border-stone-600',
+  );
+
+const pillIconClass = (active: boolean) =>
+  cn(
+    'shrink-0',
+    active
+      ? 'text-amber-600 dark:text-amber-400'
+      : 'text-stone-500 dark:text-stone-400',
+  );
 
 const getActionIcon = (action: ActionResponse) => {
   switch (action.type) {
@@ -184,6 +326,57 @@ const getActionLabel = (action: ActionResponse, t: (key: string) => string) => {
   }
 };
 
+const getEventTone = (event: TimelineEvent): MarkerTone => {
+  if (event.type === 'inspection') {
+    const ins = event.data as InspectionResponse;
+    if (ins.status === InspectionStatus.SCHEDULED) {
+      return isPast(parseISO(event.date)) ? 'red' : 'scheduled';
+    }
+    if (ins.status === InspectionStatus.CANCELLED) return 'stone';
+    return 'amber';
+  }
+  if (event.type === 'quick-check') return 'emerald';
+  if (event.type === 'photo') return 'violet';
+  if (event.type === 'document') return 'sky';
+  if (event.type === 'action') {
+    const a = event.data as ActionResponse;
+    switch (a.type) {
+      case 'FEEDING':
+        return 'orange';
+      case 'TREATMENT':
+        return 'rose';
+      case 'HARVEST':
+        return 'yellow';
+      case 'NOTE':
+      case 'FRAME':
+      case 'MAINTENANCE':
+      case 'BOX_CONFIGURATION':
+      default:
+        return 'stone';
+    }
+  }
+  return 'stone';
+};
+
+type DayGroup = {
+  key: string;
+  date: Date;
+  events: TimelineEvent[];
+};
+
+const groupEventsByDay = (events: TimelineEvent[]): DayGroup[] => {
+  const map = new Map<string, DayGroup>();
+  for (const event of events) {
+    const date = startOfDay(new Date(event.date));
+    const key = format(date, 'yyyy-MM-dd');
+    if (!map.has(key)) {
+      map.set(key, { key, date, events: [] });
+    }
+    map.get(key)!.events.push(event);
+  }
+  return Array.from(map.values());
+};
+
 export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   inspections,
   actions,
@@ -214,7 +407,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
 
   const { setReschedulingInspection, handleDoInspection, rescheduleDialogElement } =
     useScheduledInspectionActions(
-      hiveId => (getHiveName ? getHiveName(hiveId) : hiveId),
+      hiveId => (getHiveName ? (getHiveName(hiveId) ?? hiveId) : hiveId),
     );
 
   const timelineEvents= useMemo(() => {
@@ -401,67 +594,85 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
     );
   };
 
-  const renderTimelineEvent = (event: TimelineEvent, isLast: boolean) => {
+  const renderTimelineEvent = (event: TimelineEvent) => {
     const isInspection = event.type === 'inspection';
     const isQuickCheck = event.type === 'quick-check';
     const isPhoto = event.type === 'photo';
     const isDocument = event.type === 'document';
     const inspection = isInspection ? (event.data as InspectionResponse) : null;
-    const quickCheck = isQuickCheck ? (event.data as QuickCheckResponse) : null;
+    const quickCheck = isQuickCheck
+      ? (event.data as QuickCheckResponse)
+      : null;
     const photo = isPhoto ? (event.data as PhotoResponse) : null;
     const document = isDocument ? (event.data as DocumentResponse) : null;
     const action =
-      !isInspection && !isQuickCheck && !isPhoto && !isDocument ? (event.data as ActionResponse) : null;
+      !isInspection && !isQuickCheck && !isPhoto && !isDocument
+        ? (event.data as ActionResponse)
+        : null;
 
     const createdByUserName =
-      inspection?.createdByUserName ?? action?.createdByUserName ?? quickCheck?.createdByUserName;
+      inspection?.createdByUserName ??
+      action?.createdByUserName ??
+      quickCheck?.createdByUserName;
     const isScheduled = inspection?.status === InspectionStatus.SCHEDULED;
     const isCancelled = inspection?.status === InspectionStatus.CANCELLED;
     const isOverdue = isScheduled && isPast(parseISO(event.date));
+    const tone = getEventTone(event);
 
     return (
-      <div key={event.id} className="flex gap-4 pb-8 relative">
-        {/* Timeline line and dot */}
-        <div className="flex flex-col items-center">
+      <div
+        key={event.id}
+        className="relative grid grid-cols-[28px_1fr] gap-x-3 sm:gap-x-4 pb-4 group/row"
+      >
+        {/* honeycomb marker + spine segment */}
+        <div className="relative flex justify-center pt-1.5">
           <div
-            className={cn(
-              'w-3 h-3 rounded-full border-2 bg-background z-10',
-              isInspection ? 'border-blue-500' : 'border-gray-400',
-              isQuickCheck && 'border-green-500',
-              isPhoto && 'border-purple-500',
-              isDocument && 'border-orange-500',
-              isScheduled && !isOverdue && 'border-amber-500',
-              isOverdue && 'border-red-500',
-              isCancelled && 'border-gray-300',
-            )}
-          >
-            {isInspection && (
-              <CircleIcon className="w-2 h-2 -mt-0.5 -ml-0.5 fill-current text-blue-500" />
-            )}
-            {isQuickCheck && (
-              <CircleIcon className="w-2 h-2 -mt-0.5 -ml-0.5 fill-current text-green-500" />
-            )}
+            className="absolute top-0 bottom-[-16px] left-1/2 -translate-x-px w-px border-l border-dashed border-stone-200 dark:border-stone-800"
+            aria-hidden
+          />
+          <div className="relative z-10 bg-background p-0.5 rounded-full">
+            <Hexagon tone={tone} pulse={!!isOverdue} />
           </div>
-          {!isLast && (
-            <div className="w-0.5 bg-gray-200 h-full absolute top-3 left-1.5" />
-          )}
         </div>
 
-        {/* Content */}
-        <div className="flex-1 -mt-1">
-          {/* Date */}
-          <div className="text-xs text-muted-foreground mb-1">
-            {formatDate(event.date)} • {formatTime(event.date)}
-            {createdByUserName && <> • {createdByUserName}</>}
+        {/* content */}
+        <div className="min-w-0 pt-0.5">
+          {/* date + time + author */}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-overline tabular-nums text-stone-500 dark:text-stone-400">
+              {formatEntryDate(event.date, t)}
+              <span className="text-stone-300 dark:text-stone-700 mx-1.5">
+                ·
+              </span>
+              <span className="text-stone-400 dark:text-stone-500">
+                {formatTime(event.date)}
+              </span>
+            </span>
+            {createdByUserName && (
+              <>
+                <span
+                  className="text-stone-300 dark:text-stone-700"
+                  aria-hidden
+                >
+                  ·
+                </span>
+                <span className="text-[11px] text-stone-500 dark:text-stone-400 truncate">
+                  {createdByUserName}
+                </span>
+              </>
+            )}
           </div>
 
-          {/* Inspection content */}
+          {/* inspection */}
           {isInspection && inspection && (
             <div
               className={cn(
-                'rounded-lg p-2 -ml-2 transition-colors',
+                'rounded-md -mx-2 px-2 py-1.5 transition-colors',
                 onInspectionClick && !isScheduled && 'cursor-pointer',
-                isOverdue ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50',
+                isOverdue
+                  ? 'bg-red-50/70 hover:bg-red-100/70 dark:bg-red-950/30 dark:hover:bg-red-950/50 ring-1 ring-inset ring-red-200/60 dark:ring-red-900/40'
+                  : !isScheduled &&
+                      'hover:bg-stone-100/70 dark:hover:bg-stone-800/40',
               )}
               onClick={
                 onInspectionClick && !isScheduled
@@ -469,29 +680,42 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                   : undefined
               }
             >
-              <div className="flex items-start justify-between gap-1">
+              <div className="flex items-start justify-between gap-1.5">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     {isOverdue ? (
-                      <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
+                      <AlertCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />
                     ) : (
-                      <CalendarIcon className="h-4 w-4 text-blue-500 shrink-0" />
+                      <CalendarIcon
+                        className={cn(
+                          'h-3.5 w-3.5 shrink-0',
+                          isScheduled
+                            ? 'text-amber-500'
+                            : 'text-stone-500 dark:text-stone-400',
+                        )}
+                      />
                     )}
-                    <span className="font-medium text-sm">
+                    <span className="font-medium text-sm text-stone-900 dark:text-stone-100">
                       {isScheduled
-                        ? t('common:timeline.inspectHive', { hiveName: getHiveName?.(inspection.hiveId) ?? '' })
+                        ? t('common:timeline.inspectHive', {
+                            hiveName:
+                              getHiveName?.(inspection.hiveId) ?? '',
+                          })
                         : t('common:timeline.inspection')}
                     </span>
                     {!isScheduled && renderHiveName(event)}
                     {isOverdue && (
-                      <Badge variant="destructive" className="text-xs">
+                      <Badge
+                        variant="destructive"
+                        className="text-[10px] h-4 px-1.5 py-0"
+                      >
                         {t('common:timeline.overdue')}
                       </Badge>
                     )}
                     {isScheduled && !isOverdue && (
                       <Badge
                         variant="outline"
-                        className="text-amber-600 border-amber-600 text-xs"
+                        className="text-[10px] h-4 px-1.5 py-0 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700/60 bg-amber-50/50 dark:bg-amber-950/30"
                       >
                         {t('common:timeline.scheduled')}
                       </Badge>
@@ -499,38 +723,51 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                     {isCancelled && (
                       <Badge
                         variant="outline"
-                        className="text-gray-500 border-gray-300 text-xs"
+                        className="text-[10px] h-4 px-1.5 py-0 text-stone-500 dark:text-stone-400 border-stone-300 dark:border-stone-700"
                       >
                         {t('common:timeline.cancelled')}
                       </Badge>
                     )}
                   </div>
 
-                  {!isScheduled && !isCancelled && inspection.observations && (
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                      {inspection.observations.strength !== null && (
-                        <span className="flex items-center gap-1">
-                          <ActivityIcon className="h-3 w-3" />
-                          {t('common:timeline.strength')}: {inspection.observations.strength}
-                        </span>
-                      )}
-                      {inspection.observations.honeyStores !== null && (
-                        <span className="flex items-center gap-1">
-                          <DropletsIcon className="h-3 w-3" />
-                          {t('common:timeline.honey')}: {inspection.observations.honeyStores}
-                        </span>
-                      )}
-                      {inspection.observations.queenSeen !== null && (
-                        <span className="flex items-center gap-1">
-                          <Crown className="h-3 w-3" />
-                          {inspection.observations.queenSeen ? t('common:timeline.queenSeen') : t('common:timeline.queenNotSeen')}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  {!isScheduled &&
+                    !isCancelled &&
+                    inspection.observations && (
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        {inspection.observations.strength !== null && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-stone-100/80 dark:bg-stone-800/50 ring-1 ring-inset ring-stone-200/70 dark:ring-stone-700/60 px-2 py-0.5 text-[11px] text-stone-700 dark:text-stone-300 tabular-nums">
+                            <ActivityIcon className="h-3 w-3 text-stone-500" />
+                            {t('common:timeline.strength')}:{' '}
+                            {inspection.observations.strength}
+                          </span>
+                        )}
+                        {inspection.observations.honeyStores !== null && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50/80 dark:bg-amber-950/30 ring-1 ring-inset ring-amber-200/60 dark:ring-amber-900/40 px-2 py-0.5 text-[11px] text-amber-800 dark:text-amber-300 tabular-nums">
+                            <DropletsIcon className="h-3 w-3" />
+                            {t('common:timeline.honey')}:{' '}
+                            {inspection.observations.honeyStores}
+                          </span>
+                        )}
+                        {inspection.observations.queenSeen !== null && (
+                          <span
+                            className={cn(
+                              'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] ring-1 ring-inset',
+                              inspection.observations.queenSeen
+                                ? 'bg-amber-50/80 dark:bg-amber-950/30 ring-amber-200/60 dark:ring-amber-900/40 text-amber-800 dark:text-amber-300'
+                                : 'bg-stone-100/80 dark:bg-stone-800/50 ring-stone-200/70 dark:ring-stone-700/60 text-stone-600 dark:text-stone-400',
+                            )}
+                          >
+                            <Crown className="h-3 w-3" />
+                            {inspection.observations.queenSeen
+                              ? t('common:timeline.queenSeen')
+                              : t('common:timeline.queenNotSeen')}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                   {inspection.notes && (
-                    <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 mt-1 text-[11px] text-stone-500 dark:text-stone-400">
                       <FileTextIcon className="h-3 w-3" />
                       <span>{t('common:timeline.notesAvailable')}</span>
                     </div>
@@ -543,7 +780,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 shrink-0"
+                        className="h-6 w-6 shrink-0 opacity-60 hover:opacity-100"
                         onClick={e => e.stopPropagation()}
                       >
                         <MoreVertical className="h-3 w-3" />
@@ -576,14 +813,12 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
             </div>
           )}
 
-          {/* Quick check content */}
+          {/* quick check */}
           {isQuickCheck && quickCheck && (
-            <div className="flex items-start gap-2 group">
-              <div className="mt-0.5">
-                <ClipboardCheck className="h-4 w-4 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">
+            <div className="flex items-start gap-2">
+              <ClipboardCheck className="h-3.5 w-3.5 mt-0.5 text-emerald-600 dark:text-emerald-500 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap text-sm font-medium text-stone-900 dark:text-stone-100">
                   {t('common:quickCheck.title')}
                   {renderHiveName(event)}
                 </div>
@@ -593,7 +828,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                       <Badge
                         key={tag}
                         variant="secondary"
-                        className="text-xs py-0"
+                        className="text-[10px] py-0 px-1.5 h-4 font-normal bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-900/50"
                       >
                         {tag.replace(/_/g, ' ')}
                       </Badge>
@@ -601,12 +836,12 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                   </div>
                 )}
                 {quickCheck.note && (
-                  <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                  <div className="text-xs text-stone-600 dark:text-stone-400 mt-1 line-clamp-2">
                     {quickCheck.note}
                   </div>
                 )}
                 {quickCheck.photos.length > 0 && (
-                  <div className="mt-1">
+                  <div className="mt-1.5">
                     <PhotoGallery
                       quickCheckId={quickCheck.id}
                       photos={quickCheck.photos}
@@ -615,36 +850,32 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                 )}
               </div>
               {onDeleteQuickCheck && (
-                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive hover:text-destructive"
-                    onClick={e => {
-                      e.stopPropagation();
-                      onDeleteQuickCheck(quickCheck);
-                    }}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-stone-400 hover:text-destructive opacity-0 group-hover/row:opacity-100 transition-opacity"
+                  onClick={e => {
+                    e.stopPropagation();
+                    onDeleteQuickCheck(quickCheck);
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
               )}
             </div>
           )}
 
-          {/* Photo content */}
+          {/* photo */}
           {isPhoto && photo && (
-            <div className="flex items-start gap-2 group">
-              <div className="mt-0.5">
-                <Camera className="h-4 w-4 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">
+            <div className="flex items-start gap-2">
+              <Camera className="h-3.5 w-3.5 mt-0.5 text-violet-600 dark:text-violet-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap text-sm font-medium text-stone-900 dark:text-stone-100">
                   {t('common:timeline.photos', { defaultValue: 'Photo' })}
                   {renderHiveName(event)}
                 </div>
                 {photo.caption && (
-                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                  <div className="text-xs text-stone-600 dark:text-stone-400 mt-0.5 line-clamp-2">
                     {photo.caption}
                   </div>
                 )}
@@ -655,36 +886,32 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                 />
               </div>
               {onDeletePhoto && (
-                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive hover:text-destructive"
-                    onClick={e => {
-                      e.stopPropagation();
-                      onDeletePhoto(photo);
-                    }}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-stone-400 hover:text-destructive opacity-0 group-hover/row:opacity-100 transition-opacity"
+                  onClick={e => {
+                    e.stopPropagation();
+                    onDeletePhoto(photo);
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
               )}
             </div>
           )}
 
-          {/* Document content */}
+          {/* document */}
           {isDocument && document && (
-            <div className="flex items-start gap-2 group">
-              <div className="mt-0.5">
-                <FileTextIcon className="h-4 w-4 text-orange-600" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">
+            <div className="flex items-start gap-2">
+              <FileTextIcon className="h-3.5 w-3.5 mt-0.5 text-sky-600 dark:text-sky-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap text-sm font-medium text-stone-900 dark:text-stone-100">
                   {document.title}
                   {renderHiveName(event)}
                 </div>
                 {document.notes && (
-                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                  <div className="text-xs text-stone-600 dark:text-stone-400 mt-0.5 line-clamp-2">
                     {document.notes}
                   </div>
                 )}
@@ -694,80 +921,97 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                 />
               </div>
               {onDeleteDocument && (
-                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive hover:text-destructive"
-                    onClick={e => {
-                      e.stopPropagation();
-                      onDeleteDocument(document);
-                    }}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-stone-400 hover:text-destructive opacity-0 group-hover/row:opacity-100 transition-opacity"
+                  onClick={e => {
+                    e.stopPropagation();
+                    onDeleteDocument(document);
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
               )}
             </div>
           )}
 
-          {/* Action content */}
+          {/* action */}
           {action && (
             <div
               className={cn(
-                'flex items-start gap-2 group',
+                'flex items-start gap-2',
                 (action.harvestId || onActionClick) &&
-                  'cursor-pointer rounded-lg p-2 -ml-2 -mt-2 hover:bg-gray-50',
+                  'cursor-pointer rounded-md -mx-2 px-2 py-1 -mt-1 hover:bg-stone-100/70 dark:hover:bg-stone-800/40 transition-colors',
               )}
               onClick={
                 onActionClick ? () => onActionClick(action) : undefined
               }
             >
-              <div className="mt-0.5">{getActionIcon(action)}</div>
-              <div className="flex-1">
-                <div className="text-sm">
+              <span
+                className={cn(
+                  'mt-0.5 shrink-0',
+                  tone === 'orange' &&
+                    'text-orange-600 dark:text-orange-400',
+                  tone === 'rose' && 'text-rose-600 dark:text-rose-400',
+                  tone === 'yellow' &&
+                    'text-yellow-700 dark:text-yellow-400',
+                  tone === 'stone' &&
+                    'text-stone-500 dark:text-stone-400',
+                )}
+              >
+                {getActionIcon(action)}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm text-stone-800 dark:text-stone-200">
                   {getActionLabel(action, t)}
                   {renderHiveName(event)}
                   {action.inspectionId && (
-                    <Link to={`/inspections/${action.inspectionId}`} onClick={e => e.stopPropagation()}>
-                      <Badge variant="outline" className="text-xs py-0 ml-1 text-blue-600 border-blue-300 hover:bg-blue-50 cursor-pointer">
+                    <Link
+                      to={`/inspections/${action.inspectionId}`}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] h-4 py-0 px-1.5 ml-1 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700/60 bg-amber-50/50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 cursor-pointer font-normal"
+                      >
                         {t('common:timeline.fromInspection')}
                       </Badge>
                     </Link>
                   )}
                 </div>
                 {action.notes && (
-                  <div className="text-xs text-muted-foreground mt-0.5">
+                  <div className="text-xs text-stone-600 dark:text-stone-400 mt-0.5">
                     {action.notes}
                   </div>
                 )}
               </div>
               {!action.harvestId && (onEditAction || onDeleteAction) && (
-                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-0.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
                   {onEditAction && (
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7"
+                      className="h-6 w-6 text-stone-500"
                       onClick={e => {
                         e.stopPropagation();
                         onEditAction(action);
                       }}
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      <Pencil className="h-3 w-3" />
                     </Button>
                   )}
                   {onDeleteAction && (
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 text-destructive hover:text-destructive"
+                      className="h-6 w-6 text-stone-500 hover:text-destructive"
                       onClick={e => {
                         e.stopPropagation();
                         onDeleteAction(action);
                       }}
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   )}
                 </div>
@@ -779,20 +1023,55 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
     );
   };
 
+  const renderDayDivider = (group: DayGroup, isFirst: boolean) => {
+    const parts = formatDayHeaderParts(group.date, t);
+    return (
+      <div
+        className={cn(
+          'sticky top-0 z-20 grid grid-cols-[28px_1fr] gap-x-3 sm:gap-x-4 bg-background/80 backdrop-blur-md',
+          isFirst ? 'pb-2 pt-1' : 'pb-2 pt-3',
+        )}
+      >
+        <div aria-hidden />
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="font-overline text-stone-500 dark:text-stone-400 shrink-0 tabular-nums">
+            {parts.context}
+            <span className="text-stone-300 dark:text-stone-700 mx-1.5">
+              ·
+            </span>
+            {parts.month} {parts.day}
+          </span>
+          <div
+            className="h-px flex-1 bg-gradient-to-r from-stone-200 to-transparent dark:from-stone-800"
+            aria-hidden
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const groupedDays = groupEventsByDay(displayedEvents);
+
   if (isLoading) {
     return (
       <div className="relative">
         {[1, 2, 3].map(i => (
-          <div key={i} className="flex gap-4 pb-8 relative">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 rounded-full bg-gray-200 animate-pulse" />
+          <div
+            key={i}
+            className="relative grid grid-cols-[28px_1fr] gap-x-3 sm:gap-x-4 pb-6"
+          >
+            <div className="relative flex justify-center pt-1.5">
               {i < 3 && (
-                <div className="w-0.5 bg-gray-100 h-full absolute top-3 left-1.5" />
+                <div className="absolute top-0 bottom-[-24px] left-1/2 -translate-x-px w-px border-l border-dashed border-stone-200 dark:border-stone-800" />
               )}
+              <div
+                className="relative z-10 w-4 h-4 bg-stone-200 dark:bg-stone-800 animate-pulse"
+                style={{ clipPath: HEXAGON_CLIP }}
+              />
             </div>
-            <div className="flex-1">
-              <div className="h-3 bg-gray-200 rounded w-24 mb-2 animate-pulse"></div>
-              <div className="h-4 bg-gray-100 rounded w-48 animate-pulse"></div>
+            <div className="flex-1 pt-0.5">
+              <div className="h-3 bg-stone-200 dark:bg-stone-800 rounded w-20 mb-2 animate-pulse" />
+              <div className="h-4 bg-stone-100 dark:bg-stone-900 rounded w-3/4 animate-pulse" />
             </div>
           </div>
         ))}
@@ -802,57 +1081,109 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
 
   return (
     <>
-      {/* Filters */}
-      <div className="flex gap-2 mb-4 flex-wrap items-center">
+      {/* Filter rail */}
+      <div className="flex gap-2 mb-5 flex-wrap items-center">
         <Select
           value={eventTypeFilter}
-          onValueChange={value => setEventTypeFilter(value as EventTypeFilter)}
+          onValueChange={value =>
+            setEventTypeFilter(value as EventTypeFilter)
+          }
         >
-          <SelectTrigger className="w-40">
-            <Filter className="h-3 w-3 mr-2" />
-            <SelectValue placeholder="Event type" />
+          <SelectTrigger
+            className={pillTriggerClass(eventTypeFilter !== 'all')}
+          >
+            <ActivityIcon
+              className={cn(
+                'h-3 w-3',
+                pillIconClass(eventTypeFilter !== 'all'),
+              )}
+            />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('common:timeline.allEvents')}</SelectItem>
-            <SelectItem value="inspections">{t('common:timeline.inspections')}</SelectItem>
-            <SelectItem value="feeding">{t('common:timeline.feeding')}</SelectItem>
-            <SelectItem value="treatment">{t('common:timeline.treatments')}</SelectItem>
-            <SelectItem value="harvest">{t('common:timeline.harvests')}</SelectItem>
-            <SelectItem value="quick-checks">{t('common:quickCheck.title')}</SelectItem>
-            <SelectItem value="photos">{t('common:timeline.photos', { defaultValue: 'Photos' })}</SelectItem>
-            <SelectItem value="documents">{t('common:timeline.documents', { defaultValue: 'Documents' })}</SelectItem>
-            <SelectItem value="notes">{t('common:timeline.notes')}</SelectItem>
-            <SelectItem value="other">{t('common:timeline.other')}</SelectItem>
+            <SelectItem value="all">
+              {t('common:timeline.allEvents')}
+            </SelectItem>
+            <SelectItem value="inspections">
+              {t('common:timeline.inspections')}
+            </SelectItem>
+            <SelectItem value="feeding">
+              {t('common:timeline.feeding')}
+            </SelectItem>
+            <SelectItem value="treatment">
+              {t('common:timeline.treatments')}
+            </SelectItem>
+            <SelectItem value="harvest">
+              {t('common:timeline.harvests')}
+            </SelectItem>
+            <SelectItem value="quick-checks">
+              {t('common:quickCheck.title')}
+            </SelectItem>
+            <SelectItem value="photos">
+              {t('common:timeline.photos', { defaultValue: 'Photos' })}
+            </SelectItem>
+            <SelectItem value="documents">
+              {t('common:timeline.documents', {
+                defaultValue: 'Documents',
+              })}
+            </SelectItem>
+            <SelectItem value="notes">
+              {t('common:timeline.notes')}
+            </SelectItem>
+            <SelectItem value="other">
+              {t('common:timeline.other')}
+            </SelectItem>
           </SelectContent>
         </Select>
 
         <Select
           value={dateRangeFilter}
-          onValueChange={value => setDateRangeFilter(value as DateRangeFilter)}
+          onValueChange={value =>
+            setDateRangeFilter(value as DateRangeFilter)
+          }
         >
-          <SelectTrigger className="w-40">
-            <CalendarIcon className="h-3 w-3 mr-2" />
-            <SelectValue placeholder="Date range" />
+          <SelectTrigger
+            className={pillTriggerClass(dateRangeFilter !== 'all')}
+          >
+            <CalendarIcon
+              className={cn(
+                'h-3 w-3',
+                pillIconClass(dateRangeFilter !== 'all'),
+              )}
+            />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('common:timeline.allTime')}</SelectItem>
-            <SelectItem value="1month">{t('common:timeline.lastMonth')}</SelectItem>
-            <SelectItem value="3months">{t('common:timeline.last3Months')}</SelectItem>
-            <SelectItem value="6months">{t('common:timeline.last6Months')}</SelectItem>
-            <SelectItem value="year">{t('common:timeline.lastYear')}</SelectItem>
+            <SelectItem value="all">
+              {t('common:timeline.allTime')}
+            </SelectItem>
+            <SelectItem value="1month">
+              {t('common:timeline.lastMonth')}
+            </SelectItem>
+            <SelectItem value="3months">
+              {t('common:timeline.last3Months')}
+            </SelectItem>
+            <SelectItem value="6months">
+              {t('common:timeline.last6Months')}
+            </SelectItem>
+            <SelectItem value="year">
+              {t('common:timeline.lastYear')}
+            </SelectItem>
           </SelectContent>
         </Select>
 
         {hives && hives.length > 0 && (
-          <Select
-            value={hiveFilter}
-            onValueChange={setHiveFilter}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Hive" />
+          <Select value={hiveFilter} onValueChange={setHiveFilter}>
+            <SelectTrigger
+              className={pillTriggerClass(hiveFilter !== 'all')}
+            >
+              <Hexagon tone="amber" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('common:timeline.allHives')}</SelectItem>
+              <SelectItem value="all">
+                {t('common:timeline.allHives')}
+              </SelectItem>
               {hives.map(hive => (
                 <SelectItem key={hive.id} value={hive.id}>
                   {hive.name}
@@ -871,46 +1202,59 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               setDateRangeFilter('all');
               setHiveFilter('all');
             }}
-            className="h-9 px-2"
+            className="h-8 px-2 text-xs text-stone-500 hover:text-stone-900 dark:hover:text-stone-100"
           >
             <X className="h-3 w-3 mr-1" />
             {t('common:timeline.clearFilters')}
           </Button>
         )}
 
-        {headerSlot && <div className="flex gap-2 ml-auto">{headerSlot}</div>}
+        {headerSlot && (
+          <div className="flex gap-2 ml-auto">{headerSlot}</div>
+        )}
       </div>
 
       <div className="relative">
         {displayedEvents.length === 0 ? (
-          <div className="text-center text-muted-foreground py-8">
-            {hasActiveFilters
-              ? t('common:timeline.noMatchingFilters')
-              : (emptyMessage ?? t('common:timeline.noActivity'))}
+          <div className="flex flex-col items-center text-center py-12 px-4">
+            <div
+              className="w-10 h-10 mb-3 bg-stone-100 dark:bg-stone-800/60"
+              style={{ clipPath: HEXAGON_CLIP }}
+              aria-hidden
+            />
+            <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xs">
+              {hasActiveFilters
+                ? t('common:timeline.noMatchingFilters')
+                : (emptyMessage ?? t('common:timeline.noActivity'))}
+            </p>
           </div>
         ) : (
           <>
-            {displayedEvents.map((event, index) =>
-              renderTimelineEvent(
-                event,
-                index === displayedEvents.length - 1,
-              ),
-            )}
+            {groupedDays.map((group, gi) => (
+              <div key={group.key}>
+                {renderDayDivider(group, gi === 0)}
+                {group.events.map(renderTimelineEvent)}
+              </div>
+            ))}
 
             {timelineEvents.length > maxDisplayed && (
-              <div className="pl-7 pb-4">
+              <div className="grid grid-cols-[28px_1fr] gap-x-3 sm:gap-x-4 pt-1 pb-2">
+                <div />
                 <Button
                   variant="ghost"
                   onClick={() => setShowAll(!showAll)}
-                  className="text-xs h-7 px-2"
+                  className="justify-start text-xs h-8 px-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 w-fit"
                 >
                   {showAll
                     ? t('common:timeline.showLess')
-                    : t('common:timeline.showMore', { count: timelineEvents.length - maxDisplayed })}
+                    : t('common:timeline.showMore', {
+                        count: timelineEvents.length - maxDisplayed,
+                      })}
                   <ChevronDownIcon
-                    className={`ml-1 h-3 w-3 transition-transform ${
-                      showAll ? 'rotate-180' : ''
-                    }`}
+                    className={cn(
+                      'ml-1 h-3 w-3 transition-transform',
+                      showAll && 'rotate-180',
+                    )}
                   />
                 </Button>
               </div>

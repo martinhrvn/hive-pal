@@ -188,3 +188,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .font-display {
+    font-family: 'Fraunces', 'ui-serif', Georgia, 'Times New Roman', serif;
+    font-optical-sizing: auto;
+    font-variation-settings: 'opsz' 144, 'SOFT' 50;
+    letter-spacing: -0.015em;
+  }
+  .font-overline {
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    font-size: 0.6875rem;
+  }
+}

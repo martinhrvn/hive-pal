@@ -14,6 +14,8 @@ export const platformMetricsSnapshotSchema = z.object({
   totalEquipmentItems: z.number(),
   activeUsers7Days: z.number(),
   activeUsers30Days: z.number(),
+  weatherFetches24h: z.number().default(0),
+  weatherFetchErrors24h: z.number().default(0),
   createdAt: z.string(),
 });
 

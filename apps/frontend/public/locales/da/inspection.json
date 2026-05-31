@@ -15,8 +15,8 @@
     "form": {
         "selectHive": "Vælg et stade",
         "pickDate": "Vælg en dato",
-    "allDay": "All day",
-    "specificTime": "Set specific time",
+        "allDay": "All day",
+        "specificTime": "Set specific time",
         "newInspection": "Ny inspektion",
         "editInspection": "Rediger inspektion",
         "hive": "Stade",
@@ -98,12 +98,33 @@
                 "remove": "Fjern",
                 "saveNote": "Gem notat",
                 "edit": "Rediger"
+            },
+            "maintenance": "Vedligehold",
+            "maintenance_section": {
+                "title": "Vedligehold",
+                "component": "Komponent",
+                "box": "Magasin",
+                "bottomBoard": "Bund",
+                "cover": "Dækplade",
+                "status": "Status",
+                "cleaned": "Rengjort",
+                "replaced": "Udskiftet",
+                "notesOptional": "Noter (Frivilligt)",
+                "notesPlaceholder": "Yderligere noter omkring vedligeholdelse..."
             }
         },
         "audio": {
             "title": "Lyd notat",
             "pendingUpload": "{{count}} afventende upload",
             "uploadWarning": "Lyd notater vil blive uploadet når du gemmer din inspektion."
+        },
+        "photos": {
+            "title": "Fotos",
+            "addPhoto": "Tilføj foto",
+            "pendingUpload": "{{count}} upload i kø",
+            "uploadWarning": "Fotos bliver uploadet når du gemmer inspektionen.",
+            "deleteConfirm": "Slet dette foto?",
+            "maxReached": "Max {{max}} billeder pr inspektion"
         }
     },
     "scores": {
@@ -112,7 +133,11 @@
         "stores": "Beholdninger",
         "queen": "Dronning",
         "title": "Inspektion scores",
-        "warnings": "Advarsler"
+        "warnings": "Advarsler",
+        "override": "Tilsidesæt",
+        "resetToCalculated": "Nulstil til beregnet",
+        "autoCalculated": "Auto-beregnet",
+        "overridden": "Tilpasset"
     },
     "actions": {
         "details": "Detaljer",
@@ -170,9 +195,9 @@
         "pollenStores": "Pollen beholdning",
         "queenCells": "Dronningeceller",
         "swarmCells": "Sværmceller",
-        "swarmCellsDescription": "",
+        "swarmCellsDescription": "Bygget på bunden eller siden af tavlerne. Ofte flere til stede. Bierne klargører sig til at sværme.",
         "supersedureCells": "Nødceller",
-        "supersedureCellsDescription": "",
+        "supersedureCellsDescription": "Bygget midt på rammerne. Som regel kun en eller to celler. Bierne er ved at udskifte en gammel eller fejlende dronning.",
         "clearRating": "Nulstil vurdering",
         "rateAs": "Vurder som {{value}}",
         "broodPattern": "Yngelmønster",
@@ -209,7 +234,20 @@
             "requires_treatment": "Kræver behandling",
             "low_stores": "Lav beholdning",
             "prepare_for_winter": "Klargør vinterleje"
-        }
+        },
+        "frameCounts": {
+            "title": "Forekomst af yngel",
+            "totalFrames": "{{count}} rammer i alt",
+            "framesOf": "/ {{total}} rammer"
+        },
+        "eggsFrames": "Æg",
+        "uncappedBroodFrames": "Åben yngel",
+        "cappedBroodFrames": "Forseglet yngel",
+        "droneBroodFrames": "Drone yngel",
+        "pollenFrames": "Pollen",
+        "nectarFrames": "Nektar",
+        "honeyFrames": "Honning",
+        "emptyFrames": "Tom/kunsttavle"
     },
     "statusCard": {
         "actions": "Handlinger",
@@ -267,7 +305,8 @@
         "navigation": "Navigation",
         "allInspections": "Alle inspektioner",
         "recentInspections": "Seneste inspektioner",
-        "goBack": "Tilbage"
+        "goBack": "Tilbage",
+        "deleteFailed": "Sletning af inspektion fejlede"
     },
     "schedule": {
         "title": "Planlæg inspektion",
@@ -384,5 +423,15 @@
         "dueToday": "Forfalder i dag",
         "overdueCount": "{{count}} inspektion{{count, plural, one {} other{s}}} overskredet",
         "dueTodayCount": "{{count}} inspektion{{count, plural, one {} other{s}}} forfalder i dag"
+    },
+    "pendingBoxUpdate": {
+        "updatingTitle": "Opdaterer magasin opbygning",
+        "updatingDescription": "Din inspektion er blevet gem. Magasain opbygningen bliver opdateret i baggrunden.",
+        "failedTitle": "Opdatering af magasin opbygning fejlede",
+        "failedDescription": "Opdatering af magasin opbygning fejlede. Prøv igen eller afvis denne besked.",
+        "retry": "Prøv igen",
+        "retrySuccess": "Opbygning af magasin er blevet gemt",
+        "retryFailed": "Forespørgslen fejlede. Prøv venligst igen.",
+        "dismiss": "Afvis"
     }
 }

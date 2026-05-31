@@ -1,7 +1,7 @@
 {
     "fields": {
         "status": "Status",
-        "installationDate": "Dato for tilsætning",
+        "installationDate": "Dato for etablering",
         "name": "Navn",
         "label": "Mærke",
         "number": "Stade nummer",
@@ -126,8 +126,8 @@
         "lastInspected": "Senest inspiceret {{date}}",
         "noInspection": "Endnu ikke inspiceret",
         "score": "Score:",
-        "strength": "",
-        "inspectionWarnings": "",
+        "strength": "Styrke:",
+        "inspectionWarnings": "Inspektion advarsler",
         "feeding": "Foder:"
     },
     "scores": {
@@ -207,7 +207,7 @@
             "status": "Status",
             "nameValue": "Navn: {{name}}",
             "statusValue": "Status: {{status}}",
-            "installationDate": "Dato for tilsætning",
+            "installationDate": "Dato for etablering",
             "old": "gammel",
             "notes": "Noter: {{notes}}",
             "queenInformation": "Information om dronning",

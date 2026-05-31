@@ -12,7 +12,6 @@ import {
   Printer,
 } from 'lucide-react';
 
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -82,9 +81,7 @@ export const InspectionDetailSidebar: React.FC<
         )}
       </ActionSidebarGroup>
 
-      <Separator className="my-2" />
-
-      <ActionSidebarGroup title={t('inspection:detailSidebar.relatedActions')}>
+<ActionSidebarGroup title={t('inspection:detailSidebar.relatedActions')}>
         <MenuItemButton
           icon={<Home className="h-4 w-4" />}
           label={t('inspection:detailSidebar.viewHive')}
@@ -101,9 +98,7 @@ export const InspectionDetailSidebar: React.FC<
         )}
       </ActionSidebarGroup>
 
-      <Separator className="my-2" />
-
-      <ActionSidebarGroup title={t('inspection:detailSidebar.navigation')}>
+<ActionSidebarGroup title={t('inspection:detailSidebar.navigation')}>
         <MenuItemButton
           icon={<ClipboardList className="h-4 w-4" />}
           label={t('inspection:detailSidebar.allInspections')}

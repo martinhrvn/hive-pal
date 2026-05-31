@@ -95,11 +95,11 @@ export const FloatingActionButton = () => {
         />
       )}
 
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
         {/* Action buttons */}
         <div className={cn(
           "flex flex-col items-end gap-3 mb-3 bg-background/95 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-border transition-all duration-300",
-          isOpen && actions.length > 1 ? "opacity-100" : "opacity-0 pointer-events-none"
+          isOpen && actions.length > 1 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}>
           {actions.map((action, index) => (
             <div
@@ -138,7 +138,7 @@ export const FloatingActionButton = () => {
         {/* Main FAB button */}
         <Button
           className={cn(
-            'h-14 w-14 rounded-full shadow-lg transition-all duration-300',
+            'h-14 w-14 rounded-full shadow-lg transition-all duration-300 pointer-events-auto',
             'bg-primary hover:bg-primary/90',
             isOpen && actions.length > 1 && 'rotate-45',
           )}

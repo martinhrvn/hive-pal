@@ -29,6 +29,10 @@ interface AiProcessUploadResponse {
   };
 }
 
+interface AiRecommendResponse {
+  [key: string]: unknown;
+}
+
 export interface AudioResponse {
   id: string;
   inspectionId: string;
@@ -37,6 +41,7 @@ export interface AudioResponse {
   fileSize: number;
   duration: number | null;
   transcriptionStatus: TranscriptionStatus;
+  analysisStatus: TranscriptionStatus;
   transcription: string | null;
   createdAt: string;
 }
@@ -49,6 +54,7 @@ export interface DownloadUrlResponse {
 export interface AiAnalysisStatusResponse {
   id: string;
   transcriptionStatus: TranscriptionStatus;
+  analysisStatus: TranscriptionStatus;
   analysisError: string | null;
   analysisCompletedAt: Date | null;
 }
@@ -70,11 +76,15 @@ const ALLOWED_MIME_TYPES = [
   'audio/wav',
 ];
 
+type AiProcessingMode = 'pull' | 'push' | 'auto';
+
 @Injectable()
 export class InspectionAudioService {
   private maxFileSize: number;
   private aiServiceBaseUrl: string;
   private aiApiKey: string;
+  private aiProcessingMode: AiProcessingMode;
+  private pullFallbackMinutes: number;
 
   private resolveBackendBaseUrl(): string {
     const backendPublicUrl =
@@ -111,6 +121,20 @@ export class InspectionAudioService {
       'http://hivepal-ai:8008';
 
     this.aiApiKey = this.configService.get<string>('AI_API_KEY') ?? '';
+
+    const mode = (
+      this.configService.get<string>('AI_PROCESSING_MODE') ?? 'push'
+    ).toLowerCase();
+    this.aiProcessingMode =
+      mode === 'pull' || mode === 'auto' ? (mode as AiProcessingMode) : 'push';
+
+    this.pullFallbackMinutes = Number(
+      this.configService.get('AI_PULL_FALLBACK_MINUTES') ?? 10,
+    );
+  }
+
+  private hasPushConfig(): boolean {
+    return Boolean(this.aiServiceBaseUrl && this.aiApiKey);
   }
 
   /**
@@ -368,15 +392,200 @@ export class InspectionAudioService {
       data: {
         transcription: null,
         transcriptionStatus: 'PENDING',
+        transcriptionError: null,
+        transcriptionRetries: 0,
+        transcriptionClaimedAt: null,
+        transcriptionLeaseUntil: null,
+        transcriptionWorkerTokenId: null,
+        analysisStatus: 'NONE',
         analysisResult: Prisma.JsonNull,
         analysisError: null,
         analysisCompletedAt: null,
+        analysisRetries: 0,
+        analysisClaimedAt: null,
+        analysisLeaseUntil: null,
+        analysisWorkerTokenId: null,
       },
     });
 
-    void this.runAiAnalysisInBackground(audioId, audio.storageKey);
+    if (this.aiProcessingMode === 'push') {
+      if (!this.hasPushConfig()) {
+        this.logger.warn({
+          message:
+            'AI_PROCESSING_MODE=push but AI service not configured; leaving job PENDING',
+          audioId,
+        });
+      } else {
+        void this.runAiAnalysisInBackground(audioId, audio.storageKey);
+      }
+    }
+    // pull / auto: leave job PENDING for a worker. Auto mode falls back via
+    // scheduled job (`runPullFallbackSweep`) after AI_PULL_FALLBACK_MINUTES.
 
     return { status: 'PENDING' };
+  }
+
+  async updateTranscriptionAndReanalyze(
+    inspectionId: string,
+    audioId: string,
+    text: string,
+    filter: ApiaryUserFilter,
+  ): Promise<{ status: 'PENDING' }> {
+    const audio = await this.prisma.inspectionAudio.findFirst({
+      where: {
+        id: audioId,
+        inspectionId,
+        inspection: {
+          hive: {
+            apiary: {
+              id: filter.apiaryId,
+              userId: filter.userId,
+            },
+          },
+        },
+      },
+    });
+
+    if (!audio) {
+      throw new NotFoundException(`Audio with ID ${audioId} not found`);
+    }
+
+    if (audio.transcriptionStatus !== 'COMPLETED') {
+      throw new BadRequestException(
+        'Transcription must be COMPLETED before it can be edited',
+      );
+    }
+
+    if (
+      audio.analysisStatus === 'PENDING' ||
+      audio.analysisStatus === 'PROCESSING'
+    ) {
+      throw new BadRequestException(
+        'Analysis is already in progress for this recording',
+      );
+    }
+
+    const trimmed = text.trim();
+    if (!trimmed) {
+      throw new BadRequestException('Transcription must not be empty');
+    }
+
+    await this.prisma.inspectionAudio.update({
+      where: { id: audioId },
+      data: {
+        transcription: trimmed,
+        analysisStatus: 'PENDING',
+        analysisResult: Prisma.JsonNull,
+        analysisError: null,
+        analysisCompletedAt: null,
+        analysisRetries: 0,
+        analysisClaimedAt: null,
+        analysisLeaseUntil: null,
+        analysisWorkerTokenId: null,
+      },
+    });
+
+    if (this.aiProcessingMode === 'push') {
+      if (!this.hasPushConfig()) {
+        this.logger.warn({
+          message:
+            'AI_PROCESSING_MODE=push but AI service not configured; leaving analysis PENDING',
+          audioId,
+        });
+      } else {
+        void this.runAnalysisOnlyInBackground(audioId, trimmed);
+      }
+    }
+    // pull / auto: leave PENDING for a worker to claim via claimAnalysis.
+
+    this.logger.log({
+      message: 'Transcription edited and analysis re-queued',
+      audioId,
+      length: trimmed.length,
+    });
+
+    return { status: 'PENDING' };
+  }
+
+  private async runAnalysisOnlyInBackground(
+    audioId: string,
+    transcript: string,
+  ): Promise<void> {
+    try {
+      await this.prisma.inspectionAudio.update({
+        where: { id: audioId },
+        data: { analysisStatus: 'PROCESSING' },
+      });
+
+      const response = await fetch(`${this.aiServiceBaseUrl}/recommend`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.aiApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transcript }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI service returned ${response.status}`);
+      }
+
+      const rawResult: unknown = await response.json();
+      const result = rawResult as AiRecommendResponse;
+
+      await this.prisma.inspectionAudio.update({
+        where: { id: audioId },
+        data: {
+          analysisStatus: 'COMPLETED',
+          analysisResult: result as Prisma.InputJsonValue,
+          analysisError: null,
+          analysisCompletedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await this.prisma.inspectionAudio.update({
+        where: { id: audioId },
+        data: {
+          analysisStatus: 'FAILED',
+          analysisError: message,
+        },
+      });
+
+      this.logger.error({
+        message: 'Analysis-only re-run failed',
+        audioId,
+        error: message,
+      });
+    }
+  }
+
+  /**
+   * For mode=auto: find audios that have been waiting too long for a worker
+   * and process them via the push path instead.
+   */
+  async runPullFallbackSweep(): Promise<void> {
+    if (this.aiProcessingMode !== 'auto') return;
+    if (!this.hasPushConfig()) return;
+
+    const cutoff = new Date(Date.now() - this.pullFallbackMinutes * 60 * 1000);
+    const stuck = await this.prisma.inspectionAudio.findMany({
+      where: {
+        transcriptionStatus: 'PENDING',
+        analysisStatus: 'NONE',
+        createdAt: { lt: cutoff },
+      },
+      select: { id: true, storageKey: true },
+      take: 5,
+    });
+
+    for (const audio of stuck) {
+      this.logger.log({
+        message: 'Pull job timed out; falling back to push',
+        audioId: audio.id,
+      });
+      void this.runAiAnalysisInBackground(audio.id, audio.storageKey);
+    }
   }
 
   private async runAiAnalysisInBackground(
@@ -428,17 +637,22 @@ export class InspectionAudioService {
         data: {
           transcription: result.transcript?.text ?? null,
           transcriptionStatus: 'COMPLETED',
+          transcriptionError: null,
+          analysisStatus: 'COMPLETED',
           analysisResult: result.inspectionDraft ?? Prisma.JsonNull,
           analysisError: null,
           analysisCompletedAt: new Date(),
         },
       });
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
       await this.prisma.inspectionAudio.update({
         where: { id: audioId },
         data: {
           transcriptionStatus: 'FAILED',
-          analysisError: error instanceof Error ? error.message : String(error),
+          transcriptionError: message,
+          analysisStatus: 'FAILED',
+          analysisError: message,
         },
       });
 
@@ -471,6 +685,7 @@ export class InspectionAudioService {
       select: {
         id: true,
         transcriptionStatus: true,
+        analysisStatus: true,
         analysisError: true,
         analysisCompletedAt: true,
       },
@@ -503,9 +718,11 @@ export class InspectionAudioService {
       },
       select: {
         transcriptionStatus: true,
+        analysisStatus: true,
         transcription: true,
         analysisResult: true,
         analysisError: true,
+        transcriptionError: true,
       },
     });
 
@@ -513,13 +730,23 @@ export class InspectionAudioService {
       throw new NotFoundException(`Audio with ID ${audioId} not found`);
     }
 
+    // Report the overall pipeline status: COMPLETED only when both stages done;
+    // FAILED if either failed; otherwise reflect the in-progress stage.
+    let status: TranscriptionStatus = audio.transcriptionStatus;
+    if (
+      audio.transcriptionStatus === 'COMPLETED' &&
+      audio.analysisStatus !== 'NONE'
+    ) {
+      status = audio.analysisStatus;
+    }
+
     return {
-      status: audio.transcriptionStatus,
+      status,
       transcript: {
         text: audio.transcription,
       },
       inspectionDraft: audio.analysisResult,
-      error: audio.analysisError,
+      error: audio.analysisError ?? audio.transcriptionError,
     };
   }
 
@@ -550,6 +777,7 @@ export class InspectionAudioService {
       fileSize: audio.fileSize,
       duration: audio.duration,
       transcriptionStatus: audio.transcriptionStatus,
+      analysisStatus: audio.analysisStatus,
       transcription: audio.transcription,
       createdAt: audio.createdAt.toISOString(),
     };

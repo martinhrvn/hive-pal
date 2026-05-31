@@ -86,6 +86,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
         location: existingApiary.location || '',
         latitude: existingApiary.latitude ?? undefined,
         longitude: existingApiary.longitude ?? undefined,
+        featurePhotoId: existingApiary.featurePhotoId ?? null,
         settings: { inspectionType: existingApiary.settings?.inspectionType ?? 'data_driven' },
       });
       if (existingApiary.featurePhotoUrl) {
@@ -108,26 +109,10 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
             location: data.location,
             latitude: data.latitude,
             longitude: data.longitude,
+            featurePhotoId: data.featurePhotoId,
             settings: data.settings,
           },
         });
-
-        // If there's a pending file, upload it and link as feature photo
-        const pendingFile = featurePhotoRef.current?.getPendingFile();
-        if (pendingFile) {
-          const formData = new FormData();
-          formData.append('file', pendingFile);
-          formData.append('apiaryId', apiaryId);
-          formData.append('caption', 'Feature photo');
-          formData.append('date', new Date().toISOString());
-
-          const photo = await createPhoto.mutateAsync(formData);
-          await updateApiary({
-            id: apiaryId,
-            data: { featurePhotoId: photo.id },
-          });
-          featurePhotoRef.current?.clearPendingFile();
-        }
 
         navigate(`/apiaries/${apiaryId}`);
       } else {
@@ -205,9 +190,16 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
 
         <FeaturePhotoPicker
           ref={featurePhotoRef}
+          apiaryId={apiaryId}
           currentPhotoUrl={featurePhotoUrl}
-          onPhotoUploaded={() => {}}
-          onPhotoRemoved={() => {}}
+          currentPhotoId={form.watch('featurePhotoId') ?? undefined}
+          onPhotoUploaded={(photoId) =>
+            form.setValue('featurePhotoId', photoId, { shouldDirty: true })
+          }
+          onPhotoRemoved={() => {
+            form.setValue('featurePhotoId', null, { shouldDirty: true });
+            setFeaturePhotoUrl(null);
+          }}
         />
 
         <Suspense fallback={<MapLoader />}>

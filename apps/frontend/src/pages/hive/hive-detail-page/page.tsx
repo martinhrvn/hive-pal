@@ -18,6 +18,8 @@ import { HiveStatusButton } from './hive-status-button';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { useImageDisplayStore } from '@/stores/image-display-store';
 import { AlertTriangle } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { WARNING_LABELS } from '@/utils/warning-labels';
 
 export const HiveDetailPage = () => {
@@ -54,62 +56,105 @@ export const HiveDetailPage = () => {
     <div className="p-2 sm:p-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
         <div className="lg:col-span-8 xl:col-span-9">
-          {/* Hive header card */}
-          <div className={`rounded-lg overflow-hidden mb-4 ${isSide ? 'flex flex-col sm:flex-row' : ''}`}>
-            {imageMode !== 'hidden' && (
-              hive?.featurePhotoUrl ? (
-                <img
-                  src={hive.featurePhotoUrl}
-                  alt={`${hive.name} feature photo`}
-                  className={isSide
-                    ? 'w-full sm:w-[150px] h-40 sm:h-auto min-h-[140px] object-cover flex-shrink-0'
-                    : 'w-full h-40 object-cover'}
-                />
-              ) : (
+          {/* Editorial hive header card */}
+          <div className="@container/hive mb-4 sm:mb-6">
+            <section
+              className={cn(
+                'group/hive relative rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-card',
+                'shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(120,80,20,0.08)]',
+                'flex flex-col',
+                isSide && '@md/hive:flex-row',
+              )}
+            >
+              {imageMode !== 'hidden' && (
                 <div
-                  className={isSide
-                    ? 'w-full sm:w-[150px] h-32 sm:h-auto min-h-[140px]  flex-shrink-0'
-                    : 'w-full h-32 '}
-                  style={{ background: buildBoxGradient(hive?.boxes) }}
-                />
-              )
-            )}
-            <div className={`pt-3 flex-1 min-w-0 ${isSide ? 'sm:pl-4' : ''}`}>
-            <div className="flex justify-between items-center mb-2">
-              <h1 className="text-xl sm:text-2xl font-semibold">
-                {hive?.name}
-              </h1>
-              {hiveId && (
-                <HiveStatusButton hiveId={hiveId} status={hive?.status} />
+                  className={cn(
+                    'relative overflow-hidden bg-stone-100 dark:bg-stone-900',
+                    isSide
+                      ? 'w-full @md/hive:w-[200px] @lg/hive:w-[240px] flex-shrink-0 h-32 @sm/hive:h-40 @md/hive:h-auto @md/hive:min-h-[220px]'
+                      : 'w-full h-32 @sm/hive:h-40 @md/hive:h-44',
+                  )}
+                >
+                  {hive?.featurePhotoUrl ? (
+                    <img
+                      src={hive.featurePhotoUrl}
+                      alt={`${hive.name} feature photo`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: buildBoxGradient(hive?.boxes) }}
+                    />
+                  )}
+                  <div
+                    className={cn(
+                      'absolute inset-0 pointer-events-none',
+                      isSide
+                        ? '@md/hive:bg-gradient-to-r @md/hive:from-transparent @md/hive:via-transparent @md/hive:to-card/15 bg-gradient-to-t from-card/40 via-transparent to-transparent'
+                        : 'bg-gradient-to-t from-card/40 via-transparent to-transparent',
+                    )}
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-amber-500/[0.04]" />
+                </div>
               )}
-            </div>
-            {hive?.installationDate && (
-              <p className="text-sm text-gray-500">
-                Installed on{' '}
-                {new Date(hive?.installationDate).toLocaleDateString()}
-              </p>
-            )}
-            {hive?.notes && <p className="mt-2 text-gray-700">{hive.notes}</p>}
 
-            {/* Compact stats section */}
-            <div className="border-t mt-3 pt-3">
-              {hive?.inspectionType === 'subjective' && hive?.hiveScore && (
-                <StatisticCards score={hive.hiveScore} variant="inline" />
-              )}
-              {hive?.inspectionType === 'data_driven' && hiveId && (
-                <HiveHeaderStats hiveId={hiveId} />
-              )}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3">
-                <QueenInformation
-                  hiveId={hive?.id}
-                  activeQueen={hive?.activeQueen}
-                  onQueenUpdated={() => refetch()}
-                  variant="inline"
-                />
-                {hive && <FeedingSection hiveId={hive.id} variant="inline" />}
+              <div className="flex-1 min-w-0 flex flex-col">
+                {/* Overline + status pill */}
+                <div className="px-4 @sm/hive:px-5 @lg/hive:px-6 pt-4 min-w-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0 pt-0.5">
+                      <span
+                        className="inline-flex h-1.5 w-1.5 rounded-full bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.18)] shrink-0"
+                        aria-hidden
+                      />
+                      <span className="font-overline text-stone-500 dark:text-stone-400 truncate">
+                        {hive?.installationDate
+                          ? `Established · ${format(new Date(hive.installationDate), 'MMM d, yyyy')}`
+                          : 'Active hive'}
+                      </span>
+                    </div>
+                    {hiveId && (
+                      <div className="shrink-0">
+                        <HiveStatusButton hiveId={hiveId} status={hive?.status} />
+                      </div>
+                    )}
+                  </div>
+                  <h1 className="mt-1.5 font-display text-2xl @sm/hive:text-3xl @lg/hive:text-4xl font-medium leading-[1.05] text-stone-900 dark:text-stone-50 break-words">
+                    {hive?.name}
+                  </h1>
+                  {hive?.notes && (
+                    <p className="mt-2 text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
+                      {hive.notes}
+                    </p>
+                  )}
+                </div>
+
+                {/* Brood stats — hairline-separated */}
+                {((hive?.inspectionType === 'subjective' && hive?.hiveScore) ||
+                  (hive?.inspectionType === 'data_driven' && hiveId)) && (
+                  <div className="border-t border-stone-200 dark:border-stone-800 mt-4 px-4 @sm/hive:px-5 @lg/hive:px-6 py-4">
+                    {hive?.inspectionType === 'subjective' && hive?.hiveScore && (
+                      <StatisticCards score={hive.hiveScore} variant="inline" />
+                    )}
+                    {hive?.inspectionType === 'data_driven' && hiveId && (
+                      <HiveHeaderStats hiveId={hiveId} />
+                    )}
+                  </div>
+                )}
+
+                {/* Queen + feeding strip — bottom block with subtle stone wash, stacked rows */}
+                <div className="mt-auto border-t border-stone-200 dark:border-stone-800 px-4 @sm/hive:px-5 @lg/hive:px-6 py-3 bg-stone-50/60 dark:bg-stone-900/40 flex flex-col gap-2">
+                  <QueenInformation
+                    hiveId={hive?.id}
+                    activeQueen={hive?.activeQueen}
+                    onQueenUpdated={() => refetch()}
+                    variant="inline"
+                  />
+                  {hive && <FeedingSection hiveId={hive.id} variant="inline" />}
+                </div>
               </div>
-            </div>
-            </div>
+            </section>
           </div>
 
           {/* Tabs for different sections */}

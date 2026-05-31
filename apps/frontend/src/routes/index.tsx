@@ -52,6 +52,12 @@ const PlatformMetricsPage = lazyWithRetry(
 const FrameSizeReviewPage = lazyWithRetry(
   () => import('@/pages/admin/frame-sizes/frame-size-review-page'),
 );
+const WorkerTokensPage = lazyWithRetry(
+  () => import('@/pages/admin/worker-tokens/worker-tokens-page'),
+);
+const AdminMediaPage = lazyWithRetry(
+  () => import('@/pages/admin/media/media-page'),
+);
 
 // Heavy feature pages (named exports)
 const ReportsPage = lazyWithRetry(() =>
@@ -435,6 +441,26 @@ const router = createBrowserRouter([
           <AdminProtectedRoute>
             <LazyPage>
               <PlatformMetricsPage />
+            </LazyPage>
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/worker-tokens',
+        element: (
+          <AdminProtectedRoute>
+            <LazyPage>
+              <WorkerTokensPage />
+            </LazyPage>
+          </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/media',
+        element: (
+          <AdminProtectedRoute>
+            <LazyPage>
+              <AdminMediaPage />
             </LazyPage>
           </AdminProtectedRoute>
         ),

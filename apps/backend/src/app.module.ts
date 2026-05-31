@@ -41,6 +41,9 @@ import { DocumentsModule } from './documents/documents.module';
 import { InspectionAudioModule } from './inspection-audio/inspection-audio.module';
 import { AiModule } from './ai/ai.module';
 import { ApiarySharingModule } from './apiary-sharing/apiary-sharing.module';
+import { WorkerTokensModule } from './worker-tokens/worker-tokens.module';
+import { WorkerJobsModule } from './worker-jobs/worker-jobs.module';
+import { AdminMediaModule } from './admin-media/admin-media.module';
 import { HiveScaleModule } from './hivescale/hivescale.module';
 
 @Module({
@@ -82,6 +85,9 @@ import { HiveScaleModule } from './hivescale/hivescale.module';
     AiModule,
     InspectionAudioModule,
     ApiarySharingModule,
+    WorkerTokensModule,
+    WorkerJobsModule,
+    AdminMediaModule,
     HiveScaleModule,
   ],
   controllers: [AppController, EnvController],

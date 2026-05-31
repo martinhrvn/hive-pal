@@ -1,0 +1,41 @@
+services:
+  hivepal-worker:
+    build: .
+    # Or, if using a prebuilt image:
+    # image: ghcr.io/YOUR_GITHUB_USER_OR_ORG/hivepal-ai:latest
+    container_name: hivepal-worker
+    command: ['python', 'worker.py']
+    depends_on:
+      - ollama
+    environment:
+      HIVEPAL_URL: ${HIVEPAL_URL:?set HIVEPAL_URL in .env, e.g. https://hivepal.example.com}
+      WORKER_TOKEN: ${WORKER_TOKEN:?set WORKER_TOKEN in .env, the hpw_... value from /admin/worker-tokens}
+      POLL_INTERVAL_SECONDS: ${POLL_INTERVAL_SECONDS:-5}
+      OLLAMA_URL: ${OLLAMA_URL:-http://hivepal-ollama:11434/api/chat}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+      WHISPER_MODEL: ${WHISPER_MODEL:-small}
+      WHISPER_COMPUTE_TYPE: ${WHISPER_COMPUTE_TYPE:-int8}
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: hivepal-ollama
+    ports:
+      - '11434:11434'
+    restart: unless-stopped
+    volumes:
+      - ollama-data:/root/.ollama
+
+  ollama-pull:
+    image: ollama/ollama:latest
+    container_name: hivepal-ollama-pull
+    depends_on:
+      - ollama
+    environment:
+      OLLAMA_HOST: hivepal-ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+    entrypoint: ['/bin/sh', '-c', 'ollama pull "$$OLLAMA_MODEL"']
+    restart: 'no'
+
+volumes:
+  ollama-data:

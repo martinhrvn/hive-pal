@@ -23,3 +23,12 @@ export const downloadUrlResponseSchema = z.object({
 });
 
 export type DownloadUrlResponse = z.infer<typeof downloadUrlResponseSchema>;
+
+// Update transcription + re-queue analysis
+export const updateTranscriptionSchema = z.object({
+  transcription: z.string().trim().min(1).max(10000),
+});
+
+export type UpdateTranscriptionRequest = z.infer<
+  typeof updateTranscriptionSchema
+>;

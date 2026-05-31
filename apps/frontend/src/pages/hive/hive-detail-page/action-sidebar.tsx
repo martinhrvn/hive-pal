@@ -7,11 +7,11 @@ import {
   TrashIcon,
   RefreshCw,
   CalendarPlus,
+  AlertTriangle,
 } from 'lucide-react';
 import { bee } from '@lucide/lab';
 import { useTranslation } from 'react-i18next';
 
-import { SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { AlertItem } from '@/components/alerts';
 import { useHive, useDeleteHive } from '@/api/hooks';
 import { Button } from '@/components/ui/button';
@@ -63,20 +63,31 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Alerts Section */}
+      {/* Active Alerts */}
       {hive?.alerts && hive.alerts.length > 0 && (
-        <div className="border rounded-md">
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-2 pt-2">
-              Active Alerts
-            </SidebarGroupLabel>
-            <div className="px-2 pb-2 space-y-1 max-h-64 overflow-y-auto">
+        <ActionSidebarContainer className="border-amber-300/70 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_22px_-14px_rgba(217,119,6,0.20)]">
+          <ActionSidebarGroup
+            title={
+              <span className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
+                <AlertTriangle className="h-3 w-3" />
+                <span>
+                  {t('hive:fields.activeAlerts', {
+                    defaultValue: 'Active Alerts',
+                  })}
+                </span>
+                <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-amber-500/15 dark:bg-amber-400/20 text-amber-700 dark:text-amber-200 text-[10px] font-semibold tabular-nums px-1.5">
+                  {hive.alerts.length}
+                </span>
+              </span>
+            }
+          >
+            <div className="max-h-64 overflow-y-auto -mx-1 px-1 flex flex-col gap-1">
               {hive.alerts.map(alert => (
                 <AlertItem key={alert.id} alert={alert} showActions={true} />
               ))}
             </div>
-          </SidebarGroup>
-        </div>
+          </ActionSidebarGroup>
+        </ActionSidebarContainer>
       )}
 
       <WeatherForecastSection apiaryId={hive?.apiaryId} compact />
@@ -140,7 +151,6 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
         {canEdit && (
           <ActionSidebarGroup
             title={t('hive:manage.title', { defaultValue: 'Manage Hive' })}
-            className="mt-4"
           >
             <MenuItemButton
               icon={<EditIcon className="h-4 w-4" />}

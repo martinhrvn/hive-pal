@@ -6,5 +6,6 @@ export const apiariesSchema = z.object({
   location: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  featurePhotoId: z.string().nullable().optional(),
   settings: apiarySettingsSchema,
 });
