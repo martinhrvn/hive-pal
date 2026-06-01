@@ -123,10 +123,14 @@ function MicStatusBadge({
   micOk,
   leftOk,
   rightOk,
+  leftName,
+  rightName,
 }: {
   micOk: boolean | null | undefined;
   leftOk: boolean | null | undefined;
   rightOk: boolean | null | undefined;
+  leftName: string;
+  rightName: string;
 }) {
   if (micOk === null || micOk === undefined) {
     return (
@@ -148,7 +152,11 @@ function MicStatusBadge({
   return (
     <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
       <Mic className="h-3.5 w-3.5" />
-      {both ? 'L + R active' : leftOk ? 'L active' : 'R active'}
+      {both
+        ? `${leftName} + ${rightName} active`
+        : leftOk
+          ? `${leftName} active`
+          : `${rightName} active`}
     </span>
   );
 }
@@ -159,7 +167,8 @@ function MicStatusBadge({
  */
 function FftBandChart({
   data,
-  channel,
+  channelLabel,
+  emptyLabel,
   dateRange,
 }: {
   data: {
@@ -171,7 +180,8 @@ function FftBandChart({
     stress: number | null;
     high: number | null;
   }[];
-  channel: 'Left' | 'Right';
+  channelLabel: string;
+  emptyLabel: string;
   dateRange: HiveScaleDateRange;
 }) {
   const visibleData = useMemo(() => {
@@ -190,14 +200,14 @@ function FftBandChart({
     return (
       <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
         <Activity className="mr-2 h-4 w-4" />
-        No {channel.toLowerCase()} channel data in this range.
+        No data for {emptyLabel} in this range.
       </div>
     );
   }
 
   return (
     <div>
-      <p className="mb-2 text-sm font-medium">Mic {channel}</p>
+      <p className="mb-2 text-sm font-medium">{channelLabel}</p>
       <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -255,6 +265,8 @@ function FftBandChart({
 function RmsLineChart({
   data,
   dateRange,
+  leftName,
+  rightName,
 }: {
   data: {
     timestamp: number;
@@ -263,6 +275,8 @@ function RmsLineChart({
     rightRms: number | null;
   }[];
   dateRange: HiveScaleDateRange;
+  leftName: string;
+  rightName: string;
 }) {
   const visibleData = useMemo(() => {
     const startMs = dateRange.startAt
@@ -322,7 +336,7 @@ function RmsLineChart({
             <Line
               type="monotone"
               dataKey="leftRms"
-              name="Mic left RMS"
+              name={`${leftName} RMS`}
               stroke="var(--chart-1)"
               dot={false}
               connectNulls
@@ -330,7 +344,7 @@ function RmsLineChart({
             <Line
               type="monotone"
               dataKey="rightRms"
-              name="Mic right RMS"
+              name={`${rightName} RMS`}
               stroke="var(--chart-2)"
               dot={false}
               connectNulls
@@ -402,6 +416,11 @@ export function HiveScaleSoundPanel({
   scale2Name: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Map mic channels to hive display names (left = scale 1, right = scale 2),
+  // with sensible fallbacks if a name is empty.
+  const leftName = scale1Name?.trim() || 'Mic left';
+  const rightName = scale2Name?.trim() || 'Mic right';
 
   // Derive the latest measurement for the header status badge
   const latest = useMemo(() => {
@@ -502,11 +521,13 @@ export function HiveScaleSoundPanel({
                     micOk={latest?.mic_ok}
                     leftOk={latest?.mic_left_ok}
                     rightOk={latest?.mic_right_ok}
+                    leftName={leftName}
+                    rightName={rightName}
                   />
                 </CardTitle>
                 <CardDescription>
                   INMP441 broadband RMS and FFT band energy (dBFS) —{' '}
-                  {scale1Name} (left) · {scale2Name} (right)
+                  {leftName} (left) · {rightName} (right)
                 </CardDescription>
               </div>
             </div>
@@ -538,7 +559,12 @@ export function HiveScaleSoundPanel({
             ) : (
               <>
                 {/* Broadband RMS over time */}
-                <RmsLineChart data={rmsData} dateRange={dateRange} />
+                <RmsLineChart
+                  data={rmsData}
+                  dateRange={dateRange}
+                  leftName={leftName}
+                  rightName={rightName}
+                />
 
                 <div className="my-1 border-t" />
 
@@ -546,12 +572,14 @@ export function HiveScaleSoundPanel({
                 <div className="grid gap-6 xl:grid-cols-2">
                   <FftBandChart
                     data={fftLeftData}
-                    channel="Left"
+                    channelLabel={leftName}
+                    emptyLabel={leftName}
                     dateRange={dateRange}
                   />
                   <FftBandChart
                     data={fftRightData}
-                    channel="Right"
+                    channelLabel={rightName}
+                    emptyLabel={rightName}
                     dateRange={dateRange}
                   />
                 </div>
