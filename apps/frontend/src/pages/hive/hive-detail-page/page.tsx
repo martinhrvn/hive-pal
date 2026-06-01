@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BoxConfigurator } from './box-configurator';
@@ -26,12 +26,36 @@ import { WARNING_LABELS } from '@/utils/warning-labels';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
+  const location = useLocation();
   const { data: hive, error, refetch } = useHive(hiveId as string);
   const { data: features } = useFeatures();
   const { setHiveContext, clearContext } = useBreadcrumbStore();
   const { mode: imageMode } = useImageDisplayStore();
   const [activeTab, setActiveTab] = useState('overview');
+  const [assistantInit, setAssistantInit] = useState<{
+    threadId?: string;
+    prompt?: string;
+  }>();
   const isSide = imageMode === 'side';
+
+  // Handle a hand-off from the LLM prompt dialog: open the Assistant tab and
+  // auto-send the generated prompt into a freshly created thread.
+  useEffect(() => {
+    const state = location.state as {
+      assistantTab?: boolean;
+      assistantThreadId?: string;
+      assistantPrompt?: string;
+    } | null;
+    if (state?.assistantTab) {
+      setActiveTab('assistant');
+      setAssistantInit({
+        threadId: state.assistantThreadId,
+        prompt: state.assistantPrompt,
+      });
+      // Clear router state so it doesn't re-trigger on re-render/back nav.
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
 
   // Set breadcrumb context when hive data is loaded
   useEffect(() => {
@@ -221,7 +245,13 @@ export const HiveDetailPage = () => {
             {features?.aiEnabled && (
               <TabsContent value="assistant">
                 {hive?.apiaryId && hive?.id && (
-                  <AssistantChat apiaryId={hive.apiaryId} hiveId={hive.id} />
+                  <AssistantChat
+                    key={assistantInit?.threadId ?? 'default'}
+                    apiaryId={hive.apiaryId}
+                    hiveId={hive.id}
+                    threadId={assistantInit?.threadId}
+                    initialMessage={assistantInit?.prompt}
+                  />
                 )}
               </TabsContent>
             )}

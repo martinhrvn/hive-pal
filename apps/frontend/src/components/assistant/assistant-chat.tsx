@@ -28,6 +28,12 @@ interface AssistantChatProps {
   apiaryId: string;
   hiveId?: string;
   threadId?: string;
+  /**
+   * When provided, this message is sent automatically once on mount (used by
+   * the "Send to AI-Assistant" action in the LLM prompt dialog). Pair it with a
+   * `key` on the component so a fresh instance mounts per injected message.
+   */
+  initialMessage?: string;
 }
 
 type PendingMessage = Pick<AssistantMessageResponse, 'role' | 'content'> & {
@@ -38,6 +44,7 @@ export function AssistantChat({
   apiaryId,
   hiveId,
   threadId,
+  initialMessage,
 }: AssistantChatProps) {
   const queryClient = useQueryClient();
   const { data: threads } = useAssistantThreads(apiaryId, hiveId);
@@ -68,8 +75,8 @@ export function AssistantChat({
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages.length, streamingText, pending.length]);
 
-  const handleSend = async () => {
-    const content = input.trim();
+  const sendMessage = async (rawContent: string) => {
+    const content = rawContent.trim();
     if (!content || isStreaming) return;
 
     let targetThreadId = activeThreadId;
@@ -118,6 +125,19 @@ export function AssistantChat({
       setIsStreaming(false);
     }
   };
+
+  const handleSend = () => void sendMessage(input);
+
+  // Auto-send a prompt injected from elsewhere (e.g. the LLM prompt dialog).
+  const autoSentRef = useRef(false);
+  useEffect(() => {
+    if (initialMessage && !autoSentRef.current) {
+      autoSentRef.current = true;
+      void sendMessage(initialMessage);
+    }
+    // sendMessage intentionally omitted — guarded to run exactly once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialMessage]);
 
   const handleNewThread = () => {
     setActiveThreadId(undefined);
