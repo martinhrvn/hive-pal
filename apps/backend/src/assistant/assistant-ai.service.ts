@@ -35,7 +35,13 @@ export class AssistantAiService {
   async streamChat(messages: ChatMessage[]): Promise<Readable> {
     this.assertEnabled();
 
-    const aiUrl = `${this.config.get<string>('AI_SERVICE_URL')}/chat`;
+    const aiServiceUrl = this.config.get<string>('AI_SERVICE_URL');
+    if (!aiServiceUrl) {
+      throw new BadRequestException(
+        'AI_SERVICE_URL is not configured. Set this environment variable to the URL of the AI service (e.g. http://hivepal-ai:8008).',
+      );
+    }
+    const aiUrl = `${aiServiceUrl}/chat`;
     const model = this.config.get<string>('OLLAMA_MODEL');
 
     const response = await firstValueFrom(
