@@ -37,16 +37,6 @@ import {
 // Navigation data factory function
 const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
   navMain: [
-    ...(aiEnabled
-      ? [
-          {
-            title: t('navigation.assistant', { defaultValue: 'Assistant' }),
-            url: '/assistant',
-            icon: BotMessageSquare,
-            isActive: true,
-          },
-        ]
-      : []),
     {
       title: t('navigation.apiaries', { defaultValue: 'Apiaries' }),
       url: '/apiaries',
@@ -136,12 +126,6 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
       isActive: true,
     },
     {
-      title: t('navigation.hivescale', { defaultValue: 'HiveScale' }),
-      url: '/hivescale',
-      icon: Scale,
-      isActive: true,
-    },
-    {
       title: t('navigation.actions', { defaultValue: 'Actions' }),
       url: '/actions/bulk',
       icon: ClipboardList,
@@ -156,6 +140,22 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
       title: t('navigation.equipment', { defaultValue: 'Equipment' }),
       url: '/equipment',
       icon: Package,
+    },
+    ...(aiEnabled
+      ? [
+          {
+            title: t('navigation.assistant', { defaultValue: 'AI-Assistant' }),
+            url: '/assistant',
+            icon: BotMessageSquare,
+            isActive: true,
+          },
+        ]
+      : []),
+    {
+      title: t('navigation.hivescale', { defaultValue: 'HiveScale' }),
+      url: '/hivescale',
+      icon: Scale,
+      isActive: true,
     },
     {
       title: t('navigation.tools', { defaultValue: 'Tools' }),
