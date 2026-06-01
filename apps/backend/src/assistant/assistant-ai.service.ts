@@ -35,10 +35,21 @@ export class AssistantAiService {
   async streamChat(messages: ChatMessage[]): Promise<Readable> {
     this.assertEnabled();
 
-    const aiServiceUrl = this.config.get<string>('AI_SERVICE_URL');
+    // Match the env vars the existing transcription service uses
+    // (AI_SERVICE_BASE_URL / AI_API_KEY), falling back to the older names
+    // (AI_SERVICE_URL / AI_SERVICE_API_KEY) and finally the compose default.
+    const aiServiceUrl =
+      this.config.get<string>('AI_SERVICE_BASE_URL') ??
+      this.config.get<string>('AI_SERVICE_URL') ??
+      'http://hivepal-ai:8008';
+    const apiKey =
+      this.config.get<string>('AI_API_KEY') ??
+      this.config.get<string>('AI_SERVICE_API_KEY') ??
+      '';
+
     if (!aiServiceUrl) {
       throw new BadRequestException(
-        'AI_SERVICE_URL is not configured. Set this environment variable to the URL of the AI service (e.g. http://hivepal-ai:8008).',
+        'AI service URL is not configured. Set AI_SERVICE_BASE_URL to the URL of the AI service (e.g. http://hivepal-ai:8008).',
       );
     }
     const aiUrl = `${aiServiceUrl}/chat`;
@@ -50,7 +61,7 @@ export class AssistantAiService {
         { messages, ...(model ? { model } : {}) },
         {
           headers: {
-            Authorization: `Bearer ${this.config.get<string>('AI_SERVICE_API_KEY')}`,
+            Authorization: `Bearer ${apiKey}`,
           },
           timeout: Number(this.config.get('AI_REQUEST_TIMEOUT_MS') || 300000),
           responseType: 'stream',
