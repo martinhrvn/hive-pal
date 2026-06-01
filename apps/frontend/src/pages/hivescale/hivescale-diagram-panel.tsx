@@ -323,22 +323,47 @@ const getAxisDomain = (
 const shouldAllowAxisDataOverflow = (settings: AxisScaleSettings) =>
   settings.scaleMode === 'custom';
 
+// The upstream measurement API returns raw samples (no server-side
+// downsampling) and simply caps the result to the most recent `limit` rows.
+// Devices report roughly every 5 minutes, so the limit has to cover the entire
+// requested window at that cadence — otherwise long ranges silently truncate to
+// only the newest samples (e.g. a 7d window would show ~2 days). We size the
+// limit from the window length and apply a guardrail cap so very long ranges
+// don't overwhelm the chart/payload.
+const MEASUREMENT_SAMPLES_PER_DAY = (24 * 60) / 5; // ~5-min cadence => 288/day
+const MAX_MEASUREMENT_POINTS = 20000;
+
+const measurementLimitForDays = (days: number): number =>
+  Math.min(
+    MAX_MEASUREMENT_POINTS,
+    Math.max(1, Math.ceil(days * MEASUREMENT_SAMPLES_PER_DAY)),
+  );
+
 export const measurementLimitForRange = (range: HiveScaleDateRange): number => {
   switch (range.preset) {
     case '24h':
-      return 288; // 5-min intervals
+      return measurementLimitForDays(1);
     case '7d':
-      return 336; // 30-min intervals
+      return measurementLimitForDays(7);
     case '30d':
-      return 360; // 2-hour intervals
+      return measurementLimitForDays(30);
     case '365d':
     case 'currentYear':
-      return 365; // daily
+      return MAX_MEASUREMENT_POINTS;
+    case 'custom': {
+      if (range.startAt) {
+        const startMs = new Date(range.startAt).getTime();
+        const endMs = range.endAt ? new Date(range.endAt).getTime() : Date.now();
+        const days = (endMs - startMs) / (24 * 60 * 60 * 1000);
+        if (Number.isFinite(days) && days > 0) {
+          return measurementLimitForDays(days);
+        }
+      }
+      return MAX_MEASUREMENT_POINTS;
+    }
     case 'all':
-    case 'custom':
-      return 500;
     default:
-      return 500;
+      return MAX_MEASUREMENT_POINTS;
   }
 };
 
