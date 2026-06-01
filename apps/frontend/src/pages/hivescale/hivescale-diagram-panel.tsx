@@ -50,8 +50,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { HiveScaleDevice, HiveScaleMeasurement } from '@/api/hooks/useHiveScale';
+import { BeeLoadingMessages } from './hivescale-loading-messages';
+import type {
+  HiveScaleDevice,
+  HiveScaleMeasurement,
+} from '@/api/hooks/useHiveScale';
 
 export type HiveScaleDateRangePreset =
   | '24h'
@@ -353,7 +356,9 @@ export const measurementLimitForRange = (range: HiveScaleDateRange): number => {
     case 'custom': {
       if (range.startAt) {
         const startMs = new Date(range.startAt).getTime();
-        const endMs = range.endAt ? new Date(range.endAt).getTime() : Date.now();
+        const endMs = range.endAt
+          ? new Date(range.endAt).getTime()
+          : Date.now();
         const days = (endMs - startMs) / (24 * 60 * 60 * 1000);
         if (Number.isFinite(days) && days > 0) {
           return measurementLimitForDays(days);
@@ -380,17 +385,23 @@ export const createPresetDateRange = (
     case '7d':
       return {
         preset,
-        startAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        startAt: new Date(
+          now.getTime() - 7 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
       };
     case '30d':
       return {
         preset,
-        startAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        startAt: new Date(
+          now.getTime() - 30 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
       };
     case '365d':
       return {
         preset,
-        startAt: new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+        startAt: new Date(
+          now.getTime() - 365 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
       };
     case 'currentYear': {
       const start = new Date(now.getFullYear(), 0, 1);
@@ -403,7 +414,9 @@ export const createPresetDateRange = (
     default:
       return {
         preset: '7d',
-        startAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        startAt: new Date(
+          now.getTime() - 7 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
       };
   }
 };
@@ -471,9 +484,7 @@ const saveDiagramSettings = (
 // Inspection / box markers
 // ---------------------------------------------------------------------------
 
-const ACTION_MARKER_MAP: Partial<
-  Record<ActionType, ChartMarker['type']>
-> = {
+const ACTION_MARKER_MAP: Partial<Record<ActionType, ChartMarker['type']>> = {
   [ActionType.MAINTENANCE]: 'maintenance',
   [ActionType.FEEDING]: 'feeding',
   [ActionType.FRAME_ADDED]: 'frames',
@@ -1025,7 +1036,10 @@ export const HiveScaleDiagramPanel = ({
   // Group series into the three fixed columns, preserving series order and
   // splitting each column into its sub-headed sections.
   const columns = useMemo(() => {
-    const byColumn: Record<1 | 2 | 3, { subgroup: string; items: DiagramSeries[] }[]> = {
+    const byColumn: Record<
+      1 | 2 | 3,
+      { subgroup: string; items: DiagramSeries[] }[]
+    > = {
       1: [],
       2: [],
       3: [],
@@ -1098,7 +1112,14 @@ export const HiveScaleDiagramPanel = ({
         <div className="flex flex-wrap items-end gap-2 pt-2">
           <div className="flex flex-wrap gap-1">
             {(
-              ['24h', '7d', '30d', '365d', 'currentYear', 'all'] as HiveScaleDateRangePreset[]
+              [
+                '24h',
+                '7d',
+                '30d',
+                '365d',
+                'currentYear',
+                'all',
+              ] as HiveScaleDateRangePreset[]
             ).map(preset => (
               <Button
                 key={preset}
@@ -1170,7 +1191,10 @@ export const HiveScaleDiagramPanel = ({
                         className="cursor-pointer select-none"
                         style={
                           visibleSeries[s.key]
-                            ? { backgroundColor: s.stroke, borderColor: s.stroke }
+                            ? {
+                                backgroundColor: s.stroke,
+                                borderColor: s.stroke,
+                              }
                             : { borderColor: s.stroke, color: s.stroke }
                         }
                         onClick={() => toggleSeries(s.key)}
@@ -1188,7 +1212,7 @@ export const HiveScaleDiagramPanel = ({
 
       <CardContent className="space-y-4">
         {isLoading ? (
-          <Skeleton className="h-96 w-full" />
+          <BeeLoadingMessages />
         ) : visibleChartData.length ? (
           <div className="h-[28rem]" onMouseLeave={hideMarkerTooltip}>
             <ResponsiveContainer width="100%" height="100%">
