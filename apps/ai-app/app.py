@@ -10,8 +10,16 @@ import requests
 app = Flask(__name__)
 AI_API_KEY = (os.environ.get("AI_API_KEY") or "").strip()
 
+AI_PROVIDER = os.environ.get("AI_PROVIDER", "ollama").lower()  # ollama | openai | anthropic
+
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://ollama:11434/api/chat")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
 WHISPER_MODEL = os.environ.get("WHISPER_MODEL", "small")
 WHISPER_COMPUTE_TYPE = os.environ.get("WHISPER_COMPUTE_TYPE", "int8")
 
@@ -708,7 +716,7 @@ def map_ai_to_form_draft(ai: dict) -> dict:
     draft["actions"] = mapped_actions
     return draft
 
-def recommend_from_transcript(transcript: str):
+def _recommend_ollama(transcript: str) -> dict:
     payload = {
         "model": OLLAMA_MODEL,
         "messages": [
@@ -726,31 +734,86 @@ def recommend_from_transcript(transcript: str):
     }
 
     last_error = None
-
     for attempt in range(2):
         try:
             response = requests.post(OLLAMA_URL, json=payload, timeout=600)
-
             if not response.ok:
-                app.logger.error(
-                    "Ollama error %s: %s",
-                    response.status_code,
-                    response.text,
-                )
+                app.logger.error("Ollama error %s: %s", response.status_code, response.text)
                 response.raise_for_status()
-
             data = response.json()
             content = data.get("message", {}).get("content", "{}")
-            parsed = json.loads(content)
-            return normalize_recommendation(parsed)
-
+            return json.loads(content)
         except Exception as exc:
             last_error = exc
             app.logger.error("Ollama attempt %s failed: %s", attempt + 1, exc)
             if attempt == 0:
                 time.sleep(2)
-
     raise last_error
+
+
+def _recommend_openai(transcript: str) -> dict:
+    from openai import OpenAI
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    response = client.chat.completions.create(
+        model=OPENAI_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": "Return only JSON that exactly matches the provided inspection schema."
+            },
+            {
+                "role": "user",
+                "content": build_prompt(transcript)
+            }
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "hive_inspection",
+                "strict": True,
+                "schema": SCHEMA,
+            }
+        },
+        timeout=600,
+    )
+    content = response.choices[0].message.content or "{}"
+    return json.loads(content)
+
+
+def _recommend_anthropic(transcript: str) -> dict:
+    import anthropic as anthropic_sdk
+    client = anthropic_sdk.Anthropic(api_key=ANTHROPIC_API_KEY)
+    response = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=4096,
+        system="Return only JSON that exactly matches the provided inspection schema. Do not include any text outside the JSON object.",
+        messages=[
+            {
+                "role": "user",
+                "content": build_prompt(transcript)
+            }
+        ],
+        timeout=600,
+    )
+    content = response.content[0].text if response.content else "{}"
+    # Strip any markdown code fences if present
+    content = content.strip()
+    if content.startswith("```"):
+        content = content.split("```")[1]
+        if content.startswith("json"):
+            content = content[4:]
+    return json.loads(content.strip())
+
+
+def recommend_from_transcript(transcript: str) -> dict:
+    app.logger.info("Running AI analysis with provider=%s", AI_PROVIDER)
+    if AI_PROVIDER == "openai":
+        raw = _recommend_openai(transcript)
+    elif AI_PROVIDER == "anthropic":
+        raw = _recommend_anthropic(transcript)
+    else:
+        raw = _recommend_ollama(transcript)
+    return normalize_recommendation(raw)
 
 
 def save_outputs(base_name: str, transcription: dict, recommendation: dict):
