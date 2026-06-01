@@ -12,6 +12,8 @@ import { HiveCharts } from './charts';
 import { HiveHeaderStats } from './hive-header-stats';
 import { StatisticCards } from './statistic-cards';
 import { useHive } from '@/api/hooks';
+import { useFeatures } from '@/api/hooks/useFeatures';
+import { AssistantChat } from '@/components/assistant/assistant-chat';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 import { QueenHistoryTab } from './queen-history-tab';
 import { HiveStatusButton } from './hive-status-button';
@@ -25,6 +27,7 @@ import { WARNING_LABELS } from '@/utils/warning-labels';
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
   const { data: hive, error, refetch } = useHive(hiveId as string);
+  const { data: features } = useFeatures();
   const { setHiveContext, clearContext } = useBreadcrumbStore();
   const { mode: imageMode } = useImageDisplayStore();
   const [activeTab, setActiveTab] = useState('overview');
@@ -175,6 +178,11 @@ export const HiveDetailPage = () => {
               <TabsTrigger value="queens" className="text-xs sm:text-sm">
                 Queen History
               </TabsTrigger>
+              {features?.aiEnabled && (
+                <TabsTrigger value="assistant" className="text-xs sm:text-sm">
+                  Assistant
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="overview">
@@ -209,6 +217,14 @@ export const HiveDetailPage = () => {
             <TabsContent value="queens">
               {hive && <QueenHistoryTab hiveId={hive.id} activeQueen={hive.activeQueen} />}
             </TabsContent>
+
+            {features?.aiEnabled && (
+              <TabsContent value="assistant">
+                {hive?.apiaryId && hive?.id && (
+                  <AssistantChat apiaryId={hive.apiaryId} hiveId={hive.id} />
+                )}
+              </TabsContent>
+            )}
           </Tabs>
         </div>
 

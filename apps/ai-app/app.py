@@ -3,7 +3,7 @@ import os
 import pathlib
 import time
 import tempfile
-from flask import Flask, abort, jsonify, request
+from flask import Flask, abort, jsonify, request, Response, stream_with_context
 from faster_whisper import WhisperModel
 import requests
 
@@ -899,6 +899,46 @@ def process_upload():
             os.unlink(temp_path)
         except OSError:
             pass
+
+
+@app.post("/chat")
+def chat():
+    """Streaming chat relay for the in-app assistant.
+
+    Accepts {"messages": [...], "model"?: str}, forwards to Ollama's /api/chat
+    with streaming enabled, and pipes Ollama's NDJSON chunks straight back to
+    the caller (the backend, which re-streams them to the browser as SSE).
+    """
+    require_api_key(request)
+
+    data = request.get_json(force=True, silent=True) or {}
+    messages = data.get("messages")
+    if not isinstance(messages, list) or not messages:
+        return jsonify({"error": "messages is required"}), 400
+
+    model = data.get("model") or OLLAMA_MODEL
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": True,
+    }
+
+    def generate():
+        with requests.post(OLLAMA_URL, json=payload, stream=True, timeout=600) as response:
+            if not response.ok:
+                app.logger.error(
+                    "Ollama chat error %s: %s", response.status_code, response.text
+                )
+                response.raise_for_status()
+            for line in response.iter_lines(decode_unicode=False):
+                if line:
+                    yield line + b"\n"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="application/x-ndjson",
+    )
 
 
 @app.get("/health")

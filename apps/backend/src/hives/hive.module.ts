@@ -19,5 +19,6 @@ import { InspectionsModule } from '../inspections/inspections.module';
   ],
   controllers: [HiveController],
   providers: [HiveService, PrismaService, MetricsService],
+  exports: [HiveService],
 })
 export class HiveModule {}

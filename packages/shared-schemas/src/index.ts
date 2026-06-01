@@ -24,6 +24,7 @@ export * from './photos';
 export * from './documents';
 export * from './worker-tokens';
 export * from './admin-media';
+export * from './assistant';
 
 // Export utility functions
 export * from './utils/inspection-type';

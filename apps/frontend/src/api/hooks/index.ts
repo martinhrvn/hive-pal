@@ -21,3 +21,4 @@ export * from './useDocuments';
 export * from './useInspectionAudioAi';
 export * from './useAdminMedia';
 export * from './useHiveScale';
+export * from './useAssistant';

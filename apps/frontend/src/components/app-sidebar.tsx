@@ -15,8 +15,10 @@ import {
   FolderOpen,
   Wrench,
   Scale,
+  BotMessageSquare,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useFeatures } from '@/api/hooks/useFeatures';
 
 import { NavMain } from '@/components/nav-main';
 import { NavHives } from '@/components/nav-hives.tsx';
@@ -33,8 +35,18 @@ import {
 } from '@/components/ui/sidebar';
 
 // Navigation data factory function
-const getNavData = (t: TFunction<'common'>) => ({
+const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
   navMain: [
+    ...(aiEnabled
+      ? [
+          {
+            title: t('navigation.assistant', { defaultValue: 'Assistant' }),
+            url: '/assistant',
+            icon: BotMessageSquare,
+            isActive: true,
+          },
+        ]
+      : []),
     {
       title: t('navigation.apiaries', { defaultValue: 'Apiaries' }),
       url: '/apiaries',
@@ -180,7 +192,8 @@ const getNavData = (t: TFunction<'common'>) => ({
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation('common');
-  const data = getNavData(t);
+  const { data: features } = useFeatures();
+  const data = getNavData(t, features?.aiEnabled ?? false);
 
   return (
     <Sidebar collapsible="icon" {...props}>

@@ -155,6 +155,12 @@ const HiveScalePage = lazyWithRetry(() =>
   })),
 );
 
+const AssistantPage = lazyWithRetry(() =>
+  import('@/pages/assistant/assistant-page').then(m => ({
+    default: m.AssistantPage,
+  })),
+);
+
 // Loading fallback component
 function PageLoader() {
   return (
@@ -360,6 +366,14 @@ const router = createBrowserRouter([
         element: (
           <LazyPage>
             <HiveScalePage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/assistant',
+        element: (
+          <LazyPage>
+            <AssistantPage />
           </LazyPage>
         ),
       },
