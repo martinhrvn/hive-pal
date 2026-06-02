@@ -127,24 +127,30 @@ export class HiveService {
       // Create boxes if provided
       if (boxes && boxes.length > 0) {
         await prisma.box.createMany({
-          data: boxes.map((box) => ({
-            hiveId: hive.id,
-            position: box.position,
-            frameCount: box.frameCount,
-            maxFrameCount: box.maxFrameCount || 10,
-            hasExcluder: box.hasExcluder,
-            type: box.type,
-            variant: box.variant,
-            frameSizeId: box.frameSizeId ?? null,
-            color: box.color,
-            addedAt:
-              box.addedAt instanceof Date
-                ? box.addedAt
-                : box.addedAt
-                  ? new Date(box.addedAt)
-                  : new Date(),
-            winterized: box.winterized ?? false,
-          })),
+          data: boxes.map((box) => {
+            let addedAt: Date;
+            if (box.addedAt instanceof Date) {
+              addedAt = box.addedAt;
+            } else if (box.addedAt) {
+              addedAt = new Date(box.addedAt);
+            } else {
+              addedAt = new Date();
+            }
+
+            return {
+              hiveId: hive.id,
+              position: box.position,
+              frameCount: box.frameCount,
+              maxFrameCount: box.maxFrameCount || 10,
+              hasExcluder: box.hasExcluder,
+              type: box.type,
+              variant: box.variant,
+              frameSizeId: box.frameSizeId ?? null,
+              color: box.color,
+              addedAt,
+              winterized: box.winterized ?? false,
+            };
+          }),
         });
         this.logger.log(`Created ${boxes.length} boxes for hive ${hive.id}`);
       }

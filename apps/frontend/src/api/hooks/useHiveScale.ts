@@ -156,6 +156,8 @@ export interface HiveScaleMeasurementQuery {
   end_at?: string;
 }
 
+const DEFAULT_MEASUREMENT_QUERY: HiveScaleMeasurementQuery = { limit: 200 };
+
 const HIVESCALE_KEYS = {
   all: ['hivescale'] as const,
   devices: () => [...HIVESCALE_KEYS.all, 'devices'] as const,
@@ -203,7 +205,7 @@ export const useHiveScaleDeviceConfig = (deviceId: string | undefined) => {
 
 export const useHiveScaleMeasurements = (
   deviceId: string | undefined,
-  query: HiveScaleMeasurementQuery = { limit: 200 },
+  query: HiveScaleMeasurementQuery = DEFAULT_MEASUREMENT_QUERY,
   options: { refetchInterval?: number | false } = {},
 ) => {
   return useQuery<HiveScaleMeasurement[]>({
@@ -248,9 +250,9 @@ export const useHiveScaleInsights = (
         `/api/hivescale/devices/${deviceId}/insights`,
         {
           params:
-            query.lookbackDays !== undefined
-              ? { lookback_days: query.lookbackDays }
-              : undefined,
+            query.lookbackDays === undefined
+              ? undefined
+              : { lookback_days: query.lookbackDays },
         },
       );
       return response.data;

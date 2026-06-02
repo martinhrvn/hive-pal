@@ -257,12 +257,12 @@ export function HiveScaleAlertList({
   scale1Name,
   scale2Name,
   showHive = true,
-}: {
+}: Readonly<{
   alerts: HiveScaleInsightAlert[];
   scale1Name: string;
   scale2Name: string;
   showHive?: boolean;
-}) {
+}>) {
   return (
     <ul className="space-y-2">
       {alerts.map(alert => {
@@ -461,11 +461,11 @@ export function HiveScaleSeverityPill({
   severity,
   count,
   className,
-}: {
+}: Readonly<{
   severity: HiveScaleInsightSeverity | null | undefined;
   count?: number;
   className?: string;
-}) {
+}>) {
   if (!severity) return null;
   const cfg = severityConfig[severity];
   if (!cfg) return null;

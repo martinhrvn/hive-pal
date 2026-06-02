@@ -31,8 +31,9 @@ export const useAssistantThreads = (
       const params = new URLSearchParams();
       if (hiveId) params.append('hiveId', hiveId);
       const qs = params.toString();
+      const queryString = qs ? `?${qs}` : '';
       const response = await apiClient.get<AssistantThreadResponse[]>(
-        `/api/assistant/threads${qs ? `?${qs}` : ''}`,
+        `/api/assistant/threads${queryString}`,
       );
       return response.data;
     },

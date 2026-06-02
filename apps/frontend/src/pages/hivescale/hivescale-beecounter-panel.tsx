@@ -81,6 +81,18 @@ const toFiniteNumber = (value: unknown): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
+const netFlowLabel = (net: number): string => {
+  if (net > 0) return 'net inbound';
+  if (net < 0) return 'net outbound';
+  return 'balanced';
+};
+
+const netFlowTrend = (net: number): 'up' | 'down' | 'neutral' => {
+  if (net > 0) return 'up';
+  if (net < 0) return 'down';
+  return 'neutral';
+};
+
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
@@ -98,18 +110,32 @@ const HealthBadge = ({
   numGates,
   glitchCount,
 }: HealthBadgeProps) => {
-  if (!ok) {
-    return (
-      <Badge variant="destructive" className="text-xs">
-        Offline
-      </Badge>
-    );
-  }
-  const allHealthy =
-    numGates !== null && gatesHealthy !== null && gatesHealthy >= numGates;
-  const hasGlitches = glitchCount !== null && glitchCount > 0;
+  if (ok) {
+    const allHealthy =
+      numGates !== null && gatesHealthy !== null && gatesHealthy >= numGates;
+    const hasGlitches = glitchCount !== null && glitchCount > 0;
 
-  if (!allHealthy) {
+    if (allHealthy) {
+      return (
+        <div className="flex items-center gap-1.5">
+          <Badge
+            variant="outline"
+            className="border-green-500 text-green-600 text-xs"
+          >
+            {numGates} gates OK
+          </Badge>
+          {hasGlitches && (
+            <Badge
+              variant="outline"
+              className="border-yellow-400 text-yellow-600 text-xs"
+            >
+              {glitchCount} glitch{glitchCount !== 1 ? 'es' : ''}
+            </Badge>
+          )}
+        </div>
+      );
+    }
+
     return (
       <Badge
         variant="outline"
@@ -121,19 +147,9 @@ const HealthBadge = ({
   }
 
   return (
-    <div className="flex items-center gap-1.5">
-      <Badge variant="outline" className="border-green-500 text-green-600 text-xs">
-        {numGates} gates OK
-      </Badge>
-      {hasGlitches && (
-        <Badge
-          variant="outline"
-          className="border-yellow-400 text-yellow-600 text-xs"
-        >
-          {glitchCount} glitch{glitchCount !== 1 ? 'es' : ''}
-        </Badge>
-      )}
-    </div>
+    <Badge variant="destructive" className="text-xs">
+      Offline
+    </Badge>
   );
 };
 
@@ -156,10 +172,114 @@ const StatCard = ({ label, value, sub, trend }: StatCardProps) => (
       )}
     </div>
     <div className="mt-1 text-2xl font-semibold tabular-nums">
-      {value !== null && value !== undefined ? value : '—'}
+      {value ?? '—'}
     </div>
     {sub && <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>}
   </div>
+);
+
+interface ChannelSummaryProps {
+  name: string;
+  health: CounterHealth;
+  totalIn: number;
+  totalOut: number;
+}
+
+const ChannelSummary = ({
+  name,
+  health,
+  totalIn,
+  totalOut,
+}: ChannelSummaryProps) => {
+  const net = totalIn - totalOut;
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{name}</span>
+        <HealthBadge
+          ok={health.ok}
+          gatesHealthy={health.gatesHealthy}
+          numGates={health.numGates}
+          glitchCount={health.glitchCount}
+        />
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <StatCard label="In (period)" value={totalIn.toLocaleString()} trend="up" />
+        <StatCard
+          label="Out (period)"
+          value={totalOut.toLocaleString()}
+          trend="down"
+        />
+        <StatCard
+          label="Net flow"
+          value={net.toLocaleString()}
+          sub={netFlowLabel(net)}
+          trend={netFlowTrend(net)}
+        />
+      </div>
+    </div>
+  );
+};
+
+interface DiagnosticsDetailProps {
+  hasCounter1: boolean;
+  hasCounter2: boolean;
+  health: { ch1: CounterHealth; ch2: CounterHealth };
+  scale1Name: string;
+  scale2Name: string;
+}
+
+const DiagnosticsDetail = ({
+  hasCounter1,
+  hasCounter2,
+  health,
+  scale1Name,
+  scale2Name,
+}: DiagnosticsDetailProps) => (
+  <details className="group">
+    <summary className="flex cursor-pointer items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+      <Activity className="h-3.5 w-3.5" />
+      Hardware diagnostics
+      <ChevronDown className="ml-auto h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+    </summary>
+    <div className="mt-2 grid gap-3 sm:grid-cols-2 text-xs">
+      {([1, 2] as const)
+        .filter(ch => (ch === 1 ? hasCounter1 : hasCounter2))
+        .map(ch => {
+          const h = ch === 1 ? health.ch1 : health.ch2;
+          const name = ch === 1 ? scale1Name : scale2Name;
+          return (
+            <div key={ch} className="rounded-md border p-2 space-y-1">
+              <div className="font-medium">{name}</div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-muted-foreground">
+                <span>Gates healthy</span>
+                <span className="text-foreground">
+                  {h.gatesHealthy ?? '—'} / {h.numGates ?? '—'}
+                </span>
+                <span>Glitch count</span>
+                <span
+                  className={
+                    h.glitchCount && h.glitchCount > 0
+                      ? 'text-amber-500'
+                      : 'text-foreground'
+                  }
+                >
+                  {h.glitchCount ?? '—'}
+                </span>
+                <span>Total in (lifetime)</span>
+                <span className="text-foreground">
+                  {h.latestTotalIn?.toLocaleString() ?? '—'}
+                </span>
+                <span>Total out (lifetime)</span>
+                <span className="text-foreground">
+                  {h.latestTotalOut?.toLocaleString() ?? '—'}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+    </div>
+  </details>
 );
 
 // ---------------------------------------------------------------------------
@@ -341,100 +461,26 @@ export const HiveScaleBeeCounterPanel = ({
           <CardContent className="space-y-4">
             {isLoading ? (
               <Skeleton className="h-64 w-full" />
-            ) : !anyCounterPresent ? (
-              <div className="flex h-32 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
-                No BeeCounter data found for this device.
-              </div>
-            ) : (
+            ) : anyCounterPresent ? (
               <>
                 {/* Health + summary cards */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   {hasCounter1 && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{scale1Name}</span>
-                        <HealthBadge
-                          ok={health.ch1.ok}
-                          gatesHealthy={health.ch1.gatesHealthy}
-                          numGates={health.ch1.numGates}
-                          glitchCount={health.ch1.glitchCount}
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <StatCard
-                          label="In (period)"
-                          value={totalIn1.toLocaleString()}
-                          trend="up"
-                        />
-                        <StatCard
-                          label="Out (period)"
-                          value={totalOut1.toLocaleString()}
-                          trend="down"
-                        />
-                        <StatCard
-                          label="Net flow"
-                          value={(totalIn1 - totalOut1).toLocaleString()}
-                          sub={
-                            totalIn1 - totalOut1 > 0
-                              ? 'net inbound'
-                              : totalIn1 - totalOut1 < 0
-                                ? 'net outbound'
-                                : 'balanced'
-                          }
-                          trend={
-                            totalIn1 - totalOut1 > 0
-                              ? 'up'
-                              : totalIn1 - totalOut1 < 0
-                                ? 'down'
-                                : 'neutral'
-                          }
-                        />
-                      </div>
-                    </div>
+                    <ChannelSummary
+                      name={scale1Name}
+                      health={health.ch1}
+                      totalIn={totalIn1}
+                      totalOut={totalOut1}
+                    />
                   )}
 
                   {hasCounter2 && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{scale2Name}</span>
-                        <HealthBadge
-                          ok={health.ch2.ok}
-                          gatesHealthy={health.ch2.gatesHealthy}
-                          numGates={health.ch2.numGates}
-                          glitchCount={health.ch2.glitchCount}
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <StatCard
-                          label="In (period)"
-                          value={totalIn2.toLocaleString()}
-                          trend="up"
-                        />
-                        <StatCard
-                          label="Out (period)"
-                          value={totalOut2.toLocaleString()}
-                          trend="down"
-                        />
-                        <StatCard
-                          label="Net flow"
-                          value={(totalIn2 - totalOut2).toLocaleString()}
-                          sub={
-                            totalIn2 - totalOut2 > 0
-                              ? 'net inbound'
-                              : totalIn2 - totalOut2 < 0
-                                ? 'net outbound'
-                                : 'balanced'
-                          }
-                          trend={
-                            totalIn2 - totalOut2 > 0
-                              ? 'up'
-                              : totalIn2 - totalOut2 < 0
-                                ? 'down'
-                                : 'neutral'
-                          }
-                        />
-                      </div>
-                    </div>
+                    <ChannelSummary
+                      name={scale2Name}
+                      health={health.ch2}
+                      totalIn={totalIn2}
+                      totalOut={totalOut2}
+                    />
                   )}
                 </div>
 
@@ -641,54 +687,18 @@ export const HiveScaleBeeCounterPanel = ({
                 )}
 
                 {/* Technical health detail */}
-                <details className="group">
-                  <summary className="flex cursor-pointer items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-                    <Activity className="h-3.5 w-3.5" />
-                    Hardware diagnostics
-                    <ChevronDown className="ml-auto h-3.5 w-3.5 transition-transform group-open:rotate-180" />
-                  </summary>
-                  <div className="mt-2 grid gap-3 sm:grid-cols-2 text-xs">
-                    {([1, 2] as const)
-                      .filter(ch => (ch === 1 ? hasCounter1 : hasCounter2))
-                      .map(ch => {
-                        const h = ch === 1 ? health.ch1 : health.ch2;
-                        const name = ch === 1 ? scale1Name : scale2Name;
-                        return (
-                          <div
-                            key={ch}
-                            className="rounded-md border p-2 space-y-1"
-                          >
-                            <div className="font-medium">{name}</div>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-muted-foreground">
-                              <span>Gates healthy</span>
-                              <span className="text-foreground">
-                                {h.gatesHealthy ?? '—'} / {h.numGates ?? '—'}
-                              </span>
-                              <span>Glitch count</span>
-                              <span
-                                className={
-                                  h.glitchCount && h.glitchCount > 0
-                                    ? 'text-amber-500'
-                                    : 'text-foreground'
-                                }
-                              >
-                                {h.glitchCount ?? '—'}
-                              </span>
-                              <span>Total in (lifetime)</span>
-                              <span className="text-foreground">
-                                {h.latestTotalIn?.toLocaleString() ?? '—'}
-                              </span>
-                              <span>Total out (lifetime)</span>
-                              <span className="text-foreground">
-                                {h.latestTotalOut?.toLocaleString() ?? '—'}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                </details>
+                <DiagnosticsDetail
+                  hasCounter1={hasCounter1}
+                  hasCounter2={hasCounter2}
+                  health={health}
+                  scale1Name={scale1Name}
+                  scale2Name={scale2Name}
+                />
               </>
+            ) : (
+              <div className="flex h-32 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+                No BeeCounter data found for this device.
+              </div>
             )}
           </CardContent>
         </CollapsibleContent>

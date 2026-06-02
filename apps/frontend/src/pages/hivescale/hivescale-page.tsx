@@ -141,10 +141,10 @@ const isValidDateString = (value: unknown): value is string =>
   typeof value === 'string' && Number.isFinite(new Date(value).getTime());
 
 const readStoredDateRange = (): HiveScaleDateRange | undefined => {
-  if (typeof window === 'undefined') return undefined;
+  if (typeof globalThis.window === 'undefined') return undefined;
 
   try {
-    const rawValue = window.localStorage.getItem(
+    const rawValue = globalThis.localStorage.getItem(
       HIVESCALE_DATE_RANGE_STORAGE_KEY,
     );
     if (!rawValue) return undefined;
@@ -206,14 +206,14 @@ function HiveNameInput({
   onChange,
   placeholder,
   hiveNameOptions,
-}: {
+}: Readonly<{
   id: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
   hiveNameOptions: string[];
-}) {
+}>) {
   const listId = `${id}-hive-names`;
   return (
     <div className="space-y-2">
@@ -241,7 +241,7 @@ function LatestValuePanel({
   rows,
   badge,
   insight,
-}: {
+}: Readonly<{
   title: string;
   description: string;
   icon: LucideIcon;
@@ -256,7 +256,7 @@ function LatestValuePanel({
     isLoading?: boolean;
     isError?: boolean;
   };
-}) {
+}>) {
   const [showAlerts, setShowAlerts] = useState(false);
   const hasAlerts = (insight?.alerts.length ?? 0) > 0;
 
@@ -344,7 +344,9 @@ function LatestValuePanel({
   );
 }
 
-function ClaimDeviceCard({ hiveNameOptions }: { hiveNameOptions: string[] }) {
+function ClaimDeviceCard({
+  hiveNameOptions,
+}: Readonly<{ hiveNameOptions: string[] }>) {
   const [claimCode, setClaimCode] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [scale1DisplayName, setScale1DisplayName] = useState('');
@@ -462,17 +464,118 @@ const formatRawCapture = (capture: CapturedRawReading | null) => {
   return `${capture.raw.toFixed(0)} raw · ${formatDateTime(capture.measuredAt)}`;
 };
 
+type ManualConfigInput = {
+  sendInterval: string;
+  scale1Offset: string;
+  scale2Offset: string;
+  scale1Factor: string;
+  scale2Factor: string;
+};
+
+type ManualConfigResult =
+  | { error: string }
+  | {
+      error?: undefined;
+      values: {
+        send_interval_seconds: number;
+        scale1_offset: number;
+        scale1_factor: number;
+        scale2_offset: number;
+        scale2_factor: number;
+      };
+    };
+
+const parseManualConfig = (input: ManualConfigInput): ManualConfigResult => {
+  const parsedSendInterval = Number(input.sendInterval);
+  if (
+    !Number.isFinite(parsedSendInterval) ||
+    !Number.isInteger(parsedSendInterval) ||
+    parsedSendInterval < 60
+  ) {
+    return { error: 'Use a whole-number interval of at least 60 seconds.' };
+  }
+
+  const parsedScale1Offset = Number(input.scale1Offset);
+  const parsedScale2Offset = Number(input.scale2Offset);
+  if (
+    !Number.isFinite(parsedScale1Offset) ||
+    !Number.isInteger(parsedScale1Offset) ||
+    !Number.isFinite(parsedScale2Offset) ||
+    !Number.isInteger(parsedScale2Offset)
+  ) {
+    return { error: 'Scale offsets must be whole raw-count numbers.' };
+  }
+
+  const parsedScale1Factor = Number(input.scale1Factor);
+  const parsedScale2Factor = Number(input.scale2Factor);
+  if (
+    !Number.isFinite(parsedScale1Factor) ||
+    parsedScale1Factor === 0 ||
+    !Number.isFinite(parsedScale2Factor) ||
+    parsedScale2Factor === 0
+  ) {
+    return { error: 'Scale factors must be non-zero numbers.' };
+  }
+
+  return {
+    values: {
+      send_interval_seconds: parsedSendInterval,
+      scale1_offset: parsedScale1Offset,
+      scale1_factor: parsedScale1Factor,
+      scale2_offset: parsedScale2Offset,
+      scale2_factor: parsedScale2Factor,
+    },
+  };
+};
+
+const computeFactorFromKnownWeight = ({
+  raw,
+  offset,
+  knownWeightKg,
+  scaleName,
+}: {
+  raw: number | null | undefined;
+  offset: string;
+  knownWeightKg: string;
+  scaleName: string;
+}): { error: string } | { error?: undefined; factor: string } => {
+  if (!hasValidRaw(raw)) {
+    return { error: `No latest raw reading available for ${scaleName} yet.` };
+  }
+
+  const parsedOffset = Number(offset);
+  if (!Number.isFinite(parsedOffset)) {
+    return { error: `Enter a valid offset for ${scaleName} first.` };
+  }
+
+  const parsedKnownWeightKg = Number(knownWeightKg);
+  if (!Number.isFinite(parsedKnownWeightKg) || parsedKnownWeightKg <= 0) {
+    return {
+      error: `Enter a known weight greater than 0 kg for ${scaleName}.`,
+    };
+  }
+
+  const factor = ((raw as number) - parsedOffset) / parsedKnownWeightKg;
+  if (!Number.isFinite(factor) || factor === 0) {
+    return {
+      error: `${scaleName} factor could not be calculated. Check the latest raw, offset, and known weight.`,
+    };
+  }
+
+  return { factor: Number(factor.toPrecision(12)).toString() };
+};
+
 function DeviceConfigCard({
   selectedDevice,
   deviceId,
   latest,
   onCalibrationPollingChange,
-}: {
+}: Readonly<{
   selectedDevice: HiveScaleDevice | undefined;
   deviceId: string | undefined;
   latest: HiveScaleMeasurement | undefined;
   onCalibrationPollingChange: (enabled: boolean) => void;
-}) {
+}>) {
   const queryClient = useQueryClient();
   const { data: config, isLoading } = useHiveScaleDeviceConfig(deviceId);
   const updateConfig = useUpdateHiveScaleConfig(deviceId);
@@ -662,53 +765,22 @@ function DeviceConfigCard({
   const saveConfig = () => {
     if (!deviceId) return;
 
-    const parsedSendInterval = Number(sendInterval);
-    if (
-      !Number.isFinite(parsedSendInterval) ||
-      !Number.isInteger(parsedSendInterval) ||
-      parsedSendInterval < 60
-    ) {
-      toast.error('Use a whole-number interval of at least 60 seconds.');
+    const result = parseManualConfig({
+      sendInterval,
+      scale1Offset,
+      scale2Offset,
+      scale1Factor,
+      scale2Factor,
+    });
+    if (result.error) {
+      toast.error(result.error);
       return;
     }
 
-    const parsedScale1Offset = Number(scale1Offset);
-    const parsedScale2Offset = Number(scale2Offset);
-    if (
-      !Number.isFinite(parsedScale1Offset) ||
-      !Number.isInteger(parsedScale1Offset) ||
-      !Number.isFinite(parsedScale2Offset) ||
-      !Number.isInteger(parsedScale2Offset)
-    ) {
-      toast.error('Scale offsets must be whole raw-count numbers.');
-      return;
-    }
-
-    const parsedScale1Factor = Number(scale1Factor);
-    const parsedScale2Factor = Number(scale2Factor);
-    if (
-      !Number.isFinite(parsedScale1Factor) ||
-      parsedScale1Factor === 0 ||
-      !Number.isFinite(parsedScale2Factor) ||
-      parsedScale2Factor === 0
-    ) {
-      toast.error('Scale factors must be non-zero numbers.');
-      return;
-    }
-
-    updateConfig.mutate(
-      {
-        send_interval_seconds: parsedSendInterval,
-        scale1_offset: parsedScale1Offset,
-        scale1_factor: parsedScale1Factor,
-        scale2_offset: parsedScale2Offset,
-        scale2_factor: parsedScale2Factor,
-      },
-      {
-        onSuccess: () => toast.success('HiveScale config updated.'),
-        onError: error => toast.error(error.message),
-      },
-    );
+    updateConfig.mutate(result.values, {
+      onSuccess: () => toast.success('HiveScale config updated.'),
+      onError: error => toast.error(error.message),
+    });
   };
 
   if (!deviceId) return null;
@@ -744,40 +816,56 @@ function DeviceConfigCard({
     setFactor: (value: string) => void;
     scaleName: string;
   }) => {
-    if (!hasValidRaw(raw)) {
-      toast.error(`No latest raw reading available for ${scaleName} yet.`);
+    const result = computeFactorFromKnownWeight({
+      raw,
+      offset,
+      knownWeightKg,
+      scaleName,
+    });
+    if (result.error) {
+      toast.error(result.error);
       return;
     }
 
-    const parsedOffset = Number(offset);
-    if (!Number.isFinite(parsedOffset)) {
-      toast.error(`Enter a valid offset for ${scaleName} first.`);
-      return;
-    }
-
-    const parsedKnownWeightKg = Number(knownWeightKg);
-    if (!Number.isFinite(parsedKnownWeightKg) || parsedKnownWeightKg <= 0) {
-      toast.error(`Enter a known weight greater than 0 kg for ${scaleName}.`);
-      return;
-    }
-
-    const factor = ((raw as number) - parsedOffset) / parsedKnownWeightKg;
-    if (!Number.isFinite(factor) || factor === 0) {
-      toast.error(
-        `${scaleName} factor could not be calculated. Check the latest raw, offset, and known weight.`,
-      );
-      return;
-    }
-
-    const formattedFactor = Number(factor.toPrecision(12)).toString();
-    setFactor(formattedFactor);
-    toast.success(`${scaleName} factor calculated: ${formattedFactor}`);
+    setFactor(result.factor);
+    toast.success(`${scaleName} factor calculated: ${result.factor}`);
   };
 
   const pendingAction =
     updateConfig.isPending ||
     startCalibrationMode.isPending ||
     stopCalibrationMode.isPending;
+
+  let calibrationModeBadgeLabel: string;
+  let calibrationModeDescription: string;
+  if (isCalibrationModeActive) {
+    calibrationModeBadgeLabel = 'Active';
+    calibrationModeDescription =
+      'Active: new raw readings should arrive every few seconds.';
+  } else if (calibrationQueued) {
+    calibrationModeBadgeLabel = 'Queued';
+    calibrationModeDescription =
+      'Queued: waiting for the device to wake up once.';
+  } else {
+    calibrationModeBadgeLabel = 'Off';
+    calibrationModeDescription =
+      'Off: the scale is using normal battery-saving sleep.';
+  }
+
+  let wizardAlertTitle: string;
+  let wizardAlertDescription: string;
+  if (isCalibrationModeActive) {
+    wizardAlertTitle = 'Fast readings are active';
+    wizardAlertDescription = `Latest reading: ${formatDateTime(latest?.measured_at)}.`;
+  } else if (calibrationQueued) {
+    wizardAlertTitle = 'Calibration mode is queued';
+    wizardAlertDescription =
+      'The device needs one normal wake-up before it can receive the command.';
+  } else {
+    wizardAlertTitle = 'Start calibration mode first';
+    wizardAlertDescription =
+      'This disables the annoying deep-sleep delay for about 10 minutes.';
+  }
 
   return (
     <Card>
@@ -828,22 +916,14 @@ function DeviceConfigCard({
                 <div className="min-w-0">
                   <p className="font-medium">Fast calibration mode</p>
                   <p className="text-xs text-muted-foreground">
-                    {isCalibrationModeActive
-                      ? 'Active: new raw readings should arrive every few seconds.'
-                      : calibrationQueued
-                        ? 'Queued: waiting for the device to wake up once.'
-                        : 'Off: the scale is using normal battery-saving sleep.'}
+                    {calibrationModeDescription}
                   </p>
                 </div>
                 <Badge
                   variant={isCalibrationModeActive ? 'default' : 'secondary'}
                   className="shrink-0"
                 >
-                  {isCalibrationModeActive
-                    ? 'Active'
-                    : calibrationQueued
-                      ? 'Queued'
-                      : 'Off'}
+                  {calibrationModeBadgeLabel}
                 </Badge>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
@@ -884,19 +964,9 @@ function DeviceConfigCard({
                 <div className="space-y-4">
                   <Alert>
                     <Zap className="h-4 w-4" />
-                    <AlertTitle>
-                      {isCalibrationModeActive
-                        ? 'Fast readings are active'
-                        : calibrationQueued
-                          ? 'Calibration mode is queued'
-                          : 'Start calibration mode first'}
-                    </AlertTitle>
+                    <AlertTitle>{wizardAlertTitle}</AlertTitle>
                     <AlertDescription>
-                      {isCalibrationModeActive
-                        ? `Latest reading: ${formatDateTime(latest?.measured_at)}.`
-                        : calibrationQueued
-                          ? 'The device needs one normal wake-up before it can receive the command.'
-                          : 'This disables the annoying deep-sleep delay for about 10 minutes.'}
+                      {wizardAlertDescription}
                     </AlertDescription>
                   </Alert>
 
@@ -1338,10 +1408,10 @@ function DeviceConfigCard({
 function ScaleMappingCard({
   selectedDevice,
   hiveNameOptions,
-}: {
+}: Readonly<{
   selectedDevice: HiveScaleDevice | undefined;
   hiveNameOptions: string[];
-}) {
+}>) {
   const updateChannels = useUpdateHiveScaleChannels(selectedDevice?.device_id);
   const [scale1DisplayName, setScale1DisplayName] = useState('');
   const [scale2DisplayName, setScale2DisplayName] = useState('');
@@ -1407,10 +1477,10 @@ function ScaleMappingCard({
 function DeviceStatusCard({
   selectedDevice,
   latest,
-}: {
+}: Readonly<{
   selectedDevice: HiveScaleDevice;
   latest: HiveScaleMeasurement | undefined;
-}) {
+}>) {
   const [showShareForm, setShowShareForm] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'admin' | 'viewer'>('viewer');
@@ -1580,10 +1650,10 @@ function DeviceStatusCard({
 function FirmwareUploadCard({
   selectedDevice,
   deviceId,
-}: {
+}: Readonly<{
   selectedDevice: HiveScaleDevice | undefined;
   deviceId: string | undefined;
-}) {
+}>) {
   const [file, setFile] = useState<File | null>(null);
   const [version, setVersion] = useState('');
   const [target, setTarget] = useState<HiveScaleFirmwareTarget>('hivescale');
@@ -1626,6 +1696,24 @@ function FirmwareUploadCard({
     );
   };
 
+  let firmwareNotice: ReactNode = null;
+  if (selectedDevice) {
+    if (!canManage) {
+      firmwareNotice = (
+        <p className="text-sm text-muted-foreground">
+          Only device owners and admins can upload firmware. Your role is “
+          {role}”.
+        </p>
+      );
+    }
+  } else {
+    firmwareNotice = (
+      <p className="text-sm text-muted-foreground">
+        Select a claimed device to upload firmware.
+      </p>
+    );
+  }
+
   return (
     <Card className={disabled ? 'opacity-60' : undefined}>
       <CardHeader>
@@ -1639,16 +1727,7 @@ function FirmwareUploadCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!selectedDevice ? (
-          <p className="text-sm text-muted-foreground">
-            Select a claimed device to upload firmware.
-          </p>
-        ) : !canManage ? (
-          <p className="text-sm text-muted-foreground">
-            Only device owners and admins can upload firmware. Your role is
-            “{role}”.
-          </p>
-        ) : null}
+        {firmwareNotice}
 
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
@@ -1723,7 +1802,7 @@ function ScaleSetupPanel({
   onSelectDevice,
   onRemoveDevice,
   isRemovingDevice,
-}: {
+}: Readonly<{
   selectedDevice: HiveScaleDevice | undefined;
   selectedDeviceId: string | undefined;
   latest: HiveScaleMeasurement | undefined;
@@ -1735,7 +1814,7 @@ function ScaleSetupPanel({
   onSelectDevice: (deviceId: string) => void;
   onRemoveDevice: () => void;
   isRemovingDevice: boolean;
-}) {
+}>) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -1849,12 +1928,14 @@ export function HiveScalePage() {
   const measurementQuery = useMemo(() => {
     // For non-custom presets recompute startAt live on every render so a stale
     // timestamp stored from a previous session never gets sent to the API.
-    const effectiveStartAt =
-      dateRange.preset === 'all'
-        ? undefined
-        : dateRange.preset === 'custom'
-          ? dateRange.startAt
-          : createPresetDateRange(dateRange.preset).startAt;
+    let effectiveStartAt: string | undefined;
+    if (dateRange.preset === 'all') {
+      effectiveStartAt = undefined;
+    } else if (dateRange.preset === 'custom') {
+      effectiveStartAt = dateRange.startAt;
+    } else {
+      effectiveStartAt = createPresetDateRange(dateRange.preset).startAt;
+    }
 
     return {
       limit: measurementLimitForRange(dateRange),
@@ -1933,10 +2014,10 @@ export function HiveScalePage() {
 
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof globalThis.window === 'undefined') return;
 
     try {
-      window.localStorage.setItem(
+      globalThis.localStorage.setItem(
         HIVESCALE_DATE_RANGE_STORAGE_KEY,
         JSON.stringify(dateRange),
       );
@@ -2008,7 +2089,7 @@ export function HiveScalePage() {
 
   const removeSelectedDevice = () => {
     if (!selectedDevice) return;
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       `Remove ${selectedDevice.display_name || selectedDevice.device_id} from your HivePal account? You can add it again with the claim code when no other users still have access.`,
     );
     if (!confirmed) return;

@@ -104,12 +104,16 @@ export function AssistantChat({
         {
           onToken: token => setStreamingText(prev => prev + token),
           onDone: () => {
-            void queryClient.invalidateQueries({
-              queryKey: ASSISTANT_KEYS.thread(targetThreadId!),
-            });
-            void queryClient.invalidateQueries({
-              queryKey: ASSISTANT_KEYS.threads(apiaryId, hiveId),
-            });
+            queryClient
+              .invalidateQueries({
+                queryKey: ASSISTANT_KEYS.thread(targetThreadId),
+              })
+              .catch(() => {});
+            queryClient
+              .invalidateQueries({
+                queryKey: ASSISTANT_KEYS.threads(apiaryId, hiveId),
+              })
+              .catch(() => {});
             setPending([]);
             setStreamingText('');
             setIsStreaming(false);

@@ -232,7 +232,9 @@ export class AssistantService {
    */
   parseSuggestions(content: string): AssistantSuggestions | null {
     if (!content) return null;
-    const fence = /```json\s*([\s\S]*?)```/gi;
+    // Avoid overlapping quantifiers (\s* followed by [\s\S]*?) which can cause
+    // super-linear backtracking; capture the body lazily and trim later.
+    const fence = /```json([\s\S]*?)```/gi;
     let match: RegExpExecArray | null;
     let lastBlock: string | null = null;
     while ((match = fence.exec(content)) !== null) {
@@ -245,7 +247,7 @@ export class AssistantService {
       // Accept either a bare array or an object with a `suggestions` array.
       const candidate =
         Array.isArray(parsed) ||
-        typeof (parsed as { suggestions?: unknown }).suggestions === 'undefined'
+        (parsed as { suggestions?: unknown }).suggestions === undefined
           ? parsed
           : (parsed as { suggestions: unknown }).suggestions;
       const result = assistantSuggestionsSchema.safeParse(candidate);

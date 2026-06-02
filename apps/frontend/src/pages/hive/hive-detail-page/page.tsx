@@ -53,7 +53,7 @@ export const HiveDetailPage = () => {
         prompt: state.assistantPrompt,
       });
       // Clear router state so it doesn't re-trigger on re-render/back nav.
-      window.history.replaceState({}, '');
+      globalThis.history.replaceState({}, '');
     }
   }, [location.state]);
 

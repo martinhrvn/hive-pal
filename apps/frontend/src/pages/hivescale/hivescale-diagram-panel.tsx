@@ -201,6 +201,12 @@ const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
   },
 });
 
+const presetButtonLabel = (preset: HiveScaleDateRangePreset): string => {
+  if (preset === 'currentYear') return new Date().getFullYear().toString();
+  if (preset === 'all') return 'All';
+  return preset;
+};
+
 const axisOrder: SeriesAxis[] = [
   'weight',
   'temperature',
@@ -309,8 +315,8 @@ const getAxisDomain = (
     case 'zeroToMax':
       return [0, max];
     case 'custom': {
-      const customMin = parseFloat(settings.customMin);
-      const customMax = parseFloat(settings.customMax);
+      const customMin = Number.parseFloat(settings.customMin);
+      const customMax = Number.parseFloat(settings.customMax);
       if (Number.isFinite(customMin) && Number.isFinite(customMax)) {
         return [customMin, customMax];
       }
@@ -578,6 +584,58 @@ const buildBoxAddedMarkers = (
         })),
     );
 };
+
+// ---------------------------------------------------------------------------
+// Marker reference line
+// ---------------------------------------------------------------------------
+
+interface MarkerLabelProps {
+  // Recharts passes a `viewBox` to label render functions.
+  viewBox?: { x?: number; y?: number };
+}
+
+const renderMarkerLabel = (
+  marker: ChartMarker,
+  onEnter: (marker: ChartMarker, e: MouseEvent<SVGElement>) => void,
+  onLeave: () => void,
+  props: MarkerLabelProps,
+) => {
+  const Icon = marker.Icon;
+  return (
+    <g
+      transform={`translate(${props.viewBox?.x ?? 0},${
+        (props.viewBox?.y ?? 0) - 20
+      })`}
+      onMouseEnter={e => onEnter(marker, e)}
+      onMouseLeave={onLeave}
+      style={{ cursor: 'default' }}
+    >
+      <Icon size={14} x={-7} y={-7} color="var(--muted-foreground)" />
+    </g>
+  );
+};
+
+const MarkerReferenceLine = ({
+  marker,
+  yAxisId,
+  onEnter,
+  onLeave,
+}: {
+  marker: ChartMarker;
+  yAxisId: SeriesAxis;
+  onEnter: (marker: ChartMarker, e: MouseEvent<SVGElement>) => void;
+  onLeave: () => void;
+}) => (
+  <ReferenceLine
+    x={marker.timestamp}
+    yAxisId={yAxisId}
+    stroke="var(--border)"
+    strokeDasharray="4 2"
+    label={(props: MarkerLabelProps) =>
+      renderMarkerLabel(marker, onEnter, onLeave, props)
+    }
+  />
+);
 
 // ---------------------------------------------------------------------------
 // Component props
@@ -1132,11 +1190,7 @@ export const HiveScaleDiagramPanel = ({
                 }
                 onClick={() => onDateRangeChange(createPresetDateRange(preset))}
               >
-                {preset === 'currentYear'
-                  ? new Date().getFullYear().toString()
-                  : preset === 'all'
-                    ? 'All'
-                    : preset}
+                {presetButtonLabel(preset)}
               </Button>
             ))}
           </div>
@@ -1279,40 +1333,15 @@ export const HiveScaleDiagramPanel = ({
                   formatter={(value, name) => [value, name]}
                 />
                 <Legend />
-                {markers.map(marker => {
-                  const refAxisId = activeSeries[0]?.axis ?? 'weight';
-                  return (
-                    <ReferenceLine
-                      key={marker.id}
-                      x={marker.timestamp}
-                      yAxisId={refAxisId}
-                      stroke="var(--border)"
-                      strokeDasharray="4 2"
-                      label={props => {
-                        const Icon = marker.Icon;
-                        return (
-                          <g
-                            transform={`translate(${props.viewBox?.x ?? 0},${
-                              (props.viewBox?.y ?? 0) - 20
-                            })`}
-                            onMouseEnter={e =>
-                              handleMarkerMouseEnter(marker, e)
-                            }
-                            onMouseLeave={hideMarkerTooltip}
-                            style={{ cursor: 'default' }}
-                          >
-                            <Icon
-                              size={14}
-                              x={-7}
-                              y={-7}
-                              color="var(--muted-foreground)"
-                            />
-                          </g>
-                        );
-                      }}
-                    />
-                  );
-                })}
+                {markers.map(marker => (
+                  <MarkerReferenceLine
+                    key={marker.id}
+                    marker={marker}
+                    yAxisId={activeSeries[0]?.axis ?? 'weight'}
+                    onEnter={handleMarkerMouseEnter}
+                    onLeave={hideMarkerTooltip}
+                  />
+                ))}
                 {activeSeries.map(s => (
                   <Line
                     key={s.key}

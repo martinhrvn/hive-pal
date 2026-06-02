@@ -109,7 +109,7 @@ describe('AssistantService', () => {
             createdAt: new Date('2026-05-01T00:00:00.000Z'),
           },
         ],
-      } as never);
+      });
       const res = await service.getThread('thread-1', 'apiary-1');
       expect(res.id).toBe('thread-1');
       expect(res.messages).toHaveLength(1);
@@ -177,7 +177,7 @@ describe('AssistantService', () => {
             createdAt: new Date('2026-05-01T00:00:00.000Z'),
           },
         ],
-      } as never);
+      });
       contextBuilder.buildSystemMessage.mockResolvedValue('SYSTEM CONTEXT');
       repository.addMessage.mockImplementation(
         (data) =>

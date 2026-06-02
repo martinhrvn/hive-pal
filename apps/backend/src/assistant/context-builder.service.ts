@@ -132,8 +132,7 @@ export class ContextBuilderService {
 
   private formatApiarySummary(hives: HiveResponse[]): string {
     const lines: string[] = [];
-    lines.push(`## Apiary Overview (${hives.length} active hives)`);
-    lines.push('');
+    lines.push(`## Apiary Overview (${hives.length} active hives)`, '');
 
     if (hives.length === 0) {
       lines.push('No active hives recorded in this apiary.');
@@ -141,9 +140,9 @@ export class ContextBuilderService {
     }
 
     for (const hive of hives) {
-      lines.push(`### ${hive.name}`);
-      lines.push(`- Status: ${hive.status}`);
       lines.push(
+        `### ${hive.name}`,
+        `- Status: ${hive.status}`,
         `- Last inspection: ${
           hive.lastInspectionDate
             ? this.formatDate(hive.lastInspectionDate)
@@ -189,9 +188,11 @@ export class ContextBuilderService {
     const lines: string[] = [];
 
     // Hive overview
-    lines.push('## Hive Overview');
-    lines.push(`- Name: ${hive.name}`);
-    lines.push(`- Status: ${hive.status}`);
+    lines.push(
+      '## Hive Overview',
+      `- Name: ${hive.name}`,
+      `- Status: ${hive.status}`,
+    );
     if (hive.installationDate) {
       lines.push(
         `- Installation date: ${this.formatDate(hive.installationDate)}`,
@@ -286,8 +287,7 @@ export class ContextBuilderService {
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     if (completed.length === 0) {
-      lines.push('## Recent Inspections');
-      lines.push('No completed inspections recorded.');
+      lines.push('## Recent Inspections', 'No completed inspections recorded.');
       return lines.join('\n').trimEnd();
     }
 
@@ -313,67 +313,81 @@ export class ContextBuilderService {
   }
 
   private formatInspectionVerbatim(insp: InspectionResponse): string[] {
-    const lines: string[] = [];
-    lines.push('');
-    lines.push(`### ${this.formatDate(insp.date)}`);
+    const lines: string[] = ['', `### ${this.formatDate(insp.date)}`];
     if (insp.temperature !== null && insp.temperature !== undefined)
       lines.push(`- Temperature: ${insp.temperature}°C`);
     if (insp.weatherConditions)
       lines.push(`- Weather: ${insp.weatherConditions}`);
 
-    const obs = insp.observations;
-    if (obs) {
-      const yn = (v: boolean) => (v ? 'Yes' : 'No');
-      if (obs.strength !== null && obs.strength !== undefined)
-        lines.push(`- Colony strength: ${obs.strength}/10`);
-      if (obs.uncappedBrood !== null && obs.uncappedBrood !== undefined)
-        lines.push(`- Uncapped brood: ${obs.uncappedBrood}/10`);
-      if (obs.cappedBrood !== null && obs.cappedBrood !== undefined)
-        lines.push(`- Capped brood: ${obs.cappedBrood}/10`);
-      if (obs.honeyStores !== null && obs.honeyStores !== undefined)
-        lines.push(`- Honey stores: ${obs.honeyStores}/10`);
-      if (obs.pollenStores !== null && obs.pollenStores !== undefined)
-        lines.push(`- Pollen stores: ${obs.pollenStores}/10`);
-      if (obs.queenCells !== null && obs.queenCells !== undefined)
-        lines.push(`- Queen cells: ${obs.queenCells}`);
-      if (obs.swarmCells !== null && obs.swarmCells !== undefined)
-        lines.push(`- Swarm cells: ${yn(obs.swarmCells)}`);
-      if (obs.supersedureCells !== null && obs.supersedureCells !== undefined)
-        lines.push(`- Supersedure cells: ${yn(obs.supersedureCells)}`);
-      if (obs.queenSeen !== null && obs.queenSeen !== undefined)
-        lines.push(`- Queen seen: ${yn(obs.queenSeen)}`);
-      if (obs.broodPattern) lines.push(`- Brood pattern: ${obs.broodPattern}`);
-      if (obs.additionalObservations && obs.additionalObservations.length > 0)
-        lines.push(
-          `- Additional observations: ${obs.additionalObservations.join(', ')}`,
-        );
-      if (obs.reminderObservations && obs.reminderObservations.length > 0)
-        lines.push(`- Reminders: ${obs.reminderObservations.join(', ')}`);
-    }
-
-    if (insp.actions && insp.actions.length > 0) {
-      lines.push('- Actions taken:');
-      for (const action of insp.actions) {
-        const label = this.getActionLabel(action as ActionResponse);
-        lines.push(`  - ${label}${action.notes ? ` — ${action.notes}` : ''}`);
-      }
-    }
+    lines.push(...this.formatInspectionObservations(insp.observations));
+    lines.push(...this.formatInspectionActions(insp.actions));
 
     if (insp.notes) lines.push(`- Notes: ${insp.notes}`);
 
-    if (insp.score) {
-      const s = insp.score;
-      const parts: string[] = [];
-      if (s.overallScore !== null) parts.push(`overall=${s.overallScore}`);
-      if (s.populationScore !== null)
-        parts.push(`population=${s.populationScore}`);
-      if (s.storesScore !== null) parts.push(`stores=${s.storesScore}`);
-      if (s.queenScore !== null) parts.push(`queen=${s.queenScore}`);
-      if (parts.length > 0) lines.push(`- Scores: ${parts.join(', ')}`);
-      if (s.warnings.length > 0)
-        lines.push(`- Score warnings: ${s.warnings.join('; ')}`);
-    }
+    lines.push(...this.formatInspectionScore(insp.score));
 
+    return lines;
+  }
+
+  private formatInspectionObservations(
+    obs: InspectionResponse['observations'],
+  ): string[] {
+    if (!obs) return [];
+    const lines: string[] = [];
+    const yn = (v: boolean) => (v ? 'Yes' : 'No');
+    if (obs.strength !== null && obs.strength !== undefined)
+      lines.push(`- Colony strength: ${obs.strength}/10`);
+    if (obs.uncappedBrood !== null && obs.uncappedBrood !== undefined)
+      lines.push(`- Uncapped brood: ${obs.uncappedBrood}/10`);
+    if (obs.cappedBrood !== null && obs.cappedBrood !== undefined)
+      lines.push(`- Capped brood: ${obs.cappedBrood}/10`);
+    if (obs.honeyStores !== null && obs.honeyStores !== undefined)
+      lines.push(`- Honey stores: ${obs.honeyStores}/10`);
+    if (obs.pollenStores !== null && obs.pollenStores !== undefined)
+      lines.push(`- Pollen stores: ${obs.pollenStores}/10`);
+    if (obs.queenCells !== null && obs.queenCells !== undefined)
+      lines.push(`- Queen cells: ${obs.queenCells}`);
+    if (obs.swarmCells !== null && obs.swarmCells !== undefined)
+      lines.push(`- Swarm cells: ${yn(obs.swarmCells)}`);
+    if (obs.supersedureCells !== null && obs.supersedureCells !== undefined)
+      lines.push(`- Supersedure cells: ${yn(obs.supersedureCells)}`);
+    if (obs.queenSeen !== null && obs.queenSeen !== undefined)
+      lines.push(`- Queen seen: ${yn(obs.queenSeen)}`);
+    if (obs.broodPattern) lines.push(`- Brood pattern: ${obs.broodPattern}`);
+    if (obs.additionalObservations && obs.additionalObservations.length > 0)
+      lines.push(
+        `- Additional observations: ${obs.additionalObservations.join(', ')}`,
+      );
+    if (obs.reminderObservations && obs.reminderObservations.length > 0)
+      lines.push(`- Reminders: ${obs.reminderObservations.join(', ')}`);
+    return lines;
+  }
+
+  private formatInspectionActions(
+    actions: InspectionResponse['actions'],
+  ): string[] {
+    if (!actions || actions.length === 0) return [];
+    const lines: string[] = ['- Actions taken:'];
+    for (const action of actions) {
+      const label = this.getActionLabel(action as ActionResponse);
+      lines.push(`  - ${label}${action.notes ? ` — ${action.notes}` : ''}`);
+    }
+    return lines;
+  }
+
+  private formatInspectionScore(score: InspectionResponse['score']): string[] {
+    if (!score) return [];
+    const lines: string[] = [];
+    const parts: string[] = [];
+    if (score.overallScore !== null)
+      parts.push(`overall=${score.overallScore}`);
+    if (score.populationScore !== null)
+      parts.push(`population=${score.populationScore}`);
+    if (score.storesScore !== null) parts.push(`stores=${score.storesScore}`);
+    if (score.queenScore !== null) parts.push(`queen=${score.queenScore}`);
+    if (parts.length > 0) lines.push(`- Scores: ${parts.join(', ')}`);
+    if (score.warnings.length > 0)
+      lines.push(`- Score warnings: ${score.warnings.join('; ')}`);
     return lines;
   }
 
@@ -399,44 +413,62 @@ export class ContextBuilderService {
   private getActionLabel(action: ActionResponse): string {
     switch (action.type) {
       case ActionType.FEEDING:
-        if (action.details?.type === ActionType.FEEDING) {
-          return `Fed ${action.details.amount} ${action.details.unit} of ${action.details.feedType}${
-            action.details.concentration
-              ? ` (${action.details.concentration})`
-              : ''
-          }`;
-        }
-        return 'Feeding';
+        return this.formatFeedingLabel(action);
       case ActionType.TREATMENT:
-        if (action.details?.type === ActionType.TREATMENT) {
-          return `Treated with ${action.details.product} (${action.details.quantity} ${action.details.unit})`;
-        }
-        return 'Treatment';
+        return this.formatTreatmentLabel(action);
       case ActionType.FRAME:
-        if (action.details?.type === ActionType.FRAME) {
-          const q = action.details.quantity;
-          return q === 1 ? 'Added 1 frame' : `Added ${q} frames`;
-        }
-        return 'Frame management';
+        return this.formatFrameLabel(action);
       case ActionType.HARVEST:
-        if (action.details?.type === ActionType.HARVEST) {
-          return `Harvested ${action.details.amount} ${action.details.unit}`;
-        }
-        return 'Harvest';
+        return this.formatHarvestLabel(action);
       case ActionType.NOTE:
         return 'Note';
       case ActionType.BOX_CONFIGURATION:
         return 'Box configuration';
       case ActionType.MAINTENANCE:
-        if (action.details?.type === ActionType.MAINTENANCE) {
-          const comp = action.details.component.replace('_', ' ').toLowerCase();
-          const stat = action.details.status.toLowerCase();
-          return `${stat} ${comp}`;
-        }
-        return 'Maintenance';
+        return this.formatMaintenanceLabel(action);
       default:
         return action.type;
     }
+  }
+
+  private formatFeedingLabel(action: ActionResponse): string {
+    if (action.details?.type === ActionType.FEEDING) {
+      return `Fed ${action.details.amount} ${action.details.unit} of ${action.details.feedType}${
+        action.details.concentration ? ` (${action.details.concentration})` : ''
+      }`;
+    }
+    return 'Feeding';
+  }
+
+  private formatTreatmentLabel(action: ActionResponse): string {
+    if (action.details?.type === ActionType.TREATMENT) {
+      return `Treated with ${action.details.product} (${action.details.quantity} ${action.details.unit})`;
+    }
+    return 'Treatment';
+  }
+
+  private formatFrameLabel(action: ActionResponse): string {
+    if (action.details?.type === ActionType.FRAME) {
+      const q = action.details.quantity;
+      return q === 1 ? 'Added 1 frame' : `Added ${q} frames`;
+    }
+    return 'Frame management';
+  }
+
+  private formatHarvestLabel(action: ActionResponse): string {
+    if (action.details?.type === ActionType.HARVEST) {
+      return `Harvested ${action.details.amount} ${action.details.unit}`;
+    }
+    return 'Harvest';
+  }
+
+  private formatMaintenanceLabel(action: ActionResponse): string {
+    if (action.details?.type === ActionType.MAINTENANCE) {
+      const comp = action.details.component.replace('_', ' ').toLowerCase();
+      const stat = action.details.status.toLowerCase();
+      return `${stat} ${comp}`;
+    }
+    return 'Maintenance';
   }
 
   private formatDate(date: string | Date): string {

@@ -267,7 +267,7 @@ function RmsLineChart({
   dateRange,
   leftName,
   rightName,
-}: {
+}: Readonly<{
   data: {
     timestamp: number;
     measuredAt: string;
@@ -277,7 +277,7 @@ function RmsLineChart({
   dateRange: HiveScaleDateRange;
   leftName: string;
   rightName: string;
-}) {
+}>) {
   const visibleData = useMemo(() => {
     const startMs = dateRange.startAt
       ? new Date(dateRange.startAt).getTime()
