@@ -36,9 +36,14 @@ export const BeeLoadingMessages = ({
   intervalMs = 1800,
   className,
 }: BeeLoadingMessagesProps) => {
-  const [index, setIndex] = useState(() =>
-    Math.floor(Math.random() * BEE_LOADING_MESSAGES.length),
-  );
+  const [index, setIndex] = useState(() => {
+    // Pick a random starting message. crypto.getRandomValues is used instead of
+    // Math.random() purely to satisfy static analysis (the value is cosmetic and
+    // not security-sensitive); it is widely supported in modern browsers.
+    const buffer = new Uint32Array(1);
+    crypto.getRandomValues(buffer);
+    return buffer[0] % BEE_LOADING_MESSAGES.length;
+  });
 
   useEffect(() => {
     const id = window.setInterval(() => {

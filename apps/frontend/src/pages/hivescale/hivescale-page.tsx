@@ -2002,7 +2002,7 @@ export function HiveScalePage() {
     () =>
       [
         ...new Set((hives.data ?? []).map(hive => hive.name).filter(Boolean)),
-      ].sort(),
+      ].sort((a, b) => a.localeCompare(b)),
     [hives.data],
   );
 

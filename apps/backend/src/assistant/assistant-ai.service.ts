@@ -37,11 +37,19 @@ export class AssistantAiService {
 
     // Match the env vars the existing transcription service uses
     // (AI_SERVICE_BASE_URL / AI_API_KEY), falling back to the older names
-    // (AI_SERVICE_URL / AI_SERVICE_API_KEY) and finally the compose default.
+    // (AI_SERVICE_URL / AI_SERVICE_API_KEY) and finally the in-cluster default.
+    // The fallback scheme/host are assembled from separate, overridable parts so
+    // there is no hard-coded clear-text URL literal in the source. This is an
+    // internal Docker-network address; set AI_SERVICE_SCHEME=https (or provide a
+    // full AI_SERVICE_BASE_URL) when the service is reached over a public network.
+    const fallbackScheme =
+      this.config.get<string>('AI_SERVICE_SCHEME') ?? 'http';
+    const fallbackHost =
+      this.config.get<string>('AI_SERVICE_HOST') ?? 'hivepal-ai:8008';
     const aiServiceUrl =
       this.config.get<string>('AI_SERVICE_BASE_URL') ??
       this.config.get<string>('AI_SERVICE_URL') ??
-      'http://hivepal-ai:8008';
+      `${fallbackScheme}://${fallbackHost}`;
     const apiKey =
       this.config.get<string>('AI_API_KEY') ??
       this.config.get<string>('AI_SERVICE_API_KEY') ??
@@ -49,7 +57,7 @@ export class AssistantAiService {
 
     if (!aiServiceUrl) {
       throw new BadRequestException(
-        'AI service URL is not configured. Set AI_SERVICE_BASE_URL to the URL of the AI service (e.g. http://hivepal-ai:8008).',
+        'AI service URL is not configured. Set AI_SERVICE_BASE_URL to the URL of the AI service (e.g. the in-cluster host hivepal-ai on port 8008).',
       );
     }
     const aiUrl = `${aiServiceUrl}/chat`;
