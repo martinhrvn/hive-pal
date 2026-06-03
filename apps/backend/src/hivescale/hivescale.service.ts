@@ -108,7 +108,7 @@ export class HiveScaleService {
   }
 
   private async request<T>(
-    userId: string,
+    accessToken: string,
     method: Method,
     path: string,
     options: { data?: unknown; params?: Record<string, unknown> } = {},
@@ -123,7 +123,7 @@ export class HiveScaleService {
         timeout: 10000,
         headers: {
           'Content-Type': 'application/json',
-          'X-User-Id': userId,
+          'Authorization': `Bearer ${accessToken}`,
           'X-HivePal-Service-Key': this.requireServiceApiKey(),
         },
       });
@@ -156,35 +156,35 @@ export class HiveScaleService {
     throw new BadGatewayException('HiveScale backend is unavailable');
   }
 
-  claimDevice(userId: string, payload: HiveScaleClaimDeviceDto) {
-    return this.request(userId, 'POST', '/api/v1/app/devices/claim', {
+  claimDevice(accessToken: string, payload: HiveScaleClaimDeviceDto) {
+    return this.request(accessToken, 'POST', '/api/v1/app/devices/claim', {
       data: payload,
     });
   }
 
-  listDevices(userId: string) {
-    return this.request(userId, 'GET', '/api/v1/app/devices');
+  listDevices(accessToken: string) {
+    return this.request(accessToken, 'GET', '/api/v1/app/devices');
   }
 
-  removeDevice(userId: string, deviceId: string) {
-    return this.request(userId, 'DELETE', `/api/v1/app/devices/${deviceId}`);
+  removeDevice(accessToken: string, deviceId: string) {
+    return this.request(accessToken, 'DELETE', `/api/v1/app/devices/${deviceId}`);
   }
 
-  getDeviceConfig(userId: string, deviceId: string) {
+  getDeviceConfig(accessToken: string, deviceId: string) {
     return this.request(
-      userId,
+      accessToken,
       'GET',
       `/api/v1/app/devices/${deviceId}/config`,
     );
   }
 
   updateDeviceConfig(
-    userId: string,
+    accessToken: string,
     deviceId: string,
     payload: HiveScaleConfigPatchDto,
   ) {
     return this.request(
-      userId,
+      accessToken,
       'PATCH',
       `/api/v1/app/devices/${deviceId}/config`,
       {
@@ -194,12 +194,12 @@ export class HiveScaleService {
   }
 
   updateDeviceChannels(
-    userId: string,
+    accessToken: string,
     deviceId: string,
     payload: HiveScaleChannelsPatchDto,
   ) {
     return this.request(
-      userId,
+      accessToken,
       'PATCH',
       `/api/v1/app/devices/${deviceId}/channels`,
       {
@@ -209,28 +209,28 @@ export class HiveScaleService {
   }
 
   startCalibrationMode(
-    userId: string,
+    accessToken: string,
     deviceId: string,
     payload: HiveScaleCalibrationModeStartDto,
   ) {
     return this.request(
-      userId,
+      accessToken,
       'POST',
       `/api/v1/app/devices/${deviceId}/calibration/start`,
       { data: payload },
     );
   }
 
-  stopCalibrationMode(userId: string, deviceId: string) {
+  stopCalibrationMode(accessToken: string, deviceId: string) {
     return this.request(
-      userId,
+      accessToken,
       'POST',
       `/api/v1/app/devices/${deviceId}/calibration/stop`,
     );
   }
 
   async uploadFirmware(
-    userId: string,
+    accessToken: string,
     deviceId: string,
     file: Express.Multer.File,
     dto: HiveScaleFirmwareUploadDto,
@@ -271,7 +271,7 @@ export class HiveScaleService {
         maxContentLength: Infinity,
         headers: {
           ...form.getHeaders(),
-          'X-User-Id': userId,
+          'Authorization': `Bearer ${accessToken}`,
           'X-HivePal-Service-Key': this.requireServiceApiKey(),
         },
       });
@@ -285,21 +285,21 @@ export class HiveScaleService {
   }
 
   listMeasurements(
-    userId: string,
+    accessToken: string,
     deviceId: string,
     query: HiveScaleMeasurementQuery,
   ) {
     return this.request(
-      userId,
+      accessToken,
       'GET',
       `/api/v1/app/devices/${deviceId}/measurements`,
       { params: query as Record<string, unknown> },
     );
   }
 
-  latestMeasurements(userId: string, deviceId: string, limit?: number) {
+  latestMeasurements(accessToken: string, deviceId: string, limit?: number) {
     return this.request(
-      userId,
+      accessToken,
       'GET',
       `/api/v1/app/devices/${deviceId}/measurements/latest`,
       { params: { limit } },
@@ -307,12 +307,12 @@ export class HiveScaleService {
   }
 
   getDeviceInsights(
-    userId: string,
+    accessToken: string,
     deviceId: string,
     lookbackDays?: number,
   ) {
     return this.request(
-      userId,
+      accessToken,
       'GET',
       `/api/v1/app/devices/${deviceId}/insights`,
       {
@@ -324,17 +324,17 @@ export class HiveScaleService {
     );
   }
 
-  getDeviceInsightsSummary(userId: string, deviceId: string) {
+  getDeviceInsightsSummary(accessToken: string, deviceId: string) {
     return this.request(
-      userId,
+      accessToken,
       'GET',
       `/api/v1/app/devices/${deviceId}/insights/summary`,
     );
   }
 
-  async listMembers(userId: string, deviceId: string) {
+  async listMembers(accessToken: string, deviceId: string) {
     const members = await this.request<HiveScaleMember[]>(
-      userId,
+      accessToken,
       'GET',
       `/api/v1/app/devices/${deviceId}/members`,
     );
@@ -352,7 +352,7 @@ export class HiveScaleService {
   }
 
   async shareDevice(
-    ownerUserId: string,
+    accessToken: string,
     deviceId: string,
     payload: HiveScaleShareDeviceDto,
   ) {
@@ -364,7 +364,7 @@ export class HiveScaleService {
     }
 
     return this.request(
-      ownerUserId,
+      accessToken,
       'POST',
       `/api/v1/app/devices/${deviceId}/members`,
       {
@@ -376,9 +376,9 @@ export class HiveScaleService {
     );
   }
 
-  revokeMember(ownerUserId: string, deviceId: string, memberUserId: string) {
+  revokeMember(accessToken: string, deviceId: string, memberUserId: string) {
     return this.request(
-      ownerUserId,
+      accessToken,
       'DELETE',
       `/api/v1/app/devices/${deviceId}/members/${encodeURIComponent(memberUserId)}`,
     );
