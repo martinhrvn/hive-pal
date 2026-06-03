@@ -275,23 +275,32 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
           {t('observations.frameCounts.title')}
         </h3>
         <div className="flex items-center gap-2">
-          {effectiveTotalFrames != null && (
-            <span className="text-sm text-muted-foreground">
-              {t('observations.frameCounts.totalFrames', {
-                count: effectiveTotalFrames,
-              })}
-            </span>
-          )}
-          {frameDelta !== 0 && (
-            <span
-              className={`text-sm font-semibold tabular-nums ${
-                frameDelta > 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-              title={t('observations.frameCounts.frameDeltaHint')}
-            >
-              {frameDelta > 0 ? `+${frameDelta}` : frameDelta}
-            </span>
-          )}
+          {effectiveTotalFrames != null &&
+            (frameDelta !== 0 ? (
+              <span
+                className="text-sm text-muted-foreground tabular-nums"
+                title={t('observations.frameCounts.frameDeltaHint')}
+              >
+                {effectiveTotalFrames - frameDelta}{' '}
+                <span
+                  className={`font-semibold ${
+                    frameDelta > 0 ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {frameDelta > 0 ? `+${frameDelta}` : frameDelta}
+                </span>{' '}
+                ={' '}
+                {t('observations.frameCounts.totalFrames', {
+                  count: effectiveTotalFrames,
+                })}
+              </span>
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                {t('observations.frameCounts.totalFrames', {
+                  count: effectiveTotalFrames,
+                })}
+              </span>
+            ))}
           {totalFramesSuggestion && (
             <AiFieldControls
               isVisible
