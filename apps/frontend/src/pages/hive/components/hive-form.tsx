@@ -40,6 +40,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   useCreateHive,
   useUpdateHive,
+  useUpdateHiveBoxes,
   useHive,
   useFrameSizes,
 } from '@/api/hooks';
@@ -94,6 +95,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     onSuccess: () => navigate('/'),
   });
   const { mutateAsync: updateHive } = useUpdateHive();
+  const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [isBoxConfigOpen, setIsBoxConfigOpen] = useState(false);
   const [configureBoxes, setConfigureBoxes] = useState(false);
@@ -189,6 +191,11 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           installationDate: data.installationDate.toISOString(),
         },
       });
+      // The hive update endpoint ignores boxes; persist box/frame changes
+      // through the dedicated boxes endpoint.
+      if (finalData.boxes && finalData.boxes.length > 0) {
+        await updateHiveBoxes({ id: hiveId, boxes: finalData.boxes });
+      }
       navigate(`/hives/${hiveId}`);
     } else {
       createHive({
