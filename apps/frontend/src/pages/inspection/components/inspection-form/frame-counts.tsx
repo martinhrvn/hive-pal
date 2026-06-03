@@ -165,6 +165,8 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
 
 type FrameCountSectionProps = {
   totalFrames?: number | null;
+  /** Net frames added (+) / removed (-) via the current Rähmchen action */
+  frameDelta?: number;
   isAiSuggested?: (field: string) => boolean;
   aiMergeState?: AiMergeState | null;
   onAcceptSuggestion?: (field: string) => void;
@@ -173,6 +175,7 @@ type FrameCountSectionProps = {
 
 export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
   totalFrames,
+  frameDelta = 0,
   isAiSuggested,
   aiMergeState,
   onAcceptSuggestion,
@@ -274,6 +277,16 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
               {t('observations.frameCounts.totalFrames', {
                 count: effectiveTotalFrames,
               })}
+            </span>
+          )}
+          {frameDelta !== 0 && (
+            <span
+              className={`text-sm font-semibold tabular-nums ${
+                frameDelta > 0 ? 'text-green-600' : 'text-red-600'
+              }`}
+              title={t('observations.frameCounts.frameDeltaHint')}
+            >
+              {frameDelta > 0 ? `+${frameDelta}` : frameDelta}
             </span>
           )}
           {totalFramesSuggestion && (

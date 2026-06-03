@@ -145,6 +145,8 @@ export const useCreateInspection = () => {
       await queryClient.invalidateQueries({
         queryKey: INSPECTIONS_KEYS.lists(),
       });
+      // Frame actions can change the hive's brood-box frame counts
+      await queryClient.invalidateQueries({ queryKey: ['hives'] });
     },
   });
 };
@@ -176,6 +178,8 @@ export const useUpdateInspection = () => {
       await queryClient.invalidateQueries({
         queryKey: INSPECTIONS_KEYS.lists(),
       });
+      // Frame actions can change the hive's brood-box frame counts
+      await queryClient.invalidateQueries({ queryKey: ['hives'] });
     },
   });
 };
@@ -186,12 +190,22 @@ export const useDeleteInspection = () => {
   const { t } = useTranslation('inspection');
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      await apiClient.delete(`/api/inspections/${id}`);
+    mutationFn: async ({
+      id,
+      revertFrames,
+    }: {
+      id: string;
+      revertFrames?: boolean;
+    }) => {
+      await apiClient.delete(`/api/inspections/${id}`, {
+        params: revertFrames ? { revertFrames: 'true' } : undefined,
+      });
       return id;
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: INSPECTIONS_KEYS.lists() });
+      // Reverting frame actions changes the hive's brood-box frame counts
+      queryClient.invalidateQueries({ queryKey: ['hives'] });
     },
     onError: () => {
       toast.error(t('detailSidebar.deleteFailed'));

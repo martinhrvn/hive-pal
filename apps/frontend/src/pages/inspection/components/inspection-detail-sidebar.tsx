@@ -27,7 +27,8 @@ import {
   MenuItemButton,
 } from '@/components/sidebar';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
-import { useDeleteInspection } from '@/api/hooks/useInspections';
+import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
+import { ActionType } from 'shared-schemas';
 
 interface InspectionDetailSidebarProps {
   inspectionId: string;
@@ -41,11 +42,24 @@ export const InspectionDetailSidebar: React.FC<
   const navigate = useNavigate();
   const { canEdit } = useApiaryPermission();
   const deleteInspection = useDeleteInspection();
+  const { data: inspection } = useInspection(inspectionId, {
+    enabled: !!inspectionId,
+  });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const handleDelete = async () => {
+  // Net frames added (+) / removed (-) by this inspection's frame actions
+  const frameDelta = (inspection?.actions ?? []).reduce(
+    (sum, action) =>
+      action.details.type === ActionType.FRAME
+        ? sum + action.details.quantity
+        : sum,
+    0,
+  );
+  const hasFrameModification = frameDelta !== 0;
+
+  const handleDelete = async (revertFrames = false) => {
     try {
-      await deleteInspection.mutateAsync(inspectionId);
+      await deleteInspection.mutateAsync({ id: inspectionId, revertFrames });
       setShowDeleteDialog(false);
       navigate(`/hives/${hiveId}`);
     } catch (error) {
@@ -125,26 +139,63 @@ export const InspectionDetailSidebar: React.FC<
               {t('inspection:detailSidebar.deleteInspection')}
             </DialogTitle>
             <DialogDescription>
-              {t('common:confirmDelete')}
+              {hasFrameModification
+                ? `${t(
+                    frameDelta > 0
+                      ? 'inspection:detailSidebar.frameModificationAdded'
+                      : 'inspection:detailSidebar.frameModificationRemoved',
+                    { count: Math.abs(frameDelta) },
+                  )} ${t('inspection:detailSidebar.frameModificationQuestion')}`
+                : t('common:confirmDelete')}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
-            >
-              {t('common:actions.cancel', { defaultValue: 'Cancel' })}
-            </Button>
-            <Button
-              onClick={handleDelete}
-              variant="destructive"
-              disabled={deleteInspection.isPending}
-            >
-              {deleteInspection.isPending
-                ? t('common:actions.deleting', { defaultValue: 'Deleting...' })
-                : t('common:actions.delete', { defaultValue: 'Delete' })}
-            </Button>
-          </DialogFooter>
+          {hasFrameModification ? (
+            <DialogFooter className="flex-col gap-2 sm:flex-col sm:gap-2">
+              <Button
+                onClick={() => handleDelete(false)}
+                variant="destructive"
+                className="w-full"
+                disabled={deleteInspection.isPending}
+              >
+                {t('inspection:detailSidebar.deleteKeepFrames')}
+              </Button>
+              <Button
+                onClick={() => handleDelete(true)}
+                variant="destructive"
+                className="w-full"
+                disabled={deleteInspection.isPending}
+              >
+                {t('inspection:detailSidebar.deleteRevertFrames')}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowDeleteDialog(false)}
+              >
+                {t('common:actions.cancel', { defaultValue: 'Cancel' })}
+              </Button>
+            </DialogFooter>
+          ) : (
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+              >
+                {t('common:actions.cancel', { defaultValue: 'Cancel' })}
+              </Button>
+              <Button
+                onClick={() => handleDelete(false)}
+                variant="destructive"
+                disabled={deleteInspection.isPending}
+              >
+                {deleteInspection.isPending
+                  ? t('common:actions.deleting', {
+                      defaultValue: 'Deleting...',
+                    })
+                  : t('common:actions.delete', { defaultValue: 'Delete' })}
+              </Button>
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
     </ActionSidebarContainer>

@@ -311,7 +311,12 @@
         "navigation": "Navigation",
         "allInspections": "Alle Inspektionen",
         "recentInspections": "Kürzliche Inspektionen",
-        "goBack": "Zurück"
+        "goBack": "Zurück",
+        "frameModificationAdded": "Bei dieser Inspektion wurden dem Bienenstock {{count}} Rähmchen hinzugefügt.",
+        "frameModificationRemoved": "Bei dieser Inspektion wurden {{count}} Rähmchen aus dem Bienenstock entfernt.",
+        "frameModificationQuestion": "Möchten Sie die aktualisierte Rähmchenzahl beibehalten oder zurücksetzen?",
+        "deleteKeepFrames": "Löschen & Rähmchenzahl beibehalten",
+        "deleteRevertFrames": "Löschen & Rähmchenzahl zurücksetzen"
     },
     "timeline": {
         "scheduledInspections": "Geplante Inspektionen",

@@ -234,6 +234,32 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const broodBoxCount =
     effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD').length || null;
 
+  // Live frame (Rähmchen) delta from the form's current FRAME action(s)
+  const liveFrameDelta = formActions
+    .filter((a): a is { type: 'FRAME'; frames?: number } => a.type === 'FRAME')
+    .reduce((sum, a) => sum + (a.frames ?? 0), 0);
+
+  // Frame delta already persisted for this inspection (its contribution is
+  // baked into the hive's box frame counts on the backend). Subtracting it
+  // yields the hive's base frame count without this inspection's change.
+  const savedFrameDelta = (inspection?.actions ?? []).reduce(
+    (sum, action) =>
+      action.details.type === ActionType.FRAME
+        ? sum + action.details.quantity
+        : sum,
+    0,
+  );
+
+  const baseBroodFrames =
+    totalFrames != null ? totalFrames - savedFrameDelta : null;
+
+  // Effective brood frame total reflecting the current (unsaved) frame action,
+  // used both for the header indicator and as the per-frame-type counter max.
+  const effectiveTotalFrames =
+    baseBroodFrames != null
+      ? Math.max(0, baseBroodFrames + liveFrameDelta)
+      : null;
+
   const inspectionType = selectedHive?.inspectionType ?? 'data_driven';
   const isSubjective = inspectionType === 'subjective';
 
@@ -304,7 +330,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     const formattedData = applyInspectionModeToFormData(
       data,
       isSubjective,
-      totalFrames,
+      effectiveTotalFrames,
     );
 
     if (mode === 'batch' && onSubmitSuccess) {
@@ -320,7 +346,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     const formattedData = applyInspectionModeToFormData(
       data,
       isSubjective,
-      totalFrames,
+      effectiveTotalFrames,
     );
 
     if (mode === 'batch' && onSubmitSuccess) {
@@ -506,7 +532,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               {!isSubjective && (
                 <>
                   <FrameCountSection
-                    totalFrames={totalFrames}
+                    totalFrames={effectiveTotalFrames}
+                    frameDelta={liveFrameDelta}
                     isAiSuggested={isAiSuggested}
                     aiMergeState={aiMergeState}
                     onAcceptSuggestion={acceptAiSuggestion}
