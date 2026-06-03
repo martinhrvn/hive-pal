@@ -5,7 +5,6 @@ import { Minus, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InspectionFormData } from './schema';
-import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
 import { AiFieldControls } from './ai-field-controls';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
@@ -234,20 +233,24 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
     emptyFrames,
   ];
 
-  const effectiveTotalFrames = frameTotalField ?? totalFrames ?? null;
+  // Prefer the live total passed from the form (brood-box frames adjusted by
+  // the current Rähmchen action) over the stored observation value, so the
+  // header and counter maximums always reflect the latest frame change.
+  const effectiveTotalFrames = totalFrames ?? frameTotalField ?? null;
 
   // Ordered counts for all frame types — same order as FRAME_FIELDS
   const frameCounts = frameValues.map(v => v ?? 0);
 
-  // Calculate percentages based on the sum of all entered counts
-  // Shows distribution: eggs=4, capped=4, sum=8 → each is 50%
-  // Percentages always sum to exactly 100%
+  // Each frame type is shown as a share of the total frames (e.g. 1 of 10 →
+  // 10%). Types overlap — a single frame can hold eggs and honey — so the
+  // percentages are independent and intentionally need not sum to 100%.
   const pcts: (number | null)[] =
-    frameCounts.reduce((a, b) => a + b, 0) > 0
-      ? largestRemainder(
-          frameCounts,
-          frameCounts.reduce((a, b) => a + b, 0),
-        ).map((p, i) => (frameCounts[i] > 0 ? p : null))
+    effectiveTotalFrames != null && effectiveTotalFrames > 0
+      ? frameCounts.map(c =>
+          c > 0
+            ? Math.min(100, Math.round((c / effectiveTotalFrames) * 100))
+            : null,
+        )
       : frameCounts.map(() => null);
 
   const frameTypes = FRAME_FIELDS.map(ff => ({
