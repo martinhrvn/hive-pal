@@ -50,7 +50,7 @@ HIVESCALE_API_BASE_URL=https://hivescale.example.com
 HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
 ```
 
-The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` in the HiveScale backend. Hive-Pal forwards the authenticated user ID to HiveScale so HiveScale can enforce per-device roles.
+The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` in the HiveScale backend. Hive-Pal forwards the authenticated user's JWT access token (in the `Authorization: Bearer` header) to HiveScale so HiveScale can identify the user and enforce per-device roles. The HiveScale backend must therefore be able to validate Hive-Pal's JWTs, which means it must trust the same `JWT_SECRET` used by the Hive-Pal backend.
 
 HiveScale measurements can include off-grid fields such as battery state-of-charge, solar current/power, network transport, cellular status, CSQ, calibration mode, boot count, and time source. No separate frontend environment variable is required for these fields; they are returned through the HivePal backend proxy.
 

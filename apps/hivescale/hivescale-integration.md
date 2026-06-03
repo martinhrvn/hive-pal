@@ -13,7 +13,7 @@ HivePal frontend
   | JWT auth
   v
 HivePal backend (NestJS)
-  | X-HivePal-Service-Key + X-User-Id
+  | X-HivePal-Service-Key + Authorization: Bearer <user JWT>
   v
 HiveScale backend (FastAPI)
   | stores measurements, devices, roles, config, commands
@@ -21,7 +21,9 @@ HiveScale backend (FastAPI)
 HiveScale PostgreSQL database
 ```
 
-The HivePal backend authenticates outbound requests to HiveScale with `HIVESCALE_SERVICE_API_KEY` and forwards the logged-in HivePal user ID in `X-User-Id`. HiveScale enforces device ownership and roles; HivePal does not bypass those checks.
+The HivePal backend authenticates outbound requests to HiveScale with `HIVESCALE_SERVICE_API_KEY` and forwards the logged-in user's JWT access token in the `Authorization: Bearer <token>` header. HiveScale validates the JWT to identify the user and enforces device ownership and roles; HivePal does not bypass those checks.
+
+> **Migration note:** Earlier versions forwarded the HivePal user ID in an `X-User-Id` header. The backend now forwards the user's JWT access token in `Authorization: Bearer <token>` instead. The HiveScale backend must be able to validate HivePal-issued JWTs (it must share/trust the same `JWT_SECRET`) for the integration to work.
 
 ---
 
@@ -169,7 +171,7 @@ It includes:
 2. The device sends at least one measurement containing that claim code.
 3. In HivePal, open **HiveScale** and submit the same claim code.
 4. HivePal calls its backend `POST /hivescale/devices/claim` route.
-5. The HivePal backend forwards to HiveScale with the service key and current user ID.
+5. The HivePal backend forwards to HiveScale with the service key and the current user's JWT access token (`Authorization: Bearer <token>`).
 6. HiveScale hashes the claim code, matches the unclaimed device, and assigns the user as owner.
 7. The device appears in HivePal and the latest measurements populate the dashboard and charts.
 
@@ -216,6 +218,10 @@ Set `HIVESCALE_SERVICE_API_KEY` in the HivePal backend environment and restart t
 ### `401 Invalid HivePal service key`
 
 The HivePal `HIVESCALE_SERVICE_API_KEY` does not match HiveScale's `HIVEPAL_SERVICE_API_KEY`.
+
+### `401 Invalid or expired token`
+
+The user's JWT access token was rejected by HiveScale. This usually means the HiveScale backend cannot validate HivePal-issued JWTs (mismatched `JWT_SECRET`), or the token has expired. Confirm both backends share the same `JWT_SECRET` and that the user is signed in with a valid session.
 
 ### `404 No unclaimed device found for this claim code`
 

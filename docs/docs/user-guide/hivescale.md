@@ -37,6 +37,7 @@ Your administrator or self-hosting setup must provide:
 | HiveScale device | ESP32 scale firmware flashed with a claim code |
 | Hive-Pal backend config | `HIVESCALE_API_BASE_URL` and `HIVESCALE_SERVICE_API_KEY` set |
 | Matching HiveScale service key | HiveScale must use the same key as `HIVEPAL_SERVICE_API_KEY` |
+| Shared JWT secret | HiveScale must trust the same `JWT_SECRET` as Hive-Pal so it can validate forwarded user tokens |
 
 If HiveScale is not configured, the HiveScale page may show backend configuration errors.
 
