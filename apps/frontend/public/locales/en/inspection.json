@@ -299,6 +299,8 @@
         "title": "Frames",
         "framesLabel": "Number of frames added/removed",
         "framesHint": "Use positive numbers for frames added, negative for frames removed",
+        "warningNoFramesToRemove": "No frames to remove.",
+        "warningExceedsCapacity": "This exceeds the brood box capacity ({{capacity}} frames). Add a new box first.",
         "notesOptional": "Notes (optional)",
         "notesPlaceholder": "Add any additional notes about frames changes"
       },

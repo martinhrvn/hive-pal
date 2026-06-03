@@ -253,6 +253,20 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const baseBroodFrames =
     totalFrames != null ? totalFrames - savedFrameDelta : null;
 
+  // Total frame capacity of the brood boxes (sum of each box's maxFrameCount).
+  // Used to warn when a Rähmchen action would push the hive above capacity.
+  const broodFrameCapacity =
+    effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD')
+      .length > 0
+      ? effectiveBoxes
+          .filter((box: { type: string }) => box.type === 'BROOD')
+          .reduce(
+            (sum: number, box: { maxFrameCount?: number }) =>
+              sum + (box.maxFrameCount ?? 0),
+            0,
+          )
+      : null;
+
   // Effective brood frame total reflecting the current (unsaved) frame action,
   // used both for the header indicator and as the per-frame-type counter max.
   const effectiveTotalFrames =
@@ -555,6 +569,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               <ActionsSection
                 hiveBoxes={selectedHive?.boxes ?? []}
                 hiveId={selectedHive?.id}
+                baseBroodFrames={baseBroodFrames}
+                broodFrameCapacity={broodFrameCapacity}
                 isAiSuggested={isAiSuggested}
                 aiMergeState={aiMergeState}
                 onAcceptSuggestion={acceptAiSuggestion}
