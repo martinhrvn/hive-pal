@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { passwordResetTemplate } from './templates/password-reset.template';
 import { swarmAlertTemplate } from './templates/swarm-alert.template';
+import { magicLinkTemplate } from './templates/magic-link.template';
 import { MailConfigService } from './mail-config.service';
 
 export interface SwarmAlertEmailOptions {
@@ -23,7 +24,7 @@ export class MailService {
 
   constructor(private readonly mailConfig: MailConfigService) {}
 
-  async sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
+  async sendPasswordResetEmail(email: string, resetUrl: string): Promise<boolean> {
     const provider = this.mailConfig.getProvider();
 
     if (!provider) {
@@ -34,8 +35,6 @@ export class MailService {
     }
 
     try {
-      const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
-
       const { subject, html } = passwordResetTemplate({
         email,
         resetUrl,
@@ -108,6 +107,48 @@ export class MailService {
       return true;
     } catch (error) {
       this.logger.error('Error sending swarm alert email:', error);
+      return false;
+    }
+  }
+
+  async sendMagicLink(email: string, magicLinkUrl: string): Promise<boolean> {
+    const provider = this.mailConfig.getProvider();
+
+    if (!provider) {
+      this.logger.log(
+        `Email sending disabled - would have sent magic link to ${email}`,
+      );
+      return true;
+    }
+
+    try {
+      const { subject, html } = magicLinkTemplate({
+        email,
+        magicLinkUrl,
+        appName: 'Hive Pal',
+      });
+
+      const result = await provider.sendEmail({
+        from: this.mailConfig.getFromEmail(),
+        to: [email],
+        subject,
+        html,
+      });
+
+      if (!result.success) {
+        this.logger.error(
+          `Failed to send magic link via ${provider.getName()}:`,
+          result.error,
+        );
+        return false;
+      }
+
+      this.logger.log(
+        `Magic link sent to ${email} via ${provider.getName()} with ID: ${result.id}`,
+      );
+      return true;
+    } catch (error) {
+      this.logger.error('Error sending magic link:', error);
       return false;
     }
   }

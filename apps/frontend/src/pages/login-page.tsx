@@ -7,11 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { PublicFooter } from '@/components/layout/public-footer';
+import { authClient } from '@/lib/auth-client';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [busy, setBusy] = useState<null | 'password' | 'magic' | 'passkey'>(
+    null,
+  );
   const { t } = useTranslation('auth');
 
   const navigate = useNavigate();
@@ -23,7 +28,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setBusy('password');
     try {
       const success = await login(username, password, from);
       if (!success) {
@@ -32,6 +37,48 @@ const LoginPage = () => {
     } catch (err) {
       console.error('Login error:', err);
       setError(t('login.invalidCredentials'));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    setError('');
+    if (!username) {
+      setError(t('login.email') + ' ?');
+      return;
+    }
+    setBusy('magic');
+    try {
+      const result = await authClient.signIn.magicLink({
+        email: username,
+        callbackURL: from,
+      });
+      if (result.error) {
+        setError(result.error.message ?? 'Failed to send magic link');
+      } else {
+        setMagicLinkSent(true);
+      }
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handlePasskey = async () => {
+    setError('');
+    setBusy('passkey');
+    try {
+      const result = await authClient.signIn.passkey();
+      if (result?.error) {
+        setError(result.error.message ?? 'Passkey sign-in failed');
+      } else {
+        window.location.href = from;
+      }
+    } catch (err) {
+      console.error('Passkey error:', err);
+      setError('Passkey sign-in failed');
+    } finally {
+      setBusy(null);
     }
   };
 
@@ -119,11 +166,47 @@ const LoginPage = () => {
                 type="submit"
                 className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg"
                 data-umami-event="Login"
+                disabled={busy !== null}
               >
-                {t('login.submit')}
+                {busy === 'password' ? '…' : t('login.submit')}
               </Button>
             </div>
           </form>
+
+          {magicLinkSent ? (
+            <div className="mt-6 p-3 text-center bg-emerald-900/40 border border-emerald-400/30 rounded text-sm text-emerald-100">
+              Magic link sent — check your email for a sign-in link.
+            </div>
+          ) : (
+            <div className="mt-6 space-y-3">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-white/20" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                  <span className="bg-transparent px-2 text-white/60">or</span>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20"
+                onClick={handleMagicLink}
+                disabled={busy !== null}
+              >
+                {busy === 'magic' ? '…' : 'Email me a sign-in link'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20"
+                onClick={handlePasskey}
+                disabled={busy !== null}
+              >
+                {busy === 'passkey' ? '…' : 'Sign in with passkey'}
+              </Button>
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-white/80">

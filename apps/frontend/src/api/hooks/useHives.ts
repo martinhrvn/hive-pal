@@ -12,7 +12,6 @@ import {
   UpdateHiveResponse,
   UpdateHiveBoxes,
 } from 'shared-schemas';
-import { useAuth } from '@/context/auth-context';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
@@ -170,16 +169,13 @@ export const useUpdateHive = () => {
 // Delete a hive
 export const useDeleteHive = () => {
   const queryClient = useQueryClient();
-  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await fetch(`/api/hives/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {

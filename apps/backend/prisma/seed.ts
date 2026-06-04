@@ -1,5 +1,7 @@
 import { PrismaClient } from '@/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { hashPassword } from 'better-auth/crypto';
+import { randomUUID } from 'crypto';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -17,8 +19,18 @@ async function main() {
   const user = await prisma.user.create({
     data: {
       email: 'test@test.com',
-      password: 'password',
       name: 'Test User',
+      emailVerified: true,
+    },
+  });
+
+  await prisma.account.create({
+    data: {
+      id: randomUUID(),
+      userId: user.id,
+      accountId: user.id,
+      providerId: 'credential',
+      password: await hashPassword('password'),
     },
   });
 

@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/auth-context';
-import { decodeJwt } from '../utils/jwt-utils';
 import { cn } from '../lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 
@@ -11,22 +10,16 @@ type NavAdminProps = {
 
 export function NavAdmin({ collapsed: collapsedProp }: NavAdminProps) {
   const { t } = useTranslation('common');
-  const { token } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const { isMobile, setOpenMobile, state } = useSidebar();
-  // Honor explicit prop if provided, otherwise derive from the sidebar's own
-  // collapsed state (icon-only variant sets state === 'collapsed').
   const collapsed = collapsedProp ?? (!isMobile && state === 'collapsed');
 
   const handleMobileClose = () => {
     if (isMobile) setOpenMobile(false);
   };
 
-  // Get role from token first (more secure), then fallback to user object
-  const decodedToken = token ? decodeJwt(token) : null;
-  const tokenRole = decodedToken?.role;
-  // Only render admin nav items if user is admin
-  if (tokenRole !== 'ADMIN') {
+  if (user?.role !== 'ADMIN') {
     return null;
   }
 

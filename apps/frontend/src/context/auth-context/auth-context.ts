@@ -1,13 +1,17 @@
 import { createContext } from 'react';
-export interface User {
+
+export interface AuthUser {
   id: string;
   email: string;
-  name?: string;
-  role: string;
+  name?: string | null;
+  role?: string | null;
   passwordChangeRequired?: boolean;
 }
+
 interface AuthContextType {
-  token: string | null;
+  user: AuthUser | null;
+  isLoggedIn: boolean;
+  isLoading: boolean;
   login: (
     username: string,
     password: string,
@@ -21,7 +25,7 @@ interface AuthContextType {
     newsletterConsent?: boolean,
     redirectTo?: string,
   ) => Promise<boolean>;
-  logout: () => void;
-  isLoggedIn: boolean;
+  logout: () => Promise<void>;
 }
+
 export const AuthContext = createContext<AuthContextType | null>(null);
