@@ -81,6 +81,7 @@ model Apiary {
   members               ApiaryMember[]
   invites               ApiaryInvite[]
   settings              Json?
+  apiKeys               ApiaryApiKey[]
   assistantThreads      AssistantThread[]
 
   // Create index for quick lookup by userId - used in authorization checks
@@ -114,12 +115,43 @@ model Hive {
   documents            Document[]
   featurePhotoId       String?      @unique
   featurePhoto         Photo?       @relation("HiveFeaturePhoto", fields: [featurePhotoId], references: [id], onDelete: SetNull)
+  measurements         Measurement[]
   assistantThreads     AssistantThread[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
   // Create index for position-based queries within an apiary
   @@index([apiaryId, positionRow, positionCol])
+}
+
+model Measurement {
+  id         String   @id @default(uuid())
+  hiveId     String
+  hive       Hive     @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  metric     String
+  value      Float
+  unit       String?
+  recordedAt DateTime
+  source     String?
+  createdAt  DateTime @default(now())
+
+  @@index([hiveId, recordedAt])
+  @@index([hiveId, metric, recordedAt])
+}
+
+model ApiaryApiKey {
+  id              String    @id @default(uuid())
+  apiaryId        String
+  apiary          Apiary    @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  name            String
+  keyHash         String    @unique
+  prefix          String
+  lastUsedAt      DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  createdByUserId String?
+
+  @@index([apiaryId])
 }
 
 model Box {

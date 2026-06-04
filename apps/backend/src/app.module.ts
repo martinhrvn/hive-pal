@@ -46,6 +46,7 @@ import { WorkerJobsModule } from './worker-jobs/worker-jobs.module';
 import { AdminMediaModule } from './admin-media/admin-media.module';
 import { HiveScaleModule } from './hivescale/hivescale.module';
 import { AssistantModule } from './assistant/assistant.module';
+import { MeasurementsModule } from './measurements/measurements.module';
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { AssistantModule } from './assistant/assistant.module';
     AdminMediaModule,
     HiveScaleModule,
     AssistantModule,
+    MeasurementsModule,
   ],
   controllers: [AppController, EnvController],
   providers: [
