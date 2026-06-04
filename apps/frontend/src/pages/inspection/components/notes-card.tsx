@@ -1,6 +1,6 @@
-import { FileText } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FileText, Quote } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { InspectionSection } from './inspection-section';
 
 type NotesCardProps = {
   notes?: string | null;
@@ -11,18 +11,19 @@ export const NotesCard = ({ notes }: NotesCardProps) => {
   if (!notes) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            {t('inspection:notesCard.title')}
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="whitespace-pre-wrap">{notes}</p>
-      </CardContent>
-    </Card>
+    <InspectionSection
+      title={t('notesCard.title', { defaultValue: 'Notes' })}
+      icon={<FileText className="h-4 w-4" />}
+    >
+      <figure className="relative pl-7 pr-2 py-1">
+        <Quote
+          className="absolute left-0 top-1 h-4 w-4 text-amber-500/70 dark:text-amber-400/60"
+          aria-hidden
+        />
+        <blockquote className="font-display text-lg leading-relaxed text-stone-800 dark:text-stone-200 whitespace-pre-wrap">
+          {notes}
+        </blockquote>
+      </figure>
+    </InspectionSection>
   );
 };

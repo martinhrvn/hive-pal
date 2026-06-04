@@ -1,8 +1,9 @@
 import { ClipboardList } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
+import { InspectionSection } from './inspection-section';
+import { cn } from '@/lib/utils';
 
 type ObservationsCardProps = {
   observations?: {
@@ -30,7 +31,7 @@ type ObservationsCardProps = {
   };
 };
 
-// ─── Stat tile: a labelled number ────────────────────────────────────────────
+// ─── Stat tile — editorial typography ────────────────────────────────────────
 
 type StatTileProps = {
   label: string;
@@ -39,10 +40,18 @@ type StatTileProps = {
 };
 
 const StatTile = ({ label, value, sub }: StatTileProps) => (
-  <div className="flex flex-col gap-0.5 rounded-xl border bg-card p-3">
-    <span className="text-xs text-muted-foreground">{label}</span>
-    <span className="text-2xl font-bold tabular-nums leading-none">{value}</span>
-    {sub && <span className="text-xs text-muted-foreground">{sub}</span>}
+  <div className="group/tile relative rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50/40 dark:bg-stone-900/40 px-3 py-2.5 hover:border-amber-300/60 dark:hover:border-amber-700/60 transition-colors">
+    <div className="font-overline text-stone-500 dark:text-stone-400 truncate">
+      {label}
+    </div>
+    <div className="mt-1 font-display text-2xl tabular-nums leading-none text-stone-900 dark:text-stone-50">
+      {value}
+    </div>
+    {sub && (
+      <div className="mt-1 text-[10px] uppercase tracking-wider text-stone-400">
+        {sub}
+      </div>
+    )}
   </div>
 );
 
@@ -58,22 +67,30 @@ type FrameBarProps = {
 const FrameBar = ({ label, count, allFramesSum, color }: FrameBarProps) => {
   const pct = allFramesSum > 0 ? Math.round((count / allFramesSum) * 100) : 0;
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex justify-between text-sm">
-        <span className="font-medium">{label}</span>
-        <span className="text-muted-foreground">
-          {count} ({pct}%)
-        </span>
-      </div>
-      <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+    <div className="grid grid-cols-[10rem_1fr_auto] items-center gap-3 py-1.5">
+      <span className="text-sm font-medium text-stone-800 dark:text-stone-200 truncate">
+        {label}
+      </span>
+      <div className="h-1.5 rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
         <div
-          className={`h-full rounded-full ${color}`}
+          className={cn('h-full rounded-full transition-[width]', color)}
           style={{ width: `${pct}%` }}
         />
       </div>
+      <span className="font-overline tabular-nums text-stone-500 dark:text-stone-400 min-w-[3.5rem] text-right">
+        {count} · {pct}%
+      </span>
     </div>
   );
 };
+
+// ─── Subheading ─────────────────────────────────────────────────────────────
+
+const SubHeading = ({ children }: { children: React.ReactNode }) => (
+  <h4 className="font-overline text-stone-500 dark:text-stone-400 mb-2.5">
+    {children}
+  </h4>
+);
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
@@ -82,34 +99,68 @@ export const ObservationsCard = ({
 }: ObservationsCardProps) => {
   const { t } = useTranslation('inspection');
 
-  // Frame composition — sum of all 6 frame type values entered
-  const frameEntries = FRAME_FIELDS.map(ff => ({
+  const frameEntries = FRAME_FIELDS.map((ff) => ({
     key: ff.obsKey as keyof typeof observations,
     label: t(`observations.${ff.obsKey}`),
     color: ff.tailwindColor,
   }));
 
   const allFramesSum = frameEntries.reduce(
-    (sum, { key }) => sum + ((observations[key] as number | null | undefined) ?? 0),
+    (sum, { key }) =>
+      sum + ((observations[key] as number | null | undefined) ?? 0),
     0,
   );
   const hasFrameCounts = allFramesSum > 0;
 
-  // Numeric stats to show (only render tiles that have a recorded value)
   const numericStats: { label: string; value: number; sub?: string }[] = [
-    observations.strength   == null ? null : { label: t('observations.strength'),  value: observations.strength  },
-    observations.uncappedBrood == null ? null : { label: t('observations.uncappedBrood'), value: observations.uncappedBrood },
-    observations.cappedBrood == null ? null : { label: t('observations.cappedBrood'), value: observations.cappedBrood },
-    observations.honeyStores == null ? null : { label: t('observations.honeyStores'), value: observations.honeyStores },
-    observations.pollenStores == null ? null : { label: t('observations.pollenStores'), value: observations.pollenStores },
-    observations.queenCells == null ? null : { label: t('observations.queenCells'), value: observations.queenCells },
+    observations.strength == null
+      ? null
+      : { label: t('observations.strength'), value: observations.strength },
+    observations.uncappedBrood == null
+      ? null
+      : {
+          label: t('observations.uncappedBrood'),
+          value: observations.uncappedBrood,
+        },
+    observations.cappedBrood == null
+      ? null
+      : {
+          label: t('observations.cappedBrood'),
+          value: observations.cappedBrood,
+        },
+    observations.honeyStores == null
+      ? null
+      : {
+          label: t('observations.honeyStores'),
+          value: observations.honeyStores,
+        },
+    observations.pollenStores == null
+      ? null
+      : {
+          label: t('observations.pollenStores'),
+          value: observations.pollenStores,
+        },
+    observations.queenCells == null
+      ? null
+      : { label: t('observations.queenCells'), value: observations.queenCells },
   ].filter(Boolean) as { label: string; value: number; sub?: string }[];
 
-  // Boolean flags
   const booleanFlags: { label: string; value: boolean }[] = [
-    observations.queenSeen        == null ? null : { label: t('fields.queenSeen'),              value: observations.queenSeen       },
-    observations.swarmCells       == null ? null : { label: t('observations.swarmCells'),        value: observations.swarmCells      },
-    observations.supersedureCells == null ? null : { label: t('observations.supersedureCells'),  value: observations.supersedureCells },
+    observations.queenSeen == null
+      ? null
+      : { label: t('fields.queenSeen'), value: observations.queenSeen },
+    observations.swarmCells == null
+      ? null
+      : {
+          label: t('observations.swarmCells'),
+          value: observations.swarmCells,
+        },
+    observations.supersedureCells == null
+      ? null
+      : {
+          label: t('observations.supersedureCells'),
+          value: observations.supersedureCells,
+        },
   ].filter(Boolean) as { label: string; value: boolean }[];
 
   const hasContent =
@@ -123,128 +174,119 @@ export const ObservationsCard = ({
   if (!hasContent) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <div className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5" />
-            {t('observationsCard.title')}
+    <InspectionSection
+      title={t('observationsCard.title', { defaultValue: 'Observations' })}
+      icon={<ClipboardList className="h-4 w-4" />}
+    >
+      <div className="space-y-7">
+        {/* Numeric stats — masonry-style grid */}
+        {(numericStats.length > 0 || booleanFlags.length > 0) && (
+          <div className="grid grid-cols-2 @sm/sec:grid-cols-3 @lg/sec:grid-cols-4 gap-2.5">
+            {numericStats.map(({ label, value, sub }) => (
+              <StatTile key={label} label={label} value={value} sub={sub} />
+            ))}
+            {booleanFlags.map(({ label, value }) => (
+              <StatTile
+                key={label}
+                label={label}
+                value={value ? t('fields.yes') : t('fields.no')}
+              />
+            ))}
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
+        )}
 
-          {/* Numeric stats */}
-          {numericStats.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {numericStats.map(({ label, value, sub }) => (
-                <StatTile key={label} label={label} value={value} sub={sub} />
-              ))}
-              {booleanFlags.map(({ label, value }) => (
-                <StatTile
-                  key={label}
-                  label={label}
-                  value={value ? t('fields.yes') : t('fields.no')}
-                />
-              ))}
+        {/* Frame composition */}
+        {hasFrameCounts && (
+          <div>
+            <div className="flex items-baseline justify-between mb-3">
+              <SubHeading>{t('observations.frameCounts.title')}</SubHeading>
+              {observations.totalFrames != null && (
+                <span className="font-overline text-stone-400 tabular-nums">
+                  {t('observations.frameCounts.totalFrames', {
+                    count: observations.totalFrames,
+                  })}
+                </span>
+              )}
             </div>
-          )}
-
-          {/* Boolean flags when there are no numeric stats */}
-          {numericStats.length === 0 && booleanFlags.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {booleanFlags.map(({ label, value }) => (
-                <StatTile
-                  key={label}
-                  label={label}
-                  value={value ? t('fields.yes') : t('fields.no')}
-                />
-              ))}
+            <div className="border-t border-stone-200 dark:border-stone-800 pt-2 divide-y divide-stone-100 dark:divide-stone-900">
+              {frameEntries.map(({ key, label, color }) => {
+                const count =
+                  (observations[key] as number | null | undefined) ?? 0;
+                if (count === 0) return null;
+                return (
+                  <FrameBar
+                    key={key}
+                    label={label}
+                    count={count}
+                    allFramesSum={allFramesSum}
+                    color={color}
+                  />
+                );
+              })}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Frame composition */}
-          {hasFrameCounts && (
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">
-                {t('observations.frameCounts.title')}
-                {observations.totalFrames != null && (
-                  <span className="ml-2 font-normal">
-                    ({t('observations.frameCounts.totalFrames', { count: observations.totalFrames })})
-                  </span>
-                )}
-              </h4>
-              <div className="space-y-2">
-                {frameEntries.map(({ key, label, color }) => {
-                  const count = (observations[key] as number | null | undefined) ?? 0;
-                  if (count === 0) return null;
-                  return (
-                    <FrameBar
-                      key={key}
-                      label={label}
-                      count={count}
-                      allFramesSum={allFramesSum}
-                      color={color}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Brood Pattern */}
-          {observations.broodPattern && (
-            <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                {t('observationsCard.broodPattern')}
-              </h4>
-              <Badge variant="outline" className="capitalize">
-                {t(`observations.broodPatternOptions.${observations.broodPattern}`, {
+        {/* Brood Pattern */}
+        {observations.broodPattern && (
+          <div>
+            <SubHeading>{t('observationsCard.broodPattern')}</SubHeading>
+            <Badge
+              variant="outline"
+              className="capitalize border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300"
+            >
+              {t(
+                `observations.broodPatternOptions.${observations.broodPattern}`,
+                {
                   defaultValue: observations.broodPattern.replace(/_/g, ' '),
-                })}
-              </Badge>
-            </div>
-          )}
+                },
+              )}
+            </Badge>
+          </div>
+        )}
 
-          {/* Additional Observations */}
-          {(observations.additionalObservations?.length ?? 0) > 0 && (
-            <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                {t('observationsCard.additionalObservations')}
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {observations.additionalObservations!.map(obs => (
-                  <Badge key={obs} variant="secondary">
-                    {t(`observations.additional.${obs}`, {
-                      defaultValue: obs.replace(/_/g, ' '),
-                    })}
-                  </Badge>
-                ))}
-              </div>
+        {/* Additional Observations */}
+        {(observations.additionalObservations?.length ?? 0) > 0 && (
+          <div>
+            <SubHeading>
+              {t('observationsCard.additionalObservations')}
+            </SubHeading>
+            <div className="flex flex-wrap gap-2">
+              {observations.additionalObservations!.map((obs) => (
+                <Badge
+                  key={obs}
+                  variant="secondary"
+                  className="bg-stone-100 hover:bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300 font-normal"
+                >
+                  {t(`observations.additional.${obs}`, {
+                    defaultValue: obs.replace(/_/g, ' '),
+                  })}
+                </Badge>
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Reminder Observations */}
-          {(observations.reminderObservations?.length ?? 0) > 0 && (
-            <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                {t('observationsCard.reminders')}
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {observations.reminderObservations!.map(obs => (
-                  <Badge key={obs} variant="destructive">
-                    {t(`observations.reminder.${obs}`, {
-                      defaultValue: obs.replace(/_/g, ' '),
-                    })}
-                  </Badge>
-                ))}
-              </div>
+        {/* Reminder Observations */}
+        {(observations.reminderObservations?.length ?? 0) > 0 && (
+          <div>
+            <SubHeading>{t('observationsCard.reminders')}</SubHeading>
+            <div className="flex flex-wrap gap-2">
+              {observations.reminderObservations!.map((obs) => (
+                <Badge
+                  key={obs}
+                  variant="outline"
+                  className="border-red-300/70 bg-red-50/50 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
+                >
+                  {t(`observations.reminder.${obs}`, {
+                    defaultValue: obs.replace(/_/g, ' '),
+                  })}
+                </Badge>
+              ))}
             </div>
-          )}
-
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        )}
+      </div>
+    </InspectionSection>
   );
 };

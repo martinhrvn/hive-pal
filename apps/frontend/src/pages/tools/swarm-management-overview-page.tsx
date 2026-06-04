@@ -1,4 +1,4 @@
-import { ArrowRight, Beaker, Lock, Waypoints } from 'lucide-react';
+import { Beaker, Waypoints } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -6,18 +6,46 @@ import {
   PageGrid,
 } from '@/components/layout/page-grid-layout';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { SwarmMethodCard } from '@/components/common';
 
 export function SwarmManagementOverviewPage() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
+
+  const methods = [
+    {
+      key: 'demaree',
+      title: t('swarmManagement.cards.demaree.title'),
+      description: t('swarmManagement.cards.demaree.description'),
+      detail: t('swarmManagement.cards.demaree.detail'),
+      cta: t('swarmManagement.cards.demaree.cta'),
+      icon: <Waypoints className="h-5 w-5 text-primary" />,
+      badge: <Badge>{t('swarmManagement.cards.available')}</Badge>,
+      className: 'border-primary/30 bg-primary/5 lg:col-span-1',
+      onClick: () => navigate('/tools/swarm-management/demaree'),
+      disabled: false,
+    },
+    {
+      key: 'pagden',
+      title: t('swarmManagement.cards.pagden.title'),
+      description: t('swarmManagement.cards.pagden.description'),
+      cta: t('swarmManagement.cards.placeholderCta'),
+      icon: <Beaker className="h-5 w-5 text-muted-foreground" />,
+      badge: <Badge variant="secondary">{t('swarmManagement.cards.comingSoon')}</Badge>,
+      className: 'opacity-70',
+      disabled: true,
+    },
+    {
+      key: 'artificialSwarm',
+      title: t('swarmManagement.cards.artificialSwarm.title'),
+      description: t('swarmManagement.cards.artificialSwarm.description'),
+      cta: t('swarmManagement.cards.placeholderCta'),
+      icon: <Beaker className="h-5 w-5 text-muted-foreground" />,
+      badge: <Badge variant="secondary">{t('swarmManagement.cards.comingSoon')}</Badge>,
+      className: 'opacity-70',
+      disabled: true,
+    },
+  ];
 
   return (
     <PageGrid>
@@ -44,75 +72,20 @@ export function SwarmManagementOverviewPage() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
-          <Card className="border-primary/30 bg-primary/5 lg:col-span-1">
-            <CardHeader>
-              <div className="flex items-center justify-between gap-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Waypoints className="h-5 w-5 text-primary" />
-                  {t('swarmManagement.cards.demaree.title')}
-                </CardTitle>
-                <Badge>{t('swarmManagement.cards.available')}</Badge>
-              </div>
-              <CardDescription>
-                {t('swarmManagement.cards.demaree.description')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {t('swarmManagement.cards.demaree.detail')}
-              </p>
-              <Button onClick={() => navigate('/tools/swarm-management/demaree')}>
-                {t('swarmManagement.cards.demaree.cta')}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="opacity-70">
-            <CardHeader>
-              <div className="flex items-center justify-between gap-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Beaker className="h-5 w-5 text-muted-foreground" />
-                  {t('swarmManagement.cards.pagden.title')}
-                </CardTitle>
-                <Badge variant="secondary">
-                  {t('swarmManagement.cards.comingSoon')}
-                </Badge>
-              </div>
-              <CardDescription>
-                {t('swarmManagement.cards.pagden.description')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" disabled>
-                <Lock className="mr-2 h-4 w-4" />
-                {t('swarmManagement.cards.placeholderCta')}
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="opacity-70">
-            <CardHeader>
-              <div className="flex items-center justify-between gap-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Beaker className="h-5 w-5 text-muted-foreground" />
-                  {t('swarmManagement.cards.artificialSwarm.title')}
-                </CardTitle>
-                <Badge variant="secondary">
-                  {t('swarmManagement.cards.comingSoon')}
-                </Badge>
-              </div>
-              <CardDescription>
-                {t('swarmManagement.cards.artificialSwarm.description')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" disabled>
-                <Lock className="mr-2 h-4 w-4" />
-                {t('swarmManagement.cards.placeholderCta')}
-              </Button>
-            </CardContent>
-          </Card>
+          {methods.map((method) => (
+            <SwarmMethodCard
+              key={method.key}
+              title={method.title}
+              description={method.description}
+              detail={method.detail}
+              cta={method.cta}
+              icon={method.icon}
+              badge={method.badge}
+              className={method.className}
+              onClick={method.onClick}
+              disabled={method.disabled}
+            />
+          ))}
         </div>
       </MainContent>
     </PageGrid>

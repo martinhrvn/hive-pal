@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Mic, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { InspectionSection } from './inspection-section';
 import { AudioPlayer } from '@/components/audio';
 import {
   useInspectionAudio,
@@ -620,42 +620,36 @@ export function AudioCard({ inspectionId }: AudioCardProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mic className="size-5" />
-          Audio Notes
-          {recordings.length > 0 && (
-            <span className="text-sm font-normal text-muted-foreground">
-              ({recordings.length}{' '}
-              {recordings.length === 1
-                ? 'recording'
-                : 'recordings'})
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {recordings.map((recording) => (
-              <RecordingRow
-                key={recording.id}
-                inspectionId={inspectionId}
-                recording={recording}
-                getDownloadUrl={getDownloadUrl}
-                onDelete={handleDelete}
-                isDeleting={deletingId === recording.id}
-              />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <InspectionSection
+      title="Audio"
+      icon={<Mic className="h-4 w-4" />}
+      trailing={
+        recordings.length > 0 ? (
+          <span className="font-overline tabular-nums text-stone-400">
+            {recordings.length}{' '}
+            {recordings.length === 1 ? 'recording' : 'recordings'}
+          </span>
+        ) : null
+      }
+    >
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="size-6 animate-spin text-stone-400" />
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {recordings.map((recording) => (
+            <RecordingRow
+              key={recording.id}
+              inspectionId={inspectionId}
+              recording={recording}
+              getDownloadUrl={getDownloadUrl}
+              onDelete={handleDelete}
+              isDeleting={deletingId === recording.id}
+            />
+          ))}
+        </div>
+      )}
+    </InspectionSection>
   );
 }

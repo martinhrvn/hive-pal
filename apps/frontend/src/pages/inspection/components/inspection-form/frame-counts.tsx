@@ -156,12 +156,16 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
     name: 'observations.eggsFrames',
     control,
   });
+  const uncappedBroodFrames = useWatch({
+    name: 'observations.uncappedBroodFrames',
+    control,
+  });
   const cappedBroodFrames = useWatch({
     name: 'observations.cappedBroodFrames',
     control,
   });
-  const openBroodFrames = useWatch({
-    name: 'observations.openBroodFrames',
+  const droneBroodFrames = useWatch({
+    name: 'observations.droneBroodFrames',
     control,
   });
   const pollenFrames = useWatch({
@@ -183,8 +187,9 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
 
   const frameValues = [
     eggsFrames,
+    uncappedBroodFrames,
     cappedBroodFrames,
-    openBroodFrames,
+    droneBroodFrames,
     pollenFrames,
     nectarFrames,
     honeyFrames,

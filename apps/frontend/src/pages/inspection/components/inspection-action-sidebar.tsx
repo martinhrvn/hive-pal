@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   PlusCircle,
-  RefreshCw,
   CalendarClockIcon,
   CalendarPlus,
   HistoryIcon,
@@ -16,6 +15,7 @@ import {
   DataOptionsSection,
   MenuItemButton,
 } from '@/components/sidebar';
+import { RefreshButton } from '@/components/sidebar/refresh-button';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 
 interface InspectionActionSidebarProps {
@@ -59,11 +59,10 @@ export const InspectionActionSidebar: React.FC<
             tooltip={t('inspection:actions.scheduleInspection')}
           />
         )}
-        <MenuItemButton
-          icon={<RefreshCw className="h-4 w-4" />}
+        <RefreshButton
+          onRefresh={onRefreshData}
+          i18nNamespace="inspection"
           label={t('inspection:actions.refreshData')}
-          onClick={() => onRefreshData?.()}
-          tooltip={t('inspection:actions.refreshData')}
         />
       </ActionSidebarGroup>
 

@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react';
-import { format } from 'date-fns';
 import {
   AlertTriangle,
   ArrowLeft,
-  CalendarIcon,
   ShieldAlert,
   Waypoints,
 } from 'lucide-react';
@@ -20,7 +18,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import {
   Card,
   CardContent,
@@ -28,11 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -42,6 +34,7 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { DatePickerPopover } from '@/components/common/date-picker-popover';
 import { cn } from '@/lib/utils';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import {
@@ -80,10 +73,10 @@ function buildCheckpointNotes(
 function WarningSummary({
   warning,
   t,
-}: {
+}: Readonly<{
   warning: DemareeWarning;
   t: (key: string, options?: Record<string, unknown>) => string;
-}) {
+}>) {
   return (
     <div
       className={cn(
@@ -453,32 +446,11 @@ export function DemareeMethodPage() {
                   <p className="text-sm font-medium">
                     {t('swarmManagement.planner.startDateLabel')}
                   </p>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-start text-left font-normal',
-                          !startDate && 'text-muted-foreground',
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? (
-                          format(startDate, 'PPP')
-                        ) : (
-                          <span>{t('swarmManagement.planner.startDatePlaceholder')}</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <DatePickerPopover
+                    date={startDate}
+                    onDateChange={setStartDate}
+                    placeholder={t('swarmManagement.planner.startDatePlaceholder')}
+                  />
                 </div>
 
                 <div className="space-y-2 md:col-span-1 md:self-end">
@@ -533,26 +505,16 @@ export function DemareeMethodPage() {
                                 })}
                               </CardDescription>
                             </div>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button variant="outline" className="justify-start">
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {format(checkpoint.date, 'PPP')}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="end">
-                                <Calendar
-                                  mode="single"
-                                  selected={checkpoint.date}
-                                  onSelect={date => {
-                                    if (date) {
-                                      updateCheckpoint(checkpoint.id, { date });
-                                    }
-                                  }}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
+                            <DatePickerPopover
+                              date={checkpoint.date}
+                              onDateChange={(date) => {
+                                if (date) {
+                                  updateCheckpoint(checkpoint.id, { date });
+                                }
+                              }}
+                              align="end"
+                              className="justify-start"
+                            />
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-4">

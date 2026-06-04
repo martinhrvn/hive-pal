@@ -31,14 +31,8 @@ import {
   SHARED_SCOPE_CATEGORIES,
 } from 'shared-schemas';
 import { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
+import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useTranslation } from 'react-i18next';
 
 /** Round to 2 decimal places to avoid floating point display noise. */
@@ -78,7 +72,6 @@ export const EquipmentRow = ({
 }: EquipmentRowProps) => {
   const { t } = useTranslation('hive');
   const [isEditing, setIsEditing] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editData, setEditData] = useState<UpdateEquipmentItem>({
     name: item.name,
     scope: item.scope,
@@ -93,6 +86,17 @@ export const EquipmentRow = ({
   const isShared = item.scope === EquipmentScope.SHARED;
   const hasExtractionTracking = EXTRACTION_TRACKING_CATEGORIES.has(item.category);
   const hasDamageTracking = DAMAGE_TRACKING_CATEGORIES.has(item.category);
+
+  // Delete/hide logic depends on whether item is custom
+  const handleDeleteOrHide = async () => {
+    if (item.isCustom && onDelete) {
+      await onDelete();
+    } else if (onUpdate) {
+      await onUpdate({ enabled: false });
+    }
+  };
+
+  const deleteDialog = useDeleteDialog(handleDeleteOrHide);
 
   const handleEdit = () => {
     setEditData({
@@ -130,16 +134,6 @@ export const EquipmentRow = ({
       unit: item.unit,
     });
     setIsEditing(false);
-  };
-
-  const handleDelete = async () => {
-    if (!onDelete) return;
-    try {
-      await onDelete();
-      setShowDeleteDialog(false);
-    } catch (error) {
-      console.error('Failed to delete equipment item:', error);
-    }
   };
 
   const {
@@ -450,56 +444,35 @@ export const EquipmentRow = ({
         {(item.isCustom ? onDelete : onUpdate) && (
           <>
             <Button
-              size="icon"
+              size="sm"
               variant="ghost"
-              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => setShowDeleteDialog(true)}
+              className="h-6 px-1 text-red-600 hover:text-red-700 hover:bg-red-100"
+              onClick={deleteDialog.open}
               disabled={isDeleting || isUpdating}
             >
-              {isDeleting || (isUpdating && showDeleteDialog) ? (
+              {isDeleting ? (
                 <div className="h-3 w-3 animate-spin rounded-full border-2 border-destructive border-t-transparent" />
               ) : (
                 <Trash2 className="h-3 w-3" />
               )}
             </Button>
-            <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    {item.isCustom
-                      ? t('hive:equipment.table.deleteItem', { defaultValue: 'Delete Equipment Item' })
-                      : t('hive:equipment.table.hideItem', { defaultValue: 'Hide Equipment Item' })}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {item.isCustom
-                      ? t('hive:equipment.table.deleteConfirm', { name: displayName, defaultValue: `Are you sure you want to delete "${displayName}"? This action cannot be undone.` })
-                      : t('hive:equipment.table.hideConfirm', { name: displayName, defaultValue: `This will hide "${displayName}" from your equipment list. You can restore it later.` })}
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-                    {t('hive:equipment.table.cancel', { defaultValue: 'Cancel' })}
-                  </Button>
-                  <Button
-                    onClick={item.isCustom ? handleDelete : async () => {
-                      if (!onUpdate) return;
-                      try {
-                        await onUpdate({ enabled: false });
-                        setShowDeleteDialog(false);
-                      } catch (error) {
-                        console.error('Failed to hide equipment item:', error);
-                      }
-                    }}
-                    variant="destructive"
-                    disabled={isDeleting || isUpdating}
-                  >
-                    {(isDeleting || isUpdating) ? '...' : item.isCustom
-                      ? t('hive:equipment.table.delete', { defaultValue: 'Delete' })
-                      : t('hive:equipment.table.hide', { defaultValue: 'Hide' })}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+
+            <DeleteConfirmDialog
+              open={deleteDialog.isOpen}
+              onOpenChange={(open) => !open && deleteDialog.close()}
+              onConfirm={deleteDialog.handleDelete}
+              isPending={deleteDialog.isPending || isDeleting || isUpdating}
+              title={
+                item.isCustom
+                  ? t('hive:equipment.table.deleteItem', { defaultValue: 'Delete Equipment Item' })
+                  : t('hive:equipment.table.hideItem', { defaultValue: 'Hide Equipment Item' })
+              }
+              description={
+                item.isCustom
+                  ? t('hive:equipment.table.deleteConfirm', { name: displayName, defaultValue: `Are you sure you want to delete "${displayName}"? This action cannot be undone.` })
+                  : t('hive:equipment.table.hideConfirm', { name: displayName, defaultValue: `This will hide "${displayName}" from your equipment list. You can restore it later.` })
+              }
+            />
           </>
         )}
       </div>

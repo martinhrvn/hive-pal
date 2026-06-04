@@ -89,11 +89,11 @@
         "namePlaceholder": "Bigårds navn",
         "locationPlaceholder": "Lokations beskrivelse",
         "inspectionType": {
-            "label": "",
-            "placeholder": "",
-            "dataDriven": "",
-            "subjective": "",
-            "description": ""
+            "label": "Type af inspektion",
+            "placeholder": "Vælg type af inspektion",
+            "dataDriven": "Datadreven",
+            "subjective": "Subjektiv",
+            "description": "Datadreven bruger antal rammer og auto-scoring. Subjektiv bruger en kvalitativ 0-10 vurdering."
         }
     }
 }

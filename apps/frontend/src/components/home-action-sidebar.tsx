@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   PlusCircle,
-  RefreshCw,
   ClipboardCheck,
   CalendarCheck,
   CalendarPlus,
@@ -21,6 +20,7 @@ import {
   MenuItemButton,
   WeatherForecastSection,
 } from '@/components/sidebar';
+import { RefreshButton } from '@/components/sidebar/refresh-button';
 
 interface HomeActionSidebarProps {
   onRefreshData?: () => void;
@@ -99,11 +99,10 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
         </ActionSidebarGroup>
 
         <ActionSidebarGroup title={t('actions.actions')}>
-          <MenuItemButton
-            icon={<RefreshCw className="h-4 w-4" />}
+          <RefreshButton
+            onRefresh={onRefreshData}
+            i18nNamespace="common"
             label={t('actions.refreshData')}
-            onClick={() => onRefreshData?.()}
-            tooltip={t('actions.refreshData')}
           />
           <MenuItemButton
             icon={<Bell className="h-4 w-4" />}
