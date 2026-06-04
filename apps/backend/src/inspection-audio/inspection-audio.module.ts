@@ -3,6 +3,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { InspectionAudioController } from './inspection-audio.controller';
+import { ApiaryAudioController } from './apiary-audio.controller';
 import { InspectionAudioService } from './inspection-audio.service';
 import { InspectionAudioScheduler } from './inspection-audio.scheduler';
 import { PrismaService } from '../prisma/prisma.service';
@@ -25,7 +26,7 @@ import { InspectionsModule } from '../inspections/inspections.module';
       inject: [ConfigService],
     }),
   ],
-  controllers: [InspectionAudioController],
+  controllers: [InspectionAudioController, ApiaryAudioController],
   providers: [InspectionAudioService, InspectionAudioScheduler, PrismaService],
   exports: [InspectionAudioService],
 })

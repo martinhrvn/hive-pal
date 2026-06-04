@@ -46,6 +46,12 @@ export interface AudioResponse {
   createdAt: string;
 }
 
+export interface ApiaryAudioListItem extends AudioResponse {
+  inspectionDate: string;
+  hiveId: string;
+  hiveName: string;
+}
+
 export interface DownloadUrlResponse {
   downloadUrl: string;
   expiresIn: number;
@@ -246,6 +252,93 @@ export class InspectionAudioService {
     });
 
     return audioRecordings.map((audio) => this.mapToResponse(audio));
+  }
+
+  /**
+   * List all audio recordings for an apiary, joined with inspection + hive info.
+   */
+  async findAllForApiary(
+    filter: ApiaryUserFilter,
+  ): Promise<ApiaryAudioListItem[]> {
+    const records = await this.prisma.inspectionAudio.findMany({
+      where: {
+        inspection: {
+          hive: {
+            apiary: {
+              id: filter.apiaryId,
+              userId: filter.userId,
+            },
+          },
+        },
+      },
+      include: {
+        inspection: {
+          select: {
+            id: true,
+            date: true,
+            hive: {
+              select: { id: true, name: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return records.map((r) => ({
+      id: r.id,
+      inspectionId: r.inspectionId,
+      inspectionDate: r.inspection.date.toISOString(),
+      hiveId: r.inspection.hive.id,
+      hiveName: r.inspection.hive.name,
+      fileName: r.fileName,
+      mimeType: r.mimeType,
+      fileSize: r.fileSize,
+      duration: r.duration,
+      transcriptionStatus: r.transcriptionStatus,
+      analysisStatus: r.analysisStatus,
+      transcription: r.transcription,
+      createdAt: r.createdAt.toISOString(),
+    }));
+  }
+
+  /**
+   * Start AI analysis for every audio in the apiary whose transcription is
+   * NONE or FAILED. Reuses startAiAnalysis so push/pull/auto routing is shared.
+   */
+  async startAnalysisForPending(
+    filter: ApiaryUserFilter,
+  ): Promise<{ started: number }> {
+    const pending = await this.prisma.inspectionAudio.findMany({
+      where: {
+        transcriptionStatus: { in: ['NONE', 'FAILED'] },
+        inspection: {
+          hive: {
+            apiary: {
+              id: filter.apiaryId,
+              userId: filter.userId,
+            },
+          },
+        },
+      },
+      select: { id: true, inspectionId: true },
+    });
+
+    let started = 0;
+    for (const audio of pending) {
+      try {
+        await this.startAiAnalysis(audio.inspectionId, audio.id, filter);
+        started++;
+      } catch (err) {
+        this.logger.warn({
+          message: 'Failed to start AI analysis for audio in bulk',
+          audioId: audio.id,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    }
+
+    return { started };
   }
 
   /**

@@ -254,6 +254,7 @@
     "allFiles": "All Files",
     "photos": "Photos",
     "documents": "Documents",
+    "audio": "Audio",
     "search": "Search files...",
     "filterByHive": "Filter by hive",
     "filterByType": "Filter by type",
@@ -262,8 +263,24 @@
     "type": "Type",
     "hive": "Hive",
     "size": "Size",
+    "status": "Status",
     "download": "Download",
-    "delete": "Delete"
+    "delete": "Delete",
+    "sendToAi": "Send to AI",
+    "sendAllPending": "Send all to AI ({{count}})",
+    "sentToAi": "Started AI for {{count}} recordings",
+    "audioStatus": {
+      "notTranscribed": "Not transcribed",
+      "queued": "Queued",
+      "transcribing": "Transcribing…",
+      "failed": "Transcription failed",
+      "transcribed": "Transcribed",
+      "analyzing": "Analyzing…",
+      "analysisFailed": "Analysis failed",
+      "ready": "AI suggestions ready"
+    },
+    "audioDeleteTitle": "Delete audio recording?",
+    "audioDeleted": "Audio deleted"
   },
   "quickCheck": {
     "title": "Quick Check",
