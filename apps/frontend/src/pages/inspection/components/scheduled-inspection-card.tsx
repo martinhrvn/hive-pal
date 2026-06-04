@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { format, isToday, isPast, parseISO } from 'date-fns';
+import { format, isToday, isPast } from 'date-fns';
 import {
   Calendar,
   CheckCircle,
@@ -37,6 +37,7 @@ import {
 import { cn } from '@/lib/utils';
 import { InspectionResponse, InspectionStatus } from 'shared-schemas';
 import { useUpdateInspection } from '@/api/hooks/useInspections';
+import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { RescheduleDialog } from './reschedule-dialog';
 
@@ -66,7 +67,7 @@ export const ScheduledInspectionCard: React.FC<
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
   const { mutate: updateInspection, isPending } = useUpdateInspection();
 
-  const inspectionDate = parseISO(inspection.date as string);
+  const inspectionDate = getInspectionDisplayDate(inspection);
   const isOverdue = isPast(inspectionDate) && !isToday(inspectionDate);
   const isTodayInspection = isToday(inspectionDate);
 

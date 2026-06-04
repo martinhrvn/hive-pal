@@ -148,6 +148,16 @@ const BroodTimelinePage = lazyWithRetry(() =>
     default: m.BroodTimelinePage,
   })),
 );
+const SwarmManagementOverviewPage = lazyWithRetry(() =>
+  import('@/pages/tools/swarm-management-overview-page').then(m => ({
+    default: m.SwarmManagementOverviewPage,
+  })),
+);
+const DemareeMethodPage = lazyWithRetry(() =>
+  import('@/pages/tools/demaree-method-page').then(m => ({
+    default: m.DemareeMethodPage,
+  })),
+);
 
 // Loading fallback component
 function PageLoader() {
@@ -370,6 +380,22 @@ const router = createBrowserRouter([
         element: (
           <LazyPage>
             <BroodTimelinePage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/tools/swarm-management',
+        element: (
+          <LazyPage>
+            <SwarmManagementOverviewPage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/tools/swarm-management/demaree',
+        element: (
+          <LazyPage>
+            <DemareeMethodPage />
           </LazyPage>
         ),
       },

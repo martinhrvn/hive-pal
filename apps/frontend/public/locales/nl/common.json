@@ -25,5 +25,253 @@
     },
     "status": {
         "completed": "Afgerond"
+    },
+    "swarmManagement": {
+        "backToOverview": "Back to Swarm Management",
+        "eyebrow": "Swarm control guidance",
+        "title": "Swarm Management",
+        "cards": {
+            "available": "Available",
+            "comingSoon": "Coming soon",
+            "placeholderCta": "Not available yet",
+            "demaree": {
+                "title": "Demaree Method",
+                "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
+                "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+                "cta": "Open guide"
+            },
+            "pagden": {
+                "title": "Pagden split",
+                "description": "Placeholder for a future guide covering the classic artificial swarm split."
+            },
+            "artificialSwarm": {
+                "title": "Artificial swarm",
+                "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+            }
+        },
+        "aside": {
+            "title": "Choosing a method",
+            "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+            "points": [
+                "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
+                "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
+                "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+            ],
+            "criticalTimingTitle": "Critical timing",
+            "criticalTimingLead": "The first follow-up is the point where timing matters most.",
+            "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+        },
+        "demaree": {
+            "badge": "Reference method",
+            "title": "Demaree Method",
+            "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
+            "overviewTitle": "Method overview",
+            "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+            "overviewPoints": [
+                "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
+                "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
+                "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+            ],
+            "prerequisitesTitle": "Prerequisites",
+            "prerequisites": [
+                "Check that the hive is a strong colony with enough bees and brood to justify the method.",
+                "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
+                "Make sure you can find and confidently retain the laying queen in the lower brood box.",
+                "Have a queen excluder ready, with at least two honey supers available to stack above it.",
+                "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
+                "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+            ],
+            "stepsTitle": "Method Detail",
+            "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+            "methodDetail": {
+                "preparation": {
+                    "title": "Preparation",
+                    "items": [
+                        {
+                            "text": "Find a spare brood box with foundation or drawn comb.",
+                            "children": [
+                                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+                            ]
+                        },
+                        {
+                            "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+                        }
+                    ]
+                },
+                "huntTheQueen": {
+                    "title": "Hunt the Queen",
+                    "items": [
+                        {
+                            "text": "Inspect the old brood box(es) and locate the Queen."
+                        },
+                        {
+                            "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+                        }
+                    ]
+                },
+                "broodManipulation": {
+                    "title": "Brood Manipulation",
+                    "items": [
+                        {
+                            "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+                            "children": [
+                                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+                            ]
+                        },
+                        {
+                            "text": "Make sure to knock down all queen cells.",
+                            "children": [
+                                "With the queen safe you can shake bees off the frames to make sure you find them all."
+                            ]
+                        },
+                        {
+                            "text": "(Double Brood) - You should now have three brood boxes.",
+                            "children": [
+                                "Box with the queen, mostly empty directly on the hive floor.",
+                                "Box with no brood - place this on top of the queen to retain double brood status.",
+                                "Box with all the brood - keep this aside for now."
+                            ]
+                        }
+                    ]
+                },
+                "reassembly": {
+                    "title": "Reassembly",
+                    "items": [
+                        {
+                            "text": "Put the queen excluder on top of the new brood boxes."
+                        },
+                        {
+                            "text": "Add the supers (minimum 2, add extra if more space is required)."
+                        },
+                        {
+                            "text": "Place an additional queen excluder over the supers."
+                        },
+                        {
+                            "text": "The box with all the brood now goes on top of the supers."
+                        },
+                        {
+                            "text": "Fit crown board and roof and the job is done."
+                        }
+                    ]
+                }
+            },
+            "advantagesTitle": "Why the method works",
+            "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+            "advantages": [
+                "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
+                "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
+                "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+            ],
+            "followUpTitle": "Follow-up timing",
+            "followUpDayHeader": "Day",
+            "followUpTaskHeader": "Task",
+            "followUp": [
+                {
+                    "day": "Day 7-8",
+                    "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+                },
+                {
+                    "day": "Day 14-15",
+                    "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+                },
+                {
+                    "day": "Day 21-22",
+                    "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+                }
+            ],
+            "prosConsTitle": "Pros and Cons",
+            "prosTitle": "Advantages",
+            "consTitle": "Disadvantages",
+            "pros": [
+                "Works well as a swarm control method.",
+                "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
+                "Comb renewal is simple.",
+                "Good brood combs can be drawn out in the top box.",
+                "The effect is similar to an artificial swarm, but the colony is kept together."
+            ],
+            "cons": [
+                "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
+                "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
+                "There may be heavy lifting.",
+                "Regular inspections are essential.",
+                "You MUST understand the basics."
+            ]
+        },
+        "planner": {
+            "title": "Demaree inspection planner",
+            "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+            "hiveLabel": "Hive",
+            "hivePlaceholder": "Select a hive",
+            "startDateLabel": "Demaree setup date",
+            "startDatePlaceholder": "Pick the setup date",
+            "generate": "Generate checkpoints",
+            "selectedHive": "Selected hive",
+            "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
+            "notesLabel": "Inspection notes",
+            "notesChecklistLabel": "Checklist",
+            "checkpointPrefix": "Demaree checkpoint:",
+            "dayOffset_one": "Day {{count}}",
+            "dayOffset_other": "Day {{count}}",
+            "save": "Save scheduled inspections",
+            "saving": "Saving inspections...",
+            "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
+            "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
+            "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+            "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
+            "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+            "checkpoints": {
+                "setup": {
+                    "title": "Initial Demaree setup",
+                    "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+                    "checklist": [
+                        "Confirm the laying queen is in the lower brood box.",
+                        "Place the brood and supers in the planned Demaree order.",
+                        "Record any details you want visible at the next inspection."
+                    ]
+                },
+                "queenCellCheck": {
+                    "title": "Queen-cell check",
+                    "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+                    "checklist": [
+                        "Inspect every brood frame above the excluder for queen cells.",
+                        "Remove queen cells started during the swarm impulse.",
+                        "Confirm the queen still has room and activity below."
+                    ]
+                },
+                "secondQueenCellCheck": {
+                    "title": "Second queen-cell check",
+                    "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+                    "checklist": [
+                        "Look again for newly started or missed queen cells.",
+                        "Check whether brood and stores need to be rebalanced.",
+                        "Note whether the colony is settling or still crowding upward."
+                    ]
+                },
+                "colonyReview": {
+                    "title": "Colony review",
+                    "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+                    "checklist": [
+                        "Assess whether the colony can return to a more normal arrangement.",
+                        "Check space, brood pattern, and nectar intake across the stack.",
+                        "Schedule any additional inspection you want beyond the standard plan."
+                    ]
+                }
+            }
+        },
+        "warnings": {
+            "bannerTitle": "Timing warnings",
+            "lateQueenCellCheck": {
+                "title": "First queen-cell check is later than day 8",
+                "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+            },
+            "unsafeCheckpointSpacing": {
+                "title": "Checkpoint spacing looks risky",
+                "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+            },
+            "illogicalScheduleOrder": {
+                "title": "Checkpoint order is no longer chronological",
+                "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+            }
+        }
     }
 }
