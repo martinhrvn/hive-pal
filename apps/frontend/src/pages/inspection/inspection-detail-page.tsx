@@ -131,6 +131,7 @@ export const InspectionDetailPage = () => {
           <div className="flex items-center justify-between">
             <InspectionHeader
               hiveId={hive.id}
+              apiaryId={hive.apiaryId}
               date={inspection.date}
               hiveName={hive.name}
             />
