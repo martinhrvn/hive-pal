@@ -171,7 +171,10 @@ export const InspectionDetailPage = () => {
           </div>
 
           <div className="space-y-4 sm:space-y-5">
-            <ObservationsCard observations={inspection.observations} />
+            <ObservationsCard
+              observations={inspection.observations}
+              inspectionType={hive.inspectionType ?? 'data_driven'}
+            />
             <ActionsCard actions={inspection.actions ?? []} />
             <NotesCard notes={inspection.notes} />
             <AudioCard inspectionId={inspection.id} />
