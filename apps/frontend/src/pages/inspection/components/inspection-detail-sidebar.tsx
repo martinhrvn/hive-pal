@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,20 +12,13 @@ import {
   Printer,
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
   MenuItemButton,
 } from '@/components/sidebar';
+import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
+import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
 import { ActionType } from 'shared-schemas';
@@ -88,7 +81,7 @@ export const InspectionDetailSidebar: React.FC<
           <MenuItemButton
             icon={<Trash className="h-4 w-4" />}
             label={t('inspection:detailSidebar.deleteInspection')}
-            onClick={() => setShowDeleteDialog(true)}
+            onClick={deleteDialog.open}
             tooltip={t('inspection:detailSidebar.deleteInspection')}
             className="text-red-600 hover:text-red-700"
           />

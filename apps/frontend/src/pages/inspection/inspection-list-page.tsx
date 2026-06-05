@@ -29,6 +29,7 @@ import {
 import { TrendIndicator } from '@/components/common/trend-indicator';
 import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
+import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
 
 import {
   MainContent,
@@ -600,7 +601,7 @@ const renderUpcomingInspections = (
   const overdue = [];
 
   for (const inspection of scheduledInspections) {
-    const inspectionDate = parseISO(inspection.date as string);
+    const inspectionDate = getInspectionDisplayDate(inspection);
     if (isToday(inspectionDate)) {
       today.push(inspection);
     } else if (isPast(inspectionDate)) {

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PencilIcon, PlusCircle, RefreshCw, TrashIcon } from 'lucide-react';
+import { PencilIcon, PlusCircle, TrashIcon } from 'lucide-react';
 
 import {
   ActionSidebarContainer,
@@ -9,18 +9,12 @@ import {
   DataOptionsSection,
   MenuItemButton,
 } from '@/components/sidebar';
+import { RefreshButton } from '@/components/sidebar/refresh-button';
+import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
+import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { SidebarMenuItem } from '@/components/ui/sidebar';
 import { QuickAddMenu } from '@/components/quick-add-menu';
 import { useDeleteApiary } from '@/api/hooks/useApiaries';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 
 interface ApiaryActionSidebarProps {
@@ -36,18 +30,14 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
   const navigate = useNavigate();
   const { canEdit } = useApiaryPermission();
   const deleteApiary = useDeleteApiary();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const handleDelete = async () => {
-    if (!apiaryId) return;
-    try {
-      await deleteApiary.mutateAsync(apiaryId);
-      setShowDeleteDialog(false);
-      navigate('/apiaries');
-    } catch (error) {
-      console.error('Failed to delete apiary:', error);
-    }
-  };
+  const deleteDialog = useDeleteDialog(
+    () => {
+      if (!apiaryId) throw new Error('Apiary ID is required');
+      return deleteApiary.mutateAsync(apiaryId);
+    },
+    () => navigate('/apiaries'),
+  );
 
   return (
     <ActionSidebarContainer>
@@ -67,11 +57,10 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
             <QuickAddMenu apiaryId={apiaryId} variant="sidebar" />
           </SidebarMenuItem>
         )}
-        <MenuItemButton
-          icon={<RefreshCw className="h-4 w-4" />}
+        <RefreshButton
+          onRefresh={onRefreshData}
+          i18nNamespace="apiary"
           label={t('apiary:actions.refreshData')}
-          onClick={() => onRefreshData?.()}
-          tooltip={t('apiary:actions.refreshData')}
         />
       </ActionSidebarGroup>
 
@@ -94,7 +83,7 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
             label={t('apiary:manage.deleteApiary', {
               defaultValue: 'Delete Apiary',
             })}
-            onClick={() => setShowDeleteDialog(true)}
+            onClick={deleteDialog.open}
             tooltip={t('apiary:manage.deleteApiary', {
               defaultValue: 'Delete Apiary',
             })}
@@ -104,40 +93,19 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
 
       <DataOptionsSection i18nNamespace="apiary" />
 
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t('apiary:manage.deleteApiary', {
-                defaultValue: 'Delete Apiary',
-              })}
-            </DialogTitle>
-            <DialogDescription>
-              {t('apiary:manage.deleteApiaryConfirmation', {
-                defaultValue:
-                  'Are you sure you want to delete this apiary? All hives and associated data will be permanently deleted. This action cannot be undone.',
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
-            >
-              {t('common:actions.cancel', { defaultValue: 'Cancel' })}
-            </Button>
-            <Button
-              onClick={handleDelete}
-              variant="destructive"
-              disabled={deleteApiary.isPending}
-            >
-              {deleteApiary.isPending
-                ? t('common:actions.deleting', { defaultValue: 'Deleting...' })
-                : t('common:actions.delete', { defaultValue: 'Delete' })}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={deleteDialog.isOpen}
+        onOpenChange={(open) => !open && deleteDialog.close()}
+        onConfirm={deleteDialog.handleDelete}
+        isPending={deleteDialog.isPending}
+        title={t('apiary:manage.deleteApiary', {
+          defaultValue: 'Delete Apiary',
+        })}
+        description={t('apiary:manage.deleteApiaryConfirmation', {
+          defaultValue:
+            'Are you sure you want to delete this apiary? All hives and associated data will be permanently deleted. This action cannot be undone.',
+        })}
+      />
     </ActionSidebarContainer>
   );
 };

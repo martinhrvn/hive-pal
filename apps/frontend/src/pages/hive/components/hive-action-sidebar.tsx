@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PlusCircle, RefreshCw, QrCode } from 'lucide-react';
+import { PlusCircle, QrCode } from 'lucide-react';
 
 import {
   ActionSidebarContainer,
@@ -10,6 +10,7 @@ import {
   MenuItemButton,
   WeatherForecastSection,
 } from '@/components/sidebar';
+import { RefreshButton } from '@/components/sidebar/refresh-button';
 import { useApiary } from '@/hooks/use-apiary';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 
@@ -43,11 +44,10 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
               tooltip={t('hive:actions.createNewHive')}
             />
           )}
-          <MenuItemButton
-            icon={<RefreshCw className="h-4 w-4" />}
+          <RefreshButton
+            onRefresh={onRefreshData}
+            i18nNamespace="hive"
             label={t('hive:actions.refreshData')}
-            onClick={() => onRefreshData?.()}
-            tooltip={t('hive:actions.refreshData')}
           />
         </ActionSidebarGroup>
 

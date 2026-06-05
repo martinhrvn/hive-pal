@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { InspectionResponse } from 'shared-schemas';
+import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
 
 interface UpcomingInspectionListItemProps {
   inspection: InspectionResponse;
@@ -25,14 +26,19 @@ export const UpcomingInspectionListItem: React.FC<
   UpcomingInspectionListItemProps
 > = ({ inspection, hiveName, onDoInspection, onReschedule }) => {
   const { t } = useTranslation(['common', 'inspection']);
+  const inspectionDate = getInspectionDisplayDate(inspection);
+  const checkpointPrefix = t('common:swarmManagement.planner.checkpointPrefix');
+  const checkpointLabel = inspection.notes?.startsWith(checkpointPrefix)
+    ? inspection.notes.split('\n')[0]?.trim()
+    : null;
 
   return (
     <div className="flex items-start justify-between gap-2 text-sm p-2 rounded-md bg-blue-50 border border-blue-100">
       <div className="flex flex-col gap-1 flex-1 min-w-0">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <span>{format(new Date(inspection.date), 'MMM d')}</span>
+          <span>{format(inspectionDate, 'MMM d')}</span>
           {!inspection.isAllDay && (
-            <span>{format(new Date(inspection.date), 'HH:mm')}</span>
+            <span>{format(inspectionDate, 'HH:mm')}</span>
           )}
           <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
             {t('inspection:status.pending', 'Scheduled')}
@@ -41,6 +47,11 @@ export const UpcomingInspectionListItem: React.FC<
         <span className="font-medium text-blue-700">
           {t('common:timeline.inspectHive', { hiveName })}
         </span>
+        {checkpointLabel && (
+          <span className="truncate text-xs text-muted-foreground">
+            {checkpointLabel}
+          </span>
+        )}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
