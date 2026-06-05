@@ -17,8 +17,6 @@ import {
   ActionSidebarGroup,
   MenuItemButton,
 } from '@/components/sidebar';
-import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
-import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
 import { ActionType } from 'shared-schemas';
