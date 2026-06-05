@@ -1,0 +1,21 @@
+# Hive Pal
+
+> Hive Pal is a free, open-source beekeeping management platform with AI-powered voice inspections. Beekeepers can record audio at the hive and let AI transcribe and draft structured inspection notes. Self-hosted or cloud-hosted; MIT-licensed.
+
+## Free tools (no signup)
+
+- [Sugar Syrup Calculator](https://hivepal.app/tools/syrup-calculator): Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 bee feeding syrup at any container size. Supports metric and imperial units. Includes step-by-step instructions and guidance on when each ratio is appropriate (spring stimulation vs. fall winter prep).
+- [Brood Development Timeline](https://hivepal.app/tools/brood-timeline): Visualize honey bee brood stages (egg, larva, pupa, adult) for queens (16 days), workers (21 days), and drones (24 days). Project capping and emergence dates from any start date.
+
+## Product
+
+- [Hive Pal landing page](https://hivepal.app/): Overview of the platform, AI voice inspection features, and pricing (free for self-host and early cloud adopters).
+- [Sign in](https://hivepal.app/login): Existing user login.
+- [Register](https://hivepal.app/register): Create a new account.
+- [Release notes](https://hivepal.app/releases): Changelog for the platform.
+- [Privacy policy](https://hivepal.app/privacy-policy): Data handling and privacy practices.
+
+## Project
+
+- [Documentation](https://docs.hivepal.app): User and self-hosting documentation.
+- [GitHub repository](https://github.com/martinhrvn/hive-pal): Source code, issues, and contribution guidelines (MIT License).

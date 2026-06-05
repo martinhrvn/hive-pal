@@ -339,6 +339,7 @@
   "syrupCalculator": {
     "title": "Syrup Calculator",
     "description": "Calculate sugar and water amounts for feeding syrup",
+    "intro": "Free sugar syrup calculator for beekeepers. Use 1:1 (thin) syrup for spring stimulation, 3:2 (medium) as an all-purpose feed, and 2:1 (thick) for fall feeding to build winter stores. Pick a container size and ratio — exact sugar and water weights are computed from sucrose displacement so the finished syrup fills your container.",
     "units": "Units",
     "unitsDescription": "Switch between metric and imperial measurements",
     "metric": "Metric (L, g, kg)",
@@ -374,6 +375,7 @@
   "broodTimeline": {
     "title": "Brood Development Timeline",
     "description": "Explore the development stages of queen, worker, and drone bees from egg to adult",
+    "intro": "Visualize honey bee brood development from egg to adult. Queens emerge in 16 days, workers in 21, and drones in 24 — split across four stages: egg, larva, pupa, and adult. Pick a starting date to project capping and emergence days for inspection planning.",
     "beeType": "Bee Type",
     "beeTypeDescription": "Select a caste to view its development timeline",
     "queen": "Queen",

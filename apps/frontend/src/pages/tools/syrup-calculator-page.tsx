@@ -149,37 +149,116 @@ export function SyrupCalculatorPage() {
     }
   };
 
-  const howToJsonLd = {
+  const structuredData = {
     '@context': 'https://schema.org',
-    '@type': 'HowTo',
-    name: 'How to make sugar syrup for bees',
-    description:
-      'Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.',
-    step: [
+    '@graph': [
       {
-        '@type': 'HowToStep',
-        name: 'Measure the water',
-        text: `Measure ${waterDisplay} (${waterWeightDisplay}) of water.`,
+        '@type': 'WebApplication',
+        name: 'Sugar Syrup Calculator',
+        url: 'https://hivepal.app/tools/syrup-calculator',
+        applicationCategory: 'UtilitiesApplication',
+        applicationSubCategory: 'Beekeeping Calculator',
+        operatingSystem: 'Web',
+        browserRequirements: 'Requires JavaScript',
+        description:
+          'Free calculator for bee feeding syrup. Computes exact sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size, in metric or imperial units.',
+        isAccessibleForFree: true,
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Hive Pal',
+          url: 'https://hivepal.app',
+        },
       },
       {
-        '@type': 'HowToStep',
-        name: 'Warm the water',
-        text: 'Heat the water until warm (not boiling).',
+        '@type': 'HowTo',
+        name: 'How to make sugar syrup for bees',
+        description:
+          'Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.',
+        step: [
+          {
+            '@type': 'HowToStep',
+            name: 'Measure the water',
+            text: `Measure ${waterDisplay} (${waterWeightDisplay}) of water.`,
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Warm the water',
+            text: 'Heat the water until warm (not boiling).',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Add the sugar',
+            text: `Add ${sugarDisplay} of white granulated sugar.`,
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Stir to dissolve',
+            text: 'Stir until the sugar is completely dissolved.',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Cool before feeding',
+            text: 'Let the syrup cool to room temperature before feeding.',
+          },
+        ],
       },
       {
-        '@type': 'HowToStep',
-        name: 'Add the sugar',
-        text: `Add ${sugarDisplay} of white granulated sugar.`,
-      },
-      {
-        '@type': 'HowToStep',
-        name: 'Stir to dissolve',
-        text: 'Stir until the sugar is completely dissolved.',
-      },
-      {
-        '@type': 'HowToStep',
-        name: 'Cool before feeding',
-        text: 'Let the syrup cool to room temperature before feeding.',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What sugar-to-water ratio should I use to feed bees?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Use 1:1 syrup (equal parts sugar and water by weight) in spring to stimulate brood rearing, 3:2 as a general-purpose feed, and 2:1 (two parts sugar to one part water) in fall to build winter stores. Thick syrup is easier for bees to convert to capped stores; thin syrup mimics a nectar flow.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'When should I feed bees thin (1:1) syrup?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Feed 1:1 syrup in spring or whenever you want to stimulate brood rearing. Its water content mimics a natural nectar flow, encouraging the queen to lay and the colony to build up.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'When should I feed bees thick (2:1) syrup?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Feed 2:1 syrup in late summer and fall to help colonies build winter stores. The lower water content means bees spend less energy evaporating it before capping.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I use brown sugar, honey, or molasses to make bee syrup?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'No. Use only white granulated cane or beet sugar. Brown sugar, molasses, and unrefined sweeteners contain compounds that cause dysentery in bees. Honey from unknown sources can also transmit disease.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Should I boil sugar syrup for bees?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'No. Heat the water until warm enough to dissolve the sugar, but do not boil. Boiling sugar syrup produces hydroxymethylfurfural (HMF), which is toxic to bees.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'How much sugar do I need for one liter of 1:1 syrup?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'For one liter of finished 1:1 syrup, you need roughly 715 g of water and 715 g of white granulated sugar. The exact amounts depend on the ratio and final volume — this calculator computes them based on sucrose displacement.',
+            },
+          },
+        ],
       },
     ],
   };
@@ -218,14 +297,17 @@ export function SyrupCalculatorPage() {
           property="twitter:description"
           content="Free calculator for bee sugar syrup. Get precise sugar and water amounts for any ratio and container size."
         />
-        <script type="application/ld+json">{JSON.stringify(howToJsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
       <MainContent>
         <h1 className="text-2xl font-bold mb-1">
           {t('syrupCalculator.title')}
         </h1>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-muted-foreground mb-3">
           {t('syrupCalculator.description')}
+        </p>
+        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+          {t('syrupCalculator.intro')}
         </p>
 
         {/* Units */}
