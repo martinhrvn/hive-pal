@@ -34,7 +34,10 @@ const jsonLd = {
   },
 };
 
-const serif = { fontFamily: "'Fraunces', ui-serif, Georgia, serif" };
+const display = {
+  fontFamily:
+    "'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif",
+};
 const sans = { fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" };
 
 function HexBullet() {
@@ -207,16 +210,16 @@ export function LandingPage() {
 
           <h1
             className="mt-8 text-[clamp(2.75rem,6vw,5rem)] font-medium leading-[1.02] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)]"
-            style={{ ...serif, fontVariationSettings: "'opsz' 144" }}
+            style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
           >
             Your open-source
             <br />
             beekeeping{' '}
             <span
-              className="italic text-amber-300"
+              className="text-amber-300"
               style={{
-                ...serif,
-                fontVariationSettings: "'opsz' 144, 'SOFT' 80",
+                ...display,
+                fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 600",
               }}
             >
               companion
@@ -280,10 +283,10 @@ export function LandingPage() {
               <SectionLabel>Modern beekeeping</SectionLabel>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
-                style={{ ...serif, fontVariationSettings: "'opsz' 144" }}
+                style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
               >
                 Everything you need to{' '}
-                <span className="italic text-stone-700" style={serif}>
+                <span className="text-amber-700" style={display}>
                   tend
                 </span>{' '}
                 your hives.
@@ -377,11 +380,11 @@ export function LandingPage() {
               </div>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight sm:text-5xl"
-                style={{ ...serif, fontVariationSettings: "'opsz' 144" }}
+                style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
               >
                 Inspect with your voice,
                 <br />
-                <span className="italic text-amber-200" style={serif}>
+                <span className="text-amber-200" style={display}>
                   not your keyboard
                 </span>
                 .
@@ -466,10 +469,10 @@ export function LandingPage() {
             </div>
             <h2
               className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
-              style={{ ...serif, fontVariationSettings: "'opsz' 144" }}
+              style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
             >
               Self-host, or let us{' '}
-              <span className="italic" style={serif}>
+              <span className="text-amber-700" style={display}>
                 run it
               </span>{' '}
               for you.
@@ -602,7 +605,7 @@ export function LandingPage() {
               <SectionLabel>Free tools</SectionLabel>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
-                style={{ ...serif, fontVariationSettings: "'opsz' 144" }}
+                style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
               >
                 Free tools, no signup.
               </h2>
@@ -687,10 +690,10 @@ export function LandingPage() {
           />
           <h2
             className="mt-8 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-6xl"
-            style={{ ...serif, fontVariationSettings: "'opsz' 144" }}
+            style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
           >
             Give it a{' '}
-            <span className="italic text-amber-700" style={serif}>
+            <span className="text-amber-700" style={display}>
               try
             </span>
             .
