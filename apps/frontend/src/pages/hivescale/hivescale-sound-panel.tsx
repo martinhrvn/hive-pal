@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Activity, ChevronDown, Mic, MicOff } from 'lucide-react';
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Legend,
   Line,
@@ -162,8 +160,8 @@ function MicStatusBadge({
 }
 
 /**
- * FFT band bar chart for a single channel over time.
- * Each X tick = one measurement; bars are the 5 band energies (dBFS).
+ * FFT band line chart for a single channel over time.
+ * Each series is one of the 5 band energies (dBFS) tracked over time.
  */
 function FftBandChart({
   data,
@@ -198,7 +196,7 @@ function FftBandChart({
 
   if (!visibleData.length) {
     return (
-      <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-96 items-center justify-center text-sm text-muted-foreground">
         <Activity className="mr-2 h-4 w-4" />
         No data for {emptyLabel} in this range.
       </div>
@@ -208,9 +206,9 @@ function FftBandChart({
   return (
     <div>
       <p className="mb-2 text-sm font-medium">{channelLabel}</p>
-      <div className="h-52">
+      <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          <LineChart
             data={visibleData}
             margin={{ top: 4, right: 8, bottom: 4, left: 4 }}
           >
@@ -244,111 +242,17 @@ function FftBandChart({
             />
             <Legend />
             {BAND_KEYS.map(band => (
-              <Bar
+              <Line
                 key={band}
+                type="monotone"
                 dataKey={band}
                 name={`${FFT_BANDS[band].label} (${FFT_BANDS[band].range})`}
-                fill={FFT_BANDS[band].fill}
+                stroke={FFT_BANDS[band].fill}
+                dot={false}
+                connectNulls
                 isAnimationActive={false}
               />
             ))}
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-}
-
-/**
- * RMS dBFS line chart for both channels over time (broadband overview).
- */
-function RmsLineChart({
-  data,
-  dateRange,
-  leftName,
-  rightName,
-}: Readonly<{
-  data: {
-    timestamp: number;
-    measuredAt: string;
-    leftRms: number | null;
-    rightRms: number | null;
-  }[];
-  dateRange: HiveScaleDateRange;
-  leftName: string;
-  rightName: string;
-}>) {
-  const visibleData = useMemo(() => {
-    const startMs = dateRange.startAt
-      ? new Date(dateRange.startAt).getTime()
-      : Number.NEGATIVE_INFINITY;
-    const endMs = dateRange.endAt
-      ? new Date(dateRange.endAt).getTime()
-      : Number.POSITIVE_INFINITY;
-    return data.filter(
-      d => d.timestamp >= startMs && d.timestamp <= endMs,
-    );
-  }, [data, dateRange]);
-
-  if (!visibleData.length) {
-    return (
-      <div className="flex h-36 items-center justify-center text-sm text-muted-foreground">
-        <Activity className="mr-2 h-4 w-4" />
-        No RMS data in this range.
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <p className="mb-2 text-sm font-medium">Broadband RMS (both channels)</p>
-      <div className="h-40">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={visibleData}
-            margin={{ top: 4, right: 8, bottom: 4, left: 4 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              domain={[
-                dateRange.startAt
-                  ? new Date(dateRange.startAt).getTime()
-                  : 'dataMin',
-                dateRange.endAt
-                  ? new Date(dateRange.endAt).getTime()
-                  : 'dataMax',
-              ]}
-              scale="time"
-              type="number"
-              tickFormatter={formatChartTick}
-              minTickGap={40}
-            />
-            <YAxis unit=" dBFS" width={72} />
-            <Tooltip
-              labelFormatter={value => formatDateTime(Number(value))}
-              formatter={(value, name) => [
-                typeof value === 'number' ? `${value.toFixed(1)} dBFS` : '—',
-                name,
-              ]}
-            />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="leftRms"
-              name={`${leftName} RMS`}
-              stroke="var(--chart-1)"
-              dot={false}
-              connectNulls
-            />
-            <Line
-              type="monotone"
-              dataKey="rightRms"
-              name={`${rightName} RMS`}
-              stroke="var(--chart-2)"
-              dot={false}
-              connectNulls
-            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -454,21 +358,7 @@ export function HiveScaleSoundPanel({
     [measurements],
   );
 
-  // RMS line chart data (both channels)
-  const rmsData = useMemo(
-    () =>
-      sorted
-        .map(m => ({
-          timestamp: new Date(m.measured_at).getTime(),
-          measuredAt: m.measured_at,
-          leftRms: toFiniteNumber(m.mic_left_rms_dbfs),
-          rightRms: toFiniteNumber(m.mic_right_rms_dbfs),
-        }))
-        .filter(d => Number.isFinite(d.timestamp)),
-    [sorted],
-  );
-
-  // FFT band bar chart data — left channel
+  // FFT band line chart data — left channel
   const fftLeftData = useMemo(
     () =>
       sorted
@@ -485,7 +375,7 @@ export function HiveScaleSoundPanel({
     [sorted],
   );
 
-  // FFT band bar chart data — right channel
+  // FFT band line chart data — right channel
   const fftRightData = useMemo(
     () =>
       sorted
@@ -526,7 +416,7 @@ export function HiveScaleSoundPanel({
                   />
                 </CardTitle>
                 <CardDescription>
-                  INMP441 broadband RMS and FFT band energy (dBFS) —{' '}
+                  INMP441 FFT band energy (dBFS) —{' '}
                   {leftName} (left) · {rightName} (right)
                 </CardDescription>
               </div>
@@ -551,23 +441,12 @@ export function HiveScaleSoundPanel({
         <CollapsibleContent>
           <CardContent className="space-y-6 pt-0">
             {isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-40 w-full" />
-                <Skeleton className="h-52 w-full" />
-                <Skeleton className="h-52 w-full" />
+              <div className="grid gap-6 xl:grid-cols-2">
+                <Skeleton className="h-96 w-full" />
+                <Skeleton className="h-96 w-full" />
               </div>
             ) : (
               <>
-                {/* Broadband RMS over time */}
-                <RmsLineChart
-                  data={rmsData}
-                  dateRange={dateRange}
-                  leftName={leftName}
-                  rightName={rightName}
-                />
-
-                <div className="my-1 border-t" />
-
                 {/* FFT band charts per channel */}
                 <div className="grid gap-6 xl:grid-cols-2">
                   <FftBandChart
