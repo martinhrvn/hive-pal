@@ -9,9 +9,51 @@ import { HiveMinimap } from '@/components/hive-minimap';
 import { ApiaryHeader } from '@/components/apiary-header';
 import { ApiaryTimeline } from '@/components/apiary-timeline';
 import { Card, CardContent } from '@/components/ui/card';
-import { Clock } from 'lucide-react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ArrowUpRight, ChevronDown, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useApiaries, useHives } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
+import { useLocalStorageBoolean } from '@/hooks/use-local-storage-boolean';
+import { cn } from '@/lib/utils';
+
+type CollapsibleSectionProps = {
+  storageKey: string;
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+};
+
+const CollapsibleSection = ({
+  storageKey,
+  title,
+  action,
+  children,
+}: CollapsibleSectionProps) => {
+  const [open, setOpen] = useLocalStorageBoolean(storageKey, true);
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <div className="flex items-center justify-between mb-2">
+        <CollapsibleTrigger className="group flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 transition-transform',
+              !open && '-rotate-90',
+            )}
+          />
+          {title}
+        </CollapsibleTrigger>
+        {action}
+      </div>
+      <CollapsibleContent>{children}</CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 export const HomePage = () => {
   const { data, isLoading, refetch } = useHives();
@@ -55,9 +97,28 @@ export const HomePage = () => {
         <div className="space-y-6">
           <ApiaryHeader />
           {activeApiaryId && (
-            <HiveMinimap apiaryId={activeApiaryId} className="mb-6" />
+            <CollapsibleSection
+              storageKey="home-section:minimap"
+              title="Hive Layout"
+              action={
+                <Link
+                  to={`/apiaries/${activeApiaryId}?tab=hives`}
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Edit Hive Layout
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              }
+            >
+              <HiveMinimap apiaryId={activeApiaryId} showHeader={false} />
+            </CollapsibleSection>
           )}
-          <HiveList hives={data ?? []} />
+          <CollapsibleSection
+            storageKey="home-section:hives"
+            title="Hives"
+          >
+            <HiveList hives={data ?? []} />
+          </CollapsibleSection>
           <ApiaryTimeline />
         </div>
       </MainContent>
