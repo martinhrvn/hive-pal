@@ -17,12 +17,44 @@ type FramesActionProps = {
   action?: FramesActionType;
   onSave: (action: FramesActionType) => void;
   onRemove: (action: 'FRAME') => void;
+  /** Brood-box frame count excluding this inspection's frame action */
+  baseBroodFrames?: number | null;
+  /** Total brood-box frame capacity (sum of maxFrameCount) */
+  broodFrameCapacity?: number | null;
 };
 
-export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
+export const FramesForm: React.FC<FramesActionProps> = ({
+  action,
+  onSave,
+  baseBroodFrames,
+  broodFrameCapacity,
+}) => {
   const { t } = useTranslation('inspection');
   const [frames, setFrames] = useState<number | null>(action?.frames ?? 0);
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
+
+  // Resulting hive frame count if this action is applied
+  const projectedTotal = (baseBroodFrames ?? 0) + (frames ?? 0);
+
+  // Removing more frames than the hive currently has
+  const wouldGoBelowZero =
+    baseBroodFrames != null && (frames ?? 0) < 0 && projectedTotal < 0;
+
+  // Adding more frames than the brood boxes can physically hold
+  const wouldExceedCapacity =
+    broodFrameCapacity != null &&
+    (frames ?? 0) > 0 &&
+    projectedTotal > broodFrameCapacity;
+
+  const warning = wouldGoBelowZero
+    ? t('inspection:form.actions.frames_section.warningNoFramesToRemove')
+    : wouldExceedCapacity
+      ? t('inspection:form.actions.frames_section.warningExceedsCapacity', {
+          capacity: broodFrameCapacity,
+        })
+      : null;
+
+  const isInvalid = wouldGoBelowZero || wouldExceedCapacity;
 
   return (
     <div
@@ -48,6 +80,11 @@ export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
         <div className="text-sm text-gray-500">
           {t('inspection:form.actions.frames_section.framesHint')}
         </div>
+        {warning && (
+          <div className="text-sm font-medium text-red-600" role="alert">
+            {warning}
+          </div>
+        )}
       </div>
 
       <div className="lg:col-span-2 flex flex-col gap-4">
@@ -64,7 +101,9 @@ export const FramesForm: React.FC<FramesActionProps> = ({ action, onSave }) => {
       <div className="col-span-2 flex justify-end">
         {frames !== null && (
           <Button
+            disabled={isInvalid}
             onClick={() => {
+              if (isInvalid) return;
               onSave({
                 type: 'FRAME',
                 frames,
@@ -84,6 +123,8 @@ export const FramesView: React.FC<FramesActionProps> = ({
   action,
   onSave,
   onRemove,
+  baseBroodFrames,
+  broodFrameCapacity,
 }) => {
   const { t } = useTranslation('inspection');
   const [isEditing, setIsEditing] = useState(false);
@@ -105,6 +146,8 @@ export const FramesView: React.FC<FramesActionProps> = ({
       action={action}
       onSave={handleSave}
       onRemove={onRemove}
+      baseBroodFrames={baseBroodFrames}
+      broodFrameCapacity={broodFrameCapacity}
     />
   ) : (
     <ActionViewRenderer

@@ -21,6 +21,7 @@ const sidebars: SidebarsConfig = {
         'user-guide/harvest',
         'user-guide/equipment',
         'user-guide/weather',
+        'user-guide/hivescale',
         'user-guide/fab-actions',
         'user-guide/feedback',
       ],

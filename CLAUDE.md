@@ -142,3 +142,7 @@ SENTRY_DSN=                # Optional error tracking
 - Use React Query for all server state management
 - Components should use Tailwind CSS classes, avoid inline styles
 - API responses follow consistent structure with proper HTTP status codes
+
+### Handling modifications / push
+ - do not push any modifications to github
+ - always put modified files in a .zip archive with the relevant repository structure.

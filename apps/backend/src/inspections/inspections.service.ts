@@ -55,6 +55,8 @@ type InspectionWithIncludes = Prisma.InspectionGetPayload<{
   };
 }>;
 import {
+  ActionType,
+  CreateAction,
   CreateInspection,
   CreateInspectionResponse,
   InspectionFilter,
@@ -120,6 +122,94 @@ export class InspectionsService {
     private photosService: PhotosService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly winstonLogger: Logger,
   ) {}
+
+  /**
+   * Sums the net frame quantity (added - removed) across all FRAME actions in an
+   * incoming actions payload. Returns 0 when there are no frame actions.
+   */
+  private sumFrameActionDelta(actions?: CreateAction[]): number {
+    if (!actions || actions.length === 0) return 0;
+    return actions.reduce((sum, action) => {
+      if (action.details?.type === ActionType.FRAME) {
+        return sum + action.details.quantity;
+      }
+      return sum;
+    }, 0);
+  }
+
+  /**
+   * Returns the net frame delta that has already been persisted for an
+   * inspection (sum of its stored FrameAction quantities).
+   */
+  private async getInspectionFrameDelta(
+    tx: Prisma.TransactionClient,
+    inspectionId: string,
+  ): Promise<number> {
+    const frameActions = await tx.frameAction.findMany({
+      where: { action: { inspectionId } },
+      select: { quantity: true },
+    });
+    return frameActions.reduce((sum, fa) => sum + fa.quantity, 0);
+  }
+
+  /**
+   * Applies a signed frame delta to a hive's brood boxes, keeping the stored
+   * frame counts in sync with frame (Rähmchen) actions. Frames are added to /
+   * removed from the topmost brood box first, respecting each box's
+   * maxFrameCount and never dropping below zero. Any surplus that cannot fit
+   * within capacity is added to the last brood box so the recorded change is
+   * never silently lost.
+   */
+  private async applyFrameDeltaToBroodBoxes(
+    tx: Prisma.TransactionClient,
+    hiveId: string,
+    delta: number,
+  ): Promise<void> {
+    if (!delta) return;
+
+    const broodBoxes = await tx.box.findMany({
+      where: { hiveId, type: 'BROOD' },
+      orderBy: { position: 'asc' },
+    });
+    if (broodBoxes.length === 0) return;
+
+    let remaining = delta;
+    // Process from the topmost brood box (highest position) downward.
+    const ordered = [...broodBoxes].reverse();
+    for (const box of ordered) {
+      if (remaining === 0) break;
+      if (remaining > 0) {
+        const capacity = Math.max(0, box.maxFrameCount - box.frameCount);
+        const add = Math.min(capacity, remaining);
+        if (add > 0) {
+          await tx.box.update({
+            where: { id: box.id },
+            data: { frameCount: box.frameCount + add },
+          });
+          remaining -= add;
+        }
+      } else {
+        const removable = Math.min(box.frameCount, -remaining);
+        if (removable > 0) {
+          await tx.box.update({
+            where: { id: box.id },
+            data: { frameCount: box.frameCount - removable },
+          });
+          remaining += removable;
+        }
+      }
+    }
+
+    // If additions did not fully fit within capacity, place the surplus on the
+    // last brood box so the recorded frame change is preserved.
+    if (remaining > 0) {
+      const lastBox = broodBoxes[broodBoxes.length - 1];
+      await tx.box.update({
+        where: { id: lastBox.id },
+        data: { frameCount: { increment: remaining } },
+      });
+    }
+  }
 
   async create(
     createInspectionDto: CreateInspection,
@@ -206,6 +296,13 @@ export class InspectionsService {
             actions,
             tx,
             filter.userId,
+          );
+
+          // Keep the hive's brood-box frame counts in sync with frame actions
+          await this.applyFrameDeltaToBroodBoxes(
+            tx,
+            inspection.hiveId,
+            this.sumFrameActionDelta(actions),
           );
         }
 
@@ -301,6 +398,7 @@ export class InspectionsService {
       select: {
         id: true,
         status: true,
+        hiveId: true,
         hive: {
           select: {
             apiary: {
@@ -354,11 +452,23 @@ export class InspectionsService {
         }
 
         if (actions !== undefined) {
+          // Capture the previously applied frame delta before the existing
+          // frame actions are replaced, then apply only the difference so the
+          // brood-box frame counts are not double-counted on re-save.
+          const previousFrameDelta = await this.getInspectionFrameDelta(tx, id);
+
           await this.actionsService.updateActions(
             id,
             actions,
             tx,
             filter.userId,
+          );
+
+          const nextFrameDelta = this.sumFrameActionDelta(actions);
+          await this.applyFrameDeltaToBroodBoxes(
+            tx,
+            inspection.hiveId,
+            nextFrameDelta - previousFrameDelta,
           );
         }
 
@@ -403,7 +513,7 @@ export class InspectionsService {
     );
   }
 
-  async remove(id: string, filter: ApiaryUserFilter) {
+  async remove(id: string, filter: ApiaryUserFilter, revertFrames = false) {
     // Verify inspection exists and belongs to user's apiary
     const inspection = await this.prisma.inspection.findFirst({
       where: {
@@ -427,6 +537,19 @@ export class InspectionsService {
     await this.photosService.deleteAllForInspection(id);
 
     return this.prisma.$transaction(async (tx) => {
+      // Optionally revert this inspection's frame-count change before deleting
+      // its actions, so the hive's brood-box frame counts stay consistent.
+      if (revertFrames) {
+        const appliedFrameDelta = await this.getInspectionFrameDelta(tx, id);
+        if (appliedFrameDelta) {
+          await this.applyFrameDeltaToBroodBoxes(
+            tx,
+            inspection.hiveId,
+            -appliedFrameDelta,
+          );
+        }
+      }
+
       // Delete related actions first
       await this.actionsService.deleteActions(id, tx);
 

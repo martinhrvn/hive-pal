@@ -180,7 +180,7 @@ def process_analysis_job() -> bool:
         if not transcript:
             raise ValueError("Empty transcript in analysis job")
 
-        log.info("Running Ollama for audioId=%s", audio_id)
+        log.info("Running AI analysis for audioId=%s", audio_id)
         ai_result = recommend_from_transcript(transcript)
         draft = map_ai_to_form_draft(ai_result)
 

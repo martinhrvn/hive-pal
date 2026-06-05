@@ -34,6 +34,21 @@ export const userPreferencesSchema = z.object({
   pushNotifications: z.boolean().optional(),
   inspectionReminders: z.boolean().optional(),
   harvestReminders: z.boolean().optional(),
+
+  // Swarm alert settings (per HiveScale device)
+  swarmAlert: z
+    .object({
+      // Global toggle – if false, no swarm alerts are sent at all
+      enabled: z.boolean().default(false),
+      // Weight drop in kg that triggers the alert (default 2 kg)
+      weightDropKg: z.number().min(0.1).max(20).default(2),
+      // Number of consecutive measurements to look back (default 3)
+      measurementWindow: z.number().int().min(2).max(10).default(3),
+      // Per-device last-alerted timestamps (ISO strings), keyed by deviceId
+      // Used to enforce a cooldown so the same device doesn't spam alerts.
+      lastAlertedAt: z.record(z.string(), z.string()).optional(),
+    })
+    .optional(),
 });
 
 // Update user info schema

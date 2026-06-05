@@ -23,7 +23,11 @@ export enum BoxVariantEnum {
 
 // Hive system variant groups - defines which variants are compatible
 export const HIVE_SYSTEM_VARIANTS = {
-  LANGSTROTH: [BoxVariantEnum.LANGSTROTH_DEEP, BoxVariantEnum.LANGSTROTH_MEDIUM, BoxVariantEnum.LANGSTROTH_SHALLOW],
+  LANGSTROTH: [
+    BoxVariantEnum.LANGSTROTH_DEEP,
+    BoxVariantEnum.LANGSTROTH_MEDIUM,
+    BoxVariantEnum.LANGSTROTH_SHALLOW,
+  ],
   NATIONAL: [BoxVariantEnum.NATIONAL_DEEP, BoxVariantEnum.NATIONAL_SHALLOW],
   B_HIVE: [BoxVariantEnum.B_DEEP, BoxVariantEnum.B_SHALLOW],
   DADANT: [BoxVariantEnum.DADANT],
@@ -50,7 +54,7 @@ export function getHiveSystem(variant: BoxVariantEnum): HiveSystem {
  * Get all compatible variants for a main box variant
  */
 export function getCompatibleVariants(
-  mainBoxVariant: BoxVariantEnum
+  mainBoxVariant: BoxVariantEnum,
 ): BoxVariantEnum[] {
   const system = getHiveSystem(mainBoxVariant);
   return [...HIVE_SYSTEM_VARIANTS[system]];
@@ -62,7 +66,7 @@ export function getCompatibleVariants(
  */
 export function isVariantCompatible(
   mainBoxVariant: BoxVariantEnum,
-  boxVariant: BoxVariantEnum
+  boxVariant: BoxVariantEnum,
 ): boolean {
   if (
     mainBoxVariant === BoxVariantEnum.CUSTOM ||
@@ -71,7 +75,7 @@ export function isVariantCompatible(
     return true;
   const system = getHiveSystem(mainBoxVariant);
   return (HIVE_SYSTEM_VARIANTS[system] as readonly BoxVariantEnum[]).includes(
-    boxVariant
+    boxVariant,
   );
 }
 
@@ -80,22 +84,22 @@ export function isVariantCompatible(
  */
 export function getEquivalentVariant(
   currentVariant: BoxVariantEnum,
-  targetSystem: HiveSystem
+  targetSystem: HiveSystem,
 ): BoxVariantEnum {
   const isDeep =
     currentVariant.includes('DEEP') ||
-    [BoxVariantEnum.DADANT, BoxVariantEnum.WARRE, BoxVariantEnum.TOP_BAR].includes(
-      currentVariant
-    );
+    [
+      BoxVariantEnum.DADANT,
+      BoxVariantEnum.WARRE,
+      BoxVariantEnum.TOP_BAR,
+    ].includes(currentVariant);
 
   const targetVariants = HIVE_SYSTEM_VARIANTS[targetSystem];
 
   if (isDeep) {
-    return (
-      targetVariants.find((v) => v.includes('DEEP')) || targetVariants[0]
-    );
+    return targetVariants.find(v => v.includes('DEEP')) || targetVariants[0];
   }
-  return targetVariants.find((v) => v.includes('SHALLOW')) || targetVariants[0];
+  return targetVariants.find(v => v.includes('SHALLOW')) || targetVariants[0];
 }
 
 /** Maps built-in frame size names to box variant */
@@ -106,7 +110,7 @@ export const FRAME_SIZE_VARIANT_MAP: Record<string, BoxVariantEnum> = {
   Dadant: BoxVariantEnum.DADANT,
   'National Deep': BoxVariantEnum.NATIONAL_DEEP,
   'National Shallow': BoxVariantEnum.NATIONAL_SHALLOW,
-  'Warré': BoxVariantEnum.WARRE,
+  Warré: BoxVariantEnum.WARRE,
   'Top Bar': BoxVariantEnum.TOP_BAR,
   'B Deep': BoxVariantEnum.B_DEEP,
   'B Shallow': BoxVariantEnum.B_SHALLOW,
@@ -136,21 +140,21 @@ export function getVariantForFrameSize(frameSize: FrameSize): BoxVariantEnum {
 /** Find the built-in frame size matching a variant */
 export function findFrameSizeForVariant(
   frameSizes: FrameSize[],
-  variant: BoxVariantEnum
+  variant: BoxVariantEnum,
 ): FrameSize | undefined {
   const name = VARIANT_FRAME_SIZE_MAP[variant];
   if (!name) return undefined;
-  return frameSizes.find((fs) => fs.name === name && fs.isBuiltIn);
+  return frameSizes.find(fs => fs.name === name && fs.isBuiltIn);
 }
 
 /** Get compatible frame sizes for a given main box frame size */
 export function getCompatibleFrameSizes(
   allFrameSizes: FrameSize[],
-  mainBoxFrameSize: FrameSize
+  mainBoxFrameSize: FrameSize,
 ): FrameSize[] {
   const mainVariant = getVariantForFrameSize(mainBoxFrameSize);
   const compatibleVariants = getCompatibleVariants(mainVariant);
-  return allFrameSizes.filter((fs) => {
+  return allFrameSizes.filter(fs => {
     const v = getVariantForFrameSize(fs);
     return v === BoxVariantEnum.CUSTOM || compatibleVariants.includes(v);
   });
@@ -172,6 +176,7 @@ export const boxSchema = z.object({
   variant: boxVariantSchema.optional(),
   frameSizeId: z.string().uuid().optional().nullable(),
   color: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+  addedAt: z.string().datetime().or(z.date()).optional(),
   winterized: z.boolean().default(false),
 });
 

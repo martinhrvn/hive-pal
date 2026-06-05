@@ -1,0 +1,38 @@
+services:
+  hivepal-ai:
+    image: ghcr.io/YOUR_GITHUB_USER_OR_ORG/hivepal-ai:latest
+    container_name: hivepal-ai
+    environment:
+      AI_PROVIDER: openai
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: gpt-4o-mini
+      WHISPER_MODEL: small
+      WHISPER_COMPUTE_TYPE: int8
+      AUDIO_INPUT_DIR: /data/incoming
+      TRANSCRIPTS_DIR: /data/transcripts
+      OUTPUT_DIR: /data/processed
+      AI_API_KEY: ${AI_API_KEY}
+    ports:
+      - "8008:8008"
+    restart: unless-stopped
+    volumes:
+      - /YOUR-PATH/HivePal/AI:/data
+
+  # Pull-mode worker. Uncomment to use instead of (or in addition to) the
+  # `hivepal-ai` Flask service above. Requires AI_PROCESSING_MODE=pull (or auto)
+  # on the HivePal backend, and a worker token from /admin/worker-tokens.
+  #
+  # hivepal-worker:
+  #   image: ghcr.io/YOUR_GITHUB_USER_OR_ORG/hivepal-ai:latest
+  #   container_name: hivepal-worker
+  #   command: ["python", "worker.py"]
+  #   environment:
+  #     HIVEPAL_URL: https://your-hivepal-instance.com
+  #     WORKER_TOKEN: ${HIVEPAL_WORKER_TOKEN}
+  #     POLL_INTERVAL_SECONDS: "5"
+  #     AI_PROVIDER: openai
+  #     OPENAI_API_KEY: ${OPENAI_API_KEY}
+  #     OPENAI_MODEL: gpt-4o-mini
+  #     WHISPER_MODEL: small
+  #     WHISPER_COMPUTE_TYPE: int8
+  #   restart: unless-stopped

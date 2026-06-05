@@ -38,6 +38,10 @@ ALLOWED_ORIGINS=http://localhost:5173,https://yourdomain.com
 # Optional services
 SENTRY_DSN=your_sentry_dsn
 SMTP_HOST=your_smtp_server
+
+# Optional HiveScale integration
+HIVESCALE_API_BASE_URL=https://hivescale.example.com
+HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
 ```
 
 ### Frontend (.env)
@@ -48,6 +52,21 @@ VITE_API_URL=http://localhost:3000
 # Optional
 VITE_SENTRY_DSN=your_sentry_dsn
 ```
+
+
+### HiveScale sidecar / external service
+
+Hive-Pal can use either an external HiveScale URL or the optional compose overlay in `apps/hivescale/docker-compose.hivescale.yaml`. In both cases, the shared key must match on both services:
+
+```bash
+# Hive-Pal backend
+HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
+
+# HiveScale backend
+HIVEPAL_SERVICE_API_KEY=a-long-random-shared-secret
+```
+
+HiveScale remains the source of truth for scale measurements, device roles, off-grid telemetry, and calibration data. Hive-Pal only proxies authenticated user requests.
 
 ## Docker Compose Structure
 

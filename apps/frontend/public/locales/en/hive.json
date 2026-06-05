@@ -200,6 +200,8 @@
     "promptCopyToClipboard": "Copy to clipboard",
     "promptCopiedToClipboard": "Prompt copied to clipboard",
     "failedToCopyToClipboard": "Failed to copy prompt to clipboard",
+    "sendToAssistant": "Send to AI-Assistant",
+    "failedToSendToAssistant": "Could not open the assistant",
     "textArea": {
       "description": "You are an experienced beekeeping advisor. Please analyze the following hive data and provide your assessment.",
       "hiveOverview": "Hive Overview",

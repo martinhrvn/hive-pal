@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-description: Overview of Hive-Pal features including apiary management, hive tracking, inspections, queen management, and harvest recording.
-keywords: [hive-pal user guide, beekeeping features, apiary management, hive tracking overview]
+description: Overview of Hive-Pal features including apiary management, hive tracking, inspections, queen management, harvest recording, and HiveScale telemetry.
+keywords: [hive-pal user guide, beekeeping features, apiary management, hive tracking overview, hivescale]
 ---
 
 # User Guide Overview
@@ -44,6 +44,12 @@ Hive-Pal includes several core modules:
 - Track queen details and lineage
 - Record queen replacement events
 - Monitor queen performance
+
+### [HiveScale Integration](./hivescale.md)
+
+- Claim self-hosted HiveScale devices by pairing code
+- View live weight, temperature, battery, solar, and cellular telemetry
+- Correlate scale history with Hive-Pal inspection events
 
 ## Mobile Usage
 

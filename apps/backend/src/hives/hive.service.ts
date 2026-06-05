@@ -127,18 +127,30 @@ export class HiveService {
       // Create boxes if provided
       if (boxes && boxes.length > 0) {
         await prisma.box.createMany({
-          data: boxes.map((box) => ({
-            hiveId: hive.id,
-            position: box.position,
-            frameCount: box.frameCount,
-            maxFrameCount: box.maxFrameCount || 10,
-            hasExcluder: box.hasExcluder,
-            type: box.type,
-            variant: box.variant,
-            frameSizeId: box.frameSizeId ?? null,
-            color: box.color,
-            winterized: box.winterized ?? false,
-          })),
+          data: boxes.map((box) => {
+            let addedAt: Date;
+            if (box.addedAt instanceof Date) {
+              addedAt = box.addedAt;
+            } else if (box.addedAt) {
+              addedAt = new Date(box.addedAt);
+            } else {
+              addedAt = new Date();
+            }
+
+            return {
+              hiveId: hive.id,
+              position: box.position,
+              frameCount: box.frameCount,
+              maxFrameCount: box.maxFrameCount || 10,
+              hasExcluder: box.hasExcluder,
+              type: box.type,
+              variant: box.variant,
+              frameSizeId: box.frameSizeId ?? null,
+              color: box.color,
+              addedAt,
+              winterized: box.winterized ?? false,
+            };
+          }),
         });
         this.logger.log(`Created ${boxes.length} boxes for hive ${hive.id}`);
       }
@@ -318,6 +330,7 @@ export class HiveService {
               variant: box.variant as BoxVariantEnum,
               frameSizeId: box.frameSizeId ?? undefined,
               color: box.color ?? undefined,
+              addedAt: box.addedAt?.toISOString(),
               winterized: box.winterized,
             })),
           };
@@ -438,6 +451,7 @@ export class HiveService {
         maxFrameCount: box.maxFrameCount,
         hasExcluder: box.hasExcluder,
         color: box.color ?? undefined,
+        addedAt: box.addedAt?.toISOString(),
         type: box.type as BoxTypeEnum,
         variant: box.variant as BoxVariantEnum,
         frameSizeId: box.frameSizeId ?? undefined,
@@ -641,6 +655,11 @@ export class HiveService {
     const oldBoxes = hive.boxes || [];
     const newBoxes = updateHiveBoxesDto.boxes || [];
 
+    const oldBoxesById = new Map(oldBoxes.map((box) => [box.id, box]));
+    const oldBoxesByPosition = new Map(
+      oldBoxes.map((box) => [box.position, box]),
+    );
+
     const oldBoxCount = oldBoxes.length;
     const newBoxCount = newBoxes.length;
     const oldFrameCount = oldBoxes.reduce(
@@ -705,6 +724,24 @@ export class HiveService {
             variant: box.variant,
             frameSizeId: box.frameSizeId ?? null,
             color: box.color,
+            addedAt:
+              box.addedAt instanceof Date
+                ? box.addedAt
+                : box.addedAt
+                  ? new Date(box.addedAt)
+                  : ((box.id
+                      ? (
+                          oldBoxesById.get(box.id) as
+                            | { addedAt?: Date }
+                            | undefined
+                        )?.addedAt
+                      : undefined) ??
+                    (
+                      oldBoxesByPosition.get(box.position) as
+                        | { addedAt?: Date }
+                        | undefined
+                    )?.addedAt ??
+                    new Date()),
             winterized: box.winterized ?? false,
           },
         });

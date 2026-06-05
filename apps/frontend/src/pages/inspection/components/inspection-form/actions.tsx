@@ -73,6 +73,10 @@ interface ActionsSectionProps {
   hiveBoxes?: Box[];
   /** The hive's id — passed through to the box configurator */
   hiveId?: string;
+  /** Brood-box frame count excluding this inspection's frame action */
+  baseBroodFrames?: number | null;
+  /** Total brood-box frame capacity (sum of maxFrameCount) */
+  broodFrameCapacity?: number | null;
   /** Hide the Box Configuration action option — it's per-hive and doesn't
    *  make sense in bulk-create flows where the same form is applied to many
    *  hives. */
@@ -194,6 +198,8 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
   onDismissSuggestion,
   hiveBoxes = [],
   hiveId,
+  baseBroodFrames,
+  broodFrameCapacity,
   disableBoxConfig = false,
 }) => {
   const { t } = useTranslation('inspection');
@@ -284,7 +290,14 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
       case 'TREATMENT':
         return <TreatmentForm onSave={handleSave} onRemove={handleRemove} />;
       case 'FRAME':
-        return <FramesForm onSave={handleSave} onRemove={handleRemove} />;
+        return (
+          <FramesForm
+            onSave={handleSave}
+            onRemove={handleRemove}
+            baseBroodFrames={baseBroodFrames}
+            broodFrameCapacity={broodFrameCapacity}
+          />
+        );
       case 'MAINTENANCE':
         return <MaintenanceForm onSave={handleSave} onRemove={handleRemove} />;
       case 'NOTE':
@@ -292,7 +305,13 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
       default:
         return null;
     }
-  }, [selectedAction, handleSave, handleRemove]);
+  }, [
+    selectedAction,
+    handleSave,
+    handleRemove,
+    baseBroodFrames,
+    broodFrameCapacity,
+  ]);
 
   const renderActionView = (action: ActionType): ReactNode => {
     switch (action.type) {
@@ -321,6 +340,8 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             onSave={handleSave}
             action={action}
             onRemove={handleRemove}
+            baseBroodFrames={baseBroodFrames}
+            broodFrameCapacity={broodFrameCapacity}
           />
         );
       case 'MAINTENANCE':
