@@ -101,6 +101,7 @@ import {
   HiveScaleSeverityPill,
   severityConfig,
 } from './hivescale-insights-card';
+import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
@@ -2113,17 +2114,26 @@ export function HiveScalePage() {
             HiveScale backend.
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={refreshHiveScaleData}
-          disabled={isRefreshing}
-        >
-          <RefreshCw
-            className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
-          />
-          {isRefreshing ? 'Refreshing…' : 'Refresh'}
-        </Button>
+        <div className="flex items-center gap-2">
+          {selectedDevice && (
+            <HiveScaleInsightsHistoryDialog
+              deviceId={selectedDevice.device_id}
+              scale1Name={scale1Name}
+              scale2Name={scale2Name}
+            />
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={refreshHiveScaleData}
+            disabled={isRefreshing}
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
+            />
+            {isRefreshing ? 'Refreshing…' : 'Refresh'}
+          </Button>
+        </div>
       </div>
 
       <ScaleSetupPanel
