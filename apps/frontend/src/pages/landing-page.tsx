@@ -1,14 +1,14 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Github, BookOpen, Rocket } from 'lucide-react';
+import { Github, BookOpen, Rocket, Mic, Sparkles, Wand2 } from 'lucide-react';
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'Hive Pal',
   description:
-    'Free and open-source beekeeping management platform. Manage apiaries, track hive health, schedule inspections, and monitor harvests.',
+    'Free and open-source beekeeping management platform with AI-powered voice inspections. Record audio in the apiary, get automatic transcripts, and let AI draft your inspection notes.',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   offers: {
@@ -27,19 +27,21 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-green-50 w-full">
       <Helmet>
-        <title>Hive Pal - Modern Beekeeping Management Software</title>
+        <title>
+          Hive Pal - AI-Powered Beekeeping Management Software
+        </title>
         <meta
           name="description"
-          content="Manage your beehives efficiently with Hive Pal. Track inspections, monitor hive health, manage harvests, and optimize your beekeeping operations with our comprehensive digital platform."
+          content="Manage your beehives efficiently with Hive Pal. Record voice notes at the hive and let AI transcribe and draft your inspections. Open source, self-hostable, and free for early adopters."
         />
         <link rel="canonical" href="https://hivepal.app/" />
         <meta
           property="og:title"
-          content="Hive Pal - Modern Beekeeping Management Software"
+          content="Hive Pal - AI-Powered Beekeeping Management Software"
         />
         <meta
           property="og:description"
-          content="Free, open-source beekeeping management platform. Track inspections, monitor hive health, manage harvests, and optimize your operations."
+          content="Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
         />
         <meta property="og:url" content="https://hivepal.app/" />
         <meta property="og:type" content="website" />
@@ -47,11 +49,11 @@ export function LandingPage() {
         <meta property="twitter:card" content="summary_large_image" />
         <meta
           property="twitter:title"
-          content="Hive Pal - Modern Beekeeping Management Software"
+          content="Hive Pal - AI-Powered Beekeeping Management Software"
         />
         <meta
           property="twitter:description"
-          content="Free, open-source beekeeping management platform. Track inspections, monitor hive health, manage harvests, and optimize your operations."
+          content="Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
         />
         <meta
           property="twitter:image"
@@ -70,6 +72,10 @@ export function LandingPage() {
               </h1>
               <span className="ml-3 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
                 Open Source
+              </span>
+              <span className="ml-2 hidden sm:inline-flex items-center gap-1 text-xs font-medium bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                <Sparkles className="h-3 w-3" />
+                AI Powered
               </span>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
@@ -116,16 +122,20 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/20"></div>
         <div className="relative z-10 text-center px-4 py-8 max-w-5xl mx-auto">
           <div className="backdrop-blur-sm bg-black/20 rounded-2xl p-8 shadow-2xl">
+            <div className="inline-flex items-center gap-2 mb-6 rounded-full bg-purple-500/20 border border-purple-300/40 px-4 py-1.5 text-sm font-medium text-purple-100 backdrop-blur-sm">
+              <Sparkles className="h-4 w-4" />
+              New: AI-powered voice inspections
+            </div>
             <h2 className="text-4xl sm:text-6xl font-bold mb-6 text-white drop-shadow-lg">
               Your Open Source
               <span className="text-amber-400"> Beekeeping </span>
               Companion
             </h2>
             <p className="text-xl mb-8 max-w-3xl mx-auto text-white/95 drop-shadow-md">
-              Free and open-source beekeeping management platform. Self-host on
-              your own infrastructure or use our hosted service. Manage
-              apiaries, track hive health, schedule inspections, and monitor
-              harvests.
+              Free and open-source beekeeping management platform. Record voice
+              notes at the hive and let AI transcribe and draft your
+              inspections automatically — so you can keep your hands on the
+              frames, not the keyboard.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -276,6 +286,87 @@ export function LandingPage() {
                 </dd>
               </div>
             </dl>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Features Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-purple-950 via-indigo-950 to-slate-950 py-24 sm:py-32">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/40 via-transparent to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-amber-400/30 via-transparent to-transparent"
+        />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:text-center">
+            <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/20 border border-purple-300/30 px-4 py-1.5 text-sm font-medium text-purple-200">
+              <Sparkles className="h-4 w-4" />
+              AI Powered
+            </div>
+            <p className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Inspect with your voice, not your keyboard
+            </p>
+            <p className="mt-6 text-lg leading-8 text-purple-100/90">
+              Hive Pal now records audio during inspections, transcribes it
+              automatically, and uses AI to draft structured notes — so the
+              busywork happens while you're still at the apiary.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 lg:max-w-none lg:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/20 text-purple-300">
+                <Mic className="h-6 w-6" />
+              </div>
+              <h3 className="mt-6 text-lg font-semibold text-white">
+                Record at the hive
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-purple-100/80">
+                Tap record on your phone, talk through what you see on each
+                frame, and move on. Recordings upload straight into the
+                inspection, even if you lose signal mid-yard.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-300">
+                <Wand2 className="h-6 w-6" />
+              </div>
+              <h3 className="mt-6 text-lg font-semibold text-white">
+                Automatic transcription
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-purple-100/80">
+                Whisper-powered speech-to-text turns every recording into a
+                searchable transcript attached to the inspection. Multilingual
+                out of the box.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <h3 className="mt-6 text-lg font-semibold text-white">
+                AI-drafted inspections
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-purple-100/80">
+                Local LLMs extract queen sightings, brood patterns, treatments
+                and observations from the transcript into a pre-filled
+                inspection — you just review and save.
+              </p>
+            </div>
+          </div>
+
+          <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm">
+            <p className="text-sm leading-6 text-purple-100/80">
+              <span className="font-semibold text-white">
+                Your recordings, your models.
+              </span>{' '}
+              Hive Pal's AI stack runs on open-source models (faster-whisper +
+              Ollama) and can be self-hosted alongside your data — or run as a
+              pull worker on your home machine. No third-party cloud required.
+            </p>
           </div>
         </div>
       </section>
