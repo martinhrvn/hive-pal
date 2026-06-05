@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { addDays, format } from 'date-fns';
 import { Bug, Clock, Lightbulb, CalendarIcon, X } from 'lucide-react';
@@ -193,6 +194,39 @@ export function BroodTimelinePage() {
 
   return (
     <PageGrid>
+      <Helmet>
+        <title>Honey Bee Brood Development Timeline — Hive Pal</title>
+        <meta
+          name="description"
+          content="Free brood development timeline for queen, worker, and drone honey bees. Visualize each stage (egg, larva, pupa, adult) with day counts and project capping or emergence dates from any start date."
+        />
+        <link
+          rel="canonical"
+          href="https://hivepal.app/tools/brood-timeline"
+        />
+        <meta
+          property="og:title"
+          content="Honey Bee Brood Development Timeline — Hive Pal"
+        />
+        <meta
+          property="og:description"
+          content="Visualize queen, worker, and drone brood stages with day counts and projected dates."
+        />
+        <meta
+          property="og:url"
+          content="https://hivepal.app/tools/brood-timeline"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="twitter:card" content="summary" />
+        <meta
+          property="twitter:title"
+          content="Honey Bee Brood Development Timeline — Hive Pal"
+        />
+        <meta
+          property="twitter:description"
+          content="Visualize queen, worker, and drone brood stages with day counts and projected dates."
+        />
+      </Helmet>
       <MainContent>
         <h1 className="text-2xl font-bold mb-1">
           {t('broodTimeline.title')}

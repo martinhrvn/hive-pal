@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Github, BookOpen, Rocket, Mic, Sparkles, Wand2 } from 'lucide-react';
+import { Github, BookOpen, Rocket, Mic, Sparkles, Wand2, Beaker, Bug } from 'lucide-react';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -79,6 +79,12 @@ export function LandingPage() {
               </span>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
+              <Link
+                to="/tools/syrup-calculator"
+                className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+              >
+                Free Tools
+              </Link>
               <a
                 href="https://docs.hivepal.app"
                 target="_blank"
@@ -646,6 +652,60 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Free Tools Section */}
+      <section className="bg-white py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:text-center">
+            <h2 className="text-base font-semibold leading-7 text-amber-600">
+              Free Tools
+            </h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Handy calculators, no signup required
+            </p>
+            <p className="mt-4 text-base leading-7 text-gray-600">
+              Open-source tools you can use directly in the browser — bookmark
+              them for the apiary.
+            </p>
+          </div>
+          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2 lg:max-w-4xl">
+            <Link
+              to="/tools/syrup-calculator"
+              className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-amber-300 transition"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="rounded-lg bg-amber-100 p-2">
+                  <Beaker className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-amber-700">
+                  Sugar Syrup Calculator
+                </h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Precise sugar and water amounts for 1:1, 3:2, or 2:1 syrup at
+                any container size. Metric or imperial.
+              </p>
+            </Link>
+            <Link
+              to="/tools/brood-timeline"
+              className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-amber-300 transition"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="rounded-lg bg-amber-100 p-2">
+                  <Bug className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-amber-700">
+                  Brood Development Timeline
+                </h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Visualize queen, worker, and drone brood stages with day counts
+                and project dates from any starting day.
+              </p>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-amber-500">
         <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
@@ -695,7 +755,19 @@ export function LandingPage() {
               beekeeping simpler, more productive, and more enjoyable.
             </p>
 
-            <div className="flex justify-center space-x-6 mb-8">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-8">
+              <Link
+                to="/tools/syrup-calculator"
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                Syrup Calculator
+              </Link>
+              <Link
+                to="/tools/brood-timeline"
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                Brood Timeline
+              </Link>
               <a
                 href="https://docs.hivepal.app"
                 target="_blank"

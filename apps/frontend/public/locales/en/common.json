@@ -339,6 +339,10 @@
   "syrupCalculator": {
     "title": "Syrup Calculator",
     "description": "Calculate sugar and water amounts for feeding syrup",
+    "units": "Units",
+    "unitsDescription": "Switch between metric and imperial measurements",
+    "metric": "Metric (L, g, kg)",
+    "imperial": "Imperial (qt, gal, lb)",
     "ratio": "Syrup Ratio",
     "ratioDescription": "Sugar to water ratio (by weight to volume)",
     "thin": "Thin (1:1)",

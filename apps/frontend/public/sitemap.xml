@@ -20,4 +20,12 @@
     <loc>https://hivepal.app/releases</loc>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://hivepal.app/tools/syrup-calculator</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hivepal.app/tools/brood-timeline</loc>
+    <priority>0.7</priority>
+  </url>
 </urlset>

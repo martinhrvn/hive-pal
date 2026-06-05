@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { Beaker, Droplets, Scale, Lightbulb, CookingPot } from 'lucide-react';
+import { Beaker, Droplets, Ruler, Scale, Lightbulb, CookingPot } from 'lucide-react';
 import {
   PageGrid,
   MainContent,
@@ -16,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Pill } from '@/components/common/pill';
 import { useUnitFormat } from '@/hooks/use-unit-format';
+import type { UnitPreference } from '@/utils/unit-conversion';
 
 type Ratio = '1:1' | '3:2' | '2:1';
 
@@ -75,7 +77,16 @@ function calculateSyrup(containerLiters: number, sugar: number, water: number) {
 
 export function SyrupCalculatorPage() {
   const { t } = useTranslation('common');
-  const { isImperial } = useUnitFormat();
+  const { unitPreference } = useUnitFormat();
+
+  const [units, setUnits] = useState<UnitPreference>(unitPreference);
+
+  // Sync with user preference once it loads (logged-in users)
+  useEffect(() => {
+    setUnits(unitPreference);
+  }, [unitPreference]);
+
+  const isImperial = units === 'imperial';
 
   const [ratio, setRatio] = useState<Ratio>('1:1');
   const [selectedContainer, setSelectedContainer] = useState<number | null>(1);
@@ -138,8 +149,77 @@ export function SyrupCalculatorPage() {
     }
   };
 
+  const howToJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: 'How to make sugar syrup for bees',
+    description:
+      'Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.',
+    step: [
+      {
+        '@type': 'HowToStep',
+        name: 'Measure the water',
+        text: `Measure ${waterDisplay} (${waterWeightDisplay}) of water.`,
+      },
+      {
+        '@type': 'HowToStep',
+        name: 'Warm the water',
+        text: 'Heat the water until warm (not boiling).',
+      },
+      {
+        '@type': 'HowToStep',
+        name: 'Add the sugar',
+        text: `Add ${sugarDisplay} of white granulated sugar.`,
+      },
+      {
+        '@type': 'HowToStep',
+        name: 'Stir to dissolve',
+        text: 'Stir until the sugar is completely dissolved.',
+      },
+      {
+        '@type': 'HowToStep',
+        name: 'Cool before feeding',
+        text: 'Let the syrup cool to room temperature before feeding.',
+      },
+    ],
+  };
+
   return (
     <PageGrid>
+      <Helmet>
+        <title>Sugar Syrup Calculator for Beekeepers — Hive Pal</title>
+        <meta
+          name="description"
+          content="Free sugar syrup calculator for beekeepers. Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size, in metric or imperial units."
+        />
+        <link
+          rel="canonical"
+          href="https://hivepal.app/tools/syrup-calculator"
+        />
+        <meta
+          property="og:title"
+          content="Sugar Syrup Calculator for Beekeepers — Hive Pal"
+        />
+        <meta
+          property="og:description"
+          content="Free calculator for bee sugar syrup. Get precise sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size."
+        />
+        <meta
+          property="og:url"
+          content="https://hivepal.app/tools/syrup-calculator"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="twitter:card" content="summary" />
+        <meta
+          property="twitter:title"
+          content="Sugar Syrup Calculator for Beekeepers — Hive Pal"
+        />
+        <meta
+          property="twitter:description"
+          content="Free calculator for bee sugar syrup. Get precise sugar and water amounts for any ratio and container size."
+        />
+        <script type="application/ld+json">{JSON.stringify(howToJsonLd)}</script>
+      </Helmet>
       <MainContent>
         <h1 className="text-2xl font-bold mb-1">
           {t('syrupCalculator.title')}
@@ -147,6 +227,35 @@ export function SyrupCalculatorPage() {
         <p className="text-muted-foreground mb-6">
           {t('syrupCalculator.description')}
         </p>
+
+        {/* Units */}
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Ruler className="h-5 w-5" />
+              {t('syrupCalculator.units')}
+            </CardTitle>
+            <CardDescription>
+              {t('syrupCalculator.unitsDescription')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              <Pill
+                active={units === 'metric'}
+                onClick={() => setUnits('metric')}
+              >
+                {t('syrupCalculator.metric')}
+              </Pill>
+              <Pill
+                active={units === 'imperial'}
+                onClick={() => setUnits('imperial')}
+              >
+                {t('syrupCalculator.imperial')}
+              </Pill>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Ratio Selection */}
         <Card className="mb-4">

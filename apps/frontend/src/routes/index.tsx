@@ -33,6 +33,7 @@ import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
 import { SharedPage } from '@/pages/shared/shared-page';
 import { JoinApiaryPage } from '@/pages/join/join-apiary-page';
 import { EditableRoute } from './editable-route';
+import { ToolRoute } from './tool-route';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
 
 // Lazy loaded components - heavy pages that benefit from code splitting
@@ -368,22 +369,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/tools/syrup-calculator',
-        element: (
-          <LazyPage>
-            <SyrupCalculatorPage />
-          </LazyPage>
-        ),
-      },
-      {
-        path: '/tools/brood-timeline',
-        element: (
-          <LazyPage>
-            <BroodTimelinePage />
-          </LazyPage>
-        ),
-      },
-      {
         path: '/tools/swarm-management',
         element: (
           <LazyPage>
@@ -508,6 +493,29 @@ const router = createBrowserRouter([
         </LazyPage>
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/tools',
+    element: <ToolRoute />,
+    errorElement: <GenericErrorPage />,
+    children: [
+      {
+        path: 'syrup-calculator',
+        element: (
+          <LazyPage>
+            <SyrupCalculatorPage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: 'brood-timeline',
+        element: (
+          <LazyPage>
+            <BroodTimelinePage />
+          </LazyPage>
+        ),
+      },
+    ],
   },
   {
     path: '/releases',
