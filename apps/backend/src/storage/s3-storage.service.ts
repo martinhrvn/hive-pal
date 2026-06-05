@@ -7,7 +7,9 @@ import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Readable } from 'node:stream';
 import { CustomLoggerService } from '../logger/logger.service';
 import { StorageService } from './storage.interface';
 
@@ -140,6 +142,41 @@ export class S3StorageService extends StorageService implements OnModuleInit {
     });
 
     await this.s3Client!.send(command);
+  }
+
+  async uploadStream(
+    key: string,
+    stream: Readable,
+    contentType: string,
+  ): Promise<void> {
+    this.ensureConfigured();
+
+    const upload = new Upload({
+      client: this.s3Client!,
+      params: {
+        Bucket: this.bucket,
+        Key: key,
+        Body: stream,
+        ContentType: contentType,
+      },
+    });
+
+    await upload.done();
+  }
+
+  async getObject(key: string): Promise<Readable> {
+    this.ensureConfigured();
+
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+    });
+
+    const response = await this.s3Client!.send(command);
+    if (!response.Body) {
+      throw new Error(`Empty body for object ${key}`);
+    }
+    return response.Body as Readable;
   }
 
   private ensureConfigured(): void {

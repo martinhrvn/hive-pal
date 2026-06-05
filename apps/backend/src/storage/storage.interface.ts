@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+
 export abstract class StorageService {
   abstract isEnabled(): boolean;
   abstract uploadObject(
@@ -5,6 +7,12 @@ export abstract class StorageService {
     buffer: Buffer,
     contentType: string,
   ): Promise<void>;
+  abstract uploadStream(
+    key: string,
+    stream: Readable,
+    contentType: string,
+  ): Promise<void>;
+  abstract getObject(key: string): Promise<Readable>;
   abstract generateUploadUrl(
     key: string,
     contentType: string,

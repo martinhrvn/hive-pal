@@ -47,6 +47,7 @@ import { AdminMediaModule } from './admin-media/admin-media.module';
 import { HiveScaleModule } from './hivescale/hivescale.module';
 import { AssistantModule } from './assistant/assistant.module';
 import { MeasurementsModule } from './measurements/measurements.module';
+import { AccountTransferModule } from './account-transfer/account-transfer.module';
 
 @Module({
   imports: [
@@ -93,6 +94,7 @@ import { MeasurementsModule } from './measurements/measurements.module';
     HiveScaleModule,
     AssistantModule,
     MeasurementsModule,
+    AccountTransferModule,
   ],
   controllers: [AppController, EnvController],
   providers: [

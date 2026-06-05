@@ -19,7 +19,15 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
-import { Globe, Bell, Palette, User, Save, Loader2 } from 'lucide-react';
+import {
+  Globe,
+  Bell,
+  Palette,
+  User,
+  Save,
+  Loader2,
+  Database,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { usePreferences } from '@/api/hooks/useUserPreferences';
 import { useTheme } from '@/context/use-theme';
@@ -313,6 +321,36 @@ export const UserSettingsPage = () => {
                 onClick={() => navigate('/account/change-password')}
               >
                 {t('settings.changePassword')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Data */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              Data
+            </CardTitle>
+            <CardDescription>
+              Export your account data for backup, or import from a previous
+              export.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-medium">Export and import</p>
+                <p className="text-sm text-muted-foreground">
+                  Migrate between instances or keep your own backups.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/settings/data-transfer')}
+              >
+                Open
               </Button>
             </div>
           </CardContent>

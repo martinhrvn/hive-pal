@@ -27,7 +27,7 @@ import {
   ApiaryListPage,
 } from '@/pages/apiaries';
 import { ReleasesPage } from '@/pages/releases';
-import { UserSettingsPage } from '@/pages/settings';
+import { DataTransferPage, UserSettingsPage } from '@/pages/settings';
 import { FeedbackPage } from '@/pages/feedback';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
 import { SharedPage } from '@/pages/shared/shared-page';
@@ -404,6 +404,10 @@ const router = createBrowserRouter([
       {
         path: '/settings',
         element: <UserSettingsPage />,
+      },
+      {
+        path: '/settings/data-transfer',
+        element: <DataTransferPage />,
       },
       {
         path: '/feedback',

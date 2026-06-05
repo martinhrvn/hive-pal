@@ -989,3 +989,36 @@ enum AssistantRole {
   ASSISTANT
   SYSTEM
 }
+
+// Background job for full-account data export or import (per-user)
+model AccountTransferJob {
+  id                String                    @id @default(uuid())
+  userId            String
+  type              AccountTransferJobType
+  status            AccountTransferJobStatus  @default(PENDING)
+  createdAt         DateTime                  @default(now())
+  startedAt         DateTime?
+  finishedAt        DateTime?
+  inputStorageKey   String?
+  resultStorageKey  String?
+  resultExpiresAt   DateTime?
+  progress          String?
+  errorMessage      String?                   @db.Text
+  summary           Json?
+
+  @@index([userId, type, status])
+  @@index([status, startedAt])
+  @@index([resultExpiresAt])
+}
+
+enum AccountTransferJobType {
+  EXPORT
+  IMPORT
+}
+
+enum AccountTransferJobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
