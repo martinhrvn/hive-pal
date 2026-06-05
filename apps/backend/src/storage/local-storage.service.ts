@@ -61,9 +61,9 @@ export class LocalStorageService
     await pipeline(stream, createWriteStream(filePath));
   }
 
-  async getObject(key: string): Promise<Readable> {
+  getObject(key: string): Promise<Readable> {
     const filePath = this.getFilePath(key);
-    return createReadStream(filePath);
+    return Promise.resolve(createReadStream(filePath));
   }
 
   generateUploadUrl(

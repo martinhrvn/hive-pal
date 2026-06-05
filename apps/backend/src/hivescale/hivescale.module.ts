@@ -10,7 +10,13 @@ import { SwarmAlertService } from './swarm-alert.service';
 import { SwarmAlertScheduler } from './swarm-alert.scheduler';
 
 @Module({
-  imports: [AuthModule, ConfigModule, UsersModule, MailModule, ScheduleModule.forRoot()],
+  imports: [
+    AuthModule,
+    ConfigModule,
+    UsersModule,
+    MailModule,
+    ScheduleModule.forRoot(),
+  ],
   controllers: [HiveScaleController],
   providers: [HiveScaleService, SwarmAlertService, SwarmAlertScheduler],
 })

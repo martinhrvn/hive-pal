@@ -7,7 +7,11 @@ export function hashApiKey(raw: string): string {
   return createHash('sha256').update(raw).digest('hex');
 }
 
-export function generateApiKey(): { raw: string; hash: string; prefix: string } {
+export function generateApiKey(): {
+  raw: string;
+  hash: string;
+  prefix: string;
+} {
   const raw = `${API_KEY_PREFIX}${randomBytes(RAW_BYTES).toString('base64url')}`;
   return {
     raw,

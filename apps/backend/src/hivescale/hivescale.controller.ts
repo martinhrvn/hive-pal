@@ -63,7 +63,10 @@ export class HiveScaleController {
     @Req() req: RequestWithUser,
     @Param('deviceId') deviceId: string,
   ) {
-    return this.hiveScaleService.getDeviceConfig(this.extractToken(req), deviceId);
+    return this.hiveScaleService.getDeviceConfig(
+      this.extractToken(req),
+      deviceId,
+    );
   }
 
   @Patch('devices/:deviceId/config')
@@ -110,7 +113,10 @@ export class HiveScaleController {
     @Req() req: RequestWithUser,
     @Param('deviceId') deviceId: string,
   ) {
-    return this.hiveScaleService.stopCalibrationMode(this.extractToken(req), deviceId);
+    return this.hiveScaleService.stopCalibrationMode(
+      this.extractToken(req),
+      deviceId,
+    );
   }
 
   @Post('devices/:deviceId/firmware')
@@ -130,13 +136,18 @@ export class HiveScaleController {
         ? body.target
         : undefined;
 
-    return this.hiveScaleService.uploadFirmware(this.extractToken(req), deviceId, file, {
-      version: body.version ?? '',
-      target,
-      // Multipart fields arrive as strings; treat anything but "false" as true,
-      // and default to true when omitted.
-      active: body.active === undefined ? true : body.active !== 'false',
-    });
+    return this.hiveScaleService.uploadFirmware(
+      this.extractToken(req),
+      deviceId,
+      file,
+      {
+        version: body.version ?? '',
+        target,
+        // Multipart fields arrive as strings; treat anything but "false" as true,
+        // and default to true when omitted.
+        active: body.active === undefined ? true : body.active !== 'false',
+      },
+    );
   }
 
   @Get('devices/:deviceId/measurements')
@@ -145,7 +156,11 @@ export class HiveScaleController {
     @Param('deviceId') deviceId: string,
     @Query() query: HiveScaleMeasurementQuery,
   ) {
-    return this.hiveScaleService.listMeasurements(this.extractToken(req), deviceId, query);
+    return this.hiveScaleService.listMeasurements(
+      this.extractToken(req),
+      deviceId,
+      query,
+    );
   }
 
   @Get('devices/:deviceId/measurements/latest')
@@ -220,7 +235,11 @@ export class HiveScaleController {
     @Param('deviceId') deviceId: string,
     @Body() payload: HiveScaleShareDeviceDto,
   ) {
-    return this.hiveScaleService.shareDevice(this.extractToken(req), deviceId, payload);
+    return this.hiveScaleService.shareDevice(
+      this.extractToken(req),
+      deviceId,
+      payload,
+    );
   }
 
   @Delete('devices/:deviceId/members/:memberUserId')

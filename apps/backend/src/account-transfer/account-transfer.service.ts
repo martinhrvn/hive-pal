@@ -64,10 +64,7 @@ export class AccountTransferService {
     });
   }
 
-  async getJob(
-    userId: string,
-    jobId: string,
-  ): Promise<AccountTransferJob> {
+  async getJob(userId: string, jobId: string): Promise<AccountTransferJob> {
     const job = await this.prisma.accountTransferJob.findFirst({
       where: { id: jobId, userId },
     });

@@ -129,9 +129,7 @@ export class MeasurementsService {
     });
 
     if (!hive) {
-      throw new NotFoundException(
-        `Hive with ID ${hiveId} not found in apiary`,
-      );
+      throw new NotFoundException(`Hive with ID ${hiveId} not found in apiary`);
     }
   }
 }

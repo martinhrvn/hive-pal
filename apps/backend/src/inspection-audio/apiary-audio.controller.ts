@@ -28,9 +28,7 @@ export class ApiaryAudioController {
   }
 
   @Get()
-  async findAll(
-    @Req() req: RequestWithApiary,
-  ): Promise<ApiaryAudioListItem[]> {
+  async findAll(@Req() req: RequestWithApiary): Promise<ApiaryAudioListItem[]> {
     return this.audioService.findAllForApiary({
       apiaryId: req.apiaryId,
       userId: req.user.id,

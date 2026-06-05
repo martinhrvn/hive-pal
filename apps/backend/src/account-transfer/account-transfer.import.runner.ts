@@ -187,7 +187,7 @@ export class AccountTransferImportRunner {
               new Promise<void>((res, rej) => {
                 zipFile.openReadStream(entry, (err, readStream) => {
                   if (err || !readStream) {
-                    rej(err);
+                    rej(err ?? new Error('Empty read stream from archive'));
                     return;
                   }
                   const writeStream = createWriteStream(targetPath);
@@ -316,7 +316,10 @@ export class AccountTransferImportRunner {
     }
     for (const qc of a.quickChecks) {
       for (const photo of qc.photos) {
-        const local = extracted.attachmentExists('quick-check-photos', photo.id);
+        const local = extracted.attachmentExists(
+          'quick-check-photos',
+          photo.id,
+        );
         if (!local) {
           summary.photosMissing++;
           summary.warnings.push(`Missing quick check photo ${photo.fileName}`);
@@ -693,15 +696,22 @@ export class AccountTransferImportRunner {
     details: { kind: string; data: Record<string, unknown> },
   ): Promise<void> {
     const d = details.data;
+    const str = (v: unknown, fallback = ''): string =>
+      typeof v === 'string' ? v : typeof v === 'number' ? String(v) : fallback;
+    const num = (v: unknown, fallback = 0): number =>
+      typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : fallback;
+    const strOrNull = (v: unknown): string | null =>
+      typeof v === 'string' && v.length > 0 ? v : null;
+
     switch (details.kind) {
       case 'FEEDING':
         await tx.feedingAction.create({
           data: {
             actionId,
-            feedType: String(d.feedType ?? ''),
-            amount: Number(d.amount ?? 0),
-            unit: String(d.unit ?? ''),
-            concentration: d.concentration ? String(d.concentration) : null,
+            feedType: str(d.feedType),
+            amount: num(d.amount),
+            unit: str(d.unit),
+            concentration: strOrNull(d.concentration),
           },
         });
         break;
@@ -709,24 +719,27 @@ export class AccountTransferImportRunner {
         await tx.treatmentAction.create({
           data: {
             actionId,
-            product: String(d.product ?? ''),
-            quantity: d.quantity !== undefined ? Number(d.quantity) : null,
-            unit: String(d.unit ?? ''),
-            duration: d.duration ? String(d.duration) : null,
+            product: str(d.product),
+            quantity:
+              d.quantity === undefined || d.quantity === null
+                ? null
+                : num(d.quantity),
+            unit: str(d.unit),
+            duration: strOrNull(d.duration),
           },
         });
         break;
       case 'FRAME':
         await tx.frameAction.create({
-          data: { actionId, quantity: Number(d.quantity ?? 0) },
+          data: { actionId, quantity: num(d.quantity) },
         });
         break;
       case 'HARVEST':
         await tx.harvestAction.create({
           data: {
             actionId,
-            amount: Number(d.amount ?? 0),
-            unit: String(d.unit ?? 'kg'),
+            amount: num(d.amount),
+            unit: str(d.unit, 'kg'),
           },
         });
         break;
@@ -734,12 +747,12 @@ export class AccountTransferImportRunner {
         await tx.boxConfigurationAction.create({
           data: {
             actionId,
-            boxesAdded: Number(d.boxesAdded ?? 0),
-            boxesRemoved: Number(d.boxesRemoved ?? 0),
-            framesAdded: Number(d.framesAdded ?? 0),
-            framesRemoved: Number(d.framesRemoved ?? 0),
-            totalBoxes: Number(d.totalBoxes ?? 0),
-            totalFrames: Number(d.totalFrames ?? 0),
+            boxesAdded: num(d.boxesAdded),
+            boxesRemoved: num(d.boxesRemoved),
+            framesAdded: num(d.framesAdded),
+            framesRemoved: num(d.framesRemoved),
+            totalBoxes: num(d.totalBoxes),
+            totalFrames: num(d.totalFrames),
             boxes: (d.boxes ?? null) as never,
           },
         });
@@ -748,8 +761,8 @@ export class AccountTransferImportRunner {
         await tx.maintenanceAction.create({
           data: {
             actionId,
-            component: String(d.component ?? ''),
-            status: String(d.status ?? ''),
+            component: str(d.component),
+            status: str(d.status),
           },
         });
         break;

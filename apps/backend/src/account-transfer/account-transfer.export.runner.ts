@@ -62,20 +62,13 @@ export class AccountTransferExportRunner {
       });
       if (!user) throw new Error('User not found');
 
-      tmpPath = path.join(
-        os.tmpdir(),
-        `account-export-${jobId}.zip`,
-      );
+      tmpPath = path.join(os.tmpdir(), `account-export-${jobId}.zip`);
 
       const stats = await this.buildArchive(jobId, userId, user.email, tmpPath);
 
       const resultKey = `account-transfer/exports/${userId}/${jobId}.zip`;
       const readStream = createReadStream(tmpPath);
-      await this.storage.uploadStream(
-        resultKey,
-        readStream,
-        'application/zip',
-      );
+      await this.storage.uploadStream(resultKey, readStream, 'application/zip');
 
       const resultExpiresAt = new Date(
         Date.now() + RESULT_TTL_DAYS * 24 * 60 * 60 * 1000,
@@ -477,46 +470,64 @@ export class AccountTransferExportRunner {
     };
   }
 
-  private extractActionDetails(
-    a: {
-      feedingAction: unknown;
-      treatmentAction: unknown;
-      frameAction: unknown;
-      harvestAction: unknown;
-      boxConfigurationAction: unknown;
-      maintenanceAction: unknown;
-    },
-  ): { kind: string; data: Record<string, unknown> } | null {
+  private extractActionDetails(a: {
+    feedingAction: unknown;
+    treatmentAction: unknown;
+    frameAction: unknown;
+    harvestAction: unknown;
+    boxConfigurationAction: unknown;
+    maintenanceAction: unknown;
+  }): { kind: string; data: Record<string, unknown> } | null {
     if (a.feedingAction) {
-      const { id: _id, actionId: _a, ...rest } = a.feedingAction as {
+      const {
+        id: _id,
+        actionId: _a,
+        ...rest
+      } = a.feedingAction as {
         id: string;
         actionId: string;
       };
       return { kind: 'FEEDING', data: rest as Record<string, unknown> };
     }
     if (a.treatmentAction) {
-      const { id: _id, actionId: _a, ...rest } = a.treatmentAction as {
+      const {
+        id: _id,
+        actionId: _a,
+        ...rest
+      } = a.treatmentAction as {
         id: string;
         actionId: string;
       };
       return { kind: 'TREATMENT', data: rest as Record<string, unknown> };
     }
     if (a.frameAction) {
-      const { id: _id, actionId: _a, ...rest } = a.frameAction as {
+      const {
+        id: _id,
+        actionId: _a,
+        ...rest
+      } = a.frameAction as {
         id: string;
         actionId: string;
       };
       return { kind: 'FRAME', data: rest as Record<string, unknown> };
     }
     if (a.harvestAction) {
-      const { id: _id, actionId: _a, ...rest } = a.harvestAction as {
+      const {
+        id: _id,
+        actionId: _a,
+        ...rest
+      } = a.harvestAction as {
         id: string;
         actionId: string;
       };
       return { kind: 'HARVEST', data: rest as Record<string, unknown> };
     }
     if (a.boxConfigurationAction) {
-      const { id: _id, actionId: _a, ...rest } = a.boxConfigurationAction as {
+      const {
+        id: _id,
+        actionId: _a,
+        ...rest
+      } = a.boxConfigurationAction as {
         id: string;
         actionId: string;
       };
@@ -526,7 +537,11 @@ export class AccountTransferExportRunner {
       };
     }
     if (a.maintenanceAction) {
-      const { id: _id, actionId: _a, ...rest } = a.maintenanceAction as {
+      const {
+        id: _id,
+        actionId: _a,
+        ...rest
+      } = a.maintenanceAction as {
         id: string;
         actionId: string;
       };

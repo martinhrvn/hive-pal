@@ -123,7 +123,7 @@ export class HiveScaleService {
         timeout: 10000,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           'X-HivePal-Service-Key': this.requireServiceApiKey(),
         },
       });
@@ -167,7 +167,11 @@ export class HiveScaleService {
   }
 
   removeDevice(accessToken: string, deviceId: string) {
-    return this.request(accessToken, 'DELETE', `/api/v1/app/devices/${deviceId}`);
+    return this.request(
+      accessToken,
+      'DELETE',
+      `/api/v1/app/devices/${deviceId}`,
+    );
   }
 
   getDeviceConfig(accessToken: string, deviceId: string) {
@@ -271,7 +275,7 @@ export class HiveScaleService {
         maxContentLength: Infinity,
         headers: {
           ...form.getHeaders(),
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           'X-HivePal-Service-Key': this.requireServiceApiKey(),
         },
       });

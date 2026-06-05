@@ -94,10 +94,7 @@ export class AccountTransferController {
   }
 
   @Get('jobs/:id')
-  async getJob(
-    @Req() req: RequestWithUser,
-    @Param('id') id: string,
-  ) {
+  async getJob(@Req() req: RequestWithUser, @Param('id') id: string) {
     const userId = req.user.id;
     const job = await this.jobs.getJob(userId, id);
     return toJobResponse(job);
@@ -123,18 +120,12 @@ export class AccountTransferController {
     const stream = await this.storage.getObject(job.resultStorageKey);
     const filename = `hivepal-export-${userId}-${job.createdAt.toISOString().slice(0, 10)}.zip`;
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="${filename}"`,
-    );
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     stream.pipe(res);
   }
 
   @Delete('jobs/:id')
-  async deleteJob(
-    @Req() req: RequestWithUser,
-    @Param('id') id: string,
-  ) {
+  async deleteJob(@Req() req: RequestWithUser, @Param('id') id: string) {
     await this.jobs.deleteJob(req.user.id, id);
     return { ok: true };
   }
