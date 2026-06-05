@@ -6,3 +6,8 @@ export { pillVariants } from './pill-variants';
 export { TimelineEventList } from './timeline-event-list';
 export { PhotoGallery } from './photo-gallery';
 export { RatingSlider } from './rating-slider';
+export { DeleteConfirmDialog } from './delete-confirm-dialog';
+export { HiveSelect } from './hive-select';
+export { DatePickerPopover } from './date-picker-popover';
+export { InfoCard } from './info-card';
+export { SwarmMethodCard } from './swarm-method-card';

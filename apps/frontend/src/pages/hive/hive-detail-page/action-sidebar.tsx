@@ -1,28 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   EditIcon,
   Icon,
   PlusCircle,
   TrashIcon,
-  RefreshCw,
   CalendarPlus,
   AlertTriangle,
 } from 'lucide-react';
 import { bee } from '@lucide/lab';
 import { useTranslation } from 'react-i18next';
 
+import {
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from '@/components/ui/sidebar';
 import { AlertItem } from '@/components/alerts';
 import { useHive, useDeleteHive } from '@/api/hooks';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { QRCodeDialog } from './qr-code-dialog';
 import { LlmPromptDialog } from './llm-prompt-dialog';
 import {
@@ -31,7 +25,9 @@ import {
   MenuItemButton,
   WeatherForecastSection,
 } from '@/components/sidebar';
-import { SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { RefreshButton } from '@/components/sidebar/refresh-button';
+import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
+import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 
 type ActionSideBarProps = {
@@ -48,18 +44,14 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
   const { canEdit } = useApiaryPermission();
   const { data: hive } = useHive(hiveId || '', { enabled: !!hiveId });
   const deleteHive = useDeleteHive();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const handleDelete = async () => {
-    if (!hiveId) return;
-    try {
-      await deleteHive.mutateAsync(hiveId);
-      setShowDeleteDialog(false);
-      navigate(`/apiaries/${hive?.apiaryId}`);
-    } catch (error) {
-      console.error('Failed to delete hive:', error);
-    }
-  };
+  const deleteDialog = useDeleteDialog(
+    () => {
+      if (!hiveId) throw new Error('Hive ID is required');
+      return deleteHive.mutateAsync(hiveId);
+    },
+    () => navigate(`/apiaries/${hive?.apiaryId}`),
+  );
 
   return (
     <div className="space-y-4">
@@ -136,13 +128,10 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               disabled={!hiveId}
             />
           )}
-          <MenuItemButton
-            icon={<RefreshCw className="h-4 w-4" />}
+          <RefreshButton
+            onRefresh={onRefreshData}
+            i18nNamespace="hive"
             label={t('hive:actions.refreshData', {
-              defaultValue: 'Refresh Data',
-            })}
-            onClick={() => onRefreshData?.()}
-            tooltip={t('hive:actions.refreshData', {
               defaultValue: 'Refresh Data',
             })}
           />
@@ -188,45 +177,24 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             <MenuItemButton
               icon={<TrashIcon className="h-4 w-4" />}
               label={t('hive:manage.removeHive', { defaultValue: 'Remove Hive' })}
-              onClick={() => setShowDeleteDialog(true)}
+              onClick={deleteDialog.open}
               tooltip={t('hive:manage.removeHive', { defaultValue: 'Remove Hive' })}
               disabled={!hiveId}
             />
           </ActionSidebarGroup>
         )}
 
-        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {t('hive:manage.removeHive', { defaultValue: 'Remove Hive' })}
-              </DialogTitle>
-              <DialogDescription>
-                {t('hive:manage.removeHiveConfirmation', {
-                  defaultValue:
-                    'Are you sure you want to remove this hive? The hive will be archived and its data removed from active view.',
-                })}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowDeleteDialog(false)}
-              >
-                {t('common:actions.cancel', { defaultValue: 'Cancel' })}
-              </Button>
-              <Button
-                onClick={handleDelete}
-                variant="destructive"
-                disabled={deleteHive.isPending}
-              >
-                {deleteHive.isPending
-                  ? t('common:actions.deleting', { defaultValue: 'Deleting...' })
-                  : t('common:actions.delete', { defaultValue: 'Delete' })}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <DeleteConfirmDialog
+          open={deleteDialog.isOpen}
+          onOpenChange={(open) => !open && deleteDialog.close()}
+          onConfirm={deleteDialog.handleDelete}
+          isPending={deleteDialog.isPending}
+          title={t('hive:manage.removeHive', { defaultValue: 'Remove Hive' })}
+          description={t('hive:manage.removeHiveConfirmation', {
+            defaultValue:
+              'Are you sure you want to remove this hive? The hive will be archived and its data removed from active view.',
+          })}
+        />
       </ActionSidebarContainer>
     </div>
   );

@@ -34,6 +34,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { getDateLocale } from '@/utils/locale-utils.ts';
+import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
 
 export const CalendarPage = () => {
   const { t, i18n } = useTranslation('common');
@@ -100,7 +101,7 @@ export const CalendarPage = () => {
   };
 
   const getStatusColor = (inspection: InspectionResponse) => {
-    const inspectionDate = new Date(inspection.date);
+    const inspectionDate = getInspectionDisplayDate(inspection);
     const today = new Date();
 
     if (inspection.status === 'COMPLETED') {
@@ -119,7 +120,7 @@ export const CalendarPage = () => {
   };
 
   const getStatusIcon = (inspection: InspectionResponse) => {
-    const inspectionDate = new Date(inspection.date);
+    const inspectionDate = getInspectionDisplayDate(inspection);
     const today = new Date();
 
     if (inspection.status === 'COMPLETED') {

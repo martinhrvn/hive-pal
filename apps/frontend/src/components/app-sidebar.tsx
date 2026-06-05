@@ -155,6 +155,12 @@ const getNavData = (t: TFunction<'common'>) => ({
           }),
           url: '/tools/brood-timeline',
         },
+        {
+          title: t('navigation.swarmManagement', {
+            defaultValue: 'Swarm Management',
+          }),
+          url: '/tools/swarm-management',
+        },
       ],
     },
     {

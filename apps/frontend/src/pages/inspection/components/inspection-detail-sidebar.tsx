@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,20 +12,13 @@ import {
   Printer,
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
   MenuItemButton,
 } from '@/components/sidebar';
+import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
+import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection } from '@/api/hooks/useInspections';
 
@@ -41,17 +34,11 @@ export const InspectionDetailSidebar: React.FC<
   const navigate = useNavigate();
   const { canEdit } = useApiaryPermission();
   const deleteInspection = useDeleteInspection();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const handleDelete = async () => {
-    try {
-      await deleteInspection.mutateAsync(inspectionId);
-      setShowDeleteDialog(false);
-      navigate(`/hives/${hiveId}`);
-    } catch (error) {
-      console.error('Failed to delete inspection:', error);
-    }
-  };
+  const deleteDialog = useDeleteDialog(
+    () => deleteInspection.mutateAsync(inspectionId),
+    () => navigate(`/hives/${hiveId}`),
+  );
 
   return (
     <ActionSidebarContainer>
@@ -74,7 +61,7 @@ export const InspectionDetailSidebar: React.FC<
           <MenuItemButton
             icon={<Trash className="h-4 w-4" />}
             label={t('inspection:detailSidebar.deleteInspection')}
-            onClick={() => setShowDeleteDialog(true)}
+            onClick={deleteDialog.open}
             tooltip={t('inspection:detailSidebar.deleteInspection')}
             className="text-red-600 hover:text-red-700"
           />
@@ -118,35 +105,15 @@ export const InspectionDetailSidebar: React.FC<
           tooltip={t('inspection:detailSidebar.goBack')}
         />
       </ActionSidebarGroup>
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t('inspection:detailSidebar.deleteInspection')}
-            </DialogTitle>
-            <DialogDescription>
-              {t('common:confirmDelete')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
-            >
-              {t('common:actions.cancel', { defaultValue: 'Cancel' })}
-            </Button>
-            <Button
-              onClick={handleDelete}
-              variant="destructive"
-              disabled={deleteInspection.isPending}
-            >
-              {deleteInspection.isPending
-                ? t('common:actions.deleting', { defaultValue: 'Deleting...' })
-                : t('common:actions.delete', { defaultValue: 'Delete' })}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+      <DeleteConfirmDialog
+        open={deleteDialog.isOpen}
+        onOpenChange={deleteDialog.close}
+        onConfirm={deleteDialog.handleDelete}
+        isPending={deleteDialog.isPending}
+        title={t('inspection:detailSidebar.deleteInspection')}
+        description={t('common:confirmDelete')}
+      />
     </ActionSidebarContainer>
   );
 };
