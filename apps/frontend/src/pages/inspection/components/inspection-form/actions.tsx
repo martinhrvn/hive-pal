@@ -77,6 +77,10 @@ interface ActionsSectionProps {
   baseBroodFrames?: number | null;
   /** Total brood-box frame capacity (sum of maxFrameCount) */
   broodFrameCapacity?: number | null;
+  /** Hide the Box Configuration action option — it's per-hive and doesn't
+   *  make sense in bulk-create flows where the same form is applied to many
+   *  hives. */
+  disableBoxConfig?: boolean;
 }
 
 const formatActionTypeLabel = (
@@ -196,6 +200,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
   hiveId,
   baseBroodFrames,
   broodFrameCapacity,
+  disableBoxConfig = false,
 }) => {
   const { t } = useTranslation('inspection');
   const { setValue, getValues, watch, formState } =
@@ -441,14 +446,15 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             );
           })}
 
-          {/* Box Configuration — always visible; opens the sheet */}
-          <BoxConfigurationAction
-            initialBoxes={hiveBoxes}
-            hiveId={hiveId}
-            onSave={handleBoxConfigSave}
-            onRemove={() => handleRemove('BOX_CONFIGURATION')}
-            existingAction={existingBoxConfigAction}
-          />
+          {!disableBoxConfig && (
+            <BoxConfigurationAction
+              initialBoxes={hiveBoxes}
+              hiveId={hiveId}
+              onSave={handleBoxConfigSave}
+              onRemove={() => handleRemove('BOX_CONFIGURATION')}
+              existingAction={existingBoxConfigAction}
+            />
+          )}
         </div>
       )}
 

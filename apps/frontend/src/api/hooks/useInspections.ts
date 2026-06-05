@@ -16,7 +16,10 @@ import {
   HiveDetailResponse,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
-import type { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema.ts';
+import type {
+  InspectionFormData,
+  ActionData,
+} from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useNavigate } from 'react-router-dom';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { useUpdateHiveBoxes } from './useHives';
@@ -127,6 +130,84 @@ export const useInspection = (id: string, options = {}) => {
   });
 };
 
+// Transform form-shape actions into API CreateAction[]. Shared between the
+// single-inspection upsert flow and the bulk-add flow.
+export const transformActionsForApi = (
+  actions: ActionData[] | undefined,
+): CreateAction[] => {
+  if (!actions) return [];
+  return actions
+    .map((action): CreateAction | null => {
+      switch (action.type) {
+        case 'FEEDING':
+          return {
+            type: action.type,
+            notes: action.notes,
+            details: {
+              type: action.type,
+              feedType: action.feedType,
+              amount: action.quantity,
+              unit: action.unit,
+              concentration: action.concentration,
+            },
+          };
+        case 'TREATMENT':
+          return {
+            type: action.type,
+            notes: action.notes,
+            details: {
+              type: action.type,
+              product: action.treatmentType,
+              quantity: action.amount,
+              unit: action.unit,
+            },
+          };
+        case 'FRAME':
+          return {
+            type: ActionType.FRAME,
+            notes: action.notes,
+            details: {
+              type: ActionType.FRAME,
+              quantity: action.frames,
+            },
+          };
+        case 'MAINTENANCE':
+          return {
+            type: ActionType.MAINTENANCE,
+            notes: action.notes,
+            details: {
+              type: ActionType.MAINTENANCE,
+              component: action.component,
+              status: action.status,
+            },
+          };
+        case 'BOX_CONFIGURATION':
+          // Strip the local-only updatedBoxes field before sending to API,
+          // but include the per-box summary derived from updatedBoxes.
+          return {
+            type: ActionType.BOX_CONFIGURATION,
+            details: {
+              type: ActionType.BOX_CONFIGURATION,
+              boxesAdded: action.boxesAdded,
+              boxesRemoved: action.boxesRemoved,
+              framesAdded: action.framesAdded,
+              framesRemoved: action.framesRemoved,
+              totalBoxes: action.totalBoxes,
+              totalFrames: action.totalFrames,
+              boxes:
+                action.updatedBoxes?.map(b => ({
+                  type: b.type,
+                  frameCount: b.frameCount,
+                })) ?? action.boxesSummary,
+            },
+          };
+        default:
+          return null;
+      }
+    })
+    .filter((a): a is CreateAction => Boolean(a));
+};
+
 // Create a new inspection
 export const useCreateInspection = () => {
   const queryClient = useQueryClient();
@@ -228,77 +309,7 @@ export const useUpsertInspection = (
     // Extract box configuration action so we can apply hive update on success
     const boxConfigAction = data.actions?.find(a => a.type === 'BOX_CONFIGURATION');
 
-    // Transform actions to match API format
-    const transformedActions = data.actions
-      ?.map((action): CreateAction | null => {
-        switch (action.type) {
-          case 'FEEDING':
-            return {
-              type: action.type,
-              notes: action.notes,
-              details: {
-                type: action.type,
-                feedType: action.feedType,
-                amount: action.quantity,
-                unit: action.unit,
-                concentration: action.concentration,
-              },
-            };
-          case 'TREATMENT':
-            return {
-              type: action.type,
-              notes: action.notes,
-              details: {
-                type: action.type,
-                product: action.treatmentType,
-                quantity: action.amount,
-                unit: action.unit,
-              },
-            };
-          case 'FRAME':
-            return {
-              type: ActionType.FRAME,
-              notes: action.notes,
-              details: {
-                type: ActionType.FRAME,
-                quantity: action.frames,
-              },
-            };
-          case 'MAINTENANCE':
-            return {
-              type: ActionType.MAINTENANCE,
-              notes: action.notes,
-              details: {
-                type: ActionType.MAINTENANCE,
-                component: action.component,
-                status: action.status,
-              },
-            };
-          case 'BOX_CONFIGURATION':
-            // Strip the local-only updatedBoxes field before sending to API
-            // but include the per-box summary derived from updatedBoxes
-            return {
-              type: ActionType.BOX_CONFIGURATION,
-              details: {
-                type: ActionType.BOX_CONFIGURATION,
-                boxesAdded: action.boxesAdded,
-                boxesRemoved: action.boxesRemoved,
-                framesAdded: action.framesAdded,
-                framesRemoved: action.framesRemoved,
-                totalBoxes: action.totalBoxes,
-                totalFrames: action.totalFrames,
-                boxes:
-                  action.updatedBoxes?.map(b => ({
-                    type: b.type,
-                    frameCount: b.frameCount,
-                  })) ?? action.boxesSummary,
-              },
-            };
-          default:
-            return null;
-        }
-      })
-      .filter((a): a is CreateAction => Boolean(a));
+    const transformedActions = transformActionsForApi(data.actions);
 
     // Build score override if custom scores were set
     const scoreOverride = data.score

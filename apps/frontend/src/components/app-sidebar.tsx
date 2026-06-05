@@ -7,7 +7,7 @@ import {
   MapPin,
   Droplets,
   Package,
-  ClipboardList,
+  Layers,
   Calendar,
   BarChart3,
   MessageSquare,
@@ -126,9 +126,9 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
       isActive: true,
     },
     {
-      title: t('navigation.actions', { defaultValue: 'Actions' }),
+      title: t('navigation.actions', { defaultValue: 'Bulk Add' }),
       url: '/actions/bulk',
-      icon: ClipboardList,
+      icon: Layers,
       isActive: true,
     },
     {
