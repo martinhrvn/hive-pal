@@ -80,7 +80,7 @@ export function LandingPage() {
             </div>
             <nav className="hidden md:flex items-center space-x-6">
               <Link
-                to="/tools/syrup-calculator"
+                to="/tools"
                 className="text-gray-600 hover:text-gray-900 text-sm font-medium"
               >
                 Free Tools

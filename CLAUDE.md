@@ -145,4 +145,4 @@ SENTRY_DSN=                # Optional error tracking
 
 ### Handling modifications / push
  - do not push any modifications to github
- - always put modified files in a .zip archive with the relevant repository structure.
+ - when the user explicitly asks for a handoff (e.g. "package these changes", "give me a zip"), put modified files in a .zip archive with the relevant repository structure. Do not do this for normal edits.

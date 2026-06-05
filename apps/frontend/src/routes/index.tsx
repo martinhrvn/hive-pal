@@ -139,6 +139,11 @@ const FilesPage = lazyWithRetry(() =>
     default: m.FilesPage,
   })),
 );
+const ToolsIndexPage = lazyWithRetry(() =>
+  import('@/pages/tools/tools-index-page').then(m => ({
+    default: m.ToolsIndexPage,
+  })),
+);
 const SyrupCalculatorPage = lazyWithRetry(() =>
   import('@/pages/tools/syrup-calculator-page').then(m => ({
     default: m.SyrupCalculatorPage,
@@ -511,6 +516,14 @@ const router = createBrowserRouter([
     element: <ToolRoute />,
     errorElement: <GenericErrorPage />,
     children: [
+      {
+        index: true,
+        element: (
+          <LazyPage>
+            <ToolsIndexPage />
+          </LazyPage>
+        ),
+      },
       {
         path: 'syrup-calculator',
         element: (
