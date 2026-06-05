@@ -10,7 +10,6 @@ import {
   InspectionStatusCard,
   NotesCard,
   ObservationsCard,
-  WeatherCard,
   PendingBoxUpdateBanner,
 } from './components';
 import { AudioCard } from './components/audio-card';
@@ -19,7 +18,6 @@ import {
   PageAside,
   PageGrid,
 } from '@/components/layout/page-grid-layout';
-import { StatisticCards } from '@/pages/hive/hive-detail-page/statistic-cards.tsx';
 import { useHive, useInspection, useCreateShareLink } from '@/api/hooks';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 import { isCloudMode } from '@/utils/feature-flags';
@@ -63,7 +61,6 @@ export const InspectionDetailPage = () => {
     enabled: !!inspection?.hiveId,
   });
 
-  // Set breadcrumb context when data is loaded
   useEffect(() => {
     if (inspection && hive) {
       setInspectionContext({
@@ -76,20 +73,22 @@ export const InspectionDetailPage = () => {
         name: hive.name,
       });
     }
-
-    // Clear context on unmount
     return () => {
       setInspectionContext(undefined);
     };
   }, [inspection, hive, setInspectionContext, setHiveContext]);
 
   if (isLoading) {
-    return <div>{t('inspection:detail.loading')}</div>;
+    return (
+      <div className="p-6 text-stone-500 dark:text-stone-400">
+        {t('inspection:detail.loading')}
+      </div>
+    );
   }
 
   if (error || !inspection) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="m-4">
         <X className="h-4 w-4" />
         <AlertTitle>{t('inspection:detail.error')}</AlertTitle>
         <AlertDescription>
@@ -107,38 +106,40 @@ export const InspectionDetailPage = () => {
   }
 
   if (!inspection || !hive) {
-    return <div>{t('inspection:detail.notFound')}</div>;
+    return (
+      <div className="p-6 text-stone-500 dark:text-stone-400">
+        {t('inspection:detail.notFound')}
+      </div>
+    );
   }
 
   return (
-    <PageGrid>
-      <MainContent>
-        <div className="mb-6">
-          {/* Pending box update banner */}
-          <div className="mb-4">
+    <div className="p-2 sm:p-4">
+      <PageGrid>
+        <MainContent>
+          {/* Pending box update banner (if any) */}
+          <div className="mb-3">
             <PendingBoxUpdateBanner inspectionId={inspection.id} />
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="mb-4"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" /> {t('inspection:detail.back')}
-          </Button>
-
-          <div className="flex items-center justify-between">
-            <InspectionHeader
-              hiveId={hive.id}
-              date={inspection.date}
-              hiveName={hive.name}
-            />
+          {/* Top bar: back link + share */}
+          <div className="mb-4 flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 -ml-2"
+            >
+              <ChevronLeft className="mr-1 h-4 w-4" />
+              {t('inspection:detail.back')}
+            </Button>
             {isCloudMode() && (
               <Button
                 variant="outline"
+                size="sm"
                 onClick={handleShareClick}
                 disabled={createShareLink.isPending}
+                className="border-stone-200 dark:border-stone-800"
               >
                 <Share2 className="mr-2 h-4 w-4" />
                 {t('inspection:detail.share')}
@@ -146,41 +147,52 @@ export const InspectionDetailPage = () => {
             )}
           </div>
 
-          <div className="mt-6 space-y-4">
-            {/* Top row: Score, Weather, and Status cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-              {inspection.score && <StatisticCards score={inspection.score} />}
-              <WeatherCard
-                temperature={inspection.temperature}
-                weatherConditions={inspection.weatherConditions}
-              />
-              <InspectionStatusCard
-                inspectionId={inspection.id}
-                status={inspection.status}
-                inspectionDate={inspection.date}
-              />
-            </div>
+          {/* Editorial hero */}
+          <div className="mb-4 sm:mb-6">
+            <InspectionHeader
+              hiveId={hive.id}
+              apiaryId={hive.apiaryId}
+              date={inspection.date}
+              hiveName={hive.name}
+              status={inspection.status}
+              score={inspection.score ?? null}
+              temperature={inspection.temperature}
+              weatherConditions={inspection.weatherConditions}
+            />
+          </div>
 
-            {/* Full-width sections */}
-            <ObservationsCard observations={inspection.observations} />
+          {/* Status action prompt — only renders when scheduled / overdue */}
+          <div className="mb-4 sm:mb-6 @container/status">
+            <InspectionStatusCard
+              inspectionId={inspection.id}
+              status={inspection.status}
+              inspectionDate={inspection.date}
+            />
+          </div>
+
+          <div className="space-y-4 sm:space-y-5">
+            <ObservationsCard
+              observations={inspection.observations}
+              inspectionType={hive.inspectionType ?? 'data_driven'}
+            />
             <ActionsCard actions={inspection.actions ?? []} />
             <NotesCard notes={inspection.notes} />
             <AudioCard inspectionId={inspection.id} />
           </div>
-        </div>
-      </MainContent>
+        </MainContent>
 
-      <PageAside>
-        <InspectionDetailSidebar
-          inspectionId={inspection.id}
-          hiveId={hive.id}
+        <PageAside>
+          <InspectionDetailSidebar
+            inspectionId={inspection.id}
+            hiveId={hive.id}
+          />
+        </PageAside>
+        <ShareDialog
+          open={showShareDialog}
+          onOpenChange={setShowShareDialog}
+          shareLink={shareLink}
         />
-      </PageAside>
-      <ShareDialog
-        open={showShareDialog}
-        onOpenChange={setShowShareDialog}
-        shareLink={shareLink}
-      />
-    </PageGrid>
+      </PageGrid>
+    </div>
   );
 };

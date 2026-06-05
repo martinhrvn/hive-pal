@@ -1,56 +1,10 @@
-import { CheckCircle, Clock, AlertTriangle, XCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, XCircle, AlertTriangle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { InspectionStatus } from 'shared-schemas';
 import { useUpdateInspection } from '@/api/hooks/useInspections';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-
-const getStatusConfig = (status: InspectionStatus) => {
-  switch (status) {
-    case InspectionStatus.SCHEDULED:
-      return {
-        icon: <Clock className="h-5 w-5" />,
-        label: 'Scheduled',
-        badgeVariant: 'default' as const,
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-50',
-      };
-    case InspectionStatus.OVERDUE:
-      return {
-        icon: <AlertTriangle className="h-5 w-5" />,
-        label: 'Overdue',
-        badgeVariant: 'destructive' as const,
-        color: 'text-red-600',
-        bgColor: 'bg-red-50',
-      };
-    case InspectionStatus.COMPLETED:
-      return {
-        icon: <CheckCircle className="h-5 w-5" />,
-        label: 'Completed',
-        badgeVariant: 'default' as const,
-        color: 'text-green-600',
-        bgColor: 'bg-green-50',
-      };
-    case InspectionStatus.CANCELLED:
-      return {
-        icon: <XCircle className="h-5 w-5" />,
-        label: 'Cancelled',
-        badgeVariant: 'secondary' as const,
-        color: 'text-gray-600',
-        bgColor: 'bg-gray-50',
-      };
-    default:
-      return {
-        icon: <Clock className="h-5 w-5" />,
-        label: 'Unknown',
-        badgeVariant: 'secondary' as const,
-        color: 'text-gray-600',
-        bgColor: 'bg-gray-50',
-      };
-  }
-};
+import { cn } from '@/lib/utils';
 
 type InspectionStatusCardProps = {
   inspectionId: string;
@@ -58,6 +12,11 @@ type InspectionStatusCardProps = {
   inspectionDate: string;
 };
 
+/**
+ * Inline pending-action bar. Renders only when the inspection still needs
+ * a decision (scheduled / overdue). Current status itself lives in the
+ * header chip — this is purely the action prompt.
+ */
 export const InspectionStatusCard = ({
   inspectionId,
   status,
@@ -66,94 +25,91 @@ export const InspectionStatusCard = ({
   const queryClient = useQueryClient();
   const { mutate: updateInspection, isPending } = useUpdateInspection();
 
-  const statusConfig = getStatusConfig(status);
-  const showActions =
-    status === InspectionStatus.SCHEDULED ||
-    status === InspectionStatus.OVERDUE;
+  const isOverdue = status === InspectionStatus.OVERDUE;
+  const isScheduled = status === InspectionStatus.SCHEDULED;
+  const showActions = isScheduled || isOverdue;
 
-  const handleComplete = () => {
+  if (!showActions) return null;
+
+  const handleComplete = () =>
     updateInspection(
-      {
-        id: inspectionId,
-        data: {
-          status: InspectionStatus.COMPLETED,
-        },
-      },
+      { id: inspectionId, data: { status: InspectionStatus.COMPLETED } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['inspections'] });
         },
       },
     );
-  };
 
-  const handleCancel = () => {
+  const handleCancel = () =>
     updateInspection(
-      {
-        id: inspectionId,
-        data: {
-          status: InspectionStatus.CANCELLED,
-        },
-      },
+      { id: inspectionId, data: { status: InspectionStatus.CANCELLED } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['inspections'] });
         },
       },
     );
-  };
+
+  const Icon = isOverdue ? AlertTriangle : Clock;
 
   return (
-    <Card className="p-6">
-      <CardHeader className="pb-3">
-        <CardTitle>
-          <div className="flex items-center gap-2">
-            {statusConfig.icon}
+    <div
+      className={cn(
+        '@container/status rounded-xl border px-4 @sm/status:px-5 py-3 flex flex-col @sm/status:flex-row @sm/status:items-center gap-3 @sm/status:gap-4',
+        isOverdue
+          ? 'border-red-300/70 bg-red-50/70 dark:border-red-900/60 dark:bg-red-950/30'
+          : 'border-amber-300/70 bg-amber-50/70 dark:border-amber-900/60 dark:bg-amber-950/30',
+      )}
+    >
+      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        <span
+          className={cn(
+            'inline-flex h-7 w-7 items-center justify-center rounded-full',
+            isOverdue
+              ? 'bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300'
+              : 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300',
+          )}
+        >
+          <Icon className="h-3.5 w-3.5" />
+        </span>
+        <div className="min-w-0">
+          <div className="font-overline text-stone-500 dark:text-stone-400">
             {t('inspection:statusCard.title')}
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <div className="text-sm text-muted-foreground">{t('inspection:statusCard.currentStatus')}</div>
-            <Badge
-              variant={statusConfig.badgeVariant}
-              className={`${statusConfig.bgColor} ${statusConfig.color} text-lg px-3 py-1`}
-            >
-              {statusConfig.label}
-            </Badge>
+          <div className="text-sm font-medium text-stone-800 dark:text-stone-200">
+            {isOverdue
+              ? t('inspection:statusCard.overduePrompt', {
+                  defaultValue:
+                    'This inspection is past its scheduled date — record the outcome.',
+                })
+              : t('inspection:statusCard.scheduledPrompt', {
+                  defaultValue:
+                    'This inspection is scheduled — mark it complete once finished.',
+                })}
           </div>
-
-          {showActions && (
-            <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">{t('inspection:statusCard.actions')}</div>
-              <div className="flex flex-col gap-2">
-                <Button
-                  onClick={handleComplete}
-                  disabled={isPending}
-                  variant="default"
-                  size="sm"
-                  className="w-full"
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  {t('inspection:statusCard.markCompleted')}
-                </Button>
-                <Button
-                  onClick={handleCancel}
-                  disabled={isPending}
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                >
-                  <XCircle className="h-4 w-4 mr-2" />
-                  {t('inspection:statusCard.cancelInspection')}
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className="flex gap-2 shrink-0">
+        <Button
+          onClick={handleComplete}
+          disabled={isPending}
+          size="sm"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+        >
+          <CheckCircle className="h-4 w-4 mr-1.5" />
+          {t('inspection:statusCard.markCompleted')}
+        </Button>
+        <Button
+          onClick={handleCancel}
+          disabled={isPending}
+          variant="outline"
+          size="sm"
+        >
+          <XCircle className="h-4 w-4 mr-1.5" />
+          {t('inspection:statusCard.cancelInspection')}
+        </Button>
+      </div>
+    </div>
   );
 };

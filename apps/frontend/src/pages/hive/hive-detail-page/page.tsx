@@ -19,10 +19,17 @@ import { QueenHistoryTab } from './queen-history-tab';
 import { HiveStatusButton } from './hive-status-button';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { useImageDisplayStore } from '@/stores/image-display-store';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Map } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { WARNING_LABELS } from '@/utils/warning-labels';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { HiveMinimap } from '@/components/hive-minimap';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
@@ -141,11 +148,38 @@ export const HiveDetailPage = () => {
                           : 'Active hive'}
                       </span>
                     </div>
-                    {hiveId && (
-                      <div className="shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
+                      {hive?.apiaryId && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50"
+                              aria-label="Show apiary layout"
+                              title="Show apiary layout"
+                            >
+                              <Map className="h-4 w-4" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            align="end"
+                            className="w-auto max-w-[min(90vw,520px)] p-0"
+                          >
+                            <HiveMinimap
+                              apiaryId={hive.apiaryId}
+                              highlightedHiveId={hive.id}
+                              showHeader={false}
+                              className="border-0 shadow-none"
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                      {hiveId && (
                         <HiveStatusButton hiveId={hiveId} status={hive?.status} />
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                   <h1 className="mt-1.5 font-display text-2xl @sm/hive:text-3xl @lg/hive:text-4xl font-medium leading-[1.05] text-stone-900 dark:text-stone-50 break-words">
                     {hive?.name}

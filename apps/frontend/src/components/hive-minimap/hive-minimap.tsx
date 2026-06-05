@@ -11,14 +11,17 @@ import { getBoxHeight, getBoxTypeLabel } from '@/utils/box-display';
 interface HiveMinimapProps {
   apiaryId?: string;
   className?: string;
+  highlightedHiveId?: string;
+  showHeader?: boolean;
 }
 
 interface MinimapHiveProps {
   hive: HiveWithBoxesResponse;
   onClick: (hiveId: string) => void;
+  isHighlighted?: boolean;
 }
 
-const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
+const MinimapHive = ({ hive, onClick, isHighlighted }: MinimapHiveProps) => {
   // Sort boxes by position (bottom to top) and limit to show max 3 boxes for minimap
   const sortedBoxes = hive.boxes
     ? [...hive.boxes].sort((a, b) => b.position - a.position).slice(0, 3)
@@ -29,12 +32,21 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
 
   return (
     <div
-      className="group cursor-pointer hover:scale-110 transition-transform flex flex-col items-center"
+      className={cn(
+        'group cursor-pointer hover:scale-110 transition-transform flex flex-col items-center',
+        isHighlighted && 'scale-110',
+      )}
       onClick={() => onClick(hive.id)}
       title={hive.name}
     >
       {/* Status indicator */}
-      <div className="relative">
+      <div
+        className={cn(
+          'relative',
+          isHighlighted &&
+            'rounded-md ring-2 ring-amber-500 ring-offset-2 ring-offset-background p-0.5',
+        )}
+      >
         <div
           className={cn(
             'absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full z-10 border border-white',
@@ -121,7 +133,12 @@ const MinimapHive = ({ hive, onClick }: MinimapHiveProps) => {
   );
 };
 
-export const HiveMinimap = ({ apiaryId, className }: HiveMinimapProps) => {
+export const HiveMinimap = ({
+  apiaryId,
+  className,
+  highlightedHiveId,
+  showHeader = true,
+}: HiveMinimapProps) => {
   const navigate = useNavigate();
   const { data: rawHives = [] } = useHivesWithBoxes({ apiaryId, includeInactive: true });
   const allHives = rawHives.filter((h) => h.status !== 'ARCHIVED');
@@ -186,20 +203,22 @@ export const HiveMinimap = ({ apiaryId, className }: HiveMinimapProps) => {
   return (
     <Card className={cn('p-4', className)}>
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-muted-foreground">
-            Hive Layout
-          </h3>
-          {apiaryId && (
-            <Link
-              to={`/apiaries/${apiaryId}?tab=hives`}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Edit Hive Layout
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          )}
-        </div>
+        {showHeader && (
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Hive Layout
+            </h3>
+            {apiaryId && (
+              <Link
+                to={`/apiaries/${apiaryId}?tab=hives`}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Edit Hive Layout
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            )}
+          </div>
+        )}
         <div className="overflow-auto max-h-[500px]">
           <div
             className="grid gap-3 w-fit mx-auto p-2"
@@ -221,7 +240,11 @@ export const HiveMinimap = ({ apiaryId, className }: HiveMinimapProps) => {
                     style={{ minHeight: '80px' }}
                   >
                     {hive && (
-                      <MinimapHive hive={hive} onClick={handleHiveClick} />
+                      <MinimapHive
+                        hive={hive}
+                        onClick={handleHiveClick}
+                        isHighlighted={hive.id === highlightedHiveId}
+                      />
                     )}
                   </div>
                 );

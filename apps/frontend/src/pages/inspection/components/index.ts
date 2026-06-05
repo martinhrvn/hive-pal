@@ -4,6 +4,7 @@ export * from './observation-number-rating-view';
 export * from './inspection-action-sidebar';
 export * from './inspection-detail-sidebar';
 export * from './inspection-header';
+export * from './inspection-section';
 export * from './notes-card';
 export * from './observations-card';
 export * from './actions-card';
