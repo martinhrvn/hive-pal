@@ -82,6 +82,7 @@ model Apiary {
   invites               ApiaryInvite[]
   settings              Json?
   apiKeys               ApiaryApiKey[]
+  assistantThreads      AssistantThread[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -115,6 +116,7 @@ model Hive {
   featurePhotoId       String?      @unique
   featurePhoto         Photo?       @relation("HiveFeaturePhoto", fields: [featurePhotoId], references: [id], onDelete: SetNull)
   measurements         Measurement[]
+  assistantThreads     AssistantThread[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -166,6 +168,7 @@ model Box {
   frameSize     FrameSize?  @relation(fields: [frameSizeId], references: [id], onDelete: SetNull)
   color         String? // Hex color code for visual representation
   lastSanitized DateTime? // When this box position was last replaced with a sanitized box
+  addedAt       DateTime    @default(now()) // When this physical/logical box was added to the hive
   winterized    Boolean     @default(false) // Whether this box is prepared for winter
 
   @@index([hiveId])
@@ -951,4 +954,38 @@ model PlatformMetricsSnapshot {
   createdAt           DateTime @default(now())
 
   @@index([date])
+}
+
+// AI assistant conversation threads (per-hive chat or apiary-level advisor)
+model AssistantThread {
+  id        String   @id @default(uuid())
+  apiaryId  String // always set — drives ownership/authz
+  hiveId    String? // null = apiary-scoped advisor; set = per-hive chat
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  apiary    Apiary   @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  hive      Hive?    @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  messages  AssistantMessage[]
+
+  @@index([apiaryId])
+  @@index([hiveId])
+}
+
+model AssistantMessage {
+  id          String          @id @default(uuid())
+  threadId    String
+  role        AssistantRole // USER | ASSISTANT | SYSTEM
+  content     String          @db.Text
+  suggestions Json? // structured action proposals, nullable
+  createdAt   DateTime        @default(now())
+  thread      AssistantThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+}
+
+enum AssistantRole {
+  USER
+  ASSISTANT
+  SYSTEM
 }

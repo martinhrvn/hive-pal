@@ -191,6 +191,8 @@
     "promptCopyToClipboard": "In die Zwischenablage kopieren",
     "promptCopiedToClipboard": "Prompt in die Zwischenablage kopiert",
     "failedToCopyToClipboard": "Fehler beim Kopieren des Prompts in die Zwischenablage",
+    "sendToAssistant": "An KI-Assistent senden",
+    "failedToSendToAssistant": "Der Assistent konnte nicht geöffnet werden",
     "textArea": {
       "description": "Du bist ein erfahrener Imkereiberater. Bitte analysiere die folgenden Daten zum Bienenstock und gib deine Einschätzung ab.",
       "hiveOverview": "Bienenstockübersicht",

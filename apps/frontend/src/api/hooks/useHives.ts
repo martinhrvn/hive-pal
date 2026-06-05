@@ -216,9 +216,15 @@ export const useUpdateHiveBoxes = () => {
       return response.data;
     },
     onSuccess: async (_data, variables) => {
-      // Invalidate the specific hive to refresh box data
+      // Invalidate the specific hive and hive lists so box-added markers refresh.
       await queryClient.invalidateQueries({
         queryKey: HIVES_KEYS.detail(variables.id),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: HIVES_KEYS.lists(),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: HIVES_KEYS.listsWithBoxes(),
       });
     },
     onError: (error, variables) => {

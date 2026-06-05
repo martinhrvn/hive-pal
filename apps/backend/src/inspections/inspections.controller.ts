@@ -102,14 +102,22 @@ export class InspectionsController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async remove(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiary,
+    @Query('revertFrames') revertFrames?: string,
+  ) {
     this.logger.log(
       `Removing inspection with ID ${id} from apiary ${req.apiaryId}`,
     );
-    return this.inspectionsService.remove(id, {
-      apiaryId: req.apiaryId,
-      userId: req.user.id,
-    });
+    return this.inspectionsService.remove(
+      id,
+      {
+        apiaryId: req.apiaryId,
+        userId: req.user.id,
+      },
+      revertFrames === 'true',
+    );
   }
 
   @Get('status/overdue')

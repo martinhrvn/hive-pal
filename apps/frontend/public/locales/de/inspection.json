@@ -280,6 +280,8 @@
                 "title": "Rähmchen",
                 "framesLabel": "Anzahl hinzugefügter/entfernter Rähmchen",
                 "framesHint": "Positive Zahlen für hinzugefügt, negative für entfernt",
+                "warningNoFramesToRemove": "Keine Rähmchen zum Entfernen vorhanden.",
+                "warningExceedsCapacity": "Das überschreitet die Kapazität der Bruträume ({{capacity}} Rähmchen). Fügen Sie zuerst eine neue Zarge hinzu.",
                 "notesOptional": "Notizen (optional)",
                 "notesPlaceholder": "Notizen zu Änderungen der Rähmchen hinzufügen"
             },
@@ -311,7 +313,12 @@
         "navigation": "Navigation",
         "allInspections": "Alle Inspektionen",
         "recentInspections": "Kürzliche Inspektionen",
-        "goBack": "Zurück"
+        "goBack": "Zurück",
+        "frameModificationAdded": "Bei dieser Inspektion wurden dem Bienenstock {{count}} Rähmchen hinzugefügt.",
+        "frameModificationRemoved": "Bei dieser Inspektion wurden {{count}} Rähmchen aus dem Bienenstock entfernt.",
+        "frameModificationQuestion": "Möchten Sie die aktualisierte Rähmchenzahl beibehalten oder zurücksetzen?",
+        "deleteKeepFrames": "Löschen & Rähmchenzahl beibehalten",
+        "deleteRevertFrames": "Löschen & Rähmchenzahl zurücksetzen"
     },
     "timeline": {
         "scheduledInspections": "Geplante Inspektionen",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BoxConfigurator } from './box-configurator';
@@ -12,6 +12,8 @@ import { HiveCharts } from './charts';
 import { HiveHeaderStats } from './hive-header-stats';
 import { StatisticCards } from './statistic-cards';
 import { useHive } from '@/api/hooks';
+import { useFeatures } from '@/api/hooks/useFeatures';
+import { AssistantChat } from '@/components/assistant/assistant-chat';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 import { QueenHistoryTab } from './queen-history-tab';
 import { HiveStatusButton } from './hive-status-button';
@@ -31,11 +33,36 @@ import { HiveMinimap } from '@/components/hive-minimap';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
+  const location = useLocation();
   const { data: hive, error, refetch } = useHive(hiveId as string);
+  const { data: features } = useFeatures();
   const { setHiveContext, clearContext } = useBreadcrumbStore();
   const { mode: imageMode } = useImageDisplayStore();
   const [activeTab, setActiveTab] = useState('overview');
+  const [assistantInit, setAssistantInit] = useState<{
+    threadId?: string;
+    prompt?: string;
+  }>();
   const isSide = imageMode === 'side';
+
+  // Handle a hand-off from the LLM prompt dialog: open the Assistant tab and
+  // auto-send the generated prompt into a freshly created thread.
+  useEffect(() => {
+    const state = location.state as {
+      assistantTab?: boolean;
+      assistantThreadId?: string;
+      assistantPrompt?: string;
+    } | null;
+    if (state?.assistantTab) {
+      setActiveTab('assistant');
+      setAssistantInit({
+        threadId: state.assistantThreadId,
+        prompt: state.assistantPrompt,
+      });
+      // Clear router state so it doesn't re-trigger on re-render/back nav.
+      globalThis.history.replaceState({}, '');
+    }
+  }, [location.state]);
 
   // Set breadcrumb context when hive data is loaded
   useEffect(() => {
@@ -209,6 +236,11 @@ export const HiveDetailPage = () => {
               <TabsTrigger value="queens" className="text-xs sm:text-sm">
                 Queen History
               </TabsTrigger>
+              {features?.aiEnabled && (
+                <TabsTrigger value="assistant" className="text-xs sm:text-sm">
+                  Assistant
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="overview">
@@ -243,6 +275,20 @@ export const HiveDetailPage = () => {
             <TabsContent value="queens">
               {hive && <QueenHistoryTab hiveId={hive.id} activeQueen={hive.activeQueen} />}
             </TabsContent>
+
+            {features?.aiEnabled && (
+              <TabsContent value="assistant">
+                {hive?.apiaryId && hive?.id && (
+                  <AssistantChat
+                    key={assistantInit?.threadId ?? 'default'}
+                    apiaryId={hive.apiaryId}
+                    hiveId={hive.id}
+                    threadId={assistantInit?.threadId}
+                    initialMessage={assistantInit?.prompt}
+                  />
+                )}
+              </TabsContent>
+            )}
           </Tabs>
         </div>
 

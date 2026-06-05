@@ -102,7 +102,8 @@
     "frameCounts": {
       "title": "Brood Nest Counts",
       "totalFrames": "{{count}} frames total",
-      "framesOf": "/ {{total}} frames"
+      "framesOf": "/ {{total}} frames",
+      "frameDeltaHint": "Frames added/removed during this inspection"
     },
     "eggsFrames": "Eggs",
     "uncappedBroodFrames": "Uncapped Brood",
@@ -298,6 +299,8 @@
         "title": "Frames",
         "framesLabel": "Number of frames added/removed",
         "framesHint": "Use positive numbers for frames added, negative for frames removed",
+        "warningNoFramesToRemove": "No frames to remove.",
+        "warningExceedsCapacity": "This exceeds the brood box capacity ({{capacity}} frames). Add a new box first.",
         "notesOptional": "Notes (optional)",
         "notesPlaceholder": "Add any additional notes about frames changes"
       },
@@ -345,6 +348,11 @@
     "printDetails": "Print Details",
     "deleteInspection": "Delete Inspection",
     "deleteFailed": "Failed to delete inspection",
+    "frameModificationAdded": "This inspection added {{count}} frame(s) to the hive.",
+    "frameModificationRemoved": "This inspection removed {{count}} frame(s) from the hive.",
+    "frameModificationQuestion": "Do you want to keep the updated frame count or revert it?",
+    "deleteKeepFrames": "Delete & keep frame count",
+    "deleteRevertFrames": "Delete & revert frame count",
     "relatedActions": "Related Actions",
     "viewHive": "View Hive",
     "newInspection": "New Inspection",

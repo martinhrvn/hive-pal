@@ -5,8 +5,9 @@ import { Minus, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InspectionFormData } from './schema';
-import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
+import { AiFieldControls } from './ai-field-controls';
+import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 
 type FrameCounterProps<T> = {
   name: T;
@@ -15,6 +16,11 @@ type FrameCounterProps<T> = {
   totalFrames: number | null | undefined;
   /** Pre-computed composition percentage (already rounded via largest-remainder) */
   pct: number | null;
+  // AI merge wiring (optional so the component still works without AI context)
+  isAiSuggested?: (field: string) => boolean;
+  aiMergeState?: AiMergeState | null;
+  onAcceptSuggestion?: (field: string) => void;
+  onDismissSuggestion?: (field: string) => void;
 };
 
 const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
@@ -23,9 +29,18 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
   color,
   totalFrames,
   pct,
+  isAiSuggested,
+  aiMergeState,
+  onAcceptSuggestion,
+  onDismissSuggestion,
 }: FrameCounterProps<TName>) => {
   const { control } = useFormContext<InspectionFormData>();
   const hasTotalFrames = totalFrames != null && totalFrames > 0;
+
+  const fieldPath = name as string;
+  const suggestion = isAiSuggested?.(fieldPath)
+    ? aiMergeState?.suggestions[fieldPath]
+    : undefined;
 
   return (
     <FormField
@@ -61,7 +76,7 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
         };
 
         return (
-          <FormItem>
+          <FormItem data-ai-field={fieldPath}>
             <div className="flex flex-col gap-1.5 p-3 rounded-xl border bg-card">
               {/* Label row */}
               <div className="flex items-center justify-between">
@@ -78,6 +93,17 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
                   </Button>
                 )}
               </div>
+
+              {/* AI suggestion controls */}
+              {suggestion && (
+                <AiFieldControls
+                  isVisible
+                  hasConflict={suggestion.hasConflict}
+                  status={suggestion.status}
+                  onAccept={() => onAcceptSuggestion?.(fieldPath)}
+                  onDismiss={() => onDismissSuggestion?.(fieldPath)}
+                />
+              )}
 
               {/* Counter row */}
               <div className="flex items-center gap-3">
@@ -138,10 +164,21 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
 
 type FrameCountSectionProps = {
   totalFrames?: number | null;
+  /** Net frames added (+) / removed (-) via the current Rähmchen action */
+  frameDelta?: number;
+  isAiSuggested?: (field: string) => boolean;
+  aiMergeState?: AiMergeState | null;
+  onAcceptSuggestion?: (field: string) => void;
+  onDismissSuggestion?: (field: string) => void;
 };
 
 export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
   totalFrames,
+  frameDelta = 0,
+  isAiSuggested,
+  aiMergeState,
+  onAcceptSuggestion,
+  onDismissSuggestion,
 }) => {
   const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
@@ -196,20 +233,24 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
     emptyFrames,
   ];
 
-  const effectiveTotalFrames = frameTotalField ?? totalFrames ?? null;
+  // Prefer the live total passed from the form (brood-box frames adjusted by
+  // the current Rähmchen action) over the stored observation value, so the
+  // header and counter maximums always reflect the latest frame change.
+  const effectiveTotalFrames = totalFrames ?? frameTotalField ?? null;
 
   // Ordered counts for all frame types — same order as FRAME_FIELDS
   const frameCounts = frameValues.map(v => v ?? 0);
 
-  // Calculate percentages based on the sum of all entered counts
-  // Shows distribution: eggs=4, capped=4, sum=8 → each is 50%
-  // Percentages always sum to exactly 100%
+  // Each frame type is shown as a share of the total frames (e.g. 1 of 10 →
+  // 10%). Types overlap — a single frame can hold eggs and honey — so the
+  // percentages are independent and intentionally need not sum to 100%.
   const pcts: (number | null)[] =
-    frameCounts.reduce((a, b) => a + b, 0) > 0
-      ? largestRemainder(
-          frameCounts,
-          frameCounts.reduce((a, b) => a + b, 0),
-        ).map((p, i) => (frameCounts[i] > 0 ? p : null))
+    effectiveTotalFrames != null && effectiveTotalFrames > 0
+      ? frameCounts.map(c =>
+          c > 0
+            ? Math.min(100, Math.round((c / effectiveTotalFrames) * 100))
+            : null,
+        )
       : frameCounts.map(() => null);
 
   const frameTypes = FRAME_FIELDS.map(ff => ({
@@ -220,19 +261,56 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
     color: string;
   }[];
 
+  // totalFrames is shown only as the header (not a counter), so surface its
+  // AI suggestion there.
+  const totalFramesPath = 'observations.totalFrames';
+  const totalFramesSuggestion = isAiSuggested?.(totalFramesPath)
+    ? aiMergeState?.suggestions[totalFramesPath]
+    : undefined;
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center" data-ai-field={totalFramesPath}>
         <h3 className="text-lg font-medium">
           {t('observations.frameCounts.title')}
         </h3>
-        {effectiveTotalFrames != null && (
-          <span className="text-sm text-muted-foreground">
-            {t('observations.frameCounts.totalFrames', {
-              count: effectiveTotalFrames,
-            })}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {effectiveTotalFrames != null &&
+            (frameDelta !== 0 ? (
+              <span
+                className="text-sm text-muted-foreground tabular-nums"
+                title={t('observations.frameCounts.frameDeltaHint')}
+              >
+                {effectiveTotalFrames - frameDelta}{' '}
+                <span
+                  className={`font-semibold ${
+                    frameDelta > 0 ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {frameDelta > 0 ? `+${frameDelta}` : frameDelta}
+                </span>{' '}
+                ={' '}
+                {t('observations.frameCounts.totalFrames', {
+                  count: effectiveTotalFrames,
+                })}
+              </span>
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                {t('observations.frameCounts.totalFrames', {
+                  count: effectiveTotalFrames,
+                })}
+              </span>
+            ))}
+          {totalFramesSuggestion && (
+            <AiFieldControls
+              isVisible
+              hasConflict={totalFramesSuggestion.hasConflict}
+              status={totalFramesSuggestion.status}
+              onAccept={() => onAcceptSuggestion?.(totalFramesPath)}
+              onDismiss={() => onDismissSuggestion?.(totalFramesPath)}
+            />
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -244,6 +322,10 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
             color={color}
             totalFrames={effectiveTotalFrames}
             pct={pcts[i]}
+            isAiSuggested={isAiSuggested}
+            aiMergeState={aiMergeState}
+            onAcceptSuggestion={onAcceptSuggestion}
+            onDismissSuggestion={onDismissSuggestion}
           />
         ))}
       </div>

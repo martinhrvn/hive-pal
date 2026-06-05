@@ -95,12 +95,26 @@ The following environment variables can be configured:
 | `ADMIN_USERNAME` | Default admin username | `admin` |
 | `ADMIN_PASSWORD` | Default admin password | *Required* |
 | `PORT` | Port the backend will listen on | `3001` |
+| `HIVESCALE_API_BASE_URL` | Optional HiveScale backend URL for beehive scale integration | - |
+| `HIVESCALE_SERVICE_API_KEY` | Optional shared key used to call HiveScale | - |
 
 ### Frontend Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `VITE_API_URL` | URL to the backend API | `http://localhost:3001` |
+
+
+### Optional HiveScale Integration
+
+To show live HiveScale device data inside Hive-Pal, also run a HiveScale backend and set these variables on the Hive-Pal backend service:
+
+```bash
+HIVESCALE_API_BASE_URL=https://hivescale.example.com
+HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
+```
+
+The same secret must be configured on HiveScale as `HIVEPAL_SERVICE_API_KEY`. Once configured, the HiveScale page can claim devices and display weight, temperature, battery, solar, and cellular telemetry.
 
 ## Manual Installation (Development)
 

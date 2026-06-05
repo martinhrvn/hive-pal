@@ -79,6 +79,18 @@ docker compose up -d minio
 # Create bucket: hivepal-audio
 ```
 
+
+### HiveScale Integration (Optional)
+
+Set these variables when HivePal should proxy scale data from a HiveScale backend.
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `HIVESCALE_API_BASE_URL` | Base URL of the HiveScale FastAPI service | `https://hivescale.example.com` |
+| `HIVESCALE_SERVICE_API_KEY` | Shared service key sent as `X-HivePal-Service-Key` | `a-long-random-shared-secret` |
+
+`HIVESCALE_SERVICE_API_KEY` must match `HIVEPAL_SERVICE_API_KEY` on the HiveScale backend. The HivePal backend forwards the authenticated user ID as `X-User-Id` so HiveScale can enforce device roles.
+
 ### Sentry (Optional)
 
 | Variable | Description | Default |

@@ -44,6 +44,8 @@ import { ApiarySharingModule } from './apiary-sharing/apiary-sharing.module';
 import { WorkerTokensModule } from './worker-tokens/worker-tokens.module';
 import { WorkerJobsModule } from './worker-jobs/worker-jobs.module';
 import { AdminMediaModule } from './admin-media/admin-media.module';
+import { HiveScaleModule } from './hivescale/hivescale.module';
+import { AssistantModule } from './assistant/assistant.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 
 @Module({
@@ -88,6 +90,8 @@ import { MeasurementsModule } from './measurements/measurements.module';
     WorkerTokensModule,
     WorkerJobsModule,
     AdminMediaModule,
+    HiveScaleModule,
+    AssistantModule,
     MeasurementsModule,
   ],
   controllers: [AppController, EnvController],

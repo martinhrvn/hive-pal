@@ -159,6 +159,18 @@ const DemareeMethodPage = lazyWithRetry(() =>
   })),
 );
 
+const HiveScalePage = lazyWithRetry(() =>
+  import('@/pages/hivescale/hivescale-page').then(m => ({
+    default: m.HiveScalePage,
+  })),
+);
+
+const AssistantPage = lazyWithRetry(() =>
+  import('@/pages/assistant/assistant-page').then(m => ({
+    default: m.AssistantPage,
+  })),
+);
+
 // Loading fallback component
 function PageLoader() {
   return (
@@ -356,6 +368,22 @@ const router = createBrowserRouter([
         element: (
           <LazyPage>
             <ReportsPage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/hivescale',
+        element: (
+          <LazyPage>
+            <HiveScalePage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/assistant',
+        element: (
+          <LazyPage>
+            <AssistantPage />
           </LazyPage>
         ),
       },

@@ -2,3 +2,5 @@ flask
 requests
 faster-whisper
 watchdog
+openai
+anthropic

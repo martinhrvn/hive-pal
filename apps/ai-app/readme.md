@@ -169,8 +169,13 @@ outbound HTTP from the AI box is required.
 | `HIVEPAL_URL` | yes | — | Base URL of your HivePal backend, e.g. `https://hivepal.example.com` |
 | `WORKER_TOKEN` | yes | — | The `hpw_…` token from the admin UI |
 | `POLL_INTERVAL_SECONDS` | no | `5` | Sleep between polls when idle |
-| `OLLAMA_URL` | no | `http://ollama:11434/api/chat` | Ollama chat endpoint |
+| `AI_PROVIDER` | no | `ollama` | LLM provider for analysis: `ollama`, `openai`, or `anthropic` |
+| `OLLAMA_URL` | no | `http://ollama:11434/api/chat` | Ollama chat endpoint (used when `AI_PROVIDER=ollama`) |
 | `OLLAMA_MODEL` | no | `qwen3:8b` | Ollama model name (must be pulled locally) |
+| `OPENAI_API_KEY` | no | — | OpenAI API key (required when `AI_PROVIDER=openai`) |
+| `OPENAI_MODEL` | no | `gpt-4o-mini` | OpenAI model name |
+| `ANTHROPIC_API_KEY` | no | — | Anthropic API key (required when `AI_PROVIDER=anthropic`) |
+| `ANTHROPIC_MODEL` | no | `claude-haiku-4-5-20251001` | Anthropic model name |
 | `WHISPER_MODEL` | no | `small` | faster-whisper model size |
 | `WHISPER_COMPUTE_TYPE` | no | `int8` | faster-whisper compute type |
 | `DOWNLOAD_TIMEOUT_SECONDS` | no | `300` | Max time to download an audio file |

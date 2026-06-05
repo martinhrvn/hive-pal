@@ -13,6 +13,7 @@ A modern beekeeping management application designed for both mobile and desktop 
 - **Inspection Workflows**: Record detailed inspections with observations and actions
 - **Queen Management**: Track queen lineage and replacement history
 - **Mobile-First Design**: Optimized for field use with easy data entry
+- **HiveScale Integration**: Claim and monitor self-hosted HiveScale devices, including weight, temperature, battery, solar, and cellular telemetry
 
 ## Getting Started
 
@@ -104,6 +105,8 @@ The application will be available at http://localhost.
 | `SENTRY_DSN` | Backend Sentry DSN |
 | `VITE_SENTRY_DSN` | Frontend Sentry DSN |
 | `VITE_SENTRY_ENVIRONMENT` | Frontend Sentry environment |
+| `HIVESCALE_API_BASE_URL` | Base URL of the HiveScale backend for scale integration |
+| `HIVESCALE_SERVICE_API_KEY` | Shared service key used by HivePal to call HiveScale |
 
 ## Development
 
@@ -130,6 +133,7 @@ pnpm dev
 /apps
   /frontend - React frontend application
   /backend - NestJS API server
+  /hivescale - HiveScale integration notes and compose overlay
   /e2e - End-to-end tests with Playwright
 /packages
   /shared-schemas - Shared Zod validation schemas

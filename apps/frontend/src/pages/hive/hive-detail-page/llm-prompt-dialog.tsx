@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -9,9 +10,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { BotMessageSquare, Copy, Check } from 'lucide-react';
+import { BotMessageSquare, Copy, Check, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useHive, useInspections } from '@/api/hooks';
+import { useHive, useInspections, useCreateAssistantThread } from '@/api/hooks';
+import { useFeatures } from '@/api/hooks/useFeatures';
 import { generateHivePrompt } from './generate-hive-prompt';
 import { useTranslation } from 'react-i18next';
 
@@ -25,8 +27,11 @@ export function LlmPromptDialog({ hiveId, hiveName }: LlmPromptDialogProps) {
   const [promptText, setPromptText] = useState('');
   const [copied, setCopied] = useState(false);
 
+  const navigate = useNavigate();
   const { data: hive } = useHive(hiveId, { enabled: !!hiveId });
   const { data: inspections } = useInspections(hiveId ? { hiveId } : undefined);
+  const { data: features } = useFeatures();
+  const createThread = useCreateAssistantThread();
   const { t } = useTranslation('hive');
   useEffect(() => {
     if (open && hive) {
@@ -52,6 +57,34 @@ export function LlmPromptDialog({ hiveId, hiveName }: LlmPromptDialogProps) {
       );
     }
   };
+
+  const handleSendToAssistant = async () => {
+    if (!hive?.apiaryId) return;
+    try {
+      const thread = await createThread.mutateAsync({
+        apiaryId: hive.apiaryId,
+        hiveId,
+      });
+      setOpen(false);
+      // Re-navigate to this hive's Assistant tab, handing off the thread id and
+      // the generated prompt via router state (no URL length limit). The hive
+      // detail page reads this and auto-sends the prompt.
+      navigate(`/hives/${hiveId}`, {
+        state: {
+          assistantTab: true,
+          assistantThreadId: thread.id,
+          assistantPrompt: promptText,
+        },
+      });
+    } catch {
+      toast.error(
+        t('llmPrompt.failedToSendToAssistant', {
+          defaultValue: 'Could not open the assistant',
+        }),
+      );
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -88,24 +121,43 @@ export function LlmPromptDialog({ hiveId, hiveName }: LlmPromptDialogProps) {
             onChange={e => setPromptText(e.target.value)}
             className="flex-1 min-h-[300px] max-h-[50vh] font-mono text-sm resize-none"
           />
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <span className="text-xs text-muted-foreground">
               {t('llmPrompt.charactersLength', { length: promptText.length, defaultValue: '{{length}} characters' })}
             </span>
-            <Button onClick={handleCopy} data-umami-event="LLM Prompt Copy">
-              {copied ? (
-                <Check className="mr-2 h-4 w-4" />
-              ) : (
-                <Copy className="mr-2 h-4 w-4" />
-              )}
-              {copied
-                ? t('llmPrompt.promptCopied', {
-                    defaultValue: 'Copied',
-                  })
-                : t('llmPrompt.promptCopyToClipboard', {
-                    defaultValue: 'Copy to Clipboard',
+            <div className="flex items-center gap-2">
+              {features?.aiEnabled && hive?.apiaryId && (
+                <Button
+                  variant="secondary"
+                  onClick={() => void handleSendToAssistant()}
+                  disabled={createThread.isPending || !promptText}
+                  data-umami-event="LLM Prompt Send To Assistant"
+                >
+                  {createThread.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="mr-2 h-4 w-4" />
+                  )}
+                  {t('llmPrompt.sendToAssistant', {
+                    defaultValue: 'Send to AI-Assistant',
                   })}
-            </Button>
+                </Button>
+              )}
+              <Button onClick={handleCopy} data-umami-event="LLM Prompt Copy">
+                {copied ? (
+                  <Check className="mr-2 h-4 w-4" />
+                ) : (
+                  <Copy className="mr-2 h-4 w-4" />
+                )}
+                {copied
+                  ? t('llmPrompt.promptCopied', {
+                      defaultValue: 'Copied',
+                    })
+                  : t('llmPrompt.promptCopyToClipboard', {
+                      defaultValue: 'Copy to Clipboard',
+                    })}
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
