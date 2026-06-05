@@ -5,7 +5,7 @@ export type InspectionType = z.infer<typeof inspectionTypeEnum>;
 
 export const apiarySettingsSchema = z
   .object({
-    inspectionType: inspectionTypeEnum.default('data_driven'),
+    inspectionType: inspectionTypeEnum.default('subjective'),
   })
   .optional();
 export type ApiarySettings = z.infer<typeof apiarySettingsSchema>;
