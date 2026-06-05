@@ -185,6 +185,27 @@ export class HiveScaleController {
     );
   }
 
+  @Get('devices/:deviceId/insights/history')
+  getInsightsHistory(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @Query('status') status?: 'all' | 'active' | 'resolved',
+    @Query('category') category?: string,
+    @Query('since') since?: string,
+    @Query('limit') limit?: number,
+  ) {
+    return this.hiveScaleService.getDeviceInsightsHistory(
+      this.extractToken(req),
+      deviceId,
+      {
+        status,
+        category,
+        since,
+        limit: limit !== undefined ? Number(limit) : undefined,
+      },
+    );
+  }
+
   @Get('devices/:deviceId/members')
   listMembers(
     @Req() req: RequestWithUser,

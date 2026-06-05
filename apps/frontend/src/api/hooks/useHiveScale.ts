@@ -175,6 +175,10 @@ const HIVESCALE_KEYS = {
   ) => [...HIVESCALE_KEYS.all, 'insights', deviceId, query] as const,
   insightsSummary: (deviceId: string | undefined) =>
     [...HIVESCALE_KEYS.all, 'insightsSummary', deviceId] as const,
+  insightsHistory: (
+    deviceId: string | undefined,
+    query: HiveScaleInsightsHistoryQuery | undefined,
+  ) => [...HIVESCALE_KEYS.all, 'insightsHistory', deviceId, query] as const,
 };
 
 export const useHiveScaleDevices = () => {
@@ -281,6 +285,30 @@ export const useHiveScaleInsightsSummary = (
   });
 };
 
+export const useHiveScaleInsightsHistory = (
+  deviceId: string | undefined,
+  query: HiveScaleInsightsHistoryQuery = {},
+  options: { enabled?: boolean } = {},
+) => {
+  return useQuery<HiveScaleInsightsHistoryResponse>({
+    queryKey: HIVESCALE_KEYS.insightsHistory(deviceId, query),
+    queryFn: async () => {
+      const params: Record<string, unknown> = {};
+      if (query.status !== undefined) params.status = query.status;
+      if (query.category !== undefined) params.category = query.category;
+      if (query.since !== undefined) params.since = query.since;
+      if (query.limit !== undefined) params.limit = query.limit;
+      const response = await apiClient.get<HiveScaleInsightsHistoryResponse>(
+        `/api/hivescale/devices/${deviceId}/insights/history`,
+        { params: Object.keys(params).length > 0 ? params : undefined },
+      );
+      return response.data;
+    },
+    enabled: !!deviceId && (options.enabled ?? true),
+    staleTime: 60 * 1000,
+  });
+};
+
 export type HiveScaleInsightSeverity =
   | 'info'
   | 'watch'
@@ -330,6 +358,49 @@ export interface HiveScaleInsightsSummaryResponse {
 
 export interface HiveScaleInsightsQuery {
   lookbackDays?: number;
+}
+
+export type HiveScaleInsightStatus = 'active' | 'resolved';
+
+/**
+ * A persisted insight alert occurrence with its lifecycle. Returned by the
+ * history endpoint. Distinct from the live `HiveScaleInsightAlert` in that it
+ * carries first/last-seen and resolution timestamps.
+ */
+export interface HiveScaleInsightHistoryEntry {
+  id: number;
+  alert_key: string;
+  category: HiveScaleInsightCategory;
+  channel: 1 | 2;
+  severity: HiveScaleInsightSeverity;
+  peak_severity: HiveScaleInsightSeverity;
+  title: string;
+  description: string;
+  confidence: number;
+  evidence: Record<string, unknown>;
+  source: string;
+  window_start: string | null;
+  window_end: string | null;
+  first_seen_at: string | null;
+  last_seen_at: string | null;
+  resolved_at: string | null;
+  status: HiveScaleInsightStatus;
+  update_count: number;
+}
+
+export interface HiveScaleInsightsHistoryResponse {
+  device_id: string;
+  lookback_days: number;
+  count: number;
+  active_count: number;
+  alerts: HiveScaleInsightHistoryEntry[];
+}
+
+export interface HiveScaleInsightsHistoryQuery {
+  status?: 'all' | HiveScaleInsightStatus;
+  category?: HiveScaleInsightCategory;
+  since?: string;
+  limit?: number;
 }
 
 export const useClaimHiveScaleDevice = () => {

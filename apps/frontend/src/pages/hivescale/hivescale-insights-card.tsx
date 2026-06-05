@@ -32,6 +32,7 @@ import {
   HiveScaleInsightSeverity,
   useHiveScaleInsights,
 } from '@/api/hooks/useHiveScale';
+import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';
 
 interface HiveScaleInsightsCardProps {
   deviceId: string;
@@ -381,17 +382,24 @@ export function HiveScaleInsightsCard({
               )}
             </CardDescription>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0"
-            onClick={() => insights.refetch()}
-            disabled={insights.isFetching}
-            aria-label="Refresh insights"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </Button>
+          <div className="flex shrink-0 items-center gap-1">
+            <HiveScaleInsightsHistoryDialog
+              deviceId={deviceId}
+              scale1Name={scale1Name}
+              scale2Name={scale2Name}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              onClick={() => insights.refetch()}
+              disabled={insights.isFetching}
+              aria-label="Refresh insights"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
 

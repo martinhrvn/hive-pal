@@ -332,6 +332,29 @@ export class HiveScaleService {
     );
   }
 
+  getDeviceInsightsHistory(
+    accessToken: string,
+    deviceId: string,
+    query: {
+      status?: 'all' | 'active' | 'resolved';
+      category?: string;
+      since?: string;
+      limit?: number;
+    } = {},
+  ) {
+    const params: Record<string, unknown> = {};
+    if (query.status !== undefined) params.status = query.status;
+    if (query.category !== undefined) params.category = query.category;
+    if (query.since !== undefined) params.since = query.since;
+    if (query.limit !== undefined) params.limit = query.limit;
+    return this.request(
+      accessToken,
+      'GET',
+      `/api/v1/app/devices/${deviceId}/insights/history`,
+      { params: Object.keys(params).length > 0 ? params : undefined },
+    );
+  }
+
   async listMembers(accessToken: string, deviceId: string) {
     const members = await this.request<HiveScaleMember[]>(
       accessToken,
