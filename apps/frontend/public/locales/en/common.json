@@ -27,7 +27,7 @@
     "files": "Files",
     "calendar": "Calendar",
     "equipment": "Equipment",
-    "actions": "Actions",
+    "actions": "Bulk Add",
     "tools": "Tools",
     "syrupCalculator": "Syrup Calculator",
     "broodTimeline": "Brood Timeline"
@@ -465,5 +465,81 @@
   },
   "footer": {
     "privacyPolicy": "Privacy Policy"
+  },
+  "bulkAdd": {
+    "title": "Bulk Add",
+    "subtitle": "Pick a date and the hives this applies to, build an action, inspection, or queen entry, then add it to the queue.",
+    "loading": "Loading hives…",
+    "sections": {
+      "when": "When",
+      "hives": "Hives",
+      "what": "What",
+      "queue": "Queue"
+    },
+    "tabs": {
+      "actions": "Actions",
+      "inspections": "Inspections",
+      "queens": "Queens"
+    },
+    "hives": {
+      "filterPlaceholder": "Filter hives",
+      "selectAll": "Select all",
+      "clearVisible": "Clear visible",
+      "noMatches": "No hives match \"{{filter}}\""
+    },
+    "datePlaceholder": "Pick a date",
+    "applyHint": "Apply to {{count}} hive on {{date}}",
+    "applyHintPlural": "Apply to {{count}} hives on {{date}}",
+    "selectHivesHint": "Select at least one hive on the left",
+    "addToQueue": {
+      "action": "Add action to queue",
+      "inspection": "Add inspection to queue",
+      "queen": "Add queen to queue"
+    },
+    "queue": {
+      "clear": "Clear",
+      "emptyTitle": "Queue is empty",
+      "emptyBody": "Build something on the left and add it to the queue.",
+      "submit": "Submit",
+      "submitOne": "Submit {{count}} item",
+      "submitMany": "Submit {{count}} items",
+      "submitting": "Submitting…"
+    },
+    "kind": {
+      "action": "Action",
+      "inspection": "Inspection",
+      "queen": "Queen"
+    },
+    "edit": {
+      "title": "Edit Action",
+      "hive": "Hive",
+      "type": "Type",
+      "date": "Date",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "errors": {
+      "noHives": "Please select at least one hive",
+      "emptyAction": "Add at least one action to send to the queue",
+      "emptyInspection": "Fill in some inspection fields first",
+      "emptyQueen": "Fill in the queen details first",
+      "noItems": "No items to submit"
+    },
+    "toast": {
+      "addedOne": "Added {{count}} item to the queue",
+      "addedMany": "Added {{count}} items to the queue",
+      "actionUpdated": "Action updated",
+      "createdOne": "Created {{count}} item: {{breakdown}}",
+      "createdMany": "Created {{count}} items: {{breakdown}}",
+      "partial": "Created {{success}}, failed {{failed}}. Failed items kept in queue.",
+      "breakdown": {
+        "actionOne": "{{count}} action",
+        "actionMany": "{{count}} actions",
+        "inspectionOne": "{{count}} inspection",
+        "inspectionMany": "{{count}} inspections",
+        "queenOne": "{{count}} queen",
+        "queenMany": "{{count}} queens"
+      }
+    }
   }
 }

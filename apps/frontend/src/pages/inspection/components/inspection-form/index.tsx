@@ -299,7 +299,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   };
 
   // Handler for regular save button
-  const handleSave = form.handleSubmit(data => {
+  const handleSave = form.handleSubmit(async data => {
     if (!validateSubjectiveStrength(data)) return;
     const formattedData = applyInspectionModeToFormData(
       data,
@@ -309,13 +309,16 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
     if (mode === 'batch' && onSubmitSuccess) {
       onSubmitSuccess(formattedData);
-    } else {
-      const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
-      onSubmit(formattedData, status);
+      return;
     }
+    const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
+    // Return the promise so RHF's isSubmitting stays true until the save
+    // resolves — otherwise the save button re-enables before the request
+    // completes and double-clicks create duplicate inspections.
+    await onSubmit(formattedData, status);
   });
 
-  const handleSaveAndComplete = form.handleSubmit(data => {
+  const handleSaveAndComplete = form.handleSubmit(async data => {
     if (!validateSubjectiveStrength(data)) return;
     const formattedData = applyInspectionModeToFormData(
       data,
@@ -325,9 +328,9 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
     if (mode === 'batch' && onSubmitSuccess) {
       onSubmitSuccess(formattedData);
-    } else {
-      onSubmit(formattedData, InspectionStatus.COMPLETED);
+      return;
     }
+    await onSubmit(formattedData, InspectionStatus.COMPLETED);
   });
 
   const date = form.watch('date');

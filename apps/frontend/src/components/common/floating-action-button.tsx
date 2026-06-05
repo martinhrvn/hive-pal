@@ -46,7 +46,7 @@ export const FloatingActionButton = () => {
       },
       {
         id: 'add-actions',
-        label: 'Add Actions',
+        label: 'Bulk Add',
         icon: <Plus className="h-4 w-4" />,
         onClick: () => {
           navigate('/actions/bulk');

@@ -26,7 +26,8 @@
     "allQueens": "Všetky matky",
     "tools": "Nástroje",
     "syrupCalculator": "Kalkulačka sirupu",
-    "calendar": "Kalendár"
+    "calendar": "Kalendár",
+    "actions": "Hromadné pridanie"
   },
   "actions": {
     "save": "Uložiť",
@@ -286,5 +287,81 @@
   },
   "footer": {
     "privacyPolicy": "Zásady ochrany osobných údajov"
+  },
+  "bulkAdd": {
+    "title": "Hromadné pridanie",
+    "subtitle": "Vyberte dátum a úle, ktorých sa to týka, zostavte akciu, prehliadku alebo záznam o matke a pridajte to do frontu.",
+    "loading": "Načítavajú sa úle…",
+    "sections": {
+      "when": "Kedy",
+      "hives": "Úle",
+      "what": "Čo",
+      "queue": "Front"
+    },
+    "tabs": {
+      "actions": "Akcie",
+      "inspections": "Prehliadky",
+      "queens": "Matky"
+    },
+    "hives": {
+      "filterPlaceholder": "Filtrovať úle",
+      "selectAll": "Vybrať všetky",
+      "clearVisible": "Zrušiť výber",
+      "noMatches": "Žiadne úle nezodpovedajú „{{filter}}“"
+    },
+    "datePlaceholder": "Vyberte dátum",
+    "applyHint": "Použiť pre {{count}} úľ dňa {{date}}",
+    "applyHintPlural": "Použiť pre {{count}} úľov dňa {{date}}",
+    "selectHivesHint": "Vyberte aspoň jeden úľ vľavo",
+    "addToQueue": {
+      "action": "Pridať akciu do frontu",
+      "inspection": "Pridať prehliadku do frontu",
+      "queen": "Pridať matku do frontu"
+    },
+    "queue": {
+      "clear": "Vymazať",
+      "emptyTitle": "Front je prázdny",
+      "emptyBody": "Zostavte niečo vľavo a pridajte to do frontu.",
+      "submit": "Odoslať",
+      "submitOne": "Odoslať {{count}} položku",
+      "submitMany": "Odoslať {{count}} položiek",
+      "submitting": "Odosiela sa…"
+    },
+    "kind": {
+      "action": "Akcia",
+      "inspection": "Prehliadka",
+      "queen": "Matka"
+    },
+    "edit": {
+      "title": "Upraviť akciu",
+      "hive": "Úľ",
+      "type": "Typ",
+      "date": "Dátum",
+      "cancel": "Zrušiť",
+      "save": "Uložiť zmeny"
+    },
+    "errors": {
+      "noHives": "Vyberte aspoň jeden úľ",
+      "emptyAction": "Pridajte aspoň jednu akciu pred odoslaním do frontu",
+      "emptyInspection": "Najprv vyplňte nejaké polia prehliadky",
+      "emptyQueen": "Najprv vyplňte údaje o matke",
+      "noItems": "Žiadne položky na odoslanie"
+    },
+    "toast": {
+      "addedOne": "Pridaná {{count}} položka do frontu",
+      "addedMany": "Pridaných {{count}} položiek do frontu",
+      "actionUpdated": "Akcia bola aktualizovaná",
+      "createdOne": "Vytvorená {{count}} položka: {{breakdown}}",
+      "createdMany": "Vytvorených {{count}} položiek: {{breakdown}}",
+      "partial": "Vytvorených {{success}}, zlyhalo {{failed}}. Zlyhané položky ostávajú vo fronte.",
+      "breakdown": {
+        "actionOne": "{{count}} akcia",
+        "actionMany": "{{count}} akcií",
+        "inspectionOne": "{{count}} prehliadka",
+        "inspectionMany": "{{count}} prehliadok",
+        "queenOne": "{{count}} matka",
+        "queenMany": "{{count}} matiek"
+      }
+    }
   }
 }
