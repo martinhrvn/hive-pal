@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Beaker, Droplets, Ruler, Scale, Lightbulb, CookingPot } from 'lucide-react';
 import {
@@ -16,6 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Pill } from '@/components/common/pill';
+import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import type { UnitPreference } from '@/utils/unit-conversion';
 
@@ -265,50 +265,19 @@ export function SyrupCalculatorPage() {
 
   return (
     <PageGrid>
-      <Helmet>
-        <title>Sugar Syrup Calculator for Beekeepers — Hive Pal</title>
-        <meta
-          name="description"
-          content="Free sugar syrup calculator for beekeepers. Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size, in metric or imperial units."
-        />
-        <link
-          rel="canonical"
-          href="https://hivepal.app/tools/syrup-calculator"
-        />
-        <meta
-          property="og:title"
-          content="Sugar Syrup Calculator for Beekeepers — Hive Pal"
-        />
-        <meta
-          property="og:description"
-          content="Free calculator for bee sugar syrup. Get precise sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size."
-        />
-        <meta
-          property="og:url"
-          content="https://hivepal.app/tools/syrup-calculator"
-        />
-        <meta property="og:type" content="website" />
-        <meta property="twitter:card" content="summary" />
-        <meta
-          property="twitter:title"
-          content="Sugar Syrup Calculator for Beekeepers — Hive Pal"
-        />
-        <meta
-          property="twitter:description"
-          content="Free calculator for bee sugar syrup. Get precise sugar and water amounts for any ratio and container size."
-        />
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-      </Helmet>
+      <ToolMeta
+        title="Sugar Syrup Calculator for Beekeepers — Hive Pal"
+        description="Free sugar syrup calculator for beekeepers. Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size, in metric or imperial units."
+        ogDescription="Free calculator for bee sugar syrup. Get precise sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size."
+        path="/tools/syrup-calculator"
+        structuredData={structuredData}
+      />
       <MainContent>
-        <h1 className="text-2xl font-bold mb-1">
-          {t('syrupCalculator.title')}
-        </h1>
-        <p className="text-muted-foreground mb-3">
-          {t('syrupCalculator.description')}
-        </p>
-        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-          {t('syrupCalculator.intro')}
-        </p>
+        <ToolPageHeader
+          title={t('syrupCalculator.title')}
+          description={t('syrupCalculator.description')}
+          intro={t('syrupCalculator.intro')}
+        />
 
         {/* Units */}
         <Card className="mb-4">
@@ -500,51 +469,14 @@ export function SyrupCalculatorPage() {
       </MainContent>
 
       <PageAside>
-        {/* Tips */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5" />
-              {t('syrupCalculator.tips')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4 text-sm">
-              <div>
-                <h4 className="font-semibold">
-                  {t('syrupCalculator.tip1Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('syrupCalculator.tip1Description')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold">
-                  {t('syrupCalculator.tip2Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('syrupCalculator.tip2Description')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold">
-                  {t('syrupCalculator.tip3Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('syrupCalculator.tip3Description')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold">
-                  {t('syrupCalculator.tip4Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('syrupCalculator.tip4Description')}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <TipsCard
+          icon={<Lightbulb className="h-5 w-5" />}
+          title={t('syrupCalculator.tips')}
+          items={[1, 2, 3, 4].map(n => ({
+            title: t(`syrupCalculator.tip${n}Title`),
+            description: t(`syrupCalculator.tip${n}Description`),
+          }))}
+        />
       </PageAside>
     </PageGrid>
   );

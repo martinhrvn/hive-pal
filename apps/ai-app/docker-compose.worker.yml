@@ -33,7 +33,7 @@ services:
       - hivepal-ollama
     environment:
       OLLAMA_HOST: hivepal-ollama:11434
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3.5:3b}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3.5:4b}
     entrypoint: ['/bin/sh', '-c', 'ollama pull "$$OLLAMA_MODEL"']
     restart: 'no'
 

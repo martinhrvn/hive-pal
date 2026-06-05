@@ -6,6 +6,8 @@
 
 - [Sugar Syrup Calculator](https://hivepal.app/tools/syrup-calculator): Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 bee feeding syrup at any container size. Supports metric and imperial units. Includes step-by-step instructions and guidance on when each ratio is appropriate (spring stimulation vs. fall winter prep).
 - [Brood Development Timeline](https://hivepal.app/tools/brood-timeline): Visualize honey bee brood stages (egg, larva, pupa, adult) for queens (16 days), workers (21 days), and drones (24 days). Project capping and emergence dates from any start date.
+- [Swarm Management Methods](https://hivepal.app/tools/swarm-management): Overview of honey bee swarm-control methods (Demaree available; Pagden split and artificial swarm planned). Includes guidance on choosing the right method for your colony.
+- [Demaree Method Guide and Planner](https://hivepal.app/tools/swarm-management/demaree): Step-by-step Demaree swarm-control workflow for strong colonies showing swarm pressure, with prerequisites, follow-up timing (day 7-8, 14-15, 21-22), pros and cons, and an inspection planner (signed-in users can save the checkpoints as scheduled inspections on their hives).
 
 ## Product
 

@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Github, BookOpen, Rocket, Mic, Sparkles, Wand2, Beaker, Bug } from 'lucide-react';
+import { Github, BookOpen, Rocket, Mic, Sparkles, Wand2, Beaker, Bug, Waypoints } from 'lucide-react';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -667,7 +667,7 @@ export function LandingPage() {
               them for the apiary.
             </p>
           </div>
-          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2 lg:max-w-4xl">
+          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2 lg:max-w-6xl lg:grid-cols-3">
             <Link
               to="/tools/syrup-calculator"
               className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-amber-300 transition"
@@ -700,6 +700,23 @@ export function LandingPage() {
               <p className="text-sm text-gray-600">
                 Visualize queen, worker, and drone brood stages with day counts
                 and project dates from any starting day.
+              </p>
+            </Link>
+            <Link
+              to="/tools/swarm-management"
+              className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-amber-300 transition"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="rounded-lg bg-amber-100 p-2">
+                  <Waypoints className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-amber-700">
+                  Swarm Management
+                </h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Step-by-step Demaree swarm-control workflow with follow-up
+                timing and an inspection planner.
               </p>
             </Link>
           </div>
@@ -767,6 +784,12 @@ export function LandingPage() {
                 className="text-gray-400 hover:text-white text-sm"
               >
                 Brood Timeline
+              </Link>
+              <Link
+                to="/tools/swarm-management"
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                Swarm Management
               </Link>
               <a
                 href="https://docs.hivepal.app"

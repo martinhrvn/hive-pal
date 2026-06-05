@@ -1,10 +1,11 @@
 import { Link, Outlet } from 'react-router-dom';
-import { Github, BookOpen, Beaker, Bug } from 'lucide-react';
+import { Github, BookOpen, Beaker, Bug, Waypoints } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const TOOL_LINKS = [
   { to: '/tools/syrup-calculator', label: 'Syrup Calculator', icon: Beaker },
   { to: '/tools/brood-timeline', label: 'Brood Timeline', icon: Bug },
+  { to: '/tools/swarm-management', label: 'Swarm Management', icon: Waypoints },
 ];
 
 export const PublicLayout = () => {

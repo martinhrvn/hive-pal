@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { addDays, format } from 'date-fns';
 import { Bug, Clock, Lightbulb, CalendarIcon, X } from 'lucide-react';
@@ -23,6 +22,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Pill } from '@/components/common/pill';
+import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
 import { cn } from '@/lib/utils';
 
 type BeeType = 'queen' | 'worker' | 'drone';
@@ -259,50 +259,19 @@ export function BroodTimelinePage() {
 
   return (
     <PageGrid>
-      <Helmet>
-        <title>Honey Bee Brood Development Timeline — Hive Pal</title>
-        <meta
-          name="description"
-          content="Free brood development timeline for queen, worker, and drone honey bees. Visualize each stage (egg, larva, pupa, adult) with day counts and project capping or emergence dates from any start date."
-        />
-        <link
-          rel="canonical"
-          href="https://hivepal.app/tools/brood-timeline"
-        />
-        <meta
-          property="og:title"
-          content="Honey Bee Brood Development Timeline — Hive Pal"
-        />
-        <meta
-          property="og:description"
-          content="Visualize queen, worker, and drone brood stages with day counts and projected dates."
-        />
-        <meta
-          property="og:url"
-          content="https://hivepal.app/tools/brood-timeline"
-        />
-        <meta property="og:type" content="website" />
-        <meta property="twitter:card" content="summary" />
-        <meta
-          property="twitter:title"
-          content="Honey Bee Brood Development Timeline — Hive Pal"
-        />
-        <meta
-          property="twitter:description"
-          content="Visualize queen, worker, and drone brood stages with day counts and projected dates."
-        />
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-      </Helmet>
+      <ToolMeta
+        title="Honey Bee Brood Development Timeline — Hive Pal"
+        description="Free brood development timeline for queen, worker, and drone honey bees. Visualize each stage (egg, larva, pupa, adult) with day counts and project capping or emergence dates from any start date."
+        ogDescription="Visualize queen, worker, and drone brood stages with day counts and projected dates."
+        path="/tools/brood-timeline"
+        structuredData={structuredData}
+      />
       <MainContent>
-        <h1 className="text-2xl font-bold mb-1">
-          {t('broodTimeline.title')}
-        </h1>
-        <p className="text-muted-foreground mb-3">
-          {t('broodTimeline.description')}
-        </p>
-        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-          {t('broodTimeline.intro')}
-        </p>
+        <ToolPageHeader
+          title={t('broodTimeline.title')}
+          description={t('broodTimeline.description')}
+          intro={t('broodTimeline.intro')}
+        />
 
         {/* Bee Type Selector */}
         <Card className="mb-4">
@@ -500,50 +469,14 @@ export function BroodTimelinePage() {
       </MainContent>
 
       <PageAside>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5" />
-              {t('broodTimeline.funFacts')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4 text-sm">
-              <div>
-                <h4 className="font-semibold">
-                  {t('broodTimeline.fact1Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('broodTimeline.fact1Description')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold">
-                  {t('broodTimeline.fact2Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('broodTimeline.fact2Description')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold">
-                  {t('broodTimeline.fact3Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('broodTimeline.fact3Description')}
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold">
-                  {t('broodTimeline.fact4Title')}
-                </h4>
-                <p className="text-muted-foreground">
-                  {t('broodTimeline.fact4Description')}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <TipsCard
+          icon={<Lightbulb className="h-5 w-5" />}
+          title={t('broodTimeline.funFacts')}
+          items={[1, 2, 3, 4].map(n => ({
+            title: t(`broodTimeline.fact${n}Title`),
+            description: t(`broodTimeline.fact${n}Description`),
+          }))}
+        />
       </PageAside>
     </PageGrid>
   );

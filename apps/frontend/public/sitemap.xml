@@ -28,4 +28,12 @@
     <loc>https://hivepal.app/tools/brood-timeline</loc>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://hivepal.app/tools/swarm-management</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hivepal.app/tools/swarm-management/demaree</loc>
+    <priority>0.7</priority>
+  </url>
 </urlset>

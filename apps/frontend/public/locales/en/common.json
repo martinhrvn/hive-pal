@@ -424,6 +424,7 @@
     "backToOverview": "Back to Swarm Management",
     "eyebrow": "Swarm control guidance",
     "title": "Swarm Management",
+    "intro": "Free reference guides for honey bee swarm control. Compare proven methods like the Demaree, plan follow-up inspections, and reduce the risk of losing colonies to swarming during the busy spring season.",
     "cards": {
       "available": "Available",
       "comingSoon": "Coming soon",
@@ -459,6 +460,7 @@
       "badge": "Reference method",
       "title": "Demaree Method",
       "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
+      "intro": "The Demaree method is a classic swarm-control technique for strong honey bee colonies that keeps the colony intact while relieving congestion. The queen stays below an excluder with fresh comb to lay; the bulk of the brood is moved above two honey supers, separating the queen pheromone trail from the broodnest. Follow up around day 7–8, day 14–15, and day 21–22 to remove emergency queen cells before they emerge.",
       "overviewTitle": "Method overview",
       "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
       "overviewPoints": [
@@ -613,6 +615,12 @@
       "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
       "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
       "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+      "signInTitle": "Sign in to plan your inspections",
+      "signInDescription": "Create a free account to generate Demaree checkpoints, link them to one of your hives, and save them as scheduled inspections.",
+      "signInCta": "Sign in",
+      "registerCta": "Create free account",
+      "atAGlanceTitle": "At a glance",
+      "atAGlanceDescription": "Quick reference for the standard Demaree follow-ups.",
       "checkpoints": {
         "setup": {
           "title": "Initial Demaree setup",

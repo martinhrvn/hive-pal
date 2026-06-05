@@ -369,22 +369,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/tools/swarm-management',
-        element: (
-          <LazyPage>
-            <SwarmManagementOverviewPage />
-          </LazyPage>
-        ),
-      },
-      {
-        path: '/tools/swarm-management/demaree',
-        element: (
-          <LazyPage>
-            <DemareeMethodPage />
-          </LazyPage>
-        ),
-      },
-      {
         path: '/settings',
         element: <UserSettingsPage />,
       },
@@ -512,6 +496,22 @@ const router = createBrowserRouter([
         element: (
           <LazyPage>
             <BroodTimelinePage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: 'swarm-management',
+        element: (
+          <LazyPage>
+            <SwarmManagementOverviewPage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: 'swarm-management/demaree',
+        element: (
+          <LazyPage>
+            <DemareeMethodPage />
           </LazyPage>
         ),
       },
