@@ -432,6 +432,54 @@
      "overdueCount": "{{count}} inspection{{count, plural, one {} other{s}}} overdue",
      "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} due today"
    },
+   "mobile": {
+     "vitals": {
+       "title": "Strength & Brood",
+       "hint": "Population, capped and uncapped brood"
+     },
+     "stores": {
+       "title": "Stores",
+       "hint": "Honey and pollen"
+     },
+     "queen": {
+       "title": "Queen",
+       "hint": "Did you see her? Any queen cells?",
+       "yes": "Seen",
+       "no": "Not seen",
+       "notLooked": "Didn't look"
+     },
+     "mediaNotes": {
+       "title": "Media & Notes",
+       "hint": "Optional photos, audio, or written notes",
+       "addPhoto": "Add photo",
+       "recordingNumber": "Recording {{n}}",
+       "removeRecording": "Remove recording",
+       "removePhoto": "Remove photo",
+       "notesPlaceholder": "Anything else worth remembering?"
+     },
+     "review": {
+       "title": "Review",
+       "hint": "Check the summary, then save.",
+       "readyToSave": "Ready to save",
+       "save": "Save inspection",
+       "invalid": "Please review your inputs",
+       "hasNotes": "Notes added",
+       "cellTypes": "Cell types"
+     }
+   },
+   "audioQuick": {
+     "recordingFor": "Audio inspection for",
+     "prompt": "Tap to start recording. The inspection is created when recording begins.",
+     "tapToStart": "Tap to start",
+     "tapToStop": "Tap to stop and save",
+     "start": "Start recording",
+     "starting": "Starting...",
+     "stop": "Stop recording",
+     "uploading": "Saving recording...",
+     "uploadFailed": "Failed to upload recording. The inspection was saved.",
+     "tryAgain": "Try again",
+     "unsupported": "Audio recording is not supported in this browser."
+   },
    "pendingBoxUpdate": {
      "updatingTitle": "Updating box configuration",
      "updatingDescription": "Your inspection has been saved. The box configuration is being updated in the background.",

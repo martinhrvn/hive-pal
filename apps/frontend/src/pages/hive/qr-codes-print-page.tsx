@@ -34,13 +34,25 @@ function QRPreviewLoader() {
   );
 }
 
+type QrTarget = 'detail' | 'mobile-wizard' | 'audio';
+
+const TARGET_PATH: Record<QrTarget, (hiveId: string) => string> = {
+  detail: hiveId => `/hives/${hiveId}`,
+  'mobile-wizard': hiveId => `/hives/${hiveId}/inspect/mobile`,
+  audio: hiveId => `/hives/${hiveId}/inspect/audio`,
+};
+
 export function QRCodesPrintPage() {
   const { data: hives, isLoading } = useHives();
   const [selectedHives, setSelectedHives] = useState<Set<string>>(new Set());
   const [qrSize, setQrSize] = useState<'small' | 'medium' | 'large'>('large');
   const [layout, setLayout] = useState<'2x3' | '2x4' | '3x3'>('2x3');
   const [includeLogo, setIncludeLogo] = useState(true);
+  const [target, setTarget] = useState<QrTarget>('detail');
   const logoUrl = '/favicon.ico'; // Default to favicon, can be customized
+
+  const urlFor = (hiveId: string) =>
+    `${window.location.origin}${TARGET_PATH[target](hiveId)}`;
 
   const toggleHiveSelection = (hiveId: string) => {
     const newSelection = new Set(selectedHives);
@@ -187,7 +199,7 @@ export function QRCodesPrintPage() {
           <script>
             ${selectedHiveData
               .map(hive => {
-                const hiveUrl = `${window.location.origin}/hives/${hive.id}`;
+                const hiveUrl = urlFor(hive.id);
                 return `
                 (function() {
                   var typeNumber = 0;
@@ -275,6 +287,25 @@ export function QRCodesPrintPage() {
         <CardContent className="space-y-6">
           {/* Print Settings */}
           <div className="flex flex-wrap gap-4 p-4 bg-muted/50 rounded-lg">
+            <div className="flex-1 min-w-[200px]">
+              <Label htmlFor="qr-target">QR Target</Label>
+              <Select
+                value={target}
+                onValueChange={(value: QrTarget) => setTarget(value)}
+              >
+                <SelectTrigger id="qr-target">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="detail">Hive detail page</SelectItem>
+                  <SelectItem value="mobile-wizard">
+                    Mobile inspection wizard
+                  </SelectItem>
+                  <SelectItem value="audio">Quick audio inspection</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="flex-1 min-w-[200px]">
               <Label htmlFor="qr-size">QR Code Size</Label>
               <Select
@@ -380,7 +411,7 @@ export function QRCodesPrintPage() {
                   .map(hiveId => {
                     const hive = hives?.find(h => h.id === hiveId);
                     if (!hive) return null;
-                    const hiveUrl = `${window.location.origin}/hives/${hiveId}`;
+                    const hiveUrl = urlFor(hiveId);
                     return (
                       <div
                         key={hiveId}

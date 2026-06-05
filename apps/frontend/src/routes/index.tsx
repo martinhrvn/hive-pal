@@ -177,6 +177,18 @@ const AssistantPage = lazyWithRetry(() =>
   })),
 );
 
+// Fullscreen mobile inspection flows (no dashboard chrome).
+const MobileWizardPage = lazyWithRetry(() =>
+  import('@/pages/inspection/mobile-wizard/mobile-wizard-page').then(m => ({
+    default: m.MobileWizardPage,
+  })),
+);
+const AudioQuickPage = lazyWithRetry(() =>
+  import('@/pages/inspection/audio-quick/audio-quick-page').then(m => ({
+    default: m.AudioQuickPage,
+  })),
+);
+
 // Loading fallback component
 function PageLoader() {
   return (
@@ -565,6 +577,30 @@ const router = createBrowserRouter([
   {
     path: '/releases',
     element: <ReleasesPage />,
+  },
+  {
+    path: '/hives/:hiveId/inspect/mobile',
+    element: (
+      <ProtectedRoute>
+        <EditableRoute redirectTo="/inspections">
+          <LazyPage>
+            <MobileWizardPage />
+          </LazyPage>
+        </EditableRoute>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/hives/:hiveId/inspect/audio',
+    element: (
+      <ProtectedRoute>
+        <EditableRoute redirectTo="/inspections">
+          <LazyPage>
+            <AudioQuickPage />
+          </LazyPage>
+        </EditableRoute>
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/shared/:token',
