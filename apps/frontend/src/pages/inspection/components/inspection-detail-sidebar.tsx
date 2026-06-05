@@ -20,6 +20,15 @@ import {
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
 import { ActionType } from 'shared-schemas';
+import { useDeleteDialog } from '@/hooks/useDeleteDialog';
+import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from '@radix-ui/react-dialog';
+import { Button } from '@/components/ui/button';
 
 interface InspectionDetailSidebarProps {
   inspectionId: string;
@@ -58,9 +67,12 @@ export const InspectionDetailSidebar: React.FC<
     }
   };
 
+  const deleteDialog = useDeleteDialog(handleDelete);
   return (
     <ActionSidebarContainer>
-      <ActionSidebarGroup title={t('inspection:detailSidebar.inspectionActions')}>
+      <ActionSidebarGroup
+        title={t('inspection:detailSidebar.inspectionActions')}
+      >
         {canEdit && (
           <MenuItemButton
             icon={<Pencil className="h-4 w-4" />}
@@ -86,7 +98,7 @@ export const InspectionDetailSidebar: React.FC<
         )}
       </ActionSidebarGroup>
 
-<ActionSidebarGroup title={t('inspection:detailSidebar.relatedActions')}>
+      <ActionSidebarGroup title={t('inspection:detailSidebar.relatedActions')}>
         <MenuItemButton
           icon={<Home className="h-4 w-4" />}
           label={t('inspection:detailSidebar.viewHive')}
@@ -103,7 +115,7 @@ export const InspectionDetailSidebar: React.FC<
         )}
       </ActionSidebarGroup>
 
-<ActionSidebarGroup title={t('inspection:detailSidebar.navigation')}>
+      <ActionSidebarGroup title={t('inspection:detailSidebar.navigation')}>
         <MenuItemButton
           icon={<ClipboardList className="h-4 w-4" />}
           label={t('inspection:detailSidebar.allInspections')}
@@ -132,11 +144,11 @@ export const InspectionDetailSidebar: React.FC<
             <DialogDescription>
               {hasFrameModification
                 ? `${t(
-                    frameDelta > 0
-                      ? 'inspection:detailSidebar.frameModificationAdded'
-                      : 'inspection:detailSidebar.frameModificationRemoved',
-                    { count: Math.abs(frameDelta) },
-                  )} ${t('inspection:detailSidebar.frameModificationQuestion')}`
+                  frameDelta > 0
+                    ? 'inspection:detailSidebar.frameModificationAdded'
+                    : 'inspection:detailSidebar.frameModificationRemoved',
+                  { count: Math.abs(frameDelta) },
+                )} ${t('inspection:detailSidebar.frameModificationQuestion')}`
                 : t('common:confirmDelete')}
             </DialogDescription>
           </DialogHeader>
@@ -181,8 +193,8 @@ export const InspectionDetailSidebar: React.FC<
               >
                 {deleteInspection.isPending
                   ? t('common:actions.deleting', {
-                      defaultValue: 'Deleting...',
-                    })
+                    defaultValue: 'Deleting...',
+                  })
                   : t('common:actions.delete', { defaultValue: 'Delete' })}
               </Button>
             </DialogFooter>
