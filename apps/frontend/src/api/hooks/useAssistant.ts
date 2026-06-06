@@ -10,7 +10,7 @@ import {
   AssistantThreadWithMessagesResponse,
   CreateAssistantThread,
 } from 'shared-schemas';
-import { TOKEN_KEY, APIARY_SELECTION } from '@/context/auth-context';
+import { APIARY_SELECTION } from '@/context/auth-context';
 
 export const ASSISTANT_KEYS = {
   all: ['assistant'] as const,
@@ -110,14 +110,13 @@ export async function streamAssistantMessage(
   callbacks: AssistantStreamCallbacks,
   signal?: AbortSignal,
 ): Promise<void> {
-  const token = localStorage.getItem(TOKEN_KEY);
   const response = await fetch(
     `/api/assistant/threads/${threadId}/messages`,
     {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         'x-apiary-id': apiaryId || localStorage.getItem(APIARY_SELECTION) || '',
       },
       body: JSON.stringify({ content }),
