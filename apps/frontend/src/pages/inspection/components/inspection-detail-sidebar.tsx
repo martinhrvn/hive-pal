@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -20,6 +20,15 @@ import {
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
 import { ActionType } from 'shared-schemas';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface InspectionDetailSidebarProps {
   inspectionId: string;
@@ -79,7 +88,7 @@ export const InspectionDetailSidebar: React.FC<
           <MenuItemButton
             icon={<Trash className="h-4 w-4" />}
             label={t('inspection:detailSidebar.deleteInspection')}
-            onClick={deleteDialog.open}
+            onClick={() => setShowDeleteDialog(true)}
             tooltip={t('inspection:detailSidebar.deleteInspection')}
             className="text-red-600 hover:text-red-700"
           />
