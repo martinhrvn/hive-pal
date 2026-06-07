@@ -15,8 +15,11 @@ import {
   ForgotPassword,
   ResetPassword,
   SuccessResponse,
+  registerSchema,
+  forgotPasswordSchema,
 } from 'shared-schemas';
 import { AuthService } from './auth.service';
+import { ZodValidationPipe } from '../common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RequestWithUser } from './interface/request-with-user.interface';
@@ -35,7 +38,9 @@ export class AuthController {
   @Post('register')
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 409, description: 'Email already in use' })
-  async register(@Body() registerDto: Register) {
+  async register(
+    @Body(new ZodValidationPipe(registerSchema)) registerDto: Register,
+  ) {
     this.logger.log(`Registering new user with email: ${registerDto.email}`);
     return this.authService.register(
       registerDto.email,
@@ -68,7 +73,8 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async forgotPassword(
-    @Body() forgotPasswordDto: ForgotPassword,
+    @Body(new ZodValidationPipe(forgotPasswordSchema))
+    forgotPasswordDto: ForgotPassword,
   ): Promise<SuccessResponse> {
     this.logger.log(
       `Password reset requested for email: ${forgotPasswordDto.email}`,

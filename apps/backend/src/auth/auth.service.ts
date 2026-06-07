@@ -120,8 +120,11 @@ export class AuthService {
       throw new UnauthorizedException('Privacy policy consent is required');
     }
 
+    // Normalize email so lookups and login are consistent (case-insensitive)
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Check if user exists
-    const existingUser = await this.usersService.findByEmail(email);
+    const existingUser = await this.usersService.findByEmail(normalizedEmail);
     if (existingUser) {
       throw new UnauthorizedException('Email already in use');
     }
@@ -132,7 +135,7 @@ export class AuthService {
     // Create user
     const now = new Date();
     const newUser = await this.usersService.create({
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       name,
       privacyPolicyConsent,

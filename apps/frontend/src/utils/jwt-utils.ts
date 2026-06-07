@@ -9,7 +9,10 @@ const jwtPayloadSchema = z.object({
   exp: z.number(),
   iat: z.number(),
   sub: z.string(),
-  email: z.string().email(),
+  // The token is signed by our own server; do not re-enforce email format here.
+  // Enforcing `.email()` (which requires a TLD) would silently reject otherwise
+  // valid server tokens and log the user out. Email validity is gated at signup.
+  email: z.string(),
   role: z.string().optional(),
   passwordChangeRequired: z.boolean().optional(),
 });
