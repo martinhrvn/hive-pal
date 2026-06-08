@@ -158,6 +158,8 @@
     "enterEmail": "Enter your email",
     "password": "Password",
     "changePassword": "Change your account password",
+    "passkeys": "Passkeys",
+    "passkeysDescription": "Sign in without a password using your device's biometrics or security key",
     "saveSettings": "Save Settings",
     "preferencesUpdated": "Your preferences have been updated successfully.",
     "saving": "Saving..."
