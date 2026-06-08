@@ -550,6 +550,44 @@ export interface HiveScaleFirmwareUploadResult {
   crc32: number;
 }
 
+export interface HiveScaleSdImportResult {
+  status: string;
+  device_id: string;
+  /** Records parsed out of the uploaded file. */
+  parsed: number;
+  /** Non-empty lines that could not be parsed as JSON. */
+  skipped: number;
+  /** Records forwarded to the HiveScale backend. */
+  received: number;
+  /** New measurement rows actually stored. */
+  inserted: number;
+  /** Rows ignored as duplicates (already stored or repeated in the file). */
+  duplicates: number;
+}
+
+export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<HiveScaleSdImportResult, Error, File>({
+    mutationFn: async file => {
+      const formData = new FormData();
+      // The apiClient request interceptor strips Content-Type for FormData so
+      // the browser sets the multipart boundary itself.
+      formData.append('file', file);
+
+      const response = await apiClient.post<HiveScaleSdImportResult>(
+        `/api/hivescale/devices/${deviceId}/measurements/import`,
+        formData,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      // New historical measurements affect the charts and latest-value panels.
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
+    },
+  });
+};
+
 export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
   const queryClient = useQueryClient();
 

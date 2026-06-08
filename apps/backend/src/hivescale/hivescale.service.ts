@@ -10,6 +10,35 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError, Method } from 'axios';
 import FormData from 'form-data';
 import { UsersService } from '../users/users.service';
+import { parseSdMeasurements } from './sd-import.parser';
+
+// The HiveScale backend accepts up to 20k measurements per import request; we
+// forward the parsed SD file in chunks no larger than this so a multi-month
+// download (tens of thousands of rows) is split into several requests.
+const SD_IMPORT_CHUNK_SIZE = 5000;
+
+export interface HiveScaleSdImportResult {
+  status: string;
+  device_id: string;
+  /** Records parsed out of the uploaded file. */
+  parsed: number;
+  /** Non-empty lines that could not be parsed as JSON. */
+  skipped: number;
+  /** Records forwarded to the HiveScale backend. */
+  received: number;
+  /** New measurement rows actually stored. */
+  inserted: number;
+  /** Rows ignored because they already existed (or repeated in the file). */
+  duplicates: number;
+}
+
+interface HiveScaleImportResponse {
+  status: string;
+  device_id: string;
+  received: number;
+  inserted: number;
+  duplicates: number;
+}
 
 export interface HiveScaleFirmwareUploadDto {
   version: string;
@@ -286,6 +315,57 @@ export class HiveScaleService {
       }
       throw new BadGatewayException('HiveScale firmware upload failed');
     }
+  }
+
+  async importSdMeasurements(
+    accessToken: string,
+    deviceId: string,
+    file: Express.Multer.File,
+  ): Promise<HiveScaleSdImportResult> {
+    const { records, skipped } = parseSdMeasurements(
+      file.buffer,
+      file.originalname,
+    );
+
+    if (records.length === 0) {
+      throw new BadRequestException(
+        'No measurements found in the uploaded file. Expected a HiveScale .ndjson backup or the .tar SD download.',
+      );
+    }
+
+    // Pin every record to the selected device so the upload cannot smuggle in
+    // readings for a device the user does not own (the backend re-checks too).
+    const measurements = records.map((record) => ({
+      ...record,
+      device_id: deviceId,
+    }));
+
+    let received = 0;
+    let inserted = 0;
+    let duplicates = 0;
+
+    for (let i = 0; i < measurements.length; i += SD_IMPORT_CHUNK_SIZE) {
+      const chunk = measurements.slice(i, i + SD_IMPORT_CHUNK_SIZE);
+      const result = await this.request<HiveScaleImportResponse>(
+        accessToken,
+        'POST',
+        `/api/v1/app/devices/${deviceId}/measurements/import`,
+        { data: { measurements: chunk } },
+      );
+      received += result.received;
+      inserted += result.inserted;
+      duplicates += result.duplicates;
+    }
+
+    return {
+      status: 'ok',
+      device_id: deviceId,
+      parsed: records.length,
+      skipped,
+      received,
+      inserted,
+      duplicates,
+    };
   }
 
   listMeasurements(

@@ -150,6 +150,24 @@ export class HiveScaleController {
     );
   }
 
+  @Post('devices/:deviceId/measurements/import')
+  @UseInterceptors(FileInterceptor('file'))
+  importSdMeasurements(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No SD data file provided');
+    }
+
+    return this.hiveScaleService.importSdMeasurements(
+      this.extractToken(req),
+      deviceId,
+      file,
+    );
+  }
+
   @Get('devices/:deviceId/measurements')
   listMeasurements(
     @Req() req: RequestWithUser,
