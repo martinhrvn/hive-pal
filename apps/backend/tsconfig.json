@@ -22,5 +22,6 @@
     "paths": {
       "@/prisma/client": ["./src/generated/prisma/client"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "vitest.config.ts"]
 }
