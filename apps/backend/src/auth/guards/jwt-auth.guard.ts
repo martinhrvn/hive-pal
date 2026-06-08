@@ -4,6 +4,7 @@ import {
   CanActivate,
   SetMetadata,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { AuthGuard } from '@thallesp/nestjs-better-auth';
 import { fromNodeHeaders } from 'better-auth/node';
 import { auth } from '../better-auth';
@@ -20,7 +21,9 @@ export const JwtAuthGuard = AuthGuard;
 @Injectable()
 export class OptionalJwtAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { session?: unknown; user?: unknown }>();
     try {
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(request.headers ?? {}),

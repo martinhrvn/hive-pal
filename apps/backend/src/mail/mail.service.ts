@@ -24,7 +24,10 @@ export class MailService {
 
   constructor(private readonly mailConfig: MailConfigService) {}
 
-  async sendPasswordResetEmail(email: string, resetUrl: string): Promise<boolean> {
+  async sendPasswordResetEmail(
+    email: string,
+    resetUrl: string,
+  ): Promise<boolean> {
     const provider = this.mailConfig.getProvider();
 
     if (!provider) {

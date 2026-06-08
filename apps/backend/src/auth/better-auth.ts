@@ -18,17 +18,13 @@ const prismaForAuth = new PrismaClient({
 });
 
 const isBcryptHash = (hash: string): boolean =>
-  hash.startsWith('$2a$') ||
-  hash.startsWith('$2b$') ||
-  hash.startsWith('$2y$');
+  hash.startsWith('$2a$') || hash.startsWith('$2b$') || hash.startsWith('$2y$');
 
 export const auth = betterAuth({
   database: prismaAdapter(prismaForAuth, { provider: 'postgresql' }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [
-    process.env.FRONTEND_URL ?? 'http://localhost:5173',
-  ],
+  trustedOrigins: [process.env.FRONTEND_URL ?? 'http://localhost:5173'],
 
   emailAndPassword: {
     enabled: true,
@@ -125,9 +121,8 @@ export const auth = betterAuth({
 
       // User changing their own password → clear the flag
       if (ctx.path === '/change-password') {
-        const session = (
-          ctx.context as { session?: { user?: { id: string } } }
-        ).session;
+        const session = (ctx.context as { session?: { user?: { id: string } } })
+          .session;
         if (session?.user?.id) {
           await authDeps.prisma.user.update({
             where: { id: session.user.id },
