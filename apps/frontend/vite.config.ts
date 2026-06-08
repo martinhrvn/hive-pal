@@ -24,6 +24,11 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        // The service worker falls back to index.html for navigation requests.
+        // Backend-handled routes (API + better-auth, e.g. the magic-link verify
+        // link opened directly in the browser) must NOT be served the SPA shell,
+        // otherwise they never reach the server.
+        navigateFallbackDenylist: [/^\/api\//, /^\/env\.js$/],
         runtimeCaching: [
           {
             // Cache locale/translation files
