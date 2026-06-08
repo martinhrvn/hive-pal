@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 
 interface AdminProtectedRouteProps {
@@ -9,7 +10,17 @@ interface AdminProtectedRouteProps {
 export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
   children,
 }) => {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, isLoading, user } = useAuth();
+
+  // Wait for the session check before redirecting, so a refresh on an admin
+  // page doesn't flash the login page (or bounce to "/" before the role loads).
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return <Navigate to="/login" />;
