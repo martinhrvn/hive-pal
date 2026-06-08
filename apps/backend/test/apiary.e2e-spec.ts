@@ -3,13 +3,13 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
-import { getRandomUser } from './fixtures/user';
 import { getRandomApiary } from './fixtures/apiary';
+import { createTestUser, loginAndGetCookie } from './helpers/auth';
 
 describe('Apiaries (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let authToken: string;
+  let authCookie: string[];
   let userId: string;
   let testApiaryId: string;
 
@@ -24,27 +24,17 @@ describe('Apiaries (e2e)', () => {
 
     prisma = app.get(PrismaService);
 
-    // Register a test user and get authentication token
-    const testUser = await getRandomUser({
+    const testUser = await createTestUser(prisma, {
       email: 'apiary-test-user@example.com',
       password: 'password123',
     });
-    userId = testUser.id!;
+    userId = testUser.id;
 
-    // Create the user directly in the database
-    await prisma.user.create({
-      data: testUser,
-    });
-
-    // Login to get auth token
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'apiary-test-user@example.com',
-        password: 'password123',
-      });
-
-    authToken = loginResponse.body.access_token;
+    authCookie = await loginAndGetCookie(
+      app,
+      'apiary-test-user@example.com',
+      'password123',
+    );
   });
 
   afterAll(async () => {
@@ -61,7 +51,7 @@ describe('Apiaries (e2e)', () => {
   it('should create a new apiary', async () => {
     const response = await request(app.getHttpServer())
       .post('/apiaries')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .send({
         name: 'My Test Apiary',
         location: 'Backyard',
@@ -118,7 +108,7 @@ describe('Apiaries (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/apiaries')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .expect(200);
 
     // Should have at least 3 apiaries (including the one created in the previous test)
@@ -135,7 +125,7 @@ describe('Apiaries (e2e)', () => {
   it('should retrieve a specific apiary by ID', async () => {
     const response = await request(app.getHttpServer())
       .get(`/apiaries/${testApiaryId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .expect(200);
 
     expect(response.body.id).toBe(testApiaryId);
@@ -146,7 +136,7 @@ describe('Apiaries (e2e)', () => {
   it('should update an existing apiary', async () => {
     const response = await request(app.getHttpServer())
       .patch(`/apiaries/${testApiaryId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .send({
         name: 'Updated Apiary Name',
         location: 'New Location',
@@ -169,7 +159,7 @@ describe('Apiaries (e2e)', () => {
   it('should delete an apiary', async () => {
     await request(app.getHttpServer())
       .delete(`/apiaries/${testApiaryId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .expect(200);
 
     // Verify the apiary was deleted
@@ -181,17 +171,11 @@ describe('Apiaries (e2e)', () => {
   });
 
   it('should not retrieve apiaries from another user', async () => {
-    // Create another user
-    const anotherUser = await getRandomUser({
+    const anotherUser = await createTestUser(prisma, {
       email: 'another-user-2@example.com',
       password: 'password123',
     });
 
-    await prisma.user.create({
-      data: anotherUser,
-    });
-
-    // Create an apiary for the other user
     const otherUserApiary = await prisma.apiary.create({
       data: getRandomApiary({ userId: anotherUser.id, name: 'Private Apiary' }),
     });
@@ -199,7 +183,7 @@ describe('Apiaries (e2e)', () => {
     // Try to access the other user's apiary
     await request(app.getHttpServer())
       .get(`/apiaries/${otherUserApiary.id}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .expect(404); // Should not find it
 
     // Clean up the other user

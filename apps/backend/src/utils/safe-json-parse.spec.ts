@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { safeJsonParse } from './safe-json-parse';
 import { z } from 'zod';
 import { Logger } from 'winston';
@@ -7,8 +8,8 @@ describe('safeJsonParse (Backend)', () => {
 
   beforeEach(() => {
     mockLogger = {
-      error: jest.fn(),
-      warn: jest.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
     } as unknown as Logger;
   });
 
@@ -118,7 +119,7 @@ describe('safeJsonParse (Backend)', () => {
       );
       expect(result).toBeNull();
       expect(mockLogger.error).toHaveBeenCalled();
-      const errorCall = (mockLogger.error as jest.Mock).mock
+      const errorCall = (mockLogger.error as Mock).mock
         .calls[0] as unknown[];
       expect(String(errorCall[0])).toContain(
         'Failed to parse JSON for "test context"',
@@ -130,7 +131,7 @@ describe('safeJsonParse (Backend)', () => {
       const longInvalidJson = '{invalid' + 'x'.repeat(200);
       const result = safeJsonParse(longInvalidJson, schema, mockLogger, 'test');
       expect(result).toBeNull();
-      const errorCall = (mockLogger.error as jest.Mock).mock
+      const errorCall = (mockLogger.error as Mock).mock
         .calls[0] as unknown[];
       const metadata = errorCall[1] as Record<string, unknown>;
       expect(metadata.snippet).toHaveLength(100);
@@ -141,7 +142,7 @@ describe('safeJsonParse (Backend)', () => {
       const schema = z.array(z.string());
       const result = safeJsonParse('invalid', schema, mockLogger, 'test');
       expect(result).toBeNull();
-      const errorCall = (mockLogger.error as jest.Mock).mock
+      const errorCall = (mockLogger.error as Mock).mock
         .calls[0] as unknown[];
       const metadata = errorCall[1] as Record<string, unknown>;
       expect(metadata.originalError).toBeInstanceOf(Error);
@@ -155,7 +156,7 @@ describe('safeJsonParse (Backend)', () => {
       const result = safeJsonParse(input, schema, mockLogger, 'test context');
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalled();
-      const warnCall = (mockLogger.warn as jest.Mock).mock
+      const warnCall = (mockLogger.warn as Mock).mock
         .calls[0] as unknown[];
       expect(String(warnCall[0])).toContain(
         'Schema validation failed for "test context"',
@@ -187,7 +188,7 @@ describe('safeJsonParse (Backend)', () => {
       });
       const result = safeJsonParse(input, schema, mockLogger, 'nested test');
       expect(result).toBeNull();
-      const warnCall = (mockLogger.warn as jest.Mock).mock
+      const warnCall = (mockLogger.warn as Mock).mock
         .calls[0] as unknown[];
       const metadata = warnCall[1] as Record<string, unknown>;
       expect(metadata.validationErrors).toBeDefined();
@@ -205,7 +206,7 @@ describe('safeJsonParse (Backend)', () => {
         'email validation',
       );
       expect(result).toBeNull();
-      const warnCall = (mockLogger.warn as jest.Mock).mock
+      const warnCall = (mockLogger.warn as Mock).mock
         .calls[0] as unknown[];
       const metadata = warnCall[1] as Record<string, unknown>;
       expect(Array.isArray(metadata.validationErrors)).toBe(true);
@@ -281,7 +282,7 @@ describe('safeJsonParse (Backend)', () => {
       const schema = z.array(z.string());
       safeJsonParse('invalid json', schema, mockLogger, 'score warnings');
       expect(mockLogger.error).toHaveBeenCalled();
-      const errorCall = (mockLogger.error as jest.Mock).mock
+      const errorCall = (mockLogger.error as Mock).mock
         .calls[0] as unknown[];
       expect(String(errorCall[0])).toContain('score warnings');
     });
@@ -291,7 +292,7 @@ describe('safeJsonParse (Backend)', () => {
       const input = JSON.stringify(['not', 'numbers']);
       safeJsonParse(input, schema, mockLogger, 'box configuration');
       expect(mockLogger.warn).toHaveBeenCalled();
-      const warnCall = (mockLogger.warn as jest.Mock).mock
+      const warnCall = (mockLogger.warn as Mock).mock
         .calls[0] as unknown[];
       expect(String(warnCall[0])).toContain('box configuration');
     });

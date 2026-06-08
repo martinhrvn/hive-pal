@@ -13,8 +13,9 @@ datasource db {
 model User {
   id                     String                 @id @default(uuid())
   email                  String                 @unique
-  password               String
+  emailVerified          Boolean                @default(false)
   name                   String?
+  image                  String?
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @updatedAt
   lastLoginAt            DateTime?
@@ -26,7 +27,6 @@ model User {
   preferences            Json?                  // JSON field for user preferences
   feedbacks              Feedback[]
   frameSizes             FrameSize[]
-  passwordResetTokens    PasswordResetToken[]
   shareLinks             ShareLink[]
   apiaryMemberships      ApiaryMember[]
   createdInspections     Inspection[]           @relation("InspectionCreator")
@@ -34,11 +34,85 @@ model User {
   createdQuickChecks     QuickCheck[]           @relation("QuickCheckCreator")
   createdWorkerTokens    WorkerToken[]          @relation("WorkerTokenCreator")
 
+  // Better Auth relations
+  sessions               Session[]
+  accounts               Account[]
+  passkeys               Passkey[]
+
+  // Better Auth admin plugin fields
+  banned                 Boolean?               @default(false)
+  banReason              String?
+  banExpires             DateTime?
+
   // GDPR consent fields
   privacyPolicyConsent   Boolean                @default(false)
   privacyConsentTimestamp DateTime?
   newsletterConsent      Boolean                @default(false)
   newsletterConsentTimestamp DateTime?
+}
+
+model Session {
+  id             String   @id
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token          String   @unique
+  expiresAt      DateTime
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Account {
+  id                    String    @id
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  password              String?
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  idToken               String?
+  scope                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+model Passkey {
+  id           String   @id
+  name         String?
+  publicKey    String
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String   @unique
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  aaguid       String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
 }
 
 enum Role {
@@ -718,23 +792,6 @@ enum FeedbackStatus {
   NEW
   REVIEWED
   RESOLVED
-}
-
-// Password reset tokens for secure password recovery
-model PasswordResetToken {
-  id        String   @id @default(uuid())
-  token     String   @unique // Unique token for password reset
-  email     String   // Email address for the reset request
-  userId    String?  // Optional link to user (for registered users)
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime // Token expiration time
-  used      Boolean  @default(false) // Whether the token has been used
-  createdAt DateTime @default(now())
-
-  @@index([token])
-  @@index([email])
-  @@index([expiresAt])
-  @@index([email, used, expiresAt]) // Composite index for efficient token validation
 }
 
 // Batch inspection management

@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { CustomLoggerService } from './logger/logger.service';
 import { SentryExceptionCaptured } from '@sentry/nestjs';
 

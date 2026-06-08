@@ -1,20 +1,23 @@
-import * as bcrypt from 'bcrypt';
 import { Prisma } from '@/prisma/client';
 import { v4 as uuid } from 'uuid';
 
-export async function getRandomUser({
+/**
+ * Returns a Prisma.UserCreateInput for direct DB insert. Credentials live in
+ * the Account table now; use `createTestUser` from test/helpers/auth.ts when
+ * the test needs to log in.
+ */
+export function getRandomUser({
   email,
-  password = 'password123',
 }: {
   email?: string;
   password?: string;
-} = {}): Promise<Prisma.UserCreateInput> {
+} = {}): Prisma.UserCreateInput {
   return {
     email: email ?? `test-${uuid()}@example.com`,
-    password: await bcrypt.hash(password, 10),
     name: 'Test User',
     role: 'USER',
     id: uuid(),
+    emailVerified: true,
     newsletterConsent: true,
     privacyPolicyConsent: true,
   };

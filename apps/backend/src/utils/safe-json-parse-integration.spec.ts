@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { safeJsonParse } from './safe-json-parse';
 import { z } from 'zod';
 import { Logger } from 'winston';
@@ -9,14 +10,22 @@ import { Logger } from 'winston';
  */
 
 describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
-  let mockLogger: Logger;
+  let mockLogger: Logger & {
+    error: Mock;
+    warn: Mock;
+    info: Mock;
+  };
 
   beforeEach(() => {
     mockLogger = {
-      error: jest.fn(),
-      warn: jest.fn(),
-      info: jest.fn(),
-    } as unknown as Logger;
+      error: vi.fn(),
+      warn: vi.fn(),
+      info: vi.fn(),
+    } as unknown as Logger & {
+      error: Mock;
+      warn: Mock;
+      info: Mock;
+    };
   });
 
   describe('REQ-7: Backend Call Sites - Task 2.1 - Score Warnings (inspections.service.ts:728)', () => {
@@ -233,7 +242,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         );
         expect(error.message).toContain('intentionally failed');
       } else {
-        fail('Expected result to be null');
+        expect.fail('Expected result to be null');
       }
     });
   });
@@ -311,7 +320,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       );
 
       expect(result).toBeNull();
-      const errorCall = (mockLogger.error as jest.Mock).mock
+      const errorCall = (mockLogger.error as Mock).mock
         .calls[0] as unknown[];
       const metadata = errorCall[1] as Record<string, unknown>;
       expect(metadata.snippet).toHaveLength(100);
