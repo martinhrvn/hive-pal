@@ -344,7 +344,7 @@ const renderStrengthCell = (
   totalFrames: number | null,
   strengthDelta: number | null,
   frameCounts: number[],
-  frameTotal: number,
+  _frameTotal: number,
   framePcts: number[] | null,
   obs: NonNullable<InspectionResponse['observations']> | undefined,
   t: (key: string) => string,

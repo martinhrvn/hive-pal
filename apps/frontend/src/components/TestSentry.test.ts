@@ -1,7 +1,15 @@
 /**
  * Integration tests for TestSentry component using safeJsonParse
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from 'vitest';
 import { safeJsonParse } from '@/utils/safe-json-parse';
 import { z } from 'zod';
 
@@ -15,7 +23,10 @@ vi.mock('@sentry/react', () => ({
 }));
 
 describe('TestSentry integration with safeJsonParse', () => {
-  let consoleSpy: { error: vi.SpyInstance; warn: vi.SpyInstance };
+  let consoleSpy: {
+    error: MockInstance;
+    warn: MockInstance;
+  };
 
   beforeEach(() => {
     consoleSpy = {

@@ -203,7 +203,7 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
             {
               type: ActionType.TREATMENT,
               treatmentType: updated.treatmentType,
-              amount: updated.amount,
+              amount: updated.amount ?? 0,
               unit: updated.unit,
               notes: updated.notes,
             },
@@ -274,11 +274,13 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
               <div className="truncate text-xs text-muted-foreground">
                 {renderItemSummary(item)}
               </div>
-              {item.kind === 'action' && item.action.notes && (
-                <div className="truncate text-xs italic text-muted-foreground">
-                  {item.action.notes}
-                </div>
-              )}
+              {item.kind === 'action' &&
+                'notes' in item.action &&
+                item.action.notes && (
+                  <div className="truncate text-xs italic text-muted-foreground">
+                    {item.action.notes}
+                  </div>
+                )}
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground/70">
                 {format(item.date, 'MMM d, yyyy')}
               </div>

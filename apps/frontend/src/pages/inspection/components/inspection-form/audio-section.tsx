@@ -104,6 +104,7 @@ export function AudioSection({
     fileSize: r.blob.size,
     duration: r.duration,
     transcriptionStatus: 'NONE' as const,
+    analysisStatus: 'NONE' as const,
     transcription: null,
     createdAt: new Date().toISOString(),
   }));

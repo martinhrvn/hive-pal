@@ -5,6 +5,7 @@ import axios from 'axios';
 import { apiClient } from '../client';
 import {
   ActionType,
+  BoxTypeEnum,
   CreateAction,
   CreateInspection,
   CreateInspectionResponse,
@@ -177,8 +178,8 @@ export const transformActionsForApi = (
             notes: action.notes,
             details: {
               type: ActionType.MAINTENANCE,
-              component: action.component,
-              status: action.status,
+              component: action.component as 'BOX' | 'BOTTOM_BOARD' | 'COVER',
+              status: action.status as 'REPLACED' | 'CLEANED',
             },
           };
         case 'BOX_CONFIGURATION':
@@ -194,11 +195,12 @@ export const transformActionsForApi = (
               framesRemoved: action.framesRemoved,
               totalBoxes: action.totalBoxes,
               totalFrames: action.totalFrames,
-              boxes:
-                action.updatedBoxes?.map(b => ({
-                  type: b.type,
-                  frameCount: b.frameCount,
-                })) ?? action.boxesSummary,
+              boxes: (action.updatedBoxes?.map(b => ({
+                type: b.type,
+                frameCount: b.frameCount,
+              })) ?? action.boxesSummary) as
+                | { type: BoxTypeEnum; frameCount: number }[]
+                | undefined,
             },
           };
         default:

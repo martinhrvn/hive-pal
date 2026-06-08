@@ -66,7 +66,7 @@ export const useCreateAssistantThread = () => {
       );
       return response.data;
     },
-    onSuccess: (thread, variables) => {
+    onSuccess: (_thread, variables) => {
       void queryClient.invalidateQueries({
         queryKey: ASSISTANT_KEYS.threads(variables.apiaryId, variables.hiveId),
       });

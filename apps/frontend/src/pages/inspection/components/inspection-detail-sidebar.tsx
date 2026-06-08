@@ -20,14 +20,14 @@ import {
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
 import { ActionType } from 'shared-schemas';
-import { useDeleteDialog } from '@/hooks/useDeleteDialog';
-import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from '@radix-ui/react-dialog';
+  DialogHeader,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 interface InspectionDetailSidebarProps {
@@ -67,7 +67,6 @@ export const InspectionDetailSidebar: React.FC<
     }
   };
 
-  const deleteDialog = useDeleteDialog(handleDelete);
   return (
     <ActionSidebarContainer>
       <ActionSidebarGroup
@@ -91,7 +90,7 @@ export const InspectionDetailSidebar: React.FC<
           <MenuItemButton
             icon={<Trash className="h-4 w-4" />}
             label={t('inspection:detailSidebar.deleteInspection')}
-            onClick={deleteDialog.open}
+            onClick={() => setShowDeleteDialog(true)}
             tooltip={t('inspection:detailSidebar.deleteInspection')}
             className="text-red-600 hover:text-red-700"
           />

@@ -8,6 +8,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import {
+  ActionType,
   Box,
   BoxTypeEnum,
   BoxVariantEnum,
@@ -139,10 +140,11 @@ export const BoxConfigurationForm = ({
     (updatedBox: Box) => {
       setBoxes(prev => {
         if (updatedBox.position === 0 && updatedBox.variant) {
-          const newSystem = getHiveSystem(updatedBox.variant);
+          const mainVariant = updatedBox.variant;
+          const newSystem = getHiveSystem(mainVariant);
           return prev.map(box => {
             if (box.id === updatedBox.id) return updatedBox;
-            if (box.variant && !isVariantCompatible(updatedBox.variant, box.variant)) {
+            if (box.variant && !isVariantCompatible(mainVariant, box.variant)) {
               const newVariant = getEquivalentVariant(box.variant, newSystem);
               const newFs = findFrameSizeForVariant(frameSizes, newVariant);
               return { ...box, variant: newVariant, frameSizeId: newFs?.id ?? box.frameSizeId };
@@ -164,7 +166,7 @@ export const BoxConfigurationForm = ({
   const handleConfirm = () => {
     const diff = diffBoxes(initialBoxes, boxes);
     onSave({
-      type: 'BOX_CONFIGURATION',
+      type: ActionType.BOX_CONFIGURATION,
       ...diff,
       updatedBoxes: boxes,
     });

@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
-type ComponentModule = { default: React.ComponentType<unknown> };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ComponentModule = { default: React.ComponentType<any> };
 
 export function lazyWithRetry<T extends ComponentModule>(
   importFn: () => Promise<T>,

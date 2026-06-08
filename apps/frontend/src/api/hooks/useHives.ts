@@ -31,7 +31,7 @@ const HIVES_KEYS = {
 // Get all hives with optional filtering
 export const useHives = (
   filters?: HiveFilter,
-  queryOptions?: UseQueryOptions<HiveResponse[]>,
+  queryOptions?: Omit<UseQueryOptions<HiveResponse[]>, 'queryKey' | 'queryFn'>,
 ) => {
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<HiveResponse[]>({
@@ -69,7 +69,10 @@ export const useHiveOptions = (filters?: HiveFilter) => {
 // Get all hives with boxes for apiary layout
 export const useHivesWithBoxes = (
   filters?: HiveFilter,
-  queryOptions?: UseQueryOptions<HiveWithBoxesResponse[]>,
+  queryOptions?: Omit<
+    UseQueryOptions<HiveWithBoxesResponse[]>,
+    'queryKey' | 'queryFn'
+  >,
 ) => {
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<HiveWithBoxesResponse[]>({

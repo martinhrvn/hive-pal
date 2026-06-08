@@ -157,8 +157,9 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
       const withData = eligible.filter(i => i.observations?.[field.key] != null);
       if (withData.length < 1) continue;
 
-      const current  = withData[0].observations![field.key];
+      const current = withData[0].observations![field.key];
       const previous = withData[1]?.observations?.[field.key];
+      if (current == null) continue;
 
       result.push({
         fieldKey: field.key,

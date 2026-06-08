@@ -10,17 +10,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { HiveStatus } from '@/pages/hive/components';
 import { useUpdateHive } from '@/api/hooks';
-import { HiveResponse } from 'shared-schemas';
+import { HiveResponse, HiveStatus as HiveStatusValue } from 'shared-schemas';
 
 type HiveStatusEnum = HiveResponse['status'];
 
 const ALL_STATUSES: { value: HiveStatusEnum; label: string }[] = [
-  { value: 'ACTIVE', label: 'Active' },
-  { value: 'INACTIVE', label: 'Inactive' },
-  { value: 'DEAD', label: 'Dead' },
-  { value: 'SOLD', label: 'Sold' },
-  { value: 'UNKNOWN', label: 'Unknown' },
-  { value: 'ARCHIVED', label: 'Archived' },
+  { value: HiveStatusValue.ACTIVE, label: 'Active' },
+  { value: HiveStatusValue.INACTIVE, label: 'Inactive' },
+  { value: HiveStatusValue.DEAD, label: 'Dead' },
+  { value: HiveStatusValue.SOLD, label: 'Sold' },
+  { value: HiveStatusValue.UNKNOWN, label: 'Unknown' },
+  { value: HiveStatusValue.ARCHIVED, label: 'Archived' },
 ];
 
 type HiveStatusButtonProps = {

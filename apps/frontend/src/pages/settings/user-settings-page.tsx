@@ -141,8 +141,11 @@ export const UserSettingsPage = () => {
                 <Label htmlFor="dateFormat">{t('settings.dateFormat')}</Label>
                 <Select
                   value={settings.dateFormat}
-                  onValueChange={(value: UserPreferences['dateFormat']) =>
-                    setSettings({ ...settings, dateFormat: value })
+                  onValueChange={(value: string) =>
+                    setSettings({
+                      ...settings,
+                      dateFormat: value as UserPreferences['dateFormat'],
+                    })
                   }
                 >
                   <SelectTrigger id="dateFormat">

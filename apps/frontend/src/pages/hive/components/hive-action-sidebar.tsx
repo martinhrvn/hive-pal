@@ -29,7 +29,7 @@ export const HiveActionSidebar: React.FC<HiveActionSidebarProps> = ({
   return (
     <div className="space-y-4">
       <WeatherForecastSection
-        apiaryId={activeApiaryId}
+        apiaryId={activeApiaryId ?? undefined}
         compact
         titleKey="hive:weather.forecast"
       />

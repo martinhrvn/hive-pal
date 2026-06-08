@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils.ts';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { InspectionFormData, inspectionSchema } from './schema';
+import { ActionData, InspectionFormData, inspectionSchema } from './schema';
 import { WeatherSection } from '@/pages/inspection/components/inspection-form/weather.tsx';
 import { ObservationsSection } from '@/pages/inspection/components/inspection-form/observations.tsx';
 import { NotesSection } from '@/pages/inspection/components/inspection-form/notes.tsx';
@@ -132,8 +132,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       ...inspection,
       date: inspection?.date ? new Date(inspection.date) : new Date(),
       isAllDay: inspection?.isAllDay ?? true,
-      actions:
-        inspection?.actions?.map(action => {
+      // Cast: RHF types defaultValues as DeepPartial, which makes the action
+      // discriminant (`type`) optional and breaks discriminated-union narrowing.
+      // The mapping below produces correctly-shaped action objects at runtime.
+      actions: (inspection?.actions?.map(action => {
           if (action.details.type === ActionType.FEEDING) {
             const details = action.details;
             return {
@@ -202,7 +204,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             type: ActionType.OTHER,
             notes: action.notes || '',
           };
-        }) || [],
+        }) || []) as InspectionFormData['actions'],
     },
   });
 
@@ -236,7 +238,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
   // Live frame (Rähmchen) delta from the form's current FRAME action(s)
   const liveFrameDelta = formActions
-    .filter((a): a is { type: 'FRAME'; frames?: number } => a.type === 'FRAME')
+    .filter(
+      (a): a is Extract<ActionData, { type: ActionType.FRAME }> =>
+        a.type === ActionType.FRAME,
+    )
     .reduce((sum, a) => sum + (a.frames ?? 0), 0);
 
   // Frame delta already persisted for this inspection (its contribution is
