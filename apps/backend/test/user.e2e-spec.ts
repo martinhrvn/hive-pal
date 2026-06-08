@@ -78,6 +78,7 @@ describe('User (e2e)', () => {
         email: 'test@hivepal.com',
         password: "doesn't matter",
         name: 'Test User',
+        privacyPolicyConsent: true,
       })
       .expect(401);
   });
