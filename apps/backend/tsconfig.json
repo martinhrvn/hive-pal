@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "declaration": true,
+    "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -22,5 +22,6 @@
     "paths": {
       "@/prisma/client": ["./src/generated/prisma/client"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "vitest.config.ts"]
 }

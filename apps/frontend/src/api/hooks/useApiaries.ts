@@ -6,7 +6,6 @@ import {
   ApiaryResponse,
   ApiaryListResponse,
 } from 'shared-schemas';
-import { useAuth } from '@/context/auth-context';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { logApiError } from '../errorLogger';
 
@@ -129,16 +128,13 @@ export const useUpdateApiary = () => {
 // Delete an apiary
 export const useDeleteApiary = () => {
   const queryClient = useQueryClient();
-  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await fetch(`/api/apiaries/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {

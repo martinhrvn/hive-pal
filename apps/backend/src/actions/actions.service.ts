@@ -627,8 +627,14 @@ export class ActionsService {
     switch (prismaAction.type as ActionType) {
       case ActionType.FEEDING: {
         if (!prismaAction.feedingAction) {
-          this.logger.warn(`Feeding action details missing for action ${prismaAction.id}`);
-          return { ...base, type: ActionType.OTHER, details: { type: ActionType.OTHER } };
+          this.logger.warn(
+            `Feeding action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
         }
 
         // Convert volume units for feeding actions
@@ -668,8 +674,14 @@ export class ActionsService {
 
       case ActionType.TREATMENT: {
         if (!prismaAction.treatmentAction) {
-          this.logger.warn(`Treatment action details missing for action ${prismaAction.id}`);
-          return { ...base, type: ActionType.OTHER, details: { type: ActionType.OTHER } };
+          this.logger.warn(
+            `Treatment action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
         }
 
         // Convert units for treatments if they use volume or weight
@@ -721,8 +733,14 @@ export class ActionsService {
 
       case ActionType.FRAME:
         if (!prismaAction.frameAction) {
-          this.logger.warn(`Frame action details missing for action ${prismaAction.id}`);
-          return { ...base, type: ActionType.OTHER, details: { type: ActionType.OTHER } };
+          this.logger.warn(
+            `Frame action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
         }
         return {
           ...base,
@@ -735,8 +753,14 @@ export class ActionsService {
 
       case ActionType.HARVEST: {
         if (!prismaAction.harvestAction) {
-          this.logger.warn(`Harvest action details missing for action ${prismaAction.id}`);
-          return { ...base, type: ActionType.OTHER, details: { type: ActionType.OTHER } };
+          this.logger.warn(
+            `Harvest action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
         }
 
         // Convert weight units for harvest actions
@@ -772,8 +796,14 @@ export class ActionsService {
 
       case ActionType.MAINTENANCE:
         if (!prismaAction.maintenanceAction) {
-          this.logger.warn(`Maintenance action details missing for action ${prismaAction.id}`);
-          return { ...base, type: ActionType.OTHER, details: { type: ActionType.OTHER } };
+          this.logger.warn(
+            `Maintenance action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
         }
         return {
           ...base,
@@ -802,8 +832,14 @@ export class ActionsService {
 
       case ActionType.BOX_CONFIGURATION:
         if (!prismaAction.boxConfigurationAction) {
-          this.logger.warn(`Box configuration action details missing for action ${prismaAction.id}`);
-          return { ...base, type: ActionType.OTHER, details: { type: ActionType.OTHER } };
+          this.logger.warn(
+            `Box configuration action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
         }
         return {
           ...base,

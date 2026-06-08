@@ -78,6 +78,8 @@ The application will be available at http://localhost.
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies (32+ chars; generate with `openssl rand -base64 32`) |
+| `BETTER_AUTH_URL` | Backend public base URL where `/api/auth/*` is served |
 | `ADMIN_EMAIL` | Initial admin account email |
 | `ADMIN_PASSWORD` | Initial admin account password |
 | `FRONTEND_URL` | Public URL (used in emails) |
@@ -86,6 +88,8 @@ The application will be available at http://localhost.
 
 | Variable | Description |
 |----------|-------------|
+| `PASSKEY_RP_ID` | WebAuthn relying-party ID for passkeys (default: `localhost`) |
+| `COOKIE_DOMAIN` | Set in production when frontend and backend share a parent domain |
 | `MAIL_PROVIDER` | Force a specific provider: `resend`, `smtp`, or `none` (auto-selects if unset) |
 | `RESEND_API_KEY` | API key for Resend email provider |
 | `SMTP_HOST` | SMTP server hostname |
@@ -155,7 +159,7 @@ pnpm dev
 - **Framework**: NestJS with TypeScript
 - **Database**: PostgreSQL 14
 - **ORM**: Prisma
-- **Authentication**: JWT with refresh tokens
+- **Authentication**: Better Auth (session cookies, passkey/WebAuthn support)
 - **API Documentation**: Swagger/OpenAPI
 - **Logging**: Winston with Loki integration
 - **Monitoring**: Prometheus metrics, health checks

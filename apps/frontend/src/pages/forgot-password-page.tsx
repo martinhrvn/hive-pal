@@ -4,9 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { apiClient } from '@/api/client';
-import { ForgotPassword } from 'shared-schemas';
-import { AxiosError } from 'axios';
+import { authClient } from '@/lib/auth-client';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -21,14 +19,18 @@ const ForgotPasswordPage = () => {
     setIsLoading(true);
 
     try {
-      const data: ForgotPassword = { email };
-      await apiClient.post('/api/auth/forgot-password', data);
-      setIsSubmitted(true);
+      const result = await authClient.requestPasswordReset({
+        email,
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (result.error) {
+        setError(result.error.message ?? t('forgotPassword.error'));
+      } else {
+        setIsSubmitted(true);
+      }
     } catch (err: unknown) {
       console.error('Forgot password error:', err);
-      if (err instanceof AxiosError) {
-        setError(err?.response?.data?.message || t('forgotPassword.error'));
-      }
+      setError(t('forgotPassword.error'));
     } finally {
       setIsLoading(false);
     }

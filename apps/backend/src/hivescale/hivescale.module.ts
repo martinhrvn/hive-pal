@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
-import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { MailModule } from '../mail/mail.module';
 import { HiveScaleController } from './hivescale.controller';
@@ -11,10 +11,13 @@ import { SwarmAlertScheduler } from './swarm-alert.scheduler';
 
 @Module({
   imports: [
-    AuthModule,
     ConfigModule,
     UsersModule,
     MailModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '7d' },
+    }),
     ScheduleModule.forRoot(),
   ],
   controllers: [HiveScaleController],

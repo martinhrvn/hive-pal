@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/context/auth-context';
+import { authClient } from '@/lib/auth-client';
 import { useIsAdmin } from '@/hooks/use-is-admin.ts';
 import { useAdminUsers } from '@/api/hooks/useAdminUsers';
 import {
@@ -32,12 +32,10 @@ import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { Alert } from '@/components/ui/alert.tsx';
 import { AxiosError } from 'axios';
-import axios from 'axios';
 import { UserWithStatsResponse } from 'shared-schemas';
 
 const UserManagementPage: React.FC = () => {
   const { t } = useTranslation('admin');
-  const { token } = useAuth();
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const {
@@ -65,15 +63,10 @@ const UserManagementPage: React.FC = () => {
     try {
       setResetError(null);
 
-      await axios.post(
-        `/api/users/${selectedUser.id}/reset-password`,
-        { tempPassword },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await authClient.admin.setUserPassword({
+        userId: selectedUser.id,
+        newPassword: tempPassword,
+      });
 
       setResetSuccess(true);
 

@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   BadRequestException,
@@ -9,12 +10,12 @@ import { PrismaService } from '../prisma/prisma.service';
 
 describe('ApiaryContextGuard', () => {
   let guard: ApiaryContextGuard;
-  let prisma: { apiary: { findFirst: jest.Mock } };
+  let prisma: { apiary: { findFirst: Mock } };
 
   beforeEach(async () => {
     prisma = {
       apiary: {
-        findFirst: jest.fn(),
+        findFirst: vi.fn(),
       },
     };
 

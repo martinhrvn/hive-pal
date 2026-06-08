@@ -9,7 +9,7 @@ import {
   HttpStatus,
   Inject,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import * as mime from 'mime-types';
 import { StorageService } from './storage.interface';
 import { LocalStorageService } from './local-storage.service';

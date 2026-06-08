@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   ArrowLeft,
   Check,
@@ -24,6 +25,7 @@ import {
   useReopenHarvest,
   useDeleteHarvest,
 } from '@/api/hooks/useHarvests';
+import { useHives } from '@/api/hooks/useHives';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { HarvestStatus } from 'shared-schemas';
@@ -55,9 +57,10 @@ export const HarvestDetailPage = () => {
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState('');
   const [isEditingHives, setIsEditingHives] = useState(false);
-  const [editedHives, setEditedHives] = useState<
-    { hiveId: string; framesTaken: number }[]
-  >([]);
+  // Map of hiveId -> framesTaken for the hives included in the harvest.
+  const [editedHives, setEditedHives] = useState<Map<string, number>>(
+    new Map(),
+  );
 
   const [showSharePrompt, setShowSharePrompt] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -65,6 +68,10 @@ export const HarvestDetailPage = () => {
   const createShareLink = useCreateShareLink();
 
   const { data: harvest, isLoading } = useHarvest(harvestId!);
+  // Hives available for this harvest's apiary, used when adding/removing hives.
+  const { data: availableHives = [] } = useHives({
+    apiaryId: harvest?.apiaryId,
+  });
   const updateHarvest = useUpdateHarvest();
   const setHarvestWeight = useSetHarvestWeight();
   const finalizeHarvest = useFinalizeHarvest();
@@ -165,12 +172,42 @@ export const HarvestDetailPage = () => {
     }
   };
 
+  const handleToggleHive = (hiveId: string, checked: boolean) => {
+    setEditedHives(prev => {
+      const next = new Map(prev);
+      if (checked) {
+        next.set(hiveId, 1);
+      } else {
+        next.delete(hiveId);
+      }
+      return next;
+    });
+  };
+
+  const handleFrameCountChange = (hiveId: string, frames: number) => {
+    setEditedHives(prev => {
+      const next = new Map(prev);
+      next.set(hiveId, frames > 0 ? frames : 1);
+      return next;
+    });
+  };
+
   const handleUpdateHives = async () => {
+    const harvestHives = Array.from(editedHives, ([hiveId, framesTaken]) => ({
+      hiveId,
+      framesTaken,
+    }));
+
+    if (harvestHives.length === 0) {
+      toast.error('Select at least one hive');
+      return;
+    }
+
     try {
       await updateHarvest.mutateAsync({
         harvestId: harvest.id,
         data: {
-          harvestHives: editedHives,
+          harvestHives,
           // Include totalWeight to trigger recalculation if weight is set
           ...(harvest.totalWeight && { totalWeight: harvest.totalWeight }),
         },
@@ -408,10 +445,9 @@ export const HarvestDetailPage = () => {
               size="sm"
               onClick={() => {
                 setEditedHives(
-                  harvest.harvestHives.map(hh => ({
-                    hiveId: hh.hiveId,
-                    framesTaken: hh.framesTaken,
-                  })),
+                  new Map(
+                    harvest.harvestHives.map(hh => [hh.hiveId, hh.framesTaken]),
+                  ),
                 );
                 setIsEditingHives(true);
               }}
@@ -424,40 +460,59 @@ export const HarvestDetailPage = () => {
         <CardContent>
           {isEditingHives ? (
             <div className="space-y-3">
-              {editedHives.map((hh, index) => {
-                const originalHive = harvest.harvestHives.find(
-                  h => h.hiveId === hh.hiveId,
-                );
-                return (
-                  <div
-                    key={hh.hiveId}
-                    className="flex items-center justify-between p-3 border rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium">
-                        {originalHive?.hiveName || 'Unknown Hive'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        min="1"
-                        value={hh.framesTaken}
-                        onChange={e => {
-                          const newHives = [...editedHives];
-                          newHives[index].framesTaken =
-                            parseInt(e.target.value) || 1;
-                          setEditedHives(newHives);
-                        }}
-                        className="w-20"
+              {availableHives.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No hives available in this apiary.
+                </p>
+              ) : (
+                availableHives.map(hive => {
+                  const isSelected = editedHives.has(hive.id);
+                  return (
+                    <div
+                      key={hive.id}
+                      className="flex items-center gap-4 p-3 border rounded-lg"
+                    >
+                      <Checkbox
+                        id={`hive-${hive.id}`}
+                        checked={isSelected}
+                        onCheckedChange={checked =>
+                          handleToggleHive(hive.id, checked as boolean)
+                        }
                       />
-                      <span className="text-sm text-muted-foreground">
-                        frames
-                      </span>
+                      <Label
+                        htmlFor={`hive-${hive.id}`}
+                        className="flex-1 cursor-pointer font-medium"
+                      >
+                        {hive.name}
+                      </Label>
+                      {isSelected && (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            min="1"
+                            value={editedHives.get(hive.id) ?? 1}
+                            onChange={e =>
+                              handleFrameCountChange(
+                                hive.id,
+                                parseInt(e.target.value) || 1,
+                              )
+                            }
+                            className="w-20"
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            frames
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
+              <p className="text-sm text-muted-foreground">
+                Selected: {editedHives.size} hive(s) •{' '}
+                {Array.from(editedHives.values()).reduce((a, b) => a + b, 0)}{' '}
+                total frames
+              </p>
               <div className="flex justify-end gap-2 pt-2">
                 <Button
                   variant="outline"

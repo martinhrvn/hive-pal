@@ -33,7 +33,6 @@ import {
   useStartExport,
   useStartImport,
 } from '@/api/hooks/useAccountTransfer';
-import { TOKEN_KEY } from '@/context/auth-context';
 
 const statusVariant: Record<
   AccountTransferJob['status'],
@@ -105,11 +104,8 @@ export const DataTransferPage = () => {
   };
 
   const handleDownload = (job: AccountTransferJob) => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    // The download endpoint streams the ZIP; open in a new tab with auth via temporary form.
-    // Simpler: fetch the blob and trigger a save.
     fetch(`/api/account-transfer/jobs/${job.id}/download`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: 'include',
     })
       .then(async (res) => {
         if (!res.ok) throw new Error(`Download failed: ${res.statusText}`);

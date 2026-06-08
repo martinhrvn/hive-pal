@@ -3,15 +3,15 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
-import { getRandomUser } from './fixtures/user';
 import { getRandomApiary } from './fixtures/apiary';
 import { getRandomHive } from './fixtures/hive';
+import { createTestUser, loginAndGetCookie } from './helpers/auth';
 import { HiveStatus, UpdateHive } from 'shared-schemas';
 
 describe('Hives (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let authToken: string;
+  let authCookie: string[];
   let userId: string;
   let apiaryId: string;
   let testHiveId: string;
@@ -27,27 +27,17 @@ describe('Hives (e2e)', () => {
 
     prisma = app.get(PrismaService);
 
-    // Register a test user and get authentication token
-    const testUser = await getRandomUser({
+    const testUser = await createTestUser(prisma, {
       email: 'hive-test-user@example.com',
       password: 'password123',
     });
-    userId = testUser.id!;
+    userId = testUser.id;
 
-    // Create the user directly in the database
-    await prisma.user.create({
-      data: testUser,
-    });
-
-    // Login to get auth token
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'hive-test-user@example.com',
-        password: 'password123',
-      });
-
-    authToken = loginResponse.body.access_token;
+    authCookie = await loginAndGetCookie(
+      app,
+      'hive-test-user@example.com',
+      'password123',
+    );
 
     // Create a test apiary for the user
     const apiary = await prisma.apiary.create({
@@ -89,7 +79,7 @@ describe('Hives (e2e)', () => {
   it('should create a new hive', async () => {
     const response = await request(app.getHttpServer())
       .post('/hives')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId) // Set the apiary context
       .send({
         name: 'My Test Hive',
@@ -147,7 +137,7 @@ describe('Hives (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/hives')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId) // Set the apiary context
       .expect(200);
 
@@ -169,7 +159,7 @@ describe('Hives (e2e)', () => {
   it('should retrieve a specific hive by ID', async () => {
     const response = await request(app.getHttpServer())
       .get(`/hives/${testHiveId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .expect(200);
 
@@ -192,7 +182,7 @@ describe('Hives (e2e)', () => {
     };
     const response = await request(app.getHttpServer())
       .patch(`/hives/${testHiveId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .send(req);
 
@@ -233,7 +223,7 @@ describe('Hives (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .put(`/hives/${testHiveId}/boxes`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .send(boxData)
       .expect(200);
@@ -259,7 +249,7 @@ describe('Hives (e2e)', () => {
   it('should delete a hive', async () => {
     await request(app.getHttpServer())
       .delete(`/hives/${testHiveId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .expect(200);
 
@@ -284,7 +274,7 @@ describe('Hives (e2e)', () => {
     // Try to fetch it
     const res = await request(app.getHttpServer())
       .get(`/hives`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .expect(200);
     res.body.forEach((hive: any) => {
@@ -306,7 +296,7 @@ describe('Hives (e2e)', () => {
     const res = await request(app.getHttpServer())
       .get(`/hives`)
       .query({ includeInactive: true })
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .expect(200);
 
@@ -334,14 +324,14 @@ describe('Hives (e2e)', () => {
     // Try to access it with the wrong apiary context
     await request(app.getHttpServer())
       .get(`/hives/${otherHive.id}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId) // Using our original apiary ID
       .expect(404); // Should get not found
 
     // But should work with the correct apiary ID
     const response = await request(app.getHttpServer())
       .get(`/hives/${otherHive.id}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', otherApiary.id) // Using the correct apiary ID
       .expect(200);
 
@@ -361,7 +351,7 @@ describe('Hives (e2e)', () => {
     // Try to access it with apiaryId as query parameter instead of header
     const response = await request(app.getHttpServer())
       .get(`/hives/${queryTestHive.id}?apiaryId=${apiaryId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       // Not setting x-apiary-id header
       .expect(200);
 
@@ -373,14 +363,14 @@ describe('Hives (e2e)', () => {
     // Try with non-existent apiary ID
     await request(app.getHttpServer())
       .get('/hives')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', '00000000-0000-0000-0000-000000000000')
       .expect(404);
 
     // Try without any apiary context - should return 400 (apiary context required)
     await request(app.getHttpServer())
       .get('/hives')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       // No x-apiary-id header or query param
       .expect(400);
   });

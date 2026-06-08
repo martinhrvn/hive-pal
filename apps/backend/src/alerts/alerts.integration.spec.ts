@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@nestjs/common';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { AlertsEventHandler } from './alerts.event-handler';
 import { AlertsScheduler } from './alerts.scheduler';
@@ -12,6 +13,7 @@ import {
 } from '../events/hive.events';
 
 describe('Alerts Event System Integration', () => {
+  let moduleRef: TestingModule;
   let eventEmitter: EventEmitter2;
   let _alertsEventHandler: AlertsEventHandler;
   let alertsScheduler: AlertsScheduler;
@@ -19,24 +21,24 @@ describe('Alerts Event System Integration', () => {
 
   const mockPrismaService = {
     hive: {
-      findFirst: jest.fn(),
+      findFirst: vi.fn(),
     },
     alert: {
-      findMany: jest.fn(),
-      updateMany: jest.fn(),
+      findMany: vi.fn(),
+      updateMany: vi.fn(),
     },
   };
 
   const mockLoggerService = {
-    setContext: jest.fn(),
-    log: jest.fn(),
-    debug: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
+    setContext: vi.fn(),
+    log: vi.fn(),
+    debug: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [EventEmitterModule.forRoot()],
       providers: [
         AlertsEventHandler,
@@ -54,13 +56,21 @@ describe('Alerts Event System Integration', () => {
       ],
     }).compile();
 
-    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
-    _alertsEventHandler = module.get<AlertsEventHandler>(AlertsEventHandler);
-    alertsScheduler = module.get<AlertsScheduler>(AlertsScheduler);
-    _prismaService = module.get<PrismaService>(PrismaService);
+    // @OnEvent listeners are bound during onApplicationBootstrap, which only
+    // runs on init() — without this, emitted events reach no handlers.
+    await moduleRef.init();
+
+    eventEmitter = moduleRef.get<EventEmitter2>(EventEmitter2);
+    _alertsEventHandler = moduleRef.get<AlertsEventHandler>(AlertsEventHandler);
+    alertsScheduler = moduleRef.get<AlertsScheduler>(AlertsScheduler);
+    _prismaService = moduleRef.get<PrismaService>(PrismaService);
 
     // Clear all mocks before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
+  });
+
+  afterEach(async () => {
+    await moduleRef.close();
   });
 
   describe('Event-driven alert checking', () => {
@@ -79,7 +89,7 @@ describe('Alerts Event System Integration', () => {
       mockPrismaService.alert.updateMany.mockResolvedValue({ count: 0 });
 
       // Spy on the checkSingleHive method
-      const checkSingleHiveSpy = jest.spyOn(alertsScheduler, 'checkSingleHive');
+      const checkSingleHiveSpy = vi.spyOn(alertsScheduler, 'checkSingleHive');
 
       // Emit hive updated event
       const event = new HiveUpdatedEvent(
@@ -150,13 +160,21 @@ describe('Alerts Event System Integration', () => {
     it('should handle non-existent hive gracefully', async () => {
       mockPrismaService.hive.findFirst.mockResolvedValue(null);
 
+      // AlertsScheduler logs via its own private Nest Logger, not the injected
+      // CustomLoggerService, so spy on the Logger prototype.
+      const warnSpy = vi
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
+
       await expect(
         alertsScheduler.checkSingleHive('non-existent-hive'),
       ).resolves.not.toThrow();
 
-      expect(mockLoggerService.warn).toHaveBeenCalledWith(
+      expect(warnSpy).toHaveBeenCalledWith(
         'Hive non-existent-hive not found or not active',
       );
+
+      warnSpy.mockRestore();
     });
 
     it('should resolve alerts when no issues found', async () => {

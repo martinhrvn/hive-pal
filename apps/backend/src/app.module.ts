@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { EnvController } from './env.controller';
-import { AuthModule } from './auth/auth.module';
+import { BetterAuthModule } from './auth/better-auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -60,7 +60,7 @@ import { AccountTransferModule } from './account-transfer/account-transfer.modul
       renderPath: /^(?!\/assets\/)/,
     }),
     StorageModule,
-    AuthModule,
+    BetterAuthModule,
     HiveModule,
     InspectionsModule,
     BatchInspectionsModule,

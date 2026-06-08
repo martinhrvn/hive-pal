@@ -4,9 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { apiClient } from '@/api/client';
-import { ResetPassword } from 'shared-schemas';
-import { AxiosError } from 'axios';
+import { authClient } from '@/lib/auth-client';
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
@@ -48,19 +46,21 @@ const ResetPasswordPage = () => {
     setIsLoading(true);
 
     try {
-      const data: ResetPassword = { token, password };
-      await apiClient.post('/api/auth/reset-password', data);
-      setIsSuccess(true);
-
-      // Redirect to login after 3 seconds
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000);
+      const result = await authClient.resetPassword({
+        token,
+        newPassword: password,
+      });
+      if (result.error) {
+        setError(result.error.message ?? t('resetPassword.error'));
+      } else {
+        setIsSuccess(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      }
     } catch (err: unknown) {
       console.error('Reset password error:', err);
-      if (err instanceof AxiosError) {
-        setError(err?.response?.data?.message || t('resetPassword.error'));
-      } else setError(t('resetPassword.error'));
+      setError(t('resetPassword.error'));
     } finally {
       setIsLoading(false);
     }

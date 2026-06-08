@@ -1,94 +1,59 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import axios from 'axios';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { decodeJwt, isTokenExpired } from '@/utils/jwt-utils';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
-import { useRegister } from '@/api/hooks/useAuth';
+import { authClient, useSession } from '@/lib/auth-client';
 
-export const TOKEN_KEY = 'hive_pal_auth_token';
 export const APIARY_SELECTION = 'hive_pal_apiary_selection';
+const LEGACY_TOKEN_KEY = 'hive_pal_auth_token';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+const sanitizeRedirect = (url: string, fallback = '/'): string => {
+  if (!url || !url.startsWith('/') || url.startsWith('//')) return fallback;
+  return url;
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(() => {
-    // Initialize from localStorage
-    const storedToken = localStorage.getItem(TOKEN_KEY);
+  const queryClient = useQueryClient();
+  const { data: session, isPending } = useSession();
+  const user = session?.user ?? null;
+  const isLoggedIn = !!user;
 
-    // Check if token is valid and not expired
-    if (storedToken && !isTokenExpired(storedToken)) {
-      return storedToken;
-    }
-
-    // Clear invalid token
-    localStorage.removeItem(TOKEN_KEY);
-    return null;
-  });
-
-  const isLoggedIn = !!token && !isTokenExpired(token);
-  // Set up axios interceptors for authentication and handling 401 errors
-  // Update user data when token changes
+  // One-time cleanup of the legacy JWT token left over by the pre-Better-Auth client
   useEffect(() => {
-    if (token && !isTokenExpired(token)) {
-      // Store token in localStorage
-      localStorage.setItem(TOKEN_KEY, token);
+    localStorage.removeItem(LEGACY_TOKEN_KEY);
+  }, []);
 
-      // Extract user data from token
-      const decodedToken = decodeJwt(token);
-
-      if (decodedToken) {
-        if (
-          decodedToken.passwordChangeRequired &&
-          window.location.pathname !== '/account/change-password'
-        ) {
-          window.location.href = '/account/change-password';
-        }
-      }
-    } else {
-      // Clean up when token is removed or invalid
-      localStorage.removeItem(TOKEN_KEY);
+  // Force password-change page if the flag is set
+  useEffect(() => {
+    if (
+      user?.passwordChangeRequired &&
+      window.location.pathname !== '/account/change-password'
+    ) {
+      window.location.href = '/account/change-password';
     }
-  }, [token]);
-
-  const sanitizeRedirect = (url: string, fallback: string = '/'): string => {
-    if (!url || !url.startsWith('/') || url.startsWith('//')) return fallback;
-    return url;
-  };
+  }, [user?.passwordChangeRequired]);
 
   const login = useCallback(
-    async (username: string, password: string, from: string = '/') => {
-      try {
-        const response = await axios.post('/api/auth/login', {
-          email: username,
-          password,
-        });
-
-        if (response.data && response.data.access_token) {
-          setToken(response.data.access_token);
-
-          // Redirect to password change page if password change is required
-          if (response.data.user && response.data.user.passwordChangeRequired) {
-            window.location.href = '/account/change-password';
-          } else {
-            window.location.href = sanitizeRedirect(from);
-          }
-
-          return true;
-        } else {
-          return false;
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        setToken(null);
+    async (username: string, password: string, from = '/') => {
+      const result = await authClient.signIn.email({
+        email: username,
+        password,
+      });
+      if (result.error) {
+        console.error('Login error:', result.error);
         return false;
       }
+      const target = result.data?.user?.passwordChangeRequired
+        ? '/account/change-password'
+        : sanitizeRedirect(from);
+      window.location.href = target;
+      return true;
     },
     [],
   );
-
-  const { mutateAsync } = useRegister();
 
   const register = useCallback(
     async (
@@ -99,36 +64,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       newsletterConsent?: boolean,
       redirectTo?: string,
     ) => {
-      return mutateAsync({
+      const now = new Date();
+      const result = await authClient.signUp.email({
         email,
         password,
-        ...(name && { name }),
-        privacyPolicyConsent: privacyPolicyConsent || false,
-        newsletterConsent: newsletterConsent || false,
-      })
-        .then(data => {
-          if (data.access_token) {
-            localStorage.setItem(TOKEN_KEY, data.access_token);
-            window.location.href = sanitizeRedirect(
-              redirectTo || '/onboarding',
-              '/onboarding',
-            );
-            return true;
-          }
-          return false;
-        })
-        .catch(error => {
-          console.error('Registration error:', error);
-          return false;
-        });
+        name: name ?? email,
+        privacyPolicyConsent: privacyPolicyConsent ?? false,
+        privacyConsentTimestamp: privacyPolicyConsent ? now : undefined,
+        newsletterConsent: newsletterConsent ?? false,
+        newsletterConsentTimestamp: newsletterConsent ? now : undefined,
+      } as never);
+      if (result.error) {
+        console.error('Registration error:', result.error);
+        return false;
+      }
+      window.location.href = sanitizeRedirect(
+        redirectTo ?? '/onboarding',
+        '/onboarding',
+      );
+      return true;
     },
-    [mutateAsync],
+    [],
   );
 
-  const queryClient = useQueryClient();
-
-  const logout = useCallback(() => {
-    setToken(null);
+  const logout = useCallback(async () => {
+    await authClient.signOut();
     queryClient.clear();
     localStorage.removeItem(APIARY_SELECTION);
     localStorage.removeItem('hive-pal-query-cache');
@@ -136,8 +96,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [queryClient]);
 
   const value = useMemo(
-    () => ({ token, login, register, logout, isLoggedIn }),
-    [token, login, register, logout, isLoggedIn],
+    () => ({
+      user,
+      isLoggedIn,
+      isLoading: isPending,
+      login,
+      register,
+      logout,
+    }),
+    [user, isLoggedIn, isPending, login, register, logout],
   );
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

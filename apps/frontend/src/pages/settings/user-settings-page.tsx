@@ -34,6 +34,7 @@ import { useTheme } from '@/context/use-theme';
 import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { PasskeysCard } from '@/components/passkeys-card';
 
 export const UserSettingsPage = () => {
   const { t, i18n } = useTranslation('common');
@@ -328,6 +329,9 @@ export const UserSettingsPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Passkeys */}
+        <PasskeysCard />
 
         {/* Data */}
         <Card>
