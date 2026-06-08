@@ -37,7 +37,7 @@ function parseNdjson(text: string): SdImportParseResult {
     const line = rawLine.trim();
     if (!line) continue;
     try {
-      const parsed = JSON.parse(line);
+      const parsed: unknown = JSON.parse(line);
       if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
         records.push(parsed as Record<string, unknown>);
       } else {
