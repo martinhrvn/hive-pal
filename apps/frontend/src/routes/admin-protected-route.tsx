@@ -16,7 +16,7 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
   // page doesn't flash the login page (or bounce to "/" before the role loads).
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="fixed inset-0 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
