@@ -9,14 +9,22 @@ import { Logger } from 'winston';
  */
 
 describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
-  let mockLogger: Logger;
+  let mockLogger: Logger & {
+    error: jest.Mock;
+    warn: jest.Mock;
+    info: jest.Mock;
+  };
 
   beforeEach(() => {
     mockLogger = {
       error: jest.fn(),
       warn: jest.fn(),
       info: jest.fn(),
-    } as unknown as Logger;
+    } as unknown as Logger & {
+      error: jest.Mock;
+      warn: jest.Mock;
+      info: jest.Mock;
+    };
   });
 
   describe('REQ-7: Backend Call Sites - Task 2.1 - Score Warnings (inspections.service.ts:728)', () => {
