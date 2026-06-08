@@ -39,6 +39,11 @@ model User {
   accounts               Account[]
   passkeys               Passkey[]
 
+  // Better Auth admin plugin fields
+  banned                 Boolean?               @default(false)
+  banReason              String?
+  banExpires             DateTime?
+
   // GDPR consent fields
   privacyPolicyConsent   Boolean                @default(false)
   privacyConsentTimestamp DateTime?

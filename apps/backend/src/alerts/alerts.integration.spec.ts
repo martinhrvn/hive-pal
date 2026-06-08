@@ -21,20 +21,20 @@ describe('Alerts Event System Integration', () => {
 
   const mockPrismaService = {
     hive: {
-      findFirst: jest.fn(),
+      findFirst: vi.fn(),
     },
     alert: {
-      findMany: jest.fn(),
-      updateMany: jest.fn(),
+      findMany: vi.fn(),
+      updateMany: vi.fn(),
     },
   };
 
   const mockLoggerService = {
-    setContext: jest.fn(),
-    log: jest.fn(),
-    debug: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
+    setContext: vi.fn(),
+    log: vi.fn(),
+    debug: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   };
 
   beforeEach(async () => {
@@ -66,7 +66,7 @@ describe('Alerts Event System Integration', () => {
     _prismaService = moduleRef.get<PrismaService>(PrismaService);
 
     // Clear all mocks before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(async () => {
@@ -89,7 +89,7 @@ describe('Alerts Event System Integration', () => {
       mockPrismaService.alert.updateMany.mockResolvedValue({ count: 0 });
 
       // Spy on the checkSingleHive method
-      const checkSingleHiveSpy = jest.spyOn(alertsScheduler, 'checkSingleHive');
+      const checkSingleHiveSpy = vi.spyOn(alertsScheduler, 'checkSingleHive');
 
       // Emit hive updated event
       const event = new HiveUpdatedEvent(
@@ -162,7 +162,7 @@ describe('Alerts Event System Integration', () => {
 
       // AlertsScheduler logs via its own private Nest Logger, not the injected
       // CustomLoggerService, so spy on the Logger prototype.
-      const warnSpy = jest
+      const warnSpy = vi
         .spyOn(Logger.prototype, 'warn')
         .mockImplementation(() => undefined);
 

@@ -1,3 +1,4 @@
+import type { Mocked } from 'vitest';
 import { NotFoundException } from '@nestjs/common';
 import { Readable } from 'stream';
 import type { Response } from 'express';
@@ -10,7 +11,7 @@ import { AssistantRole } from '@/prisma/client';
 
 describe('AssistantService', () => {
   let service: AssistantService;
-  let repository: jest.Mocked<
+  let repository: Mocked<
     Pick<
       AssistantRepository,
       | 'hiveInApiary'
@@ -22,27 +23,27 @@ describe('AssistantService', () => {
       | 'addMessage'
     >
   >;
-  let ai: jest.Mocked<Pick<AssistantAiService, 'assertEnabled' | 'streamChat'>>;
-  let contextBuilder: jest.Mocked<
+  let ai: Mocked<Pick<AssistantAiService, 'assertEnabled' | 'streamChat'>>;
+  let contextBuilder: Mocked<
     Pick<ContextBuilderService, 'buildSystemMessage'>
   >;
 
   beforeEach(() => {
     repository = {
-      hiveInApiary: jest.fn(),
-      createThread: jest.fn(),
-      listThreads: jest.fn(),
-      findThread: jest.fn(),
-      findThreadWithMessages: jest.fn(),
-      deleteThread: jest.fn(),
-      addMessage: jest.fn(),
+      hiveInApiary: vi.fn(),
+      createThread: vi.fn(),
+      listThreads: vi.fn(),
+      findThread: vi.fn(),
+      findThreadWithMessages: vi.fn(),
+      deleteThread: vi.fn(),
+      addMessage: vi.fn(),
     };
-    ai = { assertEnabled: jest.fn(), streamChat: jest.fn() };
-    contextBuilder = { buildSystemMessage: jest.fn() };
+    ai = { assertEnabled: vi.fn(), streamChat: vi.fn() };
+    contextBuilder = { buildSystemMessage: vi.fn() };
     const logger = {
-      setContext: jest.fn(),
-      log: jest.fn(),
-      error: jest.fn(),
+      setContext: vi.fn(),
+      log: vi.fn(),
+      error: vi.fn(),
     } as unknown as CustomLoggerService;
 
     service = new AssistantService(
@@ -140,11 +141,11 @@ describe('AssistantService', () => {
   describe('streamMessage', () => {
     const makeRes = () => {
       const writes: string[] = [];
-      const end = jest.fn();
+      const end = vi.fn();
       const res = {
-        setHeader: jest.fn(),
-        flushHeaders: jest.fn(),
-        write: jest.fn((chunk: string) => {
+        setHeader: vi.fn(),
+        flushHeaders: vi.fn(),
+        write: vi.fn((chunk: string) => {
           writes.push(chunk);
           return true;
         }),

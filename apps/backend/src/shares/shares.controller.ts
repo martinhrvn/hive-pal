@@ -10,7 +10,7 @@ import {
   Res,
   Header,
 } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { SharesService } from './shares.service';
 import { ShareImageService } from './image/share-image.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

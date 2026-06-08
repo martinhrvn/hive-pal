@@ -1,30 +1,30 @@
+import { vi } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 
 // Auto-mocks any constructor dependency (e.g. PrismaService, CustomLoggerService)
 // so smoke tests can instantiate a provider/controller without wiring every
-// dependency by hand. Each dependency is a Proxy that returns a fresh jest.fn()
+// dependency by hand. Each dependency is a Proxy that returns a fresh vi.fn()
 // for any accessed member, so calls made in constructors (e.g.
-// `logger.setContext(...)`) don't blow up.
-const autoMocker = (token: unknown): unknown => {
-  if (typeof token === 'function') {
-    return new Proxy(
-      {},
-      {
-        get: (target: Record<string | symbol, unknown>, prop) => {
-          // Never look like a thenable, or `await`/Nest's promise detection
-          // will treat the mock as a Promise that never resolves.
-          if (prop === 'then' || typeof prop === 'symbol') {
-            return undefined;
-          }
-          if (!(prop in target)) {
-            target[prop] = jest.fn();
-          }
-          return target[prop];
-        },
+// `logger.setContext(...)`) don't blow up. Non-class tokens (e.g. the
+// `Symbol(AUTH_MODULE_OPTIONS)` injected into the real Better Auth guard bound
+// via `@UseGuards`) are mocked the same way so guard instantiation resolves.
+const autoMocker = (): unknown => {
+  return new Proxy(
+    {},
+    {
+      get: (target: Record<string | symbol, unknown>, prop) => {
+        // Never look like a thenable, or `await`/Nest's promise detection
+        // will treat the mock as a Promise that never resolves.
+        if (prop === 'then' || typeof prop === 'symbol') {
+          return undefined;
+        }
+        if (!(prop in target)) {
+          target[prop] = vi.fn();
+        }
+        return target[prop];
       },
-    );
-  }
-  return undefined;
+    },
+  );
 };
 
 export async function createServiceTestModule<T>(

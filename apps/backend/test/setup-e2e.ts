@@ -6,8 +6,7 @@ const adapter = new PrismaPg({
 });
 const prisma = new PrismaClient({ adapter });
 
-// Increase timeout for e2e tests
-jest.setTimeout(30000);
+// Timeouts are configured in vitest.config.ts (testTimeout / hookTimeout).
 
 // Global setup before all tests
 beforeAll(async () => {
