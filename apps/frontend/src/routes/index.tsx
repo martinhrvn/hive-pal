@@ -19,7 +19,7 @@ import {
   ScheduleInspectionPage,
 } from '@/pages/inspection';
 import { CreateQueenPage, EditQueenPage, QueenDetailPage, QueenListPage } from '@/pages/queen';
-import { ChangePasswordPage, PasskeysPage } from '@/pages/account';
+import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 import {
   CreateApiaryPage,
@@ -516,14 +516,6 @@ const router = createBrowserRouter([
   {
     path: '/account/change-password',
     element: <ChangePasswordPage />,
-  },
-  {
-    path: '/account/passkeys',
-    element: (
-      <ProtectedRoute>
-        <PasskeysPage />
-      </ProtectedRoute>
-    ),
   },
   {
     path: '/onboarding',

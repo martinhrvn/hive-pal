@@ -27,7 +27,6 @@ import {
   Save,
   Loader2,
   Database,
-  KeyRound,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePreferences } from '@/api/hooks/useUserPreferences';
@@ -35,6 +34,7 @@ import { useTheme } from '@/context/use-theme';
 import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { PasskeysCard } from '@/components/passkeys-card';
 
 export const UserSettingsPage = () => {
   const { t, i18n } = useTranslation('common');
@@ -327,27 +327,11 @@ export const UserSettingsPage = () => {
                 {t('settings.changePassword')}
               </Button>
             </div>
-
-            <Separator />
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-medium">{t('settings.passkeys')}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t('settings.passkeysDescription')}
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={() => navigate('/account/passkeys')}
-              >
-                <KeyRound className="h-4 w-4" />
-                {t('settings.passkeys')}
-              </Button>
-            </div>
           </CardContent>
         </Card>
+
+        {/* Passkeys */}
+        <PasskeysCard />
 
         {/* Data */}
         <Card>
