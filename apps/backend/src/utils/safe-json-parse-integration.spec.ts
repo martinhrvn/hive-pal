@@ -242,7 +242,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
         );
         expect(error.message).toContain('intentionally failed');
       } else {
-        fail('Expected result to be null');
+        expect.fail('Expected result to be null');
       }
     });
   });
