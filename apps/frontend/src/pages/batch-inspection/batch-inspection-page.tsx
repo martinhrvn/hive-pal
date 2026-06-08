@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import type { CreateInspection } from 'shared-schemas';
 import {
   useBatchInspection,
   useCurrentHiveToInspect,
@@ -112,12 +113,13 @@ export const BatchInspectionPage = () => {
   };
 
   const handleInspectionSubmit = (data: InspectionFormData) => {
-    // Transform inspection form data to API format
+    // Transform inspection form data to API format. The form action shape is
+    // cast to the API CreateInspection shape at this submit boundary.
     const inspectionData = {
       ...data,
       hiveId: currentHive.batchInspectionHive.hiveId,
       date: new Date().toISOString(), // Use current date for batch inspections
-    };
+    } as unknown as CreateInspection;
 
     createInspectionAndNext(
       {

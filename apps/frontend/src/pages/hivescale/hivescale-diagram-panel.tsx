@@ -493,16 +493,14 @@ const saveDiagramSettings = (
 const ACTION_MARKER_MAP: Partial<Record<ActionType, ChartMarker['type']>> = {
   [ActionType.MAINTENANCE]: 'maintenance',
   [ActionType.FEEDING]: 'feeding',
-  [ActionType.FRAME_ADDED]: 'frames',
-  [ActionType.FRAME_REMOVED]: 'frames',
+  [ActionType.FRAME]: 'frames',
   [ActionType.TREATMENT]: 'treatment',
 };
 
 const ACTION_ICON_MAP: Partial<Record<ActionType, LucideIcon>> = {
   [ActionType.MAINTENANCE]: Wrench,
   [ActionType.FEEDING]: Utensils,
-  [ActionType.FRAME_ADDED]: Frame,
-  [ActionType.FRAME_REMOVED]: Frame,
+  [ActionType.FRAME]: Frame,
   [ActionType.TREATMENT]: Pill,
 };
 
@@ -531,25 +529,20 @@ const buildInspectionMarkers = (
         Icon: ClipboardCheck,
       };
       const actionMarkers: ChartMarker[] = (ins.actions ?? [])
-        .filter(
-          a =>
-            typeof a.actionType === 'string' &&
-            a.actionType.length > 0 &&
-            ACTION_MARKER_MAP[a.actionType as ActionType],
-        )
+        .filter(a => ACTION_MARKER_MAP[a.type])
         .map(a => {
-          const actionType = a.actionType as string;
+          const actionType = a.type as string;
           return {
             id: `act-${ins.id}-${actionType}`,
             timestamp: new Date(ins.date).getTime(),
             date: ins.date,
-            type: ACTION_MARKER_MAP[actionType as ActionType]!,
+            type: ACTION_MARKER_MAP[a.type]!,
             label:
               actionType.charAt(0) +
               actionType.slice(1).toLowerCase().replace(/_/g, ' '),
             detail: '',
             hiveName,
-            Icon: ACTION_ICON_MAP[actionType as ActionType] ?? Wrench,
+            Icon: ACTION_ICON_MAP[a.type] ?? Wrench,
           };
         });
       return [base, ...actionMarkers];
@@ -569,13 +562,14 @@ const buildBoxAddedMarkers = (
     .flatMap(h =>
       (h.boxes ?? [])
         .filter(box => {
+          if (!box.addedAt) return false;
           const ts = new Date(box.addedAt).getTime();
           return ts >= startMs && ts <= endMs;
         })
         .map(box => ({
           id: `box-${h.id}-${box.id}`,
-          timestamp: new Date(box.addedAt).getTime(),
-          date: box.addedAt,
+          timestamp: new Date(box.addedAt ?? 0).getTime(),
+          date: box.addedAt ? new Date(box.addedAt).toISOString() : '',
           type: 'box' as const,
           label: 'Box added',
           detail: box.type ?? '',

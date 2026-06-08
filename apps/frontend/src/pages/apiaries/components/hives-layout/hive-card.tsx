@@ -46,7 +46,11 @@ export const HiveCard = ({
           </div>
           <HiveScoreIndicator
             status={hive.status}
-            score={isSubjective ? hive.lastInspectionOverallScore : hive.lastInspectionStrength}
+            score={
+              (isSubjective
+                ? hive.lastInspectionOverallScore
+                : hive.lastInspectionStrength) ?? null
+            }
             inspectionType={isSubjective ? 'subjective' : 'data_driven'}
             strength={hive.lastInspectionStrength}
             totalFrames={hive.lastInspectionTotalFrames}

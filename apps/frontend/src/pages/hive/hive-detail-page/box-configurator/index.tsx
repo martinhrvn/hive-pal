@@ -59,6 +59,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
       frameCount: 10,
       maxFrameCount: 10,
       hasExcluder: false,
+      winterized: false,
       type: BoxTypeEnum.BROOD,
       variant: BoxVariantEnum.LANGSTROTH_DEEP,
       frameSizeId: defaultFs?.id ?? null,
@@ -91,7 +92,8 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
       setBoxes(prevBoxes => {
         // If updating main box (position 0) variant, auto-convert incompatible boxes
         if (updatedBox.position === 0 && updatedBox.variant) {
-          const newSystem = getHiveSystem(updatedBox.variant);
+          const mainVariant = updatedBox.variant;
+          const newSystem = getHiveSystem(mainVariant);
 
           return prevBoxes.map(box => {
             if (box.id === updatedBox.id) {
@@ -101,7 +103,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
             // Check if other boxes need variant update
             if (
               box.variant &&
-              !isVariantCompatible(updatedBox.variant, box.variant)
+              !isVariantCompatible(mainVariant, box.variant)
             ) {
               // Auto-convert to equivalent in new system
               const newVariant = getEquivalentVariant(box.variant, newSystem);

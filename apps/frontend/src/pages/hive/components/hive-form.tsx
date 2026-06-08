@@ -180,7 +180,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     };
 
     if (onSubmitOverride) {
-      return onSubmitOverride(finalData);
+      return onSubmitOverride(finalData as HiveFormData);
     } else if (isEditMode) {
       await updateHive({
         id: hiveId,
@@ -508,6 +508,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                           frameCount: 10,
                           maxFrameCount: 10,
                           hasExcluder: false,
+                          winterized: false,
                           type: BoxTypeEnum.BROOD,
                           variant: BoxVariantEnum.LANGSTROTH_DEEP,
                           frameSizeId: defaultFs?.id ?? null,
@@ -540,6 +541,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                             frameCount: 10,
                             maxFrameCount: 10,
                             hasExcluder: false,
+                            winterized: false,
                             type: BoxTypeEnum.BROOD,
                             variant: BoxVariantEnum.LANGSTROTH_DEEP,
                             frameSizeId:

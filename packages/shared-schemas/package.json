@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@nestjs/swagger": "^11.1.0",
-    "zod": "^3.24.2"
+    "zod": "catalog:zod"
   },
   "devDependencies": {
     "eslint": "^8.57.0",

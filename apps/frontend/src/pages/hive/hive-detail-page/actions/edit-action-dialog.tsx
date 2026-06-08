@@ -136,8 +136,8 @@ const convertFormDataToUpdate = (
     const maintenanceAction = formAction as MaintenanceActionData;
     details = {
       type: ActionType.MAINTENANCE,
-      component: maintenanceAction.component,
-      status: maintenanceAction.status,
+      component: maintenanceAction.component as 'BOX' | 'BOTTOM_BOARD' | 'COVER',
+      status: maintenanceAction.status as 'REPLACED' | 'CLEANED',
     };
   } else if (formAction.type === ActionType.NOTE) {
     const noteAction = formAction as NoteActionData;
@@ -154,7 +154,7 @@ const convertFormDataToUpdate = (
   return {
     type: formAction.type,
     details,
-    notes: formAction.notes,
+    notes: 'notes' in formAction ? formAction.notes : undefined,
     date: date.toISOString(),
   };
 };

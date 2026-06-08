@@ -34,6 +34,7 @@ import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { useFormContext } from 'react-hook-form';
 import { ActionData, BoxConfigurationActionData, InspectionFormData } from './schema.ts';
+import { ActionType as ActionTypeEnum } from 'shared-schemas';
 import { AiBadge } from './ai-badge';
 import { AiSectionPreview } from './ai-section-preview';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
@@ -234,7 +235,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
   const visibleActionTypes = new Set([
     ...formActions
       .map(action => action.type)
-      .filter((type): type is string => typeof type === 'string'),
+      .filter(type => typeof type === 'string'),
     ...previewActions
       .map(action => getActionType(action))
       .filter(type => type !== 'UNKNOWN'),
@@ -376,7 +377,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
           <BoxConfigurationView
             key="box-configuration"
             action={action as BoxConfigurationActionData}
-            onRemove={() => handleRemove('BOX_CONFIGURATION')}
+            onRemove={() => handleRemove(ActionTypeEnum.BOX_CONFIGURATION)}
           />
         );
       default:
@@ -451,7 +452,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
               initialBoxes={hiveBoxes}
               hiveId={hiveId}
               onSave={handleBoxConfigSave}
-              onRemove={() => handleRemove('BOX_CONFIGURATION')}
+              onRemove={() => handleRemove(ActionTypeEnum.BOX_CONFIGURATION)}
               existingAction={existingBoxConfigAction}
             />
           )}

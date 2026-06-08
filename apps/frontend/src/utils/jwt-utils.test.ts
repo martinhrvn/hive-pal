@@ -1,7 +1,15 @@
 /**
  * Integration tests for jwt-utils using safeJsonParse
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from 'vitest';
 import { decodeJwt, isTokenExpired } from './jwt-utils';
 
 /**
@@ -25,8 +33,8 @@ function createMockJwt(payload: unknown): string {
 
 describe('jwt-utils integration with safeJsonParse', () => {
   let consoleSpy: {
-    error: ReturnType<typeof vi.spyOn>;
-    warn: ReturnType<typeof vi.spyOn>;
+    error: MockInstance;
+    warn: MockInstance;
   };
 
   beforeEach(() => {
