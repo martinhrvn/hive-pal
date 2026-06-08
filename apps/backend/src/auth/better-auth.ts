@@ -134,6 +134,22 @@ export const auth = betterAuth({
   },
 
   databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Auto-create a default apiary so new users land in a usable app
+          // instead of being forced through onboarding. Location is left null
+          // intentionally — weather stays off until the user sets coordinates.
+          await authDeps.prisma.apiary.create({
+            data: {
+              name: 'My Apiary',
+              userId: user.id,
+              settings: { inspectionType: 'data_driven' },
+            },
+          });
+        },
+      },
+    },
     session: {
       create: {
         after: async (session) => {
