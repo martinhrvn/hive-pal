@@ -1,0 +1,38 @@
+{
+  "badge": {
+    "label": "KI"
+  },
+  "banner": {
+    "title": "KI-Vorschläge verfügbar",
+    "pending_one": "{{count}} ausstehender Vorschlag",
+    "pending_other": "{{count}} ausstehende Vorschläge",
+    "conflicts_one": "{{count}} Konflikt",
+    "conflicts_other": "{{count}} Konflikte",
+    "summary": "{{pending}}.",
+    "summaryWithConflicts": "{{pending}}, {{conflicts}}.",
+    "acceptAllSafe": "Alle sicheren übernehmen",
+    "reviewConflicts": "Konflikte prüfen",
+    "dismissAll": "Alle verwerfen"
+  },
+  "field": {
+    "conflict": "KI-Vorschlag steht im Konflikt mit dem vorhandenen Wert",
+    "available": "KI-Vorschlag verfügbar",
+    "accept": "Übernehmen",
+    "dismiss": "Verwerfen"
+  },
+  "preview": {
+    "conflictNote": "Enthält Werte, die vorhandene Inhalte überschreiben würden",
+    "contentNote": "Enthält von der KI vorgeschlagene Inhalte",
+    "review": "Prüfen",
+    "hidePreview": "Vorschau ausblenden",
+    "current": "Aktuell",
+    "ai": "KI",
+    "empty": "Leer",
+    "accept": "Übernehmen",
+    "dismiss": "Verwerfen"
+  },
+  "suggestion": {
+    "conflict": "Steht im Konflikt mit dem vorhandenen Wert",
+    "willFill": "Füllt dieses Feld aus"
+  }
+}

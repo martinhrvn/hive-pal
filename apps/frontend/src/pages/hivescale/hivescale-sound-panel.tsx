@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Activity, ChevronDown, Mic, MicOff } from 'lucide-react';
 import {
   CartesianGrid,
@@ -34,41 +35,41 @@ import type { HiveScaleDateRange } from './hivescale-diagram-panel';
 type FftBand = 'sub_bass' | 'hum' | 'piping' | 'stress' | 'high';
 
 interface BandMeta {
-  label: string;
+  labelKey: string;
   range: string;
-  description: string;
+  descriptionKey: string;
   fill: string;
 }
 
 const FFT_BANDS: Record<FftBand, BandMeta> = {
   sub_bass: {
-    label: 'Sub-bass',
+    labelKey: 'sound.bands.subBass.label',
     range: '50–150 Hz',
-    description: 'Structural vibration / low rumble',
+    descriptionKey: 'sound.bands.subBass.description',
     fill: 'var(--chart-5)',
   },
   hum: {
-    label: 'Hum',
+    labelKey: 'sound.bands.hum.label',
     range: '150–300 Hz',
-    description: 'Normal colony hum (~200 Hz fundamental)',
+    descriptionKey: 'sound.bands.hum.description',
     fill: 'var(--chart-1)',
   },
   piping: {
-    label: 'Piping',
+    labelKey: 'sound.bands.piping.label',
     range: '300–550 Hz',
-    description: 'Queen piping / tooting (pre-swarm signal)',
+    descriptionKey: 'sound.bands.piping.description',
     fill: 'var(--chart-2)',
   },
   stress: {
-    label: 'Stress',
+    labelKey: 'sound.bands.stress.label',
     range: '550–1500 Hz',
-    description: 'Agitated colony / robbing',
+    descriptionKey: 'sound.bands.stress.description',
     fill: 'var(--chart-3)',
   },
   high: {
-    label: 'High',
+    labelKey: 'sound.bands.high.label',
     range: '1500–3000 Hz',
-    description: 'Harmonic overtones',
+    descriptionKey: 'sound.bands.high.description',
     fill: 'var(--chart-4)',
   },
 };
@@ -130,11 +131,12 @@ function MicStatusBadge({
   leftName: string;
   rightName: string;
 }) {
+  const { t } = useTranslation('hivescale');
   if (micOk === null || micOk === undefined) {
     return (
       <span className="flex items-center gap-1 text-xs text-muted-foreground">
         <MicOff className="h-3.5 w-3.5" />
-        No data
+        {t('sound.status.noData')}
       </span>
     );
   }
@@ -142,7 +144,7 @@ function MicStatusBadge({
     return (
       <span className="flex items-center gap-1 text-xs text-destructive">
         <MicOff className="h-3.5 w-3.5" />
-        Mic error
+        {t('sound.status.micError')}
       </span>
     );
   }
@@ -151,10 +153,10 @@ function MicStatusBadge({
     <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
       <Mic className="h-3.5 w-3.5" />
       {both
-        ? `${leftName} + ${rightName} active`
+        ? t('sound.status.bothActive', { left: leftName, right: rightName })
         : leftOk
-          ? `${leftName} active`
-          : `${rightName} active`}
+          ? t('sound.status.oneActive', { name: leftName })
+          : t('sound.status.oneActive', { name: rightName })}
     </span>
   );
 }
@@ -182,6 +184,7 @@ function FftBandChart({
   emptyLabel: string;
   dateRange: HiveScaleDateRange;
 }) {
+  const { t } = useTranslation('hivescale');
   const visibleData = useMemo(() => {
     const startMs = dateRange.startAt
       ? new Date(dateRange.startAt).getTime()
@@ -198,7 +201,7 @@ function FftBandChart({
     return (
       <div className="flex h-96 items-center justify-center text-sm text-muted-foreground">
         <Activity className="mr-2 h-4 w-4" />
-        No data for {emptyLabel} in this range.
+        {t('sound.noDataForChannel', { name: emptyLabel })}
       </div>
     );
   }
@@ -246,7 +249,7 @@ function FftBandChart({
                 key={band}
                 type="monotone"
                 dataKey={band}
-                name={`${FFT_BANDS[band].label} (${FFT_BANDS[band].range})`}
+                name={`${t(FFT_BANDS[band].labelKey)} (${FFT_BANDS[band].range})`}
                 stroke={FFT_BANDS[band].fill}
                 dot={false}
                 connectNulls
@@ -265,14 +268,21 @@ function FftBandChart({
 // ---------------------------------------------------------------------------
 
 function BandReferenceTable() {
+  const { t } = useTranslation('hivescale');
   return (
     <div className="rounded-md border">
       <table className="w-full text-xs">
         <thead>
           <tr className="border-b bg-muted/40">
-            <th className="px-3 py-2 text-left font-medium">Band</th>
-            <th className="px-3 py-2 text-left font-medium">Range</th>
-            <th className="px-3 py-2 text-left font-medium">Significance</th>
+            <th className="px-3 py-2 text-left font-medium">
+              {t('sound.table.band')}
+            </th>
+            <th className="px-3 py-2 text-left font-medium">
+              {t('sound.table.range')}
+            </th>
+            <th className="px-3 py-2 text-left font-medium">
+              {t('sound.table.significance')}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -286,13 +296,13 @@ function BandReferenceTable() {
                   className="mr-1.5 inline-block h-2 w-2 rounded-full"
                   style={{ background: FFT_BANDS[band].fill }}
                 />
-                {FFT_BANDS[band].label}
+                {t(FFT_BANDS[band].labelKey)}
               </td>
               <td className="px-3 py-1.5 text-muted-foreground">
                 {FFT_BANDS[band].range}
               </td>
               <td className="px-3 py-1.5 text-muted-foreground">
-                {FFT_BANDS[band].description}
+                {t(FFT_BANDS[band].descriptionKey)}
               </td>
             </tr>
           ))}
@@ -319,12 +329,13 @@ export function HiveScaleSoundPanel({
   scale1Name: string;
   scale2Name: string;
 }) {
+  const { t } = useTranslation('hivescale');
   const [isOpen, setIsOpen] = useState(false);
 
   // Map mic channels to hive display names (left = scale 1, right = scale 2),
   // with sensible fallbacks if a name is empty.
-  const leftName = scale1Name?.trim() || 'Mic left';
-  const rightName = scale2Name?.trim() || 'Mic right';
+  const leftName = scale1Name?.trim() || t('sound.micLeftFallback');
+  const rightName = scale2Name?.trim() || t('sound.micRightFallback');
 
   // Derive the latest measurement for the header status badge
   const latest = useMemo(() => {
@@ -406,7 +417,7 @@ export function HiveScaleSoundPanel({
               </div>
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  Hive sound
+                  {t('sound.title')}
                   <MicStatusBadge
                     micOk={latest?.mic_ok}
                     leftOk={latest?.mic_left_ok}
@@ -416,8 +427,7 @@ export function HiveScaleSoundPanel({
                   />
                 </CardTitle>
                 <CardDescription>
-                  INMP441 FFT band energy (dBFS) —{' '}
-                  {leftName} (left) · {rightName} (right)
+                  {t('sound.description', { left: leftName, right: rightName })}
                 </CardDescription>
               </div>
             </div>
@@ -427,7 +437,7 @@ export function HiveScaleSoundPanel({
                 variant="outline"
                 className="w-full justify-between sm:w-auto sm:min-w-36"
               >
-                {isOpen ? 'Hide sound' : 'Show sound'}
+                {isOpen ? t('sound.hide') : t('sound.show')}
                 <ChevronDown
                   className={`ml-2 h-4 w-4 transition-transform ${
                     isOpen ? 'rotate-180' : ''
@@ -468,13 +478,11 @@ export function HiveScaleSoundPanel({
                 {/* Reference table */}
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-muted-foreground">
-                    Band reference
+                    {t('sound.bandReference')}
                   </p>
                   <BandReferenceTable />
                   <p className="text-xs text-muted-foreground">
-                    Thresholds used by the Insights engine: piping &gt; −45 dBFS,
-                    stress &gt; −38 dBFS, queenless hum &gt; −40 dBFS with quiet
-                    piping. Calibrate against your own baseline.
+                    {t('sound.thresholds')}
                   </p>
                 </div>
               </>

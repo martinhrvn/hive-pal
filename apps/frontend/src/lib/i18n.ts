@@ -40,6 +40,8 @@ i18n
       'admin',
       'onboarding',
       'privacy',
+      'hivescale',
+      'ai',
     ],
     defaultNS: 'common',
   });

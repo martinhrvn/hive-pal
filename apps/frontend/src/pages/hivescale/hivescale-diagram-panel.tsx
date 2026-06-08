@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Activity,
   Battery,
@@ -201,9 +203,12 @@ const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
   },
 });
 
-const presetButtonLabel = (preset: HiveScaleDateRangePreset): string => {
+const presetButtonLabel = (
+  preset: HiveScaleDateRangePreset,
+  t: TFunction,
+): string => {
   if (preset === 'currentYear') return new Date().getFullYear().toString();
-  if (preset === 'all') return 'All';
+  if (preset === 'all') return t('diagram.range.all');
   return preset;
 };
 
@@ -221,17 +226,21 @@ const axisOrder: SeriesAxis[] = [
 
 const axisPresentation: Record<
   SeriesAxis,
-  { label: string; unit: string; Icon: LucideIcon }
+  { labelKey: string; unit: string; Icon: LucideIcon }
 > = {
-  weight: { label: 'Weight', unit: 'kg', Icon: Scale },
-  temperature: { label: 'Temperature', unit: '°C', Icon: Thermometer },
-  humidity: { label: 'Humidity', unit: '%', Icon: Droplets },
-  voltage: { label: 'Voltage', unit: 'V', Icon: Battery },
-  percent: { label: 'Percent', unit: '%', Icon: Battery },
-  current: { label: 'Current', unit: 'mA', Icon: Zap },
-  power: { label: 'Power', unit: 'mW', Icon: Sun },
-  dbfs: { label: 'Sound', unit: 'dBFS', Icon: Activity },
-  beecount: { label: 'Bee count', unit: 'bees', Icon: Activity },
+  weight: { labelKey: 'diagram.axis.weight', unit: 'kg', Icon: Scale },
+  temperature: {
+    labelKey: 'diagram.axis.temperature',
+    unit: '°C',
+    Icon: Thermometer,
+  },
+  humidity: { labelKey: 'diagram.axis.humidity', unit: '%', Icon: Droplets },
+  voltage: { labelKey: 'diagram.axis.voltage', unit: 'V', Icon: Battery },
+  percent: { labelKey: 'diagram.axis.percent', unit: '%', Icon: Battery },
+  current: { labelKey: 'diagram.axis.current', unit: 'mA', Icon: Zap },
+  power: { labelKey: 'diagram.axis.power', unit: 'mW', Icon: Sun },
+  dbfs: { labelKey: 'diagram.axis.sound', unit: 'dBFS', Icon: Activity },
+  beecount: { labelKey: 'diagram.axis.beecount', unit: 'bees', Icon: Activity },
 };
 
 // ---------------------------------------------------------------------------
@@ -511,6 +520,7 @@ const buildInspectionMarkers = (
   inspections: InspectionResponse[] | undefined,
   hives: HiveWithBoxesResponse[],
   mappedHiveIds: string[],
+  t: TFunction,
 ): ChartMarker[] => {
   if (!inspections) return [];
   return inspections
@@ -523,7 +533,7 @@ const buildInspectionMarkers = (
         timestamp: new Date(ins.date).getTime(),
         date: ins.date,
         type: 'inspection',
-        label: 'Inspection',
+        label: t('diagram.marker.inspection'),
         detail: '',
         hiveName,
         Icon: ClipboardCheck,
@@ -532,14 +542,13 @@ const buildInspectionMarkers = (
         .filter(a => ACTION_MARKER_MAP[a.type])
         .map(a => {
           const actionType = a.type as string;
+          const markerType = ACTION_MARKER_MAP[a.type]!;
           return {
             id: `act-${ins.id}-${actionType}`,
             timestamp: new Date(ins.date).getTime(),
             date: ins.date,
-            type: ACTION_MARKER_MAP[a.type]!,
-            label:
-              actionType.charAt(0) +
-              actionType.slice(1).toLowerCase().replace(/_/g, ' '),
+            type: markerType,
+            label: t(`diagram.marker.action.${markerType}`),
             detail: '',
             hiveName,
             Icon: ACTION_ICON_MAP[a.type] ?? Wrench,
@@ -552,6 +561,7 @@ const buildInspectionMarkers = (
 const buildBoxAddedMarkers = (
   hives: HiveWithBoxesResponse[],
   mappedHiveIds: string[],
+  t: TFunction,
   startAt?: string,
   endAt?: string,
 ): ChartMarker[] => {
@@ -571,7 +581,7 @@ const buildBoxAddedMarkers = (
           timestamp: new Date(box.addedAt ?? 0).getTime(),
           date: box.addedAt ? new Date(box.addedAt).toISOString() : '',
           type: 'box' as const,
-          label: 'Box added',
+          label: t('diagram.marker.boxAdded'),
           detail: box.type ?? '',
           hiveName: h.name,
           Icon: PackagePlus,
@@ -662,6 +672,7 @@ export const HiveScaleDiagramPanel = ({
   hives,
   inspections,
 }: HiveScaleDiagramPanelProps) => {
+  const { t } = useTranslation('hivescale');
   const [diagramSettings, setDiagramSettings] = useState<StoredDiagramSettings>(
     () => loadDiagramSettings(selectedDevice.device_id),
   );
@@ -690,7 +701,7 @@ export const HiveScaleDiagramPanel = ({
       // -------------------------------------------------------------------
       {
         key: 'scale1Weight',
-        label: `${scale1Name} weight`,
+        label: t('diagram.series.weight', { name: scale1Name }),
         dataKey: 'scale1Weight',
         axis: 'weight',
         unit: 'kg',
@@ -701,7 +712,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'scale1Temperature',
-        label: `${scale1Name} temp`,
+        label: t('diagram.series.temp', { name: scale1Name }),
         dataKey: 'scale1Temperature',
         axis: 'temperature',
         unit: '°C',
@@ -712,7 +723,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'micLeftRms',
-        label: `${scale1Name} mic RMS`,
+        label: t('diagram.series.micRms', { name: scale1Name }),
         dataKey: 'micLeftRms',
         axis: 'dbfs',
         unit: 'dBFS',
@@ -723,7 +734,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'beeCounter1In',
-        label: `${scale1Name} bees in`,
+        label: t('diagram.series.beesIn', { name: scale1Name }),
         dataKey: 'beeCounter1In',
         axis: 'beecount',
         unit: 'bees',
@@ -734,7 +745,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'beeCounter1Out',
-        label: `${scale1Name} bees out`,
+        label: t('diagram.series.beesOut', { name: scale1Name }),
         dataKey: 'beeCounter1Out',
         axis: 'beecount',
         unit: 'bees',
@@ -745,7 +756,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'beeCounter1Net',
-        label: `${scale1Name} net flow`,
+        label: t('diagram.series.netFlow', { name: scale1Name }),
         dataKey: 'beeCounter1Net',
         axis: 'beecount',
         unit: 'bees',
@@ -759,7 +770,7 @@ export const HiveScaleDiagramPanel = ({
       // -------------------------------------------------------------------
       {
         key: 'scale2Weight',
-        label: `${scale2Name} weight`,
+        label: t('diagram.series.weight', { name: scale2Name }),
         dataKey: 'scale2Weight',
         axis: 'weight',
         unit: 'kg',
@@ -770,7 +781,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'scale2Temperature',
-        label: `${scale2Name} temp`,
+        label: t('diagram.series.temp', { name: scale2Name }),
         dataKey: 'scale2Temperature',
         axis: 'temperature',
         unit: '°C',
@@ -781,7 +792,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'micRightRms',
-        label: `${scale2Name} mic RMS`,
+        label: t('diagram.series.micRms', { name: scale2Name }),
         dataKey: 'micRightRms',
         axis: 'dbfs',
         unit: 'dBFS',
@@ -792,7 +803,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'beeCounter2In',
-        label: `${scale2Name} bees in`,
+        label: t('diagram.series.beesIn', { name: scale2Name }),
         dataKey: 'beeCounter2In',
         axis: 'beecount',
         unit: 'bees',
@@ -803,7 +814,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'beeCounter2Out',
-        label: `${scale2Name} bees out`,
+        label: t('diagram.series.beesOut', { name: scale2Name }),
         dataKey: 'beeCounter2Out',
         axis: 'beecount',
         unit: 'bees',
@@ -814,7 +825,7 @@ export const HiveScaleDiagramPanel = ({
       },
       {
         key: 'beeCounter2Net',
-        label: `${scale2Name} net flow`,
+        label: t('diagram.series.netFlow', { name: scale2Name }),
         dataKey: 'beeCounter2Net',
         axis: 'beecount',
         unit: 'bees',
@@ -828,83 +839,83 @@ export const HiveScaleDiagramPanel = ({
       // -------------------------------------------------------------------
       {
         key: 'ambientTemperature',
-        label: 'Ambient temp',
+        label: t('diagram.series.ambientTemp'),
         dataKey: 'ambientTemperature',
         axis: 'temperature',
         unit: '°C',
         stroke: 'var(--chart-5)',
-        group: 'Ambient',
+        group: t('diagram.group.ambient'),
         column: 3,
-        subgroup: 'Ambient',
+        subgroup: t('diagram.group.ambient'),
       },
       {
         key: 'ambientHumidity',
-        label: 'Ambient humidity',
+        label: t('diagram.series.ambientHumidity'),
         dataKey: 'ambientHumidity',
         axis: 'humidity',
         unit: '%',
         stroke: 'var(--chart-3)',
-        group: 'Ambient',
+        group: t('diagram.group.ambient'),
         column: 3,
-        subgroup: 'Ambient',
+        subgroup: t('diagram.group.ambient'),
       },
       {
         key: 'batteryVoltage',
-        label: 'Battery voltage',
+        label: t('diagram.series.batteryVoltage'),
         dataKey: 'batteryVoltage',
         axis: 'voltage',
         unit: 'V',
         stroke: 'var(--destructive)',
-        group: 'Off-grid',
+        group: t('diagram.group.offGrid'),
         column: 3,
-        subgroup: 'Off-grid',
+        subgroup: t('diagram.group.offGrid'),
       },
       {
         key: 'batterySoc',
-        label: 'Battery charge',
+        label: t('diagram.series.batteryCharge'),
         dataKey: 'batterySoc',
         axis: 'percent',
         unit: '%',
         stroke: 'var(--chart-1)',
-        group: 'Off-grid',
+        group: t('diagram.group.offGrid'),
         column: 3,
-        subgroup: 'Off-grid',
+        subgroup: t('diagram.group.offGrid'),
       },
       {
         key: 'solarLoadVoltage',
-        label: 'Solar voltage',
+        label: t('diagram.series.solarVoltage'),
         dataKey: 'solarLoadVoltage',
         axis: 'voltage',
         unit: 'V',
         stroke: 'var(--chart-2)',
-        group: 'Off-grid',
+        group: t('diagram.group.offGrid'),
         column: 3,
-        subgroup: 'Off-grid',
+        subgroup: t('diagram.group.offGrid'),
       },
       {
         key: 'solarCurrent',
-        label: 'Solar current',
+        label: t('diagram.series.solarCurrent'),
         dataKey: 'solarCurrent',
         axis: 'current',
         unit: 'mA',
         stroke: 'var(--chart-3)',
-        group: 'Off-grid',
+        group: t('diagram.group.offGrid'),
         column: 3,
-        subgroup: 'Off-grid',
+        subgroup: t('diagram.group.offGrid'),
       },
       {
         key: 'solarPower',
-        label: 'Solar power',
+        label: t('diagram.series.solarPower'),
         dataKey: 'solarPower',
         axis: 'power',
         unit: 'mW',
         stroke: 'var(--chart-4)',
-        group: 'Off-grid',
+        group: t('diagram.group.offGrid'),
         column: 3,
-        subgroup: 'Off-grid',
+        subgroup: t('diagram.group.offGrid'),
       },
     ],
-    [scale1Name, scale2Name],
+    [scale1Name, scale2Name, t],
   );
 
   const activeSeries = useMemo(
@@ -1007,15 +1018,16 @@ export const HiveScaleDiagramPanel = ({
     const hiveList = hives ?? [];
     const mappedHiveIds = mappedHives.map(hive => hive.id);
     return [
-      ...buildInspectionMarkers(inspections, hiveList, mappedHiveIds),
+      ...buildInspectionMarkers(inspections, hiveList, mappedHiveIds, t),
       ...buildBoxAddedMarkers(
         hiveList,
         mappedHiveIds,
+        t,
         dateRange.startAt,
         dateRange.endAt,
       ),
     ].sort((a, b) => a.timestamp - b.timestamp);
-  }, [dateRange.endAt, dateRange.startAt, hives, inspections, mappedHives]);
+  }, [dateRange.endAt, dateRange.startAt, hives, inspections, mappedHives, t]);
 
   const toggleSeries = (key: SeriesKey) => {
     setDiagramSettings(current => ({
@@ -1125,25 +1137,31 @@ export const HiveScaleDiagramPanel = ({
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <CardTitle>Measurements</CardTitle>
-            <CardDescription>
-              Weight, temperature, and entrance activity over time
-            </CardDescription>
+            <CardTitle>{t('diagram.title')}</CardTitle>
+            <CardDescription>{t('diagram.subtitle')}</CardDescription>
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
               <span>
-                <span className="font-medium text-foreground">Device:</span>{' '}
+                <span className="font-medium text-foreground">
+                  {t('diagram.meta.device')}
+                </span>{' '}
                 {selectedDevice.display_name ?? selectedDevice.device_id}
               </span>
               <span>
-                <span className="font-medium text-foreground">Last seen:</span>{' '}
+                <span className="font-medium text-foreground">
+                  {t('diagram.meta.lastSeen')}
+                </span>{' '}
                 {formatRelativeTime(selectedDevice.last_seen_at)}
               </span>
               <span>
-                <span className="font-medium text-foreground">Last data:</span>{' '}
+                <span className="font-medium text-foreground">
+                  {t('diagram.meta.lastData')}
+                </span>{' '}
                 {formatRelativeTime(lastDataAt)}
               </span>
               <span>
-                <span className="font-medium text-foreground">Firmware:</span>{' '}
+                <span className="font-medium text-foreground">
+                  {t('diagram.meta.firmware')}
+                </span>{' '}
                 {selectedDevice.last_firmware_version ?? '—'}
               </span>
             </div>
@@ -1184,12 +1202,12 @@ export const HiveScaleDiagramPanel = ({
                 }
                 onClick={() => onDateRangeChange(createPresetDateRange(preset))}
               >
-                {presetButtonLabel(preset)}
+                {presetButtonLabel(preset, t)}
               </Button>
             ))}
           </div>
           <div className="flex items-center gap-1">
-            <Label className="text-xs">From</Label>
+            <Label className="text-xs">{t('diagram.range.from')}</Label>
             <Input
               type="datetime-local"
               className="h-8 w-44 text-xs"
@@ -1204,7 +1222,7 @@ export const HiveScaleDiagramPanel = ({
                 })
               }
             />
-            <Label className="text-xs">To</Label>
+            <Label className="text-xs">{t('diagram.range.to')}</Label>
             <Input
               type="datetime-local"
               className="h-8 w-44 text-xs"
@@ -1355,7 +1373,7 @@ export const HiveScaleDiagramPanel = ({
           </div>
         ) : (
           <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
-            No measurements for the selected range.
+            {t('diagram.noMeasurements')}
           </div>
         )}
 
@@ -1386,30 +1404,32 @@ export const HiveScaleDiagramPanel = ({
         {/* Axis scale settings */}
         <div className="space-y-3 rounded-md border p-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-medium">Axis settings</div>
+            <div className="text-sm font-medium">
+              {t('diagram.axisSettings.title')}
+            </div>
             <Button
               type="button"
               size="sm"
               variant="ghost"
               onClick={resetAxisLayout}
             >
-              Reset
+              {t('diagram.axisSettings.reset')}
             </Button>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {axisOrder.map(axis => {
               if (!activeAxes.has(axis)) return null;
-              const { label, Icon } = axisPresentation[axis];
+              const { labelKey, Icon } = axisPresentation[axis];
               const settings = axisScaleSettings[axis];
               return (
                 <div key={axis} className="space-y-2 rounded-md border p-2">
                   <div className="flex items-center gap-1 text-xs font-medium">
                     <Icon className="h-3.5 w-3.5" />
-                    {label}
+                    {t(labelKey)}
                   </div>
                   <div className="flex items-center gap-1">
                     <Label className="w-8 text-xs text-muted-foreground">
-                      Side
+                      {t('diagram.axisSettings.side')}
                     </Label>
                     <Select
                       value={settings.side}
@@ -1423,14 +1443,18 @@ export const HiveScaleDiagramPanel = ({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="left">Left</SelectItem>
-                        <SelectItem value="right">Right</SelectItem>
+                        <SelectItem value="left">
+                          {t('diagram.axisSettings.left')}
+                        </SelectItem>
+                        <SelectItem value="right">
+                          {t('diagram.axisSettings.right')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="flex items-center gap-1">
                     <Label className="w-8 text-xs text-muted-foreground">
-                      Scale
+                      {t('diagram.axisSettings.scale')}
                     </Label>
                     <Select
                       value={settings.scaleMode}
@@ -1444,9 +1468,15 @@ export const HiveScaleDiagramPanel = ({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="maxRange">Auto</SelectItem>
-                        <SelectItem value="zeroToMax">0 to max</SelectItem>
-                        <SelectItem value="custom">Custom</SelectItem>
+                        <SelectItem value="maxRange">
+                          {t('diagram.axisSettings.auto')}
+                        </SelectItem>
+                        <SelectItem value="zeroToMax">
+                          {t('diagram.axisSettings.zeroToMax')}
+                        </SelectItem>
+                        <SelectItem value="custom">
+                          {t('diagram.axisSettings.custom')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1454,11 +1484,11 @@ export const HiveScaleDiagramPanel = ({
                     <div className="space-y-1">
                       <div className="flex items-center gap-1">
                         <Label className="w-8 text-xs text-muted-foreground">
-                          Min
+                          {t('diagram.axisSettings.min')}
                         </Label>
                         <Input
                           className="h-7 text-xs"
-                          placeholder="auto"
+                          placeholder={t('diagram.axisSettings.autoPlaceholder')}
                           value={settings.customMin}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {
@@ -1469,11 +1499,11 @@ export const HiveScaleDiagramPanel = ({
                       </div>
                       <div className="flex items-center gap-1">
                         <Label className="w-8 text-xs text-muted-foreground">
-                          Max
+                          {t('diagram.axisSettings.max')}
                         </Label>
                         <Input
                           className="h-7 text-xs"
-                          placeholder="auto"
+                          placeholder={t('diagram.axisSettings.autoPlaceholder')}
                           value={settings.customMax}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {
