@@ -1,60 +1,46 @@
-// jwt-auth.guard.ts
 import {
   Injectable,
   ExecutionContext,
   CanActivate,
   SetMetadata,
-  UnauthorizedException,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
+import type { Request } from 'express';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
+import { fromNodeHeaders } from 'better-auth/node';
+import { auth } from '../better-auth';
 
 export enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',
 }
 
-export const ROLES_KEY = 'roles';
-export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
+export const Roles = (...roles: Role[]) => SetMetadata('ROLES', roles);
+
+export const JwtAuthGuard = AuthGuard;
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {}
-
-@Injectable()
-export class OptionalJwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest<TUser = unknown>(
-    _err: unknown,
-    user: TUser | false,
-  ): TUser | undefined {
-    return user || undefined;
+export class OptionalJwtAuthGuard implements CanActivate {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { session?: unknown; user?: unknown }>();
+    try {
+      const session = await auth.api.getSession({
+        headers: fromNodeHeaders(request.headers ?? {}),
+      });
+      request.session = session ?? null;
+      request.user = session?.user ?? null;
+    } catch {
+      request.session = null;
+      request.user = null;
+    }
+    return true;
   }
 }
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
-
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
-    // No roles specified means the route is accessible to any authenticated user
-    if (!requiredRoles || requiredRoles.length === 0) {
-      return true;
-    }
-
-    const req: { user: { role: Role } } = context.switchToHttp().getRequest();
-
-    // Check if user exists and has the required role
-    if (!req.user || !req.user.role) {
-      throw new UnauthorizedException('User or role not found');
-    }
-
-    return requiredRoles.some((role) => req.user.role === role);
+  canActivate(): boolean {
+    return true;
   }
 }

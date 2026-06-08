@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { UserPreferences } from 'shared-schemas';
 import { logApiError } from '../errorLogger';
-import { TOKEN_KEY } from '@/context/auth-context/auth-provider';
+import { useSession } from '@/lib/auth-client';
 import { AxiosError } from 'axios';
 
 // Query keys
@@ -13,10 +13,7 @@ const USER_PREFERENCES_KEYS = {
 
 // Get user preferences query
 export const useUserPreferences = () => {
-  // Check if user is logged in by checking for token in localStorage
-  // This avoids circular dependency with AuthContext
-  const hasToken =
-    typeof window !== 'undefined' && !!localStorage.getItem(TOKEN_KEY);
+  const { data: session } = useSession();
 
   return useQuery<UserPreferences | null>({
     queryKey: USER_PREFERENCES_KEYS.preferences(),
@@ -42,8 +39,7 @@ export const useUserPreferences = () => {
         throw error;
       }
     },
-    // Only fetch preferences if user has a token
-    enabled: hasToken,
+    enabled: !!session?.user,
     refetchOnWindowFocus: false,
     retry: false, // Don't retry on 401 errors
   });

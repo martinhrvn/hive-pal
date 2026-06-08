@@ -1,121 +1,76 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../client';
-import { AuthResponse, Login, Register, User } from 'shared-schemas';
+import { useMutation } from '@tanstack/react-query';
+import { authClient, useSession } from '@/lib/auth-client';
 import { logApiError } from '../errorLogger';
 
-// Query keys
-const AUTH_KEYS = {
-  all: ['auth'] as const,
-  user: () => [...AUTH_KEYS.all, 'user'] as const,
-  profile: () => [...AUTH_KEYS.all, 'profile'] as const,
-};
-
-// Login mutation
-export const useLogin = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (credentials: Login) => {
-      const response = await apiClient.post<AuthResponse>(
-        '/api/auth/login',
-        credentials,
-      );
-      return response.data;
-    },
-    onSuccess: data => {
-      // Update user data in cache
-      queryClient.setQueryData(AUTH_KEYS.user(), data.user);
+export const useLogin = () =>
+  useMutation({
+    mutationFn: async (credentials: { email: string; password: string }) => {
+      const result = await authClient.signIn.email(credentials);
+      if (result.error) throw result.error;
+      return result.data;
     },
     onError: error => {
-      logApiError(error, '/api/auth/login', 'POST');
+      logApiError(error, '/api/auth/sign-in/email', 'POST');
     },
   });
-};
 
-// Register mutation
-export const useRegister = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (userData: Register) => {
-      const response = await apiClient.post<AuthResponse>(
-        '/api/auth/register',
-        userData,
-      );
-      return response.data;
-    },
-    onSuccess: data => {
-      // Update user data in cache
-      queryClient.setQueryData(AUTH_KEYS.user(), data.user);
+export const useRegister = () =>
+  useMutation({
+    mutationFn: async (data: {
+      email: string;
+      password: string;
+      name?: string;
+      privacyPolicyConsent?: boolean;
+      newsletterConsent?: boolean;
+    }) => {
+      const now = new Date();
+      const result = await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.name ?? data.email,
+        privacyPolicyConsent: data.privacyPolicyConsent ?? false,
+        privacyConsentTimestamp: data.privacyPolicyConsent ? now : undefined,
+        newsletterConsent: data.newsletterConsent ?? false,
+        newsletterConsentTimestamp: data.newsletterConsent ? now : undefined,
+      } as never);
+      if (result.error) throw result.error;
+      return result.data;
     },
     onError: error => {
-      logApiError(error, '/api/auth/register', 'POST');
+      logApiError(error, '/api/auth/sign-up/email', 'POST');
     },
   });
-};
 
-// Change password mutation
-export const useChangePassword = () => {
-  return useMutation({
+export const useChangePassword = () =>
+  useMutation({
     mutationFn: async (data: {
       currentPassword: string;
       newPassword: string;
     }) => {
-      const response = await apiClient.post<{ success: boolean }>(
-        '/api/auth/change-password',
-        data,
-      );
-      return response.data;
+      const result = await authClient.changePassword({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      });
+      if (result.error) throw result.error;
+      return result.data;
     },
     onError: error => {
       logApiError(error, '/api/auth/change-password', 'POST');
     },
   });
-};
 
-// Reset password mutation (for admin or forgot password flow)
-export const useResetPassword = () => {
-  return useMutation({
-    mutationFn: async (data: { userId: string; newPassword: string }) => {
-      const response = await apiClient.post<{ success: boolean }>(
-        '/api/auth/reset-password',
-        data,
-      );
-      return response.data;
-    },
-    onError: error => {
-      logApiError(error, '/api/auth/reset-password', 'POST');
-    },
-  });
-};
-
-// User profile query - fetches the current user's profile
-export const useUserProfile = (options = {}) => {
-  return useQuery<User>({
-    queryKey: AUTH_KEYS.profile(),
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get<User>('/api/auth/me');
-        return response.data;
-      } catch (error) {
-        logApiError(error, '/api/auth/me', 'GET');
-        throw error;
-      }
-    },
-
-    // Don't refetch on window focus by default
-    refetchOnWindowFocus: false,
-    ...options,
-  });
-};
-
-// Combined hook for convenience
-export const useAuth = () => {
+export const useUserProfile = () => {
+  const { data, isPending, error } = useSession();
   return {
-    login: useLogin(),
-    register: useRegister(),
-    changePassword: useChangePassword(),
-    resetPassword: useResetPassword(),
-    profile: useUserProfile(),
+    data: data?.user ?? null,
+    isLoading: isPending,
+    error,
   };
 };
+
+export const useAuth = () => ({
+  login: useLogin(),
+  register: useRegister(),
+  changePassword: useChangePassword(),
+  profile: useUserProfile(),
+});

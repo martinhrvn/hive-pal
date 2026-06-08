@@ -8,7 +8,7 @@ import { getRandomHive } from './fixtures/hive';
 
 let app: INestApplication;
 let prisma: PrismaService;
-let authToken: string;
+let authCookie: string[];
 let userId: string;
 let apiaryId: string;
 let testHiveId: string;
@@ -16,7 +16,7 @@ const cleanupHiveIds = new Set<string>();
 
 beforeAll(async () => {
   ({ app, prisma } = await setupApp());
-  ({ userId, authToken } = await setupUser(app));
+  ({ userId, authCookie } = await setupUser(app));
   apiaryId = await setupApiary(app, userId);
   testHiveId = await setupHive(app, apiaryId);
   cleanupHiveIds.add(testHiveId);
@@ -72,7 +72,7 @@ it('should create a minimal inspection', async () => {
   };
   const response = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId) // Set the apiary context
     .send(req)
     .expect(201);
@@ -122,7 +122,7 @@ it('should create an inspection with observations', async () => {
   // Create the inspection
   const createResponse = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .send(req)
     .expect(201);
@@ -133,7 +133,7 @@ it('should create an inspection with observations', async () => {
   // Fetch the inspection to verify observations
   const getResponse = await request(app.getHttpServer())
     .get(`/inspections/${inspectionId}`)
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .expect(200);
 
@@ -211,7 +211,7 @@ it('should not return or persist scores for subjective apiaries', async () => {
 
   const createResponse = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', subjectiveApiary.id)
     .send(req)
     .expect(201);
@@ -229,7 +229,7 @@ it('should not return or persist scores for subjective apiaries', async () => {
 
   const getResponse = await request(app.getHttpServer())
     .get(`/inspections/${createResponse.body.id}`)
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', subjectiveApiary.id)
     .expect(200);
 
@@ -250,7 +250,7 @@ describe('Create status', () => {
     // Create the inspection
     const createResponse = await request(app.getHttpServer())
       .post('/inspections')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .send(getReq());
 
@@ -261,7 +261,7 @@ describe('Create status', () => {
     // Fetch the inspection to verify observations
     const getResponse = await request(app.getHttpServer())
       .get(`/inspections/${inspectionId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .expect(200);
 
@@ -272,7 +272,7 @@ describe('Create status', () => {
   it('should set status to PENDING for future date', async () => {
     const createResponse = await request(app.getHttpServer())
       .post('/inspections')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .send(getReq(new Date(Date.now() + 1000 * 60 * 60 * 24))) // Future date
       .expect(201);
@@ -282,7 +282,7 @@ describe('Create status', () => {
     // Fetch the inspection to verify observations
     const getResponse = await request(app.getHttpServer())
       .get(`/inspections/${inspectionId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .expect(200);
 
@@ -293,7 +293,7 @@ describe('Create status', () => {
   it('should set manual status', async () => {
     const createResponse = await request(app.getHttpServer())
       .post('/inspections')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .send({ ...getReq(), status: 'CANCELLED' }) // Future date
       .expect(201);
@@ -302,7 +302,7 @@ describe('Create status', () => {
     const inspectionId = createResponse.body.id;
     const getResponse = await request(app.getHttpServer())
       .get(`/inspections/${inspectionId}`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authCookie)
       .set('x-apiary-id', apiaryId)
       .expect(200);
 
@@ -336,7 +336,7 @@ it('should create an inspection with FEEDING action', async () => {
   // Create the inspection
   const createResponse = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .send(req)
     .expect(201);
@@ -366,7 +366,7 @@ it('should create an inspection with FEEDING action', async () => {
   // Fetch the inspection to verify the action in the response
   const getResponse = await request(app.getHttpServer())
     .get(`/inspections/${inspectionId}`)
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .expect(200);
 
@@ -410,7 +410,7 @@ it('should create an inspection with TREATMENT action', async () => {
   // Create the inspection
   const createResponse = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .send(req)
     .expect(201);
@@ -440,7 +440,7 @@ it('should create an inspection with TREATMENT action', async () => {
   // Fetch the inspection to verify the action in the response
   const getResponse = await request(app.getHttpServer())
     .get(`/inspections/${inspectionId}`)
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .expect(200);
 
@@ -481,7 +481,7 @@ it('should create an inspection with FRAME action', async () => {
   // Create the inspection
   const createResponse = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .send(req)
     .expect(201);
@@ -508,7 +508,7 @@ it('should create an inspection with FRAME action', async () => {
   // Fetch the inspection to verify the action in the response
   const getResponse = await request(app.getHttpServer())
     .get(`/inspections/${inspectionId}`)
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .expect(200);
 
@@ -545,7 +545,7 @@ it('should create an inspection with OTHER action', async () => {
   // Create the inspection
   const createResponse = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .send(req)
     .expect(201);
@@ -567,7 +567,7 @@ it('should create an inspection with OTHER action', async () => {
   // Fetch the inspection to verify the action in the response
   const getResponse = await request(app.getHttpServer())
     .get(`/inspections/${inspectionId}`)
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .expect(200);
 
@@ -619,7 +619,7 @@ it('should create an inspection with multiple actions of different types', async
   // Create the inspection
   const createResponse = await request(app.getHttpServer())
     .post('/inspections')
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .send(req)
     .expect(201);
@@ -679,7 +679,7 @@ it('should create an inspection with multiple actions of different types', async
   // Fetch the inspection to verify the actions in the response
   const getResponse = await request(app.getHttpServer())
     .get(`/inspections/${inspectionId}`)
-    .set('Authorization', `Bearer ${authToken}`)
+    .set('Cookie', authCookie)
     .set('x-apiary-id', apiaryId)
     .expect(200);
 

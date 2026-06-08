@@ -1,3 +1,4 @@
+import type { Mocked } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 import {
   HiveDetailResponse,
@@ -98,28 +99,28 @@ const hiveDetail: HiveDetailResponse = {
 
 describe('ContextBuilderService', () => {
   let service: ContextBuilderService;
-  let hiveService: jest.Mocked<Pick<HiveService, 'findOne' | 'findAll'>>;
-  let inspectionsService: jest.Mocked<Pick<InspectionsService, 'findAll'>>;
+  let hiveService: Mocked<Pick<HiveService, 'findOne' | 'findAll'>>;
+  let inspectionsService: Mocked<Pick<InspectionsService, 'findAll'>>;
   let configValues: Record<string, unknown>;
 
   beforeEach(() => {
     configValues = {};
     hiveService = {
-      findOne: jest.fn().mockResolvedValue(hiveDetail),
-      findAll: jest.fn(),
+      findOne: vi.fn().mockResolvedValue(hiveDetail),
+      findAll: vi.fn(),
     };
     inspectionsService = {
-      findAll: jest.fn().mockResolvedValue([]),
+      findAll: vi.fn().mockResolvedValue([]),
     };
     const config = {
       get: (key: string) => configValues[key],
     } as unknown as ConfigService;
     const logger = {
-      setContext: jest.fn(),
-      log: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
+      setContext: vi.fn(),
+      log: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
     } as unknown as CustomLoggerService;
 
     service = new ContextBuilderService(

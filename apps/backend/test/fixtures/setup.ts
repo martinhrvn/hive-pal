@@ -2,8 +2,8 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../../src/prisma/prisma.service';
-import { getRandomUser } from './user';
-import request from 'supertest';
+import { v4 as uuid } from 'uuid';
+import { createTestUser, loginAndGetCookie } from '../helpers/auth';
 import { getRandomHive } from './hive';
 import { getRandomApiary } from './apiary';
 
@@ -23,23 +23,11 @@ export const setupApp = async () => {
 
 export const setupUser = async (app: INestApplication) => {
   const prisma = app.get(PrismaService);
-
-  const testUser = await getRandomUser();
-  const { id } = await prisma.user.create({
-    data: testUser,
-  });
-  const loginResponse = await request(app.getHttpServer())
-    .post('/auth/login')
-    .send({
-      email: testUser.email,
-      password: 'password123',
-    });
-
-  return {
-    userId: id,
-    email: testUser.email,
-    authToken: loginResponse.body.access_token,
-  };
+  const email = `test-${uuid()}@example.com`;
+  const password = 'password123';
+  const { id } = await createTestUser(prisma, { email, password });
+  const authCookie = await loginAndGetCookie(app, email, password);
+  return { userId: id, email, authCookie };
 };
 
 export const setupApiary = async (app: INestApplication, userId: string) => {

@@ -7,7 +7,6 @@ import {
   Body,
   Param,
   UseGuards,
-  UnauthorizedException,
   NotFoundException,
   Req,
 } from '@nestjs/common';
@@ -21,8 +20,6 @@ import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
 import { UsersStatsService } from './users-stats.service';
 import {
-  AdminResetPassword,
-  ChangePassword,
   UserResponse,
   UserPreferences,
   UpdateUserInfo,
@@ -31,8 +28,6 @@ import {
   EquipmentPlan,
   CreateEquipmentItem,
   UpdateEquipmentItem,
-  adminResetPasswordSchema,
-  changePasswordSchema,
   userPreferencesSchema,
   updateUserInfoSchema,
   UserWithStatsResponse,
@@ -44,7 +39,6 @@ import {
   ApiBearerAuth,
   ApiResponse,
 } from '@nestjs/swagger';
-import * as bcrypt from 'bcrypt';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -97,64 +91,10 @@ export class UsersController {
     return this.usersStatsService.getUserDetailedStats(id);
   }
 
-  @Post(':id/reset-password')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: "Reset a user's password (admin only)" })
-  async resetPassword(
-    @Param('id') id: string,
-    @Body(new ZodValidationPipe(adminResetPasswordSchema))
-    resetPasswordDto: AdminResetPassword,
-    @Req() req: RequestWithUser,
-  ): Promise<UserResponse> {
-    this.logger.log(
-      `Admin user ${req.user.id} resetting password for user ${id}`,
-    );
-    return this.usersService.resetPassword(id, resetPasswordDto.tempPassword);
-  }
-
-  @Post('change-password')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Change own password' })
-  async changePassword(
-    @Req() req: RequestWithUser,
-    @Body(new ZodValidationPipe(changePasswordSchema))
-    changePasswordDto: ChangePassword,
-  ): Promise<UserResponse> {
-    this.logger.log(`User ${req.user.id} changing their password`);
-
-    const user = await this.usersService.findById(req.user.id);
-
-    if (!user) {
-      this.logger.warn(
-        `User ${req.user.id} not found when trying to change password`,
-      );
-      throw new NotFoundException('User not found');
-    }
-
-    // Verify current password
-    const isPasswordValid = await bcrypt.compare(
-      changePasswordDto.currentPassword,
-      user.password,
-    );
-
-    if (!isPasswordValid) {
-      this.logger.warn(
-        `User ${req.user.id} provided invalid current password when changing password`,
-      );
-      throw new UnauthorizedException('Current password is incorrect');
-    }
-
-    this.logger.log(
-      `Password change verified for user ${req.user.id}, updating password`,
-    );
-    return this.usersService.changePassword(
-      req.user.id,
-      changePasswordDto.newPassword,
-    );
-  }
+  // Password change + admin reset are handled by Better Auth:
+  //   POST /api/auth/change-password (user) — see better-auth.ts
+  //   POST /api/auth/admin/set-user-password (admin) — admin plugin
+  // `passwordChangeRequired` toggling happens via auth hooks in better-auth.ts.
 
   // Equipment endpoints using new structure
   @Get('equipment/items')
@@ -318,8 +258,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const { password: _, ...userProfile } = user;
-    return userProfile;
+    return user;
   }
 
   @Put('profile')

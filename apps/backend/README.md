@@ -31,7 +31,9 @@ pnpm dev
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:postgres@localhost:5432/beekeeper?schema=public` |
-| `JWT_SECRET` | Secret key for JWT tokens | `your_jwt_secret` |
+| `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies (32+ chars; generate with `openssl rand -base64 32`) | `your_random_secret` |
+| `BETTER_AUTH_URL` | Backend public base URL where `/api/auth/*` is served | `http://localhost:3000` |
+| `JWT_SECRET` | Secret for signing iCal calendar tokens, HiveScale requests, and local-storage URLs (not user auth) | `your_jwt_secret` |
 | `ADMIN_EMAIL` | Initial admin user email | `admin@hivepal.com` |
 | `ADMIN_PASSWORD` | Initial admin user password (bcrypt hash) | `$2a$12$...` |
 | `ALLOWED_ORIGINS` | CORS allowed origins | `http://localhost:5173` |
@@ -56,6 +58,13 @@ The system auto-selects the first configured provider:
 | `SMTP_SECURE` | Use TLS | `false` |
 | `SMTP_USER` | SMTP username | - |
 | `SMTP_PASS` | SMTP password | - |
+
+### Better Auth (Optional)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PASSKEY_RP_ID` | WebAuthn relying-party ID | `localhost` |
+| `COOKIE_DOMAIN` | Set in prod when frontend and backend share a parent domain | - |
 
 ### S3 Storage (Optional - for audio recordings)
 

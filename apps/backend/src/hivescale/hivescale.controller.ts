@@ -14,6 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtService } from '@nestjs/jwt';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
@@ -31,10 +32,20 @@ import {
 @Controller('hivescale')
 @UseGuards(JwtAuthGuard)
 export class HiveScaleController {
-  constructor(private readonly hiveScaleService: HiveScaleService) {}
+  constructor(
+    private readonly hiveScaleService: HiveScaleService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   private extractToken(req: RequestWithUser): string {
-    return req.headers.authorization!.split(' ')[1];
+    const user = req.user;
+    return this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      passwordChangeRequired: user.passwordChangeRequired ?? false,
+    });
   }
 
   @Post('devices/claim')
