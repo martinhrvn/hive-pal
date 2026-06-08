@@ -38,7 +38,7 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
     <div className="space-y-4">
       <CalendarSidebar />
 
-      <WeatherForecastSection apiaryId={activeApiaryId} />
+      <WeatherForecastSection apiaryId={activeApiaryId ?? undefined} />
 
       <ActionSidebarContainer>
         {canEdit && (

@@ -7,12 +7,15 @@ import {
 import type { Box } from 'shared-schemas';
 
 // Frontend-specific modifications for the form
-// We use date object instead of datetime string
+// We use date object instead of datetime string.
+// Keep the schema's input and output types identical (no transforms/defaults)
+// so `useForm<InspectionFormData>` resolves to a single field-values type — the
+// form always supplies a `Date` and an explicit `isAllDay` via defaultValues.
 const inspectionFormSchema = createInspectionSchema
   .omit({ date: true })
   .extend({
-    date: z.date().or(z.string().transform(v => new Date(v))),
-    isAllDay: z.boolean().optional().default(true),
+    date: z.date(),
+    isAllDay: z.boolean(),
   });
 
 // Action schema modifications for the frontend

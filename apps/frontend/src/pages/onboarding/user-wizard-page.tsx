@@ -15,7 +15,7 @@ import {
   ApiaryFormData,
 } from '@/pages/apiaries/components/apiary-form';
 import { HiveForm, HiveFormData } from '@/pages/hive/components/hive-form';
-import { ApiaryResponse, HiveStatus } from 'shared-schemas';
+import { ApiaryResponse, CreateHive, HiveStatus } from 'shared-schemas';
 
 // Import CheckIcon for success step
 import { CheckIcon, Loader2 } from 'lucide-react';
@@ -102,7 +102,7 @@ export const UserWizardPage = () => {
         status: data.status as HiveStatus,
         installationDate: data.installationDate.toISOString(),
         apiaryId: apiary.id,
-      });
+      } as CreateHive);
       setStep(3);
     } catch (error) {
       console.error('Error creating hive:', error);

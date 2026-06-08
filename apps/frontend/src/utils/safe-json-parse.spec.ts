@@ -1,9 +1,20 @@
 import { safeJsonParse } from './safe-json-parse';
 import { z } from 'zod';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from 'vitest';
 
 describe('safeJsonParse (Frontend)', () => {
-  let consoleSpy: { error: ReturnType<typeof vi.spyOn>; warn: ReturnType<typeof vi.spyOn> };
+  let consoleSpy: {
+    error: MockInstance;
+    warn: MockInstance;
+  };
 
   beforeEach(() => {
     consoleSpy = {

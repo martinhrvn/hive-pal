@@ -48,7 +48,7 @@ export interface BaseInspectionChartProps<T extends { date: string }> {
  */
 export const BaseInspectionChart = React.forwardRef<
   HTMLDivElement,
-  BaseInspectionChartProps<Record<string, unknown>>
+  BaseInspectionChartProps<Record<string, unknown> & { date: string }>
 >(
   (
     {
@@ -76,7 +76,7 @@ export const BaseInspectionChart = React.forwardRef<
       <div ref={ref}>
         <ChartCard title={title} description={description}>
           <ChartContainer config={config}>
-            {children?.(chartData)}
+            {children?.(chartData) as React.ReactElement}
           </ChartContainer>
         </ChartCard>
       </div>

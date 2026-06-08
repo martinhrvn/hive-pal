@@ -152,10 +152,11 @@ export function generateHivePrompt(
   // Health scores
   const score = hive.hiveScore;
   if (
-    score.overallScore !== null ||
-    score.populationScore !== null ||
-    score.storesScore !== null ||
-    score.queenScore !== null
+    score &&
+    (score.overallScore !== null ||
+      score.populationScore !== null ||
+      score.storesScore !== null ||
+      score.queenScore !== null)
   ) {
     lines.push('## ' + i18n.t('hive:llmPrompt.textArea.healthScores', { defaultValue: 'Health Scores' }));
     if (score.overallScore !== null)

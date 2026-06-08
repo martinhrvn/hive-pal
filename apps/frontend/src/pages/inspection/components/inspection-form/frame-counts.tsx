@@ -256,7 +256,7 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
   const frameTypes = FRAME_FIELDS.map(ff => ({
     name: `observations.${ff.obsKey}` as const,
     color: ff.tailwindColor,
-  })) as const satisfies readonly {
+  })) satisfies readonly {
     name: FieldPath<InspectionFormData>;
     color: string;
   }[];

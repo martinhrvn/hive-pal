@@ -775,7 +775,7 @@ function DeviceConfigCard({
       scale1Factor,
       scale2Factor,
     });
-    if (result.error) {
+    if (result.error !== undefined) {
       toast.error(result.error);
       return;
     }
@@ -825,7 +825,7 @@ function DeviceConfigCard({
       knownWeightKg,
       scaleName,
     });
-    if (result.error) {
+    if (result.error !== undefined) {
       toast.error(result.error);
       return;
     }

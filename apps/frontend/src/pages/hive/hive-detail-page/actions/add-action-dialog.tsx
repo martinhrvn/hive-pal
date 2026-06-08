@@ -129,7 +129,7 @@ export const AddActionDialog = ({
           hiveId,
           type: action.type,
           details: details as CreateStandaloneAction['details'],
-          notes: action.notes,
+          notes: 'notes' in action ? action.notes : undefined,
           date: selectedDate.toISOString(),
         };
 

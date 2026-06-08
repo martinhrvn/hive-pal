@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
 import { validatePayloadFreshness, StalePayloadError } from '@/utils/boxUpdateValidation';
 import { useUpdateHiveBoxes } from '@/api/hooks/useHives';
+import type { UpdateHiveBoxes } from 'shared-schemas';
 import { toast } from 'sonner';
 
 interface PendingBoxUpdateBannerProps {
@@ -30,7 +31,7 @@ export const PendingBoxUpdateBanner: React.FC<
   PendingBoxUpdateBannerProps
 > = ({ inspectionId }) => {
   const { t } = useTranslation('inspection');
-  const retryTimeoutRef = useRef<NodeJS.Timeout>();
+  const retryTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isRetrying, setIsRetrying] = useState(false);
 
   // Store mutations
@@ -87,7 +88,8 @@ export const PendingBoxUpdateBanner: React.FC<
       // Actually perform the box update mutation
       await updateHiveBoxes({
         id: currentPending.hiveId,
-        boxes: currentPending.boxPayload,
+        // The store types boxPayload minimally, but it holds full box configs.
+        boxes: currentPending.boxPayload as unknown as UpdateHiveBoxes['boxes'],
       });
 
       // On success, remove pending update from store
