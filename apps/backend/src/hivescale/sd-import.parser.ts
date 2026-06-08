@@ -22,6 +22,12 @@ export interface SdImportParseResult {
 
 const USTAR_MAGIC = 'ustar';
 
+/** Returns the substring up to (but excluding) the first NUL byte, trimmed. */
+function readNulTerminated(value: string): string {
+  const nul = value.indexOf('\0');
+  return (nul === -1 ? value : value.slice(0, nul)).trim();
+}
+
 /** True when the buffer looks like a TAR archive (USTAR magic at offset 257). */
 function looksLikeTar(buffer: Buffer): boolean {
   if (buffer.length < 512) return false;
@@ -65,9 +71,9 @@ function extractNdjsonFromTar(buffer: Buffer): string {
     // A block of all-zero bytes marks the end of the archive.
     if (header.every(byte => byte === 0)) break;
 
-    const name = header.toString('latin1', 0, 100).replace(/\0.*$/, '').trim();
+    const name = readNulTerminated(header.toString('latin1', 0, 100));
     // Size is a 0-padded octal string in bytes 124..136.
-    const sizeField = header.toString('latin1', 124, 136).replace(/\0.*$/, '').trim();
+    const sizeField = readNulTerminated(header.toString('latin1', 124, 136));
     const size = parseInt(sizeField, 8);
     // typeflag '0' or '\0' is a regular file.
     const typeFlag = header.toString('latin1', 156, 157);
