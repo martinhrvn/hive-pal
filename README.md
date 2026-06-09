@@ -1,8 +1,11 @@
 # Hive Pal 🐝
 
 [![Tests](https://github.com/martinhrvn/hive-pal/actions/workflows/check.yml/badge.svg)](https://github.com/martinhrvn/hive-pal/actions/workflows/check.yml)
+[![Documentation](https://img.shields.io/badge/docs-docs.hivepal.app-f59e0b)](https://docs.hivepal.app)
 
 A modern beekeeping management application designed for both mobile and desktop use. Track your apiaries, hives, inspections, and more with our intuitive interface.
+
+📚 **Full documentation:** [docs.hivepal.app](https://docs.hivepal.app) — [installation](https://docs.hivepal.app/docs/installation), [self-hosting](https://docs.hivepal.app/docs/self-hosting/docker-setup), and the [user guide](https://docs.hivepal.app/docs/user-guide/overview).
 
 **⚠️ IMPORTANT: This project is very much a Work In Progress. The API is mostly stable but there may be breaking changes.**
 

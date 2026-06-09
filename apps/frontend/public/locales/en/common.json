@@ -31,7 +31,8 @@
     "tools": "Tools",
     "syrupCalculator": "Syrup Calculator",
     "broodTimeline": "Brood Timeline",
-    "swarmManagement": "Swarm Management"
+    "swarmManagement": "Swarm Management",
+    "documentation": "Documentation"
   },
   "actions": {
     "save": "Save",
