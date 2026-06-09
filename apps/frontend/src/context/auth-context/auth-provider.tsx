@@ -78,10 +78,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('Registration error:', result.error);
         return false;
       }
-      window.location.href = sanitizeRedirect(
-        redirectTo ?? '/onboarding',
-        '/onboarding',
-      );
+      // Soft onboarding: land new users on the home page (a default apiary is
+      // auto-created on the backend) rather than forcing the wizard.
+      window.location.href = sanitizeRedirect(redirectTo ?? '/', '/');
       return true;
     },
     [],
