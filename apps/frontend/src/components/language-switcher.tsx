@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { normalizeLanguageCode, LANGUAGES } from '@/utils/language-utils';
+import { useLanguageNavigation } from '@/hooks/use-language-navigation';
 
 interface LanguageSwitcherProps {
   variant?: 'sidebar' | 'select' | 'buttons';
@@ -37,11 +38,13 @@ export function LanguageSwitcher({
   onLanguageChange,
 }: LanguageSwitcherProps) {
   const { t, i18n } = useTranslation('common');
+  const switchLanguage = useLanguageNavigation();
 
   const handleLanguageChange = (languageCode: string) => {
     const normalizedCode = normalizeLanguageCode(languageCode);
-    i18n.changeLanguage(normalizedCode);
-    localStorage.setItem('language', normalizedCode);
+    // Changes the language (and persists it); on public pages it also navigates
+    // to the language-prefixed URL.
+    switchLanguage(normalizedCode);
     onLanguageChange?.(normalizedCode);
   };
 

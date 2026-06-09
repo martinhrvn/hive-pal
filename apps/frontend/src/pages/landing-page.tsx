@@ -1,6 +1,7 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PublicMeta } from '@/components/seo/public-meta';
+import { useLocalizedPath } from '@/hooks/use-language-navigation';
 import {
   Github,
   BookOpen,
@@ -75,49 +76,27 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function LandingPage() {
+  const localize = useLocalizedPath();
   return (
     <div
       className="min-h-screen w-full bg-[#FBF5EA] text-stone-900 antialiased selection:bg-amber-200 selection:text-stone-900"
       style={sans}
     >
-      <Helmet>
-        <title>Hive Pal — AI-Powered Beekeeping Management Software</title>
-        <meta
-          name="description"
-          content="Manage your beehives efficiently with Hive Pal. Record voice notes at the hive and let AI transcribe and draft your inspections. Open source, self-hostable, and free for early adopters."
-        />
-        <link rel="canonical" href="https://hivepal.app/" />
-        <meta
-          property="og:title"
-          content="Hive Pal — AI-Powered Beekeeping Management Software"
-        />
-        <meta
-          property="og:description"
-          content="Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
-        />
-        <meta property="og:url" content="https://hivepal.app/" />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://hivepal.app/og-image.jpg" />
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta
-          property="twitter:title"
-          content="Hive Pal — AI-Powered Beekeeping Management Software"
-        />
-        <meta
-          property="twitter:description"
-          content="Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
-        />
-        <meta
-          property="twitter:image"
-          content="https://hivepal.app/og-image.jpg"
-        />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-      </Helmet>
+      <PublicMeta
+        title="Hive Pal — AI-Powered Beekeeping Management Software"
+        description="Manage your beehives efficiently with Hive Pal. Record voice notes at the hive and let AI transcribe and draft your inspections. Open source, self-hostable, and free for early adopters."
+        ogTitle="Hive Pal — AI-Powered Beekeeping Management Software"
+        ogDescription="Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
+        ogImage="https://hivepal.app/og-image.jpg"
+        twitterCard="summary_large_image"
+        path="/"
+        structuredData={jsonLd}
+      />
 
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-stone-900/10 bg-[#FBF5EA]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to={localize('/')} className="flex items-center gap-3">
             <img
               src="/hive-pal-logo.png"
               alt="Hive Pal"
@@ -137,7 +116,7 @@ export function LandingPage() {
             style={sans}
           >
             <Link
-              to="/tools"
+              to={localize('/tools')}
               className="transition-colors hover:text-stone-900"
             >
               Free tools
@@ -151,7 +130,7 @@ export function LandingPage() {
               Documentation
             </a>
             <Link
-              to="/releases"
+              to={localize('/releases')}
               className="transition-colors hover:text-stone-900"
             >
               Release notes
@@ -615,7 +594,7 @@ export function LandingPage() {
               </p>
             </div>
             <Link
-              to="/tools"
+              to={localize('/tools')}
               className="inline-flex items-center gap-2 text-sm font-medium text-stone-900 underline-offset-4 hover:underline"
             >
               See all tools
@@ -646,7 +625,7 @@ export function LandingPage() {
             ].map(tool => (
               <Link
                 key={tool.to}
-                to={tool.to}
+                to={localize(tool.to)}
                 className="group relative flex flex-col bg-[#F4ECDB] p-8 transition-colors hover:bg-[#FBF5EA]"
               >
                 <div className="flex items-center justify-between">
@@ -737,7 +716,7 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
             <div className="col-span-2 sm:col-span-1">
-              <Link to="/" className="flex items-center gap-3">
+              <Link to={localize('/')} className="flex items-center gap-3">
                 <img
                   src="/hive-pal-logo.png"
                   alt="Hive Pal"
@@ -769,7 +748,7 @@ export function LandingPage() {
               <ul className="mt-4 space-y-2.5 text-sm">
                 <li>
                   <Link
-                    to="/tools/syrup-calculator"
+                    to={localize('/tools/syrup-calculator')}
                     className="text-amber-50/75 hover:text-amber-50"
                   >
                     Syrup Calculator
@@ -777,7 +756,7 @@ export function LandingPage() {
                 </li>
                 <li>
                   <Link
-                    to="/tools/brood-timeline"
+                    to={localize('/tools/brood-timeline')}
                     className="text-amber-50/75 hover:text-amber-50"
                   >
                     Brood Timeline
@@ -785,7 +764,7 @@ export function LandingPage() {
                 </li>
                 <li>
                   <Link
-                    to="/tools/swarm-management"
+                    to={localize('/tools/swarm-management')}
                     className="text-amber-50/75 hover:text-amber-50"
                   >
                     Swarm Management
@@ -814,7 +793,7 @@ export function LandingPage() {
                 </li>
                 <li>
                   <Link
-                    to="/releases"
+                    to={localize('/releases')}
                     className="text-amber-50/75 hover:text-amber-50"
                   >
                     Release notes

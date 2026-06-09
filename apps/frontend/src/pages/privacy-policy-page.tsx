@@ -1,23 +1,20 @@
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { PublicMeta } from '@/components/seo/public-meta';
 
 export const PrivacyPolicyPage = () => {
   const { t } = useTranslation('privacy');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
-      <Helmet>
-        <title>Privacy Policy - Hive Pal</title>
-        <meta
-          name="description"
-          content="Read the Hive Pal privacy policy to understand how we collect, use, and protect your personal data."
-        />
-        <link rel="canonical" href="https://hivepal.app/privacy-policy" />
-      </Helmet>
+      <PublicMeta
+        title="Privacy Policy - Hive Pal"
+        description="Read the Hive Pal privacy policy to understand how we collect, use, and protect your personal data."
+        path="/privacy-policy"
+      />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="mb-6">
