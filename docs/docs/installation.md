@@ -46,7 +46,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:password@postgres:5432/hivepal
       JWT_SECRET: your-secret-key-change-me
-      ADMIN_USERNAME: admin
+      ADMIN_EMAIL: admin@example.com
       ADMIN_PASSWORD: securepassword
     ports:
       - "3001:3001"
@@ -92,8 +92,8 @@ The following environment variables can be configured:
 |----------|-------------|---------|
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:password@postgres:5432/hivepal` |
 | `JWT_SECRET` | Secret key for JWT token generation | *Required* |
-| `ADMIN_USERNAME` | Default admin username | `admin` |
-| `ADMIN_PASSWORD` | Default admin password | *Required* |
+| `ADMIN_EMAIL` | Initial admin account email | `admin@example.com` |
+| `ADMIN_PASSWORD` | Initial admin account password (plaintext; hashed on first run) | *Required* |
 | `PORT` | Port the backend will listen on | `3001` |
 | `HIVESCALE_API_BASE_URL` | Optional HiveScale backend URL for beehive scale integration | - |
 | `HIVESCALE_SERVICE_API_KEY` | Optional shared key used to call HiveScale | - |

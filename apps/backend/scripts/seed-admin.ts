@@ -2,12 +2,13 @@
  * Idempotent admin seeding script.
  *
  * Usage:
- *   ADMIN_EMAIL=admin@hivepal.com ADMIN_PASSWORD=... \
+ *   ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=<plaintext> \
  *     pnpm --filter backend exec tsx scripts/seed-admin.ts
  *
- * Creates the admin user via Better Auth's sign-up flow (so credentials hash
- * correctly), then promotes the User row's `role` to 'ADMIN'. If the user
- * already exists, only the role is promoted.
+ * ADMIN_PASSWORD is a plaintext password: it is passed to Better Auth's
+ * sign-up flow, which hashes it (so it is what you type to log in — not a
+ * pre-computed hash). Creates the admin user, then promotes the User row's
+ * `role` to 'ADMIN'. If the user already exists, only the role is promoted.
  */
 import { auth } from '../src/auth/better-auth';
 import { PrismaPg } from '@prisma/adapter-pg';

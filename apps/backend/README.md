@@ -34,8 +34,8 @@ pnpm dev
 | `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies (32+ chars; generate with `openssl rand -base64 32`) | `your_random_secret` |
 | `BETTER_AUTH_URL` | Backend public base URL where `/api/auth/*` is served | `http://localhost:3000` |
 | `JWT_SECRET` | Secret for signing iCal calendar tokens, HiveScale requests, and local-storage URLs (not user auth) | `your_jwt_secret` |
-| `ADMIN_EMAIL` | Initial admin user email | `admin@hivepal.com` |
-| `ADMIN_PASSWORD` | Initial admin user password (bcrypt hash) | `$2a$12$...` |
+| `ADMIN_EMAIL` | Initial admin user email | `admin@example.com` |
+| `ADMIN_PASSWORD` | Initial admin user password (plaintext; hashed on first run) | `changeme-in-production` |
 | `ALLOWED_ORIGINS` | CORS allowed origins | `http://localhost:5173` |
 | `FRONTEND_URL` | Frontend URL for email links | `http://localhost:5173` |
 
