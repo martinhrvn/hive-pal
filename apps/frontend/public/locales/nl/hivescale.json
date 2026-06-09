@@ -186,6 +186,35 @@
       "validOffset": "Enter a valid offset for {{scaleName}} first.",
       "knownWeight": "Enter a known weight greater than 0 kg for {{scaleName}}.",
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
+    },
+    "tempco": {
+      "title": "Temperatuurcompensatie",
+      "description": "Weegcellen driften met de temperatuur. De backend corrigeert het gerapporteerde gewicht bij het uitlezen als raw − coeff · (temp − ref); het ruwe gewicht wordt nooit gewijzigd.",
+      "enableAria": "Temperatuurcompensatie inschakelen",
+      "sourceLabel": "Temperatuurbron",
+      "source": {
+        "ambient": "Omgeving (SHT4x)",
+        "hive1": "Sonde kast 1",
+        "hive2": "Sonde kast 2"
+      },
+      "sourceHint": "De omgevingstemperatuur volgt het cellichaam in stabiele toestand nauwkeurig en is de aanbevolen standaard.",
+      "refLabel": "Referentietemperatuur / °C",
+      "refHint": "Temperatuur waarbij de correctie nul is.",
+      "coeffLabel": "{{scaleName}}-coëfficiënt / kg per °C",
+      "autoFit": "Automatisch afstemmen op geschiedenis",
+      "fitting": "Afstemmen…",
+      "autoFitHint": "Automatisch afstemmen voert een regressie uit van het ruwe gewicht van de afgelopen 3 dagen tegen de geselecteerde temperatuur en past het resultaat vervolgens toe en schakelt het in. Leg voor een schone afstemming een venster vast waarin de fysieke belasting constant is en de temperatuur varieert.",
+      "save": "Temperatuurcompensatie opslaan",
+      "errors": {
+        "refTemp": "De referentietemperatuur moet een getal zijn (°C).",
+        "coeff": "Temperatuurcoëfficiënten moeten getallen zijn (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Instellingen voor temperatuurcompensatie opgeslagen.",
+        "fitFailed": "Kon {{scaleName}} niet afstemmen: {{reason}}",
+        "noSignal": "onvoldoende temperatuur-/gewichtssignaal.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C bij {{refTemp}}°C (R²={{r2}}, n={{n}}). Toegepast en ingeschakeld."
+      }
     }
   },
   "firmware": {

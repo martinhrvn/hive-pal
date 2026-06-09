@@ -186,6 +186,35 @@
       "validOffset": "Enter a valid offset for {{scaleName}} first.",
       "knownWeight": "Enter a known weight greater than 0 kg for {{scaleName}}.",
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
+    },
+    "tempco": {
+      "title": "Teplotná kompenzácia",
+      "description": "Tenzometrické snímače sa s teplotou posúvajú. Backend pri čítaní koriguje nahlásenú hmotnosť ako raw − coeff · (temp − ref); surová hmotnosť sa nikdy nemení.",
+      "enableAria": "Zapnúť teplotnú kompenzáciu",
+      "sourceLabel": "Zdroj teploty",
+      "source": {
+        "ambient": "Okolie (SHT4x)",
+        "hive1": "Sonda úľa 1",
+        "hive2": "Sonda úľa 2"
+      },
+      "sourceHint": "Okolitá teplota v ustálenom stave úzko sleduje telo snímača a je odporúčaným predvoleným nastavením.",
+      "refLabel": "Referenčná teplota / °C",
+      "refHint": "Teplota, pri ktorej je korekcia nulová.",
+      "coeffLabel": "Koeficient {{scaleName}} / kg na °C",
+      "autoFit": "Automaticky prispôsobiť z histórie",
+      "fitting": "Prispôsobuje sa…",
+      "autoFitHint": "Automatické prispôsobenie regresne porovná surovú hmotnosť za posledné 3 dni so zvolenou teplotou a potom výsledok použije a zapne. Pre čisté prispôsobenie zachyťte okno, v ktorom je fyzické zaťaženie konštantné a teplota kolíše.",
+      "save": "Uložiť teplotnú kompenzáciu",
+      "errors": {
+        "refTemp": "Referenčná teplota musí byť číslo (°C).",
+        "coeff": "Teplotné koeficienty musia byť čísla (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Nastavenia teplotnej kompenzácie uložené.",
+        "fitFailed": "Nepodarilo sa prispôsobiť {{scaleName}}: {{reason}}",
+        "noSignal": "nedostatočný teplotný/hmotnostný signál.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C pri {{refTemp}}°C (R²={{r2}}, n={{n}}). Použité a zapnuté."
+      }
     }
   },
   "firmware": {

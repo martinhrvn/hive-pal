@@ -186,6 +186,35 @@
       "validOffset": "Geben Sie zuerst einen gültigen Offset für {{scaleName}} ein.",
       "knownWeight": "Geben Sie für {{scaleName}} ein bekanntes Gewicht größer als 0 kg ein.",
       "factorNotCalculated": "Faktor für {{scaleName}} konnte nicht berechnet werden. Prüfen Sie den neuesten Rohwert, den Offset und das bekannte Gewicht."
+    },
+    "tempco": {
+      "title": "Temperaturkompensation",
+      "description": "Wägezellen driften mit der Temperatur. Das Backend korrigiert das gemeldete Gewicht beim Lesen als raw − coeff · (temp − ref); der Rohwert wird nie verändert.",
+      "enableAria": "Temperaturkompensation aktivieren",
+      "sourceLabel": "Temperaturquelle",
+      "source": {
+        "ambient": "Umgebung (SHT4x)",
+        "hive1": "Sonde Stock 1",
+        "hive2": "Sonde Stock 2"
+      },
+      "sourceHint": "Die Umgebungstemperatur folgt dem Zellkörper im stationären Zustand eng und ist die empfohlene Voreinstellung.",
+      "refLabel": "Referenztemperatur / °C",
+      "refHint": "Temperatur, bei der die Korrektur null ist.",
+      "coeffLabel": "{{scaleName}} Koeffizient / kg pro °C",
+      "autoFit": "Aus Verlauf automatisch anpassen",
+      "fitting": "Wird angepasst…",
+      "autoFitHint": "Die automatische Anpassung regressiert das Rohgewicht der letzten 3 Tage gegen die gewählte Temperatur und wendet das Ergebnis an und aktiviert es. Für eine saubere Anpassung ein Zeitfenster erfassen, in dem die physische Last konstant ist und die Temperatur schwankt.",
+      "save": "Temperaturkompensation speichern",
+      "errors": {
+        "refTemp": "Die Referenztemperatur muss eine Zahl sein (°C).",
+        "coeff": "Temperaturkoeffizienten müssen Zahlen sein (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Einstellungen zur Temperaturkompensation gespeichert.",
+        "fitFailed": "{{scaleName}} konnte nicht angepasst werden: {{reason}}",
+        "noSignal": "nicht genug Temperatur-/Gewichtssignal.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C bei {{refTemp}}°C (R²={{r2}}, n={{n}}). Angewendet und aktiviert."
+      }
     }
   },
   "firmware": {

@@ -186,6 +186,35 @@
       "validOffset": "Enter a valid offset for {{scaleName}} first.",
       "knownWeight": "Enter a known weight greater than 0 kg for {{scaleName}}.",
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
+    },
+    "tempco": {
+      "title": "Temperaturkompensation",
+      "description": "Vejeceller driver med temperaturen. Backenden korrigerer den rapporterede vægt ved læsning som raw − coeff · (temp − ref); den rå vægt ændres aldrig.",
+      "enableAria": "Aktivér temperaturkompensation",
+      "sourceLabel": "Temperaturkilde",
+      "source": {
+        "ambient": "Omgivelse (SHT4x)",
+        "hive1": "Sonde stade 1",
+        "hive2": "Sonde stade 2"
+      },
+      "sourceHint": "Omgivelsestemperaturen følger cellelegemet tæt i stabil tilstand og er den anbefalede standard.",
+      "refLabel": "Referencetemperatur / °C",
+      "refHint": "Temperatur hvor korrektionen er nul.",
+      "coeffLabel": "{{scaleName}}-koefficient / kg pr. °C",
+      "autoFit": "Auto-tilpas fra historik",
+      "fitting": "Tilpasser…",
+      "autoFitHint": "Auto-tilpasning udfører en regression af de seneste 3 dages rå vægt mod den valgte temperatur og anvender og aktiverer derefter resultatet. For en ren tilpasning skal du fange et vindue, hvor den fysiske belastning er konstant, og temperaturen svinger.",
+      "save": "Gem temperaturkompensation",
+      "errors": {
+        "refTemp": "Referencetemperaturen skal være et tal (°C).",
+        "coeff": "Temperaturkoefficienter skal være tal (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Indstillinger for temperaturkompensation gemt.",
+        "fitFailed": "Kunne ikke tilpasse {{scaleName}}: {{reason}}",
+        "noSignal": "ikke nok temperatur-/vægtsignal.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C ved {{refTemp}}°C (R²={{r2}}, n={{n}}). Anvendt og aktiveret."
+      }
     }
   },
   "firmware": {

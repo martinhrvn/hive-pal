@@ -186,6 +186,35 @@
       "validOffset": "Enter a valid offset for {{scaleName}} first.",
       "knownWeight": "Enter a known weight greater than 0 kg for {{scaleName}}.",
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
+    },
+    "tempco": {
+      "title": "Compensazione della temperatura",
+      "description": "Le celle di carico derivano con la temperatura. Il backend corregge il peso riportato in lettura come raw − coeff · (temp − ref); il peso grezzo non viene mai modificato.",
+      "enableAria": "Abilita la compensazione della temperatura",
+      "sourceLabel": "Sorgente di temperatura",
+      "source": {
+        "ambient": "Ambiente (SHT4x)",
+        "hive1": "Sonda arnia 1",
+        "hive2": "Sonda arnia 2"
+      },
+      "sourceHint": "La temperatura ambiente segue da vicino il corpo della cella in stato stazionario ed è l’impostazione predefinita consigliata.",
+      "refLabel": "Temperatura di riferimento / °C",
+      "refHint": "Temperatura alla quale la correzione è zero.",
+      "coeffLabel": "Coefficiente {{scaleName}} / kg per °C",
+      "autoFit": "Adattamento automatico dalla cronologia",
+      "fitting": "Adattamento…",
+      "autoFitHint": "L’adattamento automatico esegue una regressione del peso grezzo degli ultimi 3 giorni rispetto alla temperatura selezionata, quindi applica e abilita il risultato. Per un adattamento pulito, acquisisci una finestra in cui il carico fisico è costante e la temperatura varia.",
+      "save": "Salva compensazione della temperatura",
+      "errors": {
+        "refTemp": "La temperatura di riferimento deve essere un numero (°C).",
+        "coeff": "I coefficienti di temperatura devono essere numeri (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Impostazioni di compensazione della temperatura salvate.",
+        "fitFailed": "Impossibile adattare {{scaleName}}: {{reason}}",
+        "noSignal": "segnale di temperatura/peso insufficiente.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C a {{refTemp}}°C (R²={{r2}}, n={{n}}). Applicato e abilitato."
+      }
     }
   },
   "firmware": {

@@ -186,6 +186,35 @@
       "validOffset": "Enter a valid offset for {{scaleName}} first.",
       "knownWeight": "Enter a known weight greater than 0 kg for {{scaleName}}.",
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
+    },
+    "tempco": {
+      "title": "Compensación de temperatura",
+      "description": "Las células de carga derivan con la temperatura. El backend corrige el peso reportado al leerlo como raw − coeff · (temp − ref); el peso bruto nunca se modifica.",
+      "enableAria": "Activar compensación de temperatura",
+      "sourceLabel": "Fuente de temperatura",
+      "source": {
+        "ambient": "Ambiente (SHT4x)",
+        "hive1": "Sonda colmena 1",
+        "hive2": "Sonda colmena 2"
+      },
+      "sourceHint": "La temperatura ambiente sigue de cerca el cuerpo de la célula en estado estable y es el valor predeterminado recomendado.",
+      "refLabel": "Temperatura de referencia / °C",
+      "refHint": "Temperatura a la que la corrección es cero.",
+      "coeffLabel": "Coeficiente de {{scaleName}} / kg por °C",
+      "autoFit": "Ajuste automático desde el historial",
+      "fitting": "Ajustando…",
+      "autoFitHint": "El ajuste automático realiza una regresión del peso bruto de los últimos 3 días frente a la temperatura seleccionada y luego aplica y activa el resultado. Para un ajuste limpio, captura un intervalo en el que la carga física sea constante y la temperatura varíe.",
+      "save": "Guardar compensación de temperatura",
+      "errors": {
+        "refTemp": "La temperatura de referencia debe ser un número (°C).",
+        "coeff": "Los coeficientes de temperatura deben ser números (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Ajustes de compensación de temperatura guardados.",
+        "fitFailed": "No se pudo ajustar {{scaleName}}: {{reason}}",
+        "noSignal": "señal de temperatura/peso insuficiente.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C a {{refTemp}}°C (R²={{r2}}, n={{n}}). Aplicado y activado."
+      }
     }
   },
   "firmware": {

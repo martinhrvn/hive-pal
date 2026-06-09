@@ -186,6 +186,35 @@
       "validOffset": "Enter a valid offset for {{scaleName}} first.",
       "knownWeight": "Enter a known weight greater than 0 kg for {{scaleName}}.",
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
+    },
+    "tempco": {
+      "title": "Temperature compensation",
+      "description": "Load cells drift with temperature. The backend corrects the reported weight as raw − coeff · (temp − ref) on read; the raw weight is never changed.",
+      "enableAria": "Enable temperature compensation",
+      "sourceLabel": "Temperature source",
+      "source": {
+        "ambient": "Ambient (SHT4x)",
+        "hive1": "Hive 1 probe",
+        "hive2": "Hive 2 probe"
+      },
+      "sourceHint": "Ambient tracks the cell body closely in steady state and is the recommended default.",
+      "refLabel": "Reference temperature / °C",
+      "refHint": "Temperature at which the correction is zero.",
+      "coeffLabel": "{{scaleName}} coefficient / kg per °C",
+      "autoFit": "Auto-fit from history",
+      "fitting": "Fitting…",
+      "autoFitHint": "Auto-fit regresses the last 3 days of raw weight against the selected temperature, then applies and enables the result. For a clean fit, capture a window where the physical load is constant and the temperature swings.",
+      "save": "Save temperature compensation",
+      "errors": {
+        "refTemp": "Reference temperature must be a number (°C).",
+        "coeff": "Temperature coefficients must be numbers (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Temperature compensation settings saved.",
+        "fitFailed": "Could not fit {{scaleName}}: {{reason}}",
+        "noSignal": "not enough temperature/weight signal.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C @ {{refTemp}}°C (R²={{r2}}, n={{n}}). Applied and enabled."
+      }
     }
   },
   "firmware": {
