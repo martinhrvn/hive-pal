@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { apiClient } from '../client';
 
 export interface HiveScaleDevice {
@@ -575,11 +576,28 @@ export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
       // the browser sets the multipart boundary itself.
       formData.append('file', file);
 
-      const response = await apiClient.post<HiveScaleSdImportResult>(
-        `/api/hivescale/devices/${deviceId}/measurements/import`,
-        formData,
-      );
-      return response.data;
+      try {
+        const response = await apiClient.post<HiveScaleSdImportResult>(
+          `/api/hivescale/devices/${deviceId}/measurements/import`,
+          formData,
+        );
+        return response.data;
+      } catch (error) {
+        // Surface the backend message (e.g. "No measurements found…") instead
+        // of Axios' generic "Request failed with status code 400" so callers
+        // that toast error.message show actionable feedback.
+        if (isAxiosError<{ message?: string }>(error)) {
+          const data = error.response?.data;
+          const message =
+            (typeof data === 'object' && data !== null
+              ? data.message
+              : typeof data === 'string'
+                ? data
+                : undefined) ?? error.message;
+          throw new Error(message || 'SD import failed');
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       // New historical measurements affect the charts and latest-value panels.
