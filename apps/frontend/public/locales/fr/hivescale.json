@@ -188,32 +188,32 @@
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
     },
     "tempco": {
-      "title": "Compensation de température",
-      "description": "Les capteurs de charge dérivent avec la température. Le backend lisse la température avec une moyenne mobile exponentielle (EMA) pour amortir les transitoires courts (p. ex. le lever du soleil), puis corrige le poids rapporté à la lecture sous la forme raw − coeff · (EMA(temp) − ref) ; le poids brut n’est jamais modifié.",
-      "enableAria": "Activer la compensation de température",
-      "sourceLabel": "Source de température",
+      "title": "Temperatuurcompensatie",
+      "description": "Weegcellen driften met de temperatuur. De backend vlakt de temperatuur af met een exponentieel voortschrijdend gemiddelde (EMA) om korte transiënten (bijv. zonsopkomst) te dempen en corrigeert vervolgens het gerapporteerde gewicht bij het uitlezen als raw − coeff · (EMA(temp) − ref); het ruwe gewicht wordt nooit gewijzigd.",
+      "enableAria": "Temperatuurcompensatie inschakelen",
+      "sourceLabel": "Temperatuurbron",
       "source": {
-        "ambient": "Ambiante (SHT4x)",
-        "hive1": "Sonde ruche 1",
-        "hive2": "Sonde ruche 2"
+        "ambient": "Omgeving (SHT4x)",
+        "hive1": "Sonde kast 1",
+        "hive2": "Sonde kast 2"
       },
-      "sourceHint": "La température ambiante suit de près le corps du capteur en régime stable et constitue la valeur par défaut recommandée.",
-      "refLabel": "Température de référence / °C",
-      "refHint": "Température à laquelle la correction est nulle.",
-      "coeffLabel": "Coefficient {{scaleName}} / kg par °C",
-      "autoFit": "Ajustement automatique depuis l’historique",
-      "fitting": "Ajustement…",
-      "autoFitHint": "L’ajustement automatique effectue une régression du poids brut des 3 derniers jours par rapport à la température sélectionnée, puis applique et active le résultat. Pour un ajustement propre, capturez une fenêtre où la charge physique est constante et la température varie.",
-      "save": "Enregistrer la compensation de température",
+      "sourceHint": "De omgevingstemperatuur volgt het cellichaam in stabiele toestand nauwkeurig en is de aanbevolen standaard.",
+      "refLabel": "Referentietemperatuur / °C",
+      "refHint": "Temperatuur waarbij de correctie nul is.",
+      "coeffLabel": "{{scaleName}}-coëfficiënt / kg per °C",
+      "autoFit": "Automatisch afstemmen op geschiedenis",
+      "fitting": "Afstemmen…",
+      "autoFitHint": "Automatisch afstemmen voert een regressie uit van het ruwe gewicht van de afgelopen 3 dagen tegen de met EMA gladgestreken geselecteerde temperatuur en past het resultaat vervolgens toe en schakelt het in. Leg voor een schone afstemming een venster vast waarin de fysieke belasting constant is en de temperatuur varieert.",
+      "save": "Temperatuurcompensatie opslaan",
       "errors": {
-        "refTemp": "La température de référence doit être un nombre (°C).",
-        "coeff": "Les coefficients de température doivent être des nombres (kg/°C)."
+        "refTemp": "De referentietemperatuur moet een getal zijn (°C).",
+        "coeff": "Temperatuurcoëfficiënten moeten getallen zijn (kg/°C)."
       },
       "toasts": {
-        "saved": "Paramètres de compensation de température enregistrés.",
-        "fitFailed": "Impossible d’ajuster {{scaleName}} : {{reason}}",
-        "noSignal": "signal de température/poids insuffisant.",
-        "fitApplied": "{{scaleName}} : {{coeff}} kg/°C à {{refTemp}}°C (R²={{r2}}, n={{n}}). Appliqué et activé."
+        "saved": "Instellingen voor temperatuurcompensatie opgeslagen.",
+        "fitFailed": "Kon {{scaleName}} niet afstemmen: {{reason}}",
+        "noSignal": "onvoldoende temperatuur-/gewichtssignaal.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C bij {{refTemp}}°C (R²={{r2}}, n={{n}}). Toegepast en ingeschakeld."
       }
     }
   },

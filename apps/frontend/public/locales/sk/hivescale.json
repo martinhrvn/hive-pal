@@ -203,7 +203,7 @@
       "coeffLabel": "Koeficient {{scaleName}} / kg na °C",
       "autoFit": "Automaticky prispôsobiť z histórie",
       "fitting": "Prispôsobuje sa…",
-      "autoFitHint": "Automatické prispôsobenie regresne porovná surovú hmotnosť za posledné 3 dni so zvolenou teplotou a potom výsledok použije a zapne. Pre čisté prispôsobenie zachyťte okno, v ktorom je fyzické zaťaženie konštantné a teplota kolíše.",
+      "autoFitHint": "Automatické prispôsobenie regresne porovná surovú hmotnosť za posledné 3 dni so zvolenou teplotou vyhladenou pomocou EMA a potom výsledok použije a zapne. Pre čisté prispôsobenie zachyťte okno, v ktorom je fyzické zaťaženie konštantné a teplota kolíše.",
       "save": "Uložiť teplotnú kompenzáciu",
       "errors": {
         "refTemp": "Referenčná teplota musí byť číslo (°C).",

@@ -203,7 +203,7 @@
       "coeffLabel": "{{scaleName}}-coëfficiënt / kg per °C",
       "autoFit": "Automatisch afstemmen op geschiedenis",
       "fitting": "Afstemmen…",
-      "autoFitHint": "Automatisch afstemmen voert een regressie uit van het ruwe gewicht van de afgelopen 3 dagen tegen de geselecteerde temperatuur en past het resultaat vervolgens toe en schakelt het in. Leg voor een schone afstemming een venster vast waarin de fysieke belasting constant is en de temperatuur varieert.",
+      "autoFitHint": "Automatisch afstemmen voert een regressie uit van het ruwe gewicht van de afgelopen 3 dagen tegen de met EMA gladgestreken geselecteerde temperatuur en past het resultaat vervolgens toe en schakelt het in. Leg voor een schone afstemming een venster vast waarin de fysieke belasting constant is en de temperatuur varieert.",
       "save": "Temperatuurcompensatie opslaan",
       "errors": {
         "refTemp": "De referentietemperatuur moet een getal zijn (°C).",

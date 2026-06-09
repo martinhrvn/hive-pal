@@ -203,7 +203,7 @@
       "coeffLabel": "{{scaleName}} coefficient / kg per °C",
       "autoFit": "Auto-fit from history",
       "fitting": "Fitting…",
-      "autoFitHint": "Auto-fit regresses the last 3 days of raw weight against the selected temperature, then applies and enables the result. For a clean fit, capture a window where the physical load is constant and the temperature swings.",
+      "autoFitHint": "Auto-fit regresses the last 3 days of raw weight against the EMA-smoothed selected temperature, then applies and enables the result. For a clean fit, capture a window where the physical load is constant and the temperature swings.",
       "save": "Save temperature compensation",
       "errors": {
         "refTemp": "Reference temperature must be a number (°C).",

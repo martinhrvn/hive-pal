@@ -188,32 +188,32 @@
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
     },
     "tempco": {
-      "title": "Compensación de temperatura",
-      "description": "Las células de carga derivan con la temperatura. El backend suaviza la temperatura con una media móvil exponencial (EMA) para amortiguar transitorios cortos (p. ej., el amanecer) y luego corrige el peso reportado al leerlo como raw − coeff · (EMA(temp) − ref); el peso bruto nunca se modifica.",
-      "enableAria": "Activar compensación de temperatura",
-      "sourceLabel": "Fuente de temperatura",
+      "title": "Compensation de température",
+      "description": "Les capteurs de charge dérivent avec la température. Le backend lisse la température avec une moyenne mobile exponentielle (EMA) pour amortir les transitoires courts (p. ex. le lever du soleil), puis corrige le poids rapporté à la lecture sous la forme raw − coeff · (EMA(temp) − ref) ; le poids brut n’est jamais modifié.",
+      "enableAria": "Activer la compensation de température",
+      "sourceLabel": "Source de température",
       "source": {
-        "ambient": "Ambiente (SHT4x)",
-        "hive1": "Sonda colmena 1",
-        "hive2": "Sonda colmena 2"
+        "ambient": "Ambiante (SHT4x)",
+        "hive1": "Sonde ruche 1",
+        "hive2": "Sonde ruche 2"
       },
-      "sourceHint": "La temperatura ambiente sigue de cerca el cuerpo de la célula en estado estable y es el valor predeterminado recomendado.",
-      "refLabel": "Temperatura de referencia / °C",
-      "refHint": "Temperatura a la que la corrección es cero.",
-      "coeffLabel": "Coeficiente de {{scaleName}} / kg por °C",
-      "autoFit": "Ajuste automático desde el historial",
-      "fitting": "Ajustando…",
-      "autoFitHint": "El ajuste automático realiza una regresión del peso bruto de los últimos 3 días frente a la temperatura seleccionada y luego aplica y activa el resultado. Para un ajuste limpio, captura un intervalo en el que la carga física sea constante y la temperatura varíe.",
-      "save": "Guardar compensación de temperatura",
+      "sourceHint": "La température ambiante suit de près le corps du capteur en régime stable et constitue la valeur par défaut recommandée.",
+      "refLabel": "Température de référence / °C",
+      "refHint": "Température à laquelle la correction est nulle.",
+      "coeffLabel": "Coefficient {{scaleName}} / kg par °C",
+      "autoFit": "Ajustement automatique depuis l’historique",
+      "fitting": "Ajustement…",
+      "autoFitHint": "L’ajustement automatique effectue une régression du poids brut des 3 derniers jours par rapport à la température sélectionnée lissée par EMA, puis applique et active le résultat. Pour un ajustement propre, capturez une fenêtre où la charge physique est constante et la température varie.",
+      "save": "Enregistrer la compensation de température",
       "errors": {
-        "refTemp": "La temperatura de referencia debe ser un número (°C).",
-        "coeff": "Los coeficientes de temperatura deben ser números (kg/°C)."
+        "refTemp": "La température de référence doit être un nombre (°C).",
+        "coeff": "Les coefficients de température doivent être des nombres (kg/°C)."
       },
       "toasts": {
-        "saved": "Ajustes de compensación de temperatura guardados.",
-        "fitFailed": "No se pudo ajustar {{scaleName}}: {{reason}}",
-        "noSignal": "señal de temperatura/peso insuficiente.",
-        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C a {{refTemp}}°C (R²={{r2}}, n={{n}}). Aplicado y activado."
+        "saved": "Paramètres de compensation de température enregistrés.",
+        "fitFailed": "Impossible d’ajuster {{scaleName}} : {{reason}}",
+        "noSignal": "signal de température/poids insuffisant.",
+        "fitApplied": "{{scaleName}} : {{coeff}} kg/°C à {{refTemp}}°C (R²={{r2}}, n={{n}}). Appliqué et activé."
       }
     }
   },

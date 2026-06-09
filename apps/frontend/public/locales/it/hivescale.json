@@ -188,32 +188,32 @@
       "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
     },
     "tempco": {
-      "title": "Compensazione della temperatura",
-      "description": "Le celle di carico derivano con la temperatura. Il backend liscia la temperatura con una media mobile esponenziale (EMA) per smorzare i transitori brevi (ad es. l'alba), poi corregge il peso riportato in lettura come raw − coeff · (EMA(temp) − ref); il peso grezzo non viene mai modificato.",
-      "enableAria": "Abilita la compensazione della temperatura",
-      "sourceLabel": "Sorgente di temperatura",
+      "title": "Teplotná kompenzácia",
+      "description": "Tenzometrické snímače sa s teplotou posúvajú. Backend vyhladzuje teplotu exponenciálnym kĺzavým priemerom (EMA), aby utlmil krátke prechodové javy (napr. východ slnka), a potom pri čítaní koriguje nahlásenú hmotnosť ako raw − coeff · (EMA(temp) − ref); surová hmotnosť sa nikdy nemení.",
+      "enableAria": "Zapnúť teplotnú kompenzáciu",
+      "sourceLabel": "Zdroj teploty",
       "source": {
-        "ambient": "Ambiente (SHT4x)",
-        "hive1": "Sonda arnia 1",
-        "hive2": "Sonda arnia 2"
+        "ambient": "Okolie (SHT4x)",
+        "hive1": "Sonda úľa 1",
+        "hive2": "Sonda úľa 2"
       },
-      "sourceHint": "La temperatura ambiente segue da vicino il corpo della cella in stato stazionario ed è l’impostazione predefinita consigliata.",
-      "refLabel": "Temperatura di riferimento / °C",
-      "refHint": "Temperatura alla quale la correzione è zero.",
-      "coeffLabel": "Coefficiente {{scaleName}} / kg per °C",
-      "autoFit": "Adattamento automatico dalla cronologia",
-      "fitting": "Adattamento…",
-      "autoFitHint": "L’adattamento automatico esegue una regressione del peso grezzo degli ultimi 3 giorni rispetto alla temperatura selezionata, quindi applica e abilita il risultato. Per un adattamento pulito, acquisisci una finestra in cui il carico fisico è costante e la temperatura varia.",
-      "save": "Salva compensazione della temperatura",
+      "sourceHint": "Okolitá teplota v ustálenom stave úzko sleduje telo snímača a je odporúčaným predvoleným nastavením.",
+      "refLabel": "Referenčná teplota / °C",
+      "refHint": "Teplota, pri ktorej je korekcia nulová.",
+      "coeffLabel": "Koeficient {{scaleName}} / kg na °C",
+      "autoFit": "Automaticky prispôsobiť z histórie",
+      "fitting": "Prispôsobuje sa…",
+      "autoFitHint": "Automatické prispôsobenie regresne porovná surovú hmotnosť za posledné 3 dni so zvolenou teplotou vyhladenou pomocou EMA a potom výsledok použije a zapne. Pre čisté prispôsobenie zachyťte okno, v ktorom je fyzické zaťaženie konštantné a teplota kolíše.",
+      "save": "Uložiť teplotnú kompenzáciu",
       "errors": {
-        "refTemp": "La temperatura di riferimento deve essere un numero (°C).",
-        "coeff": "I coefficienti di temperatura devono essere numeri (kg/°C)."
+        "refTemp": "Referenčná teplota musí byť číslo (°C).",
+        "coeff": "Teplotné koeficienty musia byť čísla (kg/°C)."
       },
       "toasts": {
-        "saved": "Impostazioni di compensazione della temperatura salvate.",
-        "fitFailed": "Impossibile adattare {{scaleName}}: {{reason}}",
-        "noSignal": "segnale di temperatura/peso insufficiente.",
-        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C a {{refTemp}}°C (R²={{r2}}, n={{n}}). Applicato e abilitato."
+        "saved": "Nastavenia teplotnej kompenzácie uložené.",
+        "fitFailed": "Nepodarilo sa prispôsobiť {{scaleName}}: {{reason}}",
+        "noSignal": "nedostatočný teplotný/hmotnostný signál.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C pri {{refTemp}}°C (R²={{r2}}, n={{n}}). Použité a zapnuté."
       }
     }
   },

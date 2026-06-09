@@ -203,7 +203,7 @@
       "coeffLabel": "{{scaleName}}-koefficient / kg pr. °C",
       "autoFit": "Auto-tilpas fra historik",
       "fitting": "Tilpasser…",
-      "autoFitHint": "Auto-tilpasning udfører en regression af de seneste 3 dages rå vægt mod den valgte temperatur og anvender og aktiverer derefter resultatet. For en ren tilpasning skal du fange et vindue, hvor den fysiske belastning er konstant, og temperaturen svinger.",
+      "autoFitHint": "Auto-tilpasning udfører en regression af de seneste 3 dages rå vægt mod den EMA-udjævnede valgte temperatur og anvender og aktiverer derefter resultatet. For en ren tilpasning skal du fange et vindue, hvor den fysiske belastning er konstant, og temperaturen svinger.",
       "save": "Gem temperaturkompensation",
       "errors": {
         "refTemp": "Referencetemperaturen skal være et tal (°C).",

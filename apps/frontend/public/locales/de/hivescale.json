@@ -203,7 +203,7 @@
       "coeffLabel": "{{scaleName}} Koeffizient / kg pro °C",
       "autoFit": "Aus Verlauf automatisch anpassen",
       "fitting": "Wird angepasst…",
-      "autoFitHint": "Die automatische Anpassung regressiert das Rohgewicht der letzten 3 Tage gegen die gewählte Temperatur und wendet das Ergebnis an und aktiviert es. Für eine saubere Anpassung ein Zeitfenster erfassen, in dem die physische Last konstant ist und die Temperatur schwankt.",
+      "autoFitHint": "Die automatische Anpassung regressiert das Rohgewicht der letzten 3 Tage gegen die EMA-geglättete gewählte Temperatur und wendet das Ergebnis an und aktiviert es. Für eine saubere Anpassung ein Zeitfenster erfassen, in dem die physische Last konstant ist und die Temperatur schwankt.",
       "save": "Temperaturkompensation speichern",
       "errors": {
         "refTemp": "Die Referenztemperatur muss eine Zahl sein (°C).",
