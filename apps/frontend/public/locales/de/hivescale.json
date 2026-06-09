@@ -1,0 +1,534 @@
+{
+  "common": {
+    "never": "Nie",
+    "loading": "Wird geladen…",
+    "unavailable": "Nicht verfügbar",
+    "saving": "Wird gespeichert…",
+    "insight": "Erkenntnis",
+    "scale1": "Waage 1",
+    "scale2": "Waage 2",
+    "unknownError": "unbekannter Fehler"
+  },
+  "loading": {
+    "fallback": "Wird geladen…",
+    "messages": [
+      "Daten werden bee-arbeitet...",
+      "Frische Erkenntnisse aus dem Stock werden gesammelt...",
+      "Die Arbeiterinnen sortieren noch die Waben...",
+      "Das süße Gold wird geschleudert...",
+      "Wir summen uns durch Ihre Daten...",
+      "Auf Sammelflug nach Informationen...",
+      "Es fließt wie Honig – Ihre Anfrage wird bearbeitet...",
+      "Das Schwarmgehirn denkt nach...",
+      "Die neuesten Daten werden entdeckelt...",
+      "Bee-tte um etwas Geduld, die Ergebnisse sind unterwegs...",
+      "Ihr Dashboard wird bestäubt...",
+      "Schwänzeltanz läuft...",
+      "Die Aufzeichnungen der Königin werden geprüft...",
+      "Wir schwärmen durch die Datenbank...",
+      "Wabe um Wabe, Zelle für Zelle...",
+      "Wir haben Ihre Daten schon im Stock...",
+      "Hinter den Bee-ulissen passiert die Magie...",
+      "Datensätze werden kreuzbestäubt...",
+      "Eine frische Ladung Stock-Kennzahlen wird vorbereitet..."
+    ]
+  },
+  "page": {
+    "title": "HiveScale",
+    "subtitle": "Live-Visualisierung von Gewicht und Temperatur aus Ihrem separaten HiveScale-Backend.",
+    "refresh": "Aktualisieren",
+    "refreshing": "Wird aktualisiert…",
+    "refreshError": "HiveScale-Daten konnten nicht aktualisiert werden.",
+    "removeConfirm": "{{name}} aus Ihrem HivePal-Konto entfernen? Sie können das Gerät mit dem Claim-Code wieder hinzufügen, sofern kein anderer Benutzer mehr Zugriff hat.",
+    "removeSuccess": "HiveScale-Gerät aus Ihrem Konto entfernt."
+  },
+  "setup": {
+    "title": "Geräte",
+    "description": "Wählen oder entfernen Sie ein beanspruchtes HiveScale-Gerät. Öffnen Sie die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren.",
+    "removeScale": "Waage entfernen",
+    "noDevices": "Noch keine Geräte beansprucht – öffnen Sie die Einrichtung, um eines hinzuzufügen.",
+    "hide": "Einrichtung ausblenden",
+    "show": "Einrichtung anzeigen"
+  },
+  "claim": {
+    "title": "HiveScale-Gerät beanspruchen",
+    "description": "Claim-Codes werden von der Firmware zusammen mit den Messungen gesendet, bis das Gerät beansprucht ist.",
+    "claimCode": "Claim-Code",
+    "displayName": "Anzeigename",
+    "displayNamePlaceholder": "Bienenwaage Nord",
+    "claim": "Gerät beanspruchen",
+    "claiming": "Wird beansprucht…",
+    "success": "HiveScale-Gerät beansprucht.",
+    "errors": {
+      "missingCode": "Geben Sie den auf dem Gerät aufgedruckten/konfigurierten Claim-Code ein."
+    }
+  },
+  "mapping": {
+    "title": "Waagenzuordnung",
+    "description": "Diese Bezeichnungen bleiben in HiveScale. Später ist dies der richtige Ort, um Waage 1/2 für Inspektionsmarkierungen den HivePal-Bienenstock-IDs zuzuordnen.",
+    "scale1Label": "Anzeigename für Waage 1",
+    "scale2Label": "Anzeigename für Waage 2",
+    "hiveNamePlaceholder": "Bienenstocknamen auswählen oder eingeben",
+    "save": "Zuordnung speichern",
+    "success": "Waagenzuordnung aktualisiert."
+  },
+  "status": {
+    "title": "Gerätestatus",
+    "deviceId": "Geräte-ID",
+    "role": "Rolle",
+    "lastMeasurement": "Letzte Messung",
+    "sharing": "Freigabe",
+    "sharingHint": "Admin- oder Betrachter-Zugriff gewähren.",
+    "shareWithUser": "Mit anderem Benutzer teilen",
+    "email": "E-Mail-Adresse",
+    "viewer": "Betrachter",
+    "admin": "Admin",
+    "sharing_progress": "Wird geteilt…",
+    "grantAccess": "Zugriff gewähren",
+    "shareSuccess": "HiveScale-Zugriff geteilt.",
+    "accessRevoked": "Zugriff entzogen.",
+    "revokeAccess": "Zugriff entziehen",
+    "errors": {
+      "missingEmail": "Geben Sie die E-Mail-Adresse eines bestehenden HivePal-Benutzers ein."
+    }
+  },
+  "calibration": {
+    "title": "Kalibrierung",
+    "subtitle": "Geführte Kalibrierung im Schnellmodus für die Rohwerte der Waagen.",
+    "instructionsAria": "Anleitung zur Waagenkalibrierung anzeigen",
+    "raw": "Roh {{value}}",
+    "notCapturedYet": "Noch nicht erfasst",
+    "rawCapture": "{{raw}} roh · {{time}}",
+    "openWizard": "Kalibrierungsassistenten öffnen",
+    "viewerNotice": "Mit Betrachter-Zugriff können Messungen gelesen, die Kalibrierung aber nicht geändert werden.",
+    "noConfig": "Keine Konfiguration zurückgegeben.",
+    "workflow": {
+      "title": "Einfacher Ablauf",
+      "step1": "Kalibrierungsmodus starten und auf schnelle Messwerte warten.",
+      "step2": "Messwert der leeren Waage erfassen.",
+      "step3": "Ein bekanntes Gewicht auflegen und dessen kg-Wert eingeben.",
+      "step4": "Den belasteten Messwert erfassen und speichern.",
+      "step5": "Die App beendet den Kalibrierungsmodus nach dem Speichern."
+    },
+    "mode": {
+      "title": "Schneller Kalibrierungsmodus",
+      "activeBadge": "Aktiv",
+      "activeDescription": "Aktiv: Neue Rohwerte sollten alle paar Sekunden eintreffen.",
+      "queuedBadge": "In Warteschlange",
+      "queuedDescription": "In Warteschlange: Es wird gewartet, bis das Gerät einmal aufwacht.",
+      "offBadge": "Aus",
+      "offDescription": "Aus: Die Waage nutzt den normalen, batteriesparenden Ruhemodus."
+    },
+    "wizard": {
+      "title": "Assistent zur Waagenkalibrierung",
+      "description": "Folgen Sie den Schritten der Reihe nach. Die App verwendet nur frische Rohwerte aus dem Kalibrierungsmodus, speichert dann und beendet den Schnellmodus automatisch.",
+      "alertActiveTitle": "Schnelle Messwerte sind aktiv",
+      "alertActiveDescription": "Letzter Messwert: {{time}}.",
+      "alertQueuedTitle": "Kalibrierungsmodus ist in Warteschlange",
+      "alertQueuedDescription": "Das Gerät muss einmal normal aufwachen, bevor es den Befehl empfangen kann.",
+      "alertStartTitle": "Starten Sie zuerst den Kalibrierungsmodus",
+      "alertStartDescription": "Dadurch wird die störende Tiefschlaf-Verzögerung für etwa 10 Minuten deaktiviert.",
+      "starting": "Wird gestartet…",
+      "fastModeActive": "Schnellmodus aktiv",
+      "startFastMode": "Schnellmodus starten",
+      "stopping": "Wird gestoppt…",
+      "stopFastMode": "Schnellmodus stoppen",
+      "whichScale": "Welche Waage kalibrieren Sie?",
+      "latestRaw": "Neuester Rohwert {{value}}",
+      "emptyScale": "Leere Waage",
+      "emptyScaleHint": "Entfernen Sie das Gewicht von {{scaleName}} und warten Sie dann auf einen schnellen Messwert.",
+      "captured": "Erfasst: {{value}}",
+      "captureEmptyRaw": "Leeren Rohwert erfassen",
+      "knownWeight": "Bekanntes Gewicht",
+      "knownWeightHint": "Legen Sie das Gewicht auf und geben Sie seinen Wert in kg ein.",
+      "weightKg": "Gewicht / kg",
+      "captureWeightRaw": "Belasteten Rohwert erfassen",
+      "saveResult": "Ergebnis speichern",
+      "saveResultHint": "Der Faktor wird automatisch berechnet.",
+      "offset": "Offset",
+      "factorRawPerKg": "Faktor / Roh pro kg",
+      "saveAndStop": "Speichern und Schnellmodus beenden",
+      "noChangeTitle": "Keine verwertbare Rohwert-Änderung erkannt",
+      "noChangeDescription": "Prüfen Sie, ob das bekannte Gewicht auf der richtigen Waage liegt, und warten Sie auf einen weiteren schnellen Messwert."
+    },
+    "advanced": {
+      "title": "Erweiterte manuelle Einstellungen",
+      "sendInterval": "Sendeintervall in Sekunden",
+      "manualValues": "Manuelle Werte für {{scaleName}}",
+      "latestRawHint": "Neuester Rohwert: {{value}}. Das Gewicht wird berechnet als (Roh − Offset) / Faktor.",
+      "offsetLabel": "Offset / leerer Rohwert",
+      "useLatest": "Neuesten verwenden",
+      "knownWeightLabel": "Bekanntes Gewicht / kg",
+      "calculate": "Berechnen",
+      "factorLabel": "Faktor / Rohwerte pro kg",
+      "saveManual": "Manuelle Konfiguration speichern",
+      "configVersion": "Konfigurationsversion {{version}}. Verwenden Sie die erweiterten Einstellungen nur zur Feinabstimmung oder Wiederherstellung."
+    },
+    "toasts": {
+      "modeQueued": "Kalibrierungsmodus in Warteschlange. Die Waage wechselt zu schnellen Messwerten, sobald sie aufwacht.",
+      "stopQueued": "Stopp des Kalibrierungsmodus in Warteschlange.",
+      "startModeFirst": "Starten Sie den Kalibrierungsmodus und warten Sie, bis schnelle Messwerte aktiv sind.",
+      "captureEmptyFirst": "Erfassen Sie zuerst die leere Waage.",
+      "enterKnownWeightFirst": "Geben Sie zuerst das bekannte Gewicht in kg ein.",
+      "waitForNewReading": "Warten Sie nach dem Auflegen des bekannten Gewichts auf einen neuen schnellen Messwert und erfassen Sie dann erneut.",
+      "emptyCaptured": "Leerer Messwert von {{scaleName}} erfasst.",
+      "weightedCaptured": "Belasteter Messwert von {{scaleName}} erfasst.",
+      "calibrationSaved": "Kalibrierung von {{scaleName}} gespeichert.",
+      "configUpdated": "HiveScale-Konfiguration aktualisiert.",
+      "offsetSet": "Offset von {{scaleName}} auf den neuesten Rohwert gesetzt.",
+      "factorCalculated": "Faktor von {{scaleName}} berechnet: {{factor}}"
+    },
+    "errors": {
+      "sendInterval": "Verwenden Sie ein ganzzahliges Intervall von mindestens 60 Sekunden.",
+      "offsetsWhole": "Waagen-Offsets müssen ganze Rohwert-Zahlen sein.",
+      "factorsNonZero": "Waagenfaktoren müssen von null verschiedene Zahlen sein.",
+      "noLatestRaw": "Für {{scaleName}} ist noch kein aktueller Rohwert verfügbar.",
+      "validOffset": "Geben Sie zuerst einen gültigen Offset für {{scaleName}} ein.",
+      "knownWeight": "Geben Sie für {{scaleName}} ein bekanntes Gewicht größer als 0 kg ein.",
+      "factorNotCalculated": "Faktor für {{scaleName}} konnte nicht berechnet werden. Prüfen Sie den neuesten Rohwert, den Offset und das bekannte Gewicht."
+    },
+    "tempco": {
+      "title": "Temperaturkompensation",
+      "description": "Wägezellen driften mit der Temperatur. Das Backend korrigiert das gemeldete Gewicht beim Lesen als raw − coeff · (temp − ref); der Rohwert wird nie verändert.",
+      "enableAria": "Temperaturkompensation aktivieren",
+      "sourceLabel": "Temperaturquelle",
+      "source": {
+        "ambient": "Umgebung (SHT4x)",
+        "hive1": "Sonde Stock 1",
+        "hive2": "Sonde Stock 2"
+      },
+      "sourceHint": "Die Umgebungstemperatur folgt dem Zellkörper im stationären Zustand eng und ist die empfohlene Voreinstellung.",
+      "refLabel": "Referenztemperatur / °C",
+      "refHint": "Temperatur, bei der die Korrektur null ist.",
+      "coeffLabel": "{{scaleName}} Koeffizient / kg pro °C",
+      "autoFit": "Aus Verlauf automatisch anpassen",
+      "fitting": "Wird angepasst…",
+      "autoFitHint": "Die automatische Anpassung regressiert das Rohgewicht der letzten 3 Tage gegen die gewählte Temperatur und wendet das Ergebnis an und aktiviert es. Für eine saubere Anpassung ein Zeitfenster erfassen, in dem die physische Last konstant ist und die Temperatur schwankt.",
+      "save": "Temperaturkompensation speichern",
+      "errors": {
+        "refTemp": "Die Referenztemperatur muss eine Zahl sein (°C).",
+        "coeff": "Temperaturkoeffizienten müssen Zahlen sein (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Einstellungen zur Temperaturkompensation gespeichert.",
+        "fitFailed": "{{scaleName}} konnte nicht angepasst werden: {{reason}}",
+        "noSignal": "nicht genug Temperatur-/Gewichtssignal.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C bei {{refTemp}}°C (R²={{r2}}, n={{n}}). Angewendet und aktiviert."
+      }
+    }
+  },
+  "firmware": {
+    "title": "Firmware-Upload",
+    "description": "Laden Sie eine Firmware-Binärdatei hoch und registrieren Sie sie als Release. Neue Geräte des passenden Typs übernehmen sie bei ihrer nächsten Update-Prüfung.",
+    "type": "Firmware-Typ",
+    "selectType": "Firmware-Typ auswählen",
+    "version": "Version",
+    "binary": "Firmware-Binärdatei",
+    "upload": "Firmware hochladen",
+    "uploading": "Wird hochgeladen…",
+    "success": "Firmware {{version}} ({{target}}) hochgeladen und registriert.",
+    "notice": {
+      "noPermission": "Nur Gerätebesitzer und Admins können Firmware hochladen. Ihre Rolle ist „{{role}}“.",
+      "selectDevice": "Wählen Sie ein beanspruchtes Gerät aus, um Firmware hochzuladen."
+    },
+    "errors": {
+      "missingFile": "Wählen Sie eine Firmware-Binärdatei (.bin) zum Hochladen aus.",
+      "missingVersion": "Geben Sie eine Version ein, z. B. 0.6.3."
+    }
+  },
+  "sdData": {
+    "title": "SD-Karten-Daten importieren",
+    "description": "Laden Sie die Daten hoch, die Sie im AP-Modus von der Waage heruntergeladen haben. Das erneute Hochladen derselben Datei ist unbedenklich – vorhandene Messwerte werden automatisch übersprungen.",
+    "file": "SD-Sicherungsdatei",
+    "accepts": "Akzeptiert measurements.ndjson oder den Download hivescale-sd-data.tar.",
+    "upload": "SD-Daten hochladen",
+    "importing": "Wird importiert…",
+    "importSuccess_one": "{{count}} neuer Messwert importiert ({{duplicates}} Duplikate übersprungen).",
+    "importSuccess_other": "{{count}} neue Messwerte importiert ({{duplicates}} Duplikate übersprungen).",
+    "notice": {
+      "noPermission": "Nur Gerätebesitzer und Admins können SD-Daten importieren. Ihre Rolle ist „{{role}}“.",
+      "selectDevice": "Wählen Sie ein beanspruchtes Gerät aus, um dessen SD-Karten-Daten zu importieren."
+    },
+    "errors": {
+      "missingFile": "Wählen Sie die .ndjson-Sicherung oder den .tar-SD-Download zum Hochladen aus."
+    },
+    "result": {
+      "imported": "{{inserted}} neue Messwerte importiert, {{duplicates}} Duplikate übersprungen.",
+      "parsed_one": "{{count}} Datensatz verarbeitet",
+      "parsed_other": "{{count}} Datensätze verarbeitet",
+      "skipped_one": " · {{count}} unlesbare Zeile übersprungen.",
+      "skipped_other": " · {{count}} unlesbare Zeilen übersprungen."
+    }
+  },
+  "panel": {
+    "weight": "Gewicht",
+    "hiveTemp": "Stocktemperatur",
+    "rmsSound": "RMS-Schall",
+    "temperature": "Temperatur",
+    "humidity": "Luftfeuchtigkeit",
+    "voltage": "Spannung",
+    "charge": "Ladung",
+    "alert": "Alarm",
+    "alertOn": "Alarm",
+    "alertOff": "Kein Alarm",
+    "loadVoltage": "Lastspannung",
+    "current": "Strom",
+    "power": "Leistung",
+    "ambient": {
+      "title": "Umgebung",
+      "description": "Außensensor"
+    },
+    "battery": {
+      "title": "Batterie",
+      "description": "MAX17048-Ladestandsmesser"
+    },
+    "solar": {
+      "title": "Solareingang",
+      "description": "INA219-Panel-Monitor"
+    }
+  },
+  "diagram": {
+    "title": "Messungen",
+    "subtitle": "Gewicht, Temperatur und Flugaktivität im Zeitverlauf",
+    "noMeasurements": "Keine Messungen für den ausgewählten Zeitraum.",
+    "meta": {
+      "device": "Gerät:",
+      "lastSeen": "Zuletzt gesehen:",
+      "lastData": "Letzte Daten:",
+      "firmware": "Firmware:"
+    },
+    "range": {
+      "all": "Alle",
+      "from": "Von",
+      "to": "Bis"
+    },
+    "series": {
+      "weight": "{{name}} Gewicht",
+      "temp": "{{name}} Temperatur",
+      "micRms": "{{name}} Mikro-RMS",
+      "beesIn": "{{name}} Bienen rein",
+      "beesOut": "{{name}} Bienen raus",
+      "netFlow": "{{name}} Nettofluss",
+      "ambientTemp": "Umgebungstemperatur",
+      "ambientHumidity": "Umgebungsfeuchtigkeit",
+      "batteryVoltage": "Batteriespannung",
+      "batteryCharge": "Batterieladung",
+      "solarVoltage": "Solarspannung",
+      "solarCurrent": "Solarstrom",
+      "solarPower": "Solarleistung"
+    },
+    "group": {
+      "ambient": "Umgebung",
+      "offGrid": "Netzunabhängig"
+    },
+    "axis": {
+      "weight": "Gewicht",
+      "temperature": "Temperatur",
+      "humidity": "Luftfeuchtigkeit",
+      "voltage": "Spannung",
+      "percent": "Prozent",
+      "current": "Strom",
+      "power": "Leistung",
+      "sound": "Schall",
+      "beecount": "Bienenanzahl"
+    },
+    "marker": {
+      "inspection": "Inspektion",
+      "boxAdded": "Zarge hinzugefügt",
+      "action": {
+        "maintenance": "Wartung",
+        "feeding": "Fütterung",
+        "frames": "Rähmchen",
+        "treatment": "Behandlung"
+      }
+    },
+    "axisSettings": {
+      "title": "Achseneinstellungen",
+      "reset": "Zurücksetzen",
+      "side": "Seite",
+      "left": "Links",
+      "right": "Rechts",
+      "scale": "Skalierung",
+      "auto": "Automatisch",
+      "zeroToMax": "0 bis Max",
+      "custom": "Benutzerdefiniert",
+      "min": "Min",
+      "max": "Max",
+      "autoPlaceholder": "auto"
+    }
+  },
+  "sound": {
+    "title": "Stockgeräusch",
+    "description": "INMP441 FFT-Bandenergie (dBFS) — {{left}} (links) · {{right}} (rechts)",
+    "hide": "Geräusch ausblenden",
+    "show": "Geräusch anzeigen",
+    "micLeftFallback": "Mikro links",
+    "micRightFallback": "Mikro rechts",
+    "noDataForChannel": "Keine Daten für {{name}} in diesem Zeitraum.",
+    "bandReference": "Band-Referenz",
+    "thresholds": "Von der Insights-Engine verwendete Schwellenwerte: Tüten > −45 dBFS, Stress > −38 dBFS, weiselloses Summen > −40 dBFS bei leisem Tüten. Kalibrieren Sie anhand Ihres eigenen Ausgangswerts.",
+    "status": {
+      "noData": "Keine Daten",
+      "micError": "Mikrofonfehler",
+      "bothActive": "{{left}} + {{right}} aktiv",
+      "oneActive": "{{name}} aktiv"
+    },
+    "table": {
+      "band": "Band",
+      "range": "Bereich",
+      "significance": "Bedeutung"
+    },
+    "bands": {
+      "subBass": {
+        "label": "Sub-Bass",
+        "description": "Strukturschwingung / tiefes Grollen"
+      },
+      "hum": {
+        "label": "Summen",
+        "description": "Normales Völkersummen (~200 Hz Grundton)"
+      },
+      "piping": {
+        "label": "Tüten",
+        "description": "Königinnen-Tüten / -Quaken (Vorschwarm-Signal)"
+      },
+      "stress": {
+        "label": "Stress",
+        "description": "Aufgeregtes Volk / Räuberei"
+      },
+      "high": {
+        "label": "Hoch",
+        "description": "Harmonische Obertöne"
+      }
+    }
+  },
+  "beecounter": {
+    "title": "Fluglochzähler",
+    "subtitle": "Ein- und ausfliegende Bienen pro Messintervall",
+    "noData": "Keine BeeCounter-Daten für dieses Gerät gefunden.",
+    "offline": "Offline",
+    "gatesOk": "{{count}} Gates OK",
+    "glitches_one": "{{count}} Störung",
+    "glitches_other": "{{count}} Störungen",
+    "gatesRatio": "{{healthy}}/{{total}} Gates",
+    "inPeriod": "Rein (Zeitraum)",
+    "outPeriod": "Raus (Zeitraum)",
+    "netFlow": "Nettofluss",
+    "netInbound": "netto einfliegend",
+    "netOutbound": "netto ausfliegend",
+    "balanced": "ausgeglichen",
+    "view": {
+      "inOut": "Rein / Raus",
+      "netFlow": "Nettofluss",
+      "cumulative": "Kumuliert"
+    },
+    "series": {
+      "in": "{{name}} rein",
+      "out": "{{name}} raus",
+      "net": "{{name}} netto",
+      "totalIn": "{{name}} gesamt rein",
+      "totalOut": "{{name}} gesamt raus"
+    },
+    "diagnostics": {
+      "title": "Hardware-Diagnose",
+      "gatesHealthy": "Gates funktionsfähig",
+      "glitchCount": "Anzahl Störungen",
+      "totalInLifetime": "Gesamt rein (Lebensdauer)",
+      "totalOutLifetime": "Gesamt raus (Lebensdauer)"
+    }
+  },
+  "insights": {
+    "title": "Erkenntnisse",
+    "description": "Sensorbasierte Warnungen, abgeleitet aus Gewichts- und Temperaturtrends.",
+    "updated": "Aktualisiert {{ago}}.",
+    "refresh": "Erkenntnisse aktualisieren",
+    "loadError": "Erkenntnisse konnten nicht geladen werden: {{message}}",
+    "allClear": "Alles in Ordnung",
+    "noActiveAlerts": "Keine aktiven Warnungen in den letzten {{count}} Tagen.",
+    "activeAlerts_one": "{{count}} aktive Warnung:",
+    "activeAlerts_other": "{{count}} aktive Warnungen:",
+    "confidence": "Konfidenz {{value}} %",
+    "source": "Quelle: {{source}}",
+    "hiveChannel": "Stock {{channel}}",
+    "severity": {
+      "critical": "Kritisch",
+      "warning": "Warnung",
+      "watch": "Beobachten",
+      "info": "Info"
+    },
+    "tooltip": {
+      "ariaLabel": "Welche Tests werden durchgeführt?",
+      "title": "Durchgeführte Tests",
+      "description": "Jeder Detektor läuft bei jedem Messdurchlauf gegen die Gewichts- und Stocktemperaturdaten der letzten 14 Tage.",
+      "fullDocs": "Vollständige Dokumentation"
+    },
+    "detectors": [
+      {
+        "title": "Vorschwarm-Beobachtung (Phase 1)",
+        "detail": "24-h-Standardabweichung der Brutnesttemperatur ≥ 1,5× der 7-Tage-Basislinie → beobachten."
+      },
+      {
+        "title": "Unmittelbar bevorstehender Schwarm (Phase 2)",
+        "detail": "Bruttemperatur ≥ 1,5 °C über der 4-h-Basislinie, weiterhin steigend ≥ 0,5 °C/h, über 36,5 °C → Warnung."
+      },
+      {
+        "title": "Schwarmereignis (Phase 3)",
+        "detail": "Gewichtsabfall ≥ 1,5 kg innerhalb von ≤ 30 min. Tagsüber (09–17) → kritisch, sonst Warnung."
+      },
+      {
+        "title": "Weisellosigkeit (Ausweichmethode, ohne Audio)",
+        "detail": "Aktive Saison + 7-Tage-Standardabweichung der Stocktemperatur > 1,0 °C UND |Gewichtsänderung| < 0,2 kg → Warnung."
+      },
+      {
+        "title": "Räuberei",
+        "detail": "Anhaltender Gewichtsverlust ≥ 0,4 kg/h über ≥ 30 min, keine Schwarmsignatur. Später Nachmittag (15–19) → Warnung, sonst beobachten."
+      },
+      {
+        "title": "Trachtintensität",
+        "detail": "24-h-Gewichtsdelta: ≥ 1,0 kg = starke Tracht (Info), ≥ 0,2 kg = mäßig (Info), ≤ −0,2 kg = negativ (beobachten)."
+      },
+      {
+        "title": "Brutzyklus / Volkszustand",
+        "detail": "24-h-Standardabweichung der Stocktemperatur < 0,5 °C um 34–35 °C = aktive Brut (Info); > 2,0 °C = brutlos / schwach (beobachten)."
+      },
+      {
+        "title": "Abwanderung / Kollaps-Trend",
+        "detail": "14-Tage-Gewichtsverlust > 100 g/Tag UND sich verbreiternde tägliche Temperatur-Standardabweichung (positive Steigung) → beobachten."
+      },
+      {
+        "title": "Wintersterblichkeitsrisiko (Okt–Feb)",
+        "detail": "Minimale Stocktemperatur 7 Tage < Umgebungsmittel + 2 °C oder Gewichtsverlust > 300 g/Woche. Beides → Warnung, eines → beobachten."
+      },
+      {
+        "title": "Erntezeitfenster",
+        "detail": "Frühere 7-Tage-Zunahme > 2 kg/Woche, jetzt < 0,3 kg/Woche über ≥ 4 Tage → Info."
+      }
+    ]
+  },
+  "history": {
+    "button": "Verlauf",
+    "title": "Verlauf der Erkenntnisse",
+    "description": "Frühere und aktuelle sensorbasierte Warnungen, einschließlich bereits behobener. Neueste zuerst.",
+    "summary": "{{count}} angezeigt · {{active}} aktiv",
+    "loadError": "Verlauf konnte nicht geladen werden: {{message}}",
+    "firstSeen": "Erstmals gesehen {{time}}",
+    "lastSeen": "Zuletzt gesehen {{time}}",
+    "resolvedAt": "Behoben {{time}}",
+    "peakConfidence": "Höchste Konfidenz {{value}} %",
+    "updates_one": "{{count}} Aktualisierung",
+    "updates_other": "{{count}} Aktualisierungen",
+    "status": {
+      "active": "Aktiv",
+      "resolved": "Behoben"
+    },
+    "filter": {
+      "all": "Alle Warnungen",
+      "active": "Nur aktive",
+      "resolved": "Nur behobene"
+    },
+    "empty": {
+      "title": "Noch kein Verlauf",
+      "description": "Für dieses Gerät wurden noch keine Warnungen aufgezeichnet.",
+      "descriptionFiltered": "Für dieses Gerät wurden keine Warnungen aufgezeichnet, die diesem Filter entsprechen."
+    }
+  }
+}
