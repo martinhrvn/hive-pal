@@ -75,6 +75,7 @@ HivePal uses the HiveScale app API under `/api/v1/app/...`.
 | `PATCH /hivescale/devices/:deviceId/channels` | `PATCH /api/v1/app/devices/:id/channels` | Rename scale 1 and scale 2 |
 | `GET /hivescale/devices/:deviceId/measurements` | `GET /api/v1/app/devices/:id/measurements` | Read measurements for charts and history |
 | `GET /hivescale/devices/:deviceId/measurements/latest` | `GET /api/v1/app/devices/:id/measurements/latest` | Read latest measurement/status cards |
+| `POST /hivescale/devices/:deviceId/measurements/import` | `POST /api/v1/app/devices/:id/measurements/import` | Import an SD-card backup (`.ndjson`/`.tar`) the beekeeper downloaded in AP mode |
 | `GET /hivescale/devices/:deviceId/members` | `GET /api/v1/app/devices/:id/members` | Read device members, then enrich with HivePal user data |
 | `POST /hivescale/devices/:deviceId/members` | `POST /api/v1/app/devices/:id/members` | Share by email after HivePal resolves the target user ID |
 | `DELETE /hivescale/devices/:deviceId/members/:memberUserId` | `DELETE /api/v1/app/devices/:id/members/:user_id` | Revoke member access |
@@ -142,6 +143,7 @@ Write hooks:
 | `useRemoveHiveScaleDevice()` | Remove current user's membership |
 | `useUpdateHiveScaleConfig(deviceId)` | Update interval and calibration config |
 | `useUpdateHiveScaleChannels(deviceId)` | Rename scale channels |
+| `useImportHiveScaleSdData(deviceId)` | Upload an SD-card backup file (`.ndjson`/`.tar`) and bulk-import its readings |
 | `useShareHiveScaleDevice(deviceId)` | Share with another HivePal user by email |
 | `useRevokeHiveScaleMember(deviceId)` | Revoke member access |
 | `useStartHiveScaleCalibrationMode(deviceId)` | Start fast calibration sampling where supported |
@@ -159,9 +161,90 @@ It includes:
 - **Off-grid status cards** for battery voltage, battery state-of-charge, battery alert, solar voltage/current/power, network transport, cellular connection state, and CSQ.
 - **Chart panel** with preset and custom date ranges for weight, temperature, battery, solar, and cellular signal data.
 - **Calibration controls** for entering fast sampling mode during tare/known-weight calibration.
+- **Import SD card data card** for uploading a `measurements.ndjson` or `hivescale-sd-data.tar` backup pulled from the device in AP mode (owners/admins only).
 - **Device config card** for send interval and calibration values.
 - **Scale mapping card** for matching scale channels to hive names.
 - **Device status and sharing card** for role, last seen time, firmware, and members.
+
+---
+
+## SD card data import
+
+HiveScale devices keep an append-only backup of every reading on their SD card
+(`measurements.ndjson`), plus a `cache.ndjson` retry queue. When a device has
+been offline or off-grid, those readings never reached the backend over the
+network. The beekeeper can download the card contents in AP mode as
+`hivescale-sd-data.tar` and upload them into HivePal to backfill the history.
+
+### Data flow
+
+```text
+Scale SD card (measurements.ndjson + cache.ndjson)
+  | AP-mode download (HiveScale firmware, GET /sd/download-all)
+  v
+hivescale-sd-data.tar  (or an extracted .ndjson)
+  | multipart upload, field name "file"
+  v
+HivePal frontend  (SdDataUploadCard / useImportHiveScaleSdData)
+  | POST /api/hivescale/devices/:deviceId/measurements/import
+  v
+HivePal backend  (parse + chunk + forward)
+  | POST /api/v1/app/devices/:id/measurements/import
+  v
+HiveScale backend (idempotent bulk insert)
+```
+
+### Backend proxy
+
+The import is handled by `apps/backend/src/hivescale/` and, unlike the other
+proxy routes, does **not** stream the request straight through — it parses the
+upload in the HivePal backend first:
+
+| Concern | Location | Notes |
+|---|---|---|
+| HTTP endpoint | `hivescale.controller.ts` → `importSdMeasurements()` | `POST devices/:deviceId/measurements/import`, multipart `file` via `FileInterceptor`; rejects an empty upload with `400 No SD data file provided`. |
+| File parsing | `sd-import.parser.ts` → `parseSdMeasurements()` | Pure, dependency-free. Detects `.tar` from the filename or the USTAR magic at offset 257, extracts every `*.ndjson` member, and parses NDJSON line-by-line. Blank/corrupt lines are counted as `skipped`, not fatal. |
+| Forwarding | `hivescale.service.ts` → `importSdMeasurements()` | Pins every record's `device_id` to the path device, then forwards in chunks of `SD_IMPORT_CHUNK_SIZE` (5000) so a multi-month backup stays under the backend's 20000-row-per-request cap. Aggregates the per-chunk counts. |
+
+The HiveScale backend caps each request at 20000 measurements
+(`MEASUREMENT_IMPORT_MAX`), which is why HivePal chunks at 5000.
+
+### Accepted files
+
+| Upload | Handling |
+|---|---|
+| `hivescale-sd-data.tar` | Every `*.ndjson` member is extracted and concatenated (`measurements.ndjson` + `cache.ndjson`). |
+| `measurements.ndjson` (or any `.ndjson`) | Parsed directly as one JSON object per line. |
+| Mislabelled file | Falls back to sniffing the USTAR magic, so a `.tar` without the extension still parses. |
+
+### Idempotency
+
+Re-uploading is always safe. The HiveScale backend treats
+`(device_id, measured_at)` as the natural key, so rows that already exist —
+whether they arrived earlier over the network, are repeated inside the file, or
+were uploaded before — are skipped rather than duplicated. Duplicate detection
+is in HiveScale's `sd_import.split_new_and_duplicate`.
+
+### Import result
+
+`useImportHiveScaleSdData` returns a `HiveScaleSdImportResult` that the
+`SdDataUploadCard` surfaces to the user:
+
+| Field | Meaning |
+|---|---|
+| `parsed` | Records successfully parsed out of the uploaded file |
+| `skipped` | Non-empty lines that could not be parsed as JSON |
+| `received` | Records the HiveScale backend accepted across all chunks |
+| `inserted` | New readings stored |
+| `duplicates` | Readings skipped because they already existed |
+
+### Access control
+
+Importing requires `owner` or `admin` on the device. HiveScale re-checks the
+role server-side and never auto-creates devices from uploaded data — the
+`device_id` inside the file is ignored in favour of the claimed device the user
+selected, so an upload cannot smuggle readings into a device the user does not
+own.
 
 ---
 
@@ -238,3 +321,17 @@ Confirm the firmware was built with the relevant flags enabled, the modules are 
 ### Sharing by email fails
 
 The email must belong to an existing HivePal user. HivePal resolves email to user ID before calling HiveScale.
+
+### SD import says "No measurements found in the uploaded file"
+
+The parser could not find any valid NDJSON records. Confirm the file is a
+HiveScale `measurements.ndjson` backup or the `hivescale-sd-data.tar` download
+(not an unrelated archive), and that it is not empty or truncated. The import
+also reports a `skipped` count for individual lines that were corrupt or
+truncated while the rest imported normally.
+
+### SD import reports many duplicates
+
+This is expected when the device was online: those readings already reached the
+backend over the network, so the SD backup overlaps with stored data. Only the
+genuinely new (offline/off-grid) readings count toward `inserted`.

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { apiClient } from '../client';
 
 export interface HiveScaleDevice {
@@ -549,6 +550,61 @@ export interface HiveScaleFirmwareUploadResult {
   size_bytes: number;
   crc32: number;
 }
+
+export interface HiveScaleSdImportResult {
+  status: string;
+  device_id: string;
+  /** Records parsed out of the uploaded file. */
+  parsed: number;
+  /** Non-empty lines that could not be parsed as JSON. */
+  skipped: number;
+  /** Records forwarded to the HiveScale backend. */
+  received: number;
+  /** New measurement rows actually stored. */
+  inserted: number;
+  /** Rows ignored as duplicates (already stored or repeated in the file). */
+  duplicates: number;
+}
+
+export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<HiveScaleSdImportResult, Error, File>({
+    mutationFn: async file => {
+      const formData = new FormData();
+      // The apiClient request interceptor strips Content-Type for FormData so
+      // the browser sets the multipart boundary itself.
+      formData.append('file', file);
+
+      try {
+        const response = await apiClient.post<HiveScaleSdImportResult>(
+          `/api/hivescale/devices/${deviceId}/measurements/import`,
+          formData,
+        );
+        return response.data;
+      } catch (error) {
+        // Surface the backend message (e.g. "No measurements found…") instead
+        // of Axios' generic "Request failed with status code 400" so callers
+        // that toast error.message show actionable feedback.
+        if (isAxiosError<{ message?: string }>(error)) {
+          const data = error.response?.data;
+          const message =
+            (typeof data === 'object' && data !== null
+              ? data.message
+              : typeof data === 'string'
+                ? data
+                : undefined) ?? error.message;
+          throw new Error(message || 'SD import failed');
+        }
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      // New historical measurements affect the charts and latest-value panels.
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
+    },
+  });
+};
 
 export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
   const queryClient = useQueryClient();

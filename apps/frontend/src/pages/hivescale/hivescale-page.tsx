@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock,
+  Database,
   Droplets,
   Info,
   Play,
@@ -37,6 +38,7 @@ import {
   useRemoveHiveScaleDevice,
   useRevokeHiveScaleMember,
   useShareHiveScaleDevice,
+  useImportHiveScaleSdData,
   useStartHiveScaleCalibrationMode,
   useStopHiveScaleCalibrationMode,
   useUpdateHiveScaleChannels,
@@ -1791,6 +1793,153 @@ function FirmwareUploadCard({
   );
 }
 
+function SdDataUploadCard({
+  selectedDevice,
+  deviceId,
+}: Readonly<{
+  selectedDevice: HiveScaleDevice | undefined;
+  deviceId: string | undefined;
+}>) {
+  const [file, setFile] = useState<File | null>(null);
+  // Reset key lets us clear the native file input after a successful upload.
+  const [fileInputKey, setFileInputKey] = useState(0);
+  const [lastResult, setLastResult] = useState<{
+    inserted: number;
+    duplicates: number;
+    parsed: number;
+    skipped: number;
+  } | null>(null);
+
+  const importSdData = useImportHiveScaleSdData(deviceId);
+
+  const role = selectedDevice?.role;
+  const canManage = role === 'owner' || role === 'admin';
+  const disabled = !selectedDevice || !canManage;
+
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    if (disabled) return;
+
+    if (!file) {
+      toast.error('Choose the .ndjson backup or the .tar SD download to upload.');
+      return;
+    }
+
+    importSdData.mutate(file, {
+      onSuccess: result => {
+        setFile(null);
+        setFileInputKey(key => key + 1);
+        setLastResult({
+          inserted: result.inserted,
+          duplicates: result.duplicates,
+          parsed: result.parsed,
+          skipped: result.skipped,
+        });
+        toast.success(
+          `Imported ${result.inserted} new reading${
+            result.inserted === 1 ? '' : 's'
+          } (${result.duplicates} duplicate${
+            result.duplicates === 1 ? '' : 's'
+          } skipped).`,
+        );
+      },
+      onError: error => toast.error(error.message),
+    });
+  };
+
+  let notice: ReactNode = null;
+  if (selectedDevice) {
+    if (!canManage) {
+      notice = (
+        <p className="text-sm text-muted-foreground">
+          Only device owners and admins can import SD data. Your role is “{role}”.
+        </p>
+      );
+    }
+  } else {
+    notice = (
+      <p className="text-sm text-muted-foreground">
+        Select a claimed device to import its SD card data.
+      </p>
+    );
+  }
+
+  return (
+    <Card className={disabled ? 'opacity-60' : undefined}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Database className="h-5 w-5" />
+          Import SD card data
+        </CardTitle>
+        <CardDescription>
+          Upload the data you downloaded from the scale in AP mode. Re-uploading
+          the same file is safe — existing readings are skipped automatically.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {notice}
+
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <div className="space-y-2">
+            <Label htmlFor="sd-data-file">SD backup file</Label>
+            <Input
+              key={fileInputKey}
+              id="sd-data-file"
+              type="file"
+              accept=".ndjson,.tar,.json,application/x-tar,application/octet-stream"
+              onChange={event => setFile(event.target.files?.[0] ?? null)}
+              disabled={disabled || importSdData.isPending}
+            />
+            <p className="text-xs text-muted-foreground">
+              Accepts <code>measurements.ndjson</code> or the{' '}
+              <code>hivescale-sd-data.tar</code> download.
+            </p>
+            {file && (
+              <p className="text-xs text-muted-foreground">
+                {file.name} ({(file.size / 1024).toFixed(0)} KB)
+              </p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={disabled || importSdData.isPending}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            {importSdData.isPending ? 'Importing…' : 'Upload SD data'}
+          </Button>
+        </form>
+
+        {lastResult && (
+          <div className="mt-4 rounded-md border p-3 text-xs text-muted-foreground">
+            <p>
+              <span className="font-medium text-foreground">
+                {lastResult.inserted}
+              </span>{' '}
+              new readings imported,{' '}
+              <span className="font-medium text-foreground">
+                {lastResult.duplicates}
+              </span>{' '}
+              duplicates skipped.
+            </p>
+            <p>
+              Parsed {lastResult.parsed} record
+              {lastResult.parsed === 1 ? '' : 's'}
+              {lastResult.skipped > 0
+                ? ` · ${lastResult.skipped} unreadable line${
+                    lastResult.skipped === 1 ? '' : 's'
+                  } skipped`
+                : ''}
+              .
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function ScaleSetupPanel({
   selectedDevice,
   selectedDeviceId,
@@ -1904,6 +2053,10 @@ function ScaleSetupPanel({
                 deviceId={selectedDeviceId}
                 latest={latest}
                 onCalibrationPollingChange={onCalibrationPollingChange}
+              />
+              <SdDataUploadCard
+                selectedDevice={selectedDevice}
+                deviceId={selectedDeviceId}
               />
               <FirmwareUploadCard
                 selectedDevice={selectedDevice}

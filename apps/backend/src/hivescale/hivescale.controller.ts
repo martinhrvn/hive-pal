@@ -28,6 +28,13 @@ import {
   HiveScaleShareDeviceDto,
 } from './hivescale.service';
 
+// SD backup uploads are fully buffered in memory (file.buffer), so cap the
+// upload size to avoid excessive memory usage / DoS from oversized files.
+// Overridable via env var to allow tuning without a code change.
+const SD_IMPORT_MAX_FILE_SIZE = Number(
+  process.env.HIVESCALE_SD_IMPORT_MAX_FILE_SIZE ?? 250 * 1024 * 1024,
+);
+
 @ApiTags('hivescale')
 @Controller('hivescale')
 @UseGuards(JwtAuthGuard)
@@ -158,6 +165,28 @@ export class HiveScaleController {
         // and default to true when omitted.
         active: body.active === undefined ? true : body.active !== 'false',
       },
+    );
+  }
+
+  @Post('devices/:deviceId/measurements/import')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: SD_IMPORT_MAX_FILE_SIZE },
+    }),
+  )
+  importSdMeasurements(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No SD data file provided');
+    }
+
+    return this.hiveScaleService.importSdMeasurements(
+      this.extractToken(req),
+      deviceId,
+      file,
     );
   }
 

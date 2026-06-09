@@ -2,7 +2,7 @@
 sidebar_position: 9
 title: HiveScale Integration
 description: Connect Hive-Pal with HiveScale beehive scales, claim devices, view live weight data, and monitor off-grid telemetry.
-keywords: [hivescale, beehive scale, hive weight, off-grid, cellular, solar, battery]
+keywords: [hivescale, beehive scale, hive weight, off-grid, cellular, solar, battery, sd card, import, backup]
 ---
 
 # HiveScale Integration
@@ -24,6 +24,7 @@ HiveScale devices are ESP32-based dual hive scales. They can report weights, hiv
 - Manage device sharing with other Hive-Pal users.
 - Adjust send interval and calibration settings when you have permission.
 - Monitor off-grid status for battery, solar, and cellular-enabled devices.
+- Import an SD card backup downloaded from the scale to recover offline readings.
 
 ---
 
@@ -129,6 +130,50 @@ Calibration controls require owner or admin access.
 
 ---
 
+## Import SD card data
+
+Every HiveScale device keeps a backup of its readings on its SD card, even
+when it cannot reach the backend. If your scale has been offline or off-grid
+for a while, you can recover those missing readings by downloading them from
+the device and uploading them into Hive-Pal.
+
+### 1. Download the backup from the scale
+
+Put the device into AP (setup) mode and download its SD data:
+
+1. Press the device's setup button to start AP mode (a `HiveScale-Setup-XXXX`
+   Wi-Fi network appears).
+2. Connect to that network and open `http://192.168.4.1`.
+3. Choose **Download all SD data (.tar)** to save `hivescale-sd-data.tar`.
+
+See the HiveScale firmware documentation for the full AP-mode procedure,
+including how to enter setup mode while the device is in deep sleep.
+
+### 2. Upload it into Hive-Pal
+
+1. Open **HiveScale** and select the claimed device.
+2. Find the **Import SD card data** card.
+3. Choose the file you downloaded — either the `hivescale-sd-data.tar` archive
+   or an extracted `measurements.ndjson` file.
+4. Select **Upload SD data**.
+
+Hive-Pal reads the readings out of the file and adds them to the device's
+history. After it finishes you'll see how many new readings were imported and
+how many duplicates were skipped.
+
+### Good to know
+
+- **Re-uploading is safe.** Hive-Pal recognises readings it already has, so
+  uploading the same file twice will not create duplicates — it simply reports
+  them as skipped.
+- **Duplicates are normal.** When the device was online, those readings already
+  reached the backend, so only the offline gaps are added.
+- **Owner or admin only.** Viewers can see the card but cannot import.
+- **No need to prune the file.** You can upload the entire backup each time;
+  only genuinely new readings are stored.
+
+---
+
 ## Sharing and roles
 
 HiveScale roles are enforced by the HiveScale backend.
@@ -156,6 +201,13 @@ Verify that the selected device has a recent `last_seen_at` timestamp and that t
 ### Off-grid cards are blank
 
 The firmware may not be built with `ENABLE_INA219_SOLAR`, `ENABLE_MAX17048_BATTERY`, or `ENABLE_SIM7080G`, or the connected HiveScale backend may not be returning those fields.
+
+### SD import says no measurements were found
+
+Make sure you uploaded the HiveScale backup file — the `hivescale-sd-data.tar`
+download or an extracted `measurements.ndjson` — and not another file. An empty
+or truncated download can also cause this. Try downloading the SD data from the
+device again.
 
 ### Cellular status is poor
 
