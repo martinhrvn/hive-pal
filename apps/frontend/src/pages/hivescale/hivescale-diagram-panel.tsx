@@ -951,8 +951,15 @@ export const HiveScaleDiagramPanel = ({
           return {
             timestamp: new Date(item.measured_at).getTime(),
             measuredAt: item.measured_at,
-            scale1Weight: toFiniteNumber(item.scale_1_weight_kg),
-            scale2Weight: toFiniteNumber(item.scale_2_weight_kg),
+            // Prefer the temperature-compensated weight from the HiveScale
+            // backend. It defaults to the raw weight when compensation is off,
+            // so the fallback is only hit for older payloads that lack the field.
+            scale1Weight: toFiniteNumber(
+              item.scale_1_weight_kg_compensated ?? item.scale_1_weight_kg,
+            ),
+            scale2Weight: toFiniteNumber(
+              item.scale_2_weight_kg_compensated ?? item.scale_2_weight_kg,
+            ),
             scale1Temperature: cleanTemperature(item.hive_1_temp_c),
             scale2Temperature: cleanTemperature(item.hive_2_temp_c),
             ambientTemperature: cleanTemperature(item.ambient_temp_c),

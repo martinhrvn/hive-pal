@@ -2624,7 +2624,7 @@ export function HiveScalePage() {
             rows={[
               {
                 label: t('panel.weight'),
-                value: `${numberOrDash(latest?.scale_1_weight_kg)} kg`,
+                value: `${numberOrDash(latest?.scale_1_weight_kg_compensated ?? latest?.scale_1_weight_kg)} kg`,
               },
               {
                 label: t('panel.hiveTemp'),
@@ -2658,7 +2658,7 @@ export function HiveScalePage() {
             rows={[
               {
                 label: t('panel.weight'),
-                value: `${numberOrDash(latest?.scale_2_weight_kg)} kg`,
+                value: `${numberOrDash(latest?.scale_2_weight_kg_compensated ?? latest?.scale_2_weight_kg)} kg`,
               },
               {
                 label: t('panel.hiveTemp'),
