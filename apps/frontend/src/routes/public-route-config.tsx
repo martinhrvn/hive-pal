@@ -1,5 +1,6 @@
 import type { RouteObject } from 'react-router-dom';
 import { LandingPage } from '@/pages/landing-page';
+import { FeaturesPage } from '@/pages/features-page';
 import { ToolsIndexPage } from '@/pages/tools/tools-index-page';
 import { SyrupCalculatorPage } from '@/pages/tools/syrup-calculator-page';
 import { BroodTimelinePage } from '@/pages/tools/brood-timeline-page';
@@ -24,6 +25,7 @@ const toolsChildren: RouteObject[] = [
 
 const langChildren: RouteObject[] = [
   { index: true, element: <LandingPage /> },
+  { path: 'features', element: <FeaturesPage /> },
   { path: 'tools', element: <PublicLayout />, children: toolsChildren },
   { path: 'releases', element: <ReleasesPage /> },
   { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
@@ -31,6 +33,7 @@ const langChildren: RouteObject[] = [
 
 export const serverPublicRoutes: RouteObject[] = [
   { path: '/', element: <LandingPage /> },
+  { path: '/features', element: <FeaturesPage /> },
   { path: '/tools', element: <PublicLayout />, children: toolsChildren },
   { path: '/releases', element: <ReleasesPage /> },
   { path: '/privacy-policy', element: <PrivacyPolicyPage /> },

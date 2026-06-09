@@ -35,6 +35,7 @@ import { JoinApiaryPage } from '@/pages/join/join-apiary-page';
 import { EditableRoute } from './editable-route';
 import { ToolRoute } from './tool-route';
 import { LandingPage } from '@/pages/landing-page';
+import { FeaturesPage } from '@/pages/features-page';
 import { LangLayout } from '@/components/i18n/lang-layout';
 import { isSupportedLanguage } from '@/utils/language-utils';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
@@ -260,6 +261,10 @@ function buildPublicRoutes() {
     {
       index: true,
       element: <LandingPage />,
+    },
+    {
+      path: 'features',
+      element: <FeaturesPage />,
     },
     {
       path: 'tools',
@@ -610,6 +615,10 @@ const router = createBrowserRouter([
   {
     path: '/releases',
     element: <ReleasesPage />,
+  },
+  {
+    path: '/features',
+    element: <FeaturesPage />,
   },
   {
     path: '/hives/:hiveId/inspect/mobile',

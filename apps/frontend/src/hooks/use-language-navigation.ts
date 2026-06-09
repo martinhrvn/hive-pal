@@ -11,7 +11,12 @@ import {
 // Neutral path prefixes whose pages are public and therefore get
 // language-prefixed URLs. The bare landing path ('/') is intentionally excluded
 // because for logged-in users it is the dashboard, not the public landing page.
-const PUBLIC_PATH_PREFIXES = ['/tools', '/releases', '/privacy-policy'];
+const PUBLIC_PATH_PREFIXES = [
+  '/features',
+  '/tools',
+  '/releases',
+  '/privacy-policy',
+];
 
 /**
  * Whether the given pathname belongs to a public page that supports

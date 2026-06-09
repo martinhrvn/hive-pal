@@ -30,9 +30,3 @@ Beekeeping requires careful observation and record-keeping. Hive-Pal simplifies 
 - **Informed Decision Making**: Use data to improve your beekeeping practices
 - **Self-Hosted**: Maintain control of your data by hosting the application yourself
 - **Hardware-Friendly**: Pair HiveScale devices with your Hive-Pal account and correlate scale data with inspections
-
-## Project Status
-
-<div class="bee-highlight">
-⚠️ <strong>IMPORTANT</strong>: This project is very much a Work In Progress. Features may be incomplete or change significantly.
-</div>

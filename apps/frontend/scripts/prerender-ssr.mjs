@@ -28,6 +28,7 @@ const DEFAULT_LANGUAGE = 'en';
 // src/routes/public-route-config.tsx and src/routes/index.tsx.
 const PUBLIC_ROUTES = [
   '/',
+  '/features',
   '/tools',
   '/tools/syrup-calculator',
   '/tools/brood-timeline',

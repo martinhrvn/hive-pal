@@ -4,15 +4,25 @@
 
 A modern beekeeping management application designed for both mobile and desktop use. Track your apiaries, hives, inspections, and more with our intuitive interface.
 
-**⚠️ IMPORTANT: This project is very much a Work In Progress. The API is mostly stable but there may be breaking changes.**
-
 ## Features
 
-- **Apiary Management**: Create and track multiple apiaries with location information
-- **Hive Tracking**: Monitor hives, their status, and configuration
-- **Inspection Workflows**: Record detailed inspections with observations and actions
-- **Queen Management**: Track queen lineage and replacement history
-- **Mobile-First Design**: Optimized for field use with easy data entry
+- **AI Voice Inspections**: Record audio at the hive and let AI transcribe it and draft structured inspection notes — powered by open models (faster-whisper + Ollama) that you can self-host
+- **Apiary Management**: Create and track multiple apiaries with location and weather information
+- **Hive Tracking**: Monitor hives, their status, boxes, and frame configuration
+- **Inspection Workflows**: Record detailed inspections with observations, photos, treatments, and actions
+- **Batch Inspections**: Step through an entire apiary in one guided session
+- **Scheduling & Calendar**: Plan inspections and see tasks across all apiaries on a unified calendar
+- **Queen Management**: Track queen lineage, marking, performance, and replacement history
+- **Harvest Tracking**: Record honey harvests, processing, and yields per hive and season
+- **Equipment Planning**: Plan and account for boxes, frames, and gear across your hives
+- **Reports & Analytics**: Surface colony-health and productivity trends over time
+- **QR Codes**: Print and scan hive labels to jump straight to the right record
+- **Collaboration**: Share apiaries with other beekeepers via invite links
+- **Free Tools**: Browser-based calculators and planners (syrup calculator, brood timeline, swarm management) — no signup required
+- **Mobile-First & Offline-Ready**: Optimized for field use and installable as a PWA that keeps working without signal
+- **Multilingual**: Available in multiple languages with community translations
+- **Data Portability**: Import and export your data — your records stay yours
+- **Open Source & Self-Hostable**: MIT-licensed and free to run on your own hardware
 - **HiveScale Integration**: Claim and monitor self-hosted HiveScale devices, including weight, temperature, battery, solar, and cellular telemetry
 
 ## Getting Started
