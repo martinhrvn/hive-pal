@@ -63,12 +63,30 @@ export interface HiveScaleClaimDeviceDto {
   scale_2_display_name?: string;
 }
 
+export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';
+
 export interface HiveScaleConfigPatchDto {
   send_interval_seconds?: number;
   scale1_offset?: number;
   scale1_factor?: number;
   scale2_offset?: number;
   scale2_factor?: number;
+  // Load-cell temperature compensation (applied in the HiveScale backend on
+  // read; the device keeps sending raw weights). See HiveScale
+  // docs/temperature-compensation.md.
+  tempco_enabled?: boolean;
+  tempco_source?: HiveScaleTempcoSource;
+  tempco_ref_temp_c?: number;
+  scale1_tempco_kg_per_c?: number;
+  scale2_tempco_kg_per_c?: number;
+}
+
+export interface HiveScaleTempCompensationFitDto {
+  scale: 1 | 2;
+  lookback_days?: number;
+  temp_source?: HiveScaleTempcoSource;
+  calibration_mode_only?: boolean;
+  apply?: boolean;
 }
 
 export interface HiveScaleChannelsPatchDto {
@@ -223,6 +241,19 @@ export class HiveScaleService {
       {
         data: payload,
       },
+    );
+  }
+
+  fitTempCompensation(
+    accessToken: string,
+    deviceId: string,
+    payload: HiveScaleTempCompensationFitDto,
+  ) {
+    return this.request(
+      accessToken,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/temp-compensation/fit`,
+      { data: payload },
     );
   }
 

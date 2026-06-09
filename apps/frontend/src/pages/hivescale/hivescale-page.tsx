@@ -1,13 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  FormEvent,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
-import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
+import { FormEvent, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   Battery,
   CheckCircle2,
@@ -21,6 +13,7 @@ import {
   RefreshCw,
   Square,
   Sun,
+  Thermometer,
   Trash2,
   Upload,
   UserPlus,
@@ -33,6 +26,7 @@ import { useHivesWithBoxes } from '@/api/hooks/useHives';
 import { useInspections } from '@/api/hooks/useInspections';
 import {
   useClaimHiveScaleDevice,
+  useFitHiveScaleTempCompensation,
   useHiveScaleDeviceConfig,
   useHiveScaleDevices,
   useHiveScaleMeasurements,
@@ -49,6 +43,7 @@ import {
   type HiveScaleDevice,
   type HiveScaleFirmwareTarget,
   type HiveScaleMeasurement,
+  type HiveScaleTempcoSource,
   useHiveScaleInsights,
   HiveScaleInsightSeverity,
   type HiveScaleInsightAlert,
@@ -95,6 +90,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import {
   Tooltip,
   TooltipContent,
@@ -176,8 +172,8 @@ const readStoredDateRange = (): HiveScaleDateRange | undefined => {
   }
 };
 
-const formatDateTime = (value: string | null | undefined, t: TFunction) => {
-  if (!value) return t('common.never');
+const formatDateTime = (value: string | null | undefined) => {
+  if (!value) return 'Never';
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -262,16 +258,15 @@ function LatestValuePanel({
     isError?: boolean;
   };
 }>) {
-  const { t } = useTranslation('hivescale');
   const [showAlerts, setShowAlerts] = useState(false);
   const hasAlerts = (insight?.alerts.length ?? 0) > 0;
 
   const insightSummary = (() => {
     if (!insight) return null;
-    if (insight.isLoading) return t('common.loading');
-    if (insight.isError) return t('common.unavailable');
-    if (!hasAlerts) return t('insights.allClear');
-    return `${t(severityConfig[insight.severity ?? 'info'].labelKey)}${
+    if (insight.isLoading) return 'Loading…';
+    if (insight.isError) return 'Unavailable';
+    if (!hasAlerts) return 'All clear';
+    return `${severityConfig[insight.severity ?? 'info'].label}${
       insight.count > 1 ? ` · ${insight.count}` : ''
     }`;
   })();
@@ -307,9 +302,7 @@ function LatestValuePanel({
 
             {insight && (
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-xs text-muted-foreground">
-                  {t('common.insight')}
-                </span>
+                <span className="text-xs text-muted-foreground">Insight</span>
                 {hasAlerts ? (
                   <button
                     type="button"
@@ -355,7 +348,6 @@ function LatestValuePanel({
 function ClaimDeviceCard({
   hiveNameOptions,
 }: Readonly<{ hiveNameOptions: string[] }>) {
-  const { t } = useTranslation('hivescale');
   const [claimCode, setClaimCode] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [scale1DisplayName, setScale1DisplayName] = useState('');
@@ -366,7 +358,7 @@ function ClaimDeviceCard({
     event.preventDefault();
     const normalizedClaimCode = claimCode.trim();
     if (!normalizedClaimCode) {
-      toast.error(t('claim.errors.missingCode'));
+      toast.error('Enter the claim code printed/configured for the device.');
       return;
     }
 
@@ -383,7 +375,7 @@ function ClaimDeviceCard({
           setDisplayName('');
           setScale1DisplayName('');
           setScale2DisplayName('');
-          toast.success(t('claim.success'));
+          toast.success('HiveScale device claimed.');
         },
         onError: error => toast.error(error.message),
       },
@@ -393,13 +385,16 @@ function ClaimDeviceCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('claim.title')}</CardTitle>
-        <CardDescription>{t('claim.description')}</CardDescription>
+        <CardTitle>Claim HiveScale device</CardTitle>
+        <CardDescription>
+          Claim codes are sent by the firmware with measurements until the
+          device is claimed.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="claim-code">{t('claim.claimCode')}</Label>
+            <Label htmlFor="claim-code">Claim code</Label>
             <Input
               id="claim-code"
               value={claimCode}
@@ -408,28 +403,28 @@ function ClaimDeviceCard({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="display-name">{t('claim.displayName')}</Label>
+            <Label htmlFor="display-name">Display name</Label>
             <Input
               id="display-name"
               value={displayName}
               onChange={event => setDisplayName(event.target.value)}
-              placeholder={t('claim.displayNamePlaceholder')}
+              placeholder="Hive scale north"
             />
           </div>
           <HiveNameInput
             id="scale-1-display-name"
-            label={t('mapping.scale1Label')}
+            label="Display name for Scale 1"
             value={scale1DisplayName}
             onChange={setScale1DisplayName}
-            placeholder={t('mapping.hiveNamePlaceholder')}
+            placeholder="Select or type a hive name"
             hiveNameOptions={hiveNameOptions}
           />
           <HiveNameInput
             id="scale-2-display-name"
-            label={t('mapping.scale2Label')}
+            label="Display name for Scale 2"
             value={scale2DisplayName}
             onChange={setScale2DisplayName}
-            placeholder={t('mapping.hiveNamePlaceholder')}
+            placeholder="Select or type a hive name"
             hiveNameOptions={hiveNameOptions}
           />
           <Button
@@ -437,7 +432,7 @@ function ClaimDeviceCard({
             className="w-full"
             disabled={claimDevice.isPending}
           >
-            {claimDevice.isPending ? t('claim.claiming') : t('claim.claim')}
+            {claimDevice.isPending ? 'Claiming…' : 'Claim device'}
           </Button>
         </form>
       </CardContent>
@@ -465,12 +460,9 @@ const parsePositiveNumber = (value: string) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 };
 
-const formatRawCapture = (capture: CapturedRawReading | null, t: TFunction) => {
-  if (!capture) return t('calibration.notCapturedYet');
-  return t('calibration.rawCapture', {
-    raw: capture.raw.toFixed(0),
-    time: formatDateTime(capture.measuredAt, t),
-  });
+const formatRawCapture = (capture: CapturedRawReading | null) => {
+  if (!capture) return 'Not captured yet';
+  return `${capture.raw.toFixed(0)} raw · ${formatDateTime(capture.measuredAt)}`;
 };
 
 type ManualConfigInput = {
@@ -494,17 +486,14 @@ type ManualConfigResult =
       };
     };
 
-const parseManualConfig = (
-  input: ManualConfigInput,
-  t: TFunction,
-): ManualConfigResult => {
+const parseManualConfig = (input: ManualConfigInput): ManualConfigResult => {
   const parsedSendInterval = Number(input.sendInterval);
   if (
     !Number.isFinite(parsedSendInterval) ||
     !Number.isInteger(parsedSendInterval) ||
     parsedSendInterval < 60
   ) {
-    return { error: t('calibration.errors.sendInterval') };
+    return { error: 'Use a whole-number interval of at least 60 seconds.' };
   }
 
   const parsedScale1Offset = Number(input.scale1Offset);
@@ -515,7 +504,7 @@ const parseManualConfig = (
     !Number.isFinite(parsedScale2Offset) ||
     !Number.isInteger(parsedScale2Offset)
   ) {
-    return { error: t('calibration.errors.offsetsWhole') };
+    return { error: 'Scale offsets must be whole raw-count numbers.' };
   }
 
   const parsedScale1Factor = Number(input.scale1Factor);
@@ -526,7 +515,7 @@ const parseManualConfig = (
     !Number.isFinite(parsedScale2Factor) ||
     parsedScale2Factor === 0
   ) {
-    return { error: t('calibration.errors.factorsNonZero') };
+    return { error: 'Scale factors must be non-zero numbers.' };
   }
 
   return {
@@ -545,34 +534,32 @@ const computeFactorFromKnownWeight = ({
   offset,
   knownWeightKg,
   scaleName,
-  t,
 }: {
   raw: number | null | undefined;
   offset: string;
   knownWeightKg: string;
   scaleName: string;
-  t: TFunction;
 }): { error: string } | { error?: undefined; factor: string } => {
   if (!hasValidRaw(raw)) {
-    return { error: t('calibration.errors.noLatestRaw', { scaleName }) };
+    return { error: `No latest raw reading available for ${scaleName} yet.` };
   }
 
   const parsedOffset = Number(offset);
   if (!Number.isFinite(parsedOffset)) {
-    return { error: t('calibration.errors.validOffset', { scaleName }) };
+    return { error: `Enter a valid offset for ${scaleName} first.` };
   }
 
   const parsedKnownWeightKg = Number(knownWeightKg);
   if (!Number.isFinite(parsedKnownWeightKg) || parsedKnownWeightKg <= 0) {
     return {
-      error: t('calibration.errors.knownWeight', { scaleName }),
+      error: `Enter a known weight greater than 0 kg for ${scaleName}.`,
     };
   }
 
   const factor = ((raw as number) - parsedOffset) / parsedKnownWeightKg;
   if (!Number.isFinite(factor) || factor === 0) {
     return {
-      error: t('calibration.errors.factorNotCalculated', { scaleName }),
+      error: `${scaleName} factor could not be calculated. Check the latest raw, offset, and known weight.`,
     };
   }
 
@@ -590,12 +577,12 @@ function DeviceConfigCard({
   latest: HiveScaleMeasurement | undefined;
   onCalibrationPollingChange: (enabled: boolean) => void;
 }>) {
-  const { t } = useTranslation('hivescale');
   const queryClient = useQueryClient();
   const { data: config, isLoading } = useHiveScaleDeviceConfig(deviceId);
   const updateConfig = useUpdateHiveScaleConfig(deviceId);
   const startCalibrationMode = useStartHiveScaleCalibrationMode(deviceId);
   const stopCalibrationMode = useStopHiveScaleCalibrationMode(deviceId);
+  const fitTempco = useFitHiveScaleTempCompensation(deviceId);
   const [sendInterval, setSendInterval] = useState('');
   const [scale1Offset, setScale1Offset] = useState('');
   const [scale1Factor, setScale1Factor] = useState('');
@@ -603,6 +590,13 @@ function DeviceConfigCard({
   const [scale2Offset, setScale2Offset] = useState('');
   const [scale2Factor, setScale2Factor] = useState('');
   const [scale2KnownWeightKg, setScale2KnownWeightKg] = useState('');
+  // Load-cell temperature compensation (applied in the HiveScale backend).
+  const [tempcoEnabled, setTempcoEnabled] = useState(false);
+  const [tempcoSource, setTempcoSource] =
+    useState<HiveScaleTempcoSource>('ambient');
+  const [tempcoRefTemp, setTempcoRefTemp] = useState('');
+  const [scale1Tempco, setScale1Tempco] = useState('');
+  const [scale2Tempco, setScale2Tempco] = useState('');
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [calibrationQueued, setCalibrationQueued] = useState(false);
@@ -622,6 +616,11 @@ function DeviceConfigCard({
     setScale1Factor(String(config.scale1_factor));
     setScale2Offset(String(config.scale2_offset));
     setScale2Factor(String(config.scale2_factor));
+    setTempcoEnabled(Boolean(config.tempco_enabled));
+    setTempcoSource(config.tempco_source ?? 'ambient');
+    setTempcoRefTemp(String(config.tempco_ref_temp_c ?? 20));
+    setScale1Tempco(String(config.scale1_tempco_kg_per_c ?? 0));
+    setScale2Tempco(String(config.scale2_tempco_kg_per_c ?? 0));
   }, [config]);
 
   useEffect(() => {
@@ -639,8 +638,8 @@ function DeviceConfigCard({
 
   const canConfigure =
     selectedDevice?.role === 'owner' || selectedDevice?.role === 'admin';
-  const scale1Name = channelName(selectedDevice, 1, t('common.scale1'));
-  const scale2Name = channelName(selectedDevice, 2, t('common.scale2'));
+  const scale1Name = channelName(selectedDevice, 1, 'Scale 1');
+  const scale2Name = channelName(selectedDevice, 2, 'Scale 2');
   const activeScaleName = activeScale === 1 ? scale1Name : scale2Name;
   const latestRaw = getScaleRaw(latest, activeScale);
   const hasLatestRaw = hasValidRaw(latestRaw);
@@ -668,7 +667,9 @@ function DeviceConfigCard({
           setCalibrationQueued(true);
           onCalibrationPollingChange(true);
           invalidateHiveScaleData();
-          toast.success(t('calibration.toasts.modeQueued'));
+          toast.success(
+            'Calibration mode queued. The scale will switch to fast readings when it wakes up.',
+          );
         },
         onError: error => toast.error(error.message),
       },
@@ -682,7 +683,7 @@ function DeviceConfigCard({
         setCalibrationQueued(false);
         invalidateHiveScaleData();
         if (showToast) {
-          toast.success(t('calibration.toasts.stopQueued'));
+          toast.success('Calibration mode stop queued.');
         }
       },
       onError: error => toast.error(error.message),
@@ -693,31 +694,35 @@ function DeviceConfigCard({
     type: 'empty' | 'loaded',
   ): CapturedRawReading | null => {
     if (!isCalibrationModeActive) {
-      toast.error(t('calibration.toasts.startModeFirst'));
+      toast.error(
+        'Start calibration mode and wait until fast readings are active.',
+      );
       return null;
     }
 
     if (!latest?.measured_at || !hasValidRaw(latestRaw)) {
       toast.error(
-        t('calibration.errors.noLatestRaw', { scaleName: activeScaleName }),
+        `No latest raw reading available for ${activeScaleName} yet.`,
       );
       return null;
     }
 
     if (type === 'loaded') {
       if (!emptyCapture) {
-        toast.error(t('calibration.toasts.captureEmptyFirst'));
+        toast.error('Capture the empty scale first.');
         return null;
       }
       if (knownWeight === null) {
-        toast.error(t('calibration.toasts.enterKnownWeightFirst'));
+        toast.error('Enter the known weight in kg first.');
         return null;
       }
       if (
         new Date(latest.measured_at).getTime() <=
         new Date(emptyCapture.measuredAt).getTime()
       ) {
-        toast.error(t('calibration.toasts.waitForNewReading'));
+        toast.error(
+          'Wait for a new fast reading after placing the known weight, then capture again.',
+        );
         return null;
       }
     }
@@ -730,18 +735,14 @@ function DeviceConfigCard({
     if (!capture) return;
     setEmptyCapture(capture);
     setLoadedCapture(null);
-    toast.success(
-      t('calibration.toasts.emptyCaptured', { scaleName: activeScaleName }),
-    );
+    toast.success(`${activeScaleName} empty reading captured.`);
   };
 
   const captureLoadedRaw = () => {
     const capture = captureLatestRaw('loaded');
     if (!capture) return;
     setLoadedCapture(capture);
-    toast.success(
-      t('calibration.toasts.weightedCaptured', { scaleName: activeScaleName }),
-    );
+    toast.success(`${activeScaleName} weighted reading captured.`);
   };
 
   const saveWizardCalibration = () => {
@@ -767,11 +768,7 @@ function DeviceConfigCard({
           setScale2Offset(String(Math.round(emptyCapture.raw)));
           setScale2Factor(String(calculatedFactor));
         }
-        toast.success(
-          t('calibration.toasts.calibrationSaved', {
-            scaleName: activeScaleName,
-          }),
-        );
+        toast.success(`${activeScaleName} calibration saved.`);
         stopFastMode(false);
         setIsWizardOpen(false);
       },
@@ -782,25 +779,89 @@ function DeviceConfigCard({
   const saveConfig = () => {
     if (!deviceId) return;
 
-    const result = parseManualConfig(
-      {
-        sendInterval,
-        scale1Offset,
-        scale2Offset,
-        scale1Factor,
-        scale2Factor,
-      },
-      t,
-    );
+    const result = parseManualConfig({
+      sendInterval,
+      scale1Offset,
+      scale2Offset,
+      scale1Factor,
+      scale2Factor,
+    });
     if (result.error !== undefined) {
       toast.error(result.error);
       return;
     }
 
     updateConfig.mutate(result.values, {
-      onSuccess: () => toast.success(t('calibration.toasts.configUpdated')),
+      onSuccess: () => toast.success('HiveScale config updated.'),
       onError: error => toast.error(error.message),
     });
+  };
+
+  const saveTempco = () => {
+    if (!deviceId) return;
+
+    const parsedRef = Number(tempcoRefTemp);
+    if (!Number.isFinite(parsedRef)) {
+      toast.error('Reference temperature must be a number (°C).');
+      return;
+    }
+
+    const parsedScale1 = Number(scale1Tempco);
+    const parsedScale2 = Number(scale2Tempco);
+    if (!Number.isFinite(parsedScale1) || !Number.isFinite(parsedScale2)) {
+      toast.error('Temperature coefficients must be numbers (kg/°C).');
+      return;
+    }
+
+    updateConfig.mutate(
+      {
+        tempco_enabled: tempcoEnabled,
+        tempco_source: tempcoSource,
+        tempco_ref_temp_c: parsedRef,
+        scale1_tempco_kg_per_c: parsedScale1,
+        scale2_tempco_kg_per_c: parsedScale2,
+      },
+      {
+        onSuccess: () =>
+          toast.success('Temperature compensation settings saved.'),
+        onError: error => toast.error(error.message),
+      },
+    );
+  };
+
+  const autoFitTempco = (scale: CalibrationScaleNumber) => {
+    if (!deviceId) return;
+    const scaleName = scale === 1 ? scale1Name : scale2Name;
+
+    fitTempco.mutate(
+      {
+        scale,
+        lookback_days: 3,
+        temp_source: tempcoSource,
+        calibration_mode_only: false,
+        apply: true,
+      },
+      {
+        onSuccess: result => {
+          if (!result.ok) {
+            toast.error(
+              `Could not fit ${scaleName}: ${
+                result.reason ?? 'not enough temperature/weight signal.'
+              }`,
+            );
+            return;
+          }
+          const r2 =
+            result.r_squared === null ? 'n/a' : result.r_squared.toFixed(2);
+          toast.success(
+            `${scaleName}: ${result.coeff_kg_per_c.toFixed(4)} kg/°C ` +
+              `@ ${result.ref_temp_c.toFixed(1)}°C (R²=${r2}, n=${result.n}). ` +
+              'Applied and enabled.',
+          );
+        },
+        onError: error => toast.error(error.message),
+      },
+    );
   };
 
   if (!deviceId) return null;
@@ -816,11 +877,11 @@ function DeviceConfigCard({
     scaleName: string,
   ) => {
     if (!hasValidRaw(raw)) {
-      toast.error(t('calibration.errors.noLatestRaw', { scaleName }));
+      toast.error(`No latest raw reading available for ${scaleName} yet.`);
       return;
     }
     setOffset(String(raw as number));
-    toast.success(t('calibration.toasts.offsetSet', { scaleName }));
+    toast.success(`${scaleName} offset set to latest raw reading.`);
   };
 
   const calculateFactorFromKnownWeight = ({
@@ -841,7 +902,6 @@ function DeviceConfigCard({
       offset,
       knownWeightKg,
       scaleName,
-      t,
     });
     if (result.error !== undefined) {
       toast.error(result.error);
@@ -849,12 +909,7 @@ function DeviceConfigCard({
     }
 
     setFactor(result.factor);
-    toast.success(
-      t('calibration.toasts.factorCalculated', {
-        scaleName,
-        factor: result.factor,
-      }),
-    );
+    toast.success(`${scaleName} factor calculated: ${result.factor}`);
   };
 
   const pendingAction =
@@ -865,29 +920,32 @@ function DeviceConfigCard({
   let calibrationModeBadgeLabel: string;
   let calibrationModeDescription: string;
   if (isCalibrationModeActive) {
-    calibrationModeBadgeLabel = t('calibration.mode.activeBadge');
-    calibrationModeDescription = t('calibration.mode.activeDescription');
+    calibrationModeBadgeLabel = 'Active';
+    calibrationModeDescription =
+      'Active: new raw readings should arrive every few seconds.';
   } else if (calibrationQueued) {
-    calibrationModeBadgeLabel = t('calibration.mode.queuedBadge');
-    calibrationModeDescription = t('calibration.mode.queuedDescription');
+    calibrationModeBadgeLabel = 'Queued';
+    calibrationModeDescription =
+      'Queued: waiting for the device to wake up once.';
   } else {
-    calibrationModeBadgeLabel = t('calibration.mode.offBadge');
-    calibrationModeDescription = t('calibration.mode.offDescription');
+    calibrationModeBadgeLabel = 'Off';
+    calibrationModeDescription =
+      'Off: the scale is using normal battery-saving sleep.';
   }
 
   let wizardAlertTitle: string;
   let wizardAlertDescription: string;
   if (isCalibrationModeActive) {
-    wizardAlertTitle = t('calibration.wizard.alertActiveTitle');
-    wizardAlertDescription = t('calibration.wizard.alertActiveDescription', {
-      time: formatDateTime(latest?.measured_at, t),
-    });
+    wizardAlertTitle = 'Fast readings are active';
+    wizardAlertDescription = `Latest reading: ${formatDateTime(latest?.measured_at)}.`;
   } else if (calibrationQueued) {
-    wizardAlertTitle = t('calibration.wizard.alertQueuedTitle');
-    wizardAlertDescription = t('calibration.wizard.alertQueuedDescription');
+    wizardAlertTitle = 'Calibration mode is queued';
+    wizardAlertDescription =
+      'The device needs one normal wake-up before it can receive the command.';
   } else {
-    wizardAlertTitle = t('calibration.wizard.alertStartTitle');
-    wizardAlertDescription = t('calibration.wizard.alertStartDescription');
+    wizardAlertTitle = 'Start calibration mode first';
+    wizardAlertDescription =
+      'This disables the annoying deep-sleep delay for about 10 minutes.';
   }
 
   return (
@@ -895,8 +953,10 @@ function DeviceConfigCard({
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <CardTitle>{t('calibration.title')}</CardTitle>
-            <CardDescription>{t('calibration.subtitle')}</CardDescription>
+            <CardTitle>Calibration</CardTitle>
+            <CardDescription>
+              Guided fast-mode calibration for the raw scale readings.
+            </CardDescription>
           </div>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -905,7 +965,7 @@ function DeviceConfigCard({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 shrink-0"
-                aria-label={t('calibration.instructionsAria')}
+                aria-label="Show scale calibration instructions"
               >
                 <Info className="h-4 w-4" />
               </Button>
@@ -915,13 +975,13 @@ function DeviceConfigCard({
               align="start"
               className="max-w-sm space-y-2 text-left"
             >
-              <p className="font-medium">{t('calibration.workflow.title')}</p>
+              <p className="font-medium">Simple workflow</p>
               <ol className="list-decimal space-y-1 pl-4">
-                <li>{t('calibration.workflow.step1')}</li>
-                <li>{t('calibration.workflow.step2')}</li>
-                <li>{t('calibration.workflow.step3')}</li>
-                <li>{t('calibration.workflow.step4')}</li>
-                <li>{t('calibration.workflow.step5')}</li>
+                <li>Start calibration mode and wait for fast readings.</li>
+                <li>Capture the empty scale reading.</li>
+                <li>Place a known weight and enter its kg value.</li>
+                <li>Capture the weighted reading and save.</li>
+                <li>The app stops calibration mode after saving.</li>
               </ol>
             </TooltipContent>
           </Tooltip>
@@ -935,7 +995,7 @@ function DeviceConfigCard({
             <div className="rounded-md border p-3 text-sm">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="font-medium">{t('calibration.mode.title')}</p>
+                  <p className="font-medium">Fast calibration mode</p>
                   <p className="text-xs text-muted-foreground">
                     {calibrationModeDescription}
                   </p>
@@ -953,14 +1013,14 @@ function DeviceConfigCard({
                     {scale1Name}
                   </span>
                   <br />
-                  {t('calibration.raw', { value: numberOrDash(latestScale1Raw, 0) })}
+                  Raw {numberOrDash(latestScale1Raw, 0)}
                 </div>
                 <div>
                   <span className="font-medium text-foreground">
                     {scale2Name}
                   </span>
                   <br />
-                  {t('calibration.raw', { value: numberOrDash(latestScale2Raw, 0) })}
+                  Raw {numberOrDash(latestScale2Raw, 0)}
                 </div>
               </div>
             </div>
@@ -969,14 +1029,16 @@ function DeviceConfigCard({
               <DialogTrigger asChild>
                 <Button className="w-full" disabled={!canConfigure}>
                   <Zap className="mr-2 h-4 w-4" />
-                  {t('calibration.openWizard')}
+                  Open calibration wizard
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
                 <DialogHeader>
-                  <DialogTitle>{t('calibration.wizard.title')}</DialogTitle>
+                  <DialogTitle>Scale calibration wizard</DialogTitle>
                   <DialogDescription>
-                    {t('calibration.wizard.description')}
+                    Follow the steps in order. The app uses only fresh raw
+                    readings from calibration mode, then saves and stops fast
+                    mode automatically.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -1002,10 +1064,10 @@ function DeviceConfigCard({
                     >
                       <Play className="mr-2 h-4 w-4" />
                       {startCalibrationMode.isPending
-                        ? t('calibration.wizard.starting')
+                        ? 'Starting…'
                         : isCalibrationModeActive
-                          ? t('calibration.wizard.fastModeActive')
-                          : t('calibration.wizard.startFastMode')}
+                          ? 'Fast mode active'
+                          : 'Start fast mode'}
                     </Button>
                     <Button
                       type="button"
@@ -1016,13 +1078,13 @@ function DeviceConfigCard({
                     >
                       <Square className="mr-2 h-4 w-4" />
                       {stopCalibrationMode.isPending
-                        ? t('calibration.wizard.stopping')
-                        : t('calibration.wizard.stopFastMode')}
+                        ? 'Stopping…'
+                        : 'Stop fast mode'}
                     </Button>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>{t('calibration.wizard.whichScale')}</Label>
+                    <Label>Which scale are you calibrating?</Label>
                     <div className="grid gap-2 sm:grid-cols-2">
                       {([1, 2] as CalibrationScaleNumber[]).map(scaleNumber => {
                         const name =
@@ -1041,7 +1103,7 @@ function DeviceConfigCard({
                             <span>
                               <span className="block font-medium">{name}</span>
                               <span className="block text-xs opacity-80">
-                                {t('calibration.wizard.latestRaw', { value: numberOrDash(raw, 0) })}
+                                Latest raw {numberOrDash(raw, 0)}
                               </span>
                             </span>
                           </Button>
@@ -1057,14 +1119,15 @@ function DeviceConfigCard({
                           1
                         </Badge>
                         <div>
-                          <p className="font-medium">{t('calibration.wizard.emptyScale')}</p>
+                          <p className="font-medium">Empty scale</p>
                           <p className="text-xs text-muted-foreground">
-                            {t('calibration.wizard.emptyScaleHint', { scaleName: activeScaleName })}
+                            Remove weight from {activeScaleName}, then wait for
+                            one fast reading.
                           </p>
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {t('calibration.wizard.captured', { value: formatRawCapture(emptyCapture, t) })}
+                        Captured: {formatRawCapture(emptyCapture)}
                       </p>
                       <Button
                         type="button"
@@ -1078,7 +1141,7 @@ function DeviceConfigCard({
                         }
                       >
                         <CheckCircle2 className="mr-2 h-4 w-4" />
-                        {t('calibration.wizard.captureEmptyRaw')}
+                        Capture empty raw
                       </Button>
                     </div>
 
@@ -1090,14 +1153,14 @@ function DeviceConfigCard({
                           2
                         </Badge>
                         <div>
-                          <p className="font-medium">{t('calibration.wizard.knownWeight')}</p>
+                          <p className="font-medium">Known weight</p>
                           <p className="text-xs text-muted-foreground">
-                            {t('calibration.wizard.knownWeightHint')}
+                            Place the weight and enter its value in kg.
                           </p>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="wizard-known-weight">{t('calibration.wizard.weightKg')}</Label>
+                        <Label htmlFor="wizard-known-weight">Weight / kg</Label>
                         <Input
                           id="wizard-known-weight"
                           type="number"
@@ -1112,7 +1175,7 @@ function DeviceConfigCard({
                         />
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {t('calibration.wizard.captured', { value: formatRawCapture(loadedCapture, t) })}
+                        Captured: {formatRawCapture(loadedCapture)}
                       </p>
                       <Button
                         type="button"
@@ -1128,7 +1191,7 @@ function DeviceConfigCard({
                         }
                       >
                         <CheckCircle2 className="mr-2 h-4 w-4" />
-                        {t('calibration.wizard.captureWeightRaw')}
+                        Capture weight raw
                       </Button>
                     </div>
 
@@ -1142,19 +1205,19 @@ function DeviceConfigCard({
                           3
                         </Badge>
                         <div>
-                          <p className="font-medium">{t('calibration.wizard.saveResult')}</p>
+                          <p className="font-medium">Save result</p>
                           <p className="text-xs text-muted-foreground">
-                            {t('calibration.wizard.saveResultHint')}
+                            The factor is calculated automatically.
                           </p>
                         </div>
                       </div>
                       <div className="rounded-md bg-muted p-3 text-sm">
-                        <p className="text-xs text-muted-foreground">{t('calibration.wizard.offset')}</p>
+                        <p className="text-xs text-muted-foreground">Offset</p>
                         <p className="font-mono">
                           {emptyCapture ? Math.round(emptyCapture.raw) : '—'}
                         </p>
                         <p className="mt-2 text-xs text-muted-foreground">
-                          {t('calibration.wizard.factorRawPerKg')}
+                          Factor / raw per kg
                         </p>
                         <p className="font-mono">
                           {calculatedFactor !== null ? calculatedFactor : '—'}
@@ -1171,8 +1234,8 @@ function DeviceConfigCard({
                         }
                       >
                         {updateConfig.isPending
-                          ? t('common.saving')
-                          : t('calibration.wizard.saveAndStop')}
+                          ? 'Saving…'
+                          : 'Save and stop fast mode'}
                       </Button>
                     </div>
                   </div>
@@ -1182,9 +1245,10 @@ function DeviceConfigCard({
                     calculatedFactor === null && (
                       <Alert variant="destructive">
                         <Info className="h-4 w-4" />
-                        <AlertTitle>{t('calibration.wizard.noChangeTitle')}</AlertTitle>
+                        <AlertTitle>No usable raw change detected</AlertTitle>
                         <AlertDescription>
-                          {t('calibration.wizard.noChangeDescription')}
+                          Check that the known weight is on the correct scale
+                          and wait for another fast reading.
                         </AlertDescription>
                       </Alert>
                     )}
@@ -1194,7 +1258,8 @@ function DeviceConfigCard({
 
             {!canConfigure && (
               <p className="text-xs text-muted-foreground">
-                {t('calibration.viewerNotice')}
+                Viewer access can read measurements but cannot change
+                calibration.
               </p>
             )}
 
@@ -1205,7 +1270,7 @@ function DeviceConfigCard({
                   variant="ghost"
                   className="w-full justify-between px-0"
                 >
-                  {t('calibration.advanced.title')}
+                  Advanced manual settings
                   <ChevronDown
                     className={`ml-2 h-4 w-4 transition-transform ${
                       isAdvancedOpen ? 'rotate-180' : ''
@@ -1215,7 +1280,7 @@ function DeviceConfigCard({
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-5 pt-2">
                 <div className="space-y-2">
-                  <Label htmlFor="send-interval">{t('calibration.advanced.sendInterval')}</Label>
+                  <Label htmlFor="send-interval">Send interval seconds</Label>
                   <Input
                     id="send-interval"
                     type="number"
@@ -1229,14 +1294,15 @@ function DeviceConfigCard({
 
                 <div className="space-y-3 rounded-md border p-3">
                   <div>
-                    <p className="font-medium">{t('calibration.advanced.manualValues', { scaleName: scale1Name })}</p>
+                    <p className="font-medium">{scale1Name} manual values</p>
                     <p className="text-xs text-muted-foreground">
-                      {t('calibration.advanced.latestRawHint', { value: numberOrDash(latestScale1Raw, 0) })}
+                      Latest raw: {numberOrDash(latestScale1Raw, 0)}. Weight is
+                      calculated as (raw - offset) / factor.
                     </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="scale-1-offset">
-                      {t('calibration.advanced.offsetLabel')}
+                      Offset / empty raw reading
                     </Label>
                     <div className="flex gap-2">
                       <Input
@@ -1259,13 +1325,13 @@ function DeviceConfigCard({
                           )
                         }
                       >
-                        {t('calibration.advanced.useLatest')}
+                        Use latest
                       </Button>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="scale-1-known-weight">
-                      {t('calibration.advanced.knownWeightLabel')}
+                      Known weight / kg
                     </Label>
                     <div className="flex gap-2">
                       <Input
@@ -1293,13 +1359,13 @@ function DeviceConfigCard({
                           })
                         }
                       >
-                        {t('calibration.advanced.calculate')}
+                        Calculate
                       </Button>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="scale-1-factor">
-                      {t('calibration.advanced.factorLabel')}
+                      Factor / raw counts per kg
                     </Label>
                     <Input
                       id="scale-1-factor"
@@ -1314,14 +1380,15 @@ function DeviceConfigCard({
 
                 <div className="space-y-3 rounded-md border p-3">
                   <div>
-                    <p className="font-medium">{t('calibration.advanced.manualValues', { scaleName: scale2Name })}</p>
+                    <p className="font-medium">{scale2Name} manual values</p>
                     <p className="text-xs text-muted-foreground">
-                      {t('calibration.advanced.latestRawHint', { value: numberOrDash(latestScale2Raw, 0) })}
+                      Latest raw: {numberOrDash(latestScale2Raw, 0)}. Weight is
+                      calculated as (raw - offset) / factor.
                     </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="scale-2-offset">
-                      {t('calibration.advanced.offsetLabel')}
+                      Offset / empty raw reading
                     </Label>
                     <div className="flex gap-2">
                       <Input
@@ -1344,13 +1411,13 @@ function DeviceConfigCard({
                           )
                         }
                       >
-                        {t('calibration.advanced.useLatest')}
+                        Use latest
                       </Button>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="scale-2-known-weight">
-                      {t('calibration.advanced.knownWeightLabel')}
+                      Known weight / kg
                     </Label>
                     <div className="flex gap-2">
                       <Input
@@ -1378,13 +1445,13 @@ function DeviceConfigCard({
                           })
                         }
                       >
-                        {t('calibration.advanced.calculate')}
+                        Calculate
                       </Button>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="scale-2-factor">
-                      {t('calibration.advanced.factorLabel')}
+                      Factor / raw counts per kg
                     </Label>
                     <Input
                       id="scale-2-factor"
@@ -1402,18 +1469,153 @@ function DeviceConfigCard({
                   onClick={saveConfig}
                   disabled={!canConfigure || updateConfig.isPending}
                 >
-                  {updateConfig.isPending
-                    ? t('common.saving')
-                    : t('calibration.advanced.saveManual')}
+                  {updateConfig.isPending ? 'Saving…' : 'Save manual config'}
                 </Button>
                 <div className="text-xs text-muted-foreground">
-                  {t('calibration.advanced.configVersion', { version: config.config_version })}
+                  Config version {config.config_version}. Use advanced settings
+                  only for fine tuning or recovery.
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4 rounded-md border p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="flex items-center gap-2 font-medium">
+                        <Thermometer className="h-4 w-4" />
+                        Temperature compensation
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Load cells drift with temperature. The backend corrects
+                        the reported weight as{' '}
+                        <code>raw − coeff · (temp − ref)</code> on read; the raw
+                        weight is never changed.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={tempcoEnabled}
+                      onCheckedChange={setTempcoEnabled}
+                      disabled={!canConfigure}
+                      aria-label="Enable temperature compensation"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="tempco-source">Temperature source</Label>
+                    <Select
+                      value={tempcoSource}
+                      onValueChange={value =>
+                        setTempcoSource(value as HiveScaleTempcoSource)
+                      }
+                      disabled={!canConfigure}
+                    >
+                      <SelectTrigger id="tempco-source">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ambient">Ambient (SHT4x)</SelectItem>
+                        <SelectItem value="hive_1">Hive 1 probe</SelectItem>
+                        <SelectItem value="hive_2">Hive 2 probe</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Ambient tracks the cell body closely in steady state and
+                      is the recommended default.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="tempco-ref">
+                      Reference temperature / °C
+                    </Label>
+                    <Input
+                      id="tempco-ref"
+                      type="number"
+                      step="any"
+                      value={tempcoRefTemp}
+                      onChange={event => setTempcoRefTemp(event.target.value)}
+                      disabled={!canConfigure}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Temperature at which the correction is zero.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="scale-1-tempco">
+                        {scale1Name} coefficient / kg per °C
+                      </Label>
+                      <Input
+                        id="scale-1-tempco"
+                        type="number"
+                        step="any"
+                        value={scale1Tempco}
+                        onChange={event => setScale1Tempco(event.target.value)}
+                        disabled={!canConfigure}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => autoFitTempco(1)}
+                        disabled={!canConfigure || fitTempco.isPending}
+                      >
+                        {fitTempco.isPending
+                          ? 'Fitting…'
+                          : 'Auto-fit from history'}
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="scale-2-tempco">
+                        {scale2Name} coefficient / kg per °C
+                      </Label>
+                      <Input
+                        id="scale-2-tempco"
+                        type="number"
+                        step="any"
+                        value={scale2Tempco}
+                        onChange={event => setScale2Tempco(event.target.value)}
+                        disabled={!canConfigure}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => autoFitTempco(2)}
+                        disabled={!canConfigure || fitTempco.isPending}
+                      >
+                        {fitTempco.isPending
+                          ? 'Fitting…'
+                          : 'Auto-fit from history'}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    Auto-fit regresses the last 3 days of raw weight against the
+                    selected temperature, then applies and enables the result.
+                    For a clean fit, capture a window where the physical load is
+                    constant and the temperature swings.
+                  </p>
+
+                  <Button
+                    className="w-full"
+                    onClick={saveTempco}
+                    disabled={!canConfigure || updateConfig.isPending}
+                  >
+                    {updateConfig.isPending
+                      ? 'Saving…'
+                      : 'Save temperature compensation'}
+                  </Button>
                 </div>
               </CollapsibleContent>
             </Collapsible>
           </>
         ) : (
-          <p className="text-sm text-muted-foreground">{t('calibration.noConfig')}</p>
+          <p className="text-sm text-muted-foreground">No config returned.</p>
         )}
       </CardContent>
     </Card>
@@ -1427,7 +1629,6 @@ function ScaleMappingCard({
   selectedDevice: HiveScaleDevice | undefined;
   hiveNameOptions: string[];
 }>) {
-  const { t } = useTranslation('hivescale');
   const updateChannels = useUpdateHiveScaleChannels(selectedDevice?.device_id);
   const [scale1DisplayName, setScale1DisplayName] = useState('');
   const [scale2DisplayName, setScale2DisplayName] = useState('');
@@ -1446,7 +1647,7 @@ function ScaleMappingCard({
         scale_2_display_name: scale2DisplayName.trim() || undefined,
       },
       {
-        onSuccess: () => toast.success(t('mapping.success')),
+        onSuccess: () => toast.success('Scale mapping updated.'),
         onError: error => toast.error(error.message),
       },
     );
@@ -1455,24 +1656,27 @@ function ScaleMappingCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('mapping.title')}</CardTitle>
-        <CardDescription>{t('mapping.description')}</CardDescription>
+        <CardTitle>Scale mapping</CardTitle>
+        <CardDescription>
+          These labels stay in HiveScale. Later, this is the right place to map
+          Scale 1/2 to HivePal hive IDs for inspection markers.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <HiveNameInput
           id="mapping-scale-1"
-          label={t('mapping.scale1Label')}
+          label="Display name for Scale 1"
           value={scale1DisplayName}
           onChange={setScale1DisplayName}
-          placeholder={t('mapping.hiveNamePlaceholder')}
+          placeholder="Select or type a hive name"
           hiveNameOptions={hiveNameOptions}
         />
         <HiveNameInput
           id="mapping-scale-2"
-          label={t('mapping.scale2Label')}
+          label="Display name for Scale 2"
           value={scale2DisplayName}
           onChange={setScale2DisplayName}
-          placeholder={t('mapping.hiveNamePlaceholder')}
+          placeholder="Select or type a hive name"
           hiveNameOptions={hiveNameOptions}
         />
         <Button
@@ -1480,7 +1684,7 @@ function ScaleMappingCard({
           onClick={saveMapping}
           disabled={updateChannels.isPending}
         >
-          {updateChannels.isPending ? t('common.saving') : t('mapping.save')}
+          {updateChannels.isPending ? 'Saving…' : 'Save mapping'}
         </Button>
       </CardContent>
     </Card>
@@ -1494,7 +1698,6 @@ function DeviceStatusCard({
   selectedDevice: HiveScaleDevice;
   latest: HiveScaleMeasurement | undefined;
 }>) {
-  const { t } = useTranslation('hivescale');
   const [showShareForm, setShowShareForm] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'admin' | 'viewer'>('viewer');
@@ -1510,7 +1713,7 @@ function DeviceStatusCard({
     event.preventDefault();
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail) {
-      toast.error(t('status.errors.missingEmail'));
+      toast.error('Enter the email address of an existing HivePal user.');
       return;
     }
 
@@ -1521,7 +1724,7 @@ function DeviceStatusCard({
           setEmail('');
           setRole('viewer');
           setShowShareForm(false);
-          toast.success(t('status.shareSuccess'));
+          toast.success('HiveScale access shared.');
         },
         onError: error => toast.error(error.message),
       },
@@ -1533,25 +1736,25 @@ function DeviceStatusCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          {t('status.title')}
+          Device status
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 text-sm">
         <div className="space-y-2">
           <div className="flex justify-between gap-4">
-            <span className="text-muted-foreground">{t('status.deviceId')}</span>
+            <span className="text-muted-foreground">Device ID</span>
             <span className="text-right font-mono">
               {selectedDevice.device_id}
             </span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="text-muted-foreground">{t('status.role')}</span>
+            <span className="text-muted-foreground">Role</span>
             <span>{selectedDevice.role}</span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="text-muted-foreground">{t('status.lastMeasurement')}</span>
+            <span className="text-muted-foreground">Last measurement</span>
             <span className="text-right">
-              {formatDateTime(latest?.measured_at, t)}
+              {formatDateTime(latest?.measured_at)}
             </span>
           </div>
         </div>
@@ -1561,9 +1764,9 @@ function DeviceStatusCard({
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="font-medium">{t('status.sharing')}</p>
+              <p className="font-medium">Sharing</p>
               <p className="text-xs text-muted-foreground">
-                {t('status.sharingHint')}
+                Grant admin or viewer access.
               </p>
             </div>
             {canManageMembers && (
@@ -1573,7 +1776,7 @@ function DeviceStatusCard({
                 onClick={() => setShowShareForm(value => !value)}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                {t('status.shareWithUser')}
+                Share with different user
               </Button>
             )}
           </div>
@@ -1584,7 +1787,7 @@ function DeviceStatusCard({
               onSubmit={submitShare}
             >
               <div className="space-y-2">
-                <Label htmlFor="share-email">{t('status.email')}</Label>
+                <Label htmlFor="share-email">Mail-address</Label>
                 <Input
                   id="share-email"
                   type="email"
@@ -1594,7 +1797,7 @@ function DeviceStatusCard({
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('status.role')}</Label>
+                <Label>Role</Label>
                 <Select
                   value={role}
                   onValueChange={value => setRole(value as 'admin' | 'viewer')}
@@ -1603,8 +1806,8 @@ function DeviceStatusCard({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="viewer">{t('status.viewer')}</SelectItem>
-                    <SelectItem value="admin">{t('status.admin')}</SelectItem>
+                    <SelectItem value="viewer">Viewer</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1614,7 +1817,7 @@ function DeviceStatusCard({
                 disabled={shareDevice.isPending}
               >
                 <UserPlus className="mr-2 h-4 w-4" />
-                {shareDevice.isPending ? t('status.sharing_progress') : t('status.grantAccess')}
+                {shareDevice.isPending ? 'Sharing…' : 'Grant access'}
               </Button>
             </form>
           )}
@@ -1643,12 +1846,12 @@ function DeviceStatusCard({
                       disabled={revokeMember.isPending}
                       onClick={() =>
                         revokeMember.mutate(member.user_id, {
-                          onSuccess: () => toast.success(t('status.accessRevoked')),
+                          onSuccess: () => toast.success('Access revoked.'),
                           onError: error => toast.error(error.message),
                         })
                       }
                     >
-                      {t('status.revokeAccess')}
+                      Revoke access
                     </Button>
                   )}
                 </div>
@@ -1668,7 +1871,6 @@ function FirmwareUploadCard({
   selectedDevice: HiveScaleDevice | undefined;
   deviceId: string | undefined;
 }>) {
-  const { t } = useTranslation('hivescale');
   const [file, setFile] = useState<File | null>(null);
   const [version, setVersion] = useState('');
   const [target, setTarget] = useState<HiveScaleFirmwareTarget>('hivescale');
@@ -1686,12 +1888,12 @@ function FirmwareUploadCard({
     if (disabled) return;
 
     if (!file) {
-      toast.error(t('firmware.errors.missingFile'));
+      toast.error('Choose a firmware binary (.bin) to upload.');
       return;
     }
     const normalizedVersion = version.trim();
     if (!normalizedVersion) {
-      toast.error(t('firmware.errors.missingVersion'));
+      toast.error('Enter a version, e.g. 0.6.3.');
       return;
     }
 
@@ -1703,10 +1905,7 @@ function FirmwareUploadCard({
           setVersion('');
           setFileInputKey(key => key + 1);
           toast.success(
-            t('firmware.success', {
-              version: result.version,
-              target: result.target,
-            }),
+            `Firmware ${result.version} (${result.target}) uploaded and registered.`,
           );
         },
         onError: error => toast.error(error.message),
@@ -1719,14 +1918,15 @@ function FirmwareUploadCard({
     if (!canManage) {
       firmwareNotice = (
         <p className="text-sm text-muted-foreground">
-          {t('firmware.notice.noPermission', { role })}
+          Only device owners and admins can upload firmware. Your role is “
+          {role}”.
         </p>
       );
     }
   } else {
     firmwareNotice = (
       <p className="text-sm text-muted-foreground">
-        {t('firmware.notice.selectDevice')}
+        Select a claimed device to upload firmware.
       </p>
     );
   }
@@ -1736,16 +1936,19 @@ function FirmwareUploadCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
-          {t('firmware.title')}
+          Firmware upload
         </CardTitle>
-        <CardDescription>{t('firmware.description')}</CardDescription>
+        <CardDescription>
+          Upload a firmware binary and register it as a release. New devices of
+          the matching type pick it up on their next update check.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {firmwareNotice}
 
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="firmware-target">{t('firmware.type')}</Label>
+            <Label htmlFor="firmware-target">Firmware type</Label>
             <Select
               value={target}
               onValueChange={value =>
@@ -1754,7 +1957,7 @@ function FirmwareUploadCard({
               disabled={disabled || uploadFirmware.isPending}
             >
               <SelectTrigger id="firmware-target">
-                <SelectValue placeholder={t('firmware.selectType')} />
+                <SelectValue placeholder="Select firmware type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="hivescale">HiveScale</SelectItem>
@@ -1764,7 +1967,7 @@ function FirmwareUploadCard({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="firmware-version">{t('firmware.version')}</Label>
+            <Label htmlFor="firmware-version">Version</Label>
             <Input
               id="firmware-version"
               value={version}
@@ -1775,7 +1978,7 @@ function FirmwareUploadCard({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="firmware-file">{t('firmware.binary')}</Label>
+            <Label htmlFor="firmware-file">Firmware binary</Label>
             <Input
               key={fileInputKey}
               id="firmware-file"
@@ -1796,7 +1999,7 @@ function FirmwareUploadCard({
             className="w-full"
             disabled={disabled || uploadFirmware.isPending}
           >
-            {uploadFirmware.isPending ? t('firmware.uploading') : t('firmware.upload')}
+            {uploadFirmware.isPending ? 'Uploading…' : 'Upload firmware'}
           </Button>
         </form>
       </CardContent>
@@ -1811,7 +2014,6 @@ function SdDataUploadCard({
   selectedDevice: HiveScaleDevice | undefined;
   deviceId: string | undefined;
 }>) {
-  const { t } = useTranslation('hivescale');
   const [file, setFile] = useState<File | null>(null);
   // Reset key lets us clear the native file input after a successful upload.
   const [fileInputKey, setFileInputKey] = useState(0);
@@ -1833,7 +2035,9 @@ function SdDataUploadCard({
     if (disabled) return;
 
     if (!file) {
-      toast.error(t('sdData.errors.missingFile'));
+      toast.error(
+        'Choose the .ndjson backup or the .tar SD download to upload.',
+      );
       return;
     }
 
@@ -1848,10 +2052,11 @@ function SdDataUploadCard({
           skipped: result.skipped,
         });
         toast.success(
-          t('sdData.importSuccess', {
-            count: result.inserted,
-            duplicates: result.duplicates,
-          }),
+          `Imported ${result.inserted} new reading${
+            result.inserted === 1 ? '' : 's'
+          } (${result.duplicates} duplicate${
+            result.duplicates === 1 ? '' : 's'
+          } skipped).`,
         );
       },
       onError: error => toast.error(error.message),
@@ -1863,14 +2068,15 @@ function SdDataUploadCard({
     if (!canManage) {
       notice = (
         <p className="text-sm text-muted-foreground">
-          {t('sdData.notice.noPermission', { role })}
+          Only device owners and admins can import SD data. Your role is “{role}
+          ”.
         </p>
       );
     }
   } else {
     notice = (
       <p className="text-sm text-muted-foreground">
-        {t('sdData.notice.selectDevice')}
+        Select a claimed device to import its SD card data.
       </p>
     );
   }
@@ -1880,16 +2086,19 @@ function SdDataUploadCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Database className="h-5 w-5" />
-          {t('sdData.title')}
+          Import SD card data
         </CardTitle>
-        <CardDescription>{t('sdData.description')}</CardDescription>
+        <CardDescription>
+          Upload the data you downloaded from the scale in AP mode. Re-uploading
+          the same file is safe — existing readings are skipped automatically.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {notice}
 
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="sd-data-file">{t('sdData.file')}</Label>
+            <Label htmlFor="sd-data-file">SD backup file</Label>
             <Input
               key={fileInputKey}
               id="sd-data-file"
@@ -1899,7 +2108,8 @@ function SdDataUploadCard({
               disabled={disabled || importSdData.isPending}
             />
             <p className="text-xs text-muted-foreground">
-              {t('sdData.accepts')}
+              Accepts <code>measurements.ndjson</code> or the{' '}
+              <code>hivescale-sd-data.tar</code> download.
             </p>
             {file && (
               <p className="text-xs text-muted-foreground">
@@ -1914,23 +2124,31 @@ function SdDataUploadCard({
             disabled={disabled || importSdData.isPending}
           >
             <Upload className="mr-2 h-4 w-4" />
-            {importSdData.isPending ? t('sdData.importing') : t('sdData.upload')}
+            {importSdData.isPending ? 'Importing…' : 'Upload SD data'}
           </Button>
         </form>
 
         {lastResult && (
           <div className="mt-4 rounded-md border p-3 text-xs text-muted-foreground">
             <p>
-              {t('sdData.result.imported', {
-                inserted: lastResult.inserted,
-                duplicates: lastResult.duplicates,
-              })}
+              <span className="font-medium text-foreground">
+                {lastResult.inserted}
+              </span>{' '}
+              new readings imported,{' '}
+              <span className="font-medium text-foreground">
+                {lastResult.duplicates}
+              </span>{' '}
+              duplicates skipped.
             </p>
             <p>
-              {t('sdData.result.parsed', { count: lastResult.parsed })}
+              Parsed {lastResult.parsed} record
+              {lastResult.parsed === 1 ? '' : 's'}
               {lastResult.skipped > 0
-                ? t('sdData.result.skipped', { count: lastResult.skipped })
+                ? ` · ${lastResult.skipped} unreadable line${
+                    lastResult.skipped === 1 ? '' : 's'
+                  } skipped`
                 : ''}
+              .
             </p>
           </div>
         )}
@@ -1964,7 +2182,6 @@ function ScaleSetupPanel({
   onRemoveDevice: () => void;
   isRemovingDevice: boolean;
 }>) {
-  const { t } = useTranslation('hivescale');
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -1979,8 +2196,12 @@ function ScaleSetupPanel({
         <CardHeader className="space-y-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <CardTitle>{t('setup.title')}</CardTitle>
-              <CardDescription>{t('setup.description')}</CardDescription>
+              <CardTitle>Devices</CardTitle>
+              <CardDescription>
+                Select or remove a claimed HiveScale device. Expand the setup to
+                claim devices, check status, map scales, and calibrate the raw
+                readings.
+              </CardDescription>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center lg:justify-end">
               {isDeviceListLoading ? (
@@ -2005,12 +2226,12 @@ function ScaleSetupPanel({
                     className="w-full sm:w-auto"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    {t('setup.removeScale')}
+                    Remove scale
                   </Button>
                 </>
               ) : (
                 <span className="text-sm text-muted-foreground">
-                  {t('setup.noDevices')}
+                  No devices claimed yet — open the setup to add one.
                 </span>
               )}
               <CollapsibleTrigger asChild>
@@ -2019,7 +2240,7 @@ function ScaleSetupPanel({
                   variant="outline"
                   className="w-full justify-between sm:w-auto sm:min-w-40"
                 >
-                  {isOpen ? t('setup.hide') : t('setup.show')}
+                  {isOpen ? 'Hide setup' : 'Show setup'}
                   <ChevronDown
                     className={`ml-2 h-4 w-4 transition-transform ${
                       isOpen ? 'rotate-180' : ''
@@ -2067,7 +2288,6 @@ function ScaleSetupPanel({
 }
 
 export function HiveScalePage() {
-  const { t } = useTranslation('hivescale');
   const queryClient = useQueryClient();
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>();
   const [dateRange, setDateRange] = useState<HiveScaleDateRange>(
@@ -2163,7 +2383,6 @@ export function HiveScalePage() {
     }
   }, [devices.data, selectedDeviceId]);
 
-
   useEffect(() => {
     if (typeof globalThis.window === 'undefined') return;
 
@@ -2191,7 +2410,8 @@ export function HiveScalePage() {
     device => device.device_id === selectedDeviceId,
   );
   const latest = latestMeasurement(measurements.data);
-  const latestBatteryVoltage = latest?.battery_voltage_v ?? latest?.battery_voltage;
+  const latestBatteryVoltage =
+    latest?.battery_voltage_v ?? latest?.battery_voltage;
   const hasBatteryTelemetry = hasTelemetryValue(
     latestBatteryVoltage,
     latest?.battery_soc_percent,
@@ -2211,8 +2431,8 @@ export function HiveScalePage() {
     }
   }, [isCalibrationPolling, latest?.calibration_mode]);
 
-  const scale1Name = channelName(selectedDevice, 1, t('common.scale1'));
-  const scale2Name = channelName(selectedDevice, 2, t('common.scale2'));
+  const scale1Name = channelName(selectedDevice, 1, 'Scale 1');
+  const scale2Name = channelName(selectedDevice, 2, 'Scale 2');
 
   const refreshHiveScaleData = async () => {
     setIsRefreshing(true);
@@ -2229,7 +2449,9 @@ export function HiveScalePage() {
       ]);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : t('page.refreshError'),
+        error instanceof Error
+          ? error.message
+          : 'Could not refresh HiveScale data.',
       );
     } finally {
       setIsRefreshing(false);
@@ -2239,16 +2461,14 @@ export function HiveScalePage() {
   const removeSelectedDevice = () => {
     if (!selectedDevice) return;
     const confirmed = globalThis.confirm(
-      t('page.removeConfirm', {
-        name: selectedDevice.display_name || selectedDevice.device_id,
-      }),
+      `Remove ${selectedDevice.display_name || selectedDevice.device_id} from your HivePal account? You can add it again with the claim code when no other users still have access.`,
     );
     if (!confirmed) return;
 
     removeDevice.mutate(selectedDevice.device_id, {
       onSuccess: () => {
         setSelectedDeviceId(undefined);
-        toast.success(t('page.removeSuccess'));
+        toast.success('HiveScale device removed from your account.');
       },
       onError: error => toast.error(error.message),
     });
@@ -2258,8 +2478,11 @@ export function HiveScalePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('page.title')}</h1>
-          <p className="text-muted-foreground">{t('page.subtitle')}</p>
+          <h1 className="text-3xl font-bold tracking-tight">HiveScale</h1>
+          <p className="text-muted-foreground">
+            Live weight and temperature visualisation from your separate
+            HiveScale backend.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {selectedDevice && (
@@ -2278,7 +2501,7 @@ export function HiveScalePage() {
             <RefreshCw
               className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
             />
-            {isRefreshing ? t('page.refreshing') : t('page.refresh')}
+            {isRefreshing ? 'Refreshing…' : 'Refresh'}
           </Button>
         </div>
       </div>
@@ -2301,7 +2524,7 @@ export function HiveScalePage() {
         <div className="grid gap-4 md:grid-cols-3">
           <LatestValuePanel
             title={scale1Name}
-            description={t('common.scale1')}
+            description="Scale 1"
             icon={Weight}
             badge={
               <HiveScaleSeverityPill
@@ -2311,15 +2534,15 @@ export function HiveScalePage() {
             }
             rows={[
               {
-                label: t('panel.weight'),
+                label: 'Weight',
                 value: `${numberOrDash(latest?.scale_1_weight_kg)} kg`,
               },
               {
-                label: t('panel.hiveTemp'),
+                label: 'Hive temp',
                 value: `${numberOrDash(latest?.hive_1_temp_c)} °C`,
               },
               {
-                label: t('panel.rmsSound'),
+                label: 'RMS sound',
                 value: `${numberOrDash(latest?.mic_left_rms_dbfs)} dBFS`,
               },
             ]}
@@ -2335,7 +2558,7 @@ export function HiveScalePage() {
           />
           <LatestValuePanel
             title={scale2Name}
-            description={t('common.scale2')}
+            description="Scale 2"
             icon={Weight}
             badge={
               <HiveScaleSeverityPill
@@ -2345,15 +2568,15 @@ export function HiveScalePage() {
             }
             rows={[
               {
-                label: t('panel.weight'),
+                label: 'Weight',
                 value: `${numberOrDash(latest?.scale_2_weight_kg)} kg`,
               },
               {
-                label: t('panel.hiveTemp'),
+                label: 'Hive temp',
                 value: `${numberOrDash(latest?.hive_2_temp_c)} °C`,
               },
               {
-                label: t('panel.rmsSound'),
+                label: 'RMS sound',
                 value: `${numberOrDash(latest?.mic_right_rms_dbfs)} dBFS`,
               },
             ]}
@@ -2368,40 +2591,40 @@ export function HiveScalePage() {
             }}
           />
           <LatestValuePanel
-            title={t('panel.ambient.title')}
-            description={t('panel.ambient.description')}
+            title="Ambient"
+            description="Outside sensor"
             icon={Droplets}
             rows={[
               {
-                label: t('panel.temperature'),
+                label: 'Temperature',
                 value: `${numberOrDash(latest?.ambient_temp_c)} °C`,
               },
               {
-                label: t('panel.humidity'),
+                label: 'Humidity',
                 value: `${numberOrDash(latest?.ambient_humidity_percent, 0)}%`,
               },
             ]}
           />
           {hasBatteryTelemetry && (
             <LatestValuePanel
-              title={t('panel.battery.title')}
-              description={t('panel.battery.description')}
+              title="Battery"
+              description="MAX17048 fuel gauge"
               icon={Battery}
               rows={[
                 {
-                  label: t('panel.voltage'),
+                  label: 'Voltage',
                   value: `${numberOrDash(latestBatteryVoltage, 2)} V`,
                 },
                 {
-                  label: t('panel.charge'),
+                  label: 'Charge',
                   value: `${numberOrDash(latest?.battery_soc_percent, 0)}%`,
                 },
                 {
-                  label: t('panel.alert'),
+                  label: 'Alert',
                   value: statusOrDash(
                     latest?.battery_alert,
-                    t('panel.alertOn'),
-                    t('panel.alertOff'),
+                    'Alert',
+                    'No alert',
                   ),
                 },
               ]}
@@ -2409,20 +2632,20 @@ export function HiveScalePage() {
           )}
           {hasSolarTelemetry && (
             <LatestValuePanel
-              title={t('panel.solar.title')}
-              description={t('panel.solar.description')}
+              title="Solar input"
+              description="INA219 panel monitor"
               icon={Sun}
               rows={[
                 {
-                  label: t('panel.loadVoltage'),
+                  label: 'Load voltage',
                   value: `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`,
                 },
                 {
-                  label: t('panel.current'),
+                  label: 'Current',
                   value: `${numberOrDash(latest?.solar_current_ma, 0)} mA`,
                 },
                 {
-                  label: t('panel.power'),
+                  label: 'Power',
                   value: `${numberOrDash(latest?.solar_power_mw, 0)} mW`,
                 },
               ]}
