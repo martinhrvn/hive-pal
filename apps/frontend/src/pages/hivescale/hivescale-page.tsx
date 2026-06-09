@@ -1,11 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  FormEvent,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { FormEvent, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
@@ -600,7 +594,6 @@ function DeviceConfigCard({
   const updateConfig = useUpdateHiveScaleConfig(deviceId);
   const startCalibrationMode = useStartHiveScaleCalibrationMode(deviceId);
   const stopCalibrationMode = useStopHiveScaleCalibrationMode(deviceId);
-  const fitTempco = useFitHiveScaleTempCompensation(deviceId);
   const [sendInterval, setSendInterval] = useState('');
   const [scale1Offset, setScale1Offset] = useState('');
   const [scale1Factor, setScale1Factor] = useState('');
@@ -608,13 +601,6 @@ function DeviceConfigCard({
   const [scale2Offset, setScale2Offset] = useState('');
   const [scale2Factor, setScale2Factor] = useState('');
   const [scale2KnownWeightKg, setScale2KnownWeightKg] = useState('');
-  // Load-cell temperature compensation (applied in the HiveScale backend).
-  const [tempcoEnabled, setTempcoEnabled] = useState(false);
-  const [tempcoSource, setTempcoSource] =
-    useState<HiveScaleTempcoSource>('ambient');
-  const [tempcoRefTemp, setTempcoRefTemp] = useState('');
-  const [scale1Tempco, setScale1Tempco] = useState('');
-  const [scale2Tempco, setScale2Tempco] = useState('');
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [calibrationQueued, setCalibrationQueued] = useState(false);
@@ -634,11 +620,6 @@ function DeviceConfigCard({
     setScale1Factor(String(config.scale1_factor));
     setScale2Offset(String(config.scale2_offset));
     setScale2Factor(String(config.scale2_factor));
-    setTempcoEnabled(Boolean(config.tempco_enabled));
-    setTempcoSource(config.tempco_source ?? 'ambient');
-    setTempcoRefTemp(String(config.tempco_ref_temp_c ?? 20));
-    setScale1Tempco(String(config.scale1_tempco_kg_per_c ?? 0));
-    setScale2Tempco(String(config.scale2_tempco_kg_per_c ?? 0));
   }, [config]);
 
   useEffect(() => {
@@ -820,77 +801,6 @@ function DeviceConfigCard({
     });
   };
 
-  const saveTempco = () => {
-    if (!deviceId) return;
-
-    const parsedRef = Number(tempcoRefTemp);
-    if (!Number.isFinite(parsedRef)) {
-      toast.error(t('calibration.tempco.errors.refTemp'));
-      return;
-    }
-
-    const parsedScale1 = Number(scale1Tempco);
-    const parsedScale2 = Number(scale2Tempco);
-    if (!Number.isFinite(parsedScale1) || !Number.isFinite(parsedScale2)) {
-      toast.error(t('calibration.tempco.errors.coeff'));
-      return;
-    }
-
-    updateConfig.mutate(
-      {
-        tempco_enabled: tempcoEnabled,
-        tempco_source: tempcoSource,
-        tempco_ref_temp_c: parsedRef,
-        scale1_tempco_kg_per_c: parsedScale1,
-        scale2_tempco_kg_per_c: parsedScale2,
-      },
-      {
-        onSuccess: () => toast.success(t('calibration.tempco.toasts.saved')),
-        onError: error => toast.error(error.message),
-      },
-    );
-  };
-
-  const autoFitTempco = (scale: CalibrationScaleNumber) => {
-    if (!deviceId) return;
-    const scaleName = scale === 1 ? scale1Name : scale2Name;
-
-    fitTempco.mutate(
-      {
-        scale,
-        lookback_days: 3,
-        temp_source: tempcoSource,
-        calibration_mode_only: false,
-        apply: true,
-      },
-      {
-        onSuccess: result => {
-          if (!result.ok) {
-            toast.error(
-              t('calibration.tempco.toasts.fitFailed', {
-                scaleName,
-                reason: result.reason ?? t('calibration.tempco.toasts.noSignal'),
-              }),
-            );
-            return;
-          }
-          const r2 =
-            result.r_squared === null ? 'n/a' : result.r_squared.toFixed(2);
-          toast.success(
-            t('calibration.tempco.toasts.fitApplied', {
-              scaleName,
-              coeff: result.coeff_kg_per_c.toFixed(4),
-              refTemp: result.ref_temp_c.toFixed(1),
-              r2,
-              n: result.n,
-            }),
-          );
-        },
-        onError: error => toast.error(error.message),
-      },
-    );
-  };
-
   if (!deviceId) return null;
 
   const latestScale1Raw = latest?.scale_1_raw;
@@ -1041,14 +951,18 @@ function DeviceConfigCard({
                     {scale1Name}
                   </span>
                   <br />
-                  {t('calibration.raw', { value: numberOrDash(latestScale1Raw, 0) })}
+                  {t('calibration.raw', {
+                    value: numberOrDash(latestScale1Raw, 0),
+                  })}
                 </div>
                 <div>
                   <span className="font-medium text-foreground">
                     {scale2Name}
                   </span>
                   <br />
-                  {t('calibration.raw', { value: numberOrDash(latestScale2Raw, 0) })}
+                  {t('calibration.raw', {
+                    value: numberOrDash(latestScale2Raw, 0),
+                  })}
                 </div>
               </div>
             </div>
@@ -1129,7 +1043,9 @@ function DeviceConfigCard({
                             <span>
                               <span className="block font-medium">{name}</span>
                               <span className="block text-xs opacity-80">
-                                {t('calibration.wizard.latestRaw', { value: numberOrDash(raw, 0) })}
+                                {t('calibration.wizard.latestRaw', {
+                                  value: numberOrDash(raw, 0),
+                                })}
                               </span>
                             </span>
                           </Button>
@@ -1145,14 +1061,20 @@ function DeviceConfigCard({
                           1
                         </Badge>
                         <div>
-                          <p className="font-medium">{t('calibration.wizard.emptyScale')}</p>
+                          <p className="font-medium">
+                            {t('calibration.wizard.emptyScale')}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {t('calibration.wizard.emptyScaleHint', { scaleName: activeScaleName })}
+                            {t('calibration.wizard.emptyScaleHint', {
+                              scaleName: activeScaleName,
+                            })}
                           </p>
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {t('calibration.wizard.captured', { value: formatRawCapture(emptyCapture, t) })}
+                        {t('calibration.wizard.captured', {
+                          value: formatRawCapture(emptyCapture, t),
+                        })}
                       </p>
                       <Button
                         type="button"
@@ -1178,14 +1100,18 @@ function DeviceConfigCard({
                           2
                         </Badge>
                         <div>
-                          <p className="font-medium">{t('calibration.wizard.knownWeight')}</p>
+                          <p className="font-medium">
+                            {t('calibration.wizard.knownWeight')}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             {t('calibration.wizard.knownWeightHint')}
                           </p>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="wizard-known-weight">{t('calibration.wizard.weightKg')}</Label>
+                        <Label htmlFor="wizard-known-weight">
+                          {t('calibration.wizard.weightKg')}
+                        </Label>
                         <Input
                           id="wizard-known-weight"
                           type="number"
@@ -1200,7 +1126,9 @@ function DeviceConfigCard({
                         />
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {t('calibration.wizard.captured', { value: formatRawCapture(loadedCapture, t) })}
+                        {t('calibration.wizard.captured', {
+                          value: formatRawCapture(loadedCapture, t),
+                        })}
                       </p>
                       <Button
                         type="button"
@@ -1230,14 +1158,18 @@ function DeviceConfigCard({
                           3
                         </Badge>
                         <div>
-                          <p className="font-medium">{t('calibration.wizard.saveResult')}</p>
+                          <p className="font-medium">
+                            {t('calibration.wizard.saveResult')}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             {t('calibration.wizard.saveResultHint')}
                           </p>
                         </div>
                       </div>
                       <div className="rounded-md bg-muted p-3 text-sm">
-                        <p className="text-xs text-muted-foreground">{t('calibration.wizard.offset')}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('calibration.wizard.offset')}
+                        </p>
                         <p className="font-mono">
                           {emptyCapture ? Math.round(emptyCapture.raw) : '—'}
                         </p>
@@ -1270,7 +1202,9 @@ function DeviceConfigCard({
                     calculatedFactor === null && (
                       <Alert variant="destructive">
                         <Info className="h-4 w-4" />
-                        <AlertTitle>{t('calibration.wizard.noChangeTitle')}</AlertTitle>
+                        <AlertTitle>
+                          {t('calibration.wizard.noChangeTitle')}
+                        </AlertTitle>
                         <AlertDescription>
                           {t('calibration.wizard.noChangeDescription')}
                         </AlertDescription>
@@ -1303,7 +1237,9 @@ function DeviceConfigCard({
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-5 pt-2">
                 <div className="space-y-2">
-                  <Label htmlFor="send-interval">{t('calibration.advanced.sendInterval')}</Label>
+                  <Label htmlFor="send-interval">
+                    {t('calibration.advanced.sendInterval')}
+                  </Label>
                   <Input
                     id="send-interval"
                     type="number"
@@ -1317,9 +1253,15 @@ function DeviceConfigCard({
 
                 <div className="space-y-3 rounded-md border p-3">
                   <div>
-                    <p className="font-medium">{t('calibration.advanced.manualValues', { scaleName: scale1Name })}</p>
+                    <p className="font-medium">
+                      {t('calibration.advanced.manualValues', {
+                        scaleName: scale1Name,
+                      })}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {t('calibration.advanced.latestRawHint', { value: numberOrDash(latestScale1Raw, 0) })}
+                      {t('calibration.advanced.latestRawHint', {
+                        value: numberOrDash(latestScale1Raw, 0),
+                      })}
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -1402,9 +1344,15 @@ function DeviceConfigCard({
 
                 <div className="space-y-3 rounded-md border p-3">
                   <div>
-                    <p className="font-medium">{t('calibration.advanced.manualValues', { scaleName: scale2Name })}</p>
+                    <p className="font-medium">
+                      {t('calibration.advanced.manualValues', {
+                        scaleName: scale2Name,
+                      })}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {t('calibration.advanced.latestRawHint', { value: numberOrDash(latestScale2Raw, 0) })}
+                      {t('calibration.advanced.latestRawHint', {
+                        value: numberOrDash(latestScale2Raw, 0),
+                      })}
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -1495,154 +1443,272 @@ function DeviceConfigCard({
                     : t('calibration.advanced.saveManual')}
                 </Button>
                 <div className="text-xs text-muted-foreground">
-                  {t('calibration.advanced.configVersion', { version: config.config_version })}
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4 rounded-md border p-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="flex items-center gap-2 font-medium">
-                        <Thermometer className="h-4 w-4" />
-                        {t('calibration.tempco.title')}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('calibration.tempco.description')}
-                      </p>
-                    </div>
-                    <Switch
-                      checked={tempcoEnabled}
-                      onCheckedChange={setTempcoEnabled}
-                      disabled={!canConfigure}
-                      aria-label={t('calibration.tempco.enableAria')}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="tempco-source">
-                      {t('calibration.tempco.sourceLabel')}
-                    </Label>
-                    <Select
-                      value={tempcoSource}
-                      onValueChange={value =>
-                        setTempcoSource(value as HiveScaleTempcoSource)
-                      }
-                      disabled={!canConfigure}
-                    >
-                      <SelectTrigger id="tempco-source">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ambient">
-                          {t('calibration.tempco.source.ambient')}
-                        </SelectItem>
-                        <SelectItem value="hive_1">
-                          {t('calibration.tempco.source.hive1')}
-                        </SelectItem>
-                        <SelectItem value="hive_2">
-                          {t('calibration.tempco.source.hive2')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      {t('calibration.tempco.sourceHint')}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="tempco-ref">
-                      {t('calibration.tempco.refLabel')}
-                    </Label>
-                    <Input
-                      id="tempco-ref"
-                      type="number"
-                      step="any"
-                      value={tempcoRefTemp}
-                      onChange={event => setTempcoRefTemp(event.target.value)}
-                      disabled={!canConfigure}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t('calibration.tempco.refHint')}
-                    </p>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="scale-1-tempco">
-                        {t('calibration.tempco.coeffLabel', {
-                          scaleName: scale1Name,
-                        })}
-                      </Label>
-                      <Input
-                        id="scale-1-tempco"
-                        type="number"
-                        step="any"
-                        value={scale1Tempco}
-                        onChange={event => setScale1Tempco(event.target.value)}
-                        disabled={!canConfigure}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => autoFitTempco(1)}
-                        disabled={!canConfigure || fitTempco.isPending}
-                      >
-                        {fitTempco.isPending
-                          ? t('calibration.tempco.fitting')
-                          : t('calibration.tempco.autoFit')}
-                      </Button>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="scale-2-tempco">
-                        {t('calibration.tempco.coeffLabel', {
-                          scaleName: scale2Name,
-                        })}
-                      </Label>
-                      <Input
-                        id="scale-2-tempco"
-                        type="number"
-                        step="any"
-                        value={scale2Tempco}
-                        onChange={event => setScale2Tempco(event.target.value)}
-                        disabled={!canConfigure}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => autoFitTempco(2)}
-                        disabled={!canConfigure || fitTempco.isPending}
-                      >
-                        {fitTempco.isPending
-                          ? t('calibration.tempco.fitting')
-                          : t('calibration.tempco.autoFit')}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground">
-                    {t('calibration.tempco.autoFitHint')}
-                  </p>
-
-                  <Button
-                    className="w-full"
-                    onClick={saveTempco}
-                    disabled={!canConfigure || updateConfig.isPending}
-                  >
-                    {updateConfig.isPending
-                      ? t('common.saving')
-                      : t('calibration.tempco.save')}
-                  </Button>
+                  {t('calibration.advanced.configVersion', {
+                    version: config.config_version,
+                  })}
                 </div>
               </CollapsibleContent>
             </Collapsible>
           </>
         ) : (
-          <p className="text-sm text-muted-foreground">{t('calibration.noConfig')}</p>
+          <p className="text-sm text-muted-foreground">
+            {t('calibration.noConfig')}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function TempCompensationCard({
+  selectedDevice,
+  deviceId,
+}: Readonly<{
+  selectedDevice: HiveScaleDevice | undefined;
+  deviceId: string | undefined;
+}>) {
+  const { t } = useTranslation('hivescale');
+  const { data: config, isLoading } = useHiveScaleDeviceConfig(deviceId);
+  const updateConfig = useUpdateHiveScaleConfig(deviceId);
+  const fitTempco = useFitHiveScaleTempCompensation(deviceId);
+  // Load-cell temperature compensation (applied in the HiveScale backend).
+  const [tempcoEnabled, setTempcoEnabled] = useState(false);
+  const [tempcoSource, setTempcoSource] =
+    useState<HiveScaleTempcoSource>('ambient');
+  const [tempcoRefTemp, setTempcoRefTemp] = useState('');
+  const [scale1Tempco, setScale1Tempco] = useState('');
+  const [scale2Tempco, setScale2Tempco] = useState('');
+
+  useEffect(() => {
+    if (!config) return;
+    setTempcoEnabled(Boolean(config.tempco_enabled));
+    setTempcoSource(config.tempco_source ?? 'ambient');
+    setTempcoRefTemp(String(config.tempco_ref_temp_c ?? 20));
+    setScale1Tempco(String(config.scale1_tempco_kg_per_c ?? 0));
+    setScale2Tempco(String(config.scale2_tempco_kg_per_c ?? 0));
+  }, [config]);
+
+  if (!deviceId) return null;
+
+  const canConfigure =
+    selectedDevice?.role === 'owner' || selectedDevice?.role === 'admin';
+  const scale1Name = channelName(selectedDevice, 1, t('common.scale1'));
+  const scale2Name = channelName(selectedDevice, 2, t('common.scale2'));
+
+  const saveTempco = () => {
+    const parsedRef = Number(tempcoRefTemp);
+    if (!Number.isFinite(parsedRef)) {
+      toast.error(t('calibration.tempco.errors.refTemp'));
+      return;
+    }
+
+    const parsedScale1 = Number(scale1Tempco);
+    const parsedScale2 = Number(scale2Tempco);
+    if (!Number.isFinite(parsedScale1) || !Number.isFinite(parsedScale2)) {
+      toast.error(t('calibration.tempco.errors.coeff'));
+      return;
+    }
+
+    updateConfig.mutate(
+      {
+        tempco_enabled: tempcoEnabled,
+        tempco_source: tempcoSource,
+        tempco_ref_temp_c: parsedRef,
+        scale1_tempco_kg_per_c: parsedScale1,
+        scale2_tempco_kg_per_c: parsedScale2,
+      },
+      {
+        onSuccess: () => toast.success(t('calibration.tempco.toasts.saved')),
+        onError: error => toast.error(error.message),
+      },
+    );
+  };
+
+  const autoFitTempco = (scale: CalibrationScaleNumber) => {
+    const scaleName = scale === 1 ? scale1Name : scale2Name;
+
+    fitTempco.mutate(
+      {
+        scale,
+        lookback_days: 3,
+        temp_source: tempcoSource,
+        calibration_mode_only: false,
+        apply: true,
+      },
+      {
+        onSuccess: result => {
+          if (!result.ok) {
+            toast.error(
+              t('calibration.tempco.toasts.fitFailed', {
+                scaleName,
+                reason:
+                  result.reason ?? t('calibration.tempco.toasts.noSignal'),
+              }),
+            );
+            return;
+          }
+          const r2 =
+            result.r_squared === null ? 'n/a' : result.r_squared.toFixed(2);
+          toast.success(
+            t('calibration.tempco.toasts.fitApplied', {
+              scaleName,
+              coeff: result.coeff_kg_per_c.toFixed(4),
+              refTemp: result.ref_temp_c.toFixed(1),
+              r2,
+              n: result.n,
+            }),
+          );
+        },
+        onError: error => toast.error(error.message),
+      },
+    );
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Thermometer className="h-4 w-4" />
+          {t('calibration.tempco.title')}
+        </CardTitle>
+        <CardDescription>{t('calibration.tempco.description')}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isLoading ? (
+          <Skeleton className="h-48 w-full" />
+        ) : config ? (
+          <>
+            <div className="flex items-center justify-between gap-3">
+              <Label htmlFor="tempco-enabled">
+                {t('calibration.tempco.enableAria')}
+              </Label>
+              <Switch
+                id="tempco-enabled"
+                checked={tempcoEnabled}
+                onCheckedChange={setTempcoEnabled}
+                disabled={!canConfigure}
+                aria-label={t('calibration.tempco.enableAria')}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tempco-source">
+                {t('calibration.tempco.sourceLabel')}
+              </Label>
+              <Select
+                value={tempcoSource}
+                onValueChange={value =>
+                  setTempcoSource(value as HiveScaleTempcoSource)
+                }
+                disabled={!canConfigure}
+              >
+                <SelectTrigger id="tempco-source">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ambient">
+                    {t('calibration.tempco.source.ambient')}
+                  </SelectItem>
+                  <SelectItem value="hive_1">
+                    {t('calibration.tempco.source.hive1')}
+                  </SelectItem>
+                  <SelectItem value="hive_2">
+                    {t('calibration.tempco.source.hive2')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {t('calibration.tempco.sourceHint')}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tempco-ref">
+                {t('calibration.tempco.refLabel')}
+              </Label>
+              <Input
+                id="tempco-ref"
+                type="number"
+                step="any"
+                value={tempcoRefTemp}
+                onChange={event => setTempcoRefTemp(event.target.value)}
+                disabled={!canConfigure}
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('calibration.tempco.refHint')}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="scale-1-tempco">
+                {t('calibration.tempco.coeffLabel', { scaleName: scale1Name })}
+              </Label>
+              <Input
+                id="scale-1-tempco"
+                type="number"
+                step="any"
+                value={scale1Tempco}
+                onChange={event => setScale1Tempco(event.target.value)}
+                disabled={!canConfigure}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => autoFitTempco(1)}
+                disabled={!canConfigure || fitTempco.isPending}
+              >
+                {fitTempco.isPending
+                  ? t('calibration.tempco.fitting')
+                  : t('calibration.tempco.autoFit')}
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="scale-2-tempco">
+                {t('calibration.tempco.coeffLabel', { scaleName: scale2Name })}
+              </Label>
+              <Input
+                id="scale-2-tempco"
+                type="number"
+                step="any"
+                value={scale2Tempco}
+                onChange={event => setScale2Tempco(event.target.value)}
+                disabled={!canConfigure}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => autoFitTempco(2)}
+                disabled={!canConfigure || fitTempco.isPending}
+              >
+                {fitTempco.isPending
+                  ? t('calibration.tempco.fitting')
+                  : t('calibration.tempco.autoFit')}
+              </Button>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              {t('calibration.tempco.autoFitHint')}
+            </p>
+
+            <Button
+              className="w-full"
+              onClick={saveTempco}
+              disabled={!canConfigure || updateConfig.isPending}
+            >
+              {updateConfig.isPending
+                ? t('common.saving')
+                : t('calibration.tempco.save')}
+            </Button>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {t('calibration.noConfig')}
+          </p>
         )}
       </CardContent>
     </Card>
@@ -1768,7 +1834,9 @@ function DeviceStatusCard({
       <CardContent className="space-y-4 text-sm">
         <div className="space-y-2">
           <div className="flex justify-between gap-4">
-            <span className="text-muted-foreground">{t('status.deviceId')}</span>
+            <span className="text-muted-foreground">
+              {t('status.deviceId')}
+            </span>
             <span className="text-right font-mono">
               {selectedDevice.device_id}
             </span>
@@ -1778,7 +1846,9 @@ function DeviceStatusCard({
             <span>{selectedDevice.role}</span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="text-muted-foreground">{t('status.lastMeasurement')}</span>
+            <span className="text-muted-foreground">
+              {t('status.lastMeasurement')}
+            </span>
             <span className="text-right">
               {formatDateTime(latest?.measured_at, t)}
             </span>
@@ -1843,7 +1913,9 @@ function DeviceStatusCard({
                 disabled={shareDevice.isPending}
               >
                 <UserPlus className="mr-2 h-4 w-4" />
-                {shareDevice.isPending ? t('status.sharing_progress') : t('status.grantAccess')}
+                {shareDevice.isPending
+                  ? t('status.sharing_progress')
+                  : t('status.grantAccess')}
               </Button>
             </form>
           )}
@@ -1872,7 +1944,8 @@ function DeviceStatusCard({
                       disabled={revokeMember.isPending}
                       onClick={() =>
                         revokeMember.mutate(member.user_id, {
-                          onSuccess: () => toast.success(t('status.accessRevoked')),
+                          onSuccess: () =>
+                            toast.success(t('status.accessRevoked')),
                           onError: error => toast.error(error.message),
                         })
                       }
@@ -2025,7 +2098,9 @@ function FirmwareUploadCard({
             className="w-full"
             disabled={disabled || uploadFirmware.isPending}
           >
-            {uploadFirmware.isPending ? t('firmware.uploading') : t('firmware.upload')}
+            {uploadFirmware.isPending
+              ? t('firmware.uploading')
+              : t('firmware.upload')}
           </Button>
         </form>
       </CardContent>
@@ -2143,7 +2218,9 @@ function SdDataUploadCard({
             disabled={disabled || importSdData.isPending}
           >
             <Upload className="mr-2 h-4 w-4" />
-            {importSdData.isPending ? t('sdData.importing') : t('sdData.upload')}
+            {importSdData.isPending
+              ? t('sdData.importing')
+              : t('sdData.upload')}
           </Button>
         </form>
 
@@ -2279,6 +2356,10 @@ function ScaleSetupPanel({
                 latest={latest}
                 onCalibrationPollingChange={onCalibrationPollingChange}
               />
+              <TempCompensationCard
+                selectedDevice={selectedDevice}
+                deviceId={selectedDeviceId}
+              />
               <SdDataUploadCard
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
@@ -2392,7 +2473,6 @@ export function HiveScalePage() {
     }
   }, [devices.data, selectedDeviceId]);
 
-
   useEffect(() => {
     if (typeof globalThis.window === 'undefined') return;
 
@@ -2420,7 +2500,8 @@ export function HiveScalePage() {
     device => device.device_id === selectedDeviceId,
   );
   const latest = latestMeasurement(measurements.data);
-  const latestBatteryVoltage = latest?.battery_voltage_v ?? latest?.battery_voltage;
+  const latestBatteryVoltage =
+    latest?.battery_voltage_v ?? latest?.battery_voltage;
   const hasBatteryTelemetry = hasTelemetryValue(
     latestBatteryVoltage,
     latest?.battery_soc_percent,
@@ -2487,7 +2568,9 @@ export function HiveScalePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('page.title')}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t('page.title')}
+          </h1>
           <p className="text-muted-foreground">{t('page.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
