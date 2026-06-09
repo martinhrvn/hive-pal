@@ -12,6 +12,7 @@
 ## Product
 
 - [Hive Pal landing page](https://hivepal.app/): Overview of the platform, AI voice inspection features, and pricing (free for self-host and early cloud adopters).
+- [Features](https://hivepal.app/features): Complete catalogue of what Hive Pal does, grouped by area — AI voice inspections (record at the hive, automatic Whisper transcription, AI-drafted notes), inspections and record-keeping (structured inspections, quick checks, batch inspections, scheduling, photos, treatments), colony and hive management (multiple apiaries, hive configuration, queen tracking, equipment planning, QR codes, hive scale monitoring), planning and insight (calendar, reports and analytics, harvest tracking, AI assistant, bulk actions), collaboration and sharing (apiary sharing, invite links, shared views), and open-source/privacy (MIT-licensed, self-hostable, import/export, privacy-first AI, multilingual, installable PWA).
 - [Sign in](https://hivepal.app/login): Existing user login.
 - [Register](https://hivepal.app/register): Create a new account.
 - [Release notes](https://hivepal.app/releases): Changelog for the platform.
