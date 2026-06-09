@@ -189,7 +189,7 @@
     },
     "tempco": {
       "title": "Teplotná kompenzácia",
-      "description": "Tenzometrické snímače sa s teplotou posúvajú. Backend pri čítaní koriguje nahlásenú hmotnosť ako raw − coeff · (temp − ref); surová hmotnosť sa nikdy nemení.",
+      "description": "Tenzometrické snímače sa s teplotou posúvajú. Backend vyhladzuje teplotu exponenciálnym kĺzavým priemerom (EMA), aby utlmil krátke prechodové javy (napr. východ slnka), a potom pri čítaní koriguje nahlásenú hmotnosť ako raw − coeff · (EMA(temp) − ref); surová hmotnosť sa nikdy nemení.",
       "enableAria": "Zapnúť teplotnú kompenzáciu",
       "sourceLabel": "Zdroj teploty",
       "source": {

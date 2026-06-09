@@ -189,7 +189,7 @@
     },
     "tempco": {
       "title": "Temperaturkompensation",
-      "description": "Vejeceller driver med temperaturen. Backenden korrigerer den rapporterede vægt ved læsning som raw − coeff · (temp − ref); den rå vægt ændres aldrig.",
+      "description": "Vejeceller driver med temperaturen. Backenden udjævner temperaturen med et eksponentielt glidende gennemsnit (EMA) for at dæmpe korte transienter (f.eks. solopgang) og korrigerer derefter den rapporterede vægt ved læsning som raw − coeff · (EMA(temp) − ref); den rå vægt ændres aldrig.",
       "enableAria": "Aktivér temperaturkompensation",
       "sourceLabel": "Temperaturkilde",
       "source": {

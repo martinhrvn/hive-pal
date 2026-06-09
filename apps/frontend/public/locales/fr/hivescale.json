@@ -189,7 +189,7 @@
     },
     "tempco": {
       "title": "Compensation de température",
-      "description": "Les capteurs de charge dérivent avec la température. Le backend corrige le poids rapporté à la lecture sous la forme raw − coeff · (temp − ref) ; le poids brut n’est jamais modifié.",
+      "description": "Les capteurs de charge dérivent avec la température. Le backend lisse la température avec une moyenne mobile exponentielle (EMA) pour amortir les transitoires courts (p. ex. le lever du soleil), puis corrige le poids rapporté à la lecture sous la forme raw − coeff · (EMA(temp) − ref) ; le poids brut n’est jamais modifié.",
       "enableAria": "Activer la compensation de température",
       "sourceLabel": "Source de température",
       "source": {

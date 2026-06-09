@@ -189,7 +189,7 @@
     },
     "tempco": {
       "title": "Temperature compensation",
-      "description": "Load cells drift with temperature. The backend corrects the reported weight as raw − coeff · (temp − ref) on read; the raw weight is never changed.",
+      "description": "Load cells drift with temperature. The backend smooths the temperature with an exponential moving average (EMA) to damp short transients (e.g. sunrise), then corrects the reported weight as raw − coeff · (EMA(temp) − ref) on read; the raw weight is never changed.",
       "enableAria": "Enable temperature compensation",
       "sourceLabel": "Temperature source",
       "source": {

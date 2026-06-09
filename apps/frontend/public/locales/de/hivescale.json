@@ -189,7 +189,7 @@
     },
     "tempco": {
       "title": "Temperaturkompensation",
-      "description": "Wägezellen driften mit der Temperatur. Das Backend korrigiert das gemeldete Gewicht beim Lesen als raw − coeff · (temp − ref); der Rohwert wird nie verändert.",
+      "description": "Wägezellen driften mit der Temperatur. Das Backend glättet die Temperatur mit einem exponentiell gleitenden Mittelwert (EMA), um kurze Transienten (z. B. Sonnenaufgang) zu dämpfen, und korrigiert dann das gemeldete Gewicht beim Lesen als raw − coeff · (EMA(temp) − ref); der Rohwert wird nie verändert.",
       "enableAria": "Temperaturkompensation aktivieren",
       "sourceLabel": "Temperaturquelle",
       "source": {

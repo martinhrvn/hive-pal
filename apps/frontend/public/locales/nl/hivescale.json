@@ -189,7 +189,7 @@
     },
     "tempco": {
       "title": "Temperatuurcompensatie",
-      "description": "Weegcellen driften met de temperatuur. De backend corrigeert het gerapporteerde gewicht bij het uitlezen als raw − coeff · (temp − ref); het ruwe gewicht wordt nooit gewijzigd.",
+      "description": "Weegcellen driften met de temperatuur. De backend vlakt de temperatuur af met een exponentieel voortschrijdend gemiddelde (EMA) om korte transiënten (bijv. zonsopkomst) te dempen en corrigeert vervolgens het gerapporteerde gewicht bij het uitlezen als raw − coeff · (EMA(temp) − ref); het ruwe gewicht wordt nooit gewijzigd.",
       "enableAria": "Temperatuurcompensatie inschakelen",
       "sourceLabel": "Temperatuurbron",
       "source": {

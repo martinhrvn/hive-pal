@@ -189,7 +189,7 @@
     },
     "tempco": {
       "title": "Compensación de temperatura",
-      "description": "Las células de carga derivan con la temperatura. El backend corrige el peso reportado al leerlo como raw − coeff · (temp − ref); el peso bruto nunca se modifica.",
+      "description": "Las células de carga derivan con la temperatura. El backend suaviza la temperatura con una media móvil exponencial (EMA) para amortiguar transitorios cortos (p. ej., el amanecer) y luego corrige el peso reportado al leerlo como raw − coeff · (EMA(temp) − ref); el peso bruto nunca se modifica.",
       "enableAria": "Activar compensación de temperatura",
       "sourceLabel": "Fuente de temperatura",
       "source": {
