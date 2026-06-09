@@ -1,170 +1,188 @@
 ---
 sidebar_position: 2
 title: Docker Setup
-description: Deploy Hive-Pal with Docker and Docker Compose for the simplest self-hosted installation experience.
-keywords: [hive-pal docker, docker compose setup, self-hosted beekeeping, container deployment]
+description: Deploy Hive-Pal with a single Docker container and PostgreSQL. Covers the compose file, automatic migrations, SSL, and production tips.
+keywords: [hive-pal docker, docker compose setup, self-hosted beekeeping, single container deployment]
 ---
 
 # Docker Setup
 
-Deploy Hive-Pal using Docker for the simplest installation.
+Hive-Pal runs as a **single container** that serves both the API and the web app. A production deployment is just two services: the app and PostgreSQL.
 
 ## Quick Start
 
-```bash
-# Clone repository
-git clone https://github.com/martinhrvn/hive-pal.git
-cd hive-pal
+Create a `docker-compose.yaml`:
 
-# Copy environment files
-cp apps/backend/.env.example apps/backend/.env
-cp apps/frontend/.env.example apps/frontend/.env
+```yaml
+services:
+  app:
+    image: ghcr.io/martinhrvn/hive-pal:latest
+    ports:
+      - '80:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/beekeeper
+      BETTER_AUTH_SECRET: replace_me_with_a_random_string
+      BETTER_AUTH_URL: https://hive.example.com
+      FRONTEND_URL: https://hive.example.com
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: changeme123
+      STORAGE_TYPE: local
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
 
-# Start services
-docker-compose up -d
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: beekeeper
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  uploads:
 ```
 
-## Environment Configuration
-
-### Backend (.env)
-```bash
-# Database
-DATABASE_URL="postgresql://postgres:password@postgres:5432/hivepal"
-
-# Security
-JWT_SECRET=your_jwt_secret_here
-ALLOWED_ORIGINS=http://localhost:5173,https://yourdomain.com
-
-# Optional services
-SENTRY_DSN=your_sentry_dsn
-SMTP_HOST=your_smtp_server
-
-# Optional HiveScale integration
-HIVESCALE_API_BASE_URL=https://hivescale.example.com
-HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
-```
-
-### Frontend (.env)
-```bash
-# API connection
-VITE_API_URL=http://localhost:3000
-
-# Optional
-VITE_SENTRY_DSN=your_sentry_dsn
-```
-
-
-### HiveScale sidecar / external service
-
-Hive-Pal can use either an external HiveScale URL or the optional compose overlay in `apps/hivescale/docker-compose.hivescale.yaml`. In both cases, the shared key must match on both services:
+Then start it:
 
 ```bash
-# Hive-Pal backend
-HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
-
-# HiveScale backend
-HIVEPAL_SERVICE_API_KEY=a-long-random-shared-secret
+docker compose up -d
 ```
 
-HiveScale remains the source of truth for scale measurements, device roles, off-grid telemetry, and calibration data. Hive-Pal only proxies authenticated user requests.
+The app is available on port `80`. For the full environment-variable reference see [Configuration](./configuration).
 
-## Docker Compose Structure
+## Which Compose File Should I Use?
 
-### Services
-- **frontend**: React application
-- **backend**: NestJS API
-- **postgres**: PostgreSQL database
-- **redis**: Caching (optional)
+The repository ships several compose files for different scenarios. **For a normal self-hosted deployment, use `docker-compose.prod.yaml`** (or the Traefik variant if you want automatic HTTPS). The compose block in [Quick Start](#quick-start) above is a trimmed version of it.
 
-### Volumes
-- Database persistence
-- File uploads
-- Configuration files
+### Deployment files (repository root)
 
-### Networks
-- Internal communication
-- External access
+| File | Use it for | App image | Notable host ports |
+|------|------------|-----------|--------------------|
+| `docker-compose.prod.yaml` | **Production** — the standard self-hosted deployment | Prebuilt `ghcr.io/martinhrvn/hive-pal:latest` | App `80` → `3000` |
+| `docker-compose.traefik.yaml` | Production behind **Traefik** with automatic Let's Encrypt TLS | Prebuilt image | Traefik `80` / `443` → app `3000` |
+| `docker-compose.yaml` | **Building the image from source** and running it | Built locally from `Dockerfile` | App `3000`, DB `6543` → `5432` |
+| `docker-compose.preview.yml` | Preview / staging environment, built from source | Built locally from `Dockerfile` | App `3000` |
+| `docker-compose.local.yaml` | **Legacy** split build (separate frontend + backend images) — superseded by the single container | Two locally-built images | DB `6543` → `5432` |
+
+:::note Why PostgreSQL maps to 6543
+The build/development compose files publish PostgreSQL as `6543:5432` so it doesn't clash with a PostgreSQL already running on your machine. Inside the Docker network the database is always reached on `5432`. The production files don't publish the database to the host at all.
+:::
+
+### Optional add-on overlays
+
+These are layered on top of a deployment with `-f` and are entirely optional:
+
+| File | Adds |
+|------|------|
+| `apps/backend/docker-compose.yml` | Local **PostgreSQL + MinIO** for development (`pnpm db:up`) — MinIO console on `9001` |
+| `apps/hivescale/docker-compose.hivescale.yaml` | An optional **HiveScale** backend sidecar — see [HiveScale](../user-guide/hivescale) |
+| `apps/ai-app/docker-compose.worker.yml` | The **AI worker** (audio transcription + analysis) with a bundled Ollama model server (`11434`) — see [Audio & AI Transcription](../user-guide/audio-ai) |
+| `apps/ai-app/docker-compose.ai.ollama.yml` | An alternative AI service + Ollama setup (`8008`, `11434`) |
+
+For example, to run production with the HiveScale sidecar:
+
+```bash
+docker compose -f docker-compose.prod.yaml -f apps/hivescale/docker-compose.hivescale.yaml up -d
+```
+
+## How the Container Works
+
+The image is a multi-stage build that compiles the frontend and backend, then copies the frontend's static bundle into the backend so a single NestJS process serves everything:
+
+- **`/api/*`** → the NestJS REST API (and `/api/auth/*` for Better Auth).
+- **everything else** → the React single-page app, served via `ServeStaticModule`.
+
+On every container start, the entrypoint script:
+
+1. Waits for the database to accept connections.
+2. Runs `prisma migrate deploy` to apply any pending migrations.
+3. Runs the admin seed script to create/promote the `ADMIN_EMAIL` user (idempotent; non-fatal if it fails).
+4. Starts the application.
+
+You don't need to run migrations manually — updating the image and restarting is enough.
+
+## Persistent Data
+
+Two things need persistent volumes:
+
+| Path | Purpose |
+|------|---------|
+| `/var/lib/postgresql/data` | PostgreSQL database |
+| `/data/uploads` | Local file storage (audio, photos) when `STORAGE_TYPE=local` |
+
+If you use S3-compatible storage (`STORAGE_TYPE=s3`), only the database needs a volume. See [Configuration → File Storage](./configuration#file-storage).
 
 ## Production Deployment
 
-### SSL Setup
-```yaml
-services:
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/ssl/certs
+### Reverse Proxy & SSL
+
+Run Hive-Pal behind a reverse proxy (nginx, Caddy, Traefik) that terminates TLS and forwards to the app's port `3000`. Set `BETTER_AUTH_URL` and `FRONTEND_URL` to your public HTTPS URL, and set `PASSKEY_RP_ID` to your domain so passkeys work.
+
+Example nginx server block:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name hive.example.com;
+
+    ssl_certificate     /etc/ssl/certs/hive.example.com.pem;
+    ssl_certificate_key /etc/ssl/private/hive.example.com.key;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;  # host port mapped to the app's 3000
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
 ```
 
-### Environment Variables
-- Use Docker secrets
-- External configuration
-- Environment-specific settings
-
-## Monitoring
+When the frontend and API share a parent domain across subdomains, set `COOKIE_DOMAIN` (e.g. `.example.com`) so session cookies are shared.
 
 ### Health Checks
-- API health endpoint
-- Database connectivity
-- Service status
 
-### Logs
-- Centralized logging
-- Log rotation
-- Error tracking
+The app exposes a health endpoint at `/api/health`. The compose healthcheck already polls it; use the same endpoint for external uptime monitoring. See [Monitoring](./monitoring).
 
-## Backup Strategy
+## Backups
 
-### Database Backups
+Back up the PostgreSQL database regularly:
+
 ```bash
-# Automated backup
-docker-compose exec postgres pg_dump -U postgres hivepal > backup.sql
+docker compose exec postgres pg_dump -U postgres beekeeper > backup.sql
 ```
 
-### File Backups
-- Upload directories
-- Configuration files
-- SSL certificates
+Also back up the `uploads` volume if you use local storage. See [Backup & Restore](./backup-restore) for a full strategy.
 
 ## Updates
 
-### Application Updates
 ```bash
-# Pull latest changes
-git pull origin main
-
-# Rebuild containers
-docker-compose build --no-cache
-
-# Update services
-docker-compose up -d
+# Pull the latest image and recreate (migrations run automatically)
+docker pull ghcr.io/martinhrvn/hive-pal:latest
+docker compose up -d
 ```
-
-### Database Migrations
-- Automatic on startup
-- Manual migration commands
-- Backup before updates
 
 ## Troubleshooting
 
-### Common Issues
-- Port conflicts
-- Permission problems
-- Database connection errors
-- Memory issues
-
-### Debug Commands
 ```bash
-# View logs
-docker-compose logs -f service_name
+# View application logs
+docker compose logs -f app
 
-# Execute commands
-docker-compose exec backend npm run migrate
+# Confirm the database is healthy
+docker compose ps
 
-# Restart services
-docker-compose restart
+# Restart the app
+docker compose restart app
 ```
+
+See the [Troubleshooting guide](../troubleshooting) for common issues such as login failures and database connection errors.

@@ -4,6 +4,43 @@ description: Solutions to common Hive-Pal issues including Docker problems, data
 keywords: [hive-pal troubleshooting, beekeeping app issues, docker errors, database problems]
 ---
 
+import Head from '@docusaurus/Head';
+
+<Head>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Why will my Hive-Pal Docker containers not start?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Make sure the host port you mapped for the app is free (80 in the example compose, or 3000 if mapped directly), verify your Docker install, and inspect the logs with docker compose logs app and docker compose logs postgres. PostgreSQL listens on 5432 inside the Docker network and only needs a free host port if you publish it.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Why can I not log in with valid credentials?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Hive-Pal uses Better Auth. Ensure BETTER_AUTH_SECRET is set and stable, and that BETTER_AUTH_URL and FRONTEND_URL match the public URL you are accessing. For cross-subdomain setups, set COOKIE_DOMAIN.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Why are magic links or password reset emails not arriving?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'These require a configured mail provider (SMTP or Resend). Confirm the mail variables are set, check the app logs for send errors, and verify FROM_EMAIL is allowed by your provider.',
+          },
+        },
+      ],
+    })}
+  </script>
+</Head>
+
 # Troubleshooting
 
 This guide addresses common issues you might encounter while using Hive-Pal.
@@ -14,24 +51,22 @@ This guide addresses common issues you might encounter while using Hive-Pal.
 
 If your Docker containers fail to start:
 
-1. Check if the required ports (80, 3001, 5432) are available:
+1. Check that the **host port you mapped for the app** is free (`80` in the example compose, or `3000` if you mapped it directly):
    ```bash
    sudo lsof -i :80
-   sudo lsof -i :3001
-   sudo lsof -i :5432
    ```
+   PostgreSQL listens on `5432` **inside** the Docker network and only needs a free host port if you publish it. The development compose files deliberately map it to `6543` (`6543:5432`) to avoid clashing with a PostgreSQL already running on your machine.
 
 2. Verify your Docker and Docker Compose installation:
    ```bash
    docker --version
-   docker-compose --version
+   docker compose version
    ```
 
-3. Check container logs for errors:
+3. Check container logs for errors (the app is a single container):
    ```bash
-   docker-compose logs backend
-   docker-compose logs frontend
-   docker-compose logs postgres
+   docker compose logs app
+   docker compose logs postgres
    ```
 
 ### Database Connection Errors
@@ -45,7 +80,7 @@ If the backend can't connect to the database:
    ```
 3. Try to connect to the database manually to verify credentials:
    ```bash
-   docker exec -it postgres psql -U postgres -d hivepal
+   docker compose exec postgres psql -U postgres -d beekeeper
    ```
 
 ## Login Issues
@@ -55,26 +90,41 @@ If the backend can't connect to the database:
 If you're having trouble with the initial admin account:
 
 1. Verify that the `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables are set correctly
-2. Check the backend logs for any error messages:
+2. Check the app logs for the seeding step (it runs on every startup):
    ```bash
-   docker-compose logs backend
+   docker compose logs app | grep -i admin
    ```
-3. Try restarting the backend container:
+3. Try restarting the app container:
    ```bash
-   docker-compose restart backend
+   docker compose restart app
    ```
 
 ### Login Authentication Failures
 
-If you can't log in with valid credentials:
+Hive-Pal uses [Better Auth](https://www.better-auth.com/) for sign-in. If you can't log in with valid credentials:
 
-1. Check that you're using the correct username/password combination
-2. Verify the `JWT_SECRET` environment variable is set correctly
-3. Clear your browser cookies and cache
-4. Check the backend logs for authentication errors:
+1. Check that you're using the correct email/password combination.
+2. Verify `BETTER_AUTH_SECRET` is set and **stable** — changing it invalidates all existing sessions.
+3. Verify `BETTER_AUTH_URL` and `FRONTEND_URL` match the public URL you're accessing. A mismatch causes session cookies to be rejected.
+4. For cross-subdomain setups, set `COOKIE_DOMAIN` (e.g. `.example.com`).
+5. Clear your browser cookies and cache, then try again.
+6. Check the app logs for authentication errors:
    ```bash
-   docker-compose logs backend | grep auth
+   docker compose logs app | grep -i auth
    ```
+
+### Magic Links or Password Resets Not Arriving
+
+Magic-link sign-in and password resets require a configured mail provider:
+
+1. Confirm SMTP or Resend variables are set (see [Configuration → Email](./self-hosting/configuration#email)).
+2. Check the app logs for mail-send errors.
+3. Verify `FROM_EMAIL` is an address your provider is allowed to send from.
+
+### Passkeys Not Working
+
+1. Ensure you're on **HTTPS** (WebAuthn requires a secure context, except on `localhost`).
+2. Set `PASSKEY_RP_ID` to your domain (it defaults to `localhost`).
 
 ## Performance Issues
 
@@ -86,7 +136,7 @@ If the application is running slowly:
 2. Consider allocating more resources to Docker if available
 3. Check for excessive database growth:
    ```bash
-   docker exec -it postgres psql -U postgres -d hivepal -c "SELECT pg_size_pretty(pg_database_size('hivepal'));"
+   docker exec -it postgres psql -U postgres -d beekeeper -c "SELECT pg_size_pretty(pg_database_size('beekeeper'));"
    ```
 
 ### Mobile Device Issues
@@ -125,7 +175,7 @@ If you can't create or modify records:
 To back up your Hive-Pal data:
 
 ```bash
-docker exec -t postgres pg_dump -U postgres -d hivepal > hivepal_backup_$(date +%Y%m%d).sql
+docker exec -t postgres pg_dump -U postgres -d beekeeper > beekeeper_backup_$(date +%Y%m%d).sql
 ```
 
 ### Restoring from Backup
@@ -143,7 +193,7 @@ docker-compose up -d postgres
 sleep 10
 
 # Restore the database
-cat your_backup_file.sql | docker exec -i postgres psql -U postgres -d hivepal
+cat your_backup_file.sql | docker exec -i postgres psql -U postgres -d beekeeper
 
 # Start the remaining services
 docker-compose up -d
