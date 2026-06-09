@@ -27,8 +27,17 @@ export default defineConfig({
         // The service worker falls back to index.html for navigation requests.
         // Backend-handled routes (API + better-auth, e.g. the magic-link verify
         // link opened directly in the browser) must NOT be served the SPA shell,
-        // otherwise they never reach the server.
-        navigateFallbackDenylist: [/^\/api\//, /^\/env\.js$/],
+        // otherwise they never reach the server. The static SEO files
+        // (sitemap.xml, robots.txt, llms.txt) are real files served by the
+        // backend; without these entries the SW answers a direct browser
+        // navigation to them with the cached index.html instead.
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /^\/env\.js$/,
+          /^\/sitemap\.xml$/,
+          /^\/robots\.txt$/,
+          /^\/llms\.txt$/,
+        ],
         runtimeCaching: [
           {
             // Cache locale/translation files
