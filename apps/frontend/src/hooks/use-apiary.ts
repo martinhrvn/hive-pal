@@ -1,7 +1,5 @@
-import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { APIARY_SELECTION } from '@/context/auth-context';
-import { useIsAdmin } from '@/hooks/use-is-admin.ts';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { useApiaries } from '@/api/hooks';
@@ -32,9 +30,7 @@ export const useApiaryStore = create<ApiaryState>(set => {
 });
 
 export const useApiary = () => {
-  const navigate = useNavigate();
-  const { data: apiaries, pendingMemberships } = useApiaries();
-  const isAdmin = useIsAdmin();
+  const { data: apiaries } = useApiaries();
   const { activeApiaryId, setActiveApiaryId, clearActiveApiaryId } =
     useApiaryStore(
       useShallow(state => ({
@@ -43,19 +39,6 @@ export const useApiary = () => {
         clearActiveApiaryId: state.clearActiveApiaryId,
       })),
     );
-
-  // Redirect to onboarding wizard if no apiaries exist
-  // Skip if user has pending membership requests (waiting for owner approval)
-  useEffect(() => {
-    if (
-      apiaries?.length === 0 &&
-      window.location.pathname !== '/onboarding' &&
-      !isAdmin &&
-      pendingMemberships === 0
-    ) {
-      navigate('/onboarding');
-    }
-  }, [apiaries, navigate, isAdmin, pendingMemberships]);
 
   // Validate activeApiaryId against user's apiaries and auto-select
   useEffect(() => {

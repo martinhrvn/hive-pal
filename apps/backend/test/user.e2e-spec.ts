@@ -9,6 +9,19 @@ describe('User (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   const testEmail = 'test-user@example.com';
+  const testEmails = [testEmail, 'test@hivepal.com', 'test2@hivepal.com'];
+
+  async function cleanupTestUsers() {
+    const users = await prisma.user.findMany({
+      where: { email: { in: testEmails } },
+      select: { id: true },
+    });
+    const userIds = users.map((u) => u.id);
+    if (userIds.length > 0) {
+      await prisma.apiary.deleteMany({ where: { userId: { in: userIds } } });
+    }
+    await prisma.user.deleteMany({ where: { email: { in: testEmails } } });
+  }
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -21,15 +34,11 @@ describe('User (e2e)', () => {
 
     prisma = app.get(PrismaService);
 
-    await prisma.user.deleteMany({ where: { email: testEmail } });
-    await prisma.user.deleteMany({ where: { email: 'test@hivepal.com' } });
-    await prisma.user.deleteMany({ where: { email: 'test2@hivepal.com' } });
+    await cleanupTestUsers();
   });
 
   afterAll(async () => {
-    await prisma.user.deleteMany({ where: { email: testEmail } });
-    await prisma.user.deleteMany({ where: { email: 'test@hivepal.com' } });
-    await prisma.user.deleteMany({ where: { email: 'test2@hivepal.com' } });
+    await cleanupTestUsers();
     await app.close();
   });
 

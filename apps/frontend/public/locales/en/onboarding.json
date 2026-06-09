@@ -25,5 +25,36 @@
     "title": "Congratulations!",
     "description": "You've successfully set up your first apiary and hive. You're ready to start tracking your beekeeping activities with Hive-Pal!",
     "action": "Go to Dashboard"
+  },
+  "nudges": {
+    "addHive": {
+      "title": "Looks like you're new here",
+      "description": "Add your first hive to start tracking inspections and activity.",
+      "action": "Add hive"
+    },
+    "addLocation": {
+      "title": "Get weather for your apiary",
+      "description": "Add your apiary's location to unlock weather updates and forecasts.",
+      "action": "Add location"
+    }
+  },
+  "empty": {
+    "noApiary": {
+      "title": "Create your first apiary",
+      "description": "An apiary is a location where your hives are kept. Create one to get started.",
+      "action": "Create apiary",
+      "guided": "Prefer a guided setup?"
+    },
+    "noHives": {
+      "title": "No hives yet",
+      "description": "Add your first hive to this apiary to start tracking it.",
+      "action": "Add your first hive"
+    },
+    "noLocation": {
+      "title": "Add a location for weather",
+      "description": "Set your apiary's location to get weather updates and forecasts.",
+      "action": "Add location",
+      "dismiss": "Dismiss"
+    }
   }
 }
