@@ -98,7 +98,7 @@ export const ApiaryListPage = () => {
                       ? `${apiary.latitude.toFixed(6)}, ${apiary.longitude.toFixed(6)}`
                       : t('apiary:fields.noCoordinates')}
                   </TableCell>
-                  <TableCell>{0}</TableCell>
+                  <TableCell>{apiary.hiveCount ?? 0}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"

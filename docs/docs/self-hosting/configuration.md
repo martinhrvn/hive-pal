@@ -1,292 +1,124 @@
 ---
 sidebar_position: 4
 title: Configuration
-description: Complete reference for configuring Hive-Pal environment variables, database settings, authentication, and integrations.
-keywords: [hive-pal configuration, environment variables, app settings, database config]
+description: Complete environment-variable reference for Hive-Pal — database, Better Auth, email, file storage, HiveScale, and error tracking.
+keywords: [hive-pal configuration, environment variables, better auth, smtp, s3 storage, self-hosting]
 ---
 
 # Configuration
 
-Complete reference for configuring your Hive-Pal installation.
+Hive-Pal is configured entirely through environment variables on the app container. This page is the complete reference.
 
-## Environment Variables
+## Required
 
-### Backend Configuration
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string, e.g. `postgres://postgres:postgres@postgres:5432/beekeeper` |
+| `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies. Use 32+ random chars: `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | Public base URL where the app and `/api/auth/*` are served, e.g. `https://hive.example.com` |
+| `FRONTEND_URL` | Public URL of the app. Used in email links and as a trusted auth origin |
+| `ADMIN_EMAIL` | Initial admin account email (seeded on startup) |
+| `ADMIN_PASSWORD` | Initial admin password (plaintext; hashed on first run) |
 
-#### Database
-```bash
-DATABASE_URL="postgresql://user:password@host:port/database"
-```
+:::note Single-container deployments
+Because the app serves the frontend and API from the same origin, you do **not** need to set `VITE_API_URL` or `API_URL` for the standard single-container deployment. Those are only relevant for split frontend/backend or local development setups.
+:::
 
-#### Security
-```bash
-JWT_SECRET=your_secure_jwt_secret_here
-JWT_EXPIRES_IN=7d
-ALLOWED_ORIGINS=http://localhost:5173,https://yourdomain.com
-```
+## Authentication
 
-#### Optional Services
-```bash
-# Email (SMTP)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+Hive-Pal authenticates with [Better Auth](https://www.better-auth.com/). Beyond the required `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL`:
 
-# Error Tracking
-SENTRY_DSN=your_sentry_dsn_here
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PASSKEY_RP_ID` | WebAuthn relying-party ID for passkeys. Set to your domain in production | `localhost` |
+| `COOKIE_DOMAIN` | Set when frontend and backend share a parent domain across subdomains (e.g. `.example.com`) | — |
+| `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins | — |
 
-# File Storage (see "File Storage" section below for details)
-STORAGE_TYPE=local  # or 's3' (default)
-```
+:::info JWT_SECRET is not for login
+`JWT_SECRET` is **not** used for user authentication (that's Better Auth). It only signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs. Set it only if you use those features.
+:::
 
+## Email
 
-#### HiveScale Integration
+Email powers magic-link sign-in and password-reset messages. Hive-Pal supports **Resend** or **SMTP** and auto-selects based on what's configured. Without email, password and passkey login still work, but magic links and password resets do not.
 
-Hive-Pal can proxy data from a separate HiveScale backend. Configure this on the backend service:
-
-```bash
-HIVESCALE_API_BASE_URL=https://hivescale.example.com
-HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
-```
-
-The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` in the HiveScale backend. Hive-Pal forwards the authenticated user's JWT access token (in the `Authorization: Bearer` header) to HiveScale so HiveScale can identify the user and enforce per-device roles. The HiveScale backend must therefore be able to validate Hive-Pal's JWTs, which means it must trust the same `JWT_SECRET` used by the Hive-Pal backend.
-
-HiveScale measurements can include off-grid fields such as battery state-of-charge, solar current/power, network transport, cellular status, CSQ, calibration mode, boot count, and time source. No separate frontend environment variable is required for these fields; they are returned through the HivePal backend proxy.
-
-### Frontend Configuration
-
-#### API Connection
-```bash
-VITE_API_URL=http://localhost:3000
-VITE_API_TIMEOUT=30000
-```
-
-#### Optional Features
-```bash
-VITE_SENTRY_DSN=your_sentry_dsn_here
-VITE_GOOGLE_MAPS_API_KEY=your_maps_api_key
-VITE_WEATHER_API_KEY=your_weather_api_key
-```
-
-## Database Configuration
-
-### Connection Pool
-```bash
-DB_POOL_MIN=2
-DB_POOL_MAX=10
-DB_POOL_IDLE_TIMEOUT=10000
-DB_POOL_ACQUIRE_TIMEOUT=60000
-```
-
-### Performance Tuning
-```sql
--- postgresql.conf optimizations
-shared_buffers = 256MB
-effective_cache_size = 1GB
-work_mem = 4MB
-maintenance_work_mem = 64MB
-checkpoint_completion_target = 0.9
-random_page_cost = 1.1
-```
-
-## Security Settings
-
-### HTTPS Configuration
-```bash
-# Force HTTPS
-FORCE_HTTPS=true
-HSTS_MAX_AGE=31536000
-
-# CORS Settings
-CORS_CREDENTIALS=true
-CORS_MAX_AGE=86400
-```
-
-### Rate Limiting
-```bash
-RATE_LIMIT_WINDOW=900000  # 15 minutes
-RATE_LIMIT_MAX=100        # requests per window
-```
+| Variable | Description |
+|----------|-------------|
+| `MAIL_PROVIDER` | Force a provider: `resend`, `smtp`, or `none`. Auto-selects if unset |
+| `FROM_EMAIL` | Sender address for outgoing mail |
+| `RESEND_API_KEY` | API key for the Resend provider |
+| `SMTP_HOST` | SMTP server hostname |
+| `SMTP_PORT` | SMTP server port (e.g. `587` or `465`) |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password (for Gmail, use an App Password) |
+| `SMTP_SECURE` | `true` for port 465 (SSL), `false` for 587 (TLS) |
+| `SMTP_REJECT_UNAUTHORIZED` | Reject invalid TLS certs. Default `true`; set `false` for self-signed certs |
 
 ## File Storage
 
-Hive-Pal supports two storage backends for file uploads (audio recordings, photos): **local filesystem** and **S3-compatible** object storage. Set `STORAGE_TYPE` to choose which one to use.
+Hive-Pal stores uploaded audio recordings and photos in either the local filesystem or S3-compatible object storage. Choose with `STORAGE_TYPE`.
 
-### Local Storage
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `STORAGE_TYPE` | `local` or `s3` | `s3` |
+| `STORAGE_LOCAL_PATH` | Directory for local storage. In Docker this is backed by the `uploads` volume | `/data/uploads` |
+| `AUDIO_MAX_FILE_SIZE` | Max upload size in bytes | `52428800` (50 MB) |
 
-The simplest option for self-hosted deployments — files are stored directly on disk (or a Docker volume). No external services required.
+### Local storage
+
+The simplest option — no external services. Mount a volume at `/data/uploads`:
 
 ```bash
 STORAGE_TYPE=local
-STORAGE_LOCAL_PATH=./data/uploads  # default: ./data/uploads
+STORAGE_LOCAL_PATH=/data/uploads
 ```
 
-In Docker, `STORAGE_LOCAL_PATH` defaults to `/data/uploads`, which is backed by the `hivepal_uploads` volume for persistence across container restarts.
+Download URLs are signed, time-limited paths (HMAC-SHA256 with `JWT_SECRET`), so they behave like S3 pre-signed URLs.
 
-Download URLs are generated as signed, time-limited paths (using HMAC-SHA256 with `JWT_SECRET`), so they work the same way as S3 pre-signed URLs — no frontend changes needed.
+### S3-compatible storage
 
-### S3-Compatible Storage
-
-Use this for AWS S3, MinIO, or any S3-compatible service. This is the default when `STORAGE_TYPE` is unset.
+Use AWS S3, MinIO, or any S3-compatible service:
 
 ```bash
-STORAGE_TYPE=s3  # default
-S3_ENDPOINT=http://localhost:9000   # MinIO or S3-compatible endpoint
+STORAGE_TYPE=s3
+S3_ENDPOINT=https://s3.us-east-1.amazonaws.com  # or your MinIO endpoint
 S3_REGION=us-east-1
-S3_BUCKET=hivepal-audio
+S3_BUCKET=hivepal-uploads
 S3_ACCESS_KEY_ID=your_key
 S3_SECRET_ACCESS_KEY=your_secret
 ```
 
-For local development with MinIO:
-```bash
-docker compose up -d minio
-# Access MinIO console at http://localhost:9001 to create a bucket
-```
+## HiveScale Integration
 
-## Logging
+Hive-Pal can proxy live data from a separate HiveScale backend.
 
-### Log Levels
-```bash
-LOG_LEVEL=info  # error, warn, info, debug
-LOG_FORMAT=json # json, simple
-LOG_FILE=/var/log/hive-pal/app.log
-```
+| Variable | Description |
+|----------|-------------|
+| `HIVESCALE_API_BASE_URL` | Base URL of the HiveScale backend |
+| `HIVESCALE_SERVICE_API_KEY` | Shared service key used by Hive-Pal to call HiveScale |
 
-### External Logging
-```bash
-# Loki
-LOKI_URL=http://localhost:3100
-LOKI_USERNAME=admin
-LOKI_PASSWORD=admin
-```
+The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` on the HiveScale backend. HiveScale remains the source of truth for measurements, device roles, off-grid telemetry, and calibration; Hive-Pal only proxies authenticated user requests. See the [HiveScale guide](../user-guide/hivescale).
 
-## Monitoring
+## Error Tracking (Optional)
 
-### Health Checks
-```bash
-HEALTH_CHECK_ENABLED=true
-HEALTH_CHECK_PATH=/health
-```
+Configure [Sentry](https://sentry.io/) to monitor errors in production.
 
-### Metrics
-```bash
-PROMETHEUS_ENABLED=true
-PROMETHEUS_PORT=9090
-METRICS_PATH=/metrics
-```
+| Variable | Description |
+|----------|-------------|
+| `SENTRY_DSN` | Backend Sentry DSN |
+| `SENTRY_ENVIRONMENT` | Backend environment label (e.g. `production`) |
+| `VITE_SENTRY_DSN` | Frontend Sentry DSN |
+| `VITE_SENTRY_ENVIRONMENT` | Frontend environment label |
 
-## Email Configuration
+## Other
 
-### SMTP Settings
-```bash
-MAIL_FROM=noreply@your-domain.com
-MAIL_FROM_NAME="Hive-Pal"
-MAIL_REPLY_TO=support@your-domain.com
-```
-
-### Email Templates
-- Welcome email
-- Password reset
-- Inspection reminders
-- System notifications
-
-## API Configuration
-
-### Rate Limiting
-```bash
-API_RATE_LIMIT=1000  # requests per hour
-API_BURST_LIMIT=50   # burst requests
-```
-
-### Timeouts
-```bash
-API_TIMEOUT=30000     # 30 seconds
-DB_TIMEOUT=10000      # 10 seconds
-UPLOAD_TIMEOUT=300000 # 5 minutes
-```
-
-## Cache Configuration
-
-### Redis (Optional)
-```bash
-REDIS_URL=redis://localhost:6379
-REDIS_TTL=3600        # 1 hour
-REDIS_KEY_PREFIX=hive-pal:
-```
-
-### Memory Cache
-```bash
-CACHE_MAX_SIZE=100    # MB
-CACHE_TTL=1800        # 30 minutes
-```
-
-## Backup Configuration
-
-### Database Backups
-```bash
-BACKUP_ENABLED=true
-BACKUP_SCHEDULE="0 2 * * *"  # Daily at 2 AM
-BACKUP_RETENTION=30          # Days
-BACKUP_PATH=/backups
-```
-
-### File Backups
-```bash
-FILE_BACKUP_ENABLED=true
-FILE_BACKUP_SCHEDULE="0 3 * * *"
-FILE_BACKUP_COMPRESSION=true
-```
-
-## Development Settings
-
-### Debug Mode
-```bash
-NODE_ENV=development
-DEBUG=true
-VERBOSE_LOGGING=true
-```
-
-### Hot Reload
-```bash
-WATCH_MODE=true
-RELOAD_ON_CHANGE=true
-```
-
-## Production Optimizations
-
-### Performance
-```bash
-NODE_ENV=production
-COMPRESSION_ENABLED=true
-GZIP_LEVEL=6
-STATIC_CACHE_TTL=31536000  # 1 year
-```
-
-### Security
-```bash
-HELMET_ENABLED=true
-CSP_ENABLED=true
-SECURE_COOKIES=true
-```
-
-## Configuration Validation
-
-### Required Variables
-- DATABASE_URL
-- JWT_SECRET
-- ALLOWED_ORIGINS
-
-### Optional Variables
-- All other settings have defaults
-- Override as needed
-- Environment-specific files supported
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NODE_ENV` | Runtime mode | `production` |
 
 ## Best Practices
 
-- Use environment-specific .env files
-- Never commit secrets to version control
-- Use Docker secrets in production
-- Validate configuration on startup
-- Monitor configuration changes
+- Never commit secrets to version control — use an `.env` file or your orchestrator's secret store.
+- Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32` and keep it stable; changing it invalidates existing sessions.
+- Set `BETTER_AUTH_URL`, `FRONTEND_URL`, and `PASSKEY_RP_ID` to your real public domain before going live.
+- Configure email so users can reset passwords and use magic links.

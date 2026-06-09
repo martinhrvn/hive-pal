@@ -14,7 +14,7 @@ Monitor your Hive-Pal installation with comprehensive logging and metrics.
 ### Application Health
 ```bash
 # Health check endpoint
-curl http://localhost:3000/health
+curl http://localhost:3000/api/health
 
 # Response format
 {
@@ -32,7 +32,7 @@ curl http://localhost:3000/health
 SELECT count(*) FROM pg_stat_activity;
 
 -- Database size
-SELECT pg_size_pretty(pg_database_size('hivepal'));
+SELECT pg_size_pretty(pg_database_size('beekeeper'));
 
 -- Table statistics
 SELECT schemaname,tablename,n_tup_ins,n_tup_upd,n_tup_del 

@@ -20,7 +20,7 @@ BACKUP_DIR="/backups/database"
 mkdir -p $BACKUP_DIR
 
 # PostgreSQL backup
-pg_dump -U postgres hivepal | gzip > $BACKUP_DIR/hivepal_$DATE.sql.gz
+pg_dump -U postgres beekeeper | gzip > $BACKUP_DIR/beekeeper_$DATE.sql.gz
 
 # Cleanup old backups (keep 30 days)
 find $BACKUP_DIR -name "*.sql.gz" -mtime +30 -delete
@@ -32,7 +32,7 @@ find $BACKUP_DIR -name "*.sql.gz" -mtime +30 -delete
 # backup-files.sh
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/backups/files"
-UPLOAD_DIR="/var/lib/hive-pal/uploads"
+UPLOAD_DIR="/data/uploads"
 
 mkdir -p $BACKUP_DIR
 tar -czf $BACKUP_DIR/uploads_$DATE.tar.gz -C $UPLOAD_DIR .
@@ -58,25 +58,25 @@ crontab -e
 ### Database Export
 ```bash
 # Full database
-pg_dump -U postgres -h localhost hivepal > backup.sql
+pg_dump -U postgres -h localhost beekeeper > backup.sql
 
 # Schema only
-pg_dump -U postgres -h localhost --schema-only hivepal > schema.sql
+pg_dump -U postgres -h localhost --schema-only beekeeper > schema.sql
 
 # Data only
-pg_dump -U postgres -h localhost --data-only hivepal > data.sql
+pg_dump -U postgres -h localhost --data-only beekeeper > data.sql
 ```
 
 ### Specific Tables
 ```bash
 # Backup specific tables
-pg_dump -U postgres -h localhost -t users -t apiaries hivepal > partial.sql
+pg_dump -U postgres -h localhost -t users -t apiaries beekeeper > partial.sql
 ```
 
 ### Files Export
 ```bash
 # Copy upload directory
-cp -r /var/lib/hive-pal/uploads /backups/uploads_backup
+cp -r /data/uploads /backups/uploads_backup
 
 # Create compressed archive
 tar -czf uploads_backup.tar.gz uploads/
@@ -87,7 +87,7 @@ tar -czf uploads_backup.tar.gz uploads/
 ### Container Data
 ```bash
 # Database container backup
-docker-compose exec postgres pg_dump -U postgres hivepal > backup.sql
+docker-compose exec postgres pg_dump -U postgres beekeeper > backup.sql
 
 # Volume backup
 docker run --rm -v hive-pal_postgres_data:/data -v $(pwd):/backup alpine tar czf /backup/postgres_data.tar.gz /data
@@ -110,35 +110,35 @@ docker-compose up -d
 ### Database Restore
 ```bash
 # Drop and recreate database
-dropdb -U postgres hivepal
-createdb -U postgres hivepal
+dropdb -U postgres beekeeper
+createdb -U postgres beekeeper
 
 # Restore from backup
-psql -U postgres hivepal < backup.sql
+psql -U postgres beekeeper < backup.sql
 
 # Or from compressed backup
-gunzip -c backup.sql.gz | psql -U postgres hivepal
+gunzip -c backup.sql.gz | psql -U postgres beekeeper
 ```
 
 ### Partial Restore
 ```bash
 # Restore specific tables
-psql -U postgres hivepal < partial_backup.sql
+psql -U postgres beekeeper < partial_backup.sql
 
 # Restore with conflict handling
-psql -U postgres hivepal -c "TRUNCATE TABLE users CASCADE;"
-psql -U postgres hivepal < users_backup.sql
+psql -U postgres beekeeper -c "TRUNCATE TABLE users CASCADE;"
+psql -U postgres beekeeper < users_backup.sql
 ```
 
 ### File Restore
 ```bash
 # Restore uploads directory
-rm -rf /var/lib/hive-pal/uploads
+rm -rf /data/uploads
 tar -xzf uploads_backup.tar.gz -C /var/lib/hive-pal/
 
 # Set permissions
-chown -R hive-pal:hive-pal /var/lib/hive-pal/uploads
-chmod -R 755 /var/lib/hive-pal/uploads
+chown -R hive-pal:hive-pal /data/uploads
+chmod -R 755 /data/uploads
 ```
 
 ### Docker Restore
@@ -149,11 +149,8 @@ docker-compose down
 # Restore volumes
 docker run --rm -v hive-pal_postgres_data:/data -v $(pwd):/backup alpine tar xzf /backup/postgres_data.tar.gz -C /
 
-# Start containers
-docker-compose up -d
-
-# Run migrations if needed
-docker-compose exec backend npm run migrate
+# Start containers (migrations run automatically on startup)
+docker compose up -d
 ```
 
 ## Cloud Backups
@@ -229,8 +226,8 @@ dropdb test_restore
 sudo systemctl stop hive-pal
 
 # 2. Restore database
-dropdb hivepal && createdb hivepal
-psql hivepal < latest_backup.sql
+dropdb beekeeper && createdb beekeeper
+psql beekeeper < latest_backup.sql
 
 # 3. Restore files
 tar -xzf latest_files_backup.tar.gz -C /var/lib/hive-pal/

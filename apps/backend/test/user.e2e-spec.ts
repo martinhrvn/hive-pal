@@ -9,7 +9,15 @@ describe('User (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   const testEmail = 'test-user@example.com';
-  const testEmails = [testEmail, 'test@hivepal.com', 'test2@hivepal.com'];
+  const adminEmail = 'admin-guard@example.com';
+  const nonAdminEmail = 'regular-guard@example.com';
+  const testEmails = [
+    testEmail,
+    'test@hivepal.com',
+    'test2@hivepal.com',
+    adminEmail,
+    nonAdminEmail,
+  ];
 
   async function cleanupTestUsers() {
     const users = await prisma.user.findMany({
@@ -90,5 +98,35 @@ describe('User (e2e)', () => {
       'password',
     );
     expect(cookies.length).toBeGreaterThan(0);
+  });
+
+  it('should forbid a non-admin from listing all users (RolesGuard)', async () => {
+    await createTestUser(prisma, {
+      email: nonAdminEmail,
+      password: 'password',
+      role: 'USER',
+    });
+    const cookies = await loginAndGetCookie(app, nonAdminEmail, 'password');
+
+    await request(app.getHttpServer())
+      .get('/users')
+      .set('Cookie', cookies)
+      .expect(403);
+  });
+
+  it('should allow an admin to list all users (RolesGuard)', async () => {
+    await createTestUser(prisma, {
+      email: adminEmail,
+      password: 'password',
+      role: 'ADMIN',
+    });
+    const cookies = await loginAndGetCookie(app, adminEmail, 'password');
+
+    const res = await request(app.getHttpServer())
+      .get('/users')
+      .set('Cookie', cookies)
+      .expect(200);
+
+    expect(Array.isArray(res.body)).toBe(true);
   });
 });

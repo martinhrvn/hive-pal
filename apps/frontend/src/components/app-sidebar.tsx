@@ -16,6 +16,7 @@ import {
   Wrench,
   Scale,
   BotMessageSquare,
+  BookOpen,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFeatures } from '@/api/hooks/useFeatures';
@@ -186,6 +187,12 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
       title: t('navigation.settings', { defaultValue: 'Settings' }),
       url: '/settings',
       icon: Settings2,
+    },
+    {
+      title: t('navigation.documentation', { defaultValue: 'Documentation' }),
+      url: 'https://docs.hivepal.app',
+      icon: BookOpen,
+      external: true,
     },
     {
       title: t('feedback.sendFeedback', { defaultValue: 'Send Feedback' }),
