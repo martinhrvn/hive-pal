@@ -45,7 +45,7 @@ See [Coolify Webhook Setup](../../.github/COOLIFY_WEBHOOK_SETUP.md) for configur
 
 - `BASE_URL`: The base URL of the application to test
 - `ADMIN_EMAIL`: Admin user email for authentication tests
-- `ADMIN_PASSWORD`: Admin user password for authentication tests
+- `ADMIN_PASSWORD`: Admin user password (plaintext) for authentication tests
 
 ## File Structure
 

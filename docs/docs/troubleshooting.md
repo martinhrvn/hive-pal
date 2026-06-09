@@ -54,7 +54,7 @@ If the backend can't connect to the database:
 
 If you're having trouble with the initial admin account:
 
-1. Verify that the `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables are set correctly
+1. Verify that the `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables are set correctly
 2. Check the backend logs for any error messages:
    ```bash
    docker-compose logs backend

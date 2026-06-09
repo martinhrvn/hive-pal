@@ -81,7 +81,7 @@ The application will be available at http://localhost.
 | `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies (32+ chars; generate with `openssl rand -base64 32`) |
 | `BETTER_AUTH_URL` | Backend public base URL where `/api/auth/*` is served |
 | `ADMIN_EMAIL` | Initial admin account email |
-| `ADMIN_PASSWORD` | Initial admin account password |
+| `ADMIN_PASSWORD` | Initial admin account password (plaintext; hashed on first run) |
 | `FRONTEND_URL` | Public URL (used in emails) |
 
 #### Optional

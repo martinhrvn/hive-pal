@@ -714,7 +714,11 @@ export class HiveService {
       const boxPromises = updateHiveBoxesDto.boxes.map((box) => {
         return tx.box.create({
           data: {
-            id: box.id, // If provided, will use this ID, otherwise Prisma will generate one
+            // Always let Prisma generate a fresh id. Boxes are deleted and
+            // recreated wholesale here and nothing references Box.id, so
+            // reusing the client-supplied id only risks unique-constraint
+            // collisions (duplicate ids in the payload, or an id that belongs
+            // to another hive and was therefore not deleted above).
             hiveId: id,
             position: box.position,
             frameCount: box.frameCount,
