@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { PublicMeta } from '@/components/seo/public-meta';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
@@ -22,38 +23,54 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'Hive Pal',
-  description:
-    'Free and open-source beekeeping management platform with AI-powered voice inspections. Record audio in the apiary, get automatic transcripts, and let AI draft your inspection notes.',
-  applicationCategory: 'BusinessApplication',
-  operatingSystem: 'Web',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
-  url: 'https://hivepal.app',
-  author: {
-    '@type': 'Organization',
-    name: 'Hive Pal',
-  },
-};
+// Structure (ids/icons) lives in code; copy comes from i18n under `marketing.*`.
+const PILLAR_KEYS = ['apiary', 'inspections', 'queen', 'harvest'] as const;
+
+const AI_ITEMS = [
+  { key: 'record', icon: <Mic className="h-5 w-5" /> },
+  { key: 'transcribe', icon: <Wand2 className="h-5 w-5" /> },
+  { key: 'draft', icon: <Sparkles className="h-5 w-5" /> },
+] as const;
+
+const TOOL_CARDS = [
+  { to: '/tools/syrup-calculator', key: 'syrup', icon: <Beaker className="h-5 w-5" /> },
+  { to: '/tools/brood-timeline', key: 'brood', icon: <Bug className="h-5 w-5" /> },
+  { to: '/tools/swarm-management', key: 'swarm', icon: <Waypoints className="h-5 w-5" /> },
+] as const;
 
 export function LandingPage() {
   const localize = useLocalizedPath();
+  const { t } = useTranslation('common');
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Hive Pal',
+    description: t('marketing.landing.meta.ogDescription'),
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    url: 'https://hivepal.app',
+    author: { '@type': 'Organization', name: 'Hive Pal' },
+  };
+
+  const selfHostedItems = t('marketing.landing.run.selfHosted.items', {
+    returnObjects: true,
+  }) as string[];
+  const hostedItems = t('marketing.landing.run.hosted.items', {
+    returnObjects: true,
+  }) as string[];
+
   return (
     <div
       className="min-h-screen w-full bg-[#FBF5EA] text-stone-900 antialiased selection:bg-amber-200 selection:text-stone-900"
       style={sans}
     >
       <PublicMeta
-        title="Hive Pal — AI-Powered Beekeeping Management Software"
-        description="Manage your beehives efficiently with Hive Pal. Record voice notes at the hive and let AI transcribe and draft your inspections. Open source, self-hostable, and free for early adopters."
-        ogTitle="Hive Pal — AI-Powered Beekeeping Management Software"
-        ogDescription="Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
+        title={t('marketing.landing.meta.title')}
+        description={t('marketing.landing.meta.description')}
+        ogTitle={t('marketing.landing.meta.ogTitle')}
+        ogDescription={t('marketing.landing.meta.ogDescription')}
         ogImage="https://hivepal.app/og-image.jpg"
         twitterCard="summary_large_image"
         path="/"
@@ -79,35 +96,37 @@ export function LandingPage() {
         <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/50 bg-stone-950/60 px-3.5 py-1 text-[11px] font-medium uppercase tracking-[0.22em] text-amber-100 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
-            New · AI voice inspections
+            {t('marketing.landing.hero.badge')}
           </div>
 
           <h1
             className="mt-8 text-[clamp(2.75rem,6vw,5rem)] font-medium leading-[1.02] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)]"
             style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
           >
-            Your open-source
-            <br />
-            beekeeping{' '}
-            <span
-              className="text-amber-300"
-              style={{
-                ...display,
-                fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 600",
+            <Trans
+              t={t}
+              i18nKey="marketing.landing.hero.title"
+              components={{
+                br: <br />,
+                accent: (
+                  <span
+                    className="text-amber-300"
+                    style={{
+                      ...display,
+                      fontVariationSettings:
+                        "'opsz' 96, 'wdth' 100, 'wght' 600",
+                    }}
+                  />
+                ),
               }}
-            >
-              companion
-            </span>
-            .
+            />
           </h1>
 
           <p
             className="mx-auto mt-7 max-w-2xl text-lg font-normal leading-relaxed text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.7)]"
             style={sans}
           >
-            Record voice notes at the hive. Let AI transcribe and draft your
-            inspections automatically — so you keep your hands on the frames,
-            not the keyboard.
+            {t('marketing.landing.hero.lede')}
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -118,7 +137,7 @@ export function LandingPage() {
             >
               <Link to="/register">
                 <Rocket className="mr-2 h-4 w-4" />
-                Sign up — it's free
+                {t('marketing.landing.hero.ctaSignup')}
               </Link>
             </Button>
             <Button
@@ -133,7 +152,7 @@ export function LandingPage() {
                 rel="noopener noreferrer"
               >
                 <Github className="mr-2 h-4 w-4" />
-                Self-host
+                {t('marketing.landing.hero.ctaSelfHost')}
               </a>
             </Button>
           </div>
@@ -143,7 +162,7 @@ export function LandingPage() {
             style={sans}
           >
             <span className="h-px flex-1 bg-white/40" />
-            <span>MIT licensed · self-hostable · voice-first</span>
+            <span>{t('marketing.landing.hero.tagline')}</span>
             <span className="h-px flex-1 bg-white/40" />
           </div>
         </div>
@@ -154,52 +173,35 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <SectionLabel>Modern beekeeping</SectionLabel>
+              <SectionLabel>{t('marketing.landing.features.label')}</SectionLabel>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
                 style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
               >
-                Everything you need to{' '}
-                <span className="text-amber-700" style={display}>
-                  tend
-                </span>{' '}
-                your hives.
+                <Trans
+                  t={t}
+                  i18nKey="marketing.landing.features.title"
+                  components={{
+                    accent: <span className="text-amber-700" style={display} />,
+                  }}
+                />
               </h2>
               <p className="mt-6 max-w-md text-base leading-relaxed text-stone-600">
-                Professional tools designed by beekeepers, for beekeepers — to
-                keep colonies healthy, productive, and well-documented through
-                every season.
+                {t('marketing.landing.features.lede')}
               </p>
               <div className="mt-8 h-px w-16 bg-stone-900/30" />
               <p
                 className="mt-6 text-sm font-medium uppercase tracking-[0.2em] text-stone-500"
                 style={sans}
               >
-                Four pillars · built into one platform
+                {t('marketing.landing.features.pillars')}
               </p>
             </div>
 
             <div className="lg:col-span-7">
               <dl className="grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2">
-                {[
-                  {
-                    title: 'Apiary management',
-                    body: 'Organize and track multiple apiaries with detailed location information, weather data, and site-specific notes.',
-                  },
-                  {
-                    title: 'Hive inspections',
-                    body: 'Schedule and record detailed inspections with customizable checklists, photos, and health assessments.',
-                  },
-                  {
-                    title: 'Queen tracking',
-                    body: 'Monitor queen performance, breeding records, and replacement schedules to maintain strong colonies.',
-                  },
-                  {
-                    title: 'Harvest management',
-                    body: 'Track honey production, processing dates, and yields across seasons and hive locations.',
-                  },
-                ].map(item => (
-                  <div key={item.title} className="group relative">
+                {PILLAR_KEYS.map(key => (
+                  <div key={key} className="group relative">
                     <div className="flex items-center gap-3">
                       <HexBullet />
                       <span className="h-px flex-1 bg-stone-900/10 transition-colors group-hover:bg-amber-700/40" />
@@ -208,10 +210,10 @@ export function LandingPage() {
                       className="mt-3 text-lg font-semibold text-stone-900"
                       style={sans}
                     >
-                      {item.title}
+                      {t(`marketing.landing.features.items.${key}.title`)}
                     </dt>
                     <dd className="mt-2 text-sm leading-relaxed text-stone-600">
-                      {item.body}
+                      {t(`marketing.landing.features.items.${key}.body`)}
                     </dd>
                   </div>
                 ))}
@@ -250,49 +252,33 @@ export function LandingPage() {
                 style={sans}
               >
                 <span className="h-px w-8 bg-amber-300/70" />
-                <span>Voice &amp; AI</span>
+                <span>{t('marketing.ai.eyebrow')}</span>
               </div>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight sm:text-5xl"
                 style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
               >
-                Inspect with your voice,
-                <br />
-                <span className="text-amber-200" style={display}>
-                  not your keyboard
-                </span>
-                .
+                <Trans
+                  t={t}
+                  i18nKey="marketing.ai.title"
+                  components={{
+                    br: <br />,
+                    accent: <span className="text-amber-200" style={display} />,
+                  }}
+                />
               </h2>
             </div>
             <div className="lg:col-span-5">
               <p className="text-base leading-relaxed text-amber-50/75">
-                Hive Pal records audio during inspections, transcribes it
-                automatically, and uses AI to draft structured notes — so the
-                busywork happens while you're still at the apiary.
+                {t('marketing.ai.lede')}
               </p>
             </div>
           </div>
 
           <div className="mx-auto mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-amber-50/10 lg:grid-cols-3">
-            {[
-              {
-                icon: <Mic className="h-5 w-5" />,
-                title: 'Record at the hive',
-                body: 'Tap record on your phone, talk through what you see on each frame, and move on. Recordings upload straight into the inspection — even if you lose signal mid-yard.',
-              },
-              {
-                icon: <Wand2 className="h-5 w-5" />,
-                title: 'Automatic transcription',
-                body: 'Whisper-powered speech-to-text turns every recording into a searchable transcript attached to the inspection. Multilingual out of the box.',
-              },
-              {
-                icon: <Sparkles className="h-5 w-5" />,
-                title: 'AI-drafted notes',
-                body: 'Local LLMs extract queen sightings, brood patterns, treatments and observations into a pre-filled inspection — you just review and save.',
-              },
-            ].map(item => (
+            {AI_ITEMS.map(item => (
               <div
-                key={item.title}
+                key={item.key}
                 className="group relative bg-[#15201E] p-8 transition-colors hover:bg-[#1a2826]"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-400/15 text-amber-200">
@@ -302,10 +288,10 @@ export function LandingPage() {
                   className="mt-6 text-lg font-semibold text-amber-50"
                   style={sans}
                 >
-                  {item.title}
+                  {t(`marketing.ai.items.${item.key}.title`)}
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-amber-50/70">
-                  {item.body}
+                  {t(`marketing.ai.items.${item.key}.body`)}
                 </p>
               </div>
             ))}
@@ -318,17 +304,15 @@ export function LandingPage() {
               style={sans}
             >
               <span className="font-semibold text-amber-100">
-                Your recordings, your models.
+                {t('marketing.ai.assuranceLead')}
               </span>{' '}
-              The AI stack runs on open-source models (faster-whisper + Ollama)
-              and can be self-hosted alongside your data — or run as a pull
-              worker on your home machine.
+              {t('marketing.ai.assuranceBody')}
             </p>
             <p
               className="mt-4 text-[11px] font-medium uppercase tracking-[0.24em] text-amber-200/70"
               style={sans}
             >
-              No third-party cloud required
+              {t('marketing.ai.assuranceNote')}
             </p>
           </div>
         </div>
@@ -339,21 +323,22 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <div className="flex justify-center">
-              <SectionLabel>How to run it</SectionLabel>
+              <SectionLabel>{t('marketing.landing.run.label')}</SectionLabel>
             </div>
             <h2
               className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
               style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
             >
-              Self-host, or let us{' '}
-              <span className="text-amber-700" style={display}>
-                run it
-              </span>{' '}
-              for you.
+              <Trans
+                t={t}
+                i18nKey="marketing.landing.run.title"
+                components={{
+                  accent: <span className="text-amber-700" style={display} />,
+                }}
+              />
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-stone-600">
-              Two ways to use Hive Pal — both free, both run the same
-              open-source code.
+              {t('marketing.landing.run.lede')}
             </p>
           </div>
 
@@ -365,23 +350,19 @@ export function LandingPage() {
                   className="text-2xl font-semibold text-stone-900"
                   style={sans}
                 >
-                  Self-hosted
+                  {t('marketing.landing.run.selfHosted.title')}
                 </h3>
-                <span className="text-sm text-stone-500">Free, forever</span>
+                <span className="text-sm text-stone-500">
+                  {t('marketing.landing.run.selfHosted.badge')}
+                </span>
               </div>
 
               <p className="mt-6 text-sm leading-relaxed text-stone-600">
-                Full control over your data and infrastructure. Run it on your
-                own server, your laptop, a Raspberry Pi — wherever suits you.
+                {t('marketing.landing.run.selfHosted.body')}
               </p>
 
               <ul className="mt-8 space-y-3 text-sm text-stone-700">
-                {[
-                  'MIT licensed — read, fork, ship',
-                  'Host anywhere Docker runs',
-                  'Your data stays on your hardware',
-                  'Community support via GitHub',
-                ].map(item => (
+                {selfHostedItems.map(item => (
                   <li key={item} className="flex items-center gap-3">
                     <HexBullet />
                     {item}
@@ -402,7 +383,7 @@ export function LandingPage() {
                   rel="noopener noreferrer"
                 >
                   <BookOpen className="mr-2 h-4 w-4" />
-                  Read the docs
+                  {t('marketing.landing.run.selfHosted.cta')}
                 </a>
               </Button>
             </div>
@@ -414,24 +395,19 @@ export function LandingPage() {
                   className="text-2xl font-semibold text-amber-50"
                   style={sans}
                 >
-                  Hosted by us
+                  {t('marketing.landing.run.hosted.title')}
                 </h3>
-                <span className="text-sm text-amber-200/80">Free</span>
+                <span className="text-sm text-amber-200/80">
+                  {t('marketing.landing.run.hosted.badge')}
+                </span>
               </div>
 
               <p className="mt-6 text-sm leading-relaxed text-amber-50/75">
-                Zero setup required. We run the servers, handle updates, and
-                keep things ticking. Same open-source app — just on our
-                hardware.
+                {t('marketing.landing.run.hosted.body')}
               </p>
 
               <ul className="mt-8 space-y-3 text-sm text-amber-50/85">
-                {[
-                  'Sign up and go — no installation',
-                  'Automatic updates & backups',
-                  'Best-effort uptime, monitored',
-                  'Community support via GitHub',
-                ].map(item => (
+                {hostedItems.map(item => (
                   <li key={item} className="flex items-center gap-3">
                     <svg
                       viewBox="0 0 24 24"
@@ -462,7 +438,7 @@ export function LandingPage() {
                 asChild
               >
                 <Link to="/register">
-                  Sign up — it's free
+                  {t('marketing.landing.run.hosted.cta')}
                   <ArrowUpRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
@@ -476,48 +452,28 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
             <div>
-              <SectionLabel>Free tools</SectionLabel>
+              <SectionLabel>{t('marketing.landing.tools.label')}</SectionLabel>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
                 style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
               >
-                Free tools, no signup.
+                {t('marketing.landing.tools.title')}
               </h2>
               <p className="mt-4 max-w-xl text-base leading-relaxed text-stone-600">
-                Handy calculators and planners you can use directly in the
-                browser — bookmark them for the apiary.
+                {t('marketing.landing.tools.lede')}
               </p>
             </div>
             <Link
               to={localize('/tools')}
               className="inline-flex items-center gap-2 text-sm font-medium text-stone-900 underline-offset-4 hover:underline"
             >
-              See all tools
+              {t('marketing.landing.tools.seeAll')}
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
 
           <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-stone-900/10 bg-stone-900/10 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                to: '/tools/syrup-calculator',
-                icon: <Beaker className="h-5 w-5" />,
-                title: 'Sugar Syrup Calculator',
-                body: 'Precise sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size. Metric or imperial.',
-              },
-              {
-                to: '/tools/brood-timeline',
-                icon: <Bug className="h-5 w-5" />,
-                title: 'Brood Development Timeline',
-                body: 'Visualize queen, worker, and drone brood stages with day counts and project dates from any starting day.',
-              },
-              {
-                to: '/tools/swarm-management',
-                icon: <Waypoints className="h-5 w-5" />,
-                title: 'Swarm Management',
-                body: 'Step-by-step Demaree swarm-control workflow with follow-up timing and an inspection planner.',
-              },
-            ].map(tool => (
+            {TOOL_CARDS.map(tool => (
               <Link
                 key={tool.to}
                 to={localize(tool.to)}
@@ -533,10 +489,10 @@ export function LandingPage() {
                   className="mt-6 text-lg font-semibold text-stone-900"
                   style={sans}
                 >
-                  {tool.title}
+                  {t(`marketing.landing.tools.items.${tool.key}.title`)}
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-stone-600">
-                  {tool.body}
+                  {t(`marketing.landing.tools.items.${tool.key}.body`)}
                 </p>
               </Link>
             ))}
@@ -566,15 +522,16 @@ export function LandingPage() {
             className="mt-8 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-6xl"
             style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
           >
-            Give it a{' '}
-            <span className="text-amber-700" style={display}>
-              try
-            </span>
-            .
+            <Trans
+              t={t}
+              i18nKey="marketing.landing.cta.title"
+              components={{
+                accent: <span className="text-amber-700" style={display} />,
+              }}
+            />
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-stone-600">
-            Sign up for the hosted version, or grab the source and run it
-            yourself. Either way, it's free.
+            {t('marketing.landing.cta.lede')}
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
@@ -583,7 +540,7 @@ export function LandingPage() {
               className="bg-stone-900 px-6 text-amber-50 hover:bg-stone-800"
             >
               <Link to="/register">
-                Sign up free
+                {t('marketing.landing.cta.signup')}
                 <ArrowUpRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
@@ -599,7 +556,7 @@ export function LandingPage() {
                 rel="noopener noreferrer"
               >
                 <Github className="mr-2 h-4 w-4" />
-                View on GitHub
+                {t('marketing.landing.cta.github')}
               </a>
             </Button>
           </div>

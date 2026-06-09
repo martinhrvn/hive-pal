@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Github, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
@@ -43,6 +44,7 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
 /** Sticky top navigation shared across the public marketing pages. */
 export function MarketingHeader() {
   const localize = useLocalizedPath();
+  const { t } = useTranslation('common');
   return (
     <header className="sticky top-0 z-40 border-b border-stone-900/10 bg-[#FBF5EA]/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
@@ -69,13 +71,13 @@ export function MarketingHeader() {
             to={localize('/features')}
             className="transition-colors hover:text-stone-900"
           >
-            Features
+            {t('marketing.nav.features')}
           </Link>
           <Link
             to={localize('/tools')}
             className="transition-colors hover:text-stone-900"
           >
-            Free tools
+            {t('marketing.nav.freeTools')}
           </Link>
           <a
             href="https://docs.hivepal.app"
@@ -83,13 +85,13 @@ export function MarketingHeader() {
             rel="noopener noreferrer"
             className="transition-colors hover:text-stone-900"
           >
-            Documentation
+            {t('marketing.nav.documentation')}
           </a>
           <Link
             to={localize('/releases')}
             className="transition-colors hover:text-stone-900"
           >
-            Release notes
+            {t('marketing.nav.releaseNotes')}
           </Link>
           <a
             href="https://github.com/martinhrvn/hive-pal"
@@ -98,7 +100,7 @@ export function MarketingHeader() {
             className="inline-flex items-center gap-1.5 transition-colors hover:text-stone-900"
           >
             <Github className="h-4 w-4" />
-            GitHub
+            {t('marketing.nav.github')}
           </a>
         </nav>
 
@@ -108,14 +110,14 @@ export function MarketingHeader() {
             asChild
             className="hidden text-stone-700 hover:bg-stone-900/5 hover:text-stone-900 sm:inline-flex"
           >
-            <Link to="/login">Sign in</Link>
+            <Link to="/login">{t('marketing.nav.signIn')}</Link>
           </Button>
           <Button
             asChild
             className="bg-stone-900 text-amber-50 shadow-sm hover:bg-stone-800"
           >
             <Link to="/register">
-              Start free
+              {t('marketing.nav.startFree')}
               <ArrowUpRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
@@ -128,6 +130,7 @@ export function MarketingHeader() {
 /** Dark footer shared across the public marketing pages. */
 export function MarketingFooter() {
   const localize = useLocalizedPath();
+  const { t } = useTranslation('common');
   return (
     <footer className="bg-[#15201E] text-amber-50/80">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
@@ -146,8 +149,7 @@ export function MarketingFooter() {
               className="mt-5 max-w-xs text-sm leading-relaxed text-amber-50/65"
               style={sans}
             >
-              Free, open-source beekeeping management. Making the craft simpler,
-              more productive, and a little more enjoyable.
+              {t('marketing.footer.tagline')}
             </p>
           </div>
 
@@ -156,7 +158,7 @@ export function MarketingFooter() {
               className="text-[11px] uppercase tracking-[0.22em] text-amber-200/60"
               style={sans}
             >
-              Product
+              {t('marketing.footer.product')}
             </p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
@@ -164,7 +166,7 @@ export function MarketingFooter() {
                   to={localize('/features')}
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Features
+                  {t('marketing.footer.features')}
                 </Link>
               </li>
               <li>
@@ -172,7 +174,7 @@ export function MarketingFooter() {
                   to={localize('/tools')}
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Free tools
+                  {t('marketing.footer.freeTools')}
                 </Link>
               </li>
               <li>
@@ -180,7 +182,7 @@ export function MarketingFooter() {
                   to={localize('/releases')}
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Release notes
+                  {t('marketing.footer.releaseNotes')}
                 </Link>
               </li>
             </ul>
@@ -191,7 +193,7 @@ export function MarketingFooter() {
               className="text-[11px] uppercase tracking-[0.22em] text-amber-200/60"
               style={sans}
             >
-              Project
+              {t('marketing.footer.project')}
             </p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
@@ -201,7 +203,7 @@ export function MarketingFooter() {
                   rel="noopener noreferrer"
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Documentation
+                  {t('marketing.footer.documentation')}
                 </a>
               </li>
               <li>
@@ -211,7 +213,7 @@ export function MarketingFooter() {
                   rel="noopener noreferrer"
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Report an issue
+                  {t('marketing.footer.reportIssue')}
                 </a>
               </li>
               <li>
@@ -219,7 +221,7 @@ export function MarketingFooter() {
                   to={localize('/privacy-policy')}
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Privacy policy
+                  {t('marketing.footer.privacyPolicy')}
                 </Link>
               </li>
             </ul>
@@ -230,7 +232,7 @@ export function MarketingFooter() {
               className="text-[11px] uppercase tracking-[0.22em] text-amber-200/60"
               style={sans}
             >
-              Source
+              {t('marketing.footer.source')}
             </p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
@@ -241,7 +243,7 @@ export function MarketingFooter() {
                   className="inline-flex items-center gap-1.5 text-amber-50/75 hover:text-amber-50"
                 >
                   <Github className="h-4 w-4" />
-                  GitHub
+                  {t('marketing.footer.github')}
                 </a>
               </li>
               <li>
@@ -249,7 +251,7 @@ export function MarketingFooter() {
                   to="/login"
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Sign in
+                  {t('marketing.footer.signIn')}
                 </Link>
               </li>
               <li>
@@ -257,7 +259,7 @@ export function MarketingFooter() {
                   to="/register"
                   className="text-amber-50/75 hover:text-amber-50"
                 >
-                  Create account
+                  {t('marketing.footer.createAccount')}
                 </Link>
               </li>
             </ul>
@@ -269,10 +271,10 @@ export function MarketingFooter() {
             className="text-[11px] uppercase tracking-[0.22em] text-amber-50/55"
             style={sans}
           >
-            © 2025 Hive Pal · MIT Licensed
+            {t('marketing.footer.copyright')}
           </p>
           <p className="text-xs text-amber-50/55">
-            Built with care for beekeepers everywhere.
+            {t('marketing.footer.builtWith')}
           </p>
         </div>
       </div>
