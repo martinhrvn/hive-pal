@@ -1852,8 +1852,7 @@ function SdDataUploadCard({
     if (!canManage) {
       notice = (
         <p className="text-sm text-muted-foreground">
-          Only device owners and admins can import SD data. Your role is “{role}
-          ”.
+          Only device owners and admins can import SD data. Your role is “{role}”.
         </p>
       );
     }
