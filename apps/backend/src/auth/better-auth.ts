@@ -155,13 +155,25 @@ export const auth = betterAuth({
         after: async (session) => {
           const dbUser = await authDeps.prisma.user.findUnique({
             where: { id: session.userId },
-            select: { lastLoginAt: true, email: true },
+            select: { lastLoginAt: true, email: true, role: true },
           });
           if (!dbUser) return;
           const previousLoginAt = dbUser.lastLoginAt;
+          // Self-heal the configured admin account: whoever logs in with
+          // ADMIN_EMAIL always gets the ADMIN role, regardless of how/when the
+          // account was created (covers signups that pre-date or bypass the
+          // startup seed). Comparison is case-insensitive.
+          const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
+          const promoteToAdmin =
+            !!adminEmail &&
+            dbUser.email.toLowerCase() === adminEmail &&
+            dbUser.role !== 'ADMIN';
           await authDeps.prisma.user.update({
             where: { id: session.userId },
-            data: { lastLoginAt: new Date() },
+            data: {
+              lastLoginAt: new Date(),
+              ...(promoteToAdmin ? { role: 'ADMIN' } : {}),
+            },
           });
           authDeps.eventEmitter.emit(
             'user.login',
