@@ -1,693 +1,703 @@
 {
-    "status": {
-        "active": "Aktiv",
-        "inactive": "Inaktiv",
-        "archived": "Arkiveret",
-        "completed": "Gennemført",
-        "loading": "Henter...",
-        "success": "Success",
-        "error": "Fejl",
-        "warning": "Advarsel",
-        "info": "Information",
-        "pending": "Afventer",
-        "failed": "Fejlede"
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "archived": "Arkiveret",
+    "completed": "Gennemført",
+    "loading": "Henter...",
+    "success": "Success",
+    "error": "Fejl",
+    "warning": "Advarsel",
+    "info": "Information",
+    "pending": "Afventer",
+    "failed": "Fejlede"
+  },
+  "actions": {
+    "refreshData": "Opdater data",
+    "save": "Gem",
+    "cancel": "Afbryd",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "create": "Opret",
+    "add": "Tilføj",
+    "remove": "Fjern",
+    "search": "Søg",
+    "filter": "Filtrer",
+    "export": "Eksporter",
+    "import": "Importer",
+    "submit": "Indsend",
+    "back": "Tilbage",
+    "next": "Næste",
+    "previous": "Forrige",
+    "close": "Luk",
+    "confirm": "Bekræft",
+    "view": "Se",
+    "download": "Download",
+    "upload": "Upload",
+    "refresh": "Opdater",
+    "actions": "Handlinger",
+    "createNew": "Opret ny",
+    "navigate": "Naviger",
+    "notifications": "Notifikationer",
+    "newHive": "Nyt stade",
+    "language": "Sprog",
+    "logout": "Log ud",
+    "newInspection": "Ny inspektion",
+    "scheduleInspection": "Planlæg inspektion",
+    "newQueen": "Ny dronning",
+    "recentInspections": "Seneste inspektioner"
+  },
+  "navigation": {
+    "home": "Hjem",
+    "dashboard": "Kontrolpanel",
+    "apiaries": "Bigårde",
+    "hives": "Stader",
+    "inspections": "Inspektioner",
+    "queens": "Dronninger",
+    "settings": "Indstillinger",
+    "admin": "Administrator",
+    "users": "Brugere",
+    "feedback": "Feedback",
+    "logout": "Log ud",
+    "allApiaries": "Alle bigårde",
+    "createApiary": "Opret bigård",
+    "allHives": "Alle stader",
+    "allInspections": "Alle inspektioner",
+    "schedule": "Planlægning",
+    "recent": "Seneste",
+    "upcoming": "Kommende",
+    "general": "Generelt",
+    "harvests": "Høst",
+    "allHarvests": "Alle høst",
+    "reports": "Rapporter",
+    "metrics": "Målinger",
+    "files": "Filer",
+    "allQueens": "Alle dronninger",
+    "calendar": "Kalender",
+    "equipment": "Materiel",
+    "actions": "Handlinger",
+    "tools": "Værktøjer",
+    "syrupCalculator": "Sirups beregner",
+    "broodTimeline": "Yngel tidslinie"
+  },
+  "messages": {
+    "confirmDelete": "Er du sikker på at du vil slette denne?",
+    "changesSaved": "Ændringer er blevet gemt",
+    "errorOccurred": "Der opstod en fejl",
+    "noData": "Ingen data tilgængelig",
+    "required": "Dette felt er påkrævet",
+    "invalidEmail": "Ugyldig email adresse",
+    "invalidFormat": "Ugyldig format",
+    "notificationsComingSoon": "Funktionen \"notifikationer\" kommer snart"
+  },
+  "feedback": {
+    "selectType": "Vælg type af feedback",
+    "typeBug": "Rapporter fejl",
+    "typeSuggestion": "Forslag til ny funktionalitet",
+    "typeOther": "Andet",
+    "subject": "Emne",
+    "subjectPlaceholder": "Kort opsummering af din feedback",
+    "message": "Besked",
+    "messagePlaceholder": "Angiv venligst en uddybende forklaring af din feedback...",
+    "email": "Email (Frivilligt)",
+    "emailPlaceholder": "navn@eksempel.dk",
+    "emailDescription": "Angiv venligst din email, hvis du gerne vil modtage en tilbagemelding",
+    "submit": "Indsend feedback",
+    "thankYou": "Mange tak!",
+    "submittedMessage": "Din feedback er blevet modtaget. Vi sætter pris på din tilbagemelding og vil snarest kigge den igennem.",
+    "submitAnother": "Indsend yderligere feedback",
+    "title": "Indsend feedback",
+    "description": "Tak for dit feedback. Hjælp os med at gøre HivePal endnu bedre ved at dele dine tanker, rapportere fejl, eller foreslå ny funktionalitet.",
+    "sendFeedback": "Indsend feedback",
+    "type": "Type af feedback"
+  },
+  "alerts": {
+    "alert": "påmindelse",
+    "alerts": "påmindelser",
+    "activeAlerts": "Aktive påmindelser",
+    "activeAlert": "Aktiv påmindelse"
+  },
+  "calendar": {
+    "both": "Begge",
+    "inspections": "Inspektioner",
+    "actions": "Handlinger",
+    "title": "Kalender",
+    "today": "I dag",
+    "noEventsScheduled": "Ingen planlagte begivenheder",
+    "sevenDayViewTitle": "{{date}} - 7-dagess oversigt",
+    "previousWeek": "Forrige uge",
+    "previousDay": "Forrige dag",
+    "nextDay": "Næste dag",
+    "nextWeek": "Næste uge",
+    "dayHeader": "{{date}}",
+    "noEvents": "Ingen begivenheder",
+    "overdueInspections": "Overskredne inspektioner ({{overdueInspectionsSize}})",
+    "viewInspection": "Vis inspektion"
+  },
+  "quickCheck": {
+    "title": "Kort inspektion",
+    "description": "Denne handling kan ikke fortrydes. Den vil permanent slette dene korte inspektion og dens billeder.",
+    "deleteTitle": "Slet kort inspektion?",
+    "deleteDescription": "Denne handling kan ikke fortrydes. Den vil permanent slette denne korte inspektion og dens billeder.",
+    "deleted": "Kort inspektion slettet",
+    "deleteFailed": "Der opsted en fejl ved sletning af kort inspektion"
+  },
+  "timeline": {
+    "recentActivity": "Nylig aktivitet",
+    "noActivity": "Der er endnu ikke registreret en aktivitet",
+    "noActivityApiary": "Der er endnu ikke registreret en aktivitet for denne bigård",
+    "noMatchingFilters": "Der er ingen begivenhed, der matcher hvad der filtreres på",
+    "allEvents": "Begivenheder",
+    "inspections": "Inspektioner",
+    "feeding": "Fodring",
+    "treatments": "Behandlinger",
+    "harvests": "Høst",
+    "notes": "Noter",
+    "quickChecks": "Korte inspektioner",
+    "other": "Andet",
+    "allTime": "Tidspunkter",
+    "lastMonth": "Sidste måned",
+    "last3Months": "Sidste 3 måneder",
+    "last6Months": "Sidste 6 måneder",
+    "lastYear": "Sidste år",
+    "allHives": "Alle stader",
+    "clearFilters": "Nulstil filtre",
+    "showMore": "Vis {{count}} mere",
+    "showLess": "Vis mindre",
+    "notesAvailable": "Noter tilgængelig",
+    "boxConfiguration": "Magasin opbygning",
+    "inspection": "Inspektion",
+    "overdue": "Overskredet",
+    "scheduled": "Planlagt",
+    "cancelled": "Afbrudt",
+    "doInspection": "Udfør inspektion",
+    "reschedule": "Omsplan",
+    "inspectHive": "Inspicér {{hiveName}}",
+    "strength": "Styrke",
+    "honey": "Honning",
+    "queenSeen": "Dronning observeret",
+    "queenNotSeen": "Dronning ikke observerret",
+    "photos": "Fotos",
+    "documents": "Dokumenter",
+    "fromInspection": "Fra inspektion",
+    "maintenance": "Vedligehold"
+  },
+  "reports": {
+    "title": "Rappoter",
+    "selectApiary": "Vælg en bigård for at se rapporter",
+    "tabs": {
+      "overview": "Oversigt",
+      "charts": "Kort",
+      "trends": "Tendenser"
     },
-    "actions": {
-        "refreshData": "Opdater data",
-        "save": "Gem",
-        "cancel": "Afbryd",
-        "delete": "Slet",
-        "edit": "Rediger",
-        "create": "Opret",
-        "add": "Tilføj",
-        "remove": "Fjern",
-        "search": "Søg",
-        "filter": "Filtrer",
-        "export": "Eksporter",
-        "import": "Importer",
-        "submit": "Indsend",
-        "back": "Tilbage",
-        "next": "Næste",
-        "previous": "Forrige",
-        "close": "Luk",
-        "confirm": "Bekræft",
-        "view": "Se",
-        "download": "Download",
-        "upload": "Upload",
-        "refresh": "Opdater",
-        "actions": "Handlinger",
-        "createNew": "Opret ny",
-        "navigate": "Naviger",
-        "notifications": "Notifikationer",
-        "newHive": "Nyt stade",
-        "language": "Sprog",
-        "logout": "Log ud",
-        "newInspection": "Ny inspektion",
-        "scheduleInspection": "Planlæg inspektion",
-        "newQueen": "Ny dronning",
-        "recentInspections": "Seneste inspektioner"
+    "honeyProduction": "Honning produktion",
+    "feedingTotals": "Samlet antal fodringer",
+    "healthScores": "Sundheds score",
+    "hiveComparison": "Stade sammenligning",
+    "table": {
+      "hiveName": "Stade",
+      "honey": "Honning",
+      "sugarFed": "Fodret med sukker",
+      "overall": "Alt i alt",
+      "population": "Befolkning",
+      "stores": "Beholdninger",
+      "queen": "Dronning",
+      "lastInspection": "Seneste inspektion"
     },
-    "navigation": {
-        "home": "Hjem",
-        "dashboard": "Kontrolpanel",
-        "apiaries": "Bigårde",
-        "hives": "Stader",
-        "inspections": "Inspektioner",
-        "queens": "Dronninger",
-        "settings": "Indstillinger",
-        "admin": "Administrator",
-        "users": "Brugere",
-        "feedback": "Feedback",
-        "logout": "Log ud",
-        "allApiaries": "Alle bigårde",
-        "createApiary": "Opret bigård",
-        "allHives": "Alle stader",
-        "allInspections": "Alle inspektioner",
-        "schedule": "Planlægning",
-        "recent": "Seneste",
-        "upcoming": "Kommende",
-        "general": "Generelt",
-        "harvests": "Høst",
-        "allHarvests": "Alle høst",
-        "reports": "Rapporter",
-        "metrics": "Målinger",
-        "files": "Filer",
-        "allQueens": "Alle dronninger",
-        "calendar": "Kalender",
-        "equipment": "Materiel",
-        "actions": "Handlinger",
-        "tools": "Værktøjer",
-        "syrupCalculator": "Sirups beregner",
-        "broodTimeline": "Yngel tidslinie"
+    "charts": {
+      "hiveScoreTrends": "Stade score tendenser"
     },
-    "messages": {
-        "confirmDelete": "Er du sikker på at du vil slette denne?",
-        "changesSaved": "Ændringer er blevet gemt",
-        "errorOccurred": "Der opstod en fejl",
-        "noData": "Ingen data tilgængelig",
-        "required": "Dette felt er påkrævet",
-        "invalidEmail": "Ugyldig email adresse",
-        "invalidFormat": "Ugyldig format",
-        "notificationsComingSoon": "Funktionen \"notifikationer\" kommer snart"
+    "periods": {
+      "1month": "En måned",
+      "3months": "3 måneder",
+      "6months": "6 måneder",
+      "ytd": "År til dato",
+      "1year": "Et år",
+      "all": "Hele perioden"
     },
-    "feedback": {
-        "selectType": "Vælg type af feedback",
-        "typeBug": "Rapporter fejl",
-        "typeSuggestion": "Forslag til ny funktionalitet",
-        "typeOther": "Andet",
-        "subject": "Emne",
-        "subjectPlaceholder": "Kort opsummering af din feedback",
-        "message": "Besked",
-        "messagePlaceholder": "Angiv venligst en uddybende forklaring af din feedback...",
-        "email": "Email (Frivilligt)",
-        "emailPlaceholder": "navn@eksempel.dk",
-        "emailDescription": "Angiv venligst din email, hvis du gerne vil modtage en tilbagemelding",
-        "submit": "Indsend feedback",
-        "thankYou": "Mange tak!",
-        "submittedMessage": "Din feedback er blevet modtaget. Vi sætter pris på din tilbagemelding og vil snarest kigge den igennem.",
-        "submitAnother": "Indsend yderligere feedback",
-        "title": "Indsend feedback",
-        "description": "Tak for dit feedback. Hjælp os med at gøre HivePal endnu bedre ved at dele dine tanker, rapportere fejl, eller foreslå ny funktionalitet.",
-        "sendFeedback": "Indsend feedback",
-        "type": "Type af feedback"
+    "filters": {
+      "period": "Periode"
     },
-    "alerts": {
-        "alert": "påmindelse",
-        "alerts": "påmindelser",
-        "activeAlerts": "Aktive påmindelser",
-        "activeAlert": "Aktiv påmindelse"
+    "export": {
+      "title": "Eksporter",
+      "csv": "Eksporter som CSV",
+      "pdf": "Eksporter som PDF",
+      "success": "Rapporten er blevet eksporteret",
+      "error": "Der opstod en fejl ved eksport af rapport"
     },
-    "calendar": {
-        "both": "Begge",
-        "inspections": "Inspektioner",
-        "actions": "Handlinger",
-        "title": "Kalender",
-        "today": "I dag",
-        "noEventsScheduled": "Ingen planlagte begivenheder",
-        "sevenDayViewTitle": "{{date}} - 7-dagess oversigt",
-        "previousWeek": "Forrige uge",
-        "previousDay": "Forrige dag",
-        "nextDay": "Næste dag",
-        "nextWeek": "Næste uge",
-        "dayHeader": "{{date}}",
-        "noEvents": "Ingen begivenheder",
-        "overdueInspections": "Overskredne inspektioner ({{overdueInspectionsSize}})",
-        "viewInspection": "Vis inspektion"
-    },
-    "quickCheck": {
-        "title": "Kort inspektion",
-        "description": "Denne handling kan ikke fortrydes. Den vil permanent slette dene korte inspektion og dens billeder.",
-        "deleteTitle": "Slet kort inspektion?",
-        "deleteDescription": "Denne handling kan ikke fortrydes. Den vil permanent slette denne korte inspektion og dens billeder.",
-        "deleted": "Kort inspektion slettet",
-        "deleteFailed": "Der opsted en fejl ved sletning af kort inspektion"
-    },
-    "timeline": {
-        "recentActivity": "Nylig aktivitet",
-        "noActivity": "Der er endnu ikke registreret en aktivitet",
-        "noActivityApiary": "Der er endnu ikke registreret en aktivitet for denne bigård",
-        "noMatchingFilters": "Der er ingen begivenhed, der matcher hvad der filtreres på",
-        "allEvents": "Begivenheder",
-        "inspections": "Inspektioner",
-        "feeding": "Fodring",
-        "treatments": "Behandlinger",
-        "harvests": "Høst",
-        "notes": "Noter",
-        "quickChecks": "Korte inspektioner",
-        "other": "Andet",
-        "allTime": "Tidspunkter",
-        "lastMonth": "Sidste måned",
-        "last3Months": "Sidste 3 måneder",
-        "last6Months": "Sidste 6 måneder",
-        "lastYear": "Sidste år",
-        "allHives": "Alle stader",
-        "clearFilters": "Nulstil filtre",
-        "showMore": "Vis {{count}} mere",
-        "showLess": "Vis mindre",
-        "notesAvailable": "Noter tilgængelig",
-        "boxConfiguration": "Magasin opbygning",
-        "inspection": "Inspektion",
-        "overdue": "Overskredet",
-        "scheduled": "Planlagt",
-        "cancelled": "Afbrudt",
-        "doInspection": "Udfør inspektion",
-        "reschedule": "Omsplan",
-        "inspectHive": "Inspicér {{hiveName}}",
-        "strength": "Styrke",
-        "honey": "Honning",
-        "queenSeen": "Dronning observeret",
-        "queenNotSeen": "Dronning ikke observerret",
-        "photos": "Fotos",
-        "documents": "Dokumenter",
-        "fromInspection": "Fra inspektion",
-        "maintenance": "Vedligehold"
-    },
-    "reports": {
-        "title": "Rappoter",
-        "selectApiary": "Vælg en bigård for at se rapporter",
-        "tabs": {
-            "overview": "Oversigt",
-            "charts": "Kort",
-            "trends": "Tendenser"
-        },
-        "honeyProduction": "Honning produktion",
-        "feedingTotals": "Samlet antal fodringer",
-        "healthScores": "Sundheds score",
-        "hiveComparison": "Stade sammenligning",
-        "table": {
-            "hiveName": "Stade",
-            "honey": "Honning",
-            "sugarFed": "Fodret med sukker",
-            "overall": "Alt i alt",
-            "population": "Befolkning",
-            "stores": "Beholdninger",
-            "queen": "Dronning",
-            "lastInspection": "Seneste inspektion"
-        },
-        "charts": {
-            "hiveScoreTrends": "Stade score tendenser"
-        },
-        "periods": {
-            "1month": "En måned",
-            "3months": "3 måneder",
-            "6months": "6 måneder",
-            "ytd": "År til dato",
-            "1year": "Et år",
-            "all": "Hele perioden"
-        },
-        "filters": {
-            "period": "Periode"
-        },
-        "export": {
-            "title": "Eksporter",
-            "csv": "Eksporter som CSV",
-            "pdf": "Eksporter som PDF",
-            "success": "Rapporten er blevet eksporteret",
-            "error": "Der opstod en fejl ved eksport af rapport"
-        },
-        "widget": {
-            "title": "Bigårds statistik",
-            "viewReports": "Vis rapporter",
-            "noApiary": "Vælg et stade for at se statistik",
-            "apiaryDetails": "Detaljer om bigården"
-        }
-    },
-    "releaseNotes": {
-        "title": "Sidste nyt i HivePal",
-        "version": "Version {{version}}",
-        "released": "Frigivet den {{date}}",
-        "newVersionAvailable": "Ny version v{{version}} er tilgængelig!",
-        "checkLatestFeatures": "Tjek de nyeste funktioner og forbedringer.",
-        "whatsNew": "Seneste nyt",
-        "dismiss": "Afvis"
-    },
-    "time": {
-        "today": "I dag",
-        "yesterday": "I går",
-        "tomorrow": "I morgen",
-        "week": "Uge",
-        "month": "Måned",
-        "year": "År",
-        "date": "Dato",
-        "time": "Tidspunkt",
-        "days": "Dage",
-        "hours": "Timer",
-        "minutes": "Minutter",
-        "seconds": "Sekunder"
-    },
-    "weather": {
-        "selectHiveToView": "Vælg et stade i en bigård for at se vejrudsigten",
-        "unableToLoad": "Hentning af vejrudsigt fejlede",
-        "noWeatherData": "Ingen vejrdata tilgængelig",
-        "currentWeather": "Vejret lige nu",
-        "feelsLike": "Føles som {{temperature}}°C",
-        "humidity": "Fugtighed",
-        "wind": "Vind",
-        "nextHours": "Næste 5 timer",
-        "dayForecast": "7-dages prognose",
-        "weatherForecast": "Vejrudsigt"
-    },
-    "settings": {
-        "managePreferences": "Administrer din konto og dine applikations indstillinger",
-        "generalSettings": "Generelle indstillinger",
-        "configureLanguageRegional": "Konfigurer dine sprogline og regionale indstillinger",
-        "dateFormat": "Datoformat",
-        "unitsOfMeasurement": "Måleenhed",
-        "metric": "Metrisk (kg, km, °C)",
-        "imperial": "Imperial (lbs, miles, °F)",
-        "displayPreferences": "Vis indstillinger",
-        "customizeAppearance": "Tilret udseende af applikationen",
-        "theme": "Tema",
-        "light": "Lys",
-        "dark": "Mørk",
-        "system": "System",
-        "notificationPreferences": "Indstillinger for notifikationer",
-        "chooseNotificationMethod": "Angiv hvordan du vil modtage notifikationer for vigtige begivenheder",
-        "emailNotifications": "Email notifikationer",
-        "receiveEmailUpdates": "Modtag opdateringer via email",
-        "pushNotifications": "Push notifikationer",
-        "receiveBrowserNotifications": "Modtag push notifikationer i browseren",
-        "inspectionReminders": "Inspektions påmindelser",
-        "upcomingInspectionsNotify": "Modtag notifikationer om kommende inspektioner",
-        "harvestReminders": "Påmindelse om høst",
-        "harvestSchedulesNotify": "Modtag notifikationer hos planlagt høst",
-        "accountSettings": "Konto indstillinger",
-        "manageAccountInfo": "Administrer dine konto indstillinger",
-        "name": "Navn",
-        "enterName": "Indtast dit navn",
-        "email": "Email",
-        "enterEmail": "Indtast din email",
-        "password": "Password",
-        "changePassword": "Skift password på din konto",
-        "saveSettings": "Gem indstillinger",
-        "preferencesUpdated": "Dine indstillinger er blevet gemt.",
-        "saving": "Gemmer..."
-    },
-    "quickAdd": {
-        "title": "Opret ny post",
-        "quickCheck": "Kort inspektion",
-        "action": "Handling",
-        "photo": "Foto",
-        "document": "Dokument",
-        "inspection": "Inspektion"
-    },
-    "photo": {
-        "title": "Tilføj foto",
-        "description": "Upload foto, med en frivillig beskrivelse.",
-        "caption": "Beskrivelse",
-        "optional": "frivillig",
-        "captionPlaceholder": "Beskrive fotoet...",
-        "selectPhoto": "Vælg et foto",
-        "upload": "Upload foto",
-        "uploading": "Uploader...",
-        "uploadSuccess": "Foto uploaded",
-        "uploadFailed": "Upload af foto fejlede",
-        "deleteTitle": "Slet foto?",
-        "deleteDescription": "Denne handling kan ikke fortrydes. Dette sletter dit foto permanent.",
-        "deleted": "Foto slettet",
-        "deleteFailed": "Sletning af foto fejlede"
-    },
-    "document": {
-        "title": "Tilføj dokument",
-        "description": "Upload en PDF eller et indscannet dokument.",
-        "titleField": "Titel",
-        "titlePlaceholder": "Titel på dokument",
-        "notes": "Noter",
-        "optional": "frivillig",
-        "notesPlaceholder": "Tilføj noter om dette dokument...",
-        "selectFile": "Vælg en fil (PDF, JPEG, PNG)",
-        "upload": "Upload dokument",
-        "uploading": "Uploader...",
-        "uploadSuccess": "Dokument uploaded",
-        "uploadFailed": "Upload af dokument fejlede",
-        "deleteTitle": "Slet dokument?",
-        "deleteDescription": "Denne handling kan ikke fortrydes. Dette sletter dit dokument permanent.",
-        "deleted": "Dokument slettet",
-        "deleteFailed": "Sletning af dokument fejlede"
-    },
-    "files": {
-        "title": "Filer",
-        "allFiles": "Alle filer",
-        "photos": "Fotos",
-        "documents": "Dokumenter",
-        "search": "Søg i filer...",
-        "filterByHive": "Filtrer på stade",
-        "filterByType": "Filtrer på type",
-        "noFiles": "Ingen filer uploadet endnu",
-        "name": "Navn",
-        "type": "Type",
-        "hive": "Stade",
-        "size": "Størrelse",
-        "download": "Download",
-        "delete": "Slet"
-    },
-    "swarmManagement": {
-        "backToOverview": "Back to Swarm Management",
-        "eyebrow": "Swarm control guidance",
-        "title": "Swarm Management",
-        "cards": {
-            "available": "Available",
-            "comingSoon": "Coming soon",
-            "placeholderCta": "Not available yet",
-            "demaree": {
-                "title": "Demaree Method",
-                "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
-                "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
-                "cta": "Open guide"
-            },
-            "pagden": {
-                "title": "Pagden split",
-                "description": "Placeholder for a future guide covering the classic artificial swarm split."
-            },
-            "artificialSwarm": {
-                "title": "Artificial swarm",
-                "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
-            }
-        },
-        "aside": {
-            "title": "Choosing a method",
-            "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
-            "points": [
-                "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
-                "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
-                "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
-            ],
-            "criticalTimingTitle": "Critical timing",
-            "criticalTimingLead": "The first follow-up is the point where timing matters most.",
-            "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
-        },
-        "demaree": {
-            "badge": "Reference method",
-            "title": "Demaree Method",
-            "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
-            "overviewTitle": "Method overview",
-            "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
-            "overviewPoints": [
-                "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
-                "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
-                "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
-            ],
-            "prerequisitesTitle": "Prerequisites",
-            "prerequisites": [
-                "Check that the hive is a strong colony with enough bees and brood to justify the method.",
-                "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
-                "Make sure you can find and confidently retain the laying queen in the lower brood box.",
-                "Have a queen excluder ready, with at least two honey supers available to stack above it.",
-                "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
-                "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
-            ],
-            "stepsTitle": "Method Detail",
-            "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
-            "methodDetail": {
-                "preparation": {
-                    "title": "Preparation",
-                    "items": [
-                        {
-                            "text": "Find a spare brood box with foundation or drawn comb.",
-                            "children": [
-                                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
-                            ]
-                        },
-                        {
-                            "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
-                        }
-                    ]
-                },
-                "huntTheQueen": {
-                    "title": "Hunt the Queen",
-                    "items": [
-                        {
-                            "text": "Inspect the old brood box(es) and locate the Queen."
-                        },
-                        {
-                            "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
-                        }
-                    ]
-                },
-                "broodManipulation": {
-                    "title": "Brood Manipulation",
-                    "items": [
-                        {
-                            "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
-                            "children": [
-                                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
-                            ]
-                        },
-                        {
-                            "text": "Make sure to knock down all queen cells.",
-                            "children": [
-                                "With the queen safe you can shake bees off the frames to make sure you find them all."
-                            ]
-                        },
-                        {
-                            "text": "(Double Brood) - You should now have three brood boxes.",
-                            "children": [
-                                "Box with the queen, mostly empty directly on the hive floor.",
-                                "Box with no brood - place this on top of the queen to retain double brood status.",
-                                "Box with all the brood - keep this aside for now."
-                            ]
-                        }
-                    ]
-                },
-                "reassembly": {
-                    "title": "Reassembly",
-                    "items": [
-                        {
-                            "text": "Put the queen excluder on top of the new brood boxes."
-                        },
-                        {
-                            "text": "Add the supers (minimum 2, add extra if more space is required)."
-                        },
-                        {
-                            "text": "Place an additional queen excluder over the supers."
-                        },
-                        {
-                            "text": "The box with all the brood now goes on top of the supers."
-                        },
-                        {
-                            "text": "Fit crown board and roof and the job is done."
-                        }
-                    ]
-                }
-            },
-            "advantagesTitle": "Why the method works",
-            "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
-            "advantages": [
-                "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
-                "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
-                "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
-            ],
-            "followUpTitle": "Follow-up timing",
-            "followUpDayHeader": "Day",
-            "followUpTaskHeader": "Task",
-            "followUp": [
-                {
-                    "day": "Day 7-8",
-                    "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
-                },
-                {
-                    "day": "Day 14-15",
-                    "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
-                },
-                {
-                    "day": "Day 21-22",
-                    "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
-                }
-            ],
-            "prosConsTitle": "Pros and Cons",
-            "prosTitle": "Advantages",
-            "consTitle": "Disadvantages",
-            "pros": [
-                "Works well as a swarm control method.",
-                "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
-                "Comb renewal is simple.",
-                "Good brood combs can be drawn out in the top box.",
-                "The effect is similar to an artificial swarm, but the colony is kept together."
-            ],
-            "cons": [
-                "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
-                "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
-                "There may be heavy lifting.",
-                "Regular inspections are essential.",
-                "You MUST understand the basics."
-            ]
-        },
-        "planner": {
-            "title": "Demaree inspection planner",
-            "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
-            "hiveLabel": "Hive",
-            "hivePlaceholder": "Select a hive",
-            "startDateLabel": "Demaree setup date",
-            "startDatePlaceholder": "Pick the setup date",
-            "generate": "Generate checkpoints",
-            "selectedHive": "Selected hive",
-            "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
-            "notesLabel": "Inspection notes",
-            "notesChecklistLabel": "Checklist",
-            "checkpointPrefix": "Demaree checkpoint:",
-            "dayOffset_one": "Day {{count}}",
-            "dayOffset_other": "Day {{count}}",
-            "save": "Save scheduled inspections",
-            "saving": "Saving inspections...",
-            "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
-            "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
-            "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
-            "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
-            "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
-            "checkpoints": {
-                "setup": {
-                    "title": "Initial Demaree setup",
-                    "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
-                    "checklist": [
-                        "Confirm the laying queen is in the lower brood box.",
-                        "Place the brood and supers in the planned Demaree order.",
-                        "Record any details you want visible at the next inspection."
-                    ]
-                },
-                "queenCellCheck": {
-                    "title": "Queen-cell check",
-                    "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
-                    "checklist": [
-                        "Inspect every brood frame above the excluder for queen cells.",
-                        "Remove queen cells started during the swarm impulse.",
-                        "Confirm the queen still has room and activity below."
-                    ]
-                },
-                "secondQueenCellCheck": {
-                    "title": "Second queen-cell check",
-                    "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
-                    "checklist": [
-                        "Look again for newly started or missed queen cells.",
-                        "Check whether brood and stores need to be rebalanced.",
-                        "Note whether the colony is settling or still crowding upward."
-                    ]
-                },
-                "colonyReview": {
-                    "title": "Colony review",
-                    "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
-                    "checklist": [
-                        "Assess whether the colony can return to a more normal arrangement.",
-                        "Check space, brood pattern, and nectar intake across the stack.",
-                        "Schedule any additional inspection you want beyond the standard plan."
-                    ]
-                }
-            }
-        },
-        "warnings": {
-            "bannerTitle": "Timing warnings",
-            "lateQueenCellCheck": {
-                "title": "First queen-cell check is later than day 8",
-                "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
-            },
-            "unsafeCheckpointSpacing": {
-                "title": "Checkpoint spacing looks risky",
-                "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
-            },
-            "illogicalScheduleOrder": {
-                "title": "Checkpoint order is no longer chronological",
-                "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
-            }
-        }
-    },
-    "footer": {
-        "privacyPolicy": "Privatlivspolitik"
-    },
-    "syrupCalculator": {
-        "title": "Sirups beregner",
-        "description": "Beregn sukker og vandmængde til foder sirup",
-        "ratio": "Sirup forhold",
-        "ratioDescription": "Sukker til vand forhold (som vægt til volumen)",
-        "thin": "Tynd (1:1)",
-        "medium": "Medium (3:2)",
-        "thick": "Tyk (2:1)",
-        "containerSize": "Beholder størrelse",
-        "containerDescription": "Færdig mængde af sirup",
-        "customSize": "Tilpasset",
-        "results": "Resultater",
-        "water": "Vand",
-        "sugar": "Sukker",
-        "totalWeight": "Færdig vægt",
-        "instructions": "Instruktioner",
-        "step1": "Afmål {{water}} vand",
-        "step2": "Varm vandet op til det er lunkent (må ikke koge)",
-        "step3": "Tilsæt {{sugar}} hvidt sukker",
-        "step4": "Rør rundt indtil sukkeret er helt opløst",
-        "step5": "Lad sirupsopløsningen afkøle til stuetemperatur inden fodring",
-        "tips": "Tips og brugsvejledning",
-        "tip1Title": "Tynd sirup (1:1)",
-        "tip1Description": "Bedst til forårs fodring, for at stimulere yngeludvikling og efterligne nektar indhentning. Anvendes når bierne skal motiveres til bygge op.",
-        "tip2Title": "Medium sirup (3:2)",
-        "tip2Description": "En god all-round sirup. Kan bruges både om foråret og til begrænset fodring om efteråret.",
-        "tip3Title": "Tyk sirup (2:1)",
-        "tip3Description": "Bedst til indfodring før vinter. Bierne kan hurtigt sætte det i tavler pga lavt indhold af vand.",
-        "tip4Title": "Generelle tips",
-        "tip4Description": "Brug altid hvid, granuleret sikker - aldrig rørsukker, brown farin, sirup eller kunstige sødestoffer. Flydende foder må ikke koges, da der kan dannes HMF (hydroxymethylfurfural), der er giftigt for bierne. Fodring bør ske om aftenen for at reducere risiko for røveri."
-    },
-    "broodTimeline": {
-        "title": "Yngeludvikling tidslinie",
-        "description": "Følg de forskellige trin i udviklingen af dronning, arbejdere og droner fra æg til voksen",
-        "beeType": "Bitype",
-        "beeTypeDescription": "Vælg en bitype for at se hvordan den udvikler sig",
-        "queen": "Dronning",
-        "worker": "Arbejder",
-        "drone": "Drone",
-        "compareAll": "Sammenlign alle",
-        "dateSelector": "Startdato",
-        "dateSelectorDescription": "Vælg evt dato for hvornår æggene er lagt, for at se udviklingen på bestemte dage",
-        "pickDate": "Vælg en dato",
-        "timeline": "Tidslinie for udvikling",
-        "totalDays": "Samlet: {{days}} dage",
-        "daysUnit": "dage",
-        "stage": {
-            "egg": "Æg",
-            "larva": "Larve",
-            "pupa": "Puppe",
-            "adult": "Voksen"
-        },
-        "days": "Dage {{start}}–{{end}}",
-        "day": "Dag {{day}}",
-        "durationOne": "1 dag",
-        "durationOther": "{{count}} dage",
-        "queenEggDesc": "Lagt i dronningecelle",
-        "queenLarvaDesc": "Fodres udelukkende med dronningegele",
-        "queenPupaDesc": "Forseglet, udvikles hurtigt",
-        "queenAdultDesc": "Færdigudviklet, parres i løbet af få dage",
-        "workerEggDesc": "Meget lille hvid æg, der står op i cellen",
-        "workerLarvaDesc": "Fodres med dronningegele, derefter bibrød og honning",
-        "workerPupaDesc": "Forseglet celle, forvandlingsfasen",
-        "workerAdultDesc": "Kommer frem som en fuldt udviklet arbejder",
-        "droneEggDesc": "Større celler, ubefrugtede æg",
-        "droneLarvaDesc": "Fodres på samme måde som arbejdere",
-        "dronePupaDesc": "Forseglet, udvikles til droner",
-        "droneAdultDesc": "Kommer ud som drone",
-        "funFacts": "Sjove facts",
-        "fact1Title": "Dronning vs arbejder",
-        "fact1Description": "Den eneste forskel mellem en dronning og en arbejder er dens kost.Larver, der kun fodres med dronningegele udvikles til dronning - de bliver færdigudviklet på kun 16 dage, sammenlignet med 21 for arbejdere.",
-        "fact2Title": "Drone udvikling",
-        "fact2Description": "Droner tager længst tid at udvikle (24 dage) og stammer fra ubefrugtede æg. De har ingen far, men de har en bedstefar!",
-        "fact3Title": "Æggefasen",
-        "fact3Description": "Alle 3 bityper deler den samme æggeperiode. Dronningen lægger ægget lodret i cellen - det vipper gradvist til siden inden det knækker.",
-        "fact4Title": "Tidspunkt for forsegling",
-        "fact4Description": "Arbejderne forsegler dronningeceller på dag 8, arbejder celler på dag 9 og drone celler på dag 10. Når man observerer forseglede celler er det en hjælp til at se hvad der udvikler sig indeni."
+    "widget": {
+      "title": "Bigårds statistik",
+      "viewReports": "Vis rapporter",
+      "noApiary": "Vælg et stade for at se statistik",
+      "apiaryDetails": "Detaljer om bigården"
     }
+  },
+  "releaseNotes": {
+    "title": "Sidste nyt i HivePal",
+    "version": "Version {{version}}",
+    "released": "Frigivet den {{date}}",
+    "newVersionAvailable": "Ny version v{{version}} er tilgængelig!",
+    "checkLatestFeatures": "Tjek de nyeste funktioner og forbedringer.",
+    "whatsNew": "Seneste nyt",
+    "dismiss": "Afvis"
+  },
+  "time": {
+    "today": "I dag",
+    "yesterday": "I går",
+    "tomorrow": "I morgen",
+    "week": "Uge",
+    "month": "Måned",
+    "year": "År",
+    "date": "Dato",
+    "time": "Tidspunkt",
+    "days": "Dage",
+    "hours": "Timer",
+    "minutes": "Minutter",
+    "seconds": "Sekunder"
+  },
+  "weather": {
+    "selectHiveToView": "Vælg et stade i en bigård for at se vejrudsigten",
+    "unableToLoad": "Hentning af vejrudsigt fejlede",
+    "noWeatherData": "Ingen vejrdata tilgængelig",
+    "currentWeather": "Vejret lige nu",
+    "feelsLike": "Føles som {{temperature}}°C",
+    "humidity": "Fugtighed",
+    "wind": "Vind",
+    "nextHours": "Næste 5 timer",
+    "dayForecast": "7-dages prognose",
+    "weatherForecast": "Vejrudsigt"
+  },
+  "settings": {
+    "managePreferences": "Administrer din konto og dine applikations indstillinger",
+    "generalSettings": "Generelle indstillinger",
+    "configureLanguageRegional": "Konfigurer dine sprogline og regionale indstillinger",
+    "dateFormat": "Datoformat",
+    "unitsOfMeasurement": "Måleenhed",
+    "metric": "Metrisk (kg, km, °C)",
+    "imperial": "Imperial (lbs, miles, °F)",
+    "displayPreferences": "Vis indstillinger",
+    "customizeAppearance": "Tilret udseende af applikationen",
+    "theme": "Tema",
+    "light": "Lys",
+    "dark": "Mørk",
+    "system": "System",
+    "notificationPreferences": "Indstillinger for notifikationer",
+    "chooseNotificationMethod": "Angiv hvordan du vil modtage notifikationer for vigtige begivenheder",
+    "emailNotifications": "Email notifikationer",
+    "receiveEmailUpdates": "Modtag opdateringer via email",
+    "pushNotifications": "Push notifikationer",
+    "receiveBrowserNotifications": "Modtag push notifikationer i browseren",
+    "inspectionReminders": "Inspektions påmindelser",
+    "upcomingInspectionsNotify": "Modtag notifikationer om kommende inspektioner",
+    "harvestReminders": "Påmindelse om høst",
+    "harvestSchedulesNotify": "Modtag notifikationer hos planlagt høst",
+    "accountSettings": "Konto indstillinger",
+    "manageAccountInfo": "Administrer dine konto indstillinger",
+    "name": "Navn",
+    "enterName": "Indtast dit navn",
+    "email": "Email",
+    "enterEmail": "Indtast din email",
+    "password": "Password",
+    "changePassword": "Skift password på din konto",
+    "saveSettings": "Gem indstillinger",
+    "preferencesUpdated": "Dine indstillinger er blevet gemt.",
+    "saving": "Gemmer..."
+  },
+  "quickAdd": {
+    "title": "Opret ny post",
+    "quickCheck": "Kort inspektion",
+    "action": "Handling",
+    "photo": "Foto",
+    "document": "Dokument",
+    "inspection": "Inspektion"
+  },
+  "photo": {
+    "title": "Tilføj foto",
+    "description": "Upload foto, med en frivillig beskrivelse.",
+    "caption": "Beskrivelse",
+    "optional": "frivillig",
+    "captionPlaceholder": "Beskrive fotoet...",
+    "selectPhoto": "Vælg et foto",
+    "upload": "Upload foto",
+    "uploading": "Uploader...",
+    "uploadSuccess": "Foto uploaded",
+    "uploadFailed": "Upload af foto fejlede",
+    "deleteTitle": "Slet foto?",
+    "deleteDescription": "Denne handling kan ikke fortrydes. Dette sletter dit foto permanent.",
+    "deleted": "Foto slettet",
+    "deleteFailed": "Sletning af foto fejlede"
+  },
+  "document": {
+    "title": "Tilføj dokument",
+    "description": "Upload en PDF eller et indscannet dokument.",
+    "titleField": "Titel",
+    "titlePlaceholder": "Titel på dokument",
+    "notes": "Noter",
+    "optional": "frivillig",
+    "notesPlaceholder": "Tilføj noter om dette dokument...",
+    "selectFile": "Vælg en fil (PDF, JPEG, PNG)",
+    "upload": "Upload dokument",
+    "uploading": "Uploader...",
+    "uploadSuccess": "Dokument uploaded",
+    "uploadFailed": "Upload af dokument fejlede",
+    "deleteTitle": "Slet dokument?",
+    "deleteDescription": "Denne handling kan ikke fortrydes. Dette sletter dit dokument permanent.",
+    "deleted": "Dokument slettet",
+    "deleteFailed": "Sletning af dokument fejlede"
+  },
+  "files": {
+    "title": "Filer",
+    "allFiles": "Alle filer",
+    "photos": "Fotos",
+    "documents": "Dokumenter",
+    "search": "Søg i filer...",
+    "filterByHive": "Filtrer på stade",
+    "filterByType": "Filtrer på type",
+    "noFiles": "Ingen filer uploadet endnu",
+    "name": "Navn",
+    "type": "Type",
+    "hive": "Stade",
+    "size": "Størrelse",
+    "download": "Download",
+    "delete": "Slet"
+  },
+  "swarmManagement": {
+    "backToOverview": "Back to Swarm Management",
+    "eyebrow": "Swarm control guidance",
+    "title": "Swarm Management",
+    "cards": {
+      "available": "Available",
+      "comingSoon": "Coming soon",
+      "placeholderCta": "Not available yet",
+      "demaree": {
+        "title": "Demaree Method",
+        "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
+        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+        "cta": "Open guide"
+      },
+      "pagden": {
+        "title": "Pagden split",
+        "description": "Placeholder for a future guide covering the classic artificial swarm split."
+      },
+      "artificialSwarm": {
+        "title": "Artificial swarm",
+        "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+      }
+    },
+    "aside": {
+      "title": "Choosing a method",
+      "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+      "points": [
+        "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
+        "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
+        "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+      ],
+      "criticalTimingTitle": "Critical timing",
+      "criticalTimingLead": "The first follow-up is the point where timing matters most.",
+      "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+    },
+    "demaree": {
+      "badge": "Reference method",
+      "title": "Demaree Method",
+      "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
+      "overviewTitle": "Method overview",
+      "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+      "overviewPoints": [
+        "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
+        "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
+        "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+      ],
+      "prerequisitesTitle": "Prerequisites",
+      "prerequisites": [
+        "Check that the hive is a strong colony with enough bees and brood to justify the method.",
+        "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
+        "Make sure you can find and confidently retain the laying queen in the lower brood box.",
+        "Have a queen excluder ready, with at least two honey supers available to stack above it.",
+        "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
+        "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+      ],
+      "stepsTitle": "Method Detail",
+      "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+      "methodDetail": {
+        "preparation": {
+          "title": "Preparation",
+          "items": [
+            {
+              "text": "Find a spare brood box with foundation or drawn comb.",
+              "children": [
+                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+              ]
+            },
+            {
+              "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+            }
+          ]
+        },
+        "huntTheQueen": {
+          "title": "Hunt the Queen",
+          "items": [
+            {
+              "text": "Inspect the old brood box(es) and locate the Queen."
+            },
+            {
+              "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+            }
+          ]
+        },
+        "broodManipulation": {
+          "title": "Brood Manipulation",
+          "items": [
+            {
+              "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+              "children": [
+                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+              ]
+            },
+            {
+              "text": "Make sure to knock down all queen cells.",
+              "children": [
+                "With the queen safe you can shake bees off the frames to make sure you find them all."
+              ]
+            },
+            {
+              "text": "(Double Brood) - You should now have three brood boxes.",
+              "children": [
+                "Box with the queen, mostly empty directly on the hive floor.",
+                "Box with no brood - place this on top of the queen to retain double brood status.",
+                "Box with all the brood - keep this aside for now."
+              ]
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Reassembly",
+          "items": [
+            {
+              "text": "Put the queen excluder on top of the new brood boxes."
+            },
+            {
+              "text": "Add the supers (minimum 2, add extra if more space is required)."
+            },
+            {
+              "text": "Place an additional queen excluder over the supers."
+            },
+            {
+              "text": "The box with all the brood now goes on top of the supers."
+            },
+            {
+              "text": "Fit crown board and roof and the job is done."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Why the method works",
+      "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+      "advantages": [
+        "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
+        "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
+        "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+      ],
+      "followUpTitle": "Follow-up timing",
+      "followUpDayHeader": "Day",
+      "followUpTaskHeader": "Task",
+      "followUp": [
+        {
+          "day": "Day 7-8",
+          "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+        },
+        {
+          "day": "Day 14-15",
+          "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+        },
+        {
+          "day": "Day 21-22",
+          "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+        }
+      ],
+      "prosConsTitle": "Pros and Cons",
+      "prosTitle": "Advantages",
+      "consTitle": "Disadvantages",
+      "pros": [
+        "Works well as a swarm control method.",
+        "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
+        "Comb renewal is simple.",
+        "Good brood combs can be drawn out in the top box.",
+        "The effect is similar to an artificial swarm, but the colony is kept together."
+      ],
+      "cons": [
+        "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
+        "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
+        "There may be heavy lifting.",
+        "Regular inspections are essential.",
+        "You MUST understand the basics."
+      ]
+    },
+    "planner": {
+      "title": "Demaree inspection planner",
+      "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+      "hiveLabel": "Hive",
+      "hivePlaceholder": "Select a hive",
+      "startDateLabel": "Demaree setup date",
+      "startDatePlaceholder": "Pick the setup date",
+      "generate": "Generate checkpoints",
+      "selectedHive": "Selected hive",
+      "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
+      "notesLabel": "Inspection notes",
+      "notesChecklistLabel": "Checklist",
+      "checkpointPrefix": "Demaree checkpoint:",
+      "dayOffset_one": "Day {{count}}",
+      "dayOffset_other": "Day {{count}}",
+      "save": "Save scheduled inspections",
+      "saving": "Saving inspections...",
+      "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
+      "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
+      "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+      "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
+      "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+      "checkpoints": {
+        "setup": {
+          "title": "Initial Demaree setup",
+          "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+          "checklist": [
+            "Confirm the laying queen is in the lower brood box.",
+            "Place the brood and supers in the planned Demaree order.",
+            "Record any details you want visible at the next inspection."
+          ]
+        },
+        "queenCellCheck": {
+          "title": "Queen-cell check",
+          "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+          "checklist": [
+            "Inspect every brood frame above the excluder for queen cells.",
+            "Remove queen cells started during the swarm impulse.",
+            "Confirm the queen still has room and activity below."
+          ]
+        },
+        "secondQueenCellCheck": {
+          "title": "Second queen-cell check",
+          "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+          "checklist": [
+            "Look again for newly started or missed queen cells.",
+            "Check whether brood and stores need to be rebalanced.",
+            "Note whether the colony is settling or still crowding upward."
+          ]
+        },
+        "colonyReview": {
+          "title": "Colony review",
+          "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+          "checklist": [
+            "Assess whether the colony can return to a more normal arrangement.",
+            "Check space, brood pattern, and nectar intake across the stack.",
+            "Schedule any additional inspection you want beyond the standard plan."
+          ]
+        }
+      }
+    },
+    "warnings": {
+      "bannerTitle": "Timing warnings",
+      "lateQueenCellCheck": {
+        "title": "First queen-cell check is later than day 8",
+        "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+      },
+      "unsafeCheckpointSpacing": {
+        "title": "Checkpoint spacing looks risky",
+        "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+      },
+      "illogicalScheduleOrder": {
+        "title": "Checkpoint order is no longer chronological",
+        "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+      }
+    }
+  },
+  "footer": {
+    "privacyPolicy": "Privatlivspolitik"
+  },
+  "syrupCalculator": {
+    "title": "Sirups beregner",
+    "description": "Beregn sukker og vandmængde til foder sirup",
+    "ratio": "Sirup forhold",
+    "ratioDescription": "Sukker til vand forhold (som vægt til volumen)",
+    "thin": "Tynd (1:1)",
+    "medium": "Medium (3:2)",
+    "thick": "Tyk (2:1)",
+    "containerSize": "Beholder størrelse",
+    "containerDescription": "Færdig mængde af sirup",
+    "customSize": "Tilpasset",
+    "results": "Resultater",
+    "water": "Vand",
+    "sugar": "Sukker",
+    "totalWeight": "Færdig vægt",
+    "instructions": "Instruktioner",
+    "step1": "Afmål {{water}} vand",
+    "step2": "Varm vandet op til det er lunkent (må ikke koge)",
+    "step3": "Tilsæt {{sugar}} hvidt sukker",
+    "step4": "Rør rundt indtil sukkeret er helt opløst",
+    "step5": "Lad sirupsopløsningen afkøle til stuetemperatur inden fodring",
+    "tips": "Tips og brugsvejledning",
+    "tip1Title": "Tynd sirup (1:1)",
+    "tip1Description": "Bedst til forårs fodring, for at stimulere yngeludvikling og efterligne nektar indhentning. Anvendes når bierne skal motiveres til bygge op.",
+    "tip2Title": "Medium sirup (3:2)",
+    "tip2Description": "En god all-round sirup. Kan bruges både om foråret og til begrænset fodring om efteråret.",
+    "tip3Title": "Tyk sirup (2:1)",
+    "tip3Description": "Bedst til indfodring før vinter. Bierne kan hurtigt sætte det i tavler pga lavt indhold af vand.",
+    "tip4Title": "Generelle tips",
+    "tip4Description": "Brug altid hvid, granuleret sikker - aldrig rørsukker, brown farin, sirup eller kunstige sødestoffer. Flydende foder må ikke koges, da der kan dannes HMF (hydroxymethylfurfural), der er giftigt for bierne. Fodring bør ske om aftenen for at reducere risiko for røveri."
+  },
+  "broodTimeline": {
+    "title": "Yngeludvikling tidslinie",
+    "description": "Følg de forskellige trin i udviklingen af dronning, arbejdere og droner fra æg til voksen",
+    "beeType": "Bitype",
+    "beeTypeDescription": "Vælg en bitype for at se hvordan den udvikler sig",
+    "queen": "Dronning",
+    "worker": "Arbejder",
+    "drone": "Drone",
+    "compareAll": "Sammenlign alle",
+    "dateSelector": "Startdato",
+    "dateSelectorDescription": "Vælg evt dato for hvornår æggene er lagt, for at se udviklingen på bestemte dage",
+    "pickDate": "Vælg en dato",
+    "timeline": "Tidslinie for udvikling",
+    "totalDays": "Samlet: {{days}} dage",
+    "daysUnit": "dage",
+    "stage": {
+      "egg": "Æg",
+      "larva": "Larve",
+      "pupa": "Puppe",
+      "adult": "Voksen"
+    },
+    "days": "Dage {{start}}–{{end}}",
+    "day": "Dag {{day}}",
+    "durationOne": "1 dag",
+    "durationOther": "{{count}} dage",
+    "queenEggDesc": "Lagt i dronningecelle",
+    "queenLarvaDesc": "Fodres udelukkende med dronningegele",
+    "queenPupaDesc": "Forseglet, udvikles hurtigt",
+    "queenAdultDesc": "Færdigudviklet, parres i løbet af få dage",
+    "workerEggDesc": "Meget lille hvid æg, der står op i cellen",
+    "workerLarvaDesc": "Fodres med dronningegele, derefter bibrød og honning",
+    "workerPupaDesc": "Forseglet celle, forvandlingsfasen",
+    "workerAdultDesc": "Kommer frem som en fuldt udviklet arbejder",
+    "droneEggDesc": "Større celler, ubefrugtede æg",
+    "droneLarvaDesc": "Fodres på samme måde som arbejdere",
+    "dronePupaDesc": "Forseglet, udvikles til droner",
+    "droneAdultDesc": "Kommer ud som drone",
+    "funFacts": "Sjove facts",
+    "fact1Title": "Dronning vs arbejder",
+    "fact1Description": "Den eneste forskel mellem en dronning og en arbejder er dens kost.Larver, der kun fodres med dronningegele udvikles til dronning - de bliver færdigudviklet på kun 16 dage, sammenlignet med 21 for arbejdere.",
+    "fact2Title": "Drone udvikling",
+    "fact2Description": "Droner tager længst tid at udvikle (24 dage) og stammer fra ubefrugtede æg. De har ingen far, men de har en bedstefar!",
+    "fact3Title": "Æggefasen",
+    "fact3Description": "Alle 3 bityper deler den samme æggeperiode. Dronningen lægger ægget lodret i cellen - det vipper gradvist til siden inden det knækker.",
+    "fact4Title": "Tidspunkt for forsegling",
+    "fact4Description": "Arbejderne forsegler dronningeceller på dag 8, arbejder celler på dag 9 og drone celler på dag 10. Når man observerer forseglede celler er det en hjælp til at se hvad der udvikler sig indeni."
+  },
+  "marketing": {
+    "toolsIndex": {
+      "items": {
+        "liebefelder": {
+          "title": "Liebefelder Schätzmethode",
+          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+        }
+      }
+    }
+  }
 }

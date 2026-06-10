@@ -1,12 +1,13 @@
 import { Link, Outlet } from 'react-router-dom';
-import { Github, BookOpen, Beaker, Bug, Waypoints } from 'lucide-react';
+import { Github, BookOpen, Beaker, Bug, Waypoints, Microscope } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 
 const TOOL_LINKS = [
-  { to: '/tools/syrup-calculator', label: 'Syrup Calculator', icon: Beaker },
-  { to: '/tools/brood-timeline', label: 'Brood Timeline', icon: Bug },
-  { to: '/tools/swarm-management', label: 'Swarm Management', icon: Waypoints },
+  { to: '/tools/syrup-calculator', label: 'Syrup Calculator',           icon: Beaker },
+  { to: '/tools/brood-timeline',   label: 'Brood Timeline',             icon: Bug },
+  { to: '/tools/swarm-management', label: 'Swarm Management',           icon: Waypoints },
+  { to: '/tools/liebefelder',      label: 'Liebefelder Schätzmethode',  icon: Microscope },
 ];
 
 export const PublicLayout = () => {
