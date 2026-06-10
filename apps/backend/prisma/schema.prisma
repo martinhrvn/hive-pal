@@ -141,7 +141,7 @@ model Apiary {
   notes            String?
   hives                 Hive[]
   harvests              Harvest[]
-  user                  User                    @relation(fields: [userId], references: [id])
+  user                  User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                String
   weather               Weather[]
   weatherHourlyForecasts WeatherHourlyForecast[]
@@ -167,7 +167,7 @@ model Hive {
   name             String
   notes            String?
   apiaryId         String?
-  apiary           Apiary?      @relation(fields: [apiaryId], references: [id])
+  apiary           Apiary?      @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
   status           HiveStatus   @default(ACTIVE)
   installationDate DateTime?
   positionRow      Int?         // Row position in apiary layout (0-based)
@@ -231,7 +231,7 @@ model ApiaryApiKey {
 model Box {
   id            String      @id @default(uuid())
   hiveId        String
-  hive          Hive        @relation(fields: [hiveId], references: [id])
+  hive          Hive        @relation(fields: [hiveId], references: [id], onDelete: Cascade)
   position      Int // Position from bottom up
   frameCount    Int // Number of frames in this box
   maxFrameCount Int         @default(10) // Maximum number of frames the box can hold
@@ -252,7 +252,7 @@ model Box {
 model Queen {
   id          String      @id @default(uuid())
   hiveId      String?
-  hive        Hive?       @relation(fields: [hiveId], references: [id])
+  hive        Hive?       @relation(fields: [hiveId], references: [id], onDelete: Cascade)
   name        String?
   marking     String?
   color       String?
@@ -272,9 +272,9 @@ model QueenMovement {
   queenId    String
   queen      Queen     @relation(fields: [queenId], references: [id], onDelete: Cascade)
   fromHiveId String?
-  fromHive   Hive?     @relation("MovementFromHive", fields: [fromHiveId], references: [id])
+  fromHive   Hive?     @relation("MovementFromHive", fields: [fromHiveId], references: [id], onDelete: SetNull)
   toHiveId   String?
-  toHive     Hive?     @relation("MovementToHive", fields: [toHiveId], references: [id])
+  toHive     Hive?     @relation("MovementToHive", fields: [toHiveId], references: [id], onDelete: SetNull)
   movedAt    DateTime  @default(now())
   reason     String?
   notes      String?
@@ -288,7 +288,7 @@ model QueenMovement {
 model Inspection {
   id                String             @id @default(uuid())
   hiveId            String
-  hive              Hive               @relation(fields: [hiveId], references: [id])
+  hive              Hive               @relation(fields: [hiveId], references: [id], onDelete: Cascade)
   date              DateTime
   isAllDay          Boolean            @default(true)
   notes             InspectionNote[]
@@ -327,7 +327,7 @@ enum InspectionStatus {
 model InspectionNote {
   id           String     @id @default(uuid())
   inspectionId String
-  inspection   Inspection @relation(fields: [inspectionId], references: [id])
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
   text         String
 
   @@index([inspectionId])
@@ -383,7 +383,7 @@ enum TranscriptionStatus {
 model Observation {
   id           String     @id @default(uuid())
   inspectionId String
-  inspection   Inspection @relation(fields: [inspectionId], references: [id])
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
   type         String // BROOD_PATTERN, QUEEN_SEEN, DISEASE_SIGNS etc.
   numericValue Float? // For numerical observations
   textValue    String? // For text-based observations
@@ -397,11 +397,11 @@ model Observation {
 model Action {
   id           String     @id @default(uuid())
   hiveId       String?
-  hive         Hive?      @relation(fields: [hiveId], references: [id])
+  hive         Hive?      @relation(fields: [hiveId], references: [id], onDelete: Cascade)
   inspectionId String?
-  inspection   Inspection? @relation(fields: [inspectionId], references: [id])
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
   harvestId    String?    // Link to harvest if action from harvest
-  harvest      Harvest?   @relation(fields: [harvestId], references: [id])
+  harvest      Harvest?   @relation(fields: [harvestId], references: [id], onDelete: Cascade)
   type         ActionType // FEEDING, TREATMENT, HARVEST etc.
   notes        String? // Description of the action taken
   date         DateTime   @default(now()) // Date when action was performed
@@ -486,7 +486,7 @@ model MaintenanceAction {
 model Harvest {
   id              String         @id @default(uuid())
   apiaryId        String
-  apiary          Apiary         @relation(fields: [apiaryId], references: [id])
+  apiary          Apiary         @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
   date            DateTime
   status          HarvestStatus  @default(DRAFT)
   totalWeight     Float?         // amount of honey extracted
@@ -507,7 +507,7 @@ model HarvestHive {
   harvestId        String
   harvest          Harvest  @relation(fields: [harvestId], references: [id], onDelete: Cascade)
   hiveId           String
-  hive             Hive     @relation(fields: [hiveId], references: [id])
+  hive             Hive     @relation(fields: [hiveId], references: [id], onDelete: Cascade)
   framesTaken      Int      // Number of frames harvested from this hive
   honeyAmount      Float?   // Calculated amount after weight entry
   honeyAmountUnit  String   @default("kg") // Unit for honeyAmount
@@ -822,7 +822,7 @@ model BatchInspectionHive {
   order              Int              // Position in inspection queue (0-based)
   status             BatchHiveStatus  @default(PENDING)
   inspectionId       String?          @unique
-  inspection         Inspection?      @relation(fields: [inspectionId], references: [id])
+  inspection         Inspection?      @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
   completedAt        DateTime?        // When this hive's inspection was completed
   skippedCount       Int              @default(0) // Number of times this hive was skipped
 
@@ -985,7 +985,7 @@ model WorkerToken {
   prefix      String
   createdAt   DateTime  @default(now())
   createdById String
-  createdBy   User      @relation("WorkerTokenCreator", fields: [createdById], references: [id])
+  createdBy   User      @relation("WorkerTokenCreator", fields: [createdById], references: [id], onDelete: Cascade)
   lastSeenAt  DateTime?
   revokedAt   DateTime?
 
