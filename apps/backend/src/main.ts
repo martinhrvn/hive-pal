@@ -1,12 +1,19 @@
 import './instrument';
+import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { setup } from './setup';
 import { CustomLoggerService } from './logger/logger.service';
+import { createPrerenderFallback } from './prerender-fallback.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Serve prerendered language-prefixed public pages before ServeStaticModule
+  // (which registers in onModuleInit, i.e. during listen()). Must precede it so
+  // a route like `/da` isn't shadowed by the `da/` directory.
+  app.use(createPrerenderFallback(join(__dirname, '..', 'static')));
   if (process.env.NODE_ENV !== 'production') {
     app.enableCors({
       origin: ['http://localhost:5173'],

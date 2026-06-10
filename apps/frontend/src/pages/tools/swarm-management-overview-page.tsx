@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { SwarmMethodCard } from '@/components/common';
+import { useLocalizedPath } from '@/hooks/use-language-navigation';
 import {
   CalloutCard,
   DotList,
@@ -25,6 +26,7 @@ import {
 export function SwarmManagementOverviewPage() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
+  const localize = useLocalizedPath();
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -93,7 +95,9 @@ export function SwarmManagementOverviewPage() {
             icon={<Waypoints className="h-5 w-5 text-primary" />}
             badge={<Badge>{t('swarmManagement.cards.available')}</Badge>}
             className="border-primary/30 bg-primary/5"
-            onClick={() => navigate('/tools/swarm-management/demaree')}
+            onClick={() =>
+              navigate(localize('/tools/swarm-management/demaree'))
+            }
           />
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

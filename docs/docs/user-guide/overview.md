@@ -19,37 +19,42 @@ After [installing Hive-Pal](../installation.md), you'll need to:
 
 ## Main Features
 
-Hive-Pal includes several core modules:
+### Getting Around
 
-### [Apiary Management](./apiaries.md)
+- **[Apiary Management](./apiaries.md)** — create and manage multiple apiary locations with GPS and notes.
+- **[Hive Management](./hives.md)** — track individual hives, box setup, status, and history.
+- **[Quick Actions (FAB)](./fab-actions.md)** — the floating button for fast inspection, scheduling, and actions.
 
-- Create and manage multiple apiary locations
-- Track GPS coordinates and location details
-- Add notes about forage, land ownership, etc.
+### Inspections
 
-### [Hive Management](./hives.md)
+- **[Inspections](./inspections.md)** — detailed records with subjective ratings or data-driven counts.
+- **[Quick Check](./quick-check.md)** — fast, tag-based field observations.
+- **[Batch Inspections](./batch-inspections.md)** — inspect many hives in one guided run.
+- **[Scheduled Inspections](./scheduled-inspections.md)** — plan ahead using the weather forecast.
+- **[Audio & AI Transcription](./audio-ai.md)** — speak your notes and let AI structure them.
+- **[Bulk Add](./bulk-add.md)** — apply an inspection, action, or queen to many hives at once.
 
-- Track individual hives across your apiaries
-- Configure box setup and frame counts
-- Monitor hive status and history
+### Colony Management
 
-### [Inspection Records](./inspections.md)
+- **[Queen Management](./queens.md)** — details, marking, movement history, and transfers.
+- **[Equipment](./equipment.md)** — plan and track equipment against target hive counts.
+- **[Harvests](./harvest.md)** — log and track honey harvests.
+- **[Weather](./weather.md)** — forecasts and conditions tied to your apiaries.
 
-- Document detailed hive inspections
-- Record observations about colony health
-- Track changes over time
+### Data & Devices
 
-### [Queen Management](./queens.md)
+- **[QR Codes](./qr-codes.md)** — print labels that scan straight to a hive or inspection.
+- **[Import & Export](./import-export.md)** — back up or migrate your account data.
+- **[Calendar](./calendar.md)** — past and upcoming inspections across all apiaries.
+- **[Reports & Analytics](./reports.md)** — trends for health, feeding, scores, and honey.
+- **[Apiary Assistant](./assistant.md)** — ask questions about your hives in plain language.
+- **[HiveScale Integration](./hivescale.md)** — live weight, temperature, and off-grid telemetry from HiveScale devices.
 
-- Track queen details and lineage
-- Record queen replacement events
-- Monitor queen performance
+### Tools & Account
 
-### [HiveScale Integration](./hivescale.md)
-
-- Claim self-hosted HiveScale devices by pairing code
-- View live weight, temperature, battery, solar, and cellular telemetry
-- Correlate scale history with Hive-Pal inspection events
+- **[Beekeeping Tools](./tools.md)** — free syrup calculator, brood timeline, and swarm management.
+- **[Logging In](./login.md)** — password, magic link, and passkey sign-in.
+- **[Account & Settings](./account-settings.md)** — password, files, and preferences.
 
 ## Mobile Usage
 

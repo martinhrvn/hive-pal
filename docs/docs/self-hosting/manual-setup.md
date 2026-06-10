@@ -1,253 +1,95 @@
 ---
 sidebar_position: 3
-title: Manual Installation
-description: Install Hive-Pal manually without Docker for full control over Node.js, PostgreSQL, and application configuration.
-keywords: [manual installation, hive-pal setup, nodejs setup, postgresql beekeeping]
+title: Manual Setup
+description: Run Hive-Pal from source without Docker using the PNPM/Turborepo monorepo — for development and customization.
+keywords: [manual installation, hive-pal from source, pnpm, turborepo, nodejs setup, postgresql]
 ---
 
-# Manual Installation
+# Manual Setup
 
-Set up Hive-Pal without Docker for more control over the environment.
+Running from source is intended for **development and customization**. For production self-hosting, the [single-container Docker setup](./docker-setup) is strongly recommended — it builds the frontend and backend together and runs migrations for you.
 
 ## Prerequisites
 
-### System Dependencies
-```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install nodejs npm postgresql postgresql-contrib git
+- **Node.js 22+**
+- **PNPM** (`npm install -g pnpm`)
+- **PostgreSQL 14+** (or use the bundled Docker database — see below)
 
-# macOS
-brew install node postgresql git
+## 1. Clone and Install
 
-# Windows
-# Use official installers for Node.js, PostgreSQL
-```
-
-### Node.js Setup
-```bash
-# Install pnpm
-npm install -g pnpm
-
-# Verify versions
-node --version  # Should be 18+
-pnpm --version
-```
-
-## Database Setup
-
-### PostgreSQL Installation
-```sql
--- Create database and user
-CREATE DATABASE hivepal;
-CREATE USER hivepal_user WITH PASSWORD 'secure_password';
-GRANT ALL PRIVILEGES ON DATABASE hivepal TO hivepal_user;
-```
-
-### Configuration
-```bash
-# Edit postgresql.conf
-listen_addresses = 'localhost'
-port = 5432
-
-# Edit pg_hba.conf
-local   hivepal    hivepal_user                     md5
-host    hivepal    hivepal_user    127.0.0.1/32     md5
-```
-
-## Application Setup
-
-### Clone Repository
 ```bash
 git clone https://github.com/martinhrvn/hive-pal.git
 cd hive-pal
-```
-
-### Install Dependencies
-```bash
-# Install all packages
 pnpm install
-
-# Verify workspace structure
-pnpm list --depth=0
 ```
 
-### Environment Configuration
+This is a PNPM workspace managed by Turborepo. The app lives in `apps/frontend` and `apps/backend`; shared Zod schemas are in `packages/shared-schemas`.
+
+## 2. Database
+
+The quickest way to get a database is the bundled Docker compose helper:
+
 ```bash
-# Backend environment
 cd apps/backend
-cp .env.example .env
-
-# Frontend environment  
-cd ../frontend
-cp .env.example .env
+pnpm db:up          # starts PostgreSQL in Docker
 ```
 
-### Database Migration
+Or point `DATABASE_URL` at any existing PostgreSQL 14+ instance.
+
+## 3. Configure Environment
+
+Create `apps/backend/.env` (and `apps/frontend/.env` for the dev server). At minimum the backend needs:
+
 ```bash
-# From backend directory
-pnpm prisma generate
-pnpm prisma migrate dev
-pnpm seed  # Optional test data
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/beekeeper?schema=public"
+BETTER_AUTH_SECRET=replace_me_with_a_random_string   # openssl rand -base64 32
+BETTER_AUTH_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5173
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=changeme123
 ```
 
-## Development Setup
+See [Configuration](./configuration) for the full list. For the frontend dev server set `VITE_API_URL=http://localhost:3000` in `apps/frontend/.env`.
 
-### Start Services
+## 4. Generate Client and Run Migrations
+
+From `apps/backend`:
+
 ```bash
-# Terminal 1: Backend
-cd apps/backend
+pnpm prisma:generate   # generate the Prisma client
+prisma migrate dev     # apply migrations to the database
+pnpm seed              # optional: seed test data
+```
+
+## 5. Start the App
+
+From the repository root:
+
+```bash
 pnpm dev
-
-# Terminal 2: Frontend
-cd apps/frontend  
-pnpm dev
-
-# Terminal 3: Database (if needed)
-sudo service postgresql start
 ```
 
-### Verify Installation
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3000
-- API Docs: http://localhost:3000/api-docs
+This starts both services:
 
-## Production Setup
+- **Frontend** — `http://localhost:5173`
+- **Backend API** — `http://localhost:3000/api`
+- **API docs (Swagger)** — `http://localhost:3000/api-docs`
 
-### Build Applications
+## Building for Production
+
+To produce production builds without Docker:
+
 ```bash
-# Build all packages
-pnpm build
-
-# Production dependencies only
-pnpm install --prod
+turbo build
 ```
 
-### Process Manager
+In production the backend serves the frontend's static build from its own `static/` directory (the same arrangement the Docker image uses). You'll need a process manager and reverse proxy to run it reliably — at which point the [Docker image](./docker-setup) does all of this for you, so prefer it unless you have a specific reason not to.
+
+## Updating
+
 ```bash
-# Install PM2
-npm install -g pm2
-
-# Create ecosystem file
-# ecosystem.config.js
-module.exports = {
-  apps: [
-    {
-      name: 'hive-pal-backend',
-      script: './apps/backend/dist/main.js',
-      env: {
-        NODE_ENV: 'production'
-      }
-    }
-  ]
-}
-
-# Start with PM2
-pm2 start ecosystem.config.js
-```
-
-### Web Server Setup
-```nginx
-# nginx configuration
-server {
-    listen 80;
-    server_name your-domain.com;
-    
-    location /api {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-    }
-    
-    location / {
-        root /path/to/frontend/dist;
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
-
-## Security
-
-### SSL Certificate
-```bash
-# Using Certbot
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d your-domain.com
-```
-
-### Firewall
-```bash
-# UFW rules
-sudo ufw allow 22    # SSH
-sudo ufw allow 80    # HTTP
-sudo ufw allow 443   # HTTPS
-sudo ufw enable
-```
-
-## Monitoring
-
-### System Monitoring
-```bash
-# Install monitoring tools
-npm install -g htop iotop
-
-# Check processes
-pm2 status
-pm2 logs
-```
-
-### Database Monitoring
-```sql
--- Check connections
-SELECT * FROM pg_stat_activity;
-
--- Monitor performance
-SELECT * FROM pg_stat_database;
-```
-
-## Backup
-
-### Automated Backups
-```bash
-#!/bin/bash
-# backup.sh
-DATE=$(date +%Y%m%d_%H%M%S)
-pg_dump -U hivepal_user hivepal > backups/hivepal_$DATE.sql
-tar -czf backups/uploads_$DATE.tar.gz uploads/
-
-# Add to crontab
-0 2 * * * /path/to/backup.sh
-```
-
-## Updates
-
-### Application Updates
-```bash
-# Pull changes
 git pull origin main
-
-# Update dependencies
 pnpm install
-
-# Run migrations
-cd apps/backend
-pnpm prisma migrate deploy
-
-# Rebuild
-pnpm build
-
-# Restart services
-pm2 restart all
+cd apps/backend && pnpm prisma migrate deploy
+turbo build
 ```
-
-## Troubleshooting
-
-### Common Issues
-- **Port already in use**: Check with `netstat -tlnp`
-- **Database connection**: Verify credentials and service
-- **Permission errors**: Check file ownership
-- **Memory issues**: Monitor with `htop`
-
-### Log Locations
-- Application logs: `~/.pm2/logs/`
-- System logs: `/var/log/`
-- Database logs: `/var/log/postgresql/`

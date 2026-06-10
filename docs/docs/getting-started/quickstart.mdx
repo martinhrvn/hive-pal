@@ -7,6 +7,26 @@ keywords: [hive-pal quickstart, beekeeping app setup, getting started, docker qu
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Head from '@docusaurus/Head';
+
+<Head>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'Get started with Hive-Pal',
+      description:
+        'Install Hive-Pal with Docker, access the app, and create your first apiary and hive.',
+      step: [
+        { '@type': 'HowToStep', name: 'Choose an installation method', text: 'Run Hive-Pal with the single-container Docker image, or set it up manually for development.' },
+        { '@type': 'HowToStep', name: 'Access the application', text: 'Open the app in your browser (port 80 for Docker, 5173 for the dev server).' },
+        { '@type': 'HowToStep', name: 'Sign in or create an account', text: 'Log in with the admin credentials, or sign up with email and password, magic link, or a passkey.' },
+        { '@type': 'HowToStep', name: 'Run the setup wizard', text: 'Create your first apiary and add your first hive.' },
+        { '@type': 'HowToStep', name: 'Explore key features', text: 'Use the quick-actions menu, dashboard, and mobile-friendly inspection flows.' },
+      ],
+    })}
+  </script>
+</Head>
 
 # Quick Start Wizard
 
@@ -16,7 +36,7 @@ Welcome to Hive-Pal! This interactive guide will help you get up and running in 
 
 Before you begin, ensure you have:
 - Docker and Docker Compose installed (for Docker setup)
-- Node.js 18+ and PostgreSQL (for manual setup)
+- Node.js 22+ and PostgreSQL (for manual setup)
 - A modern web browser
 
 ## Step 1: Choose Your Installation Method
@@ -26,27 +46,62 @@ Before you begin, ensure you have:
 
 ### Docker Installation
 
-The fastest way to get started with Hive-Pal.
+The fastest way to get started. Hive-Pal ships as a **single container** that serves both the API and the web app. Create a `docker-compose.yaml`:
+
+```yaml
+services:
+  app:
+    image: ghcr.io/martinhrvn/hive-pal:latest
+    ports:
+      - '80:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/beekeeper
+      BETTER_AUTH_SECRET: replace_me_with_a_random_string
+      BETTER_AUTH_URL: http://localhost
+      FRONTEND_URL: http://localhost
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: changeme123
+      STORAGE_TYPE: local
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: beekeeper
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  uploads:
+```
+
+Then start it:
 
 ```bash
-# Clone the repository
-git clone https://github.com/martinhrvn/hive-pal.git
-cd hive-pal
-
-# Copy environment files
-cp apps/backend/.env.example apps/backend/.env
-cp apps/frontend/.env.example apps/frontend/.env
-
-# Start the application
-docker-compose up -d
+docker compose up -d
 ```
 
 :::tip
-Docker Compose will automatically:
-- Set up PostgreSQL database
-- Run database migrations
-- Start the backend API
-- Start the frontend application
+On startup the app automatically:
+- Waits for PostgreSQL to be ready
+- Runs database migrations
+- Creates the admin user from `ADMIN_EMAIL` / `ADMIN_PASSWORD`
+- Serves the web app and API on the same port
+
+Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`. See the [Installation Guide](../installation) for all options.
 :::
 
   </TabItem>
@@ -85,18 +140,18 @@ pnpm dev
 
 ## Step 2: Access the Application
 
-Once the installation is complete:
+Once the containers are running:
 
-1. Open your browser and navigate to `http://localhost:5173`
-2. You should see the Hive-Pal landing page
+1. Open your browser and navigate to `http://localhost` (Docker) — or `http://localhost:5173` if you used the manual/development setup.
+2. You should see the Hive-Pal landing page.
 
 :::note
-- Frontend runs on port **5173**
-- Backend API runs on port **3000**
-- API documentation available at `http://localhost:3000/api-docs`
+- **Docker:** the whole app (web + API) is served on the port you mapped (`80` in the example above)
+- **Manual/dev:** frontend on **5173**, backend API on **3000**
+- API documentation is available at `/api-docs` on the backend
 :::
 
-## Step 3: Create Your Account
+## Step 3: Sign In or Create an Account
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <div style={{padding: '1rem', background: '#f0f0f0', borderRadius: '8px'}}>
@@ -104,13 +159,21 @@ Once the installation is complete:
   </div>
 </div>
 
-1. Click **"Get Started"** on the landing page
-2. Choose **"Sign Up"** to create a new account
-3. Enter your details:
-   - Email address
-   - Password (minimum 8 characters)
-   - Confirm password
-4. Click **"Create Account"**
+For a fresh self-hosted install, log in with the `ADMIN_EMAIL` / `ADMIN_PASSWORD` you set in the compose file. To create additional accounts:
+
+1. Click **"Get Started"** on the landing page, then **"Sign Up"**.
+2. Enter your email and password and accept the privacy policy.
+3. Click **"Create Account"**.
+
+Hive-Pal supports three sign-in methods (see the [Login guide](../user-guide/login)):
+
+- **Email & password** — always available
+- **Magic link** — passwordless email sign-in (requires email to be configured)
+- **Passkey** — biometric or hardware-key sign-in
+
+:::tip
+Magic links and password resets require a mail provider (SMTP or Resend). See [Configuration → Email](../self-hosting/configuration#email).
+:::
 
 ## Step 4: Initial Setup Wizard
 

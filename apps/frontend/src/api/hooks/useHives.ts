@@ -19,11 +19,15 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 const HIVES_KEYS = {
   all: ['hives'] as const,
   lists: () => [...HIVES_KEYS.all, 'list'] as const,
-  list: (filters: HiveFilter | undefined) =>
-    [...HIVES_KEYS.lists(), filters] as const,
+  // The active apiary is part of the key: the hives list is apiary-scoped (via
+  // the x-apiary-id header) and the query cache is persisted to localStorage, so
+  // omitting it would let one apiary's result (e.g. an empty list) be served for
+  // another apiary.
+  list: (apiaryId: string | null, filters: HiveFilter | undefined) =>
+    [...HIVES_KEYS.lists(), apiaryId, filters] as const,
   listsWithBoxes: () => [...HIVES_KEYS.all, 'listWithBoxes'] as const,
-  listWithBoxes: (filters: HiveFilter | undefined) =>
-    [...HIVES_KEYS.listsWithBoxes(), filters] as const,
+  listWithBoxes: (apiaryId: string | null, filters: HiveFilter | undefined) =>
+    [...HIVES_KEYS.listsWithBoxes(), apiaryId, filters] as const,
   details: () => [...HIVES_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...HIVES_KEYS.details(), id] as const,
 };
@@ -36,7 +40,7 @@ export const useHives = (
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<HiveResponse[]>({
     ...queryOptions,
-    queryKey: HIVES_KEYS.list(filters),
+    queryKey: HIVES_KEYS.list(activeApiaryId, filters),
     queryFn: async () => {
       try {
         const params = new URLSearchParams();
@@ -77,7 +81,7 @@ export const useHivesWithBoxes = (
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   return useQuery<HiveWithBoxesResponse[]>({
     ...queryOptions,
-    queryKey: HIVES_KEYS.listWithBoxes(filters),
+    queryKey: HIVES_KEYS.listWithBoxes(activeApiaryId, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.apiaryId) params.append('apiaryId', filters.apiaryId);

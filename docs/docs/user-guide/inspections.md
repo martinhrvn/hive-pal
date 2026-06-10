@@ -9,6 +9,27 @@ keywords: [hive inspection, bee colony inspection, inspection records, beekeepin
 
 Record detailed hive inspections to track colony health, development, and management actions over time.
 
+Inspections are the heart of Hive-Pal. Beyond the standard form described here, you can also record them in several faster ways:
+
+- **[Quick Check](./quick-check)** — a lightweight, tag-based observation when you don't need full ratings.
+- **[Batch Inspections](./batch-inspections)** — inspect many hives in one guided run.
+- **[Scheduled Inspections](./scheduled-inspections)** — plan inspections ahead using the weather forecast.
+- **[Audio & AI Transcription](./audio-ai)** — speak your notes and let AI turn them into structured data.
+- **[Bulk Add](./bulk-add)** — apply the same inspection, action, or queen to many hives at once.
+
+## Inspection Modes: Subjective vs Data-Driven
+
+Each apiary chooses how its inspection form works, set in the apiary's settings (`Inspection type`):
+
+- **Subjective** — you rate colony characteristics on a **0–10 scale** based on your own judgement (the default; described under [Observations](#observations) below). Best for quick, consistent trend-tracking.
+- **Data-driven** — you record **concrete counts** (such as frames of brood, bees, honey, and pollen) instead of ratings. Best if you prefer objective, repeatable measurements.
+
+The inspection form adapts automatically to the apiary's mode, showing only the relevant fields. Scores and trends are calculated for both modes, so you can compare hives within an apiary regardless of which style you use.
+
+:::tip
+Pick one mode per apiary and stick with it — mixing styles within the same apiary makes trends harder to read. You can run different apiaries in different modes.
+:::
+
 ## Creating an Inspection
 
 ### Basic Information

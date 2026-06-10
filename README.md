@@ -1,18 +1,31 @@
 # Hive Pal 🐝
 
 [![Tests](https://github.com/martinhrvn/hive-pal/actions/workflows/check.yml/badge.svg)](https://github.com/martinhrvn/hive-pal/actions/workflows/check.yml)
+[![Documentation](https://img.shields.io/badge/docs-docs.hivepal.app-f59e0b)](https://docs.hivepal.app)
 
 A modern beekeeping management application designed for both mobile and desktop use. Track your apiaries, hives, inspections, and more with our intuitive interface.
 
-**⚠️ IMPORTANT: This project is very much a Work In Progress. The API is mostly stable but there may be breaking changes.**
+📚 **Full documentation:** [docs.hivepal.app](https://docs.hivepal.app) — [installation](https://docs.hivepal.app/docs/installation), [self-hosting](https://docs.hivepal.app/docs/self-hosting/docker-setup), and the [user guide](https://docs.hivepal.app/docs/user-guide/overview).
 
 ## Features
 
-- **Apiary Management**: Create and track multiple apiaries with location information
-- **Hive Tracking**: Monitor hives, their status, and configuration
-- **Inspection Workflows**: Record detailed inspections with observations and actions
-- **Queen Management**: Track queen lineage and replacement history
-- **Mobile-First Design**: Optimized for field use with easy data entry
+- **AI Voice Inspections**: Record audio at the hive and let AI transcribe it and draft structured inspection notes — powered by open models (faster-whisper + Ollama) that you can self-host
+- **Apiary Management**: Create and track multiple apiaries with location and weather information
+- **Hive Tracking**: Monitor hives, their status, boxes, and frame configuration
+- **Inspection Workflows**: Record detailed inspections with observations, photos, treatments, and actions
+- **Batch Inspections**: Step through an entire apiary in one guided session
+- **Scheduling & Calendar**: Plan inspections and see tasks across all apiaries on a unified calendar
+- **Queen Management**: Track queen lineage, marking, performance, and replacement history
+- **Harvest Tracking**: Record honey harvests, processing, and yields per hive and season
+- **Equipment Planning**: Plan and account for boxes, frames, and gear across your hives
+- **Reports & Analytics**: Surface colony-health and productivity trends over time
+- **QR Codes**: Print and scan hive labels to jump straight to the right record
+- **Collaboration**: Share apiaries with other beekeepers via invite links
+- **Free Tools**: Browser-based calculators and planners (syrup calculator, brood timeline, swarm management) — no signup required
+- **Mobile-First & Offline-Ready**: Optimized for field use and installable as a PWA that keeps working without signal
+- **Multilingual**: Available in multiple languages with community translations
+- **Data Portability**: Import and export your data — your records stay yours
+- **Open Source & Self-Hostable**: MIT-licensed and free to run on your own hardware
 - **HiveScale Integration**: Claim and monitor self-hosted HiveScale devices, including weight, temperature, battery, solar, and cellular telemetry
 
 ## Getting Started
@@ -75,42 +88,42 @@ The application will be available at http://localhost.
 
 #### Required
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
+| Variable             | Description                                                                                           |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`       | PostgreSQL connection string                                                                          |
 | `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies (32+ chars; generate with `openssl rand -base64 32`) |
-| `BETTER_AUTH_URL` | Backend public base URL where `/api/auth/*` is served |
-| `ADMIN_EMAIL` | Initial admin account email |
-| `ADMIN_PASSWORD` | Initial admin account password (plaintext; hashed on first run) |
-| `FRONTEND_URL` | Public URL (used in emails) |
+| `BETTER_AUTH_URL`    | Backend public base URL where `/api/auth/*` is served                                                 |
+| `ADMIN_EMAIL`        | Initial admin account email                                                                           |
+| `ADMIN_PASSWORD`     | Initial admin account password (plaintext; hashed on first run)                                       |
+| `FRONTEND_URL`       | Public URL (used in emails)                                                                           |
 
 #### Optional
 
-| Variable | Description |
-|----------|-------------|
-| `PASSKEY_RP_ID` | WebAuthn relying-party ID for passkeys (default: `localhost`) |
-| `COOKIE_DOMAIN` | Set in production when frontend and backend share a parent domain |
-| `MAIL_PROVIDER` | Force a specific provider: `resend`, `smtp`, or `none` (auto-selects if unset) |
-| `RESEND_API_KEY` | API key for Resend email provider |
-| `SMTP_HOST` | SMTP server hostname |
-| `SMTP_PORT` | SMTP server port |
-| `SMTP_USER` | SMTP username |
-| `SMTP_PASS` | SMTP password |
-| `SMTP_SECURE` | Use TLS (`true` for port 465, `false` for 587) |
-| `SMTP_REJECT_UNAUTHORIZED` | Reject invalid TLS certificates (default `true`; set `false` for self-signed) |
-| `FROM_EMAIL` | Sender email address |
-| `STORAGE_TYPE` | `s3` (default) or `local` for filesystem storage |
-| `STORAGE_LOCAL_PATH` | Directory for local file storage (default: `/data/uploads`) |
-| `S3_ENDPOINT` | S3-compatible endpoint URL |
-| `S3_REGION` | S3 region (default: `us-east-1`) |
-| `S3_BUCKET` | S3 bucket name |
-| `S3_ACCESS_KEY_ID` | S3 access key |
-| `S3_SECRET_ACCESS_KEY` | S3 secret key |
-| `SENTRY_DSN` | Backend Sentry DSN |
-| `VITE_SENTRY_DSN` | Frontend Sentry DSN |
-| `VITE_SENTRY_ENVIRONMENT` | Frontend Sentry environment |
-| `HIVESCALE_API_BASE_URL` | Base URL of the HiveScale backend for scale integration |
-| `HIVESCALE_SERVICE_API_KEY` | Shared service key used by HivePal to call HiveScale |
+| Variable                    | Description                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `PASSKEY_RP_ID`             | WebAuthn relying-party ID for passkeys (default: `localhost`)                  |
+| `COOKIE_DOMAIN`             | Set in production when frontend and backend share a parent domain              |
+| `MAIL_PROVIDER`             | Force a specific provider: `resend`, `smtp`, or `none` (auto-selects if unset) |
+| `RESEND_API_KEY`            | API key for Resend email provider                                              |
+| `SMTP_HOST`                 | SMTP server hostname                                                           |
+| `SMTP_PORT`                 | SMTP server port                                                               |
+| `SMTP_USER`                 | SMTP username                                                                  |
+| `SMTP_PASS`                 | SMTP password                                                                  |
+| `SMTP_SECURE`               | Use TLS (`true` for port 465, `false` for 587)                                 |
+| `SMTP_REJECT_UNAUTHORIZED`  | Reject invalid TLS certificates (default `true`; set `false` for self-signed)  |
+| `FROM_EMAIL`                | Sender email address                                                           |
+| `STORAGE_TYPE`              | `s3` (default) or `local` for filesystem storage                               |
+| `STORAGE_LOCAL_PATH`        | Directory for local file storage (default: `/data/uploads`)                    |
+| `S3_ENDPOINT`               | S3-compatible endpoint URL                                                     |
+| `S3_REGION`                 | S3 region (default: `us-east-1`)                                               |
+| `S3_BUCKET`                 | S3 bucket name                                                                 |
+| `S3_ACCESS_KEY_ID`          | S3 access key                                                                  |
+| `S3_SECRET_ACCESS_KEY`      | S3 secret key                                                                  |
+| `SENTRY_DSN`                | Backend Sentry DSN                                                             |
+| `VITE_SENTRY_DSN`           | Frontend Sentry DSN                                                            |
+| `VITE_SENTRY_ENVIRONMENT`   | Frontend Sentry environment                                                    |
+| `HIVESCALE_API_BASE_URL`    | Base URL of the HiveScale backend for scale integration                        |
+| `HIVESCALE_SERVICE_API_KEY` | Shared service key used by HivePal to call HiveScale                           |
 
 ## Development
 
@@ -147,6 +160,7 @@ pnpm dev
 ## Technology Stack
 
 ### Frontend
+
 - **Framework**: React 19 with TypeScript
 - **Styling**: Tailwind CSS v4
 - **UI Components**: shadcn/ui
@@ -156,6 +170,7 @@ pnpm dev
 - **Form Handling**: React Hook Form with Zod validation
 
 ### Backend
+
 - **Framework**: NestJS with TypeScript
 - **Database**: PostgreSQL 14
 - **ORM**: Prisma
@@ -165,6 +180,7 @@ pnpm dev
 - **Monitoring**: Prometheus metrics, health checks
 
 ### DevOps & Tooling
+
 - **Package Management**: PNPM with workspaces
 - **Build System**: Turborepo for monorepo management
 - **Containerization**: Docker with multi-stage builds

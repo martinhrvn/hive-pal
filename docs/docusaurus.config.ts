@@ -45,6 +45,42 @@ const config: Config = {
         },
       }),
     },
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'Hive-Pal',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web, Docker',
+        description:
+          'Open-source, self-hostable beekeeping management application for tracking apiaries, hives, inspections, queens, harvests, and HiveScale telemetry.',
+        url: 'https://hivepal.app',
+        license: 'https://opensource.org/licenses/MIT',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        },
+      }),
+    },
+  ],
+
+  plugins: [
+    [
+      'docusaurus-plugin-llms',
+      {
+        title: 'Hive-Pal Documentation',
+        description:
+          'Documentation for Hive-Pal, an open-source, self-hostable beekeeping management application.',
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+        includeOrder: ['intro', 'installation', 'getting-started/*', 'user-guide/*', 'self-hosting/*', 'troubleshooting'],
+      },
+    ],
   ],
 
   presets: [

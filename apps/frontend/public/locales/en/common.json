@@ -31,7 +31,8 @@
     "tools": "Tools",
     "syrupCalculator": "Syrup Calculator",
     "broodTimeline": "Brood Timeline",
-    "swarmManagement": "Swarm Management"
+    "swarmManagement": "Swarm Management",
+    "documentation": "Documentation"
   },
   "actions": {
     "save": "Save",
@@ -816,6 +817,344 @@
         "inspectionMany": "{{count}} inspections",
         "queenOne": "{{count}} queen",
         "queenMany": "{{count}} queens"
+      }
+    }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Features",
+      "freeTools": "Free tools",
+      "documentation": "Documentation",
+      "releaseNotes": "Release notes",
+      "github": "GitHub",
+      "signIn": "Sign in",
+      "startFree": "Start free"
+    },
+    "footer": {
+      "tagline": "Free, open-source beekeeping management. Making the craft simpler, more productive, and a little more enjoyable.",
+      "product": "Product",
+      "features": "Features",
+      "freeTools": "Free tools",
+      "releaseNotes": "Release notes",
+      "project": "Project",
+      "documentation": "Documentation",
+      "reportIssue": "Report an issue",
+      "privacyPolicy": "Privacy policy",
+      "source": "Source",
+      "github": "GitHub",
+      "signIn": "Sign in",
+      "createAccount": "Create account",
+      "copyright": "© 2025 Hive Pal · MIT Licensed",
+      "builtWith": "Built with care for beekeepers everywhere."
+    },
+    "ai": {
+      "eyebrow": "Voice & AI",
+      "title": "Inspect with your voice,<br/><accent>not your keyboard</accent>.",
+      "lede": "Hive Pal records audio during inspections, transcribes it automatically, and uses AI to draft structured notes — so the busywork happens while you’re still at the apiary.",
+      "items": {
+        "record": {
+          "title": "Record at the hive",
+          "body": "Tap record on your phone, talk through what you see on each frame, and move on. Recordings upload straight into the inspection — even if you lose signal mid-yard."
+        },
+        "transcribe": {
+          "title": "Automatic transcription",
+          "body": "Whisper-powered speech-to-text turns every recording into a searchable transcript attached to the inspection. Multilingual out of the box."
+        },
+        "draft": {
+          "title": "AI-drafted notes",
+          "body": "Local LLMs extract queen sightings, brood patterns, treatments, and observations into a pre-filled inspection — you just review and save."
+        }
+      },
+      "assuranceLead": "Your recordings, your models.",
+      "assuranceBody": "The AI stack runs on open-source models (faster-whisper + Ollama) and can be self-hosted alongside your data — or run as a pull worker on your home machine.",
+      "assuranceNote": "No third-party cloud required"
+    },
+    "landing": {
+      "meta": {
+        "title": "Hive Pal — AI-Powered Beekeeping Management Software",
+        "description": "Manage your beehives efficiently with Hive Pal. Record voice notes at the hive and let AI transcribe and draft your inspections. Open source, self-hostable, and free for early adopters.",
+        "ogTitle": "Hive Pal — AI-Powered Beekeeping Management Software",
+        "ogDescription": "Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
+      },
+      "hero": {
+        "badge": "New · AI voice inspections",
+        "title": "Your open-source<br/>beekeeping <accent>companion</accent>.",
+        "lede": "Record voice notes at the hive. Let AI transcribe and draft your inspections automatically — so you keep your hands on the frames, not the keyboard.",
+        "ctaSignup": "Sign up — it’s free",
+        "ctaSelfHost": "Self-host",
+        "tagline": "MIT licensed · self-hostable · voice-first"
+      },
+      "features": {
+        "label": "Modern beekeeping",
+        "title": "Everything you need to <accent>tend</accent> your hives.",
+        "lede": "Professional tools designed by beekeepers, for beekeepers — to keep colonies healthy, productive, and well-documented through every season.",
+        "pillars": "Four pillars · built into one platform",
+        "items": {
+          "apiary": {
+            "title": "Apiary management",
+            "body": "Organize and track multiple apiaries with detailed location information, weather data, and site-specific notes."
+          },
+          "inspections": {
+            "title": "Hive inspections",
+            "body": "Schedule and record detailed inspections with customizable checklists, photos, and health assessments."
+          },
+          "queen": {
+            "title": "Queen tracking",
+            "body": "Monitor queen performance, breeding records, and replacement schedules to maintain strong colonies."
+          },
+          "harvest": {
+            "title": "Harvest management",
+            "body": "Track honey production, processing dates, and yields across seasons and hive locations."
+          }
+        }
+      },
+      "run": {
+        "label": "How to run it",
+        "title": "Self-host, or let us <accent>run it</accent> for you.",
+        "lede": "Two ways to use Hive Pal — both free, both run the same open-source code.",
+        "selfHosted": {
+          "title": "Self-hosted",
+          "badge": "Free, forever",
+          "body": "Full control over your data and infrastructure. Run it on your own server, your laptop, a Raspberry Pi — wherever suits you.",
+          "items": [
+            "MIT licensed — read, fork, ship",
+            "Host anywhere Docker runs",
+            "Your data stays on your hardware",
+            "Community support via GitHub"
+          ],
+          "cta": "Read the docs"
+        },
+        "hosted": {
+          "title": "Hosted by us",
+          "badge": "Free",
+          "body": "Zero setup required. We run the servers, handle updates, and keep things ticking. Same open-source app — just on our hardware.",
+          "items": [
+            "Sign up and go — no installation",
+            "Automatic updates & backups",
+            "Best-effort uptime, monitored",
+            "Community support via GitHub"
+          ],
+          "cta": "Sign up — it’s free"
+        }
+      },
+      "tools": {
+        "label": "Free tools",
+        "title": "Free tools, no signup.",
+        "lede": "Handy calculators and planners you can use directly in the browser — bookmark them for the apiary.",
+        "seeAll": "See all tools",
+        "items": {
+          "syrup": {
+            "title": "Sugar Syrup Calculator",
+            "body": "Precise sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size. Metric or imperial."
+          },
+          "brood": {
+            "title": "Brood Development Timeline",
+            "body": "Visualize queen, worker, and drone brood stages with day counts and project dates from any starting day."
+          },
+          "swarm": {
+            "title": "Swarm Management",
+            "body": "Step-by-step Demaree swarm-control workflow with follow-up timing and an inspection planner."
+          }
+        }
+      },
+      "cta": {
+        "title": "Give it a <accent>try</accent>.",
+        "lede": "Sign up for the hosted version, or grab the source and run it yourself. Either way, it’s free.",
+        "signup": "Sign up free",
+        "github": "View on GitHub"
+      }
+    },
+    "features": {
+      "meta": {
+        "title": "Features — Everything Hive Pal Does for Beekeepers",
+        "description": "Explore every Hive Pal feature: AI voice inspections with automatic transcription, hive and queen management, batch inspections, planning and reports, harvest tracking, collaboration, and open-source, self-hostable, privacy-first software.",
+        "ogTitle": "Hive Pal Features — AI Voice Inspections & Beekeeping Management",
+        "ogDescription": "AI voice inspections, hive & queen management, planning, reports, collaboration, and open-source self-hosting. See everything Hive Pal does."
+      },
+      "hero": {
+        "eyebrow": "Everything in one place",
+        "title": "Everything you need to <accent>run the bees</accent>.",
+        "lede": "Hive Pal brings voice-first AI inspections, colony and queen records, planning, reports, and collaboration into a single open-source platform — free to use and yours to host.",
+        "ctaSignup": "Sign up — it’s free",
+        "ctaSelfHost": "Self-host",
+        "tagline": "MIT licensed · self-hostable · voice-first"
+      },
+      "groups": {
+        "inspections": {
+          "label": "Inspections & record-keeping",
+          "title": "Every inspection, captured in detail",
+          "lede": "Record what you see at the hive with structured, repeatable inspections — then find it again the moment you need it.",
+          "items": {
+            "structured": {
+              "title": "Structured inspections",
+              "body": "Log brood pattern, stores, temperament, space, and queen status with consistent fields, so colonies are comparable across visits and seasons."
+            },
+            "quickChecks": {
+              "title": "Quick checks",
+              "body": "A lightweight inspection flow for fast yard walk-throughs when you only need to note the essentials and move on."
+            },
+            "batch": {
+              "title": "Batch inspections",
+              "body": "Inspect a whole apiary in one sitting — step through every hive in sequence without re-opening each record by hand."
+            },
+            "scheduled": {
+              "title": "Scheduled inspections & reminders",
+              "body": "Plan future visits and get release-note and task reminders so nothing slips between sessions."
+            },
+            "photos": {
+              "title": "Photos & observations",
+              "body": "Attach photos and free-text notes to any inspection to document disease signs, comb, or anything worth a second look."
+            },
+            "actions": {
+              "title": "Actions & treatments",
+              "body": "Record feeding, treatments, and management actions as part of the inspection, building a full history per colony."
+            }
+          }
+        },
+        "colony": {
+          "label": "Colony & hive management",
+          "title": "Organize apiaries, hives, and queens",
+          "lede": "A clear model of your operation — from yards down to individual frames and queen lineages.",
+          "items": {
+            "apiaries": {
+              "title": "Multiple apiaries",
+              "body": "Group hives by location with site-specific notes and local weather context for each yard."
+            },
+            "hiveConfig": {
+              "title": "Hive configuration",
+              "body": "Track boxes, frames, and configuration per hive so the record reflects the real equipment in the field."
+            },
+            "queens": {
+              "title": "Queen tracking",
+              "body": "Follow each queen’s marking, origin, lineage, performance, and replacement history to keep colonies strong."
+            },
+            "equipment": {
+              "title": "Equipment planning",
+              "body": "Plan and account for boxes, frames, and gear across your hives so you know what to build before the season."
+            },
+            "qrCodes": {
+              "title": "QR codes",
+              "body": "Generate and print QR labels for hives, then scan in the apiary to jump straight to the right record."
+            },
+            "hiveScale": {
+              "title": "Hive scale monitoring",
+              "body": "Connect hive scales to follow weight trends — nectar flow, consumption, and overwintering at a glance."
+            }
+          }
+        },
+        "planning": {
+          "label": "Planning & insight",
+          "title": "See the season, not just the day",
+          "lede": "Turn your records into a plan and a picture of how the operation is doing.",
+          "items": {
+            "calendar": {
+              "title": "Calendar",
+              "body": "A unified calendar of inspections and scheduled tasks across every apiary, so the week ahead is always visible."
+            },
+            "reports": {
+              "title": "Reports & analytics",
+              "body": "Roll your data up into colony-health and productivity reports to spot trends and weak hives early."
+            },
+            "harvest": {
+              "title": "Harvest tracking",
+              "body": "Record honey harvests, processing dates, and yields across hives and seasons to measure real output."
+            },
+            "assistant": {
+              "title": "AI assistant",
+              "body": "Ask questions about your apiary and get help making sense of your records, right inside the app."
+            },
+            "bulkActions": {
+              "title": "Bulk actions",
+              "body": "Apply the same action across many hives at once instead of editing them one by one."
+            }
+          }
+        },
+        "collaboration": {
+          "label": "Collaboration & sharing",
+          "title": "Beekeeping is rarely a solo job",
+          "lede": "Work the bees with partners, clubs, or mentees — and share what matters without handing over the keys.",
+          "items": {
+            "sharing": {
+              "title": "Apiary sharing",
+              "body": "Invite other beekeepers to collaborate on an apiary so the whole team works from the same records."
+            },
+            "inviteLinks": {
+              "title": "Invite links",
+              "body": "Share a join link to bring someone into an apiary quickly, without manual account juggling."
+            },
+            "sharedViews": {
+              "title": "Shared views",
+              "body": "Give read access to colonies or data so a mentor or club can follow along without editing."
+            }
+          }
+        },
+        "data": {
+          "label": "Your data, your rules",
+          "title": "Open source, private, and portable",
+          "lede": "Hive Pal is free software you can run yourself — your records stay yours.",
+          "items": {
+            "openSource": {
+              "title": "Open source (MIT)",
+              "body": "The entire app is MIT-licensed. Read it, fork it, audit it, or contribute — no black boxes."
+            },
+            "selfHostable": {
+              "title": "Self-hostable",
+              "body": "Run it anywhere Docker runs: a server, a laptop, or a Raspberry Pi. The hosted version runs the same code."
+            },
+            "importExport": {
+              "title": "Import & export",
+              "body": "Move your data in and out freely. Your beekeeping history is never locked inside the app."
+            },
+            "privacyAI": {
+              "title": "Privacy-first AI",
+              "body": "The voice and AI stack uses open models (faster-whisper + Ollama) and can run on your own hardware — no third-party cloud required."
+            },
+            "multilingual": {
+              "title": "Multilingual",
+              "body": "Use Hive Pal in your language, with community translations managed through Weblate and growing over time."
+            },
+            "pwa": {
+              "title": "Installable & offline-ready",
+              "body": "Install it as a PWA on your phone and keep working in the apiary even when the signal drops."
+            }
+          }
+        }
+      },
+      "tools": {
+        "label": "No signup required",
+        "title": "Free tools you can use right now",
+        "lede": "Calculators and planners that work in the browser, no account needed — a taste of how Hive Pal thinks about beekeeping.",
+        "seeAll": "See all tools"
+      },
+      "cta": {
+        "title": "Ready to <accent>try it</accent>?",
+        "lede": "Sign up for the hosted version, or grab the source and run it yourself. Either way, it’s free.",
+        "signup": "Sign up free",
+        "github": "View on GitHub"
+      }
+    },
+    "toolsIndex": {
+      "meta": {
+        "title": "Free Beekeeping Tools — Hive Pal",
+        "description": "Free, open-source calculators and reference guides for beekeepers. Sugar syrup calculator, brood development timeline, and swarm management workflows.",
+        "ogDescription": "Free calculators and reference guides for beekeepers — no signup required."
+      },
+      "eyebrow": "Free Tools",
+      "title": "Beekeeping tools, no signup required",
+      "intro": "Open-source calculators and reference guides you can use directly in the browser. Bookmark them for the apiary.",
+      "items": {
+        "syrup": {
+          "title": "Sugar Syrup Calculator",
+          "body": "Precise sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size. Metric or imperial."
+        },
+        "brood": {
+          "title": "Brood Development Timeline",
+          "body": "Visualize queen, worker, and drone brood stages with day counts and project dates from any starting day."
+        },
+        "swarm": {
+          "title": "Swarm Management",
+          "body": "Step-by-step Demaree swarm-control workflow with follow-up timing and an inspection planner."
+        }
       }
     }
   }

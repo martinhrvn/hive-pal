@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default tseslint.config(
-  { ignores: ['dist', 'src/components/ui/**', 'playwright/**'] },
+  { ignores: ['dist', 'dist-ssr', 'src/components/ui/**', 'playwright/**'] },
   {
     extends: [
       js.configs.recommended,

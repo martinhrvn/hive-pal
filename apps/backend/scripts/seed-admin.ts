@@ -26,7 +26,10 @@ async function main() {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
   if (!email || !password) {
-    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD are required');
+    // Skip rather than fail: the script runs unconditionally on container
+    // startup, and deployments without a configured admin must still boot.
+    console.log('ADMIN_EMAIL/ADMIN_PASSWORD not set — skipping admin seeding');
+    return;
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });

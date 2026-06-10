@@ -32,6 +32,7 @@ export const apiaryResponseSchema = createApiarySchema.extend({
   featurePhotoUrl: z.string().nullish(),
   role: apiaryRoleEnum.optional(),
   isShared: z.boolean().optional(),
+  hiveCount: z.number().optional(),
   settings: apiarySettingsSchema,
 });
 

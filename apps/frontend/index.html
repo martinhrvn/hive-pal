@@ -3,7 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
+    <!-- Apply the saved theme before first paint to avoid a light/dark flash
+         (mirrors ThemeProvider: storageKey 'vite-ui-theme', default light). -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('vite-ui-theme') || 'light';
+          if (t === 'system') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+          }
+          document.documentElement.classList.add(t);
+        } catch (e) {
+          document.documentElement.classList.add('light');
+        }
+      })();
+    </script>
+
     <!-- Primary Meta Tags -->
     <title>Hive Pal - Modern Beekeeping Management Software</title>
     <meta name="title" content="Hive Pal - Modern Beekeeping Management Software" />

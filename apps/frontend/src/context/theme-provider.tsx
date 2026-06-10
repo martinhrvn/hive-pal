@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Theme, ThemeProviderContext } from './theme-context';
 import { usePreferences } from '@/api/hooks/useUserPreferences';
+import { useAuth } from '@/context/auth-context';
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const { preferences, updatePreferences } = usePreferences();
+  const { isLoggedIn, isLoading } = useAuth();
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
@@ -31,6 +33,15 @@ export function ThemeProvider({
 
     root.classList.remove('light', 'dark');
 
+    // The public/marketing surface (landing, tools, releases, …) is designed
+    // light-only. Once the session check has resolved and the visitor is logged
+    // out, force light regardless of the stored preference — without mutating
+    // `theme`, so a returning user's dark choice is restored after they sign in.
+    if (!isLoading && !isLoggedIn) {
+      root.classList.add('light');
+      return;
+    }
+
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
         .matches
@@ -42,7 +53,7 @@ export function ThemeProvider({
     }
 
     root.classList.add(theme);
-  }, [theme]);
+  }, [theme, isLoggedIn, isLoading]);
 
   const value = {
     theme,
