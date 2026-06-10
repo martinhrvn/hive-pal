@@ -17,6 +17,7 @@ import { AssistantChat } from '@/components/assistant/assistant-chat';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 import { QueenHistoryTab } from './queen-history-tab';
 import { HiveStatusButton } from './hive-status-button';
+import { HiveTodos } from './hive-todos';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { useImageDisplayStore } from '@/stores/image-display-store';
 import { AlertTriangle, Map } from 'lucide-react';
@@ -257,6 +258,7 @@ export const HiveDetailPage = () => {
                   </AlertDescription>
                 </Alert>
               )}
+              {hiveId && <HiveTodos hiveId={hiveId} />}
               <HiveTimeline hiveId={hiveId} apiaryId={hive?.apiaryId} />
             </TabsContent>
 

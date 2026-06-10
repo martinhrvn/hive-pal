@@ -10,6 +10,10 @@
     "placeholder": "Pridať úlohu…",
     "button": "Pridať"
   },
+  "hive": {
+    "title": "Úlohy",
+    "empty": "Pre tento úľ nie sú žiadne úlohy."
+  },
   "edit": {
     "title": "Upraviť úlohu",
     "description": "Upravte podrobnosti tejto úlohy.",

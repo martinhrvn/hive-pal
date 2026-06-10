@@ -11,9 +11,11 @@ import { TodoDialog } from './todo-dialog';
 interface TodoListProps {
   todos: TodoResponse[];
   emptyMessage?: string;
+  /** Hide the hive badge — useful when the list is already scoped to one hive. */
+  hideHive?: boolean;
 }
 
-export function TodoList({ todos, emptyMessage }: TodoListProps) {
+export function TodoList({ todos, emptyMessage, hideHive }: TodoListProps) {
   const { t, i18n } = useTranslation('todo');
   const updateTodo = useUpdateTodo();
   const [selectedTodo, setSelectedTodo] = useState<TodoResponse | null>(null);
@@ -71,7 +73,7 @@ export function TodoList({ todos, emptyMessage }: TodoListProps) {
               >
                 {todo.title}
               </span>
-              {(todo.dueDate || todo.hiveName) && (
+              {(todo.dueDate || (todo.hiveName && !hideHive)) && (
                 <span className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground">
                   {todo.dueDate && (
                     <span className="flex items-center gap-1">
@@ -79,7 +81,7 @@ export function TodoList({ todos, emptyMessage }: TodoListProps) {
                       {formatDate(todo.dueDate)}
                     </span>
                   )}
-                  {todo.hiveName && (
+                  {todo.hiveName && !hideHive && (
                     <span className="flex items-center gap-1">
                       <Hexagon className="h-3 w-3" />
                       {todo.hiveName}

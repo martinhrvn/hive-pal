@@ -10,6 +10,10 @@
     "placeholder": "Add a todo…",
     "button": "Add"
   },
+  "hive": {
+    "title": "Todos",
+    "empty": "No todos for this hive."
+  },
   "edit": {
     "title": "Edit todo",
     "description": "Update the details for this todo.",

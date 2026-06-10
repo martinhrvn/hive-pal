@@ -6,7 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCreateTodo } from '@/api/hooks/useTodos';
 
-export function TodoQuickAdd() {
+interface TodoQuickAddProps {
+  /** When set, new todos are assigned to this hive. */
+  hiveId?: string;
+}
+
+export function TodoQuickAdd({ hiveId }: TodoQuickAddProps) {
   const { t } = useTranslation('todo');
   const [title, setTitle] = useState('');
   const createTodo = useCreateTodo();
@@ -14,7 +19,7 @@ export function TodoQuickAdd() {
   const handleAdd = async () => {
     const trimmed = title.trim();
     if (!trimmed) return;
-    await createTodo.mutateAsync({ title: trimmed });
+    await createTodo.mutateAsync({ title: trimmed, hiveId });
     setTitle('');
   };
 
