@@ -68,12 +68,17 @@ tail -f /var/log/hive-pal/app.log | jq '.'
 ## Metrics Collection
 
 ### Prometheus Integration
+Metrics are served from a dedicated internal port (`METRICS_PORT`, default
+`9100`) by a standalone HTTP server — **not** on the public `:3000` API. Keep
+this port unpublished and scrape it from a Prometheus instance on the same
+Docker network so metrics are never exposed to the internet.
+
 ```yaml
 # prometheus.yml
 scrape_configs:
   - job_name: 'hive-pal'
     static_configs:
-      - targets: ['localhost:3000']
+      - targets: ['backend:9100']
     metrics_path: /metrics
     scrape_interval: 15s
 ```

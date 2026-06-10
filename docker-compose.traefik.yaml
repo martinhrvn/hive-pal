@@ -35,6 +35,9 @@ services:
     container_name: hive-pal-app
     environment:
       NODE_ENV: production
+      # Prometheus metrics port — served by a standalone internal server and
+      # NOT routed by Traefik (only port 3000 is), so it stays off the internet.
+      METRICS_PORT: 9100
       ADMIN_EMAIL: '${ADMIN_EMAIL:-admin@example.com}'
       ADMIN_PASSWORD: '${ADMIN_PASSWORD:-password}'
       DATABASE_URL: '${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper}'
