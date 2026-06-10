@@ -673,16 +673,24 @@ const renderUpcomingInspections = (
         </div>
       )}
 
-      {/* Show completed/cancelled inspections in a table below */}
-      {inspections.some(i => i.status !== InspectionStatus.SCHEDULED) && (
+      {/* Show non-scheduled, non-completed inspections in a table below */}
+      {inspections.some(
+        i =>
+          i.status !== InspectionStatus.SCHEDULED &&
+          i.status !== InspectionStatus.COMPLETED,
+      ) && (
         <div>
           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <HistoryIcon className="h-5 w-5" />
             {t('inspection:scheduled.otherUpcomingInspections')}
           </h3>
           {renderInspectionsTable(
-            inspections.filter(i => i.status !== InspectionStatus.SCHEDULED),
-            'Completed and cancelled inspections',
+            inspections.filter(
+              i =>
+                i.status !== InspectionStatus.SCHEDULED &&
+                i.status !== InspectionStatus.COMPLETED,
+            ),
+            'Cancelled inspections',
             navigate,
             hives,
             InspectionTab.UPCOMING,
