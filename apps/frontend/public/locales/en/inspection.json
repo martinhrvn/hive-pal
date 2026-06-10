@@ -118,6 +118,8 @@
     "details": "Details",
     "createInspection": "Create Inspection",
     "addInspection": "Add Inspection",
+    "mobileInspection": "Mobile Inspection",
+    "audioInspection": "Audio Inspection",
     "scheduleInspection": "Schedule Inspection",
     "refreshData": "Refresh Data",
     "exportCSV": "Export to CSV",

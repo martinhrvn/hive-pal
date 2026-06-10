@@ -7,6 +7,8 @@ import {
   TrashIcon,
   CalendarPlus,
   AlertTriangle,
+  Smartphone,
+  Mic,
 } from 'lucide-react';
 import { bee } from '@lucide/lab';
 import { useTranslation } from 'react-i18next';
@@ -99,6 +101,36 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               }
               tooltip={t('inspection:actions.addInspection', {
                 defaultValue: 'Add Inspection',
+              })}
+              disabled={!hiveId}
+            />
+          )}
+          {canEdit && (
+            <MenuItemButton
+              icon={<Smartphone className="h-4 w-4" />}
+              label={t('inspection:actions.mobileInspection', {
+                defaultValue: 'Mobile Inspection',
+              })}
+              onClick={() =>
+                hiveId && navigate(`/hives/${hiveId}/inspect/mobile`)
+              }
+              tooltip={t('inspection:actions.mobileInspection', {
+                defaultValue: 'Mobile Inspection',
+              })}
+              disabled={!hiveId}
+            />
+          )}
+          {canEdit && (
+            <MenuItemButton
+              icon={<Mic className="h-4 w-4" />}
+              label={t('inspection:actions.audioInspection', {
+                defaultValue: 'Audio Inspection',
+              })}
+              onClick={() =>
+                hiveId && navigate(`/hives/${hiveId}/inspect/audio`)
+              }
+              tooltip={t('inspection:actions.audioInspection', {
+                defaultValue: 'Audio Inspection',
               })}
               disabled={!hiveId}
             />
