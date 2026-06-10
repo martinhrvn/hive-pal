@@ -40,6 +40,7 @@ i18n
       'admin',
       'onboarding',
       'privacy',
+      'todo',
     ],
     defaultNS: 'common',
   });

@@ -17,6 +17,7 @@ import {
   Scale,
   BotMessageSquare,
   BookOpen,
+  ListTodo,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFeatures } from '@/api/hooks/useFeatures';
@@ -75,6 +76,18 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
         {
           title: t('navigation.allQueens'),
           url: '/queens',
+        },
+      ],
+    },
+    {
+      title: t('navigation.todos', { defaultValue: 'Todos' }),
+      url: '/todos',
+      icon: ListTodo,
+      isActive: true,
+      items: [
+        {
+          title: t('navigation.allTodos', { defaultValue: 'All Todos' }),
+          url: '/todos',
         },
       ],
     },

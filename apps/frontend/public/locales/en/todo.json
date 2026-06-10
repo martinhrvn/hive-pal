@@ -1,0 +1,41 @@
+{
+  "list": {
+    "title": "Todos",
+    "caption": "Keep track of tasks for this apiary.",
+    "empty": "No todos yet.",
+    "emptyOpen": "No open todos. Nice work!",
+    "showCompleted": "Show completed"
+  },
+  "quickAdd": {
+    "placeholder": "Add a todo…",
+    "button": "Add"
+  },
+  "edit": {
+    "title": "Edit todo",
+    "description": "Update the details for this todo.",
+    "success": "Todo updated",
+    "error": "Failed to update todo"
+  },
+  "delete": {
+    "success": "Todo deleted",
+    "error": "Failed to delete todo"
+  },
+  "fields": {
+    "title": "Title",
+    "description": "Description",
+    "dueDate": "Due date",
+    "hive": "Hive"
+  },
+  "form": {
+    "titlePlaceholder": "What needs to be done?",
+    "descriptionPlaceholder": "Add more details…",
+    "hivePlaceholder": "Select a hive",
+    "noHive": "No hive"
+  },
+  "validation": {
+    "titleRequired": "Title is required"
+  },
+  "actions": {
+    "toggleComplete": "Toggle complete"
+  }
+}
