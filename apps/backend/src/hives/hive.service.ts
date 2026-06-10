@@ -8,6 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
+import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { FileUploadService } from '../storage/file-upload.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -45,6 +46,7 @@ export class HiveService {
     private prisma: PrismaService,
     private inspectionService: InspectionsService,
     private metricsService: MetricsService,
+    private prometheus: PrometheusService,
     private fileUpload: FileUploadService,
     private logger: CustomLoggerService,
     private eventEmitter: EventEmitter2,
@@ -159,6 +161,7 @@ export class HiveService {
     });
 
     this.logger.log(`Hive created with ID: ${result.id}`);
+    this.prometheus.incrementHivesCreated();
 
     // Emit event for new hive creation
     const userId = result.apiary?.userId || 'unknown';

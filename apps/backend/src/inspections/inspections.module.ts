@@ -9,6 +9,7 @@ import { ActionsModule } from '../actions/actions.module';
 import { UsersModule } from '../users/users.module';
 import { InspectionAudioModule } from '../inspection-audio/inspection-audio.module';
 import { PhotosModule } from '../photos/photos.module';
+import { PrometheusModule } from '../health/prometheus/prometheus.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PhotosModule } from '../photos/photos.module';
     UsersModule,
     forwardRef(() => InspectionAudioModule),
     PhotosModule,
+    PrometheusModule,
   ],
   controllers: [InspectionsController],
   providers: [
