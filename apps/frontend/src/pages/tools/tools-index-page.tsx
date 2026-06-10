@@ -1,4 +1,4 @@
-import { Beaker, Bug, Waypoints } from 'lucide-react';
+import { Beaker, Bug, Microscope, Waypoints } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ToolMeta, ToolPageHeader } from '@/components/tool-page';
@@ -7,9 +7,10 @@ import { useLocalizedPath } from '@/hooks/use-language-navigation';
 // Tool structure (route + icon + i18n key) lives in code; copy comes from i18n
 // under `marketing.toolsIndex.*`.
 const TOOLS = [
-  { to: '/tools/syrup-calculator', key: 'syrup', icon: Beaker },
-  { to: '/tools/brood-timeline', key: 'brood', icon: Bug },
-  { to: '/tools/swarm-management', key: 'swarm', icon: Waypoints },
+  { to: '/tools/syrup-calculator', key: 'syrup',       icon: Beaker },
+  { to: '/tools/brood-timeline',   key: 'brood',       icon: Bug },
+  { to: '/tools/swarm-management', key: 'swarm',       icon: Waypoints },
+  { to: '/tools/liebefelder',      key: 'liebefelder', icon: Microscope },
 ] as const;
 
 export function ToolsIndexPage() {

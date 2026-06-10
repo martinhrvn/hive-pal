@@ -1,693 +1,703 @@
 {
-    "navigation": {
-        "home": "Accueil",
-        "dashboard": "Tableau de bord",
-        "apiaries": "Ruchers",
-        "hives": "Ruches",
-        "inspections": "Inspections",
-        "queens": "Reines",
-        "settings": "Paramètres",
-        "admin": "Admin",
-        "users": "Utilisateurs",
-        "feedback": "Retour",
-        "logout": "Déconnexion",
-        "allApiaries": "Tous les ruchers",
-        "createApiary": "Créer un rucher",
-        "allHives": "Toutes les ruches",
-        "allInspections": "Toutes les inspections",
-        "schedule": "Planification",
-        "recent": "Récent",
-        "upcoming": "À venir",
-        "general": "Général",
-        "harvests": "Récoltes",
-        "allHarvests": "Toutes les récoltes",
-        "reports": "Rapports",
-        "metrics": "Statistiques",
-        "files": "Fichiers",
-        "calendar": "Calendrier",
-        "equipment": "Équipement",
-        "actions": "Actions",
-        "allQueens": "Toutes les reines",
-        "tools": "Outils",
-        "syrupCalculator": "Calculateur de sirop",
-        "broodTimeline": "Cycle du couvain"
+  "navigation": {
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
+    "apiaries": "Ruchers",
+    "hives": "Ruches",
+    "inspections": "Inspections",
+    "queens": "Reines",
+    "settings": "Paramètres",
+    "admin": "Admin",
+    "users": "Utilisateurs",
+    "feedback": "Retour",
+    "logout": "Déconnexion",
+    "allApiaries": "Tous les ruchers",
+    "createApiary": "Créer un rucher",
+    "allHives": "Toutes les ruches",
+    "allInspections": "Toutes les inspections",
+    "schedule": "Planification",
+    "recent": "Récent",
+    "upcoming": "À venir",
+    "general": "Général",
+    "harvests": "Récoltes",
+    "allHarvests": "Toutes les récoltes",
+    "reports": "Rapports",
+    "metrics": "Statistiques",
+    "files": "Fichiers",
+    "calendar": "Calendrier",
+    "equipment": "Équipement",
+    "actions": "Actions",
+    "allQueens": "Toutes les reines",
+    "tools": "Outils",
+    "syrupCalculator": "Calculateur de sirop",
+    "broodTimeline": "Cycle du couvain"
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "add": "Ajouter",
+    "remove": "Supprimer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "submit": "Soumettre",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "view": "Voir",
+    "download": "Télécharger",
+    "upload": "Téléverser",
+    "refresh": "Actualiser",
+    "actions": "Actions",
+    "createNew": "Créer",
+    "navigate": "Naviguer",
+    "refreshData": "Actualiser les données",
+    "notifications": "Notifications",
+    "newHive": "Nouvelle ruche",
+    "language": "Langue",
+    "logout": "Se déconnecter",
+    "newInspection": "Nouvelle inspection",
+    "scheduleInspection": "Planifier une inspection",
+    "newQueen": "Nouvelle reine",
+    "recentInspections": "Inspections récentes"
+  },
+  "status": {
+    "loading": "Chargement...",
+    "success": "Succès",
+    "error": "Erreur",
+    "warning": "Avertissement",
+    "info": "Information",
+    "pending": "En attente",
+    "completed": "Terminé",
+    "failed": "Échec",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "archived": "Archivé"
+  },
+  "messages": {
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "changesSaved": "Modifications enregistrées avec succès",
+    "errorOccurred": "Une erreur est survenue",
+    "noData": "Aucune donnée disponible",
+    "required": "Ce champ est requis",
+    "invalidEmail": "Adresse e-mail invalide",
+    "invalidFormat": "Format invalide",
+    "notificationsComingSoon": "La fonctionnalité de notifications arrive bientôt"
+  },
+  "releaseNotes": {
+    "title": "Nouveautés dans HivePal",
+    "version": "Version {{version}}",
+    "released": "Publié le {{date}}",
+    "newVersionAvailable": "Une nouvelle version v{{version}} est disponible !",
+    "checkLatestFeatures": "Découvrez les dernières fonctionnalités et améliorations.",
+    "whatsNew": "Nouveautés",
+    "dismiss": "Ignorer"
+  },
+  "time": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "tomorrow": "Demain",
+    "week": "Semaine",
+    "month": "Mois",
+    "year": "Année",
+    "date": "Date",
+    "time": "Heure",
+    "days": "Jours",
+    "hours": "Heures",
+    "minutes": "Minutes",
+    "seconds": "Secondes"
+  },
+  "weather": {
+    "selectHiveToView": "Sélectionnez une ruche associée à un rucher pour voir la météo",
+    "unableToLoad": "Impossible de charger les données météo",
+    "noWeatherData": "Aucune donnée météo disponible",
+    "currentWeather": "Météo actuelle",
+    "feelsLike": "Ressenti {{temperature}}°C",
+    "humidity": "Humidité",
+    "wind": "Vent",
+    "nextHours": "5 prochaines heures",
+    "dayForecast": "Prévisions sur 7 jours",
+    "weatherForecast": "Prévisions météo"
+  },
+  "settings": {
+    "managePreferences": "Gérez les préférences de votre compte et de l'application",
+    "generalSettings": "Paramètres généraux",
+    "configureLanguageRegional": "Configurez vos préférences de langue et de région",
+    "dateFormat": "Format de date",
+    "unitsOfMeasurement": "Unités de mesure",
+    "metric": "Métrique (kg, km, °C)",
+    "imperial": "Impérial (lbs, miles, °F)",
+    "displayPreferences": "Préférences d'affichage",
+    "customizeAppearance": "Personnalisez l'apparence de l'application",
+    "theme": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système",
+    "notificationPreferences": "Préférences de notification",
+    "chooseNotificationMethod": "Choisissez comment vous souhaitez être notifié des événements importants",
+    "emailNotifications": "Notifications par e-mail",
+    "receiveEmailUpdates": "Recevoir les mises à jour par e-mail",
+    "pushNotifications": "Notifications push",
+    "receiveBrowserNotifications": "Recevoir les notifications push du navigateur",
+    "inspectionReminders": "Rappels d'inspection",
+    "upcomingInspectionsNotify": "Recevoir des notifications pour les inspections à venir",
+    "harvestReminders": "Rappels de récolte",
+    "harvestSchedulesNotify": "Recevoir des notifications pour les calendriers de récolte",
+    "accountSettings": "Paramètres du compte",
+    "manageAccountInfo": "Gérez les informations de votre compte",
+    "name": "Nom",
+    "enterName": "Saisissez votre nom",
+    "email": "E-mail",
+    "enterEmail": "Saisissez votre e-mail",
+    "password": "Mot de passe",
+    "changePassword": "Modifier le mot de passe de votre compte",
+    "saveSettings": "Enregistrer les paramètres",
+    "preferencesUpdated": "Vos préférences ont été mises à jour avec succès.",
+    "saving": "Enregistrement..."
+  },
+  "feedback": {
+    "title": "Envoyer un retour",
+    "description": "Votre avis compte ! Aidez-nous à améliorer HivePal en partageant vos idées, en signalant des bugs ou en suggérant de nouvelles fonctionnalités.",
+    "sendFeedback": "Envoyer un retour",
+    "type": "Type de retour",
+    "selectType": "Sélectionner un type de retour",
+    "typeBug": "Signalement de bug",
+    "typeSuggestion": "Suggestion de fonctionnalité",
+    "typeOther": "Autre",
+    "subject": "Sujet",
+    "subjectPlaceholder": "Bref résumé de votre retour",
+    "message": "Message",
+    "messagePlaceholder": "Veuillez fournir des informations détaillées sur votre retour...",
+    "email": "E-mail (optionnel)",
+    "emailPlaceholder": "votre@email.com",
+    "emailDescription": "Indiquez votre e-mail si vous souhaitez recevoir une réponse",
+    "submit": "Envoyer le retour",
+    "thankYou": "Merci !",
+    "submittedMessage": "Votre retour a bien été envoyé. Nous apprécions votre contribution et l'examinerons bientôt.",
+    "submitAnother": "Envoyer un autre retour"
+  },
+  "alerts": {
+    "alert": "alerte",
+    "alerts": "alertes",
+    "activeAlerts": "Alertes actives",
+    "activeAlert": "Alerte active"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "both": "Les deux",
+    "inspections": "Inspections",
+    "actions": "Actions",
+    "today": "Aujourd'hui",
+    "noEventsScheduled": "Aucun événement planifié",
+    "sevenDayViewTitle": "{{date}} - Vue sur 7 jours",
+    "previousWeek": "Semaine précédente",
+    "previousDay": "Jour précédent",
+    "nextDay": "Jour suivant",
+    "nextWeek": "Semaine suivante",
+    "dayHeader": "{{date}}",
+    "noEvents": "Aucun événement",
+    "overdueInspections": "Inspections en retard ({{overdueInspectionsSize}})",
+    "viewInspection": "Voir l'inspection"
+  },
+  "quickAdd": {
+    "title": "Ajouter une entrée",
+    "quickCheck": "Contrôle rapide",
+    "action": "Action",
+    "photo": "Photo",
+    "document": "Document",
+    "inspection": "Inspection"
+  },
+  "photo": {
+    "title": "Ajouter une photo",
+    "description": "Téléverser une photo avec une légende facultative.",
+    "caption": "Légende",
+    "optional": "optionnel",
+    "captionPlaceholder": "Décrivez la photo...",
+    "selectPhoto": "Sélectionner une photo",
+    "upload": "Téléverser la photo",
+    "uploading": "Téléversement...",
+    "uploadSuccess": "Photo téléversée",
+    "uploadFailed": "Échec du téléversement de la photo",
+    "deleteTitle": "Supprimer la photo ?",
+    "deleteDescription": "Cette action est irréversible. Cette photo sera définitivement supprimée.",
+    "deleted": "Photo supprimée",
+    "deleteFailed": "Échec de la suppression de la photo"
+  },
+  "document": {
+    "title": "Ajouter un document",
+    "description": "Téléverser un PDF ou un document numérisé.",
+    "titleField": "Titre",
+    "titlePlaceholder": "Titre du document",
+    "notes": "Notes",
+    "optional": "optionnel",
+    "notesPlaceholder": "Ajoutez des notes sur ce document...",
+    "selectFile": "Sélectionner un fichier (PDF, JPEG, PNG)",
+    "upload": "Téléverser le document",
+    "uploading": "Téléversement...",
+    "uploadSuccess": "Document téléversé",
+    "uploadFailed": "Échec du téléversement du document",
+    "deleteTitle": "Supprimer le document ?",
+    "deleteDescription": "Cette action est irréversible. Ce document sera définitivement supprimé.",
+    "deleted": "Document supprimé",
+    "deleteFailed": "Échec de la suppression du document"
+  },
+  "files": {
+    "title": "Fichiers",
+    "allFiles": "Tous les fichiers",
+    "photos": "Photos",
+    "documents": "Documents",
+    "search": "Rechercher des fichiers...",
+    "filterByHive": "Filtrer par ruche",
+    "filterByType": "Filtrer par type",
+    "noFiles": "Aucun fichier téléversé pour le moment",
+    "name": "Nom",
+    "type": "Type",
+    "hive": "Ruche",
+    "size": "Taille",
+    "download": "Télécharger",
+    "delete": "Supprimer"
+  },
+  "quickCheck": {
+    "title": "Contrôle rapide",
+    "description": "Cette action est irréversible. Ce contrôle rapide et ses photos seront définitivement supprimés.",
+    "deleteTitle": "Supprimer le contrôle rapide ?",
+    "deleteDescription": "Cette action est irréversible. Ce contrôle rapide et ses photos seront définitivement supprimés.",
+    "deleted": "Contrôle rapide supprimé",
+    "deleteFailed": "Échec de la suppression du contrôle rapide"
+  },
+  "timeline": {
+    "recentActivity": "Activité récente",
+    "noActivity": "Aucune activité enregistrée pour le moment",
+    "noActivityApiary": "Aucune activité enregistrée dans ce rucher pour le moment",
+    "noMatchingFilters": "Aucun événement ne correspond aux filtres sélectionnés",
+    "allEvents": "Tous les événements",
+    "inspections": "Inspections",
+    "feeding": "Nourrissage",
+    "treatments": "Traitements",
+    "harvests": "Récoltes",
+    "notes": "Notes",
+    "quickChecks": "Contrôles rapides",
+    "other": "Autre",
+    "allTime": "Depuis toujours",
+    "lastMonth": "Dernier mois",
+    "last3Months": "3 derniers mois",
+    "last6Months": "6 derniers mois",
+    "lastYear": "Dernière année",
+    "allHives": "Toutes les ruches",
+    "clearFilters": "Effacer les filtres",
+    "showMore": "Afficher {{count}} de plus",
+    "showLess": "Afficher moins",
+    "notesAvailable": "Notes disponibles",
+    "boxConfiguration": "Configuration de la ruche",
+    "inspection": "Inspection",
+    "overdue": "En retard",
+    "scheduled": "Planifiée",
+    "cancelled": "Annulée",
+    "doInspection": "Effectuer l'inspection",
+    "reschedule": "Reprogrammer",
+    "inspectHive": "Inspecter {{hiveName}}",
+    "strength": "Force",
+    "honey": "Miel",
+    "queenSeen": "Reine vue",
+    "queenNotSeen": "Reine non vue",
+    "photos": "Photos",
+    "documents": "Documents",
+    "fromInspection": "À partir de l’inspection",
+    "maintenance": "Maintenance"
+  },
+  "reports": {
+    "title": "Rapports",
+    "selectApiary": "Sélectionnez un rucher pour voir les rapports",
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "charts": "Graphiques",
+      "trends": "Tendances"
     },
-    "actions": {
-        "save": "Enregistrer",
-        "cancel": "Annuler",
-        "delete": "Supprimer",
-        "edit": "Modifier",
-        "create": "Créer",
-        "add": "Ajouter",
-        "remove": "Supprimer",
-        "search": "Rechercher",
-        "filter": "Filtrer",
-        "export": "Exporter",
-        "import": "Importer",
-        "submit": "Soumettre",
-        "back": "Retour",
-        "next": "Suivant",
-        "previous": "Précédent",
-        "close": "Fermer",
-        "confirm": "Confirmer",
-        "view": "Voir",
-        "download": "Télécharger",
-        "upload": "Téléverser",
-        "refresh": "Actualiser",
-        "actions": "Actions",
-        "createNew": "Créer",
-        "navigate": "Naviguer",
-        "refreshData": "Actualiser les données",
-        "notifications": "Notifications",
-        "newHive": "Nouvelle ruche",
-        "language": "Langue",
-        "logout": "Se déconnecter",
-        "newInspection": "Nouvelle inspection",
-        "scheduleInspection": "Planifier une inspection",
-        "newQueen": "Nouvelle reine",
-        "recentInspections": "Inspections récentes"
+    "honeyProduction": "Production de miel",
+    "feedingTotals": "Totaux de nourrissage",
+    "healthScores": "Scores de santé",
+    "hiveComparison": "Comparaison des ruches",
+    "table": {
+      "hiveName": "Ruche",
+      "honey": "Miel",
+      "sugarFed": "Sucre distribué",
+      "overall": "Global",
+      "population": "Population",
+      "stores": "Réserves",
+      "queen": "Reine",
+      "lastInspection": "Dernière inspection"
     },
-    "status": {
-        "loading": "Chargement...",
-        "success": "Succès",
-        "error": "Erreur",
-        "warning": "Avertissement",
-        "info": "Information",
-        "pending": "En attente",
-        "completed": "Terminé",
-        "failed": "Échec",
-        "active": "Actif",
-        "inactive": "Inactif",
-        "archived": "Archivé"
+    "charts": {
+      "hiveScoreTrends": "Tendances des scores des ruches"
     },
-    "messages": {
-        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
-        "changesSaved": "Modifications enregistrées avec succès",
-        "errorOccurred": "Une erreur est survenue",
-        "noData": "Aucune donnée disponible",
-        "required": "Ce champ est requis",
-        "invalidEmail": "Adresse e-mail invalide",
-        "invalidFormat": "Format invalide",
-        "notificationsComingSoon": "La fonctionnalité de notifications arrive bientôt"
+    "periods": {
+      "1month": "1 mois",
+      "3months": "3 mois",
+      "6months": "6 mois",
+      "ytd": "Depuis le début de l'année",
+      "1year": "1 an",
+      "all": "Depuis toujours"
     },
-    "releaseNotes": {
-        "title": "Nouveautés dans HivePal",
-        "version": "Version {{version}}",
-        "released": "Publié le {{date}}",
-        "newVersionAvailable": "Une nouvelle version v{{version}} est disponible !",
-        "checkLatestFeatures": "Découvrez les dernières fonctionnalités et améliorations.",
-        "whatsNew": "Nouveautés",
-        "dismiss": "Ignorer"
+    "filters": {
+      "period": "Période"
     },
-    "time": {
-        "today": "Aujourd'hui",
-        "yesterday": "Hier",
-        "tomorrow": "Demain",
-        "week": "Semaine",
-        "month": "Mois",
-        "year": "Année",
-        "date": "Date",
-        "time": "Heure",
-        "days": "Jours",
-        "hours": "Heures",
-        "minutes": "Minutes",
-        "seconds": "Secondes"
+    "export": {
+      "title": "Exporter",
+      "csv": "Exporter en CSV",
+      "pdf": "Exporter en PDF",
+      "success": "Rapport exporté avec succès",
+      "error": "Échec de l'export du rapport"
     },
-    "weather": {
-        "selectHiveToView": "Sélectionnez une ruche associée à un rucher pour voir la météo",
-        "unableToLoad": "Impossible de charger les données météo",
-        "noWeatherData": "Aucune donnée météo disponible",
-        "currentWeather": "Météo actuelle",
-        "feelsLike": "Ressenti {{temperature}}°C",
-        "humidity": "Humidité",
-        "wind": "Vent",
-        "nextHours": "5 prochaines heures",
-        "dayForecast": "Prévisions sur 7 jours",
-        "weatherForecast": "Prévisions météo"
-    },
-    "settings": {
-        "managePreferences": "Gérez les préférences de votre compte et de l'application",
-        "generalSettings": "Paramètres généraux",
-        "configureLanguageRegional": "Configurez vos préférences de langue et de région",
-        "dateFormat": "Format de date",
-        "unitsOfMeasurement": "Unités de mesure",
-        "metric": "Métrique (kg, km, °C)",
-        "imperial": "Impérial (lbs, miles, °F)",
-        "displayPreferences": "Préférences d'affichage",
-        "customizeAppearance": "Personnalisez l'apparence de l'application",
-        "theme": "Thème",
-        "light": "Clair",
-        "dark": "Sombre",
-        "system": "Système",
-        "notificationPreferences": "Préférences de notification",
-        "chooseNotificationMethod": "Choisissez comment vous souhaitez être notifié des événements importants",
-        "emailNotifications": "Notifications par e-mail",
-        "receiveEmailUpdates": "Recevoir les mises à jour par e-mail",
-        "pushNotifications": "Notifications push",
-        "receiveBrowserNotifications": "Recevoir les notifications push du navigateur",
-        "inspectionReminders": "Rappels d'inspection",
-        "upcomingInspectionsNotify": "Recevoir des notifications pour les inspections à venir",
-        "harvestReminders": "Rappels de récolte",
-        "harvestSchedulesNotify": "Recevoir des notifications pour les calendriers de récolte",
-        "accountSettings": "Paramètres du compte",
-        "manageAccountInfo": "Gérez les informations de votre compte",
-        "name": "Nom",
-        "enterName": "Saisissez votre nom",
-        "email": "E-mail",
-        "enterEmail": "Saisissez votre e-mail",
-        "password": "Mot de passe",
-        "changePassword": "Modifier le mot de passe de votre compte",
-        "saveSettings": "Enregistrer les paramètres",
-        "preferencesUpdated": "Vos préférences ont été mises à jour avec succès.",
-        "saving": "Enregistrement..."
-    },
-    "feedback": {
-        "title": "Envoyer un retour",
-        "description": "Votre avis compte ! Aidez-nous à améliorer HivePal en partageant vos idées, en signalant des bugs ou en suggérant de nouvelles fonctionnalités.",
-        "sendFeedback": "Envoyer un retour",
-        "type": "Type de retour",
-        "selectType": "Sélectionner un type de retour",
-        "typeBug": "Signalement de bug",
-        "typeSuggestion": "Suggestion de fonctionnalité",
-        "typeOther": "Autre",
-        "subject": "Sujet",
-        "subjectPlaceholder": "Bref résumé de votre retour",
-        "message": "Message",
-        "messagePlaceholder": "Veuillez fournir des informations détaillées sur votre retour...",
-        "email": "E-mail (optionnel)",
-        "emailPlaceholder": "votre@email.com",
-        "emailDescription": "Indiquez votre e-mail si vous souhaitez recevoir une réponse",
-        "submit": "Envoyer le retour",
-        "thankYou": "Merci !",
-        "submittedMessage": "Votre retour a bien été envoyé. Nous apprécions votre contribution et l'examinerons bientôt.",
-        "submitAnother": "Envoyer un autre retour"
-    },
-    "alerts": {
-        "alert": "alerte",
-        "alerts": "alertes",
-        "activeAlerts": "Alertes actives",
-        "activeAlert": "Alerte active"
-    },
-    "calendar": {
-        "title": "Calendrier",
-        "both": "Les deux",
-        "inspections": "Inspections",
-        "actions": "Actions",
-        "today": "Aujourd'hui",
-        "noEventsScheduled": "Aucun événement planifié",
-        "sevenDayViewTitle": "{{date}} - Vue sur 7 jours",
-        "previousWeek": "Semaine précédente",
-        "previousDay": "Jour précédent",
-        "nextDay": "Jour suivant",
-        "nextWeek": "Semaine suivante",
-        "dayHeader": "{{date}}",
-        "noEvents": "Aucun événement",
-        "overdueInspections": "Inspections en retard ({{overdueInspectionsSize}})",
-        "viewInspection": "Voir l'inspection"
-    },
-    "quickAdd": {
-        "title": "Ajouter une entrée",
-        "quickCheck": "Contrôle rapide",
-        "action": "Action",
-        "photo": "Photo",
-        "document": "Document",
-        "inspection": "Inspection"
-    },
-    "photo": {
-        "title": "Ajouter une photo",
-        "description": "Téléverser une photo avec une légende facultative.",
-        "caption": "Légende",
-        "optional": "optionnel",
-        "captionPlaceholder": "Décrivez la photo...",
-        "selectPhoto": "Sélectionner une photo",
-        "upload": "Téléverser la photo",
-        "uploading": "Téléversement...",
-        "uploadSuccess": "Photo téléversée",
-        "uploadFailed": "Échec du téléversement de la photo",
-        "deleteTitle": "Supprimer la photo ?",
-        "deleteDescription": "Cette action est irréversible. Cette photo sera définitivement supprimée.",
-        "deleted": "Photo supprimée",
-        "deleteFailed": "Échec de la suppression de la photo"
-    },
-    "document": {
-        "title": "Ajouter un document",
-        "description": "Téléverser un PDF ou un document numérisé.",
-        "titleField": "Titre",
-        "titlePlaceholder": "Titre du document",
-        "notes": "Notes",
-        "optional": "optionnel",
-        "notesPlaceholder": "Ajoutez des notes sur ce document...",
-        "selectFile": "Sélectionner un fichier (PDF, JPEG, PNG)",
-        "upload": "Téléverser le document",
-        "uploading": "Téléversement...",
-        "uploadSuccess": "Document téléversé",
-        "uploadFailed": "Échec du téléversement du document",
-        "deleteTitle": "Supprimer le document ?",
-        "deleteDescription": "Cette action est irréversible. Ce document sera définitivement supprimé.",
-        "deleted": "Document supprimé",
-        "deleteFailed": "Échec de la suppression du document"
-    },
-    "files": {
-        "title": "Fichiers",
-        "allFiles": "Tous les fichiers",
-        "photos": "Photos",
-        "documents": "Documents",
-        "search": "Rechercher des fichiers...",
-        "filterByHive": "Filtrer par ruche",
-        "filterByType": "Filtrer par type",
-        "noFiles": "Aucun fichier téléversé pour le moment",
-        "name": "Nom",
-        "type": "Type",
-        "hive": "Ruche",
-        "size": "Taille",
-        "download": "Télécharger",
-        "delete": "Supprimer"
-    },
-    "quickCheck": {
-        "title": "Contrôle rapide",
-        "description": "Cette action est irréversible. Ce contrôle rapide et ses photos seront définitivement supprimés.",
-        "deleteTitle": "Supprimer le contrôle rapide ?",
-        "deleteDescription": "Cette action est irréversible. Ce contrôle rapide et ses photos seront définitivement supprimés.",
-        "deleted": "Contrôle rapide supprimé",
-        "deleteFailed": "Échec de la suppression du contrôle rapide"
-    },
-    "timeline": {
-        "recentActivity": "Activité récente",
-        "noActivity": "Aucune activité enregistrée pour le moment",
-        "noActivityApiary": "Aucune activité enregistrée dans ce rucher pour le moment",
-        "noMatchingFilters": "Aucun événement ne correspond aux filtres sélectionnés",
-        "allEvents": "Tous les événements",
-        "inspections": "Inspections",
-        "feeding": "Nourrissage",
-        "treatments": "Traitements",
-        "harvests": "Récoltes",
-        "notes": "Notes",
-        "quickChecks": "Contrôles rapides",
-        "other": "Autre",
-        "allTime": "Depuis toujours",
-        "lastMonth": "Dernier mois",
-        "last3Months": "3 derniers mois",
-        "last6Months": "6 derniers mois",
-        "lastYear": "Dernière année",
-        "allHives": "Toutes les ruches",
-        "clearFilters": "Effacer les filtres",
-        "showMore": "Afficher {{count}} de plus",
-        "showLess": "Afficher moins",
-        "notesAvailable": "Notes disponibles",
-        "boxConfiguration": "Configuration de la ruche",
-        "inspection": "Inspection",
-        "overdue": "En retard",
-        "scheduled": "Planifiée",
-        "cancelled": "Annulée",
-        "doInspection": "Effectuer l'inspection",
-        "reschedule": "Reprogrammer",
-        "inspectHive": "Inspecter {{hiveName}}",
-        "strength": "Force",
-        "honey": "Miel",
-        "queenSeen": "Reine vue",
-        "queenNotSeen": "Reine non vue",
-        "photos": "Photos",
-        "documents": "Documents",
-        "fromInspection": "À partir de l’inspection",
-        "maintenance": "Maintenance"
-    },
-    "reports": {
-        "title": "Rapports",
-        "selectApiary": "Sélectionnez un rucher pour voir les rapports",
-        "tabs": {
-            "overview": "Vue d'ensemble",
-            "charts": "Graphiques",
-            "trends": "Tendances"
-        },
-        "honeyProduction": "Production de miel",
-        "feedingTotals": "Totaux de nourrissage",
-        "healthScores": "Scores de santé",
-        "hiveComparison": "Comparaison des ruches",
-        "table": {
-            "hiveName": "Ruche",
-            "honey": "Miel",
-            "sugarFed": "Sucre distribué",
-            "overall": "Global",
-            "population": "Population",
-            "stores": "Réserves",
-            "queen": "Reine",
-            "lastInspection": "Dernière inspection"
-        },
-        "charts": {
-            "hiveScoreTrends": "Tendances des scores des ruches"
-        },
-        "periods": {
-            "1month": "1 mois",
-            "3months": "3 mois",
-            "6months": "6 mois",
-            "ytd": "Depuis le début de l'année",
-            "1year": "1 an",
-            "all": "Depuis toujours"
-        },
-        "filters": {
-            "period": "Période"
-        },
-        "export": {
-            "title": "Exporter",
-            "csv": "Exporter en CSV",
-            "pdf": "Exporter en PDF",
-            "success": "Rapport exporté avec succès",
-            "error": "Échec de l'export du rapport"
-        },
-        "widget": {
-            "title": "Statistiques du rucher",
-            "viewReports": "Voir les rapports",
-            "apiaryDetails": "Détails du rucher",
-            "noApiary": "Sélectionnez un rucher pour voir les statistiques"
-        }
-    },
-    "syrupCalculator": {
-        "title": "Calculateur de sirop",
-        "description": "Calculer les quantités de sucre et d’eau pour préparer le sirop de nourrissage",
-        "ratio": "Ratio de sirop",
-        "ratioDescription": "Rapport sucre/eau (poids/volume)",
-        "thin": "Léger (1:1)",
-        "medium": "Moyen (3:2)",
-        "thick": "Épais (2:1)",
-        "containerSize": "Taille du contenant",
-        "containerDescription": "Volume total de sirop à préparer",
-        "customSize": "Personnalisé",
-        "results": "Résultats",
-        "water": "Eau",
-        "sugar": "Sucre",
-        "totalWeight": "Poids total",
-        "instructions": "Instructions",
-        "step1": "Mesurer {{water}} d’eau",
-        "step2": "Chauffer l’eau jusqu’à ce qu’elle soit chaude (sans bouillir)",
-        "step3": "Ajouter {{sugar}} de sucre blanc en poudre",
-        "step4": "Remuer jusqu’à dissolution complète du sucre",
-        "step5": "Laisser le sirop refroidir à température ambiante avant le nourrissement",
-        "tips": "Conseils et guide d’utilisation",
-        "tip1Title": "Sirop léger (1:1)",
-        "tip1Description": "Idéal au printemps pour stimuler l’élevage du couvain et simuler une miellée. À utiliser lorsque les abeilles ont besoin d’être stimulées pour se développer.",
-        "tip2Title": "Sirop intermédiaire (3:2)",
-        "tip2Description": "Un sirop polyvalent. Convient aussi bien pour la stimulation de printemps que pour un nourrissement léger en automne.",
-        "tip3Title": "Sirop épais (2:1)",
-        "tip3Description": "Idéal pour le nourrissement d’automne afin de constituer les réserves hivernales. Les abeilles peuvent le stocker rapidement avec moins d’effort pour évaporer l’excès d’eau.",
-        "tip4Title": "Conseils généraux",
-        "tip4Description": "Utilisez toujours du sucre blanc en poudre — jamais de sucre brun, de mélasse ou d’édulcorants artificiels. Ne faites pas bouillir le sirop, car cela peut produire du HMF (hydroxyméthylfurfural), toxique pour les abeilles. Nourrissez de préférence le soir pour limiter le pillage."
-    },
-    "broodTimeline": {
-        "title": "Cycle de développement du couvain",
-        "description": "Explorez les stades de développement de la reine, de l’ouvrière et du faux-bourdon, de l’œuf à l’abeille adulte",
-        "beeType": "Type d’abeille",
-        "beeTypeDescription": "Choisissez une caste pour afficher son cycle de développement",
-        "queen": "Reine",
-        "worker": "Ouvrière",
-        "drone": "Faux-bourdon",
-        "compareAll": "Comparer tout",
-        "dateSelector": "Date de départ",
-        "dateSelectorDescription": "Sélectionnez éventuellement la date de ponte des œufs pour afficher les dates du calendrier sur la chronologie",
-        "pickDate": "Choisissez une date",
-        "timeline": "Cycle de développement",
-        "totalDays": "Total: {{days}} jours",
-        "daysUnit": "jours",
-        "stage": {
-            "egg": "Oeuf",
-            "larva": "Larve",
-            "pupa": "Nymphe",
-            "adult": "Adulte"
-        },
-        "days": "Jours {{start}}–{{end}}",
-        "day": "Jour {{day}}",
-        "durationOne": "1 jour",
-        "durationOther": "{{count}} jours",
-        "queenEggDesc": "Pondus dans une cupule à reine",
-        "queenLarvaDesc": "Nourri exclusivement à la gelée royale",
-        "queenPupaDesc": "Operculé, se développe rapidement",
-        "queenAdultDesc": "Émerge, s’accouple dans les jours suivants",
-        "workerEggDesc": "Petit œuf blanc dressé dans la cellule",
-        "workerLarvaDesc": "Nourrie à la gelée royale, puis au pain d’abeille et au miel",
-        "workerPupaDesc": "Cellule operculée, métamorphose",
-        "workerAdultDesc": "Émerge en tant qu’ouvrière entièrement formée",
-        "droneEggDesc": "Cellules plus grandes, œufs non fécondés",
-        "droneLarvaDesc": "Nourrissement similaire à celui des ouvrières",
-        "dronePupaDesc": "Operculé, se développe en faux-bourdon",
-        "droneAdultDesc": "Émerge en tant que faux-bourdon",
-        "funFacts": "Anecdotes",
-        "fact1Title": "Reine vs ouvrière",
-        "fact1Description": "La seule différence entre une reine et une ouvrière réside dans l’alimentation. Les larves nourries exclusivement à la gelée royale deviennent des reines — leur développement est achevé en seulement 16 jours contre 21 jours pour les ouvrières.",
-        "fact2Title": "Développement du faux-bourdon",
-        "fact2Description": "Les faux-bourdons sont les plus longs à se développer (24 jours) et proviennent d’œufs non fécondés. Ils n’ont pas de père, mais ont un grand-père !",
-        "fact3Title": "Le stade de l’œuf",
-        "fact3Description": "Les trois castes partagent le même stade d’œuf de 3 jours. La reine pond chaque œuf verticalement dans la cellule ; il s’incline progressivement avant l’éclosion.",
-        "fact4Title": "Période d’operculation",
-        "fact4Description": "Les ouvrières operculent les cellules royales au 8eme jour, les cellules d’ouvrières au 9eme jour et celles des faux-bourdons au 10eme jour. L’observation des cellules operculées permet d’identifier ce qui s’y développe."
-    },
-    "swarmManagement": {
-        "backToOverview": "Back to Swarm Management",
-        "eyebrow": "Swarm control guidance",
-        "title": "Swarm Management",
-        "cards": {
-            "available": "Available",
-            "comingSoon": "Coming soon",
-            "placeholderCta": "Not available yet",
-            "demaree": {
-                "title": "Demaree Method",
-                "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
-                "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
-                "cta": "Open guide"
-            },
-            "pagden": {
-                "title": "Pagden split",
-                "description": "Placeholder for a future guide covering the classic artificial swarm split."
-            },
-            "artificialSwarm": {
-                "title": "Artificial swarm",
-                "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
-            }
-        },
-        "aside": {
-            "title": "Choosing a method",
-            "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
-            "points": [
-                "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
-                "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
-                "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
-            ],
-            "criticalTimingTitle": "Critical timing",
-            "criticalTimingLead": "The first follow-up is the point where timing matters most.",
-            "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
-        },
-        "demaree": {
-            "badge": "Reference method",
-            "title": "Demaree Method",
-            "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
-            "overviewTitle": "Method overview",
-            "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
-            "overviewPoints": [
-                "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
-                "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
-                "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
-            ],
-            "prerequisitesTitle": "Prerequisites",
-            "prerequisites": [
-                "Check that the hive is a strong colony with enough bees and brood to justify the method.",
-                "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
-                "Make sure you can find and confidently retain the laying queen in the lower brood box.",
-                "Have a queen excluder ready, with at least two honey supers available to stack above it.",
-                "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
-                "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
-            ],
-            "stepsTitle": "Method Detail",
-            "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
-            "methodDetail": {
-                "preparation": {
-                    "title": "Preparation",
-                    "items": [
-                        {
-                            "text": "Find a spare brood box with foundation or drawn comb.",
-                            "children": [
-                                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
-                            ]
-                        },
-                        {
-                            "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
-                        }
-                    ]
-                },
-                "huntTheQueen": {
-                    "title": "Hunt the Queen",
-                    "items": [
-                        {
-                            "text": "Inspect the old brood box(es) and locate the Queen."
-                        },
-                        {
-                            "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
-                        }
-                    ]
-                },
-                "broodManipulation": {
-                    "title": "Brood Manipulation",
-                    "items": [
-                        {
-                            "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
-                            "children": [
-                                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
-                            ]
-                        },
-                        {
-                            "text": "Make sure to knock down all queen cells.",
-                            "children": [
-                                "With the queen safe you can shake bees off the frames to make sure you find them all."
-                            ]
-                        },
-                        {
-                            "text": "(Double Brood) - You should now have three brood boxes.",
-                            "children": [
-                                "Box with the queen, mostly empty directly on the hive floor.",
-                                "Box with no brood - place this on top of the queen to retain double brood status.",
-                                "Box with all the brood - keep this aside for now."
-                            ]
-                        }
-                    ]
-                },
-                "reassembly": {
-                    "title": "Reassembly",
-                    "items": [
-                        {
-                            "text": "Put the queen excluder on top of the new brood boxes."
-                        },
-                        {
-                            "text": "Add the supers (minimum 2, add extra if more space is required)."
-                        },
-                        {
-                            "text": "Place an additional queen excluder over the supers."
-                        },
-                        {
-                            "text": "The box with all the brood now goes on top of the supers."
-                        },
-                        {
-                            "text": "Fit crown board and roof and the job is done."
-                        }
-                    ]
-                }
-            },
-            "advantagesTitle": "Why the method works",
-            "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
-            "advantages": [
-                "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
-                "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
-                "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
-            ],
-            "followUpTitle": "Follow-up timing",
-            "followUpDayHeader": "Day",
-            "followUpTaskHeader": "Task",
-            "followUp": [
-                {
-                    "day": "Day 7-8",
-                    "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
-                },
-                {
-                    "day": "Day 14-15",
-                    "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
-                },
-                {
-                    "day": "Day 21-22",
-                    "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
-                }
-            ],
-            "prosConsTitle": "Pros and Cons",
-            "prosTitle": "Advantages",
-            "consTitle": "Disadvantages",
-            "pros": [
-                "Works well as a swarm control method.",
-                "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
-                "Comb renewal is simple.",
-                "Good brood combs can be drawn out in the top box.",
-                "The effect is similar to an artificial swarm, but the colony is kept together."
-            ],
-            "cons": [
-                "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
-                "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
-                "There may be heavy lifting.",
-                "Regular inspections are essential.",
-                "You MUST understand the basics."
-            ]
-        },
-        "planner": {
-            "title": "Demaree inspection planner",
-            "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
-            "hiveLabel": "Hive",
-            "hivePlaceholder": "Select a hive",
-            "startDateLabel": "Demaree setup date",
-            "startDatePlaceholder": "Pick the setup date",
-            "generate": "Generate checkpoints",
-            "selectedHive": "Selected hive",
-            "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
-            "notesLabel": "Inspection notes",
-            "notesChecklistLabel": "Checklist",
-            "checkpointPrefix": "Demaree checkpoint:",
-            "dayOffset_one": "Day {{count}}",
-            "dayOffset_other": "Day {{count}}",
-            "save": "Save scheduled inspections",
-            "saving": "Saving inspections...",
-            "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
-            "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
-            "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
-            "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
-            "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
-            "checkpoints": {
-                "setup": {
-                    "title": "Initial Demaree setup",
-                    "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
-                    "checklist": [
-                        "Confirm the laying queen is in the lower brood box.",
-                        "Place the brood and supers in the planned Demaree order.",
-                        "Record any details you want visible at the next inspection."
-                    ]
-                },
-                "queenCellCheck": {
-                    "title": "Queen-cell check",
-                    "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
-                    "checklist": [
-                        "Inspect every brood frame above the excluder for queen cells.",
-                        "Remove queen cells started during the swarm impulse.",
-                        "Confirm the queen still has room and activity below."
-                    ]
-                },
-                "secondQueenCellCheck": {
-                    "title": "Second queen-cell check",
-                    "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
-                    "checklist": [
-                        "Look again for newly started or missed queen cells.",
-                        "Check whether brood and stores need to be rebalanced.",
-                        "Note whether the colony is settling or still crowding upward."
-                    ]
-                },
-                "colonyReview": {
-                    "title": "Colony review",
-                    "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
-                    "checklist": [
-                        "Assess whether the colony can return to a more normal arrangement.",
-                        "Check space, brood pattern, and nectar intake across the stack.",
-                        "Schedule any additional inspection you want beyond the standard plan."
-                    ]
-                }
-            }
-        },
-        "warnings": {
-            "bannerTitle": "Timing warnings",
-            "lateQueenCellCheck": {
-                "title": "First queen-cell check is later than day 8",
-                "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
-            },
-            "unsafeCheckpointSpacing": {
-                "title": "Checkpoint spacing looks risky",
-                "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
-            },
-            "illogicalScheduleOrder": {
-                "title": "Checkpoint order is no longer chronological",
-                "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
-            }
-        }
-    },
-    "footer": {
-        "privacyPolicy": "Politique de confidentialité"
+    "widget": {
+      "title": "Statistiques du rucher",
+      "viewReports": "Voir les rapports",
+      "apiaryDetails": "Détails du rucher",
+      "noApiary": "Sélectionnez un rucher pour voir les statistiques"
     }
+  },
+  "syrupCalculator": {
+    "title": "Calculateur de sirop",
+    "description": "Calculer les quantités de sucre et d’eau pour préparer le sirop de nourrissage",
+    "ratio": "Ratio de sirop",
+    "ratioDescription": "Rapport sucre/eau (poids/volume)",
+    "thin": "Léger (1:1)",
+    "medium": "Moyen (3:2)",
+    "thick": "Épais (2:1)",
+    "containerSize": "Taille du contenant",
+    "containerDescription": "Volume total de sirop à préparer",
+    "customSize": "Personnalisé",
+    "results": "Résultats",
+    "water": "Eau",
+    "sugar": "Sucre",
+    "totalWeight": "Poids total",
+    "instructions": "Instructions",
+    "step1": "Mesurer {{water}} d’eau",
+    "step2": "Chauffer l’eau jusqu’à ce qu’elle soit chaude (sans bouillir)",
+    "step3": "Ajouter {{sugar}} de sucre blanc en poudre",
+    "step4": "Remuer jusqu’à dissolution complète du sucre",
+    "step5": "Laisser le sirop refroidir à température ambiante avant le nourrissement",
+    "tips": "Conseils et guide d’utilisation",
+    "tip1Title": "Sirop léger (1:1)",
+    "tip1Description": "Idéal au printemps pour stimuler l’élevage du couvain et simuler une miellée. À utiliser lorsque les abeilles ont besoin d’être stimulées pour se développer.",
+    "tip2Title": "Sirop intermédiaire (3:2)",
+    "tip2Description": "Un sirop polyvalent. Convient aussi bien pour la stimulation de printemps que pour un nourrissement léger en automne.",
+    "tip3Title": "Sirop épais (2:1)",
+    "tip3Description": "Idéal pour le nourrissement d’automne afin de constituer les réserves hivernales. Les abeilles peuvent le stocker rapidement avec moins d’effort pour évaporer l’excès d’eau.",
+    "tip4Title": "Conseils généraux",
+    "tip4Description": "Utilisez toujours du sucre blanc en poudre — jamais de sucre brun, de mélasse ou d’édulcorants artificiels. Ne faites pas bouillir le sirop, car cela peut produire du HMF (hydroxyméthylfurfural), toxique pour les abeilles. Nourrissez de préférence le soir pour limiter le pillage."
+  },
+  "broodTimeline": {
+    "title": "Cycle de développement du couvain",
+    "description": "Explorez les stades de développement de la reine, de l’ouvrière et du faux-bourdon, de l’œuf à l’abeille adulte",
+    "beeType": "Type d’abeille",
+    "beeTypeDescription": "Choisissez une caste pour afficher son cycle de développement",
+    "queen": "Reine",
+    "worker": "Ouvrière",
+    "drone": "Faux-bourdon",
+    "compareAll": "Comparer tout",
+    "dateSelector": "Date de départ",
+    "dateSelectorDescription": "Sélectionnez éventuellement la date de ponte des œufs pour afficher les dates du calendrier sur la chronologie",
+    "pickDate": "Choisissez une date",
+    "timeline": "Cycle de développement",
+    "totalDays": "Total: {{days}} jours",
+    "daysUnit": "jours",
+    "stage": {
+      "egg": "Oeuf",
+      "larva": "Larve",
+      "pupa": "Nymphe",
+      "adult": "Adulte"
+    },
+    "days": "Jours {{start}}–{{end}}",
+    "day": "Jour {{day}}",
+    "durationOne": "1 jour",
+    "durationOther": "{{count}} jours",
+    "queenEggDesc": "Pondus dans une cupule à reine",
+    "queenLarvaDesc": "Nourri exclusivement à la gelée royale",
+    "queenPupaDesc": "Operculé, se développe rapidement",
+    "queenAdultDesc": "Émerge, s’accouple dans les jours suivants",
+    "workerEggDesc": "Petit œuf blanc dressé dans la cellule",
+    "workerLarvaDesc": "Nourrie à la gelée royale, puis au pain d’abeille et au miel",
+    "workerPupaDesc": "Cellule operculée, métamorphose",
+    "workerAdultDesc": "Émerge en tant qu’ouvrière entièrement formée",
+    "droneEggDesc": "Cellules plus grandes, œufs non fécondés",
+    "droneLarvaDesc": "Nourrissement similaire à celui des ouvrières",
+    "dronePupaDesc": "Operculé, se développe en faux-bourdon",
+    "droneAdultDesc": "Émerge en tant que faux-bourdon",
+    "funFacts": "Anecdotes",
+    "fact1Title": "Reine vs ouvrière",
+    "fact1Description": "La seule différence entre une reine et une ouvrière réside dans l’alimentation. Les larves nourries exclusivement à la gelée royale deviennent des reines — leur développement est achevé en seulement 16 jours contre 21 jours pour les ouvrières.",
+    "fact2Title": "Développement du faux-bourdon",
+    "fact2Description": "Les faux-bourdons sont les plus longs à se développer (24 jours) et proviennent d’œufs non fécondés. Ils n’ont pas de père, mais ont un grand-père !",
+    "fact3Title": "Le stade de l’œuf",
+    "fact3Description": "Les trois castes partagent le même stade d’œuf de 3 jours. La reine pond chaque œuf verticalement dans la cellule ; il s’incline progressivement avant l’éclosion.",
+    "fact4Title": "Période d’operculation",
+    "fact4Description": "Les ouvrières operculent les cellules royales au 8eme jour, les cellules d’ouvrières au 9eme jour et celles des faux-bourdons au 10eme jour. L’observation des cellules operculées permet d’identifier ce qui s’y développe."
+  },
+  "swarmManagement": {
+    "backToOverview": "Back to Swarm Management",
+    "eyebrow": "Swarm control guidance",
+    "title": "Swarm Management",
+    "cards": {
+      "available": "Available",
+      "comingSoon": "Coming soon",
+      "placeholderCta": "Not available yet",
+      "demaree": {
+        "title": "Demaree Method",
+        "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
+        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+        "cta": "Open guide"
+      },
+      "pagden": {
+        "title": "Pagden split",
+        "description": "Placeholder for a future guide covering the classic artificial swarm split."
+      },
+      "artificialSwarm": {
+        "title": "Artificial swarm",
+        "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+      }
+    },
+    "aside": {
+      "title": "Choosing a method",
+      "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+      "points": [
+        "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
+        "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
+        "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+      ],
+      "criticalTimingTitle": "Critical timing",
+      "criticalTimingLead": "The first follow-up is the point where timing matters most.",
+      "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+    },
+    "demaree": {
+      "badge": "Reference method",
+      "title": "Demaree Method",
+      "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
+      "overviewTitle": "Method overview",
+      "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+      "overviewPoints": [
+        "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
+        "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
+        "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+      ],
+      "prerequisitesTitle": "Prerequisites",
+      "prerequisites": [
+        "Check that the hive is a strong colony with enough bees and brood to justify the method.",
+        "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
+        "Make sure you can find and confidently retain the laying queen in the lower brood box.",
+        "Have a queen excluder ready, with at least two honey supers available to stack above it.",
+        "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
+        "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+      ],
+      "stepsTitle": "Method Detail",
+      "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+      "methodDetail": {
+        "preparation": {
+          "title": "Preparation",
+          "items": [
+            {
+              "text": "Find a spare brood box with foundation or drawn comb.",
+              "children": [
+                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+              ]
+            },
+            {
+              "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+            }
+          ]
+        },
+        "huntTheQueen": {
+          "title": "Hunt the Queen",
+          "items": [
+            {
+              "text": "Inspect the old brood box(es) and locate the Queen."
+            },
+            {
+              "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+            }
+          ]
+        },
+        "broodManipulation": {
+          "title": "Brood Manipulation",
+          "items": [
+            {
+              "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+              "children": [
+                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+              ]
+            },
+            {
+              "text": "Make sure to knock down all queen cells.",
+              "children": [
+                "With the queen safe you can shake bees off the frames to make sure you find them all."
+              ]
+            },
+            {
+              "text": "(Double Brood) - You should now have three brood boxes.",
+              "children": [
+                "Box with the queen, mostly empty directly on the hive floor.",
+                "Box with no brood - place this on top of the queen to retain double brood status.",
+                "Box with all the brood - keep this aside for now."
+              ]
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Reassembly",
+          "items": [
+            {
+              "text": "Put the queen excluder on top of the new brood boxes."
+            },
+            {
+              "text": "Add the supers (minimum 2, add extra if more space is required)."
+            },
+            {
+              "text": "Place an additional queen excluder over the supers."
+            },
+            {
+              "text": "The box with all the brood now goes on top of the supers."
+            },
+            {
+              "text": "Fit crown board and roof and the job is done."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Why the method works",
+      "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+      "advantages": [
+        "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
+        "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
+        "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+      ],
+      "followUpTitle": "Follow-up timing",
+      "followUpDayHeader": "Day",
+      "followUpTaskHeader": "Task",
+      "followUp": [
+        {
+          "day": "Day 7-8",
+          "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+        },
+        {
+          "day": "Day 14-15",
+          "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+        },
+        {
+          "day": "Day 21-22",
+          "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+        }
+      ],
+      "prosConsTitle": "Pros and Cons",
+      "prosTitle": "Advantages",
+      "consTitle": "Disadvantages",
+      "pros": [
+        "Works well as a swarm control method.",
+        "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
+        "Comb renewal is simple.",
+        "Good brood combs can be drawn out in the top box.",
+        "The effect is similar to an artificial swarm, but the colony is kept together."
+      ],
+      "cons": [
+        "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
+        "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
+        "There may be heavy lifting.",
+        "Regular inspections are essential.",
+        "You MUST understand the basics."
+      ]
+    },
+    "planner": {
+      "title": "Demaree inspection planner",
+      "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+      "hiveLabel": "Hive",
+      "hivePlaceholder": "Select a hive",
+      "startDateLabel": "Demaree setup date",
+      "startDatePlaceholder": "Pick the setup date",
+      "generate": "Generate checkpoints",
+      "selectedHive": "Selected hive",
+      "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
+      "notesLabel": "Inspection notes",
+      "notesChecklistLabel": "Checklist",
+      "checkpointPrefix": "Demaree checkpoint:",
+      "dayOffset_one": "Day {{count}}",
+      "dayOffset_other": "Day {{count}}",
+      "save": "Save scheduled inspections",
+      "saving": "Saving inspections...",
+      "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
+      "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
+      "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+      "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
+      "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+      "checkpoints": {
+        "setup": {
+          "title": "Initial Demaree setup",
+          "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+          "checklist": [
+            "Confirm the laying queen is in the lower brood box.",
+            "Place the brood and supers in the planned Demaree order.",
+            "Record any details you want visible at the next inspection."
+          ]
+        },
+        "queenCellCheck": {
+          "title": "Queen-cell check",
+          "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+          "checklist": [
+            "Inspect every brood frame above the excluder for queen cells.",
+            "Remove queen cells started during the swarm impulse.",
+            "Confirm the queen still has room and activity below."
+          ]
+        },
+        "secondQueenCellCheck": {
+          "title": "Second queen-cell check",
+          "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+          "checklist": [
+            "Look again for newly started or missed queen cells.",
+            "Check whether brood and stores need to be rebalanced.",
+            "Note whether the colony is settling or still crowding upward."
+          ]
+        },
+        "colonyReview": {
+          "title": "Colony review",
+          "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+          "checklist": [
+            "Assess whether the colony can return to a more normal arrangement.",
+            "Check space, brood pattern, and nectar intake across the stack.",
+            "Schedule any additional inspection you want beyond the standard plan."
+          ]
+        }
+      }
+    },
+    "warnings": {
+      "bannerTitle": "Timing warnings",
+      "lateQueenCellCheck": {
+        "title": "First queen-cell check is later than day 8",
+        "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+      },
+      "unsafeCheckpointSpacing": {
+        "title": "Checkpoint spacing looks risky",
+        "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+      },
+      "illogicalScheduleOrder": {
+        "title": "Checkpoint order is no longer chronological",
+        "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+      }
+    }
+  },
+  "footer": {
+    "privacyPolicy": "Politique de confidentialité"
+  },
+  "marketing": {
+    "toolsIndex": {
+      "items": {
+        "liebefelder": {
+          "title": "Liebefelder Schätzmethode",
+          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+        }
+      }
+    }
+  }
 }

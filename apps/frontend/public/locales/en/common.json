@@ -1167,6 +1167,10 @@
         "swarm": {
           "title": "Swarm Management",
           "body": "Step-by-step Demaree swarm-control workflow with follow-up timing and an inspection planner."
+        },
+        "liebefelder": {
+          "title": "Liebefelder Schätzmethode",
+          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
         }
       }
     }

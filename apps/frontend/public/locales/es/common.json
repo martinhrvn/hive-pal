@@ -1,1 +1,12 @@
-{}
+{
+  "marketing": {
+    "toolsIndex": {
+      "items": {
+        "liebefelder": {
+          "title": "Liebefelder Schätzmethode",
+          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+        }
+      }
+    }
+  }
+}

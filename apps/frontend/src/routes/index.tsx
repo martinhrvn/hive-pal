@@ -168,6 +168,11 @@ const DemareeMethodPage = lazyWithRetry(() =>
     default: m.DemareeMethodPage,
   })),
 );
+const LiebefelderPage = lazyWithRetry(() =>
+  import('@/pages/tools/liebefelder-page').then(m => ({
+    default: m.LiebefelderPage,
+  })),
+);
 
 const HiveScalePage = lazyWithRetry(() =>
   import('@/pages/hivescale/hivescale-page').then(m => ({
@@ -247,6 +252,14 @@ function buildToolsChildren() {
       element: (
         <LazyPage>
           <DemareeMethodPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'liebefelder',
+      element: (
+        <LazyPage>
+          <LiebefelderPage />
         </LazyPage>
       ),
     },

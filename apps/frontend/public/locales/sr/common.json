@@ -1,671 +1,681 @@
 {
-    "actions": {
-        "refreshData": "Освежи податке",
-        "save": "Сачувај",
-        "cancel": "Откажи",
-        "delete": "Обриши",
-        "edit": "Измени",
-        "create": "Креирај",
-        "add": "Додај",
-        "remove": "Уклони",
-        "search": "Претражи",
-        "filter": "Филтрирај",
-        "export": "Извези",
-        "import": "Увези",
-        "submit": "Пошаљи",
-        "back": "Назад",
-        "next": "Даље",
-        "previous": "Претходно",
-        "close": "Затвори",
-        "confirm": "Потврди",
-        "view": "Погледај",
-        "download": "Преузми",
-        "upload": "Отпреми",
-        "refresh": "Освежи",
-        "actions": "Акције",
-        "createNew": "Креирај ново",
-        "navigate": "Навигација",
-        "notifications": "Обавештења",
-        "newHive": "Нова кошница",
-        "language": "Језик",
-        "logout": "Одјава",
-        "newInspection": "Нови преглед",
-        "scheduleInspection": "Закажи преглед",
-        "newQueen": "Нова матица",
-        "recentInspections": "Недавни прегледи"
+  "actions": {
+    "refreshData": "Освежи податке",
+    "save": "Сачувај",
+    "cancel": "Откажи",
+    "delete": "Обриши",
+    "edit": "Измени",
+    "create": "Креирај",
+    "add": "Додај",
+    "remove": "Уклони",
+    "search": "Претражи",
+    "filter": "Филтрирај",
+    "export": "Извези",
+    "import": "Увези",
+    "submit": "Пошаљи",
+    "back": "Назад",
+    "next": "Даље",
+    "previous": "Претходно",
+    "close": "Затвори",
+    "confirm": "Потврди",
+    "view": "Погледај",
+    "download": "Преузми",
+    "upload": "Отпреми",
+    "refresh": "Освежи",
+    "actions": "Акције",
+    "createNew": "Креирај ново",
+    "navigate": "Навигација",
+    "notifications": "Обавештења",
+    "newHive": "Нова кошница",
+    "language": "Језик",
+    "logout": "Одјава",
+    "newInspection": "Нови преглед",
+    "scheduleInspection": "Закажи преглед",
+    "newQueen": "Нова матица",
+    "recentInspections": "Недавни прегледи"
+  },
+  "status": {
+    "active": "Активно",
+    "inactive": "Неактивна",
+    "archived": "Архивирана",
+    "loading": "Учитавање...",
+    "success": "Успешно",
+    "error": "Грешка",
+    "warning": "Упозорење",
+    "info": "Информација",
+    "pending": "На чекању",
+    "completed": "Завршено",
+    "failed": "Није успело"
+  },
+  "navigation": {
+    "home": "Почетна",
+    "dashboard": "Контролна табла",
+    "apiaries": "Пчелињаци",
+    "hives": "Кошнице",
+    "inspections": "Прегледи",
+    "queens": "Матице",
+    "settings": "Подешавања",
+    "admin": "Админ",
+    "users": "Корисници",
+    "feedback": "Повратне информације",
+    "logout": "Одјава",
+    "allApiaries": "Сви пчелињаци",
+    "createApiary": "Креирај пчелињак",
+    "allHives": "Све кошнице",
+    "allInspections": "Сви прегледи",
+    "schedule": "Распоред",
+    "recent": "Недавно",
+    "upcoming": "Предстојеће",
+    "general": "Опште",
+    "harvests": "Приноси",
+    "allHarvests": "Сви приноси",
+    "reports": "Извештаји",
+    "metrics": "Показатељи",
+    "files": "Датотеке",
+    "allQueens": "Све матице",
+    "calendar": "Календар",
+    "equipment": "Опрема",
+    "actions": "Акције",
+    "tools": "Алати",
+    "syrupCalculator": "Калкулатор сирупа",
+    "broodTimeline": "Временска линија легла"
+  },
+  "messages": {
+    "confirmDelete": "Да ли сте сигурни да желите да обришете ову ставку?",
+    "changesSaved": "Измене су успешно сачуване",
+    "errorOccurred": "Дошло је до грешке",
+    "noData": "Нема доступних података",
+    "required": "Ово поље је обавезно",
+    "invalidEmail": "Неисправна имејл адреса",
+    "invalidFormat": "Неисправан формат",
+    "notificationsComingSoon": "Функционалност обавештења ускоро стиже"
+  },
+  "releaseNotes": {
+    "title": "Шта је ново у HivePal-у",
+    "version": "Верзија {{version}}",
+    "released": "Објављено {{date}}",
+    "newVersionAvailable": "Доступна је нова верзија v{{version}}!",
+    "checkLatestFeatures": "Погледајте најновије функције и побољшања.",
+    "whatsNew": "Шта је ново",
+    "dismiss": "Одбаци"
+  },
+  "time": {
+    "today": "Данас",
+    "yesterday": "Јуче",
+    "tomorrow": "Сутра",
+    "week": "Недеља",
+    "month": "Месец",
+    "year": "Година",
+    "date": "Датум",
+    "time": "Време",
+    "days": "Дани",
+    "hours": "Сати",
+    "minutes": "Минути",
+    "seconds": "Секунде"
+  },
+  "weather": {
+    "selectHiveToView": "Изаберите кошницу која припада пчелињаку да бисте видели временску прогнозу",
+    "unableToLoad": "Немогуће учитати податке о времену",
+    "noWeatherData": "Нема доступних података о времену",
+    "currentWeather": "Тренутно време",
+    "feelsLike": "Осећај као {{temperature}}°C",
+    "humidity": "Влажност",
+    "wind": "Ветар",
+    "nextHours": "Следећих 5 сати",
+    "dayForecast": "Седмодневна прогноза",
+    "weatherForecast": "Временска прогноза"
+  },
+  "settings": {
+    "managePreferences": "Управљајте налогом и апликацијом",
+    "generalSettings": "Општа подешавања",
+    "configureLanguageRegional": "Подесите језичка и регионална подешавања",
+    "dateFormat": "Формат датума",
+    "unitsOfMeasurement": "Јединице мере",
+    "metric": "Метрички систем (кг, км, °C)",
+    "imperial": "Империјални систем (фунте, миље, °F)",
+    "displayPreferences": "Подешавања приказа",
+    "customizeAppearance": "Прилагодите изглед апликације",
+    "theme": "Тема",
+    "light": "Светла",
+    "dark": "Тамна",
+    "system": "Системска",
+    "notificationPreferences": "Подешавања обавештења",
+    "chooseNotificationMethod": "Изаберите како желите да будете обавештени о важним догађајима",
+    "emailNotifications": "Имејл обавештења",
+    "receiveEmailUpdates": "Примај обавештења путем е-поште",
+    "pushNotifications": "Ауто обавештења",
+    "receiveBrowserNotifications": "Примај ауто обавештења у прегледачу",
+    "inspectionReminders": "Подсетници за прегледе",
+    "upcomingInspectionsNotify": "Обавештавај ме о предстојећим прегледима",
+    "harvestReminders": "Подсетници за врцање",
+    "harvestSchedulesNotify": "Обавештавај ме о распореду врцања",
+    "accountSettings": "Подешавања налога",
+    "manageAccountInfo": "Управљајте информацијама вашег налога",
+    "name": "Име",
+    "enterName": "Унесите ваше име",
+    "email": "Е-пошта",
+    "enterEmail": "Унесите е-пошту",
+    "password": "Лозинка",
+    "changePassword": "Промените лозинку вашег налога",
+    "saveSettings": "Сачувај подешавања",
+    "preferencesUpdated": "Ваша подешавања су успешно ажурирана.",
+    "saving": "Чување..."
+  },
+  "feedback": {
+    "title": "Пошаљи повратне информације",
+    "description": "Ценимо ваше мишљење! Помозите нам да унапредимо HivePal тако што ћете поделити своје утиске, пријавити грешке или предложити нове функције.",
+    "sendFeedback": "Пошаљи повратне информације",
+    "type": "Тип повратних информација",
+    "selectType": "Изаберите тип повратне информације",
+    "typeBug": "Пријава грешке",
+    "typeSuggestion": "Предлог функције",
+    "typeOther": "Остало",
+    "subject": "Наслов",
+    "subjectPlaceholder": "Кратак сажетак ваше повратне информације",
+    "message": "Порука",
+    "messagePlaceholder": "Молимо вас да пружите детаљне информације о вашој повратној информацији...",
+    "email": "Е-пошта (опционо)",
+    "emailPlaceholder": "pera@peric.com",
+    "emailDescription": "Наведите ваш имејл ако желите да примите одговор",
+    "submit": "Додај повратне информације",
+    "thankYou": "Хвала!",
+    "submittedMessage": "Ваша повратна информација је успешно послата. Ценимо ваш допринос и ускоро ћемо је размотрити.",
+    "submitAnother": "Пошаљи још једну повратну информацију"
+  },
+  "alerts": {
+    "alert": "упозорење",
+    "alerts": "упозорења",
+    "activeAlerts": "Активна упозорења",
+    "activeAlert": "Активно упозорење"
+  },
+  "calendar": {
+    "both": "Оба",
+    "inspections": "Прегледи",
+    "actions": "Акције",
+    "today": "Данас",
+    "noEventsScheduled": "Нема заказаних догађаја",
+    "sevenDayViewTitle": "{{date}} - Преглед 7 дана",
+    "previousWeek": "Претходна недеља",
+    "previousDay": "Претходни дан",
+    "nextDay": "Следећи дан",
+    "nextWeek": "Следећа недеља",
+    "dayHeader": "{{date}}",
+    "noEvents": "Нема догађаја",
+    "overdueInspections": "Прегледи који касне ({{overdueInspectionsSize}})",
+    "viewInspection": "Види преглед",
+    "title": "Календар"
+  },
+  "quickCheck": {
+    "title": "Брза провера",
+    "description": "Ова радња се не може опозвати. Ово ће трајно обрисати ову брзу проверу и њене фотографије.",
+    "deleteTitle": "Обриши брзу проверу?",
+    "deleteDescription": "Ова радња се не може опозвати. Ово ће трајно обрисати ову брзу проверу и њене фотографије.",
+    "deleted": "Брза провера је обрисана",
+    "deleteFailed": "Брисање брзе провере није успело"
+  },
+  "timeline": {
+    "recentActivity": "Недавне активности",
+    "noActivity": "Још увек нема забележених активности",
+    "noActivityApiary": "Још увек нема забележених активности у овом пчелињаку",
+    "noMatchingFilters": "Ниједан догађај не одговара изабраним филтерима",
+    "allEvents": "Сви догађаји",
+    "inspections": "Прегледи",
+    "feeding": "Прихрана",
+    "treatments": "Третмани",
+    "harvests": "Врцања",
+    "notes": "Белешке",
+    "quickChecks": "Брзи прегледи",
+    "other": "Остало",
+    "allTime": "Све време",
+    "lastMonth": "Прошли месец",
+    "last3Months": "Последња 3 месеца",
+    "last6Months": "Последњих 6 месеци",
+    "lastYear": "Последња година",
+    "allHives": "Све кошнице",
+    "clearFilters": "Обриши филтере",
+    "showMore": "Прикажи још {{count}}",
+    "showLess": "Прикажи мање",
+    "notesAvailable": "Белешке доступне",
+    "boxConfiguration": "Конфигурација кутија",
+    "inspection": "Преглед",
+    "overdue": "Касни",
+    "scheduled": "Заказано",
+    "cancelled": "Отказано",
+    "doInspection": "Изврши преглед",
+    "reschedule": "Прераспореди",
+    "inspectHive": "Прегледај {{hiveName}}",
+    "strength": "Снага",
+    "honey": "Мед",
+    "queenSeen": "Матица виђена",
+    "queenNotSeen": "Матица није виђена",
+    "photos": "Фотографије",
+    "documents": "Документи",
+    "fromInspection": "Из прегледа",
+    "maintenance": "Одржавање"
+  },
+  "reports": {
+    "title": "Извештаји",
+    "selectApiary": "Изаберите пчелињак за преглед извештаја",
+    "tabs": {
+      "overview": "Преглед",
+      "charts": "Графикони",
+      "trends": "Трендови"
     },
-    "status": {
-        "active": "Активно",
-        "inactive": "Неактивна",
-        "archived": "Архивирана",
-        "loading": "Учитавање...",
-        "success": "Успешно",
-        "error": "Грешка",
-        "warning": "Упозорење",
-        "info": "Информација",
-        "pending": "На чекању",
-        "completed": "Завршено",
-        "failed": "Није успело"
+    "honeyProduction": "Производња меда",
+    "feedingTotals": "Укупна прихрана",
+    "healthScores": "Оцене здравља",
+    "hiveComparison": "Поређење кошница",
+    "table": {
+      "hiveName": "Кошница",
+      "honey": "Мед",
+      "sugarFed": "Храњено шећером",
+      "overall": "Укупно",
+      "population": "Популација",
+      "stores": "Залихе",
+      "queen": "Краљица",
+      "lastInspection": "Последњи преглед"
     },
-    "navigation": {
-        "home": "Почетна",
-        "dashboard": "Контролна табла",
-        "apiaries": "Пчелињаци",
-        "hives": "Кошнице",
-        "inspections": "Прегледи",
-        "queens": "Матице",
-        "settings": "Подешавања",
-        "admin": "Админ",
-        "users": "Корисници",
-        "feedback": "Повратне информације",
-        "logout": "Одјава",
-        "allApiaries": "Сви пчелињаци",
-        "createApiary": "Креирај пчелињак",
-        "allHives": "Све кошнице",
-        "allInspections": "Сви прегледи",
-        "schedule": "Распоред",
-        "recent": "Недавно",
-        "upcoming": "Предстојеће",
-        "general": "Опште",
-        "harvests": "Приноси",
-        "allHarvests": "Сви приноси",
-        "reports": "Извештаји",
-        "metrics": "Показатељи",
-        "files": "Датотеке",
-        "allQueens": "Све матице",
-        "calendar": "Календар",
-        "equipment": "Опрема",
-        "actions": "Акције",
-        "tools": "Алати",
-        "syrupCalculator": "Калкулатор сирупа",
-        "broodTimeline": "Временска линија легла"
+    "charts": {
+      "hiveScoreTrends": "Трендови оцена кошница"
     },
-    "messages": {
-        "confirmDelete": "Да ли сте сигурни да желите да обришете ову ставку?",
-        "changesSaved": "Измене су успешно сачуване",
-        "errorOccurred": "Дошло је до грешке",
-        "noData": "Нема доступних података",
-        "required": "Ово поље је обавезно",
-        "invalidEmail": "Неисправна имејл адреса",
-        "invalidFormat": "Неисправан формат",
-        "notificationsComingSoon": "Функционалност обавештења ускоро стиже"
+    "periods": {
+      "1month": "1 Месец",
+      "3months": "3 Месеца",
+      "6months": "6 Месеци",
+      "ytd": "Од почетка године",
+      "1year": "1 Година",
+      "all": "Све време"
     },
-    "releaseNotes": {
-        "title": "Шта је ново у HivePal-у",
-        "version": "Верзија {{version}}",
-        "released": "Објављено {{date}}",
-        "newVersionAvailable": "Доступна је нова верзија v{{version}}!",
-        "checkLatestFeatures": "Погледајте најновије функције и побољшања.",
-        "whatsNew": "Шта је ново",
-        "dismiss": "Одбаци"
+    "filters": {
+      "period": "Период"
     },
-    "time": {
-        "today": "Данас",
-        "yesterday": "Јуче",
-        "tomorrow": "Сутра",
-        "week": "Недеља",
-        "month": "Месец",
-        "year": "Година",
-        "date": "Датум",
-        "time": "Време",
-        "days": "Дани",
-        "hours": "Сати",
-        "minutes": "Минути",
-        "seconds": "Секунде"
+    "export": {
+      "title": "Извоз",
+      "csv": "Извези као CSV",
+      "pdf": "Извези као PDF",
+      "success": "Извештај је успешно извезен",
+      "error": "Извоз извештаја није успео"
     },
-    "weather": {
-        "selectHiveToView": "Изаберите кошницу која припада пчелињаку да бисте видели временску прогнозу",
-        "unableToLoad": "Немогуће учитати податке о времену",
-        "noWeatherData": "Нема доступних података о времену",
-        "currentWeather": "Тренутно време",
-        "feelsLike": "Осећај као {{temperature}}°C",
-        "humidity": "Влажност",
-        "wind": "Ветар",
-        "nextHours": "Следећих 5 сати",
-        "dayForecast": "Седмодневна прогноза",
-        "weatherForecast": "Временска прогноза"
-    },
-    "settings": {
-        "managePreferences": "Управљајте налогом и апликацијом",
-        "generalSettings": "Општа подешавања",
-        "configureLanguageRegional": "Подесите језичка и регионална подешавања",
-        "dateFormat": "Формат датума",
-        "unitsOfMeasurement": "Јединице мере",
-        "metric": "Метрички систем (кг, км, °C)",
-        "imperial": "Империјални систем (фунте, миље, °F)",
-        "displayPreferences": "Подешавања приказа",
-        "customizeAppearance": "Прилагодите изглед апликације",
-        "theme": "Тема",
-        "light": "Светла",
-        "dark": "Тамна",
-        "system": "Системска",
-        "notificationPreferences": "Подешавања обавештења",
-        "chooseNotificationMethod": "Изаберите како желите да будете обавештени о важним догађајима",
-        "emailNotifications": "Имејл обавештења",
-        "receiveEmailUpdates": "Примај обавештења путем е-поште",
-        "pushNotifications": "Ауто обавештења",
-        "receiveBrowserNotifications": "Примај ауто обавештења у прегледачу",
-        "inspectionReminders": "Подсетници за прегледе",
-        "upcomingInspectionsNotify": "Обавештавај ме о предстојећим прегледима",
-        "harvestReminders": "Подсетници за врцање",
-        "harvestSchedulesNotify": "Обавештавај ме о распореду врцања",
-        "accountSettings": "Подешавања налога",
-        "manageAccountInfo": "Управљајте информацијама вашег налога",
-        "name": "Име",
-        "enterName": "Унесите ваше име",
-        "email": "Е-пошта",
-        "enterEmail": "Унесите е-пошту",
-        "password": "Лозинка",
-        "changePassword": "Промените лозинку вашег налога",
-        "saveSettings": "Сачувај подешавања",
-        "preferencesUpdated": "Ваша подешавања су успешно ажурирана.",
-        "saving": "Чување..."
-    },
-    "feedback": {
-        "title": "Пошаљи повратне информације",
-        "description": "Ценимо ваше мишљење! Помозите нам да унапредимо HivePal тако што ћете поделити своје утиске, пријавити грешке или предложити нове функције.",
-        "sendFeedback": "Пошаљи повратне информације",
-        "type": "Тип повратних информација",
-        "selectType": "Изаберите тип повратне информације",
-        "typeBug": "Пријава грешке",
-        "typeSuggestion": "Предлог функције",
-        "typeOther": "Остало",
-        "subject": "Наслов",
-        "subjectPlaceholder": "Кратак сажетак ваше повратне информације",
-        "message": "Порука",
-        "messagePlaceholder": "Молимо вас да пружите детаљне информације о вашој повратној информацији...",
-        "email": "Е-пошта (опционо)",
-        "emailPlaceholder": "pera@peric.com",
-        "emailDescription": "Наведите ваш имејл ако желите да примите одговор",
-        "submit": "Додај повратне информације",
-        "thankYou": "Хвала!",
-        "submittedMessage": "Ваша повратна информација је успешно послата. Ценимо ваш допринос и ускоро ћемо је размотрити.",
-        "submitAnother": "Пошаљи још једну повратну информацију"
-    },
-    "alerts": {
-        "alert": "упозорење",
-        "alerts": "упозорења",
-        "activeAlerts": "Активна упозорења",
-        "activeAlert": "Активно упозорење"
-    },
-    "calendar": {
-        "both": "Оба",
-        "inspections": "Прегледи",
-        "actions": "Акције",
-        "today": "Данас",
-        "noEventsScheduled": "Нема заказаних догађаја",
-        "sevenDayViewTitle": "{{date}} - Преглед 7 дана",
-        "previousWeek": "Претходна недеља",
-        "previousDay": "Претходни дан",
-        "nextDay": "Следећи дан",
-        "nextWeek": "Следећа недеља",
-        "dayHeader": "{{date}}",
-        "noEvents": "Нема догађаја",
-        "overdueInspections": "Прегледи који касне ({{overdueInspectionsSize}})",
-        "viewInspection": "Види преглед",
-        "title": "Календар"
-    },
-    "quickCheck": {
-        "title": "Брза провера",
-        "description": "Ова радња се не може опозвати. Ово ће трајно обрисати ову брзу проверу и њене фотографије.",
-        "deleteTitle": "Обриши брзу проверу?",
-        "deleteDescription": "Ова радња се не може опозвати. Ово ће трајно обрисати ову брзу проверу и њене фотографије.",
-        "deleted": "Брза провера је обрисана",
-        "deleteFailed": "Брисање брзе провере није успело"
-    },
-    "timeline": {
-        "recentActivity": "Недавне активности",
-        "noActivity": "Још увек нема забележених активности",
-        "noActivityApiary": "Још увек нема забележених активности у овом пчелињаку",
-        "noMatchingFilters": "Ниједан догађај не одговара изабраним филтерима",
-        "allEvents": "Сви догађаји",
-        "inspections": "Прегледи",
-        "feeding": "Прихрана",
-        "treatments": "Третмани",
-        "harvests": "Врцања",
-        "notes": "Белешке",
-        "quickChecks": "Брзи прегледи",
-        "other": "Остало",
-        "allTime": "Све време",
-        "lastMonth": "Прошли месец",
-        "last3Months": "Последња 3 месеца",
-        "last6Months": "Последњих 6 месеци",
-        "lastYear": "Последња година",
-        "allHives": "Све кошнице",
-        "clearFilters": "Обриши филтере",
-        "showMore": "Прикажи још {{count}}",
-        "showLess": "Прикажи мање",
-        "notesAvailable": "Белешке доступне",
-        "boxConfiguration": "Конфигурација кутија",
-        "inspection": "Преглед",
-        "overdue": "Касни",
-        "scheduled": "Заказано",
-        "cancelled": "Отказано",
-        "doInspection": "Изврши преглед",
-        "reschedule": "Прераспореди",
-        "inspectHive": "Прегледај {{hiveName}}",
-        "strength": "Снага",
-        "honey": "Мед",
-        "queenSeen": "Матица виђена",
-        "queenNotSeen": "Матица није виђена",
-        "photos": "Фотографије",
-        "documents": "Документи",
-        "fromInspection": "Из прегледа",
-        "maintenance": "Одржавање"
-    },
-    "reports": {
-        "title": "Извештаји",
-        "selectApiary": "Изаберите пчелињак за преглед извештаја",
-        "tabs": {
-            "overview": "Преглед",
-            "charts": "Графикони",
-            "trends": "Трендови"
-        },
-        "honeyProduction": "Производња меда",
-        "feedingTotals": "Укупна прихрана",
-        "healthScores": "Оцене здравља",
-        "hiveComparison": "Поређење кошница",
-        "table": {
-            "hiveName": "Кошница",
-            "honey": "Мед",
-            "sugarFed": "Храњено шећером",
-            "overall": "Укупно",
-            "population": "Популација",
-            "stores": "Залихе",
-            "queen": "Краљица",
-            "lastInspection": "Последњи преглед"
-        },
-        "charts": {
-            "hiveScoreTrends": "Трендови оцена кошница"
-        },
-        "periods": {
-            "1month": "1 Месец",
-            "3months": "3 Месеца",
-            "6months": "6 Месеци",
-            "ytd": "Од почетка године",
-            "1year": "1 Година",
-            "all": "Све време"
-        },
-        "filters": {
-            "period": "Период"
-        },
-        "export": {
-            "title": "Извоз",
-            "csv": "Извези као CSV",
-            "pdf": "Извези као PDF",
-            "success": "Извештај је успешно извезен",
-            "error": "Извоз извештаја није успео"
-        },
-        "widget": {
-            "title": "Статистика пчелињака",
-            "viewReports": "Преглед извештаја",
-            "noApiary": "Изаберите пчелињак за преглед статистике"
-        }
-    },
-    "quickAdd": {
-        "title": "Додај унос",
-        "quickCheck": "Брза провера",
-        "action": "Акција",
-        "photo": "Фотографија",
-        "document": "Документ",
-        "inspection": "Преглед"
-    },
-    "photo": {
-        "title": "Додај фотографију",
-        "description": "Отпремите фотографију уз опциони натпис.",
-        "caption": "Натпис",
-        "optional": "опционо",
-        "captionPlaceholder": "Опишите фотографију...",
-        "selectPhoto": "Изаберите фотографију",
-        "upload": "Отпреми фотографију",
-        "uploading": "Отпремање...",
-        "uploadSuccess": "Фотографија је отпремљена",
-        "uploadFailed": "Отпремање фотографије није успело",
-        "deleteTitle": "Обриши фотографију?",
-        "deleteDescription": "Ова радња се не може опозвати. Фотографија ће бити трајно обрисана.",
-        "deleted": "Фотографија је обрисана",
-        "deleteFailed": "Брисање фотографије није успело"
-    },
-    "document": {
-        "title": "Додај документ",
-        "description": "Отпремите PDF или скенирани документ.",
-        "titleField": "Наслов",
-        "titlePlaceholder": "Наслов документа",
-        "notes": "Белешке",
-        "optional": "опционо",
-        "notesPlaceholder": "Додајте белешке о овом документу...",
-        "selectFile": "Изаберите датотеку (PDF, JPEG, PNG)",
-        "upload": "Отпреми документ",
-        "uploading": "Отпремање...",
-        "uploadSuccess": "Документ је отпремљен",
-        "uploadFailed": "Отпремање документа није успело",
-        "deleteTitle": "Обриши документ?",
-        "deleteDescription": "Ова радња се не може опозвати. Документ ће бити трајно обрисан.",
-        "deleted": "Документ је обрисан",
-        "deleteFailed": "Брисање документа није успело"
-    },
-    "files": {
-        "title": "Датотеке",
-        "allFiles": "Све датотеке",
-        "photos": "Фотографије",
-        "documents": "Документи",
-        "search": "Претражи датотеке...",
-        "filterByHive": "Филтрирај по кошници",
-        "filterByType": "Филтрирај по типу",
-        "noFiles": "Још увек нема отпремљених датотека",
-        "name": "Назив",
-        "type": "Тип",
-        "hive": "Кошница",
-        "size": "Величина",
-        "download": "Преузми",
-        "delete": "Избриши"
-    },
-    "swarmManagement": {
-        "backToOverview": "Back to Swarm Management",
-        "eyebrow": "Swarm control guidance",
-        "title": "Swarm Management",
-        "cards": {
-            "available": "Available",
-            "comingSoon": "Coming soon",
-            "placeholderCta": "Not available yet",
-            "demaree": {
-                "title": "Demaree Method",
-                "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
-                "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
-                "cta": "Open guide"
-            },
-            "pagden": {
-                "title": "Pagden split",
-                "description": "Placeholder for a future guide covering the classic artificial swarm split."
-            },
-            "artificialSwarm": {
-                "title": "Artificial swarm",
-                "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
-            }
-        },
-        "aside": {
-            "title": "Choosing a method",
-            "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
-            "points": [
-                "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
-                "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
-                "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
-            ],
-            "criticalTimingTitle": "Critical timing",
-            "criticalTimingLead": "The first follow-up is the point where timing matters most.",
-            "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
-        },
-        "demaree": {
-            "badge": "Reference method",
-            "title": "Demaree Method",
-            "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
-            "overviewTitle": "Method overview",
-            "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
-            "overviewPoints": [
-                "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
-                "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
-                "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
-            ],
-            "prerequisitesTitle": "Prerequisites",
-            "prerequisites": [
-                "Check that the hive is a strong colony with enough bees and brood to justify the method.",
-                "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
-                "Make sure you can find and confidently retain the laying queen in the lower brood box.",
-                "Have a queen excluder ready, with at least two honey supers available to stack above it.",
-                "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
-                "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
-            ],
-            "stepsTitle": "Method Detail",
-            "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
-            "methodDetail": {
-                "preparation": {
-                    "title": "Preparation",
-                    "items": [
-                        {
-                            "text": "Find a spare brood box with foundation or drawn comb.",
-                            "children": [
-                                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
-                            ]
-                        },
-                        {
-                            "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
-                        }
-                    ]
-                },
-                "huntTheQueen": {
-                    "title": "Hunt the Queen",
-                    "items": [
-                        {
-                            "text": "Inspect the old brood box(es) and locate the Queen."
-                        },
-                        {
-                            "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
-                        }
-                    ]
-                },
-                "broodManipulation": {
-                    "title": "Brood Manipulation",
-                    "items": [
-                        {
-                            "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
-                            "children": [
-                                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
-                            ]
-                        },
-                        {
-                            "text": "Make sure to knock down all queen cells.",
-                            "children": [
-                                "With the queen safe you can shake bees off the frames to make sure you find them all."
-                            ]
-                        },
-                        {
-                            "text": "(Double Brood) - You should now have three brood boxes.",
-                            "children": [
-                                "Box with the queen, mostly empty directly on the hive floor.",
-                                "Box with no brood - place this on top of the queen to retain double brood status.",
-                                "Box with all the brood - keep this aside for now."
-                            ]
-                        }
-                    ]
-                },
-                "reassembly": {
-                    "title": "Reassembly",
-                    "items": [
-                        {
-                            "text": "Put the queen excluder on top of the new brood boxes."
-                        },
-                        {
-                            "text": "Add the supers (minimum 2, add extra if more space is required)."
-                        },
-                        {
-                            "text": "Place an additional queen excluder over the supers."
-                        },
-                        {
-                            "text": "The box with all the brood now goes on top of the supers."
-                        },
-                        {
-                            "text": "Fit crown board and roof and the job is done."
-                        }
-                    ]
-                }
-            },
-            "advantagesTitle": "Why the method works",
-            "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
-            "advantages": [
-                "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
-                "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
-                "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
-            ],
-            "followUpTitle": "Follow-up timing",
-            "followUpDayHeader": "Day",
-            "followUpTaskHeader": "Task",
-            "followUp": [
-                {
-                    "day": "Day 7-8",
-                    "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
-                },
-                {
-                    "day": "Day 14-15",
-                    "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
-                },
-                {
-                    "day": "Day 21-22",
-                    "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
-                }
-            ],
-            "prosConsTitle": "Pros and Cons",
-            "prosTitle": "Advantages",
-            "consTitle": "Disadvantages",
-            "pros": [
-                "Works well as a swarm control method.",
-                "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
-                "Comb renewal is simple.",
-                "Good brood combs can be drawn out in the top box.",
-                "The effect is similar to an artificial swarm, but the colony is kept together."
-            ],
-            "cons": [
-                "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
-                "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
-                "There may be heavy lifting.",
-                "Regular inspections are essential.",
-                "You MUST understand the basics."
-            ]
-        },
-        "planner": {
-            "title": "Demaree inspection planner",
-            "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
-            "hiveLabel": "Hive",
-            "hivePlaceholder": "Select a hive",
-            "startDateLabel": "Demaree setup date",
-            "startDatePlaceholder": "Pick the setup date",
-            "generate": "Generate checkpoints",
-            "selectedHive": "Selected hive",
-            "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
-            "notesLabel": "Inspection notes",
-            "notesChecklistLabel": "Checklist",
-            "checkpointPrefix": "Demaree checkpoint:",
-            "dayOffset_one": "Day {{count}}",
-            "dayOffset_other": "Day {{count}}",
-            "save": "Save scheduled inspections",
-            "saving": "Saving inspections...",
-            "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
-            "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
-            "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
-            "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
-            "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
-            "checkpoints": {
-                "setup": {
-                    "title": "Initial Demaree setup",
-                    "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
-                    "checklist": [
-                        "Confirm the laying queen is in the lower brood box.",
-                        "Place the brood and supers in the planned Demaree order.",
-                        "Record any details you want visible at the next inspection."
-                    ]
-                },
-                "queenCellCheck": {
-                    "title": "Queen-cell check",
-                    "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
-                    "checklist": [
-                        "Inspect every brood frame above the excluder for queen cells.",
-                        "Remove queen cells started during the swarm impulse.",
-                        "Confirm the queen still has room and activity below."
-                    ]
-                },
-                "secondQueenCellCheck": {
-                    "title": "Second queen-cell check",
-                    "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
-                    "checklist": [
-                        "Look again for newly started or missed queen cells.",
-                        "Check whether brood and stores need to be rebalanced.",
-                        "Note whether the colony is settling or still crowding upward."
-                    ]
-                },
-                "colonyReview": {
-                    "title": "Colony review",
-                    "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
-                    "checklist": [
-                        "Assess whether the colony can return to a more normal arrangement.",
-                        "Check space, brood pattern, and nectar intake across the stack.",
-                        "Schedule any additional inspection you want beyond the standard plan."
-                    ]
-                }
-            }
-        },
-        "warnings": {
-            "bannerTitle": "Timing warnings",
-            "lateQueenCellCheck": {
-                "title": "First queen-cell check is later than day 8",
-                "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
-            },
-            "unsafeCheckpointSpacing": {
-                "title": "Checkpoint spacing looks risky",
-                "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
-            },
-            "illogicalScheduleOrder": {
-                "title": "Checkpoint order is no longer chronological",
-                "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
-            }
-        }
-    },
-    "footer": {
-        "privacyPolicy": "Politika privatnosti"
-    },
-    "syrupCalculator": {
-        "title": "Калкулатор сирупа",
-        "description": "Израчунајте количине шећера и воде за сируп за храњење",
-        "ratio": "Однос сирупа",
-        "ratioDescription": "Однос шећера и воде (по тежини према запремини)",
-        "thin": "Танки (1:1)",
-        "medium": "Средњи (3:2)",
-        "thick": "Густи (2:1)",
-        "containerSize": "Величина посуде",
-        "containerDescription": "Укупна запремина сирупа за припрему",
-        "customSize": "Прилагођено",
-        "results": "Резултати",
-        "water": "Вода",
-        "sugar": "Шећер",
-        "totalWeight": "Укупна тежина",
-        "instructions": "Упутства",
-        "step1": "Одмерите {{water}} воде",
-        "step2": "Загрејте воду док не постане млака (не кључала)",
-        "step3": "Додајте {{sugar}} белог кристал шећера",
-        "step4": "Мешајте док се шећер потпуно не раствори",
-        "step5": "Оставите сируп да се охлади на собну температуру пре храњења",
-        "tips": "Савети и упутства за употребу",
-        "tip1Title": "Танки сируп (1:1)",
-        "tip1Description": "Најбољи за пролећно храњење за подстицај легла и симулацију тока нектара. Користите када су пчеле потребне за потстицај развоја.",
-        "tip2Title": "Средњи сируп (3:2)",
-        "tip2Description": "Добар сируп за све намене. Ради добро и за пролећну стимулацију и за лакше јесење храњење.",
-        "tip3Title": "Густи сируп (2:1)",
-        "tip3Description": "Најбољи за јесење храњење за накупљање зимских залиха. Пчеле га брже складиште уз мање напора да уклоне вишак воде.",
-        "tip4Title": "Општи савети",
-        "tip4Description": "Увек користите бели кристал шећер — никако браон шећер, меласу или вештачке заслађиваче. Немојте кувати сируп јер се ствара HMF (хидроксиметилфурфурал) који је токсичан за пчеле. Храните увече да смањите пљачкање."
-    },
-    "broodTimeline": {
-        "title": "Временска линија развоја легла",
-        "description": "Истражите фазе развоја матица, раденица и трутова од јајета до одрасле јединке",
-        "beeType": "Врста пчеле",
-        "beeTypeDescription": "Изаберите касту да бисте видели њену временску линију развоја",
-        "queen": "Матица",
-        "worker": "Радилица",
-        "drone": "Трут",
-        "compareAll": "Упореди све",
-        "dateSelector": "Датум почетка",
-        "dateSelectorDescription": "Опционо изаберите када су јаја положена да бисте видели датуме на временској линији",
-        "pickDate": "Изаберите датум",
-        "timeline": "Временска линија развоја",
-        "totalDays": "Укупно: {{days}} дана",
-        "daysUnit": "дана",
-        "stage": {
-            "egg": "Јаје",
-            "larva": "Ларва",
-            "pupa": "Луцка",
-            "adult": "Одрасла јединка"
-        },
-        "days": "Дани {{start}}–{{end}}",
-        "day": "Дан {{day}}",
-        "durationOne": "1 дан",
-        "durationOther": "{{count}} дана"
+    "widget": {
+      "title": "Статистика пчелињака",
+      "viewReports": "Преглед извештаја",
+      "noApiary": "Изаберите пчелињак за преглед статистике"
     }
+  },
+  "quickAdd": {
+    "title": "Додај унос",
+    "quickCheck": "Брза провера",
+    "action": "Акција",
+    "photo": "Фотографија",
+    "document": "Документ",
+    "inspection": "Преглед"
+  },
+  "photo": {
+    "title": "Додај фотографију",
+    "description": "Отпремите фотографију уз опциони натпис.",
+    "caption": "Натпис",
+    "optional": "опционо",
+    "captionPlaceholder": "Опишите фотографију...",
+    "selectPhoto": "Изаберите фотографију",
+    "upload": "Отпреми фотографију",
+    "uploading": "Отпремање...",
+    "uploadSuccess": "Фотографија је отпремљена",
+    "uploadFailed": "Отпремање фотографије није успело",
+    "deleteTitle": "Обриши фотографију?",
+    "deleteDescription": "Ова радња се не може опозвати. Фотографија ће бити трајно обрисана.",
+    "deleted": "Фотографија је обрисана",
+    "deleteFailed": "Брисање фотографије није успело"
+  },
+  "document": {
+    "title": "Додај документ",
+    "description": "Отпремите PDF или скенирани документ.",
+    "titleField": "Наслов",
+    "titlePlaceholder": "Наслов документа",
+    "notes": "Белешке",
+    "optional": "опционо",
+    "notesPlaceholder": "Додајте белешке о овом документу...",
+    "selectFile": "Изаберите датотеку (PDF, JPEG, PNG)",
+    "upload": "Отпреми документ",
+    "uploading": "Отпремање...",
+    "uploadSuccess": "Документ је отпремљен",
+    "uploadFailed": "Отпремање документа није успело",
+    "deleteTitle": "Обриши документ?",
+    "deleteDescription": "Ова радња се не може опозвати. Документ ће бити трајно обрисан.",
+    "deleted": "Документ је обрисан",
+    "deleteFailed": "Брисање документа није успело"
+  },
+  "files": {
+    "title": "Датотеке",
+    "allFiles": "Све датотеке",
+    "photos": "Фотографије",
+    "documents": "Документи",
+    "search": "Претражи датотеке...",
+    "filterByHive": "Филтрирај по кошници",
+    "filterByType": "Филтрирај по типу",
+    "noFiles": "Још увек нема отпремљених датотека",
+    "name": "Назив",
+    "type": "Тип",
+    "hive": "Кошница",
+    "size": "Величина",
+    "download": "Преузми",
+    "delete": "Избриши"
+  },
+  "swarmManagement": {
+    "backToOverview": "Back to Swarm Management",
+    "eyebrow": "Swarm control guidance",
+    "title": "Swarm Management",
+    "cards": {
+      "available": "Available",
+      "comingSoon": "Coming soon",
+      "placeholderCta": "Not available yet",
+      "demaree": {
+        "title": "Demaree Method",
+        "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
+        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+        "cta": "Open guide"
+      },
+      "pagden": {
+        "title": "Pagden split",
+        "description": "Placeholder for a future guide covering the classic artificial swarm split."
+      },
+      "artificialSwarm": {
+        "title": "Artificial swarm",
+        "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+      }
+    },
+    "aside": {
+      "title": "Choosing a method",
+      "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+      "points": [
+        "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
+        "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
+        "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+      ],
+      "criticalTimingTitle": "Critical timing",
+      "criticalTimingLead": "The first follow-up is the point where timing matters most.",
+      "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+    },
+    "demaree": {
+      "badge": "Reference method",
+      "title": "Demaree Method",
+      "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
+      "overviewTitle": "Method overview",
+      "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+      "overviewPoints": [
+        "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
+        "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
+        "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+      ],
+      "prerequisitesTitle": "Prerequisites",
+      "prerequisites": [
+        "Check that the hive is a strong colony with enough bees and brood to justify the method.",
+        "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
+        "Make sure you can find and confidently retain the laying queen in the lower brood box.",
+        "Have a queen excluder ready, with at least two honey supers available to stack above it.",
+        "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
+        "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+      ],
+      "stepsTitle": "Method Detail",
+      "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+      "methodDetail": {
+        "preparation": {
+          "title": "Preparation",
+          "items": [
+            {
+              "text": "Find a spare brood box with foundation or drawn comb.",
+              "children": [
+                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+              ]
+            },
+            {
+              "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+            }
+          ]
+        },
+        "huntTheQueen": {
+          "title": "Hunt the Queen",
+          "items": [
+            {
+              "text": "Inspect the old brood box(es) and locate the Queen."
+            },
+            {
+              "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+            }
+          ]
+        },
+        "broodManipulation": {
+          "title": "Brood Manipulation",
+          "items": [
+            {
+              "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+              "children": [
+                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+              ]
+            },
+            {
+              "text": "Make sure to knock down all queen cells.",
+              "children": [
+                "With the queen safe you can shake bees off the frames to make sure you find them all."
+              ]
+            },
+            {
+              "text": "(Double Brood) - You should now have three brood boxes.",
+              "children": [
+                "Box with the queen, mostly empty directly on the hive floor.",
+                "Box with no brood - place this on top of the queen to retain double brood status.",
+                "Box with all the brood - keep this aside for now."
+              ]
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Reassembly",
+          "items": [
+            {
+              "text": "Put the queen excluder on top of the new brood boxes."
+            },
+            {
+              "text": "Add the supers (minimum 2, add extra if more space is required)."
+            },
+            {
+              "text": "Place an additional queen excluder over the supers."
+            },
+            {
+              "text": "The box with all the brood now goes on top of the supers."
+            },
+            {
+              "text": "Fit crown board and roof and the job is done."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Why the method works",
+      "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+      "advantages": [
+        "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
+        "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
+        "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+      ],
+      "followUpTitle": "Follow-up timing",
+      "followUpDayHeader": "Day",
+      "followUpTaskHeader": "Task",
+      "followUp": [
+        {
+          "day": "Day 7-8",
+          "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+        },
+        {
+          "day": "Day 14-15",
+          "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+        },
+        {
+          "day": "Day 21-22",
+          "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+        }
+      ],
+      "prosConsTitle": "Pros and Cons",
+      "prosTitle": "Advantages",
+      "consTitle": "Disadvantages",
+      "pros": [
+        "Works well as a swarm control method.",
+        "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
+        "Comb renewal is simple.",
+        "Good brood combs can be drawn out in the top box.",
+        "The effect is similar to an artificial swarm, but the colony is kept together."
+      ],
+      "cons": [
+        "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
+        "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
+        "There may be heavy lifting.",
+        "Regular inspections are essential.",
+        "You MUST understand the basics."
+      ]
+    },
+    "planner": {
+      "title": "Demaree inspection planner",
+      "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+      "hiveLabel": "Hive",
+      "hivePlaceholder": "Select a hive",
+      "startDateLabel": "Demaree setup date",
+      "startDatePlaceholder": "Pick the setup date",
+      "generate": "Generate checkpoints",
+      "selectedHive": "Selected hive",
+      "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
+      "notesLabel": "Inspection notes",
+      "notesChecklistLabel": "Checklist",
+      "checkpointPrefix": "Demaree checkpoint:",
+      "dayOffset_one": "Day {{count}}",
+      "dayOffset_other": "Day {{count}}",
+      "save": "Save scheduled inspections",
+      "saving": "Saving inspections...",
+      "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
+      "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
+      "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+      "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
+      "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+      "checkpoints": {
+        "setup": {
+          "title": "Initial Demaree setup",
+          "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+          "checklist": [
+            "Confirm the laying queen is in the lower brood box.",
+            "Place the brood and supers in the planned Demaree order.",
+            "Record any details you want visible at the next inspection."
+          ]
+        },
+        "queenCellCheck": {
+          "title": "Queen-cell check",
+          "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+          "checklist": [
+            "Inspect every brood frame above the excluder for queen cells.",
+            "Remove queen cells started during the swarm impulse.",
+            "Confirm the queen still has room and activity below."
+          ]
+        },
+        "secondQueenCellCheck": {
+          "title": "Second queen-cell check",
+          "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+          "checklist": [
+            "Look again for newly started or missed queen cells.",
+            "Check whether brood and stores need to be rebalanced.",
+            "Note whether the colony is settling or still crowding upward."
+          ]
+        },
+        "colonyReview": {
+          "title": "Colony review",
+          "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+          "checklist": [
+            "Assess whether the colony can return to a more normal arrangement.",
+            "Check space, brood pattern, and nectar intake across the stack.",
+            "Schedule any additional inspection you want beyond the standard plan."
+          ]
+        }
+      }
+    },
+    "warnings": {
+      "bannerTitle": "Timing warnings",
+      "lateQueenCellCheck": {
+        "title": "First queen-cell check is later than day 8",
+        "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+      },
+      "unsafeCheckpointSpacing": {
+        "title": "Checkpoint spacing looks risky",
+        "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+      },
+      "illogicalScheduleOrder": {
+        "title": "Checkpoint order is no longer chronological",
+        "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+      }
+    }
+  },
+  "footer": {
+    "privacyPolicy": "Politika privatnosti"
+  },
+  "syrupCalculator": {
+    "title": "Калкулатор сирупа",
+    "description": "Израчунајте количине шећера и воде за сируп за храњење",
+    "ratio": "Однос сирупа",
+    "ratioDescription": "Однос шећера и воде (по тежини према запремини)",
+    "thin": "Танки (1:1)",
+    "medium": "Средњи (3:2)",
+    "thick": "Густи (2:1)",
+    "containerSize": "Величина посуде",
+    "containerDescription": "Укупна запремина сирупа за припрему",
+    "customSize": "Прилагођено",
+    "results": "Резултати",
+    "water": "Вода",
+    "sugar": "Шећер",
+    "totalWeight": "Укупна тежина",
+    "instructions": "Упутства",
+    "step1": "Одмерите {{water}} воде",
+    "step2": "Загрејте воду док не постане млака (не кључала)",
+    "step3": "Додајте {{sugar}} белог кристал шећера",
+    "step4": "Мешајте док се шећер потпуно не раствори",
+    "step5": "Оставите сируп да се охлади на собну температуру пре храњења",
+    "tips": "Савети и упутства за употребу",
+    "tip1Title": "Танки сируп (1:1)",
+    "tip1Description": "Најбољи за пролећно храњење за подстицај легла и симулацију тока нектара. Користите када су пчеле потребне за потстицај развоја.",
+    "tip2Title": "Средњи сируп (3:2)",
+    "tip2Description": "Добар сируп за све намене. Ради добро и за пролећну стимулацију и за лакше јесење храњење.",
+    "tip3Title": "Густи сируп (2:1)",
+    "tip3Description": "Најбољи за јесење храњење за накупљање зимских залиха. Пчеле га брже складиште уз мање напора да уклоне вишак воде.",
+    "tip4Title": "Општи савети",
+    "tip4Description": "Увек користите бели кристал шећер — никако браон шећер, меласу или вештачке заслађиваче. Немојте кувати сируп јер се ствара HMF (хидроксиметилфурфурал) који је токсичан за пчеле. Храните увече да смањите пљачкање."
+  },
+  "broodTimeline": {
+    "title": "Временска линија развоја легла",
+    "description": "Истражите фазе развоја матица, раденица и трутова од јајета до одрасле јединке",
+    "beeType": "Врста пчеле",
+    "beeTypeDescription": "Изаберите касту да бисте видели њену временску линију развоја",
+    "queen": "Матица",
+    "worker": "Радилица",
+    "drone": "Трут",
+    "compareAll": "Упореди све",
+    "dateSelector": "Датум почетка",
+    "dateSelectorDescription": "Опционо изаберите када су јаја положена да бисте видели датуме на временској линији",
+    "pickDate": "Изаберите датум",
+    "timeline": "Временска линија развоја",
+    "totalDays": "Укупно: {{days}} дана",
+    "daysUnit": "дана",
+    "stage": {
+      "egg": "Јаје",
+      "larva": "Ларва",
+      "pupa": "Луцка",
+      "adult": "Одрасла јединка"
+    },
+    "days": "Дани {{start}}–{{end}}",
+    "day": "Дан {{day}}",
+    "durationOne": "1 дан",
+    "durationOther": "{{count}} дана"
+  },
+  "marketing": {
+    "toolsIndex": {
+      "items": {
+        "liebefelder": {
+          "title": "Liebefelder Schätzmethode",
+          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+        }
+      }
+    }
+  }
 }
