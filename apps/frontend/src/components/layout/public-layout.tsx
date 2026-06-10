@@ -17,7 +17,7 @@ export const PublicLayout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <Link to={localize('/')} className="flex items-center">
-              <div className="text-2xl font-bold text-amber-600">🐝</div>
+              <img className="w-10" src="/hive-pal-logo.png" alt="Hive Pal logo" />
               <h1 className="ml-2 text-xl font-semibold text-gray-900">
                 Hive Pal
               </h1>
@@ -69,7 +69,7 @@ export const PublicLayout = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center mb-3">
-                <div className="text-2xl font-bold text-amber-400">🐝</div>
+                <img className="w-10" src="/hive-pal-logo.png" alt="Hive Pal logo" />
                 <span className="ml-2 text-lg font-semibold">Hive Pal</span>
               </div>
               <p className="text-gray-400 text-sm leading-6">
