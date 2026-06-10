@@ -27,20 +27,50 @@ import {
   Save,
   Loader2,
   Database,
+  Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePreferences } from '@/api/hooks/useUserPreferences';
+import { useDeleteAccount } from '@/api/hooks/useDeleteAccount';
 import { useTheme } from '@/context/use-theme';
+import { useAuth } from '@/context/auth-context/use-auth';
 import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { PasskeysCard } from '@/components/passkeys-card';
+import { DeleteAccountDialog } from '@/components/common/delete-account-dialog';
 
 export const UserSettingsPage = () => {
   const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
   const { preferences, updatePreferences } = usePreferences();
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const deleteAccount = useDeleteAccount();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount.mutateAsync();
+      toast.success(
+        t('settings.accountDeleted', {
+          defaultValue: 'Your account has been deleted.',
+        }),
+      );
+      try {
+        await logout();
+      } catch {
+        // Session is already gone server-side; ensure we still leave the app.
+        window.location.href = '/login';
+      }
+    } catch {
+      toast.error(
+        t('settings.deleteAccountFailed', {
+          defaultValue: 'Failed to delete account. Please try again.',
+        }),
+      );
+    }
+  };
 
   const [settings, setSettings] = useState<Omit<UserPreferences, 'theme'>>({
     language: normalizeLanguageCode(i18n.language || 'en'),
@@ -381,7 +411,57 @@ export const UserSettingsPage = () => {
               : t('settings.saveSettings')}
           </Button>
         </div>
+
+        {/* Danger Zone */}
+        <Card className="border-destructive/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              {t('settings.dangerZone', { defaultValue: 'Danger Zone' })}
+            </CardTitle>
+            <CardDescription>
+              {t('settings.dangerZoneDescription', {
+                defaultValue: 'Irreversible actions for your account.',
+              })}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-medium">
+                  {t('settings.deleteAccount', {
+                    defaultValue: 'Delete account',
+                  })}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {t('settings.deleteAccountDescription', {
+                    defaultValue:
+                      'Permanently delete your account and all your apiaries, hives, inspections, photos, and other data. This cannot be undone. Export your data first if you want to keep a copy.',
+                  })}
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                className="gap-2"
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+                {t('settings.deleteAccount', {
+                  defaultValue: 'Delete account',
+                })}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      <DeleteAccountDialog
+        open={deleteOpen}
+        onOpenChange={open => !deleteAccount.isPending && setDeleteOpen(open)}
+        onConfirm={handleDeleteAccount}
+        isPending={deleteAccount.isPending}
+        email={user?.email ?? ''}
+      />
     </div>
   );
 };

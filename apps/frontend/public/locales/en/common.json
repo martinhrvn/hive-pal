@@ -175,7 +175,20 @@
     "passkeyDeleteFailed": "Failed to delete passkey",
     "saveSettings": "Save Settings",
     "preferencesUpdated": "Your preferences have been updated successfully.",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "dangerZone": "Danger Zone",
+    "dangerZoneDescription": "Irreversible actions for your account.",
+    "deleteAccount": "Delete account",
+    "deleteAccountDescription": "Permanently delete your account and all your apiaries, hives, inspections, photos, and other data. This cannot be undone. Export your data first if you want to keep a copy.",
+    "deleteAccountConfirmTitle": "Delete your account?",
+    "deleteAccountConfirmDescription": "This permanently deletes your account and all data you own. Apiaries shared with you by others are unaffected, and content you contributed to others' apiaries is kept but anonymized. This action cannot be undone.",
+    "deleteAccountExportReminder": "Want to keep a copy? Export your data before deleting.",
+    "deleteAccountExportLink": "Export my data",
+    "deleteAccountTypeEmail": "Type your email address {{email}} to confirm:",
+    "deleteAccountButton": "Delete my account",
+    "deleteAccountDeleting": "Deleting account...",
+    "accountDeleted": "Your account has been deleted.",
+    "deleteAccountFailed": "Failed to delete account. Please try again."
   },
   "feedback": {
     "title": "Send Feedback",
