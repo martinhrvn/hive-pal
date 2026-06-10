@@ -4,6 +4,7 @@ import { EnvController } from './env.controller';
 import { BetterAuthModule } from './auth/better-auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppService } from './app.service';
@@ -55,6 +56,12 @@ import { AccountTransferModule } from './account-transfer/account-transfer.modul
     SentryModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
+    // Single app-wide scheduler. Must be registered exactly once — the
+    // orchestrator discovers every @Cron provider across all modules via
+    // DiscoveryService. Registering forRoot() in multiple feature modules
+    // spins up multiple orchestrators and fires every cron once per
+    // registration (the cause of jobs running 4×).
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
       exclude: ['/api{/*path}'],
