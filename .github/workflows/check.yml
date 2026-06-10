@@ -80,6 +80,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+      - name: Run typecheck
+        run: npx turbo typecheck --filter=frontend
       - name: Run build
         run: npx turbo build --filter=frontend
       - name: Run linter
