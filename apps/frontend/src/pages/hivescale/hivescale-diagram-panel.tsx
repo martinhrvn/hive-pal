@@ -598,8 +598,13 @@ interface MarkerLabelProps {
   viewBox?: { x?: number; y?: number };
 }
 
+// Vertical spacing between icons that share the same timestamp, so multiple
+// markers (e.g. an inspection plus its actions) stack instead of overlapping.
+const MARKER_STACK_SPACING = 16;
+
 const renderMarkerLabel = (
   marker: ChartMarker,
+  stackIndex: number,
   onEnter: (marker: ChartMarker, e: MouseEvent<SVGElement>) => void,
   onLeave: () => void,
   props: MarkerLabelProps,
@@ -608,7 +613,7 @@ const renderMarkerLabel = (
   return (
     <g
       transform={`translate(${props.viewBox?.x ?? 0},${
-        (props.viewBox?.y ?? 0) - 20
+        (props.viewBox?.y ?? 0) - 20 + stackIndex * MARKER_STACK_SPACING
       })`}
       onMouseEnter={e => onEnter(marker, e)}
       onMouseLeave={onLeave}
@@ -627,11 +632,13 @@ const renderMarkerLabel = (
 // finds it and the marker (and its icon label) is silently dropped.
 const renderMarkerReferenceLine = ({
   marker,
+  stackIndex,
   yAxisId,
   onEnter,
   onLeave,
 }: {
   marker: ChartMarker;
+  stackIndex: number;
   yAxisId: SeriesAxis;
   onEnter: (marker: ChartMarker, e: MouseEvent<SVGElement>) => void;
   onLeave: () => void;
@@ -643,7 +650,7 @@ const renderMarkerReferenceLine = ({
     stroke="var(--border)"
     strokeDasharray="4 2"
     label={(props: MarkerLabelProps) =>
-      renderMarkerLabel(marker, onEnter, onLeave, props)
+      renderMarkerLabel(marker, stackIndex, onEnter, onLeave, props)
     }
   />
 );
@@ -1031,7 +1038,7 @@ export const HiveScaleDiagramPanel = ({
   const markers = useMemo(() => {
     const hiveList = hives ?? [];
     const mappedHiveIds = mappedHives.map(hive => hive.id);
-    return [
+    const sorted = [
       ...buildInspectionMarkers(inspections, hiveList, mappedHiveIds, t),
       ...buildBoxAddedMarkers(
         hiveList,
@@ -1041,6 +1048,15 @@ export const HiveScaleDiagramPanel = ({
         dateRange.endAt,
       ),
     ].sort((a, b) => a.timestamp - b.timestamp);
+    // Markers that share a timestamp (e.g. an inspection plus its actions) would
+    // otherwise draw their icons on top of each other. Assign each one a stack
+    // index within its timestamp group so they can be offset vertically.
+    const stackCountByTimestamp = new Map<number, number>();
+    return sorted.map(marker => {
+      const stackIndex = stackCountByTimestamp.get(marker.timestamp) ?? 0;
+      stackCountByTimestamp.set(marker.timestamp, stackIndex + 1);
+      return { marker, stackIndex };
+    });
   }, [dateRange.endAt, dateRange.startAt, hives, inspections, mappedHives, t]);
 
   const toggleSeries = (key: SeriesKey) => {
@@ -1359,9 +1375,10 @@ export const HiveScaleDiagramPanel = ({
                   formatter={(value, name) => [value, name]}
                 />
                 <Legend />
-                {markers.map(marker =>
+                {markers.map(({ marker, stackIndex }) =>
                   renderMarkerReferenceLine({
                     marker,
+                    stackIndex,
                     yAxisId: activeSeries[0]?.axis ?? 'weight',
                     onEnter: handleMarkerMouseEnter,
                     onLeave: hideMarkerTooltip,
