@@ -619,7 +619,13 @@ const renderMarkerLabel = (
   );
 };
 
-const MarkerReferenceLine = ({
+// NOTE: This must be a plain function that returns a <ReferenceLine> element,
+// NOT a React component rendered as <MarkerReferenceLine />. Recharts discovers
+// reference lines by walking its children and matching them against the
+// ReferenceLine type so it can inject the axis scale maps. A custom wrapper
+// component's element type is the wrapper, not ReferenceLine, so recharts never
+// finds it and the marker (and its icon label) is silently dropped.
+const renderMarkerReferenceLine = ({
   marker,
   yAxisId,
   onEnter,
@@ -631,6 +637,7 @@ const MarkerReferenceLine = ({
   onLeave: () => void;
 }) => (
   <ReferenceLine
+    key={marker.id}
     x={marker.timestamp}
     yAxisId={yAxisId}
     stroke="var(--border)"
@@ -1352,15 +1359,14 @@ export const HiveScaleDiagramPanel = ({
                   formatter={(value, name) => [value, name]}
                 />
                 <Legend />
-                {markers.map(marker => (
-                  <MarkerReferenceLine
-                    key={marker.id}
-                    marker={marker}
-                    yAxisId={activeSeries[0]?.axis ?? 'weight'}
-                    onEnter={handleMarkerMouseEnter}
-                    onLeave={hideMarkerTooltip}
-                  />
-                ))}
+                {markers.map(marker =>
+                  renderMarkerReferenceLine({
+                    marker,
+                    yAxisId: activeSeries[0]?.axis ?? 'weight',
+                    onEnter: handleMarkerMouseEnter,
+                    onLeave: hideMarkerTooltip,
+                  }),
+                )}
                 {activeSeries.map(s => (
                   <Line
                     key={s.key}
