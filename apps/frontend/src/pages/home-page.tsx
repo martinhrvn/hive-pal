@@ -26,8 +26,10 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useApiaries, useHives } from '@/api/hooks';
+import { useApiaries, useHives, useTodos } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
+import { useApiaryPermission } from '@/hooks/useApiaryPermission';
+import { TodoQuickAdd, TodoList } from '@/pages/todo';
 import { useOnboardingNudges } from '@/hooks/use-onboarding-nudges';
 import { useLocalStorageBoolean } from '@/hooks/use-local-storage-boolean';
 import { cn } from '@/lib/utils';
@@ -95,6 +97,23 @@ const EmptyStateCard = ({
     </CardContent>
   </Card>
 );
+
+const DashboardTodos = () => {
+  const { t } = useTranslation('todo');
+  const { data } = useTodos();
+  const { canEdit } = useApiaryPermission();
+
+  const openTodos = (data ?? []).filter(todo => !todo.completed);
+
+  return (
+    <CollapsibleSection storageKey="home-section:todos" title={t('list.title')}>
+      <div className="space-y-3">
+        {canEdit && <TodoQuickAdd />}
+        <TodoList todos={openTodos} emptyMessage={t('list.emptyOpen')} />
+      </div>
+    </CollapsibleSection>
+  );
+};
 
 export const HomePage = () => {
   const { t } = useTranslation('onboarding');
@@ -245,6 +264,7 @@ export const HomePage = () => {
               />
             )}
           </CollapsibleSection>
+          <DashboardTodos />
           <ApiaryTimeline />
         </div>
       </MainContent>

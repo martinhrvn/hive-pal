@@ -157,6 +157,7 @@ model Apiary {
   settings              Json?
   apiKeys               ApiaryApiKey[]
   assistantThreads      AssistantThread[]
+  todos                 Todo[]
 
   // Create index for quick lookup by userId - used in authorization checks
   @@index([userId])
@@ -191,6 +192,7 @@ model Hive {
   featurePhoto         Photo?       @relation("HiveFeaturePhoto", fields: [featurePhotoId], references: [id], onDelete: SetNull)
   measurements         Measurement[]
   assistantThreads     AssistantThread[]
+  todos                Todo[]
 
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
@@ -211,6 +213,23 @@ model Measurement {
 
   @@index([hiveId, recordedAt])
   @@index([hiveId, metric, recordedAt])
+}
+
+model Todo {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  completed   Boolean   @default(false)
+  apiaryId    String
+  apiary      Apiary    @relation(fields: [apiaryId], references: [id], onDelete: Cascade)
+  hiveId      String?
+  hive        Hive?     @relation(fields: [hiveId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([apiaryId])
+  @@index([hiveId])
 }
 
 model ApiaryApiKey {

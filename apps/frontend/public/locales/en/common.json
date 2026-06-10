@@ -7,6 +7,8 @@
     "inspections": "Inspections",
     "queens": "Queens",
     "allQueens": "All Queens",
+    "todos": "Todos",
+    "allTodos": "All Todos",
     "settings": "Settings",
     "admin": "Admin",
     "users": "Users",

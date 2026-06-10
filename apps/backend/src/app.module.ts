@@ -11,6 +11,7 @@ import { HiveModule } from './hives/hive.module';
 import { InspectionsModule } from './inspections/inspections.module';
 import { BatchInspectionsModule } from './batch-inspections/batch-inspections.module';
 import { QueensModule } from './queens/queens.module';
+import { TodosModule } from './todos/todos.module';
 import { MetricsService } from './metrics/metrics.service';
 import { UsersModule } from './users/users.module';
 import { ApiariesModule } from './apiaries/apiaries.module';
@@ -65,6 +66,7 @@ import { AccountTransferModule } from './account-transfer/account-transfer.modul
     InspectionsModule,
     BatchInspectionsModule,
     QueensModule,
+    TodosModule,
     UsersModule,
     ApiariesModule,
     LoggerModule,
