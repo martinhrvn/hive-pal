@@ -65,8 +65,7 @@ export class TodosController {
     return this.todosService.findAll(
       { apiaryId: req.apiaryId, userId: req.user.id },
       {
-        completed:
-          completed === undefined ? undefined : completed === 'true',
+        completed: completed === undefined ? undefined : completed === 'true',
         hiveId,
       },
     );

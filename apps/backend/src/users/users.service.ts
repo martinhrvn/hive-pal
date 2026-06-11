@@ -122,12 +122,17 @@ export class UsersService {
     });
     const ownedApiaryIds = ownedApiaries.map((a) => a.id);
 
-    const storageKeys = await this.collectOwnedStorageKeys(userId, ownedApiaryIds);
+    const storageKeys = await this.collectOwnedStorageKeys(
+      userId,
+      ownedApiaryIds,
+    );
     await this.deleteStorageObjects(storageKeys, userId);
 
     // AccountTransferJob has no FK to User, so it does not cascade — remove it
     // explicitly (its storage artifacts were gathered above).
-    await this.prismaService.accountTransferJob.deleteMany({ where: { userId } });
+    await this.prismaService.accountTransferJob.deleteMany({
+      where: { userId },
+    });
 
     // Single delete cascades all owned data and auth records (sessions,
     // accounts, passkeys, equipment, memberships, ...) and nulls out the
