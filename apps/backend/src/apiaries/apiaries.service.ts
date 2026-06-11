@@ -3,6 +3,7 @@ import { Prisma } from '@/prisma/client';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileUploadService } from '../storage/file-upload.service';
+import { PrometheusService } from '../health/prometheus/prometheus.service';
 import {
   ApiaryResponse,
   ApiaryListResponse,
@@ -18,6 +19,7 @@ export class ApiariesService {
     private prisma: PrismaService,
     private logger: CustomLoggerService,
     private fileUpload: FileUploadService,
+    private prometheus: PrometheusService,
   ) {
     this.logger.setContext('ApiariesService');
   }
@@ -108,6 +110,7 @@ export class ApiariesService {
     });
 
     this.logger.log(`Apiary created with ID: ${apiary.id}`);
+    this.prometheus.incrementApiariesCreated();
     return this.mapApiaryToResponse(apiary, userId);
   }
 

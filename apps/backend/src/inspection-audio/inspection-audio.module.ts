@@ -1,7 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ScheduleModule } from '@nestjs/schedule';
 import { InspectionAudioController } from './inspection-audio.controller';
 import { ApiaryAudioController } from './apiary-audio.controller';
 import { InspectionAudioService } from './inspection-audio.service';
@@ -13,7 +12,6 @@ import { InspectionsModule } from '../inspections/inspections.module';
 @Module({
   imports: [
     LoggerModule,
-    ScheduleModule.forRoot(),
     forwardRef(() => InspectionsModule),
     MulterModule.registerAsync({
       imports: [ConfigModule],

@@ -5,6 +5,10 @@ services:
       - '80:3000'
     environment:
       NODE_ENV: production
+      # Prometheus metrics port — served by a standalone internal server and
+      # deliberately NOT published under `ports:`, so it is reachable only on
+      # the Docker network, never from the internet.
+      METRICS_PORT: 9100
       ADMIN_EMAIL: '${ADMIN_EMAIL:-admin@example.com}'
       ADMIN_PASSWORD: '${ADMIN_PASSWORD:-password}'
       DATABASE_URL: '${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper}'
