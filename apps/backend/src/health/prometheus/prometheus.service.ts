@@ -136,23 +136,45 @@ export class PrometheusService {
       this.prisma.apiary.count(),
     );
 
-    this.registerStatusGauge('hivepal_hives', 'Current number of hives by status', () =>
-      this.prisma.hive.groupBy({ by: ['status'], _count: { _all: true } }),
+    this.registerStatusGauge(
+      'hivepal_hives',
+      'Current number of hives by status',
+      () => this.collectHiveStatusRows(),
     );
     this.registerStatusGauge(
       'hivepal_queens',
       'Current number of queens by status',
-      () => this.prisma.queen.groupBy({ by: ['status'], _count: { _all: true } }),
+      () => this.collectQueenStatusRows(),
     );
     this.registerStatusGauge(
       'hivepal_inspections',
       'Current number of inspections by status',
-      () =>
-        this.prisma.inspection.groupBy({
-          by: ['status'],
-          _count: { _all: true },
-        }),
+      () => this.collectInspectionStatusRows(),
     );
+  }
+
+  private async collectHiveStatusRows(): Promise<GroupedCountRow[]> {
+    const rows = await this.prisma.hive.groupBy({
+      by: ['status'],
+      _count: { _all: true },
+    });
+    return rows;
+  }
+
+  private async collectQueenStatusRows(): Promise<GroupedCountRow[]> {
+    const rows = await this.prisma.queen.groupBy({
+      by: ['status'],
+      _count: { _all: true },
+    });
+    return rows;
+  }
+
+  private async collectInspectionStatusRows(): Promise<GroupedCountRow[]> {
+    const rows = await this.prisma.inspection.groupBy({
+      by: ['status'],
+      _count: { _all: true },
+    });
+    return rows;
   }
 
   private registerCountGauge(
