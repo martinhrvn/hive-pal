@@ -320,8 +320,7 @@ describe('Safe JSON Parsing - Integration Tests for Backend Call Sites', () => {
       );
 
       expect(result).toBeNull();
-      const errorCall = (mockLogger.error as Mock).mock
-        .calls[0] as unknown[];
+      const errorCall = (mockLogger.error as Mock).mock.calls[0] as unknown[];
       const metadata = errorCall[1] as Record<string, unknown>;
       expect(metadata.snippet).toHaveLength(100);
       expect(metadata.snippet).toBe(longInvalidJson.substring(0, 100));

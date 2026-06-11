@@ -8,7 +8,7 @@
   ],
   "tasks": {
     "typecheck": {
-      "dependsOn": ["^prisma:generate"],
+      "dependsOn": ["^build", "^prisma:generate"],
       "outputs": [],
       "cache": false
     },

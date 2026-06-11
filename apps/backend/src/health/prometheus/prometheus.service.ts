@@ -96,16 +96,16 @@ export class PrometheusService {
    * previous value.
    */
   private registerBusinessGauges(): void {
-    const self = this;
+    const { prisma, logger } = this;
 
     new Gauge({
       name: 'hivepal_users',
       help: 'Current number of registered users',
       async collect() {
         try {
-          this.set(await self.prisma.user.count());
+          this.set(await prisma.user.count());
         } catch (err) {
-          self.logger.warn(`Failed to collect hivepal_users: ${String(err)}`);
+          logger.warn(`Failed to collect hivepal_users: ${String(err)}`);
         }
       },
     });
@@ -115,11 +115,9 @@ export class PrometheusService {
       help: 'Current number of apiaries',
       async collect() {
         try {
-          this.set(await self.prisma.apiary.count());
+          this.set(await prisma.apiary.count());
         } catch (err) {
-          self.logger.warn(
-            `Failed to collect hivepal_apiaries: ${String(err)}`,
-          );
+          logger.warn(`Failed to collect hivepal_apiaries: ${String(err)}`);
         }
       },
     });
@@ -130,7 +128,7 @@ export class PrometheusService {
       labelNames: ['status'],
       async collect() {
         try {
-          const rows = await self.prisma.hive.groupBy({
+          const rows = await prisma.hive.groupBy({
             by: ['status'],
             _count: { _all: true },
           });
@@ -139,7 +137,7 @@ export class PrometheusService {
             this.set({ status: row.status }, row._count._all);
           }
         } catch (err) {
-          self.logger.warn(`Failed to collect hivepal_hives: ${String(err)}`);
+          logger.warn(`Failed to collect hivepal_hives: ${String(err)}`);
         }
       },
     });
@@ -150,7 +148,7 @@ export class PrometheusService {
       labelNames: ['status'],
       async collect() {
         try {
-          const rows = await self.prisma.queen.groupBy({
+          const rows = await prisma.queen.groupBy({
             by: ['status'],
             _count: { _all: true },
           });
@@ -159,7 +157,7 @@ export class PrometheusService {
             this.set({ status: row.status }, row._count._all);
           }
         } catch (err) {
-          self.logger.warn(`Failed to collect hivepal_queens: ${String(err)}`);
+          logger.warn(`Failed to collect hivepal_queens: ${String(err)}`);
         }
       },
     });
@@ -170,7 +168,7 @@ export class PrometheusService {
       labelNames: ['status'],
       async collect() {
         try {
-          const rows = await self.prisma.inspection.groupBy({
+          const rows = await prisma.inspection.groupBy({
             by: ['status'],
             _count: { _all: true },
           });
@@ -179,9 +177,7 @@ export class PrometheusService {
             this.set({ status: row.status }, row._count._all);
           }
         } catch (err) {
-          self.logger.warn(
-            `Failed to collect hivepal_inspections: ${String(err)}`,
-          );
+          logger.warn(`Failed to collect hivepal_inspections: ${String(err)}`);
         }
       },
     });
