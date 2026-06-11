@@ -26,6 +26,7 @@ import {
   HiveScaleMeasurementQuery,
   HiveScaleService,
   HiveScaleShareDeviceDto,
+  HiveScaleTempCompensationFitDto,
 } from './hivescale.service';
 
 // SD backup uploads are fully buffered in memory (file.buffer), so cap the
@@ -94,6 +95,19 @@ export class HiveScaleController {
     @Body() payload: HiveScaleConfigPatchDto,
   ) {
     return this.hiveScaleService.updateDeviceConfig(
+      this.extractToken(req),
+      deviceId,
+      payload,
+    );
+  }
+
+  @Post('devices/:deviceId/temp-compensation/fit')
+  fitTempCompensation(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @Body() payload: HiveScaleTempCompensationFitDto,
+  ) {
+    return this.hiveScaleService.fitTempCompensation(
       this.extractToken(req),
       deviceId,
       payload,

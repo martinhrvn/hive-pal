@@ -41,6 +41,8 @@ i18n
       'onboarding',
       'privacy',
       'todo',
+      'hivescale',
+      'ai',
     ],
     defaultNS: 'common',
   });

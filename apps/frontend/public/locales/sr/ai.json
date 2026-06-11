@@ -1,0 +1,38 @@
+{
+  "badge": {
+    "label": "AI"
+  },
+  "banner": {
+    "title": "AI suggestions available",
+    "pending_one": "{{count}} pending suggestion",
+    "pending_other": "{{count}} pending suggestions",
+    "conflicts_one": "{{count}} conflict",
+    "conflicts_other": "{{count}} conflicts",
+    "summary": "{{pending}}.",
+    "summaryWithConflicts": "{{pending}}, {{conflicts}}.",
+    "acceptAllSafe": "Accept all safe",
+    "reviewConflicts": "Review conflicts",
+    "dismissAll": "Dismiss all"
+  },
+  "field": {
+    "conflict": "AI suggestion conflicts with existing value",
+    "available": "AI suggestion available",
+    "accept": "Accept",
+    "dismiss": "Dismiss"
+  },
+  "preview": {
+    "conflictNote": "Contains values that would overwrite existing content",
+    "contentNote": "Contains AI-suggested content",
+    "review": "Review",
+    "hidePreview": "Hide preview",
+    "current": "Current",
+    "ai": "AI",
+    "empty": "Empty",
+    "accept": "Accept",
+    "dismiss": "Dismiss"
+  },
+  "suggestion": {
+    "conflict": "Conflicts with existing value",
+    "willFill": "Will fill this field"
+  }
+}

@@ -22,6 +22,12 @@ export interface HiveScaleMeasurement {
   received_at: string;
   scale_1_weight_kg: number | null;
   scale_2_weight_kg: number | null;
+  // Temperature-compensated weights from the HiveScale backend. When
+  // compensation is disabled these equal the raw weights and
+  // tempco_applied is false, so they can be read unconditionally.
+  scale_1_weight_kg_compensated?: number | null;
+  scale_2_weight_kg_compensated?: number | null;
+  tempco_applied?: boolean | null;
   hive_1_temp_c: number | null;
   hive_2_temp_c: number | null;
   ambient_temp_c: number | null;
@@ -60,11 +66,11 @@ export interface HiveScaleMeasurement {
   mic_right_peak_dbfs: number | null;
   mic_right_rms_normalized: number | null;
   // FFT band energy per channel (dBFS, arduinoFFT)
-  mic_left_band_sub_bass_dbfs: number | null;   //   50–150 Hz
-  mic_left_band_hum_dbfs: number | null;         // 150–300 Hz  (colony hum ~200 Hz)
-  mic_left_band_piping_dbfs: number | null;      // 300–550 Hz  (queen piping)
-  mic_left_band_stress_dbfs: number | null;      // 550–1500 Hz (agitated / robbing)
-  mic_left_band_high_dbfs: number | null;        // 1500–3000 Hz (harmonic overtones)
+  mic_left_band_sub_bass_dbfs: number | null; //   50–150 Hz
+  mic_left_band_hum_dbfs: number | null; // 150–300 Hz  (colony hum ~200 Hz)
+  mic_left_band_piping_dbfs: number | null; // 300–550 Hz  (queen piping)
+  mic_left_band_stress_dbfs: number | null; // 550–1500 Hz (agitated / robbing)
+  mic_left_band_high_dbfs: number | null; // 1500–3000 Hz (harmonic overtones)
   mic_right_band_sub_bass_dbfs: number | null;
   mic_right_band_hum_dbfs: number | null;
   mic_right_band_piping_dbfs: number | null;
@@ -102,6 +108,8 @@ export interface HiveScaleMeasurement {
   bee_counter_2_latch_succeeded: boolean | null;
 }
 
+export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';
+
 export interface HiveScaleDeviceConfig {
   device_id: string;
   send_interval_seconds: number;
@@ -110,6 +118,12 @@ export interface HiveScaleDeviceConfig {
   scale2_offset: number;
   scale2_factor: number;
   config_version: number;
+  // Load-cell temperature compensation (corrected in the HiveScale backend).
+  tempco_enabled: boolean;
+  tempco_source: HiveScaleTempcoSource;
+  tempco_ref_temp_c: number;
+  scale1_tempco_kg_per_c: number;
+  scale2_tempco_kg_per_c: number;
 }
 
 export interface ClaimHiveScaleDeviceInput {
@@ -125,6 +139,36 @@ export interface HiveScaleConfigPatch {
   scale1_factor?: number;
   scale2_offset?: number;
   scale2_factor?: number;
+  tempco_enabled?: boolean;
+  tempco_source?: HiveScaleTempcoSource;
+  tempco_ref_temp_c?: number;
+  scale1_tempco_kg_per_c?: number;
+  scale2_tempco_kg_per_c?: number;
+}
+
+export interface HiveScaleTempCompensationFitInput {
+  scale: 1 | 2;
+  lookback_days?: number;
+  temp_source?: HiveScaleTempcoSource;
+  calibration_mode_only?: boolean;
+  apply?: boolean;
+}
+
+export interface HiveScaleTempCompensationFitResult {
+  ok: boolean;
+  reason?: string;
+  scale: 1 | 2;
+  temp_source: HiveScaleTempcoSource;
+  applied: boolean;
+  coeff_kg_per_c: number;
+  ref_temp_c: number;
+  intercept_kg?: number | null;
+  r_squared: number | null;
+  n: number;
+  temp_min_c: number | null;
+  temp_max_c: number | null;
+  window_start?: string;
+  window_end?: string;
 }
 
 export interface HiveScaleChannelsPatch {
@@ -409,7 +453,10 @@ export const useClaimHiveScaleDevice = () => {
 
   return useMutation({
     mutationFn: async (data: ClaimHiveScaleDeviceInput) => {
-      const response = await apiClient.post('/api/hivescale/devices/claim', data);
+      const response = await apiClient.post(
+        '/api/hivescale/devices/claim',
+        data,
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -423,7 +470,9 @@ export const useRemoveHiveScaleDevice = () => {
 
   return useMutation({
     mutationFn: async (deviceId: string) => {
-      const response = await apiClient.delete(`/api/hivescale/devices/${deviceId}`);
+      const response = await apiClient.delete(
+        `/api/hivescale/devices/${deviceId}`,
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -444,7 +493,39 @@ export const useUpdateHiveScaleConfig = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.config(deviceId),
+      });
+    },
+  });
+};
+
+export const useFitHiveScaleTempCompensation = (
+  deviceId: string | undefined,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    HiveScaleTempCompensationFitResult,
+    Error,
+    HiveScaleTempCompensationFitInput
+  >({
+    mutationFn: async data => {
+      const response = await apiClient.post<HiveScaleTempCompensationFitResult>(
+        `/api/hivescale/devices/${deviceId}/temp-compensation/fit`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: result => {
+      // A successful applied fit writes the coefficient back to the config, so
+      // refresh it. Measurements gain new compensated values too.
+      if (result.applied) {
+        queryClient.invalidateQueries({
+          queryKey: HIVESCALE_KEYS.config(deviceId),
+        });
+        queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
+      }
     },
   });
 };
@@ -478,7 +559,9 @@ export const useShareHiveScaleDevice = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.members(deviceId),
+      });
     },
   });
 };
@@ -494,12 +577,16 @@ export const useRevokeHiveScaleMember = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.members(deviceId),
+      });
     },
   });
 };
 
-export const useStartHiveScaleCalibrationMode = (deviceId: string | undefined) => {
+export const useStartHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -511,12 +598,16 @@ export const useStartHiveScaleCalibrationMode = (deviceId: string | undefined) =
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.config(deviceId),
+      });
     },
   });
 };
 
-export const useStopHiveScaleCalibrationMode = (deviceId: string | undefined) => {
+export const useStopHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -527,7 +618,9 @@ export const useStopHiveScaleCalibrationMode = (deviceId: string | undefined) =>
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.config(deviceId),
+      });
     },
   });
 };
@@ -609,7 +702,11 @@ export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
 export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
   const queryClient = useQueryClient();
 
-  return useMutation<HiveScaleFirmwareUploadResult, Error, HiveScaleFirmwareUploadInput>({
+  return useMutation<
+    HiveScaleFirmwareUploadResult,
+    Error,
+    HiveScaleFirmwareUploadInput
+  >({
     mutationFn: async ({ file, version, target, active = true }) => {
       const formData = new FormData();
       // Field order/names must match the FastAPI File()/Form() parameters.

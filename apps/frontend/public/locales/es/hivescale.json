@@ -1,0 +1,534 @@
+{
+  "common": {
+    "never": "Never",
+    "loading": "Loading…",
+    "unavailable": "Unavailable",
+    "saving": "Saving…",
+    "insight": "Insight",
+    "scale1": "Scale 1",
+    "scale2": "Scale 2",
+    "unknownError": "unknown error"
+  },
+  "loading": {
+    "fallback": "Loading…",
+    "messages": [
+      "Data bee-ing prepared...",
+      "Gathering fresh hive insights...",
+      "Worker bees are sorting the combs...",
+      "Extracting the sweet stuff...",
+      "Buzzing through your data...",
+      "Foraging for information...",
+      "Honey, we're processing your request...",
+      "The hive mind is thinking...",
+      "Uncapping the latest data...",
+      "Bee patient, results are on the way...",
+      "Pollinating your dashboard...",
+      "Waggle dance in progress...",
+      "Checking the queen's records...",
+      "Swarming through the database...",
+      "Building the comb, one cell at a time...",
+      "Hive got your data right here...",
+      "Beehind the scenes magic happening...",
+      "Cross-pollinating datasets...",
+      "Preparing a fresh batch of hive metrics..."
+    ]
+  },
+  "page": {
+    "title": "HiveScale",
+    "subtitle": "Live weight and temperature visualisation from your separate HiveScale backend.",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…",
+    "refreshError": "Could not refresh HiveScale data.",
+    "removeConfirm": "Remove {{name}} from your HivePal account? You can add it again with the claim code when no other users still have access.",
+    "removeSuccess": "HiveScale device removed from your account."
+  },
+  "setup": {
+    "title": "Devices",
+    "description": "Select or remove a claimed HiveScale device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
+    "removeScale": "Remove scale",
+    "noDevices": "No devices claimed yet — open the setup to add one.",
+    "hide": "Hide setup",
+    "show": "Show setup"
+  },
+  "claim": {
+    "title": "Claim HiveScale device",
+    "description": "Claim codes are sent by the firmware with measurements until the device is claimed.",
+    "claimCode": "Claim code",
+    "displayName": "Display name",
+    "displayNamePlaceholder": "Hive scale north",
+    "claim": "Claim device",
+    "claiming": "Claiming…",
+    "success": "HiveScale device claimed.",
+    "errors": {
+      "missingCode": "Enter the claim code printed/configured for the device."
+    }
+  },
+  "mapping": {
+    "title": "Scale mapping",
+    "description": "These labels stay in HiveScale. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
+    "scale1Label": "Display name for Scale 1",
+    "scale2Label": "Display name for Scale 2",
+    "hiveNamePlaceholder": "Select or type a hive name",
+    "save": "Save mapping",
+    "success": "Scale mapping updated."
+  },
+  "status": {
+    "title": "Device status",
+    "deviceId": "Device ID",
+    "role": "Role",
+    "lastMeasurement": "Last measurement",
+    "sharing": "Sharing",
+    "sharingHint": "Grant admin or viewer access.",
+    "shareWithUser": "Share with different user",
+    "email": "Mail-address",
+    "viewer": "Viewer",
+    "admin": "Admin",
+    "sharing_progress": "Sharing…",
+    "grantAccess": "Grant access",
+    "shareSuccess": "HiveScale access shared.",
+    "accessRevoked": "Access revoked.",
+    "revokeAccess": "Revoke access",
+    "errors": {
+      "missingEmail": "Enter the email address of an existing HivePal user."
+    }
+  },
+  "calibration": {
+    "title": "Calibration",
+    "subtitle": "Guided fast-mode calibration for the raw scale readings.",
+    "instructionsAria": "Show scale calibration instructions",
+    "raw": "Raw {{value}}",
+    "notCapturedYet": "Not captured yet",
+    "rawCapture": "{{raw}} raw · {{time}}",
+    "openWizard": "Open calibration wizard",
+    "viewerNotice": "Viewer access can read measurements but cannot change calibration.",
+    "noConfig": "No config returned.",
+    "workflow": {
+      "title": "Simple workflow",
+      "step1": "Start calibration mode and wait for fast readings.",
+      "step2": "Capture the empty scale reading.",
+      "step3": "Place a known weight and enter its kg value.",
+      "step4": "Capture the weighted reading and save.",
+      "step5": "The app stops calibration mode after saving."
+    },
+    "mode": {
+      "title": "Fast calibration mode",
+      "activeBadge": "Active",
+      "activeDescription": "Active: new raw readings should arrive every few seconds.",
+      "queuedBadge": "Queued",
+      "queuedDescription": "Queued: waiting for the device to wake up once.",
+      "offBadge": "Off",
+      "offDescription": "Off: the scale is using normal battery-saving sleep."
+    },
+    "wizard": {
+      "title": "Scale calibration wizard",
+      "description": "Follow the steps in order. The app uses only fresh raw readings from calibration mode, then saves and stops fast mode automatically.",
+      "alertActiveTitle": "Fast readings are active",
+      "alertActiveDescription": "Latest reading: {{time}}.",
+      "alertQueuedTitle": "Calibration mode is queued",
+      "alertQueuedDescription": "The device needs one normal wake-up before it can receive the command.",
+      "alertStartTitle": "Start calibration mode first",
+      "alertStartDescription": "This disables the annoying deep-sleep delay for about 10 minutes.",
+      "starting": "Starting…",
+      "fastModeActive": "Fast mode active",
+      "startFastMode": "Start fast mode",
+      "stopping": "Stopping…",
+      "stopFastMode": "Stop fast mode",
+      "whichScale": "Which scale are you calibrating?",
+      "latestRaw": "Latest raw {{value}}",
+      "emptyScale": "Empty scale",
+      "emptyScaleHint": "Remove weight from {{scaleName}}, then wait for one fast reading.",
+      "captured": "Captured: {{value}}",
+      "captureEmptyRaw": "Capture empty raw",
+      "knownWeight": "Known weight",
+      "knownWeightHint": "Place the weight and enter its value in kg.",
+      "weightKg": "Weight / kg",
+      "captureWeightRaw": "Capture weight raw",
+      "saveResult": "Save result",
+      "saveResultHint": "The factor is calculated automatically.",
+      "offset": "Offset",
+      "factorRawPerKg": "Factor / raw per kg",
+      "saveAndStop": "Save and stop fast mode",
+      "noChangeTitle": "No usable raw change detected",
+      "noChangeDescription": "Check that the known weight is on the correct scale and wait for another fast reading."
+    },
+    "advanced": {
+      "title": "Advanced manual settings",
+      "sendInterval": "Send interval seconds",
+      "manualValues": "{{scaleName}} manual values",
+      "latestRawHint": "Latest raw: {{value}}. Weight is calculated as (raw - offset) / factor.",
+      "offsetLabel": "Offset / empty raw reading",
+      "useLatest": "Use latest",
+      "knownWeightLabel": "Known weight / kg",
+      "calculate": "Calculate",
+      "factorLabel": "Factor / raw counts per kg",
+      "saveManual": "Save manual config",
+      "configVersion": "Config version {{version}}. Use advanced settings only for fine tuning or recovery."
+    },
+    "toasts": {
+      "modeQueued": "Calibration mode queued. The scale will switch to fast readings when it wakes up.",
+      "stopQueued": "Calibration mode stop queued.",
+      "startModeFirst": "Start calibration mode and wait until fast readings are active.",
+      "captureEmptyFirst": "Capture the empty scale first.",
+      "enterKnownWeightFirst": "Enter the known weight in kg first.",
+      "waitForNewReading": "Wait for a new fast reading after placing the known weight, then capture again.",
+      "emptyCaptured": "{{scaleName}} empty reading captured.",
+      "weightedCaptured": "{{scaleName}} weighted reading captured.",
+      "calibrationSaved": "{{scaleName}} calibration saved.",
+      "configUpdated": "HiveScale config updated.",
+      "offsetSet": "{{scaleName}} offset set to latest raw reading.",
+      "factorCalculated": "{{scaleName}} factor calculated: {{factor}}"
+    },
+    "errors": {
+      "sendInterval": "Use a whole-number interval of at least 60 seconds.",
+      "offsetsWhole": "Scale offsets must be whole raw-count numbers.",
+      "factorsNonZero": "Scale factors must be non-zero numbers.",
+      "noLatestRaw": "No latest raw reading available for {{scaleName}} yet.",
+      "validOffset": "Enter a valid offset for {{scaleName}} first.",
+      "knownWeight": "Enter a known weight greater than 0 kg for {{scaleName}}.",
+      "factorNotCalculated": "{{scaleName}} factor could not be calculated. Check the latest raw, offset, and known weight."
+    },
+    "tempco": {
+      "title": "Compensation de température",
+      "description": "Les capteurs de charge dérivent avec la température. Le backend lisse la température avec une moyenne mobile exponentielle (EMA) pour amortir les transitoires courts (p. ex. le lever du soleil), puis corrige le poids rapporté à la lecture sous la forme raw − coeff · (EMA(temp) − ref) ; le poids brut n’est jamais modifié.",
+      "enableAria": "Activer la compensation de température",
+      "sourceLabel": "Source de température",
+      "source": {
+        "ambient": "Ambiante (SHT4x)",
+        "hive1": "Sonde ruche 1",
+        "hive2": "Sonde ruche 2"
+      },
+      "sourceHint": "La température ambiante suit de près le corps du capteur en régime stable et constitue la valeur par défaut recommandée.",
+      "refLabel": "Température de référence / °C",
+      "refHint": "Température à laquelle la correction est nulle.",
+      "coeffLabel": "Coefficient {{scaleName}} / kg par °C",
+      "autoFit": "Ajustement automatique depuis l’historique",
+      "fitting": "Ajustement…",
+      "autoFitHint": "L’ajustement automatique effectue une régression du poids brut des 3 derniers jours par rapport à la température sélectionnée lissée par EMA, puis applique et active le résultat. Pour un ajustement propre, capturez une fenêtre où la charge physique est constante et la température varie.",
+      "save": "Enregistrer la compensation de température",
+      "errors": {
+        "refTemp": "La température de référence doit être un nombre (°C).",
+        "coeff": "Les coefficients de température doivent être des nombres (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Paramètres de compensation de température enregistrés.",
+        "fitFailed": "Impossible d’ajuster {{scaleName}} : {{reason}}",
+        "noSignal": "signal de température/poids insuffisant.",
+        "fitApplied": "{{scaleName}} : {{coeff}} kg/°C à {{refTemp}}°C (R²={{r2}}, n={{n}}). Appliqué et activé."
+      }
+    }
+  },
+  "firmware": {
+    "title": "Firmware upload",
+    "description": "Upload a firmware binary and register it as a release. New devices of the matching type pick it up on their next update check.",
+    "type": "Firmware type",
+    "selectType": "Select firmware type",
+    "version": "Version",
+    "binary": "Firmware binary",
+    "upload": "Upload firmware",
+    "uploading": "Uploading…",
+    "success": "Firmware {{version}} ({{target}}) uploaded and registered.",
+    "notice": {
+      "noPermission": "Only device owners and admins can upload firmware. Your role is “{{role}}”.",
+      "selectDevice": "Select a claimed device to upload firmware."
+    },
+    "errors": {
+      "missingFile": "Choose a firmware binary (.bin) to upload.",
+      "missingVersion": "Enter a version, e.g. 0.6.3."
+    }
+  },
+  "sdData": {
+    "title": "Import SD card data",
+    "description": "Upload the data you downloaded from the scale in AP mode. Re-uploading the same file is safe — existing readings are skipped automatically.",
+    "file": "SD backup file",
+    "accepts": "Accepts measurements.ndjson or the hivescale-sd-data.tar download.",
+    "upload": "Upload SD data",
+    "importing": "Importing…",
+    "importSuccess_one": "Imported {{count}} new reading ({{duplicates}} duplicates skipped).",
+    "importSuccess_other": "Imported {{count}} new readings ({{duplicates}} duplicates skipped).",
+    "notice": {
+      "noPermission": "Only device owners and admins can import SD data. Your role is “{{role}}”.",
+      "selectDevice": "Select a claimed device to import its SD card data."
+    },
+    "errors": {
+      "missingFile": "Choose the .ndjson backup or the .tar SD download to upload."
+    },
+    "result": {
+      "imported": "{{inserted}} new readings imported, {{duplicates}} duplicates skipped.",
+      "parsed_one": "Parsed {{count}} record",
+      "parsed_other": "Parsed {{count}} records",
+      "skipped_one": " · {{count}} unreadable line skipped.",
+      "skipped_other": " · {{count}} unreadable lines skipped."
+    }
+  },
+  "panel": {
+    "weight": "Weight",
+    "hiveTemp": "Hive temp",
+    "rmsSound": "RMS sound",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "voltage": "Voltage",
+    "charge": "Charge",
+    "alert": "Alert",
+    "alertOn": "Alert",
+    "alertOff": "No alert",
+    "loadVoltage": "Load voltage",
+    "current": "Current",
+    "power": "Power",
+    "ambient": {
+      "title": "Ambient",
+      "description": "Outside sensor"
+    },
+    "battery": {
+      "title": "Battery",
+      "description": "MAX17048 fuel gauge"
+    },
+    "solar": {
+      "title": "Solar input",
+      "description": "INA219 panel monitor"
+    }
+  },
+  "diagram": {
+    "title": "Measurements",
+    "subtitle": "Weight, temperature, and entrance activity over time",
+    "noMeasurements": "No measurements for the selected range.",
+    "meta": {
+      "device": "Device:",
+      "lastSeen": "Last seen:",
+      "lastData": "Last data:",
+      "firmware": "Firmware:"
+    },
+    "range": {
+      "all": "All",
+      "from": "From",
+      "to": "To"
+    },
+    "series": {
+      "weight": "{{name}} weight",
+      "temp": "{{name}} temp",
+      "micRms": "{{name}} mic RMS",
+      "beesIn": "{{name}} bees in",
+      "beesOut": "{{name}} bees out",
+      "netFlow": "{{name}} net flow",
+      "ambientTemp": "Ambient temp",
+      "ambientHumidity": "Ambient humidity",
+      "batteryVoltage": "Battery voltage",
+      "batteryCharge": "Battery charge",
+      "solarVoltage": "Solar voltage",
+      "solarCurrent": "Solar current",
+      "solarPower": "Solar power"
+    },
+    "group": {
+      "ambient": "Ambient",
+      "offGrid": "Off-grid"
+    },
+    "axis": {
+      "weight": "Weight",
+      "temperature": "Temperature",
+      "humidity": "Humidity",
+      "voltage": "Voltage",
+      "percent": "Percent",
+      "current": "Current",
+      "power": "Power",
+      "sound": "Sound",
+      "beecount": "Bee count"
+    },
+    "marker": {
+      "inspection": "Inspection",
+      "boxAdded": "Box added",
+      "action": {
+        "maintenance": "Maintenance",
+        "feeding": "Feeding",
+        "frames": "Frames",
+        "treatment": "Treatment"
+      }
+    },
+    "axisSettings": {
+      "title": "Axis settings",
+      "reset": "Reset",
+      "side": "Side",
+      "left": "Left",
+      "right": "Right",
+      "scale": "Scale",
+      "auto": "Auto",
+      "zeroToMax": "0 to max",
+      "custom": "Custom",
+      "min": "Min",
+      "max": "Max",
+      "autoPlaceholder": "auto"
+    }
+  },
+  "sound": {
+    "title": "Hive sound",
+    "description": "INMP441 FFT band energy (dBFS) — {{left}} (left) · {{right}} (right)",
+    "hide": "Hide sound",
+    "show": "Show sound",
+    "micLeftFallback": "Mic left",
+    "micRightFallback": "Mic right",
+    "noDataForChannel": "No data for {{name}} in this range.",
+    "bandReference": "Band reference",
+    "thresholds": "Thresholds used by the Insights engine: piping > −45 dBFS, stress > −38 dBFS, queenless hum > −40 dBFS with quiet piping. Calibrate against your own baseline.",
+    "status": {
+      "noData": "No data",
+      "micError": "Mic error",
+      "bothActive": "{{left}} + {{right}} active",
+      "oneActive": "{{name}} active"
+    },
+    "table": {
+      "band": "Band",
+      "range": "Range",
+      "significance": "Significance"
+    },
+    "bands": {
+      "subBass": {
+        "label": "Sub-bass",
+        "description": "Structural vibration / low rumble"
+      },
+      "hum": {
+        "label": "Hum",
+        "description": "Normal colony hum (~200 Hz fundamental)"
+      },
+      "piping": {
+        "label": "Piping",
+        "description": "Queen piping / tooting (pre-swarm signal)"
+      },
+      "stress": {
+        "label": "Stress",
+        "description": "Agitated colony / robbing"
+      },
+      "high": {
+        "label": "High",
+        "description": "Harmonic overtones"
+      }
+    }
+  },
+  "beecounter": {
+    "title": "Entrance Counter",
+    "subtitle": "Bees entering and exiting per measurement interval",
+    "noData": "No BeeCounter data found for this device.",
+    "offline": "Offline",
+    "gatesOk": "{{count}} gates OK",
+    "glitches_one": "{{count}} glitch",
+    "glitches_other": "{{count}} glitches",
+    "gatesRatio": "{{healthy}}/{{total}} gates",
+    "inPeriod": "In (period)",
+    "outPeriod": "Out (period)",
+    "netFlow": "Net flow",
+    "netInbound": "net inbound",
+    "netOutbound": "net outbound",
+    "balanced": "balanced",
+    "view": {
+      "inOut": "In / Out",
+      "netFlow": "Net flow",
+      "cumulative": "Cumulative"
+    },
+    "series": {
+      "in": "{{name}} in",
+      "out": "{{name}} out",
+      "net": "{{name}} net",
+      "totalIn": "{{name}} total in",
+      "totalOut": "{{name}} total out"
+    },
+    "diagnostics": {
+      "title": "Hardware diagnostics",
+      "gatesHealthy": "Gates healthy",
+      "glitchCount": "Glitch count",
+      "totalInLifetime": "Total in (lifetime)",
+      "totalOutLifetime": "Total out (lifetime)"
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "description": "Sensor-based alerts derived from weight and temperature trends.",
+    "updated": "Updated {{ago}}.",
+    "refresh": "Refresh insights",
+    "loadError": "Failed to load insights: {{message}}",
+    "allClear": "All clear",
+    "noActiveAlerts": "No active alerts in the last {{count}} days.",
+    "activeAlerts_one": "{{count}} active alert:",
+    "activeAlerts_other": "{{count}} active alerts:",
+    "confidence": "Confidence {{value}}%",
+    "source": "Source: {{source}}",
+    "hiveChannel": "Hive {{channel}}",
+    "severity": {
+      "critical": "Critical",
+      "warning": "Warning",
+      "watch": "Watch",
+      "info": "Info"
+    },
+    "tooltip": {
+      "ariaLabel": "Which tests are performed?",
+      "title": "Tests performed",
+      "description": "Each detector runs on every measurement pass against the last 14 days of weight and hive-temperature data.",
+      "fullDocs": "Full documentation"
+    },
+    "detectors": [
+      {
+        "title": "Pre-swarm watch (Phase 1)",
+        "detail": "24h brood-nest temperature std-dev ≥ 1.5× the 7-day baseline → watch."
+      },
+      {
+        "title": "Imminent swarm (Phase 2)",
+        "detail": "Brood temp ≥ 1.5 °C above 4h baseline, still rising ≥ 0.5 °C/h, above 36.5 °C → warning."
+      },
+      {
+        "title": "Swarm event (Phase 3)",
+        "detail": "Weight drop ≥ 1.5 kg within ≤ 30 min. Daytime (09–17) → critical, otherwise warning."
+      },
+      {
+        "title": "Queenlessness (fallback, no audio)",
+        "detail": "Active season + 7d hive-temp std-dev > 1.0 °C AND |weight change| < 0.2 kg → warning."
+      },
+      {
+        "title": "Robbing",
+        "detail": "Sustained weight loss ≥ 0.4 kg/h for ≥ 30 min, no swarm signature. Late afternoon (15–19) → warning, else watch."
+      },
+      {
+        "title": "Foraging intensity",
+        "detail": "24h weight delta: ≥ 1.0 kg = strong flow (info), ≥ 0.2 kg = moderate (info), ≤ −0.2 kg = negative (watch)."
+      },
+      {
+        "title": "Brood cycle / colony state",
+        "detail": "24h hive-temp std-dev < 0.5 °C around 34–35 °C = active brood (info); > 2.0 °C = broodless / weak (watch)."
+      },
+      {
+        "title": "Absconding / collapse trend",
+        "detail": "14d weight loss > 100 g/day AND widening daily temp std-dev (positive slope) → watch."
+      },
+      {
+        "title": "Winter survival risk (Oct–Feb)",
+        "detail": "Min hive temp 7d < ambient mean + 2 °C, or weight loss > 300 g/week. Both → warning, one → watch."
+      },
+      {
+        "title": "Harvest window",
+        "detail": "Earlier 7d gain > 2 kg/week, now < 0.3 kg/week for ≥ 4 days → info."
+      }
+    ]
+  },
+  "history": {
+    "button": "History",
+    "title": "Insights history",
+    "description": "Past and current sensor-based alerts, including ones that have since resolved. Newest first.",
+    "summary": "{{count}} shown · {{active}} active",
+    "loadError": "Failed to load history: {{message}}",
+    "firstSeen": "First seen {{time}}",
+    "lastSeen": "Last seen {{time}}",
+    "resolvedAt": "Resolved {{time}}",
+    "peakConfidence": "Peak confidence {{value}}%",
+    "updates_one": "{{count}} update",
+    "updates_other": "{{count}} updates",
+    "status": {
+      "active": "Active",
+      "resolved": "Resolved"
+    },
+    "filter": {
+      "all": "All alerts",
+      "active": "Active only",
+      "resolved": "Resolved only"
+    },
+    "empty": {
+      "title": "No history yet",
+      "description": "No alerts have been recorded for this device.",
+      "descriptionFiltered": "No alerts have been recorded for this device matching this filter."
+    }
+  }
+}

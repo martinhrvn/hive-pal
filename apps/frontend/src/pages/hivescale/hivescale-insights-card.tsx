@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   AlertOctagon,
   AlertTriangle,
@@ -51,65 +53,14 @@ const INSIGHTS_DOCS_URL =
 
 /**
  * Short, human-readable summary of every detector currently implemented in
- * `server/insights.py`. Kept here (not fetched) so the tooltip is instant
- * and works offline. Keep this list in sync with `docs/insights.md` and
- * with the detectors in `compute_insights()`.
+ * `server/insights.py`. The list of titles/details is provided by the
+ * translation file (`insights.detectors`); keep that in sync with
+ * `docs/insights.md` and with the detectors in `compute_insights()`.
  */
-const DETECTOR_SUMMARIES: Array<{
+interface DetectorSummary {
   title: string;
   detail: string;
-}> = [
-  {
-    title: 'Pre-swarm watch (Phase 1)',
-    detail:
-      '24h brood-nest temperature std-dev ≥ 1.5× the 7-day baseline → watch.',
-  },
-  {
-    title: 'Imminent swarm (Phase 2)',
-    detail:
-      'Brood temp ≥ 1.5 °C above 4h baseline, still rising ≥ 0.5 °C/h, above 36.5 °C → warning.',
-  },
-  {
-    title: 'Swarm event (Phase 3)',
-    detail:
-      'Weight drop ≥ 1.5 kg within ≤ 30 min. Daytime (09–17) → critical, otherwise warning.',
-  },
-  {
-    title: 'Queenlessness (fallback, no audio)',
-    detail:
-      'Active season + 7d hive-temp std-dev > 1.0 °C AND |weight change| < 0.2 kg → warning.',
-  },
-  {
-    title: 'Robbing',
-    detail:
-      'Sustained weight loss ≥ 0.4 kg/h for ≥ 30 min, no swarm signature. Late afternoon (15–19) → warning, else watch.',
-  },
-  {
-    title: 'Foraging intensity',
-    detail:
-      '24h weight delta: ≥ 1.0 kg = strong flow (info), ≥ 0.2 kg = moderate (info), ≤ −0.2 kg = negative (watch).',
-  },
-  {
-    title: 'Brood cycle / colony state',
-    detail:
-      '24h hive-temp std-dev < 0.5 °C around 34–35 °C = active brood (info); > 2.0 °C = broodless / weak (watch).',
-  },
-  {
-    title: 'Absconding / collapse trend',
-    detail:
-      '14d weight loss > 100 g/day AND widening daily temp std-dev (positive slope) → watch.',
-  },
-  {
-    title: 'Winter survival risk (Oct–Feb)',
-    detail:
-      'Min hive temp 7d < ambient mean + 2 °C, or weight loss > 300 g/week. Both → warning, one → watch.',
-  },
-  {
-    title: 'Harvest window',
-    detail:
-      'Earlier 7d gain > 2 kg/week, now < 0.3 kg/week for ≥ 4 days → info.',
-  },
-];
+}
 
 /**
  * Visual config per severity. Mirrors the four levels emitted by the
@@ -118,7 +69,7 @@ const DETECTOR_SUMMARIES: Array<{
 export const severityConfig: Record<
   HiveScaleInsightSeverity,
   {
-    label: string;
+    labelKey: string;
     icon: typeof Info;
     badgeClass: string;
     rowClass: string;
@@ -127,7 +78,7 @@ export const severityConfig: Record<
   }
 > = {
   critical: {
-    label: 'Critical',
+    labelKey: 'insights.severity.critical',
     icon: AlertOctagon,
     badgeClass:
       'bg-red-100 text-red-900 border-red-200 dark:bg-red-900/40 dark:text-red-100 dark:border-red-800',
@@ -137,7 +88,7 @@ export const severityConfig: Record<
     rank: 4,
   },
   warning: {
-    label: 'Warning',
+    labelKey: 'insights.severity.warning',
     icon: AlertTriangle,
     badgeClass:
       'bg-amber-100 text-amber-900 border-amber-200 dark:bg-amber-900/40 dark:text-amber-100 dark:border-amber-800',
@@ -147,7 +98,7 @@ export const severityConfig: Record<
     rank: 3,
   },
   watch: {
-    label: 'Watch',
+    labelKey: 'insights.severity.watch',
     icon: Eye,
     badgeClass:
       'bg-yellow-100 text-yellow-900 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-100 dark:border-yellow-800',
@@ -157,7 +108,7 @@ export const severityConfig: Record<
     rank: 2,
   },
   info: {
-    label: 'Info',
+    labelKey: 'insights.severity.info',
     icon: Info,
     badgeClass:
       'bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-900/40 dark:text-blue-100 dark:border-blue-800',
@@ -172,14 +123,23 @@ export function severityRank(severity: HiveScaleInsightSeverity): number {
   return severityConfig[severity]?.rank ?? 0;
 }
 
+export function severityLabel(
+  t: TFunction,
+  severity: HiveScaleInsightSeverity,
+): string {
+  const cfg = severityConfig[severity] ?? severityConfig.info;
+  return t(cfg.labelKey);
+}
+
 export function channelLabel(
   channel: number,
   scale1Name: string,
   scale2Name: string,
+  t: TFunction,
 ): string {
   if (channel === 1) return scale1Name;
   if (channel === 2) return scale2Name;
-  return `Hive ${channel}`;
+  return t('insights.hiveChannel', { channel });
 }
 
 /**
@@ -203,6 +163,11 @@ export function sortAlerts(
  * Extracted so it can be reused outside the standalone insights card.
  */
 export function InsightsInfoTooltip() {
+  const { t } = useTranslation('hivescale');
+  const rawDetectors = t('insights.detectors', { returnObjects: true });
+  const detectors: DetectorSummary[] = Array.isArray(rawDetectors)
+    ? (rawDetectors as DetectorSummary[])
+    : [];
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -211,7 +176,7 @@ export function InsightsInfoTooltip() {
           variant="ghost"
           size="icon"
           className="h-7 w-7 shrink-0"
-          aria-label="Which tests are performed?"
+          aria-label={t('insights.tooltip.ariaLabel')}
         >
           <Info className="h-4 w-4" />
         </Button>
@@ -221,13 +186,12 @@ export function InsightsInfoTooltip() {
         align="start"
         className="max-w-md space-y-2 text-left"
       >
-        <p className="font-medium">Tests performed</p>
+        <p className="font-medium">{t('insights.tooltip.title')}</p>
         <p className="text-xs text-muted-foreground">
-          Each detector runs on every measurement pass against the last 14 days
-          of weight and hive-temperature data.
+          {t('insights.tooltip.description')}
         </p>
         <ul className="space-y-1.5 text-xs">
-          {DETECTOR_SUMMARIES.map(d => (
+          {detectors.map(d => (
             <li key={d.title}>
               <span className="font-medium">{d.title}:</span>{' '}
               <span className="text-muted-foreground">{d.detail}</span>
@@ -240,7 +204,7 @@ export function InsightsInfoTooltip() {
           rel="noreferrer"
           className="inline-flex items-center gap-1 pt-1 text-xs font-medium text-blue-400 hover:text-blue-300 hover:underline"
         >
-          Full documentation
+          {t('insights.tooltip.fullDocs')}
           <ExternalLink className="h-3 w-3" />
         </a>
       </TooltipContent>
@@ -264,13 +228,19 @@ export function HiveScaleAlertList({
   scale2Name: string;
   showHive?: boolean;
 }>) {
+  const { t } = useTranslation('hivescale');
   return (
     <ul className="space-y-2">
       {alerts.map(alert => {
         const cfg = severityConfig[alert.severity];
         const Icon = cfg.icon;
         const windowEnd = alert.window_end ? new Date(alert.window_end) : null;
-        const hiveName = channelLabel(alert.channel, scale1Name, scale2Name);
+        const hiveName = channelLabel(
+          alert.channel,
+          scale1Name,
+          scale2Name,
+          t,
+        );
 
         return (
           <li
@@ -293,7 +263,7 @@ export function HiveScaleAlertList({
                       variant="outline"
                       className={cn('text-xs', cfg.badgeClass)}
                     >
-                      {cfg.label}
+                      {t(cfg.labelKey)}
                     </Badge>
                     {showHive && (
                       <span className="text-xs text-muted-foreground">
@@ -307,7 +277,9 @@ export function HiveScaleAlertList({
                 </p>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   <span>
-                    Confidence {Math.round((alert.confidence ?? 0) * 100)}%
+                    {t('insights.confidence', {
+                      value: Math.round((alert.confidence ?? 0) * 100),
+                    })}
                   </span>
                   {windowEnd && (
                     <span>
@@ -317,7 +289,9 @@ export function HiveScaleAlertList({
                     </span>
                   )}
                   {alert.source && (
-                    <span className="truncate">Source: {alert.source}</span>
+                    <span className="truncate">
+                      {t('insights.source', { source: alert.source })}
+                    </span>
                   )}
                 </div>
               </div>
@@ -335,6 +309,7 @@ export function HiveScaleInsightsCard({
   scale2Name,
   lookbackDays = 14,
 }: HiveScaleInsightsCardProps) {
+  const { t } = useTranslation('hivescale');
   const insights = useHiveScaleInsights(deviceId, { lookbackDays });
 
   const sortedAlerts = useMemo<HiveScaleInsightAlert[]>(
@@ -365,19 +340,22 @@ export function HiveScaleInsightsCard({
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <CardTitle className="flex items-center gap-2">
-              Insights
+              {t('insights.title')}
               {insights.isFetching && !insights.isLoading && (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
               <InsightsInfoTooltip />
             </CardTitle>
             <CardDescription>
-              Sensor-based alerts derived from weight and temperature trends.
+              {t('insights.description')}
               {computedAt && (
                 <>
                   {' '}
-                  Updated{' '}
-                  {formatDistanceToNowStrict(computedAt, { addSuffix: true })}.
+                  {t('insights.updated', {
+                    ago: formatDistanceToNowStrict(computedAt, {
+                      addSuffix: true,
+                    }),
+                  })}
                 </>
               )}
             </CardDescription>
@@ -395,7 +373,7 @@ export function HiveScaleInsightsCard({
               className="h-8 w-8 shrink-0"
               onClick={() => insights.refetch()}
               disabled={insights.isFetching}
-              aria-label="Refresh insights"
+              aria-label={t('insights.refresh')}
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
@@ -411,16 +389,19 @@ export function HiveScaleInsightsCard({
           </>
         ) : insights.isError ? (
           <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-            Failed to load insights:{' '}
-            {(insights.error as Error)?.message ?? 'unknown error'}
+            {t('insights.loadError', {
+              message:
+                (insights.error as Error)?.message ??
+                t('common.unknownError'),
+            })}
           </div>
         ) : sortedAlerts.length === 0 ? (
           <div className="flex items-center gap-3 rounded-md border bg-muted/30 p-4">
             <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <div className="space-y-0.5">
-              <p className="text-sm font-medium">All clear</p>
+              <p className="text-sm font-medium">{t('insights.allClear')}</p>
               <p className="text-xs text-muted-foreground">
-                No active alerts in the last {lookbackDays} days.
+                {t('insights.noActiveAlerts', { count: lookbackDays })}
               </p>
             </div>
           </div>
@@ -429,8 +410,7 @@ export function HiveScaleInsightsCard({
             {/* Severity summary */}
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                {sortedAlerts.length} active alert
-                {sortedAlerts.length === 1 ? '' : 's'}:
+                {t('insights.activeAlerts', { count: sortedAlerts.length })}
               </span>
               {(['critical', 'warning', 'watch', 'info'] as const).map(
                 severity =>
@@ -440,7 +420,7 @@ export function HiveScaleInsightsCard({
                       variant="outline"
                       className={cn(severityConfig[severity].badgeClass)}
                     >
-                      {severityConfig[severity].label}:{' '}
+                      {t(severityConfig[severity].labelKey)}:{' '}
                       {severityCounts[severity]}
                     </Badge>
                   ) : null,
@@ -474,6 +454,7 @@ export function HiveScaleSeverityPill({
   count?: number;
   className?: string;
 }>) {
+  const { t } = useTranslation('hivescale');
   if (!severity) return null;
   const cfg = severityConfig[severity];
   if (!cfg) return null;
@@ -488,7 +469,7 @@ export function HiveScaleSeverityPill({
       )}
     >
       <Icon className={cn('h-3 w-3', cfg.iconClass)} aria-hidden />
-      <span>{cfg.label}</span>
+      <span>{t(cfg.labelKey)}</span>
       {count && count > 1 ? <span>· {count}</span> : null}
     </Badge>
   );

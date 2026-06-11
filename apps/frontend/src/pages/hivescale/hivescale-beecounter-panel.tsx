@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Activity, Bug, ChevronDown, TrendingDown, TrendingUp } from 'lucide-react';
 import {
   Bar,
@@ -81,10 +83,10 @@ const toFiniteNumber = (value: unknown): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
-const netFlowLabel = (net: number): string => {
-  if (net > 0) return 'net inbound';
-  if (net < 0) return 'net outbound';
-  return 'balanced';
+const netFlowLabel = (net: number, t: TFunction): string => {
+  if (net > 0) return t('beecounter.netInbound');
+  if (net < 0) return t('beecounter.netOutbound');
+  return t('beecounter.balanced');
 };
 
 const netFlowTrend = (net: number): 'up' | 'down' | 'neutral' => {
@@ -110,6 +112,7 @@ const HealthBadge = ({
   numGates,
   glitchCount,
 }: HealthBadgeProps) => {
+  const { t } = useTranslation('hivescale');
   if (ok) {
     const allHealthy =
       numGates !== null && gatesHealthy !== null && gatesHealthy >= numGates;
@@ -122,14 +125,14 @@ const HealthBadge = ({
             variant="outline"
             className="border-green-500 text-green-600 text-xs"
           >
-            {numGates} gates OK
+            {t('beecounter.gatesOk', { count: numGates ?? 0 })}
           </Badge>
           {hasGlitches && (
             <Badge
               variant="outline"
               className="border-yellow-400 text-yellow-600 text-xs"
             >
-              {glitchCount} glitch{glitchCount !== 1 ? 'es' : ''}
+              {t('beecounter.glitches', { count: glitchCount ?? 0 })}
             </Badge>
           )}
         </div>
@@ -141,14 +144,17 @@ const HealthBadge = ({
         variant="outline"
         className="border-amber-400 text-amber-600 text-xs"
       >
-        {gatesHealthy ?? '?'}/{numGates ?? '?'} gates
+        {t('beecounter.gatesRatio', {
+          healthy: gatesHealthy ?? '?',
+          total: numGates ?? '?',
+        })}
       </Badge>
     );
   }
 
   return (
     <Badge variant="destructive" className="text-xs">
-      Offline
+      {t('beecounter.offline')}
     </Badge>
   );
 };
@@ -191,6 +197,7 @@ const ChannelSummary = ({
   totalIn,
   totalOut,
 }: ChannelSummaryProps) => {
+  const { t } = useTranslation('hivescale');
   const net = totalIn - totalOut;
   return (
     <div className="space-y-2">
@@ -204,16 +211,20 @@ const ChannelSummary = ({
         />
       </div>
       <div className="grid grid-cols-3 gap-2">
-        <StatCard label="In (period)" value={totalIn.toLocaleString()} trend="up" />
         <StatCard
-          label="Out (period)"
+          label={t('beecounter.inPeriod')}
+          value={totalIn.toLocaleString()}
+          trend="up"
+        />
+        <StatCard
+          label={t('beecounter.outPeriod')}
           value={totalOut.toLocaleString()}
           trend="down"
         />
         <StatCard
-          label="Net flow"
+          label={t('beecounter.netFlow')}
           value={net.toLocaleString()}
-          sub={netFlowLabel(net)}
+          sub={netFlowLabel(net, t)}
           trend={netFlowTrend(net)}
         />
       </div>
@@ -235,52 +246,55 @@ const DiagnosticsDetail = ({
   health,
   scale1Name,
   scale2Name,
-}: DiagnosticsDetailProps) => (
-  <details className="group">
-    <summary className="flex cursor-pointer items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-      <Activity className="h-3.5 w-3.5" />
-      Hardware diagnostics
-      <ChevronDown className="ml-auto h-3.5 w-3.5 transition-transform group-open:rotate-180" />
-    </summary>
-    <div className="mt-2 grid gap-3 sm:grid-cols-2 text-xs">
-      {([1, 2] as const)
-        .filter(ch => (ch === 1 ? hasCounter1 : hasCounter2))
-        .map(ch => {
-          const h = ch === 1 ? health.ch1 : health.ch2;
-          const name = ch === 1 ? scale1Name : scale2Name;
-          return (
-            <div key={ch} className="rounded-md border p-2 space-y-1">
-              <div className="font-medium">{name}</div>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-muted-foreground">
-                <span>Gates healthy</span>
-                <span className="text-foreground">
-                  {h.gatesHealthy ?? '—'} / {h.numGates ?? '—'}
-                </span>
-                <span>Glitch count</span>
-                <span
-                  className={
-                    h.glitchCount && h.glitchCount > 0
-                      ? 'text-amber-500'
-                      : 'text-foreground'
-                  }
-                >
-                  {h.glitchCount ?? '—'}
-                </span>
-                <span>Total in (lifetime)</span>
-                <span className="text-foreground">
-                  {h.latestTotalIn?.toLocaleString() ?? '—'}
-                </span>
-                <span>Total out (lifetime)</span>
-                <span className="text-foreground">
-                  {h.latestTotalOut?.toLocaleString() ?? '—'}
-                </span>
+}: DiagnosticsDetailProps) => {
+  const { t } = useTranslation('hivescale');
+  return (
+    <details className="group">
+      <summary className="flex cursor-pointer items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+        <Activity className="h-3.5 w-3.5" />
+        {t('beecounter.diagnostics.title')}
+        <ChevronDown className="ml-auto h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+      </summary>
+      <div className="mt-2 grid gap-3 sm:grid-cols-2 text-xs">
+        {([1, 2] as const)
+          .filter(ch => (ch === 1 ? hasCounter1 : hasCounter2))
+          .map(ch => {
+            const h = ch === 1 ? health.ch1 : health.ch2;
+            const name = ch === 1 ? scale1Name : scale2Name;
+            return (
+              <div key={ch} className="rounded-md border p-2 space-y-1">
+                <div className="font-medium">{name}</div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-muted-foreground">
+                  <span>{t('beecounter.diagnostics.gatesHealthy')}</span>
+                  <span className="text-foreground">
+                    {h.gatesHealthy ?? '—'} / {h.numGates ?? '—'}
+                  </span>
+                  <span>{t('beecounter.diagnostics.glitchCount')}</span>
+                  <span
+                    className={
+                      h.glitchCount && h.glitchCount > 0
+                        ? 'text-amber-500'
+                        : 'text-foreground'
+                    }
+                  >
+                    {h.glitchCount ?? '—'}
+                  </span>
+                  <span>{t('beecounter.diagnostics.totalInLifetime')}</span>
+                  <span className="text-foreground">
+                    {h.latestTotalIn?.toLocaleString() ?? '—'}
+                  </span>
+                  <span>{t('beecounter.diagnostics.totalOutLifetime')}</span>
+                  <span className="text-foreground">
+                    {h.latestTotalOut?.toLocaleString() ?? '—'}
+                  </span>
+                </div>
               </div>
-            </div>
-          );
-        })}
-    </div>
-  </details>
-);
+            );
+          })}
+      </div>
+    </details>
+  );
+};
 
 // ---------------------------------------------------------------------------
 // Props
@@ -305,6 +319,7 @@ export const HiveScaleBeeCounterPanel = ({
   scale1Name,
   scale2Name,
 }: HiveScaleBeeCounterPanelProps) => {
+  const { t } = useTranslation('hivescale');
   const [isOpen, setIsOpen] = useState(true);
   const [activeView, setActiveView] = useState<'activity' | 'flow' | 'cumulative'>(
     'activity',
@@ -439,9 +454,11 @@ export const HiveScaleBeeCounterPanel = ({
             <div className="flex items-center gap-2">
               <Bug className="h-4 w-4 text-amber-500" />
               <div>
-                <CardTitle className="text-base">Entrance Counter</CardTitle>
+                <CardTitle className="text-base">
+                  {t('beecounter.title')}
+                </CardTitle>
                 <CardDescription>
-                  Bees entering and exiting per measurement interval
+                  {t('beecounter.subtitle')}
                 </CardDescription>
               </div>
             </div>
@@ -488,9 +505,12 @@ export const HiveScaleBeeCounterPanel = ({
                 <div className="flex gap-1">
                   {(
                     [
-                      { key: 'activity', label: 'In / Out' },
-                      { key: 'flow', label: 'Net flow' },
-                      { key: 'cumulative', label: 'Cumulative' },
+                      { key: 'activity', label: t('beecounter.view.inOut') },
+                      { key: 'flow', label: t('beecounter.view.netFlow') },
+                      {
+                        key: 'cumulative',
+                        label: t('beecounter.view.cumulative'),
+                      },
                     ] as const
                   ).map(({ key, label }) => (
                     <Button
@@ -528,14 +548,14 @@ export const HiveScaleBeeCounterPanel = ({
                           <>
                             <Bar
                               dataKey="in1"
-                              name={`${scale1Name} in`}
+                              name={t('beecounter.series.in', { name: scale1Name })}
                               stackId="ch1"
                               fill="var(--chart-1)"
                               isAnimationActive={false}
                             />
                             <Bar
                               dataKey="out1"
-                              name={`${scale1Name} out`}
+                              name={t('beecounter.series.out', { name: scale1Name })}
                               stackId="ch1"
                               fill="var(--chart-2)"
                               isAnimationActive={false}
@@ -546,14 +566,14 @@ export const HiveScaleBeeCounterPanel = ({
                           <>
                             <Bar
                               dataKey="in2"
-                              name={`${scale2Name} in`}
+                              name={t('beecounter.series.in', { name: scale2Name })}
                               stackId="ch2"
                               fill="var(--chart-3)"
                               isAnimationActive={false}
                             />
                             <Bar
                               dataKey="out2"
-                              name={`${scale2Name} out`}
+                              name={t('beecounter.series.out', { name: scale2Name })}
                               stackId="ch2"
                               fill="var(--chart-4)"
                               isAnimationActive={false}
@@ -588,7 +608,7 @@ export const HiveScaleBeeCounterPanel = ({
                           <Line
                             type="monotone"
                             dataKey="net1"
-                            name={`${scale1Name} net`}
+                            name={t('beecounter.series.net', { name: scale1Name })}
                             stroke="var(--chart-1)"
                             dot={false}
                             connectNulls={false}
@@ -600,7 +620,7 @@ export const HiveScaleBeeCounterPanel = ({
                           <Line
                             type="monotone"
                             dataKey="net2"
-                            name={`${scale2Name} net`}
+                            name={t('beecounter.series.net', { name: scale2Name })}
                             stroke="var(--chart-3)"
                             dot={false}
                             connectNulls={false}
@@ -636,7 +656,7 @@ export const HiveScaleBeeCounterPanel = ({
                             <Line
                               type="monotone"
                               dataKey="cumIn1"
-                              name={`${scale1Name} total in`}
+                              name={t('beecounter.series.totalIn', { name: scale1Name })}
                               stroke="var(--chart-1)"
                               dot={false}
                               connectNulls={false}
@@ -646,7 +666,7 @@ export const HiveScaleBeeCounterPanel = ({
                             <Line
                               type="monotone"
                               dataKey="cumOut1"
-                              name={`${scale1Name} total out`}
+                              name={t('beecounter.series.totalOut', { name: scale1Name })}
                               stroke="var(--chart-2)"
                               dot={false}
                               connectNulls={false}
@@ -661,7 +681,7 @@ export const HiveScaleBeeCounterPanel = ({
                             <Line
                               type="monotone"
                               dataKey="cumIn2"
-                              name={`${scale2Name} total in`}
+                              name={t('beecounter.series.totalIn', { name: scale2Name })}
                               stroke="var(--chart-3)"
                               dot={false}
                               connectNulls={false}
@@ -671,7 +691,7 @@ export const HiveScaleBeeCounterPanel = ({
                             <Line
                               type="monotone"
                               dataKey="cumOut2"
-                              name={`${scale2Name} total out`}
+                              name={t('beecounter.series.totalOut', { name: scale2Name })}
                               stroke="var(--chart-4)"
                               dot={false}
                               connectNulls={false}
@@ -697,7 +717,7 @@ export const HiveScaleBeeCounterPanel = ({
               </>
             ) : (
               <div className="flex h-32 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
-                No BeeCounter data found for this device.
+                {t('beecounter.noData')}
               </div>
             )}
           </CardContent>
