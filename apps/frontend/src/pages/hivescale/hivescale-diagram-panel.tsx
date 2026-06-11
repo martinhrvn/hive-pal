@@ -14,6 +14,7 @@ import {
   Sun,
   Thermometer,
   Utensils,
+  Waves,
   Wrench,
   Zap,
   type LucideIcon,
@@ -82,7 +83,8 @@ type SeriesAxis =
   | 'current'
   | 'power'
   | 'dbfs'
-  | 'beecount';
+  | 'beecount'
+  | 'vibration';
 
 type SeriesKey =
   | 'scale1Weight'
@@ -103,7 +105,11 @@ type SeriesKey =
   | 'beeCounter1Net'
   | 'beeCounter2In'
   | 'beeCounter2Out'
-  | 'beeCounter2Net';
+  | 'beeCounter2Net'
+  | 'accel1Vibration'
+  | 'accel1SwarmBand'
+  | 'accel2Vibration'
+  | 'accel2SwarmBand';
 
 interface DiagramSeries {
   key: SeriesKey;
@@ -151,7 +157,7 @@ interface AxisScaleSettings {
 type AxisScaleSettingsMap = Record<SeriesAxis, AxisScaleSettings>;
 
 interface StoredDiagramSettings {
-  version: 5;
+  version: 6;
   visibleSeries: VisibleSeriesMap;
   axes: AxisScaleSettingsMap;
 }
@@ -178,6 +184,10 @@ const defaultVisibleSeries: VisibleSeriesMap = {
   beeCounter2In: false,
   beeCounter2Out: false,
   beeCounter2Net: false,
+  accel1Vibration: false,
+  accel1SwarmBand: false,
+  accel2Vibration: false,
+  accel2SwarmBand: false,
 };
 
 const defaultAxisSettings: AxisScaleSettings = {
@@ -188,7 +198,7 @@ const defaultAxisSettings: AxisScaleSettings = {
 };
 
 const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
-  version: 5,
+  version: 6,
   visibleSeries: { ...defaultVisibleSeries },
   axes: {
     weight: { ...defaultAxisSettings, side: 'left' },
@@ -200,6 +210,7 @@ const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
     power: { ...defaultAxisSettings, side: 'right' },
     dbfs: { ...defaultAxisSettings, side: 'right' },
     beecount: { ...defaultAxisSettings, scaleMode: 'zeroToMax', side: 'right' },
+    vibration: { ...defaultAxisSettings, scaleMode: 'zeroToMax', side: 'right' },
   },
 });
 
@@ -222,6 +233,7 @@ const axisOrder: SeriesAxis[] = [
   'power',
   'dbfs',
   'beecount',
+  'vibration',
 ];
 
 const axisPresentation: Record<
@@ -241,6 +253,7 @@ const axisPresentation: Record<
   power: { labelKey: 'diagram.axis.power', unit: 'mW', Icon: Sun },
   dbfs: { labelKey: 'diagram.axis.sound', unit: 'dBFS', Icon: Activity },
   beecount: { labelKey: 'diagram.axis.beecount', unit: 'bees', Icon: Activity },
+  vibration: { labelKey: 'diagram.axis.vibration', unit: 'mg', Icon: Waves },
 };
 
 type SeriesTuple = readonly [
@@ -264,6 +277,8 @@ const scale1SeriesTuples: SeriesTuple[] = [
   ['scale1Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--primary)'],
   ['scale1Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-2)'],
   ['micLeftRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-1)'],
+  ['accel1Vibration', 'diagram.series.vibration', 'vibration', 'mg', 'var(--chart-1)'],
+  ['accel1SwarmBand', 'diagram.series.swarmBand', 'vibration', 'mg', 'var(--chart-3)'],
   ['beeCounter1In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
   ['beeCounter1Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-4)'],
   ['beeCounter1Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--chart-5)'],
@@ -273,6 +288,8 @@ const scale2SeriesTuples: SeriesTuple[] = [
   ['scale2Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--muted-foreground)'],
   ['scale2Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-4)'],
   ['micRightRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-2)'],
+  ['accel2Vibration', 'diagram.series.vibration', 'vibration', 'mg', 'var(--chart-2)'],
+  ['accel2SwarmBand', 'diagram.series.swarmBand', 'vibration', 'mg', 'var(--chart-4)'],
   ['beeCounter2In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
   ['beeCounter2Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-5)'],
   ['beeCounter2Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--primary)'],
@@ -551,10 +568,10 @@ const loadDiagramSettings = (deviceId: string): StoredDiagramSettings => {
     );
     if (!raw) return getDefaultDiagramSettings();
     const parsed = JSON.parse(raw) as Partial<StoredDiagramSettings>;
-    // version 5 adds beecount series — reset if older
-    if (parsed.version !== 5) return getDefaultDiagramSettings();
+    // version 6 adds accelerometer/vibration series — reset if older
+    if (parsed.version !== 6) return getDefaultDiagramSettings();
     return {
-      version: 5,
+      version: 6,
       visibleSeries: mergeVisibleSeries(parsed.visibleSeries),
       axes: mergeAxisSettings(parsed.axes),
     };
@@ -829,6 +846,10 @@ export const HiveScaleDiagramPanel = ({
           // Zero-counts from an ok counter are valid; only suppress if counter is not ok
           const counter1Ok = item.bee_counter_1_ok !== false;
           const counter2Ok = item.bee_counter_2_ok !== false;
+          // Same for the accelerometers: a missing/not-ok sensor must show as a
+          // gap, not a misleading 0 mg "perfectly still" reading.
+          const accel1Ok = item.accel_1_ok !== false;
+          const accel2Ok = item.accel_2_ok !== false;
           return {
             timestamp: new Date(item.measured_at).getTime(),
             measuredAt: item.measured_at,
@@ -860,6 +881,14 @@ export const HiveScaleDiagramPanel = ({
             beeCounter2In: counter2Ok ? bc2In : null,
             beeCounter2Out: counter2Ok ? bc2Out : null,
             beeCounter2Net: counter2Ok ? bc2Net : null,
+            accel1Vibration: accel1Ok ? toFiniteNumber(item.accel_1_rms_mg) : null,
+            accel1SwarmBand: accel1Ok
+              ? toFiniteNumber(item.accel_1_band_swarm_mg)
+              : null,
+            accel2Vibration: accel2Ok ? toFiniteNumber(item.accel_2_rms_mg) : null,
+            accel2SwarmBand: accel2Ok
+              ? toFiniteNumber(item.accel_2_band_swarm_mg)
+              : null,
           };
         })
         .filter(item => Number.isFinite(item.timestamp)),
@@ -1224,6 +1253,7 @@ export const HiveScaleDiagramPanel = ({
                     power: 62,
                     dbfs: 68,
                     beecount: 62,
+                    vibration: 58,
                   };
                   return (
                     <YAxis

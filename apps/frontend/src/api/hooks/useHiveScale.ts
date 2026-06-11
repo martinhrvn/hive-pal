@@ -106,6 +106,25 @@ export interface HiveScaleMeasurement {
   bee_counter_2_busy_retries: number | null;
   bee_counter_2_read_attempts: number | null;
   bee_counter_2_latch_succeeded: boolean | null;
+  // Accelerometer (LIS3DH / LIS2DH12 per-hive vibration, mg, AC/gravity-removed)
+  accel_1_ok: boolean | null;
+  accel_1_sample_rate_hz: number | null;
+  accel_1_sample_count: number | null;
+  accel_1_range_g: number | null;
+  accel_1_rms_mg: number | null;
+  accel_1_peak_mg: number | null;
+  accel_1_band_swarm_mg: number | null; //   8–30 Hz  (~20 Hz pre-swarm signal)
+  accel_1_band_fanning_mg: number | null; //  30–100 Hz (fanning / ventilation)
+  accel_1_band_activity_mg: number | null; // 100–200 Hz (general activity)
+  accel_2_ok: boolean | null;
+  accel_2_sample_rate_hz: number | null;
+  accel_2_sample_count: number | null;
+  accel_2_range_g: number | null;
+  accel_2_rms_mg: number | null;
+  accel_2_peak_mg: number | null;
+  accel_2_band_swarm_mg: number | null;
+  accel_2_band_fanning_mg: number | null;
+  accel_2_band_activity_mg: number | null;
 }
 
 export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';

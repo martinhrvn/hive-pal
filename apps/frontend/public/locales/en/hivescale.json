@@ -306,6 +306,8 @@
       "weight": "{{name}} weight",
       "temp": "{{name}} temp",
       "micRms": "{{name}} mic RMS",
+      "vibration": "{{name}} vibration",
+      "swarmBand": "{{name}} swarm band (8–30 Hz)",
       "beesIn": "{{name}} bees in",
       "beesOut": "{{name}} bees out",
       "netFlow": "{{name}} net flow",
@@ -330,7 +332,8 @@
       "current": "Current",
       "power": "Power",
       "sound": "Sound",
-      "beecount": "Bee count"
+      "beecount": "Bee count",
+      "vibration": "Vibration"
     },
     "marker": {
       "inspection": "Inspection",

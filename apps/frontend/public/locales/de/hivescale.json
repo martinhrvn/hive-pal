@@ -306,6 +306,8 @@
       "weight": "{{name}} Gewicht",
       "temp": "{{name}} Temperatur",
       "micRms": "{{name}} Mikro-RMS",
+      "vibration": "{{name}} Vibration",
+      "swarmBand": "{{name}} Schwarmband (8–30 Hz)",
       "beesIn": "{{name}} Bienen rein",
       "beesOut": "{{name}} Bienen raus",
       "netFlow": "{{name}} Nettofluss",
@@ -330,7 +332,8 @@
       "current": "Strom",
       "power": "Leistung",
       "sound": "Schall",
-      "beecount": "Bienenanzahl"
+      "beecount": "Bienenanzahl",
+      "vibration": "Vibration"
     },
     "marker": {
       "inspection": "Inspektion",
