@@ -28,46 +28,94 @@ import { Input } from '@/components/ui/input';
 import { Pill } from '@/components/common/pill';
 import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
 
+type PerEighth = {
+  bees: number;
+  drones: number;
+  workerBroodCells: number;
+  droneBroodCells: number;
+  pollenG: number;
+  feedG: number;
+};
+
+type FrameDimensions = {
+  widthMm: number;
+  heightMm: number;
+};
+
+type FrameTypeConfig = {
+  id: string;
+  label: string;
+  dimensions: string;
+  dimensionsMm: FrameDimensions;
+  perEighth: PerEighth;
+};
+
+const ZANDER_DIMENSIONS: FrameDimensions = { widthMm: 420, heightMm: 220 };
+const ZANDER_PER_EIGHTH: PerEighth = {
+  bees: 125,
+  drones: 100,
+  workerBroodCells: 400,
+  droneBroodCells: 230,
+  pollenG: 40,
+  feedG: 125,
+};
+
+function formatFrameDimensions(dimensions: FrameDimensions): string {
+  return `${dimensions.widthMm}×${dimensions.heightMm} mm`;
+}
+
+function calculateFromZanderArea(dimensions: FrameDimensions): PerEighth {
+  const zanderArea = ZANDER_DIMENSIONS.widthMm * ZANDER_DIMENSIONS.heightMm;
+  const frameArea = Math.max(0, dimensions.widthMm * dimensions.heightMm);
+  const scale = zanderArea > 0 ? frameArea / zanderArea : 1;
+
+  return {
+    bees: Math.round(ZANDER_PER_EIGHTH.bees * scale),
+    drones: Math.round(ZANDER_PER_EIGHTH.drones * scale),
+    workerBroodCells: Math.round(
+      ZANDER_PER_EIGHTH.workerBroodCells * scale,
+    ),
+    droneBroodCells: Math.round(ZANDER_PER_EIGHTH.droneBroodCells * scale),
+    pollenG: Math.round(ZANDER_PER_EIGHTH.pollenG * scale),
+    feedG: Math.round(ZANDER_PER_EIGHTH.feedG * scale),
+  };
+}
+
 // Estimation values per 1/8 of a comb side, from Dr. Pia Aumeier's
-// population-estimation cheat sheet ("Durchzählen bitte!").
+// population-estimation cheat sheet ("Durchzählen bitte!"). Custom frames are
+// calculated from the Zander values by scaling with comb-side frame area.
 const FRAME_TYPES = [
   {
     id: 'zander',
     label: 'Zander',
-    dimensions: '420×220 mm',
-    perEighth: { bees: 125, drones: 100, workerBroodCells: 400, droneBroodCells: 230, pollenG: 40, feedG: 125 },
+    dimensions: formatFrameDimensions(ZANDER_DIMENSIONS),
+    dimensionsMm: ZANDER_DIMENSIONS,
+    perEighth: ZANDER_PER_EIGHTH,
   },
   {
     id: 'dnm',
     label: 'Deutsch-Normal',
     dimensions: '370×223 mm',
-    perEighth: { bees: 111, drones: 89, workerBroodCells: 357, droneBroodCells: 205, pollenG: 36, feedG: 111 },
+    dimensionsMm: { widthMm: 370, heightMm: 223 },
+    perEighth: calculateFromZanderArea({ widthMm: 370, heightMm: 223 }),
   },
   {
     id: 'langstroth',
     label: 'Langstroth',
     dimensions: '448×232 mm',
-    perEighth: { bees: 140, drones: 112, workerBroodCells: 450, droneBroodCells: 259, pollenG: 45, feedG: 140 },
+    dimensionsMm: { widthMm: 448, heightMm: 232 },
+    perEighth: calculateFromZanderArea({ widthMm: 448, heightMm: 232 }),
   },
   {
     id: 'dadant',
     label: 'Dadant',
     dimensions: '448×285 mm',
-    perEighth: { bees: 176, drones: 141, workerBroodCells: 564, droneBroodCells: 324, pollenG: 56, feedG: 176 },
+    dimensionsMm: { widthMm: 448, heightMm: 285 },
+    perEighth: calculateFromZanderArea({ widthMm: 448, heightMm: 285 }),
   },
-] as const;
+] as const satisfies readonly FrameTypeConfig[];
 
 type FrameTypeId = (typeof FRAME_TYPES)[number]['id'] | 'custom';
-type PerEighth = (typeof FRAME_TYPES)[number]['perEighth'];
-
-const PER_EIGHTH_FIELDS = [
-  { id: 'bees' as const, unit: '' },
-  { id: 'drones' as const, unit: '' },
-  { id: 'workerBroodCells' as const, unit: '' },
-  { id: 'droneBroodCells' as const, unit: '' },
-  { id: 'pollenG' as const, unit: 'g' },
-  { id: 'feedG' as const, unit: 'g' },
-];
 
 // All quantities are counted directly as total eighths across all comb sides.
 const CONTENT_FIELDS = [
@@ -329,17 +377,23 @@ const structuredData = {
 export function LiebefelderPage() {
   const { t } = useTranslation('common');
   const [frameType, setFrameType] = useState<FrameTypeId>('zander');
-  const [customPer, setCustomPer] = useState<PerEighth>(
-    FRAME_TYPES[0].perEighth,
-  );
+  const [customDimensions, setCustomDimensions] =
+    useState<FrameDimensions>(ZANDER_DIMENSIONS);
   const [content, setContent] = useState<ContentCounts>(EMPTY_CONTENT);
   const [evaluationId, setEvaluationId] = useState<EvaluationId | null>(null);
 
+  const customPer = useMemo(
+    () => calculateFromZanderArea(customDimensions),
+    [customDimensions],
+  );
   const selected = FRAME_TYPES.find(f => f.id === frameType) ?? null;
   const per = selected ? selected.perEighth : customPer;
   const frameLabel = selected
     ? selected.label
-    : t('liebefelder.frameType.custom');
+    : `${t('liebefelder.frameType.custom')} (${formatFrameDimensions(customDimensions)})`;
+  const customAreaRatio =
+    (customDimensions.widthMm * customDimensions.heightMm) /
+    (ZANDER_DIMENSIONS.widthMm * ZANDER_DIMENSIONS.heightMm);
 
   const results = useMemo(() => {
     const bees = Math.round(content.bees * per.bees);
@@ -372,11 +426,12 @@ export function LiebefelderPage() {
   const setContentCount = (field: ContentFieldId) => (value: number) =>
     setContent(prev => ({ ...prev, [field]: value }));
 
-  const setCustomValue =
-    (field: keyof PerEighth) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      setCustomPer(prev => ({
+  const setCustomDimension =
+    (field: keyof FrameDimensions) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setCustomDimensions(prev => ({
         ...prev,
-        [field]: Math.max(0, Number(e.target.value) || 0),
+        [field]: Math.max(1, Math.round(Number(e.target.value) || 1)),
       }));
 
   const renderEvaluation = () => {
@@ -604,24 +659,38 @@ export function LiebefelderPage() {
             {frameType === 'custom' && (
               <div className="mt-4 space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  {t('liebefelder.frameType.customDescription')}
+                  Enter the comb-side frame dimensions. Hive Pal derives bees,
+                  drones, brood cells, pollen and feed per 1/8 from Zander by
+                  scaling with frame area.
                 </p>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {PER_EIGHTH_FIELDS.map(field => (
-                    <div key={field.id} className="space-y-1">
-                      <p className="text-xs text-muted-foreground">
-                        {t(`liebefelder.reference.${field.id}`)}
-                        {field.unit && ` (${field.unit})`}
-                      </p>
-                      <Input
-                        type="number"
-                        min={0}
-                        value={customPer[field.id]}
-                        onChange={setCustomValue(field.id)}
-                        className="h-8 tabular-nums"
-                      />
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 gap-3 sm:max-w-md">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Width (mm)</p>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={customDimensions.widthMm}
+                      onChange={setCustomDimension('widthMm')}
+                      className="h-8 tabular-nums"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Height (mm)</p>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={customDimensions.heightMm}
+                      onChange={setCustomDimension('heightMm')}
+                      className="h-8 tabular-nums"
+                    />
+                  </div>
+                </div>
+                <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+                  <p>
+                    Derived from Zander ({formatFrameDimensions(ZANDER_DIMENSIONS)}) at{' '}
+                    {customAreaRatio.toFixed(2)}× area. The calculated per-1/8
+                    values are shown in the reference card.
+                  </p>
                 </div>
               </div>
             )}
