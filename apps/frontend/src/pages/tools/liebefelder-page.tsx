@@ -9,6 +9,7 @@ import {
   XCircle,
   AlertTriangle,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   PageGrid,
   MainContent,
@@ -22,10 +23,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Pill } from '@/components/common/pill';
 import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
-
-const SOURCE_ATTRIBUTION = 'Source: Dr. Pia Aumeier, Germany';
 
 // Estimation values per 1/8 of a comb side, from Dr. Pia Aumeier's
 // population-estimation cheat sheet ("Durchzählen bitte!").
@@ -56,40 +56,33 @@ const FRAME_TYPES = [
   },
 ] as const;
 
-type FrameTypeId = (typeof FRAME_TYPES)[number]['id'];
+type FrameTypeId = (typeof FRAME_TYPES)[number]['id'] | 'custom';
+type PerEighth = (typeof FRAME_TYPES)[number]['perEighth'];
 
-// Bee coverage is entered per side in eighths (8/8 = fully covered side).
-const COVERAGE_LEVELS = [
-  { id: 'e8' as const, label: '8/8', note: 'fully covered', eighths: 8 },
-  { id: 'e7' as const, label: '7/8', note: '', eighths: 7 },
-  { id: 'e6' as const, label: '6/8', note: '', eighths: 6 },
-  { id: 'e5' as const, label: '5/8', note: '', eighths: 5 },
-  { id: 'e4' as const, label: '4/8', note: 'half', eighths: 4 },
-  { id: 'e3' as const, label: '3/8', note: '', eighths: 3 },
-  { id: 'e2' as const, label: '2/8', note: '', eighths: 2 },
-  { id: 'e1' as const, label: '1/8', note: 'nearly empty', eighths: 1 },
+const PER_EIGHTH_FIELDS = [
+  { id: 'bees' as const, unit: '' },
+  { id: 'drones' as const, unit: '' },
+  { id: 'workerBroodCells' as const, unit: '' },
+  { id: 'droneBroodCells' as const, unit: '' },
+  { id: 'pollenG' as const, unit: 'g' },
+  { id: 'feedG' as const, unit: 'g' },
 ];
 
-type CoverageId = (typeof COVERAGE_LEVELS)[number]['id'];
-type CoverageCounts = Record<CoverageId, number>;
-
-const EMPTY_COVERAGE: CoverageCounts = {
-  e8: 0, e7: 0, e6: 0, e5: 0, e4: 0, e3: 0, e2: 0, e1: 0,
-};
-
-// Brood and stores are counted directly as total eighths across all combs.
+// All quantities are counted directly as total eighths across all comb sides.
 const CONTENT_FIELDS = [
-  { id: 'cappedWorkerBrood' as const, label: 'Capped worker brood', hint: 'emerges within 0–12 days' },
-  { id: 'openWorkerBrood' as const, label: 'Open worker brood', hint: 'emerges within 13–21 days' },
-  { id: 'droneBrood' as const, label: 'Drone brood', hint: 'capped 0–14 d, open 15–24 d' },
-  { id: 'pollen' as const, label: 'Pollen', hint: 'stored bee bread' },
-  { id: 'feed' as const, label: 'Feed / honey', hint: 'capped or open stores' },
+  { id: 'bees' as const },
+  { id: 'cappedWorkerBrood' as const },
+  { id: 'openWorkerBrood' as const },
+  { id: 'droneBrood' as const },
+  { id: 'pollen' as const },
+  { id: 'feed' as const },
 ];
 
 type ContentFieldId = (typeof CONTENT_FIELDS)[number]['id'];
 type ContentCounts = Record<ContentFieldId, number>;
 
 const EMPTY_CONTENT: ContentCounts = {
+  bees: 0,
   cappedWorkerBrood: 0,
   openWorkerBrood: 0,
   droneBrood: 0,
@@ -101,7 +94,6 @@ const EMPTY_CONTENT: ContentCounts = {
 const EVALUATION_CONTEXTS = [
   {
     id: 'split_mid_may',
-    label: 'Split by mid-May',
     kind: 'split' as const,
     minBees: 1000,
     minCappedBrood: 4000,
@@ -109,7 +101,6 @@ const EVALUATION_CONTEXTS = [
   },
   {
     id: 'split_end_may',
-    label: 'Split by end of May',
     kind: 'split' as const,
     minBees: 2000,
     minCappedBrood: 6000,
@@ -117,7 +108,6 @@ const EVALUATION_CONTEXTS = [
   },
   {
     id: 'split_mid_june',
-    label: 'Split by mid-June',
     kind: 'split' as const,
     minBees: 3000,
     minCappedBrood: 9000,
@@ -125,12 +115,10 @@ const EVALUATION_CONTEXTS = [
   },
   {
     id: 'winter_aug',
-    label: 'Wintering, mid-August',
     kind: 'winter_aug' as const,
   },
   {
     id: 'winter_oct',
-    label: 'Wintering, end of October',
     kind: 'winter_oct' as const,
   },
 ];
@@ -157,9 +145,15 @@ function Counter({
       >
         <Minus className="h-3 w-3" />
       </Button>
-      <span className="w-8 text-center text-base font-semibold tabular-nums">
-        {value}
-      </span>
+      <Input
+        type="number"
+        min={0}
+        value={value}
+        onChange={e =>
+          onChange(Math.max(0, Math.round(Number(e.target.value) || 0)))
+        }
+        className="h-8 w-16 text-center text-base font-semibold tabular-nums"
+      />
       <Button
         type="button"
         variant="outline"
@@ -216,25 +210,27 @@ const structuredData = {
 };
 
 export function LiebefelderPage() {
+  const { t } = useTranslation('common');
   const [frameType, setFrameType] = useState<FrameTypeId>('zander');
-  const [coverage, setCoverage] = useState<CoverageCounts>(EMPTY_COVERAGE);
+  const [customPer, setCustomPer] = useState<PerEighth>(
+    FRAME_TYPES[0].perEighth,
+  );
   const [content, setContent] = useState<ContentCounts>(EMPTY_CONTENT);
   const [evaluationId, setEvaluationId] = useState<EvaluationId | null>(null);
 
-  const selected = FRAME_TYPES.find(f => f.id === frameType)!;
-  const per = selected.perEighth;
+  const selected = FRAME_TYPES.find(f => f.id === frameType) ?? null;
+  const per = selected ? selected.perEighth : customPer;
+  const frameLabel = selected
+    ? selected.label
+    : t('liebefelder.frameType.custom');
 
   const results = useMemo(() => {
-    const beeEighths = COVERAGE_LEVELS.reduce(
-      (sum, level) => sum + coverage[level.id] * level.eighths,
-      0,
-    );
-    const bees = Math.round(beeEighths * per.bees);
+    const bees = Math.round(content.bees * per.bees);
     const cappedBroodCells = Math.round(content.cappedWorkerBrood * per.workerBroodCells);
     const openBroodCells = Math.round(content.openWorkerBrood * per.workerBroodCells);
     const droneBroodCells = Math.round(content.droneBrood * per.droneBroodCells);
     return {
-      beeEighths,
+      beeEighths: content.bees,
       bees,
       // Rule of thumb (Aumeier): ~1,000 bees fill one Wabengasse (frame gap).
       wabengassen: bees / 1000,
@@ -244,7 +240,7 @@ export function LiebefelderPage() {
       pollenGrams: content.pollen * per.pollenG,
       feedGrams: content.feed * per.feedG,
     };
-  }, [coverage, content, per]);
+  }, [content, per]);
 
   const hasBees = results.beeEighths > 0;
   const hasBrood =
@@ -256,11 +252,15 @@ export function LiebefelderPage() {
 
   const evaluation = EVALUATION_CONTEXTS.find(e => e.id === evaluationId) ?? null;
 
-  const setCoverageCount = (level: CoverageId) => (value: number) =>
-    setCoverage(prev => ({ ...prev, [level]: value }));
-
   const setContentCount = (field: ContentFieldId) => (value: number) =>
     setContent(prev => ({ ...prev, [field]: value }));
+
+  const setCustomValue =
+    (field: keyof PerEighth) => (e: React.ChangeEvent<HTMLInputElement>) =>
+      setCustomPer(prev => ({
+        ...prev,
+        [field]: Math.max(0, Number(e.target.value) || 0),
+      }));
 
   const renderEvaluation = () => {
     if (!evaluation) return null;
@@ -270,18 +270,27 @@ export function LiebefelderPage() {
         <div className="space-y-1.5">
           <CheckRow
             ok={results.bees >= evaluation.minBees}
-            label={`≥ ${evaluation.minBees.toLocaleString()} bees (measured: ~${results.bees.toLocaleString()})`}
+            label={t('liebefelder.evaluation.checks.minBees', {
+              min: evaluation.minBees.toLocaleString(),
+              measured: results.bees.toLocaleString(),
+            })}
           />
           <CheckRow
             ok={results.cappedBroodCells >= evaluation.minCappedBrood}
-            label={`≥ ${evaluation.minCappedBrood.toLocaleString()} capped worker brood cells (measured: ~${results.cappedBroodCells.toLocaleString()})`}
+            label={t('liebefelder.evaluation.checks.minCappedBrood', {
+              min: evaluation.minCappedBrood.toLocaleString(),
+              measured: results.cappedBroodCells.toLocaleString(),
+            })}
           />
           <CheckRow
             ok={results.openBroodCells >= evaluation.minOpenBrood}
-            label={`≥ ${evaluation.minOpenBrood.toLocaleString()} open worker brood cells (measured: ~${results.openBroodCells.toLocaleString()})`}
+            label={t('liebefelder.evaluation.checks.minOpenBrood', {
+              min: evaluation.minOpenBrood.toLocaleString(),
+              measured: results.openBroodCells.toLocaleString(),
+            })}
           />
           <p className="pt-1 text-xs text-muted-foreground">
-            A broodless mating split (Begattungsableger) created by mid-May needs only ≥ 1,000 bees and no brood.
+            {t('liebefelder.evaluation.splitNote')}
           </p>
         </div>
       );
@@ -293,10 +302,12 @@ export function LiebefelderPage() {
         <div className="space-y-1.5">
           <CheckRow
             ok={ok}
-            label={`> 15,000 bees regardless of brood (measured: ~${results.bees.toLocaleString()})`}
+            label={t('liebefelder.evaluation.winterAug.check', {
+              measured: results.bees.toLocaleString(),
+            })}
           />
           <p className="pt-1 text-xs text-muted-foreground">
-            Applies to established colonies in mid-August: a colony this strong hangs through into the floor across more than 5 Wabengassen. Weaker, shrinking colonies and this year's splits are assessed at the end of October instead.
+            {t('liebefelder.evaluation.winterAug.note')}
           </p>
         </div>
       );
@@ -304,23 +315,24 @@ export function LiebefelderPage() {
 
     // winter_oct: classify by occupied Wabengassen after a cold night.
     const gassen = Math.round(results.wabengassen);
+    const values = { bees: results.bees.toLocaleString(), gassen };
     let verdict: { icon: React.ReactNode; text: string; className: string };
     if (gassen >= 5) {
       verdict = {
         icon: <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />,
-        text: `Ready for winter — ~${results.bees.toLocaleString()} bees on ${gassen} Wabengassen (5 or more occupied gaps; over 5,000 bees).`,
+        text: t('liebefelder.evaluation.winterOct.ready', values),
         className: 'text-green-700 dark:text-green-400',
       };
     } else if (gassen === 4) {
       verdict = {
         icon: <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" />,
-        text: `Minimal wintering strength — ~${results.bees.toLocaleString()} bees on 4 Wabengassen (around 5,000 bees).`,
+        text: t('liebefelder.evaluation.winterOct.minimal', values),
         className: 'text-amber-700 dark:text-amber-400',
       };
     } else {
       verdict = {
         icon: <XCircle className="h-4 w-4 shrink-0 text-red-500" />,
-        text: `Strongly at risk of winter loss — ~${results.bees.toLocaleString()} bees on ${gassen} Wabengassen (3 or fewer occupied gaps; under 5,000 bees). Combine or dissolve.`,
+        text: t('liebefelder.evaluation.winterOct.atRisk', values),
         className: 'text-red-700 dark:text-red-400',
       };
     }
@@ -331,7 +343,7 @@ export function LiebefelderPage() {
           <span className={verdict.className}>{verdict.text}</span>
         </div>
         <p className="pt-1 text-xs text-muted-foreground">
-          Assess as late as possible, after a cold night (≈ 5 °C), by counting the Wabengassen occupied by bees.
+          {t('liebefelder.evaluation.winterOct.note')}
         </p>
       </div>
     );
@@ -349,9 +361,9 @@ export function LiebefelderPage() {
 
       <MainContent>
         <ToolPageHeader
-          title="Liebefelder Schätzmethode"
-          description="Colony strength estimator"
-          intro="The Liebefelder method estimates colony strength by assessing each comb side in eighths (1/8 steps): how much is covered with bees, brood, pollen, and feed. Estimation values and seasonal guidelines are based on the population-estimation cheat sheet by Dr. Pia Aumeier, Germany."
+          title={t('liebefelder.title')}
+          description={t('liebefelder.description')}
+          intro={t('liebefelder.intro')}
         />
 
         {/* Frame type */}
@@ -359,10 +371,10 @@ export function LiebefelderPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Bug className="h-5 w-5" />
-              Frame type
+              {t('liebefelder.frameType.title')}
             </CardTitle>
             <CardDescription>
-              Choose the frame format used in your hive — it determines the estimation values per eighth.
+              {t('liebefelder.frameType.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -377,45 +389,52 @@ export function LiebefelderPage() {
                   <span className="ml-1 text-xs opacity-60">({f.dimensions})</span>
                 </Pill>
               ))}
+              <Pill
+                active={frameType === 'custom'}
+                onClick={() => setFrameType('custom')}
+              >
+                {t('liebefelder.frameType.custom')}
+              </Pill>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Bee coverage */}
-        <Card className="mb-4">
-          <CardHeader>
-            <CardTitle className="text-base">Bees — coverage per side</CardTitle>
-            <CardDescription>
-              For each comb side, estimate in eighths how much is covered with a layer of bees, and count the sides per coverage level. One eighth holds about {per.bees} bees ({selected.label}).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {COVERAGE_LEVELS.map(level => (
-                <div
-                  key={level.id}
-                  className="flex flex-col items-center gap-2 rounded-lg border bg-muted/30 p-3"
-                >
-                  <p className="text-sm font-semibold">{level.label}</p>
-                  {level.note && (
-                    <p className="text-xs text-muted-foreground">{level.note}</p>
-                  )}
-                  <Counter
-                    value={coverage[level.id]}
-                    onChange={setCoverageCount(level.id)}
-                  />
+            {frameType === 'custom' && (
+              <div className="mt-4 space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  {t('liebefelder.frameType.customDescription')}
+                </p>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {PER_EIGHTH_FIELDS.map(field => (
+                    <div key={field.id} className="space-y-1">
+                      <p className="text-xs text-muted-foreground">
+                        {t(`liebefelder.reference.${field.id}`)}
+                        {field.unit && ` (${field.unit})`}
+                      </p>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={customPer[field.id]}
+                        onChange={setCustomValue(field.id)}
+                        className="h-8 tabular-nums"
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Brood and stores */}
+        {/* Counts: bees, brood and stores as total eighths */}
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle className="text-base">Brood &amp; stores — total eighths (optional)</CardTitle>
+            <CardTitle className="text-base">
+              {t('liebefelder.counts.title')}
+            </CardTitle>
             <CardDescription>
-              Sum the eighths of comb area across all combs for each category. Needed for split evaluation and feed assessment.
+              {t('liebefelder.counts.description', {
+                bees: per.bees,
+                frame: frameLabel,
+              })}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -426,8 +445,12 @@ export function LiebefelderPage() {
                   className="flex items-center justify-between gap-4"
                 >
                   <div>
-                    <p className="text-sm font-medium">{field.label}</p>
-                    <p className="text-xs text-muted-foreground">{field.hint}</p>
+                    <p className="text-sm font-medium">
+                      {t(`liebefelder.fields.${field.id}`)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {t(`liebefelder.fields.${field.id}Hint`)}
+                    </p>
                   </div>
                   <Counter
                     value={content[field.id]}
@@ -442,36 +465,48 @@ export function LiebefelderPage() {
         {/* Results */}
         <Card className={`mb-4 ${hasAnyResult ? '' : 'opacity-60'}`}>
           <CardHeader>
-            <CardTitle className="text-base">Result</CardTitle>
+            <CardTitle className="text-base">
+              {t('liebefelder.result.title')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {!hasAnyResult ? (
               <p className="text-sm text-muted-foreground">
-                Enter your eighth counts above to see the estimate.
+                {t('liebefelder.result.empty')}
               </p>
             ) : (
               <div className="space-y-4">
                 {hasBees && (
                   <div className="grid grid-cols-3 gap-3 text-center">
                     <div className="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/30">
-                      <p className="text-xs text-muted-foreground">Bees</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.bees')}
+                      </p>
                       <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">
                         ~{results.bees.toLocaleString()}
                       </p>
                     </div>
                     <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">Wabengassen</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.wabengassen')}
+                      </p>
                       <p className="text-2xl font-bold">
                         {results.wabengassen.toFixed(1)}
                       </p>
-                      <p className="text-xs text-muted-foreground">≈ 1,000 bees each</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.wabengassenNote')}
+                      </p>
                     </div>
                     <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">Strength field</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.strengthField')}
+                      </p>
                       <p className="text-2xl font-bold">
                         {Math.round(results.wabengassen)}
                       </p>
-                      <p className="text-xs text-muted-foreground">for inspection</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.strengthFieldNote')}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -479,46 +514,64 @@ export function LiebefelderPage() {
                 {hasBrood && (
                   <div className="grid grid-cols-3 gap-3 text-center">
                     <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">Capped worker brood</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.cappedBrood')}
+                      </p>
                       <p className="text-xl font-bold">
                         ~{results.cappedBroodCells.toLocaleString()}
                       </p>
-                      <p className="text-xs text-muted-foreground">cells</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.cells')}
+                      </p>
                     </div>
                     <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">Open worker brood</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.openBrood')}
+                      </p>
                       <p className="text-xl font-bold">
                         ~{results.openBroodCells.toLocaleString()}
                       </p>
-                      <p className="text-xs text-muted-foreground">cells</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.cells')}
+                      </p>
                     </div>
                     <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">Drone brood</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.droneBrood')}
+                      </p>
                       <p className="text-xl font-bold">
                         ~{results.droneBroodCells.toLocaleString()}
                       </p>
-                      <p className="text-xs text-muted-foreground">cells</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.cells')}
+                      </p>
                     </div>
                   </div>
                 )}
 
                 {results.cappedBroodCells > 0 && (
                   <p className="text-xs text-muted-foreground">
-                    Within the next 12 days, ~{results.cappedBroodCells.toLocaleString()} bees will emerge from the capped worker brood — roughly{' '}
-                    {(results.cappedBroodCells / 1000).toFixed(1)} additional Wabengassen. Expand the hive in time.
+                    {t('liebefelder.result.emergeNote', {
+                      cells: results.cappedBroodCells.toLocaleString(),
+                      gassen: (results.cappedBroodCells / 1000).toFixed(1),
+                    })}
                   </p>
                 )}
 
                 {hasStores && (
                   <div className="grid grid-cols-2 gap-3 text-center">
                     <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">Pollen</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.pollen')}
+                      </p>
                       <p className="text-xl font-bold">
                         ~{formatGrams(results.pollenGrams)}
                       </p>
                     </div>
                     <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">Feed / honey</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('liebefelder.result.feed')}
+                      </p>
                       <p className="text-xl font-bold">
                         ~{formatGrams(results.feedGrams)}
                       </p>
@@ -535,10 +588,10 @@ export function LiebefelderPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ClipboardCheck className="h-5 w-5" />
-              Seasonal evaluation
+              {t('liebefelder.evaluation.title')}
             </CardTitle>
             <CardDescription>
-              Compare the measured colony against the seasonal benchmarks by Dr. Pia Aumeier, Germany.
+              {t('liebefelder.evaluation.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -551,20 +604,20 @@ export function LiebefelderPage() {
                     setEvaluationId(evaluationId === ctx.id ? null : ctx.id)
                   }
                 >
-                  {ctx.label}
+                  {t(`liebefelder.evaluation.contexts.${ctx.id}`)}
                 </Pill>
               ))}
             </div>
 
             {!evaluation && (
               <p className="text-sm text-muted-foreground">
-                Select a context to evaluate the colony.
+                {t('liebefelder.evaluation.selectPrompt')}
               </p>
             )}
 
             {evaluation && !hasAnyResult && (
               <p className="text-sm text-muted-foreground">
-                Enter your counts above first.
+                {t('liebefelder.evaluation.enterCountsFirst')}
               </p>
             )}
 
@@ -578,18 +631,18 @@ export function LiebefelderPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              One eighth of a {selected.label} comb side contains…
+              {t('liebefelder.reference.title', { frame: frameLabel })}
             </CardTitle>
-            <CardDescription>{SOURCE_ATTRIBUTION}</CardDescription>
+            <CardDescription>{t('liebefelder.source')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-1.5 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Bees</span><span className="font-medium">{per.bees}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Drones</span><span className="font-medium">{per.drones}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Worker brood (capped/open)</span><span className="font-medium">{per.workerBroodCells} cells</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Drone brood (capped/open)</span><span className="font-medium">{per.droneBroodCells} cells</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Pollen</span><span className="font-medium">{per.pollenG} g</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Feed / honey</span><span className="font-medium">{per.feedG} g</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.bees')}</span><span className="font-medium">{per.bees}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.drones')}</span><span className="font-medium">{per.drones}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.workerBroodCells')}</span><span className="font-medium">{t('liebefelder.reference.cellsValue', { value: per.workerBroodCells })}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.droneBroodCells')}</span><span className="font-medium">{t('liebefelder.reference.cellsValue', { value: per.droneBroodCells })}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.pollenG')}</span><span className="font-medium">{per.pollenG} g</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.feedG')}</span><span className="font-medium">{per.feedG} g</span></div>
             </div>
           </CardContent>
         </Card>
@@ -597,95 +650,87 @@ export function LiebefelderPage() {
         <TipsCard
           className="mt-4"
           icon={<Lightbulb className="h-5 w-5" />}
-          title="How to assess coverage"
+          title={t('liebefelder.tips.coverage.title')}
           items={[
             {
-              title: 'Pull out each frame',
-              description:
-                'Remove one frame at a time. Look straight at each side and estimate in eighths how much of the comb surface is covered with bees, brood, pollen, or feed.',
+              title: t('liebefelder.tips.coverage.pullFrames.title'),
+              description: t('liebefelder.tips.coverage.pullFrames.description'),
             },
             {
-              title: 'Count both sides independently',
-              description:
-                'Each frame has two sides. A frame fully covered with bees on both sides contributes two 8/8 entries.',
+              title: t('liebefelder.tips.coverage.bothSides.title'),
+              description: t('liebefelder.tips.coverage.bothSides.description'),
             },
             {
-              title: 'Round down when in doubt',
-              description:
-                'Underestimating is safer than overestimating — round to the nearest lower eighth.',
+              title: t('liebefelder.tips.coverage.roundDown.title'),
+              description: t('liebefelder.tips.coverage.roundDown.description'),
             },
           ]}
         />
 
         <TipsCard
           className="mt-4"
-          title="When does the brood emerge?"
-          description={SOURCE_ATTRIBUTION}
+          title={t('liebefelder.tips.emergence.title')}
+          description={t('liebefelder.source')}
           items={[
             {
-              title: 'Capped worker brood',
-              description: 'All currently capped worker cells emerge within 0–12 days.',
+              title: t('liebefelder.tips.emergence.capped.title'),
+              description: t('liebefelder.tips.emergence.capped.description'),
             },
             {
-              title: 'Open worker brood',
-              description: 'Open worker cells emerge within 13–21 days.',
+              title: t('liebefelder.tips.emergence.open.title'),
+              description: t('liebefelder.tips.emergence.open.description'),
             },
             {
-              title: 'Drone brood',
-              description: 'Capped drone cells emerge within 0–14 days, open drone cells within 15–24 days.',
+              title: t('liebefelder.tips.emergence.drone.title'),
+              description: t('liebefelder.tips.emergence.drone.description'),
             },
             {
-              title: 'Rule of thumb',
-              description: 'About 1,000 emerged bees fill one Wabengasse — expand the hive before the colony outgrows it.',
+              title: t('liebefelder.tips.emergence.ruleOfThumb.title'),
+              description: t('liebefelder.tips.emergence.ruleOfThumb.description'),
             },
           ]}
         />
 
         <TipsCard
           className="mt-4"
-          title="Required feed stores"
-          description={SOURCE_ATTRIBUTION}
+          title={t('liebefelder.tips.feed.title')}
+          description={t('liebefelder.source')}
           items={[
             {
-              title: 'Throughout the year',
-              description: 'At least 1 kg of feed at all times — for production colonies and splits alike.',
+              title: t('liebefelder.tips.feed.yearRound.title'),
+              description: t('liebefelder.tips.feed.yearRound.description'),
             },
             {
-              title: 'Wintering, warm region (e.g. NRW)',
-              description:
-                'Production colonies: 13 kg pure sugar = 18 kg / 13 L syrup ≈ 8 full Zander combs. Splits: 10 kg sugar = 14 kg / 10 L syrup ≈ 6 full Zander combs.',
+              title: t('liebefelder.tips.feed.warmRegion.title'),
+              description: t('liebefelder.tips.feed.warmRegion.description'),
             },
             {
-              title: 'Wintering, cool region (e.g. BW, Bavaria)',
-              description:
-                'Production colonies: 20 kg pure sugar = 28 kg / 20 L syrup ≈ 12 full Zander combs. Splits: 15 kg sugar = 21 kg / 15 L syrup ≈ 9 full Zander combs.',
+              title: t('liebefelder.tips.feed.coolRegion.title'),
+              description: t('liebefelder.tips.feed.coolRegion.description'),
             },
             {
-              title: 'Before the spring flow (Feb–Mar)',
-              description: 'In a wet, cold early spring: at least 10 kg of feed remaining.',
+              title: t('liebefelder.tips.feed.spring.title'),
+              description: t('liebefelder.tips.feed.spring.description'),
             },
           ]}
         />
 
         <TipsCard
           className="mt-4"
-          title="Development times until emergence"
-          description={SOURCE_ATTRIBUTION}
+          title={t('liebefelder.tips.development.title')}
+          description={t('liebefelder.source')}
           items={[
             {
-              title: 'Queen — 16 days',
-              description:
-                'From the egg (swarm or silent supersedure): 3 d egg + 5 d larva + 8 d pupa. Emergency cells started from a ~2-day-old larva emerge after just 11 days. One queen per colony.',
+              title: t('liebefelder.tips.development.queen.title'),
+              description: t('liebefelder.tips.development.queen.description'),
             },
             {
-              title: 'Worker — 21 days',
-              description:
-                'From the fertilized egg: 3 d egg + 6 d larva + 12 d pupa. A colony holds 5,000–40,000 workers.',
+              title: t('liebefelder.tips.development.worker.title'),
+              description: t('liebefelder.tips.development.worker.description'),
             },
             {
-              title: 'Drone — 24 days',
-              description:
-                'From the unfertilized egg: 3 d egg + 7 d larva + 14 d pupa. A colony holds 0–1,000 drones.',
+              title: t('liebefelder.tips.development.drone.title'),
+              description: t('liebefelder.tips.development.drone.description'),
             },
           ]}
         />

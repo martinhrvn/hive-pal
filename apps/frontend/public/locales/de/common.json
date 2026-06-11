@@ -26,7 +26,163 @@
     "files": "Dateien",
     "calendar": "Kalender",
     "equipment": "Ausstattung",
-    "actions": "Aktionen"
+    "actions": "Aktionen",
+    "liebefelder": "Liebefelder Methode"
+  },
+  "liebefelder": {
+    "title": "Liebefelder Schätzmethode",
+    "description": "Volksstärke schätzen",
+    "intro": "Die Liebefelder Schätzmethode bestimmt die Volksstärke, indem die Wabenfläche in Achteln (1/8-Schritten) beurteilt wird: Wie viel ist mit Bienen, Brut, Pollen und Futter belegt? Schätzwerte und saisonale Richtwerte basieren auf dem Spickzettel zur Populationsschätzung von Dr. Pia Aumeier.",
+    "source": "Quelle: Dr. Pia Aumeier",
+    "frameType": {
+      "title": "Rähmchenmaß",
+      "description": "Wähle das in deiner Beute verwendete Rähmchenmaß — es bestimmt die Schätzwerte je Achtel.",
+      "custom": "Eigene Werte",
+      "customDescription": "Gib eigene Schätzwerte für ein Achtel einer Wabenseite ein."
+    },
+    "counts": {
+      "title": "Zählung — Achtel gesamt",
+      "description": "Summiere die Achtel Wabenfläche über alle Wabenseiten je Kategorie. Ein Achtel fasst etwa {{bees}} Bienen ({{frame}}). Brut und Vorräte sind optional — sie werden für die Ableger-Bewertung und die Futterabschätzung benötigt."
+    },
+    "fields": {
+      "bees": "Bienen",
+      "beesHint": "mit einer Bienenschicht belegte Wabenfläche, beide Seiten zählen",
+      "cappedWorkerBrood": "Verdeckelte Arbeiterinnenbrut",
+      "cappedWorkerBroodHint": "schlüpft innerhalb von 0–12 Tagen",
+      "openWorkerBrood": "Offene Arbeiterinnenbrut",
+      "openWorkerBroodHint": "schlüpft innerhalb von 13–21 Tagen",
+      "droneBrood": "Drohnenbrut",
+      "droneBroodHint": "verdeckelt 0–14 T., offen 15–24 T.",
+      "pollen": "Pollen",
+      "pollenHint": "eingelagertes Bienenbrot",
+      "feed": "Futter / Honig",
+      "feedHint": "verdeckelte oder offene Vorräte"
+    },
+    "result": {
+      "title": "Ergebnis",
+      "empty": "Trage oben deine Achtel-Zählung ein, um die Schätzung zu sehen.",
+      "bees": "Bienen",
+      "wabengassen": "Wabengassen",
+      "wabengassenNote": "≈ 1.000 Bienen je Gasse",
+      "strengthField": "Stärke-Feld",
+      "strengthFieldNote": "für die Durchsicht",
+      "cappedBrood": "Verdeckelte Arbeiterinnenbrut",
+      "openBrood": "Offene Arbeiterinnenbrut",
+      "droneBrood": "Drohnenbrut",
+      "cells": "Zellen",
+      "pollen": "Pollen",
+      "feed": "Futter / Honig",
+      "emergeNote": "In den nächsten 12 Tagen schlüpfen ~{{cells}} Bienen aus der verdeckelten Arbeiterinnenbrut — etwa {{gassen}} zusätzliche Wabengassen. Erweitere die Beute rechtzeitig."
+    },
+    "evaluation": {
+      "title": "Saisonale Bewertung",
+      "description": "Vergleiche das gemessene Volk mit den saisonalen Richtwerten von Dr. Pia Aumeier.",
+      "selectPrompt": "Wähle einen Zeitpunkt, um das Volk zu bewerten.",
+      "enterCountsFirst": "Trage zuerst oben deine Zählung ein.",
+      "contexts": {
+        "split_mid_may": "Ableger bis Mitte Mai",
+        "split_end_may": "Ableger bis Ende Mai",
+        "split_mid_june": "Ableger bis Mitte Juni",
+        "winter_aug": "Einwinterung, Mitte August",
+        "winter_oct": "Einwinterung, Ende Oktober"
+      },
+      "checks": {
+        "minBees": "≥ {{min}} Bienen (gemessen: ~{{measured}})",
+        "minCappedBrood": "≥ {{min}} verdeckelte Arbeiterinnenbrutzellen (gemessen: ~{{measured}})",
+        "minOpenBrood": "≥ {{min}} offene Arbeiterinnenbrutzellen (gemessen: ~{{measured}})"
+      },
+      "splitNote": "Ein brutloser Begattungsableger, der bis Mitte Mai erstellt wird, braucht nur ≥ 1.000 Bienen und keine Brut.",
+      "winterAug": {
+        "check": "> 15.000 Bienen unabhängig von der Brut (gemessen: ~{{measured}})",
+        "note": "Gilt für etablierte Völker Mitte August: Ein so starkes Volk hängt über mehr als 5 Wabengassen bis in den Boden durch. Schwächere, schrumpfende Völker und diesjährige Ableger werden stattdessen Ende Oktober beurteilt."
+      },
+      "winterOct": {
+        "ready": "Bereit für den Winter — ~{{bees}} Bienen auf {{gassen}} Wabengassen (5 oder mehr besetzte Gassen; über 5.000 Bienen).",
+        "minimal": "Minimale Einwinterungsstärke — ~{{bees}} Bienen auf 4 Wabengassen (rund 5.000 Bienen).",
+        "atRisk": "Stark gefährdet, den Winter nicht zu überleben — ~{{bees}} Bienen auf {{gassen}} Wabengassen (3 oder weniger besetzte Gassen; unter 5.000 Bienen). Vereinigen oder auflösen.",
+        "note": "So spät wie möglich beurteilen, nach einer kalten Nacht (≈ 5 °C), durch Zählen der von Bienen besetzten Wabengassen."
+      }
+    },
+    "reference": {
+      "title": "Ein Achtel einer {{frame}}-Wabenseite enthält…",
+      "bees": "Bienen",
+      "drones": "Drohnen",
+      "workerBroodCells": "Arbeiterinnenbrut (verdeckelt/offen)",
+      "droneBroodCells": "Drohnenbrut (verdeckelt/offen)",
+      "pollenG": "Pollen",
+      "feedG": "Futter / Honig",
+      "cellsValue": "{{value}} Zellen"
+    },
+    "tips": {
+      "coverage": {
+        "title": "So schätzt du die Belegung",
+        "pullFrames": {
+          "title": "Jede Wabe ziehen",
+          "description": "Ziehe eine Wabe nach der anderen. Schaue senkrecht auf jede Seite und schätze in Achteln, wie viel der Wabenfläche mit Bienen, Brut, Pollen oder Futter belegt ist."
+        },
+        "bothSides": {
+          "title": "Beide Seiten zählen",
+          "description": "Jede Wabe hat zwei Seiten. Eine beidseitig voll mit Bienen besetzte Wabe trägt 16 Achtel zur Summe bei."
+        },
+        "roundDown": {
+          "title": "Im Zweifel abrunden",
+          "description": "Unterschätzen ist sicherer als Überschätzen — runde auf das nächstniedrigere Achtel ab."
+        }
+      },
+      "emergence": {
+        "title": "Wann schlüpft die Brut?",
+        "capped": {
+          "title": "Verdeckelte Arbeiterinnenbrut",
+          "description": "Alle aktuell verdeckelten Arbeiterinnenzellen schlüpfen innerhalb von 0–12 Tagen."
+        },
+        "open": {
+          "title": "Offene Arbeiterinnenbrut",
+          "description": "Offene Arbeiterinnenzellen schlüpfen innerhalb von 13–21 Tagen."
+        },
+        "drone": {
+          "title": "Drohnenbrut",
+          "description": "Verdeckelte Drohnenzellen schlüpfen innerhalb von 0–14 Tagen, offene Drohnenzellen innerhalb von 15–24 Tagen."
+        },
+        "ruleOfThumb": {
+          "title": "Faustregel",
+          "description": "Etwa 1.000 geschlüpfte Bienen füllen eine Wabengasse — erweitere die Beute, bevor das Volk ihr entwächst."
+        }
+      },
+      "feed": {
+        "title": "Benötigte Futtervorräte",
+        "yearRound": {
+          "title": "Das ganze Jahr über",
+          "description": "Jederzeit mindestens 1 kg Futter — für Wirtschaftsvölker und Ableger gleichermaßen."
+        },
+        "warmRegion": {
+          "title": "Einwinterung, warme Region (z. B. NRW)",
+          "description": "Wirtschaftsvölker: 13 kg reiner Zucker = 18 kg / 13 L Sirup ≈ 8 volle Zanderwaben. Ableger: 10 kg Zucker = 14 kg / 10 L Sirup ≈ 6 volle Zanderwaben."
+        },
+        "coolRegion": {
+          "title": "Einwinterung, kühle Region (z. B. BW, Bayern)",
+          "description": "Wirtschaftsvölker: 20 kg reiner Zucker = 28 kg / 20 L Sirup ≈ 12 volle Zanderwaben. Ableger: 15 kg Zucker = 21 kg / 15 L Sirup ≈ 9 volle Zanderwaben."
+        },
+        "spring": {
+          "title": "Vor der Frühtracht (Feb–Mär)",
+          "description": "In einem nassen, kalten Vorfrühling: mindestens 10 kg Futter übrig."
+        }
+      },
+      "development": {
+        "title": "Entwicklungszeiten bis zum Schlupf",
+        "queen": {
+          "title": "Königin — 16 Tage",
+          "description": "Ab dem Ei (Schwarm oder stille Umweiselung): 3 T. Ei + 5 T. Larve + 8 T. Puppe. Nachschaffungszellen aus einer ~2 Tage alten Larve schlüpfen schon nach 11 Tagen. Eine Königin je Volk."
+        },
+        "worker": {
+          "title": "Arbeiterin — 21 Tage",
+          "description": "Aus dem befruchteten Ei: 3 T. Ei + 6 T. Larve + 12 T. Puppe. Ein Volk hält 5.000–40.000 Arbeiterinnen."
+        },
+        "drone": {
+          "title": "Drohn — 24 Tage",
+          "description": "Aus dem unbefruchteten Ei: 3 T. Ei + 7 T. Larve + 14 T. Puppe. Ein Volk hält 0–1.000 Drohnen."
+        }
+      }
+    }
   },
   "actions": {
     "save": "Speichern",
