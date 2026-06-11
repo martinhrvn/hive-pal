@@ -243,6 +243,88 @@ const axisPresentation: Record<
   beecount: { labelKey: 'diagram.axis.beecount', unit: 'bees', Icon: Activity },
 };
 
+type SeriesTuple = readonly [
+  key: SeriesKey,
+  labelKey: string,
+  axis: SeriesAxis,
+  unit: string,
+  stroke: string,
+];
+
+type GroupedSeriesTuple = readonly [
+  key: SeriesKey,
+  labelKey: string,
+  axis: SeriesAxis,
+  unit: string,
+  stroke: string,
+  groupKey: string,
+];
+
+const scale1SeriesTuples: SeriesTuple[] = [
+  ['scale1Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--primary)'],
+  ['scale1Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-2)'],
+  ['micLeftRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-1)'],
+  ['beeCounter1In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
+  ['beeCounter1Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-4)'],
+  ['beeCounter1Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--chart-5)'],
+];
+
+const scale2SeriesTuples: SeriesTuple[] = [
+  ['scale2Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--muted-foreground)'],
+  ['scale2Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-4)'],
+  ['micRightRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-2)'],
+  ['beeCounter2In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
+  ['beeCounter2Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-5)'],
+  ['beeCounter2Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--primary)'],
+];
+
+const ambientAndOffGridSeriesTuples: GroupedSeriesTuple[] = [
+  ['ambientTemperature', 'diagram.series.ambientTemp', 'temperature', '°C', 'var(--chart-5)', 'diagram.group.ambient'],
+  ['ambientHumidity', 'diagram.series.ambientHumidity', 'humidity', '%', 'var(--chart-3)', 'diagram.group.ambient'],
+  ['batteryVoltage', 'diagram.series.batteryVoltage', 'voltage', 'V', 'var(--destructive)', 'diagram.group.offGrid'],
+  ['batterySoc', 'diagram.series.batteryCharge', 'percent', '%', 'var(--chart-1)', 'diagram.group.offGrid'],
+  ['solarLoadVoltage', 'diagram.series.solarVoltage', 'voltage', 'V', 'var(--chart-2)', 'diagram.group.offGrid'],
+  ['solarCurrent', 'diagram.series.solarCurrent', 'current', 'mA', 'var(--chart-3)', 'diagram.group.offGrid'],
+  ['solarPower', 'diagram.series.solarPower', 'power', 'mW', 'var(--chart-4)', 'diagram.group.offGrid'],
+];
+
+const toHiveSeries = (
+  tuples: SeriesTuple[],
+  hiveName: string,
+  column: DiagramSeries['column'],
+  t: TFunction,
+): DiagramSeries[] =>
+  tuples.map(([key, labelKey, axis, unit, stroke]) => ({
+    key,
+    label: t(labelKey, { name: hiveName }),
+    dataKey: key,
+    axis,
+    unit,
+    stroke,
+    group: hiveName,
+    column,
+    subgroup: hiveName,
+  }));
+
+const toGroupedSeries = (
+  tuples: GroupedSeriesTuple[],
+  t: TFunction,
+): DiagramSeries[] =>
+  tuples.map(([key, labelKey, axis, unit, stroke, groupKey]) => {
+    const group = t(groupKey);
+    return {
+      key,
+      label: t(labelKey),
+      dataKey: key,
+      axis,
+      unit,
+      stroke,
+      group,
+      column: 3,
+      subgroup: group,
+    };
+  });
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -710,224 +792,9 @@ export const HiveScaleDiagramPanel = ({
 
   const series = useMemo<DiagramSeries[]>(
     () => [
-      // -------------------------------------------------------------------
-      // Column 1 — Hive 1 (scale 1). Mic LEFT is always hive 1.
-      // -------------------------------------------------------------------
-      {
-        key: 'scale1Weight',
-        label: t('diagram.series.weight', { name: scale1Name }),
-        dataKey: 'scale1Weight',
-        axis: 'weight',
-        unit: 'kg',
-        stroke: 'var(--primary)',
-        group: scale1Name,
-        column: 1,
-        subgroup: scale1Name,
-      },
-      {
-        key: 'scale1Temperature',
-        label: t('diagram.series.temp', { name: scale1Name }),
-        dataKey: 'scale1Temperature',
-        axis: 'temperature',
-        unit: '°C',
-        stroke: 'var(--chart-2)',
-        group: scale1Name,
-        column: 1,
-        subgroup: scale1Name,
-      },
-      {
-        key: 'micLeftRms',
-        label: t('diagram.series.micRms', { name: scale1Name }),
-        dataKey: 'micLeftRms',
-        axis: 'dbfs',
-        unit: 'dBFS',
-        stroke: 'var(--chart-1)',
-        group: scale1Name,
-        column: 1,
-        subgroup: scale1Name,
-      },
-      {
-        key: 'beeCounter1In',
-        label: t('diagram.series.beesIn', { name: scale1Name }),
-        dataKey: 'beeCounter1In',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-3)',
-        group: scale1Name,
-        column: 1,
-        subgroup: scale1Name,
-      },
-      {
-        key: 'beeCounter1Out',
-        label: t('diagram.series.beesOut', { name: scale1Name }),
-        dataKey: 'beeCounter1Out',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-4)',
-        group: scale1Name,
-        column: 1,
-        subgroup: scale1Name,
-      },
-      {
-        key: 'beeCounter1Net',
-        label: t('diagram.series.netFlow', { name: scale1Name }),
-        dataKey: 'beeCounter1Net',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-5)',
-        group: scale1Name,
-        column: 1,
-        subgroup: scale1Name,
-      },
-      // -------------------------------------------------------------------
-      // Column 2 — Hive 2 (scale 2). Mic RIGHT is always hive 2.
-      // -------------------------------------------------------------------
-      {
-        key: 'scale2Weight',
-        label: t('diagram.series.weight', { name: scale2Name }),
-        dataKey: 'scale2Weight',
-        axis: 'weight',
-        unit: 'kg',
-        stroke: 'var(--muted-foreground)',
-        group: scale2Name,
-        column: 2,
-        subgroup: scale2Name,
-      },
-      {
-        key: 'scale2Temperature',
-        label: t('diagram.series.temp', { name: scale2Name }),
-        dataKey: 'scale2Temperature',
-        axis: 'temperature',
-        unit: '°C',
-        stroke: 'var(--chart-4)',
-        group: scale2Name,
-        column: 2,
-        subgroup: scale2Name,
-      },
-      {
-        key: 'micRightRms',
-        label: t('diagram.series.micRms', { name: scale2Name }),
-        dataKey: 'micRightRms',
-        axis: 'dbfs',
-        unit: 'dBFS',
-        stroke: 'var(--chart-2)',
-        group: scale2Name,
-        column: 2,
-        subgroup: scale2Name,
-      },
-      {
-        key: 'beeCounter2In',
-        label: t('diagram.series.beesIn', { name: scale2Name }),
-        dataKey: 'beeCounter2In',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-3)',
-        group: scale2Name,
-        column: 2,
-        subgroup: scale2Name,
-      },
-      {
-        key: 'beeCounter2Out',
-        label: t('diagram.series.beesOut', { name: scale2Name }),
-        dataKey: 'beeCounter2Out',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--chart-5)',
-        group: scale2Name,
-        column: 2,
-        subgroup: scale2Name,
-      },
-      {
-        key: 'beeCounter2Net',
-        label: t('diagram.series.netFlow', { name: scale2Name }),
-        dataKey: 'beeCounter2Net',
-        axis: 'beecount',
-        unit: 'bees',
-        stroke: 'var(--primary)',
-        group: scale2Name,
-        column: 2,
-        subgroup: scale2Name,
-      },
-      // -------------------------------------------------------------------
-      // Column 3 — Ambient + Off-grid.
-      // -------------------------------------------------------------------
-      {
-        key: 'ambientTemperature',
-        label: t('diagram.series.ambientTemp'),
-        dataKey: 'ambientTemperature',
-        axis: 'temperature',
-        unit: '°C',
-        stroke: 'var(--chart-5)',
-        group: t('diagram.group.ambient'),
-        column: 3,
-        subgroup: t('diagram.group.ambient'),
-      },
-      {
-        key: 'ambientHumidity',
-        label: t('diagram.series.ambientHumidity'),
-        dataKey: 'ambientHumidity',
-        axis: 'humidity',
-        unit: '%',
-        stroke: 'var(--chart-3)',
-        group: t('diagram.group.ambient'),
-        column: 3,
-        subgroup: t('diagram.group.ambient'),
-      },
-      {
-        key: 'batteryVoltage',
-        label: t('diagram.series.batteryVoltage'),
-        dataKey: 'batteryVoltage',
-        axis: 'voltage',
-        unit: 'V',
-        stroke: 'var(--destructive)',
-        group: t('diagram.group.offGrid'),
-        column: 3,
-        subgroup: t('diagram.group.offGrid'),
-      },
-      {
-        key: 'batterySoc',
-        label: t('diagram.series.batteryCharge'),
-        dataKey: 'batterySoc',
-        axis: 'percent',
-        unit: '%',
-        stroke: 'var(--chart-1)',
-        group: t('diagram.group.offGrid'),
-        column: 3,
-        subgroup: t('diagram.group.offGrid'),
-      },
-      {
-        key: 'solarLoadVoltage',
-        label: t('diagram.series.solarVoltage'),
-        dataKey: 'solarLoadVoltage',
-        axis: 'voltage',
-        unit: 'V',
-        stroke: 'var(--chart-2)',
-        group: t('diagram.group.offGrid'),
-        column: 3,
-        subgroup: t('diagram.group.offGrid'),
-      },
-      {
-        key: 'solarCurrent',
-        label: t('diagram.series.solarCurrent'),
-        dataKey: 'solarCurrent',
-        axis: 'current',
-        unit: 'mA',
-        stroke: 'var(--chart-3)',
-        group: t('diagram.group.offGrid'),
-        column: 3,
-        subgroup: t('diagram.group.offGrid'),
-      },
-      {
-        key: 'solarPower',
-        label: t('diagram.series.solarPower'),
-        dataKey: 'solarPower',
-        axis: 'power',
-        unit: 'mW',
-        stroke: 'var(--chart-4)',
-        group: t('diagram.group.offGrid'),
-        column: 3,
-        subgroup: t('diagram.group.offGrid'),
-      },
+      ...toHiveSeries(scale1SeriesTuples, scale1Name, 1, t),
+      ...toHiveSeries(scale2SeriesTuples, scale2Name, 2, t),
+      ...toGroupedSeries(ambientAndOffGridSeriesTuples, t),
     ],
     [scale1Name, scale2Name, t],
   );

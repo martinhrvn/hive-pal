@@ -9,6 +9,45 @@ import {
 import { CustomLoggerService } from '../../logger/logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
+type CounterConfig = {
+  name: string;
+  help: string;
+  labelNames?: string[];
+};
+
+type GroupedCountRow = {
+  status: string;
+  _count: { _all: number };
+};
+
+const API_CALL_LABELS = ['method', 'endpoint', 'status_code'];
+const API_ERROR_LABELS = ['method', 'endpoint', 'error_type'];
+const HTTP_REQUEST_BUCKETS = [
+  0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10,
+];
+
+const businessCounterConfigs: Record<
+  'hives' | 'apiaries' | 'queens' | 'inspections',
+  CounterConfig
+> = {
+  hives: {
+    name: 'hivepal_hives_created_total',
+    help: 'Total number of hives created',
+  },
+  apiaries: {
+    name: 'hivepal_apiaries_created_total',
+    help: 'Total number of apiaries created',
+  },
+  queens: {
+    name: 'hivepal_queens_created_total',
+    help: 'Total number of queens created',
+  },
+  inspections: {
+    name: 'hivepal_inspections_created_total',
+    help: 'Total number of inspections created',
+  },
+};
+
 @Injectable()
 export class PrometheusService {
   // --- Operational metrics ---
@@ -29,48 +68,36 @@ export class PrometheusService {
   ) {
     this.logger.setContext('PrometheusService');
 
-    // --- Operational metrics ---
-    this.apiCallsCounter = new Counter({
+    this.apiCallsCounter = this.createCounter({
       name: 'hivepal_api_calls_total',
       help: 'Total number of API calls',
-      labelNames: ['method', 'endpoint', 'status_code'],
+      labelNames: API_CALL_LABELS,
     });
 
-    this.apiErrorsCounter = new Counter({
+    this.apiErrorsCounter = this.createCounter({
       name: 'hivepal_api_errors_total',
       help: 'Total number of API errors',
-      labelNames: ['method', 'endpoint', 'error_type'],
+      labelNames: API_ERROR_LABELS,
     });
 
     this.httpRequestDuration = new Histogram({
       name: 'hivepal_http_request_duration_seconds',
       help: 'Duration of HTTP requests in seconds',
-      labelNames: ['method', 'endpoint', 'status_code'],
-      buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
+      labelNames: API_CALL_LABELS,
+      buckets: HTTP_REQUEST_BUCKETS,
     });
 
-    // --- Business event counters ---
-    this.hivesCreatedCounter = new Counter({
-      name: 'hivepal_hives_created_total',
-      help: 'Total number of hives created',
-    });
-
-    this.apiariesCreatedCounter = new Counter({
-      name: 'hivepal_apiaries_created_total',
-      help: 'Total number of apiaries created',
-    });
-
-    this.queensCreatedCounter = new Counter({
-      name: 'hivepal_queens_created_total',
-      help: 'Total number of queens created',
-    });
-
-    this.inspectionsCreatedCounter = new Counter({
-      name: 'hivepal_inspections_created_total',
-      help: 'Total number of inspections created',
-    });
-
-    this.weatherFetchesCounter = new Counter({
+    this.hivesCreatedCounter = this.createCounter(businessCounterConfigs.hives);
+    this.apiariesCreatedCounter = this.createCounter(
+      businessCounterConfigs.apiaries,
+    );
+    this.queensCreatedCounter = this.createCounter(
+      businessCounterConfigs.queens,
+    );
+    this.inspectionsCreatedCounter = this.createCounter(
+      businessCounterConfigs.inspections,
+    );
+    this.weatherFetchesCounter = this.createCounter({
       name: 'hivepal_weather_fetches_total',
       help: 'Total number of weather API fetches to Open-Meteo',
       labelNames: ['endpoint', 'outcome'],
@@ -80,7 +107,11 @@ export class PrometheusService {
     this.registerBusinessGauges();
   }
 
-  private init() {
+  private createCounter(config: CounterConfig): Counter {
+    return new Counter(config);
+  }
+
+  private init(): void {
     this.logger.log('Initializing Prometheus metrics');
     // Default Node.js process metrics (CPU, memory, event loop, GC, ...)
     collectDefaultMetrics();
@@ -96,88 +127,74 @@ export class PrometheusService {
    * previous value.
    */
   private registerBusinessGauges(): void {
-    const { prisma, logger } = this;
+    this.registerCountGauge(
+      'hivepal_users',
+      'Current number of registered users',
+      () => this.prisma.user.count(),
+    );
+    this.registerCountGauge('hivepal_apiaries', 'Current number of apiaries', () =>
+      this.prisma.apiary.count(),
+    );
+
+    this.registerStatusGauge('hivepal_hives', 'Current number of hives by status', () =>
+      this.prisma.hive.groupBy({ by: ['status'], _count: { _all: true } }),
+    );
+    this.registerStatusGauge(
+      'hivepal_queens',
+      'Current number of queens by status',
+      () => this.prisma.queen.groupBy({ by: ['status'], _count: { _all: true } }),
+    );
+    this.registerStatusGauge(
+      'hivepal_inspections',
+      'Current number of inspections by status',
+      () =>
+        this.prisma.inspection.groupBy({
+          by: ['status'],
+          _count: { _all: true },
+        }),
+    );
+  }
+
+  private registerCountGauge(
+    name: string,
+    help: string,
+    collectValue: () => Promise<number>,
+  ): void {
+    const logger = this.logger;
 
     new Gauge({
-      name: 'hivepal_users',
-      help: 'Current number of registered users',
+      name,
+      help,
       async collect() {
         try {
-          this.set(await prisma.user.count());
+          this.set(await collectValue());
         } catch (err) {
-          logger.warn(`Failed to collect hivepal_users: ${String(err)}`);
+          logger.warn(`Failed to collect ${name}: ${String(err)}`);
         }
       },
     });
+  }
+
+  private registerStatusGauge(
+    name: string,
+    help: string,
+    collectRows: () => Promise<GroupedCountRow[]>,
+  ): void {
+    const logger = this.logger;
 
     new Gauge({
-      name: 'hivepal_apiaries',
-      help: 'Current number of apiaries',
-      async collect() {
-        try {
-          this.set(await prisma.apiary.count());
-        } catch (err) {
-          logger.warn(`Failed to collect hivepal_apiaries: ${String(err)}`);
-        }
-      },
-    });
-
-    new Gauge({
-      name: 'hivepal_hives',
-      help: 'Current number of hives by status',
+      name,
+      help,
       labelNames: ['status'],
       async collect() {
         try {
-          const rows = await prisma.hive.groupBy({
-            by: ['status'],
-            _count: { _all: true },
-          });
+          const rows = await collectRows();
           this.reset();
           for (const row of rows) {
             this.set({ status: row.status }, row._count._all);
           }
         } catch (err) {
-          logger.warn(`Failed to collect hivepal_hives: ${String(err)}`);
-        }
-      },
-    });
-
-    new Gauge({
-      name: 'hivepal_queens',
-      help: 'Current number of queens by status',
-      labelNames: ['status'],
-      async collect() {
-        try {
-          const rows = await prisma.queen.groupBy({
-            by: ['status'],
-            _count: { _all: true },
-          });
-          this.reset();
-          for (const row of rows) {
-            this.set({ status: row.status }, row._count._all);
-          }
-        } catch (err) {
-          logger.warn(`Failed to collect hivepal_queens: ${String(err)}`);
-        }
-      },
-    });
-
-    new Gauge({
-      name: 'hivepal_inspections',
-      help: 'Current number of inspections by status',
-      labelNames: ['status'],
-      async collect() {
-        try {
-          const rows = await prisma.inspection.groupBy({
-            by: ['status'],
-            _count: { _all: true },
-          });
-          this.reset();
-          for (const row of rows) {
-            this.set({ status: row.status }, row._count._all);
-          }
-        } catch (err) {
-          logger.warn(`Failed to collect hivepal_inspections: ${String(err)}`);
+          logger.warn(`Failed to collect ${name}: ${String(err)}`);
         }
       },
     });

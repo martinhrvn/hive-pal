@@ -10,6 +10,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   PageGrid,
   MainContent,
@@ -181,6 +182,122 @@ function CheckRow({ ok, label }: { ok: boolean; label: string }) {
   );
 }
 
+type ResultStatCardProps = {
+  label: string;
+  value: React.ReactNode;
+  note?: string;
+  highlighted?: boolean;
+  valueClassName?: string;
+};
+
+function ResultStatCard({
+  label,
+  value,
+  note,
+  highlighted = false,
+  valueClassName = 'text-xl font-bold',
+}: ResultStatCardProps) {
+  return (
+    <div
+      className={
+        highlighted
+          ? 'rounded-lg bg-amber-50 p-3 dark:bg-amber-950/30'
+          : 'rounded-lg bg-muted/50 p-3'
+      }
+    >
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={valueClassName}>{value}</p>
+      {note && <p className="text-xs text-muted-foreground">{note}</p>}
+    </div>
+  );
+}
+
+function ResultStatGrid({
+  columns,
+  children,
+}: {
+  columns: 2 | 3;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`grid ${
+        columns === 3 ? 'grid-cols-3' : 'grid-cols-2'
+      } gap-3 text-center`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ReferenceRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
+  );
+}
+
+type TipSection = {
+  id: string;
+  titleKey: string;
+  descriptionKey?: string;
+  icon?: 'lightbulb';
+  itemKeys: readonly string[];
+};
+
+const TIP_SECTIONS: readonly TipSection[] = [
+  {
+    id: 'coverage',
+    titleKey: 'liebefelder.tips.coverage.title',
+    icon: 'lightbulb',
+    itemKeys: [
+      'liebefelder.tips.coverage.pullFrames',
+      'liebefelder.tips.coverage.bothSides',
+      'liebefelder.tips.coverage.roundDown',
+    ],
+  },
+  {
+    id: 'emergence',
+    titleKey: 'liebefelder.tips.emergence.title',
+    descriptionKey: 'liebefelder.source',
+    itemKeys: [
+      'liebefelder.tips.emergence.capped',
+      'liebefelder.tips.emergence.open',
+      'liebefelder.tips.emergence.drone',
+      'liebefelder.tips.emergence.ruleOfThumb',
+    ],
+  },
+  {
+    id: 'feed',
+    titleKey: 'liebefelder.tips.feed.title',
+    descriptionKey: 'liebefelder.source',
+    itemKeys: [
+      'liebefelder.tips.feed.yearRound',
+      'liebefelder.tips.feed.warmRegion',
+      'liebefelder.tips.feed.coolRegion',
+      'liebefelder.tips.feed.spring',
+    ],
+  },
+  {
+    id: 'development',
+    titleKey: 'liebefelder.tips.development.title',
+    descriptionKey: 'liebefelder.source',
+    itemKeys: [
+      'liebefelder.tips.development.queen',
+      'liebefelder.tips.development.worker',
+      'liebefelder.tips.development.drone',
+    ],
+  },
+] as const;
+
+const buildTipItems = (t: TFunction, itemKeys: readonly string[]) =>
+  itemKeys.map(key => ({
+    title: t(`${key}.title`),
+    description: t(`${key}.description`),
+  }));
+
 function formatGrams(grams: number): string {
   return grams >= 1000 ? `${(grams / 1000).toFixed(1)} kg` : `${Math.round(grams)} g`;
 }
@@ -266,29 +383,39 @@ export function LiebefelderPage() {
     if (!evaluation) return null;
 
     if (evaluation.kind === 'split') {
+      const checks = [
+        {
+          id: 'minBees',
+          ok: results.bees >= evaluation.minBees,
+          min: evaluation.minBees,
+          measured: results.bees,
+        },
+        {
+          id: 'minCappedBrood',
+          ok: results.cappedBroodCells >= evaluation.minCappedBrood,
+          min: evaluation.minCappedBrood,
+          measured: results.cappedBroodCells,
+        },
+        {
+          id: 'minOpenBrood',
+          ok: results.openBroodCells >= evaluation.minOpenBrood,
+          min: evaluation.minOpenBrood,
+          measured: results.openBroodCells,
+        },
+      ];
+
       return (
         <div className="space-y-1.5">
-          <CheckRow
-            ok={results.bees >= evaluation.minBees}
-            label={t('liebefelder.evaluation.checks.minBees', {
-              min: evaluation.minBees.toLocaleString(),
-              measured: results.bees.toLocaleString(),
-            })}
-          />
-          <CheckRow
-            ok={results.cappedBroodCells >= evaluation.minCappedBrood}
-            label={t('liebefelder.evaluation.checks.minCappedBrood', {
-              min: evaluation.minCappedBrood.toLocaleString(),
-              measured: results.cappedBroodCells.toLocaleString(),
-            })}
-          />
-          <CheckRow
-            ok={results.openBroodCells >= evaluation.minOpenBrood}
-            label={t('liebefelder.evaluation.checks.minOpenBrood', {
-              min: evaluation.minOpenBrood.toLocaleString(),
-              measured: results.openBroodCells.toLocaleString(),
-            })}
-          />
+          {checks.map(check => (
+            <CheckRow
+              key={check.id}
+              ok={check.ok}
+              label={t(`liebefelder.evaluation.checks.${check.id}`, {
+                min: check.min.toLocaleString(),
+                measured: check.measured.toLocaleString(),
+              })}
+            />
+          ))}
           <p className="pt-1 text-xs text-muted-foreground">
             {t('liebefelder.evaluation.splitNote')}
           </p>
@@ -348,6 +475,83 @@ export function LiebefelderPage() {
       </div>
     );
   };
+
+  const beeResultCards = [
+    {
+      id: 'bees',
+      label: t('liebefelder.result.bees'),
+      value: `~${results.bees.toLocaleString()}`,
+      highlighted: true,
+      valueClassName: 'text-2xl font-bold text-amber-700 dark:text-amber-400',
+    },
+    {
+      id: 'wabengassen',
+      label: t('liebefelder.result.wabengassen'),
+      value: results.wabengassen.toFixed(1),
+      note: t('liebefelder.result.wabengassenNote'),
+      valueClassName: 'text-2xl font-bold',
+    },
+    {
+      id: 'strengthField',
+      label: t('liebefelder.result.strengthField'),
+      value: Math.round(results.wabengassen),
+      note: t('liebefelder.result.strengthFieldNote'),
+      valueClassName: 'text-2xl font-bold',
+    },
+  ];
+
+  const broodResultCards = [
+    {
+      id: 'cappedBrood',
+      label: t('liebefelder.result.cappedBrood'),
+      value: `~${results.cappedBroodCells.toLocaleString()}`,
+      note: t('liebefelder.result.cells'),
+    },
+    {
+      id: 'openBrood',
+      label: t('liebefelder.result.openBrood'),
+      value: `~${results.openBroodCells.toLocaleString()}`,
+      note: t('liebefelder.result.cells'),
+    },
+    {
+      id: 'droneBrood',
+      label: t('liebefelder.result.droneBrood'),
+      value: `~${results.droneBroodCells.toLocaleString()}`,
+      note: t('liebefelder.result.cells'),
+    },
+  ];
+
+  const storeResultCards = [
+    {
+      id: 'pollen',
+      label: t('liebefelder.result.pollen'),
+      value: `~${formatGrams(results.pollenGrams)}`,
+    },
+    {
+      id: 'feed',
+      label: t('liebefelder.result.feed'),
+      value: `~${formatGrams(results.feedGrams)}`,
+    },
+  ];
+
+  const referenceRows = [
+    { id: 'bees', value: per.bees },
+    { id: 'drones', value: per.drones },
+    {
+      id: 'workerBroodCells',
+      value: t('liebefelder.reference.cellsValue', {
+        value: per.workerBroodCells,
+      }),
+    },
+    {
+      id: 'droneBroodCells',
+      value: t('liebefelder.reference.cellsValue', {
+        value: per.droneBroodCells,
+      }),
+    },
+    { id: 'pollenG', value: `${per.pollenG} g` },
+    { id: 'feedG', value: `${per.feedG} g` },
+  ];
 
   return (
     <PageGrid>
@@ -477,76 +681,19 @@ export function LiebefelderPage() {
             ) : (
               <div className="space-y-4">
                 {hasBees && (
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/30">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.bees')}
-                      </p>
-                      <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">
-                        ~{results.bees.toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.wabengassen')}
-                      </p>
-                      <p className="text-2xl font-bold">
-                        {results.wabengassen.toFixed(1)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.wabengassenNote')}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.strengthField')}
-                      </p>
-                      <p className="text-2xl font-bold">
-                        {Math.round(results.wabengassen)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.strengthFieldNote')}
-                      </p>
-                    </div>
-                  </div>
+                  <ResultStatGrid columns={3}>
+                    {beeResultCards.map(card => (
+                      <ResultStatCard key={card.id} {...card} />
+                    ))}
+                  </ResultStatGrid>
                 )}
 
                 {hasBrood && (
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.cappedBrood')}
-                      </p>
-                      <p className="text-xl font-bold">
-                        ~{results.cappedBroodCells.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.cells')}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.openBrood')}
-                      </p>
-                      <p className="text-xl font-bold">
-                        ~{results.openBroodCells.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.cells')}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.droneBrood')}
-                      </p>
-                      <p className="text-xl font-bold">
-                        ~{results.droneBroodCells.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.cells')}
-                      </p>
-                    </div>
-                  </div>
+                  <ResultStatGrid columns={3}>
+                    {broodResultCards.map(card => (
+                      <ResultStatCard key={card.id} {...card} />
+                    ))}
+                  </ResultStatGrid>
                 )}
 
                 {results.cappedBroodCells > 0 && (
@@ -559,24 +706,11 @@ export function LiebefelderPage() {
                 )}
 
                 {hasStores && (
-                  <div className="grid grid-cols-2 gap-3 text-center">
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.pollen')}
-                      </p>
-                      <p className="text-xl font-bold">
-                        ~{formatGrams(results.pollenGrams)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t('liebefelder.result.feed')}
-                      </p>
-                      <p className="text-xl font-bold">
-                        ~{formatGrams(results.feedGrams)}
-                      </p>
-                    </div>
-                  </div>
+                  <ResultStatGrid columns={2}>
+                    {storeResultCards.map(card => (
+                      <ResultStatCard key={card.id} {...card} />
+                    ))}
+                  </ResultStatGrid>
                 )}
               </div>
             )}
@@ -637,103 +771,34 @@ export function LiebefelderPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-1.5 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.bees')}</span><span className="font-medium">{per.bees}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.drones')}</span><span className="font-medium">{per.drones}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.workerBroodCells')}</span><span className="font-medium">{t('liebefelder.reference.cellsValue', { value: per.workerBroodCells })}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.droneBroodCells')}</span><span className="font-medium">{t('liebefelder.reference.cellsValue', { value: per.droneBroodCells })}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.pollenG')}</span><span className="font-medium">{per.pollenG} g</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">{t('liebefelder.reference.feedG')}</span><span className="font-medium">{per.feedG} g</span></div>
+              {referenceRows.map(row => (
+                <ReferenceRow
+                  key={row.id}
+                  label={t(`liebefelder.reference.${row.id}`)}
+                  value={row.value}
+                />
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        <TipsCard
-          className="mt-4"
-          icon={<Lightbulb className="h-5 w-5" />}
-          title={t('liebefelder.tips.coverage.title')}
-          items={[
-            {
-              title: t('liebefelder.tips.coverage.pullFrames.title'),
-              description: t('liebefelder.tips.coverage.pullFrames.description'),
-            },
-            {
-              title: t('liebefelder.tips.coverage.bothSides.title'),
-              description: t('liebefelder.tips.coverage.bothSides.description'),
-            },
-            {
-              title: t('liebefelder.tips.coverage.roundDown.title'),
-              description: t('liebefelder.tips.coverage.roundDown.description'),
-            },
-          ]}
-        />
+        {TIP_SECTIONS.map(section => (
+          <TipsCard
+            key={section.id}
+            className="mt-4"
+            icon={
+              section.icon === 'lightbulb' ? (
+                <Lightbulb className="h-5 w-5" />
+              ) : undefined
+            }
+            title={t(section.titleKey)}
+            description={
+              section.descriptionKey ? t(section.descriptionKey) : undefined
+            }
+            items={buildTipItems(t, section.itemKeys)}
+          />
+        ))}
 
-        <TipsCard
-          className="mt-4"
-          title={t('liebefelder.tips.emergence.title')}
-          description={t('liebefelder.source')}
-          items={[
-            {
-              title: t('liebefelder.tips.emergence.capped.title'),
-              description: t('liebefelder.tips.emergence.capped.description'),
-            },
-            {
-              title: t('liebefelder.tips.emergence.open.title'),
-              description: t('liebefelder.tips.emergence.open.description'),
-            },
-            {
-              title: t('liebefelder.tips.emergence.drone.title'),
-              description: t('liebefelder.tips.emergence.drone.description'),
-            },
-            {
-              title: t('liebefelder.tips.emergence.ruleOfThumb.title'),
-              description: t('liebefelder.tips.emergence.ruleOfThumb.description'),
-            },
-          ]}
-        />
-
-        <TipsCard
-          className="mt-4"
-          title={t('liebefelder.tips.feed.title')}
-          description={t('liebefelder.source')}
-          items={[
-            {
-              title: t('liebefelder.tips.feed.yearRound.title'),
-              description: t('liebefelder.tips.feed.yearRound.description'),
-            },
-            {
-              title: t('liebefelder.tips.feed.warmRegion.title'),
-              description: t('liebefelder.tips.feed.warmRegion.description'),
-            },
-            {
-              title: t('liebefelder.tips.feed.coolRegion.title'),
-              description: t('liebefelder.tips.feed.coolRegion.description'),
-            },
-            {
-              title: t('liebefelder.tips.feed.spring.title'),
-              description: t('liebefelder.tips.feed.spring.description'),
-            },
-          ]}
-        />
-
-        <TipsCard
-          className="mt-4"
-          title={t('liebefelder.tips.development.title')}
-          description={t('liebefelder.source')}
-          items={[
-            {
-              title: t('liebefelder.tips.development.queen.title'),
-              description: t('liebefelder.tips.development.queen.description'),
-            },
-            {
-              title: t('liebefelder.tips.development.worker.title'),
-              description: t('liebefelder.tips.development.worker.description'),
-            },
-            {
-              title: t('liebefelder.tips.development.drone.title'),
-              description: t('liebefelder.tips.development.drone.description'),
-            },
-          ]}
-        />
       </PageAside>
     </PageGrid>
   );
