@@ -33,6 +33,7 @@ Hive-Pal authenticates with [Better Auth](https://www.better-auth.com/). Beyond 
 | `PASSKEY_RP_ID` | WebAuthn relying-party ID for passkeys. Set to your domain in production | `localhost` |
 | `COOKIE_DOMAIN` | Set when frontend and backend share a parent domain across subdomains (e.g. `.example.com`) | — |
 | `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins | — |
+| `JWT_SECRET` | Signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs (see note below). Generate with `openssl rand -base64 32` | — |
 
 :::info JWT_SECRET is not for login
 `JWT_SECRET` is **not** used for user authentication (that's Better Auth). It only signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs. Set it only if you use those features.
@@ -96,8 +97,9 @@ Hive-Pal can proxy live data from a separate HiveScale backend.
 |----------|-------------|
 | `HIVESCALE_API_BASE_URL` | Base URL of the HiveScale backend |
 | `HIVESCALE_SERVICE_API_KEY` | Shared service key used by Hive-Pal to call HiveScale |
+| `JWT_SECRET` | Signs the per-user tokens Hive-Pal forwards to HiveScale |
 
-The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` on the HiveScale backend. HiveScale remains the source of truth for measurements, device roles, off-grid telemetry, and calibration; Hive-Pal only proxies authenticated user requests. See the [HiveScale guide](../user-guide/hivescale).
+The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` on the HiveScale backend, and `JWT_SECRET` must match HiveScale's `HIVEPAL_JWT_SECRET` so it can verify the forwarded user tokens. HiveScale remains the source of truth for measurements, device roles, off-grid telemetry, and calibration; Hive-Pal only proxies authenticated user requests. See the [HiveScale guide](../user-guide/hivescale).
 
 ## Error Tracking (Optional)
 
