@@ -194,6 +194,12 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
           }),
           url: '/tools/swarm-management',
         },
+        {
+          title: t('navigation.liebefelder', {
+            defaultValue: 'Liebefelder Method',
+          }),
+          url: '/tools/liebefelder',
+        },
       ],
     },
     {
