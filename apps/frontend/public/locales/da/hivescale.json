@@ -315,7 +315,9 @@
       "batteryCharge": "Battery charge",
       "solarVoltage": "Solar voltage",
       "solarCurrent": "Solar current",
-      "solarPower": "Solar power"
+      "solarPower": "Solar power",
+      "humidity": "{{name}} luftfugtighed",
+      "pressure": "{{name}} lufttryk"
     },
     "group": {
       "ambient": "Ambient",
@@ -330,7 +332,8 @@
       "current": "Current",
       "power": "Power",
       "sound": "Sound",
-      "beecount": "Bee count"
+      "beecount": "Bee count",
+      "pressure": "Lufttryk"
     },
     "marker": {
       "inspection": "Inspection",

@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
 import {
   Activity,
   Battery,
@@ -10,6 +8,7 @@ import {
   Download,
   Droplets,
   Frame,
+  Gauge,
   Scale,
   PackagePlus,
   Pill,
@@ -80,6 +79,7 @@ type SeriesAxis =
   | 'weight'
   | 'temperature'
   | 'humidity'
+  | 'pressure'
   | 'voltage'
   | 'percent'
   | 'current'
@@ -91,8 +91,12 @@ type SeriesAxis =
 type SeriesKey =
   | 'scale1Weight'
   | 'scale1Temperature'
+  | 'scale1Humidity'
+  | 'scale1Pressure'
   | 'scale2Weight'
   | 'scale2Temperature'
+  | 'scale2Humidity'
+  | 'scale2Pressure'
   | 'ambientTemperature'
   | 'ambientHumidity'
   | 'batteryVoltage'
@@ -169,8 +173,12 @@ const diagramSettingsStoragePrefix = 'hivepal:hivescale-diagram:';
 const defaultVisibleSeries: VisibleSeriesMap = {
   scale1Weight: true,
   scale1Temperature: true,
+  scale1Humidity: false,
+  scale1Pressure: false,
   scale2Weight: true,
   scale2Temperature: true,
+  scale2Humidity: false,
+  scale2Pressure: false,
   ambientTemperature: false,
   ambientHumidity: false,
   batteryVoltage: false,
@@ -206,13 +214,18 @@ const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
     weight: { ...defaultAxisSettings, side: 'left' },
     temperature: { ...defaultAxisSettings, side: 'right' },
     humidity: { ...defaultAxisSettings, side: 'right' },
+    pressure: { ...defaultAxisSettings, side: 'right' },
     voltage: { ...defaultAxisSettings, side: 'right' },
     percent: { ...defaultAxisSettings, side: 'right' },
     current: { ...defaultAxisSettings, side: 'right' },
     power: { ...defaultAxisSettings, side: 'right' },
     dbfs: { ...defaultAxisSettings, side: 'right' },
     beecount: { ...defaultAxisSettings, scaleMode: 'zeroToMax', side: 'right' },
-    vibration: { ...defaultAxisSettings, scaleMode: 'zeroToMax', side: 'right' },
+    vibration: {
+      ...defaultAxisSettings,
+      scaleMode: 'zeroToMax',
+      side: 'right',
+    },
   },
 });
 
@@ -229,6 +242,7 @@ const axisOrder: SeriesAxis[] = [
   'weight',
   'temperature',
   'humidity',
+  'pressure',
   'voltage',
   'percent',
   'current',
@@ -241,7 +255,6 @@ const axisOrder: SeriesAxis[] = [
 const axisPresentation: Record<
   SeriesAxis,
   { labelKey: string; unit: string; Icon: LucideIcon }
-  { labelKey: string; unit: string; Icon: LucideIcon }
 > = {
   weight: { labelKey: 'diagram.axis.weight', unit: 'kg', Icon: Scale },
   temperature: {
@@ -250,6 +263,7 @@ const axisPresentation: Record<
     Icon: Thermometer,
   },
   humidity: { labelKey: 'diagram.axis.humidity', unit: '%', Icon: Droplets },
+  pressure: { labelKey: 'diagram.axis.pressure', unit: 'hPa', Icon: Gauge },
   voltage: { labelKey: 'diagram.axis.voltage', unit: 'V', Icon: Battery },
   percent: { labelKey: 'diagram.axis.percent', unit: '%', Icon: Battery },
   current: { labelKey: 'diagram.axis.current', unit: 'mA', Icon: Zap },
@@ -278,34 +292,189 @@ type GroupedSeriesTuple = readonly [
 
 const scale1SeriesTuples: SeriesTuple[] = [
   ['scale1Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--primary)'],
-  ['scale1Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-2)'],
+  [
+    'scale1Temperature',
+    'diagram.series.temp',
+    'temperature',
+    '°C',
+    'var(--chart-2)',
+  ],
+  [
+    'scale1Humidity',
+    'diagram.series.humidity',
+    'humidity',
+    '%',
+    'var(--chart-3)',
+  ],
+  [
+    'scale1Pressure',
+    'diagram.series.pressure',
+    'pressure',
+    'hPa',
+    'var(--chart-4)',
+  ],
   ['micLeftRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-1)'],
-  ['accel1Vibration', 'diagram.series.vibration', 'vibration', 'mg', 'var(--chart-1)'],
-  ['accel1SwarmBand', 'diagram.series.swarmBand', 'vibration', 'mg', 'var(--chart-3)'],
-  ['beeCounter1In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
-  ['beeCounter1Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-4)'],
-  ['beeCounter1Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--chart-5)'],
+  [
+    'accel1Vibration',
+    'diagram.series.vibration',
+    'vibration',
+    'mg',
+    'var(--chart-1)',
+  ],
+  [
+    'accel1SwarmBand',
+    'diagram.series.swarmBand',
+    'vibration',
+    'mg',
+    'var(--chart-3)',
+  ],
+  [
+    'beeCounter1In',
+    'diagram.series.beesIn',
+    'beecount',
+    'bees',
+    'var(--chart-3)',
+  ],
+  [
+    'beeCounter1Out',
+    'diagram.series.beesOut',
+    'beecount',
+    'bees',
+    'var(--chart-4)',
+  ],
+  [
+    'beeCounter1Net',
+    'diagram.series.netFlow',
+    'beecount',
+    'bees',
+    'var(--chart-5)',
+  ],
 ];
 
 const scale2SeriesTuples: SeriesTuple[] = [
-  ['scale2Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--muted-foreground)'],
-  ['scale2Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-4)'],
+  [
+    'scale2Weight',
+    'diagram.series.weight',
+    'weight',
+    'kg',
+    'var(--muted-foreground)',
+  ],
+  [
+    'scale2Temperature',
+    'diagram.series.temp',
+    'temperature',
+    '°C',
+    'var(--chart-4)',
+  ],
+  [
+    'scale2Humidity',
+    'diagram.series.humidity',
+    'humidity',
+    '%',
+    'var(--chart-5)',
+  ],
+  [
+    'scale2Pressure',
+    'diagram.series.pressure',
+    'pressure',
+    'hPa',
+    'var(--chart-1)',
+  ],
   ['micRightRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-2)'],
-  ['accel2Vibration', 'diagram.series.vibration', 'vibration', 'mg', 'var(--chart-2)'],
-  ['accel2SwarmBand', 'diagram.series.swarmBand', 'vibration', 'mg', 'var(--chart-4)'],
-  ['beeCounter2In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
-  ['beeCounter2Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-5)'],
-  ['beeCounter2Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--primary)'],
+  [
+    'accel2Vibration',
+    'diagram.series.vibration',
+    'vibration',
+    'mg',
+    'var(--chart-2)',
+  ],
+  [
+    'accel2SwarmBand',
+    'diagram.series.swarmBand',
+    'vibration',
+    'mg',
+    'var(--chart-4)',
+  ],
+  [
+    'beeCounter2In',
+    'diagram.series.beesIn',
+    'beecount',
+    'bees',
+    'var(--chart-3)',
+  ],
+  [
+    'beeCounter2Out',
+    'diagram.series.beesOut',
+    'beecount',
+    'bees',
+    'var(--chart-5)',
+  ],
+  [
+    'beeCounter2Net',
+    'diagram.series.netFlow',
+    'beecount',
+    'bees',
+    'var(--primary)',
+  ],
 ];
 
 const ambientAndOffGridSeriesTuples: GroupedSeriesTuple[] = [
-  ['ambientTemperature', 'diagram.series.ambientTemp', 'temperature', '°C', 'var(--chart-5)', 'diagram.group.ambient'],
-  ['ambientHumidity', 'diagram.series.ambientHumidity', 'humidity', '%', 'var(--chart-3)', 'diagram.group.ambient'],
-  ['batteryVoltage', 'diagram.series.batteryVoltage', 'voltage', 'V', 'var(--destructive)', 'diagram.group.offGrid'],
-  ['batterySoc', 'diagram.series.batteryCharge', 'percent', '%', 'var(--chart-1)', 'diagram.group.offGrid'],
-  ['solarLoadVoltage', 'diagram.series.solarVoltage', 'voltage', 'V', 'var(--chart-2)', 'diagram.group.offGrid'],
-  ['solarCurrent', 'diagram.series.solarCurrent', 'current', 'mA', 'var(--chart-3)', 'diagram.group.offGrid'],
-  ['solarPower', 'diagram.series.solarPower', 'power', 'mW', 'var(--chart-4)', 'diagram.group.offGrid'],
+  [
+    'ambientTemperature',
+    'diagram.series.ambientTemp',
+    'temperature',
+    '°C',
+    'var(--chart-5)',
+    'diagram.group.ambient',
+  ],
+  [
+    'ambientHumidity',
+    'diagram.series.ambientHumidity',
+    'humidity',
+    '%',
+    'var(--chart-3)',
+    'diagram.group.ambient',
+  ],
+  [
+    'batteryVoltage',
+    'diagram.series.batteryVoltage',
+    'voltage',
+    'V',
+    'var(--destructive)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'batterySoc',
+    'diagram.series.batteryCharge',
+    'percent',
+    '%',
+    'var(--chart-1)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'solarLoadVoltage',
+    'diagram.series.solarVoltage',
+    'voltage',
+    'V',
+    'var(--chart-2)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'solarCurrent',
+    'diagram.series.solarCurrent',
+    'current',
+    'mA',
+    'var(--chart-3)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'solarPower',
+    'diagram.series.solarPower',
+    'power',
+    'mW',
+    'var(--chart-4)',
+    'diagram.group.offGrid',
+  ],
 ];
 
 const toHiveSeries = (
@@ -867,6 +1036,13 @@ export const HiveScaleDiagramPanel = ({
             ),
             scale1Temperature: cleanTemperature(item.hive_1_temp_c),
             scale2Temperature: cleanTemperature(item.hive_2_temp_c),
+            // In-hive humidity & barometric pressure from the paired HolyIot
+            // 25015 BLE sensor (per hive). The HiveScale backend promotes these
+            // to ble_N_* columns; older payloads without a BLE sensor send null.
+            scale1Humidity: toFiniteNumber(item.ble_1_humidity_percent),
+            scale2Humidity: toFiniteNumber(item.ble_2_humidity_percent),
+            scale1Pressure: toFiniteNumber(item.ble_1_pressure_hpa),
+            scale2Pressure: toFiniteNumber(item.ble_2_pressure_hpa),
             ambientTemperature: cleanTemperature(item.ambient_temp_c),
             ambientHumidity: toFiniteNumber(item.ambient_humidity_percent),
             batteryVoltage: toFiniteNumber(
@@ -884,11 +1060,15 @@ export const HiveScaleDiagramPanel = ({
             beeCounter2In: counter2Ok ? bc2In : null,
             beeCounter2Out: counter2Ok ? bc2Out : null,
             beeCounter2Net: counter2Ok ? bc2Net : null,
-            accel1Vibration: accel1Ok ? toFiniteNumber(item.accel_1_rms_mg) : null,
+            accel1Vibration: accel1Ok
+              ? toFiniteNumber(item.accel_1_rms_mg)
+              : null,
             accel1SwarmBand: accel1Ok
               ? toFiniteNumber(item.accel_1_band_swarm_mg)
               : null,
-            accel2Vibration: accel2Ok ? toFiniteNumber(item.accel_2_rms_mg) : null,
+            accel2Vibration: accel2Ok
+              ? toFiniteNumber(item.accel_2_rms_mg)
+              : null,
             accel2SwarmBand: accel2Ok
               ? toFiniteNumber(item.accel_2_band_swarm_mg)
               : null,
@@ -1252,6 +1432,7 @@ export const HiveScaleDiagramPanel = ({
                   const { unit } = axisPresentation[axis];
                   const settings = axisScaleSettings[axis];
                   const unitWidths: Partial<Record<SeriesAxis, number>> = {
+                    pressure: 74,
                     current: 58,
                     power: 62,
                     dbfs: 68,
@@ -1418,7 +1599,9 @@ export const HiveScaleDiagramPanel = ({
                         </Label>
                         <Input
                           className="h-7 text-xs"
-                          placeholder={t('diagram.axisSettings.autoPlaceholder')}
+                          placeholder={t(
+                            'diagram.axisSettings.autoPlaceholder',
+                          )}
                           value={settings.customMin}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {
@@ -1433,7 +1616,9 @@ export const HiveScaleDiagramPanel = ({
                         </Label>
                         <Input
                           className="h-7 text-xs"
-                          placeholder={t('diagram.axisSettings.autoPlaceholder')}
+                          placeholder={t(
+                            'diagram.axisSettings.autoPlaceholder',
+                          )}
                           value={settings.customMax}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {

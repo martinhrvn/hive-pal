@@ -125,6 +125,24 @@ export interface HiveScaleMeasurement {
   accel_2_band_swarm_mg: number | null;
   accel_2_band_fanning_mg: number | null;
   accel_2_band_activity_mg: number | null;
+  // HolyIot 25015 in-hive BLE sensor (SHT40 + LPS22HB + LIS2DH12), bridged by
+  // the ESP32 per hive. Temperature is delivered via hive_N_temp_c and the
+  // per-hive acceleration via accel_N_*; humidity and barometric pressure are
+  // promoted to their own columns. Battery/RSSI/raw axes are diagnostic.
+  ble_1_humidity_percent: number | null;
+  ble_1_pressure_hpa: number | null;
+  ble_1_accel_x_mg: number | null;
+  ble_1_accel_y_mg: number | null;
+  ble_1_accel_z_mg: number | null;
+  ble_1_battery_percent: number | null;
+  ble_1_rssi_dbm: number | null;
+  ble_2_humidity_percent: number | null;
+  ble_2_pressure_hpa: number | null;
+  ble_2_accel_x_mg: number | null;
+  ble_2_accel_y_mg: number | null;
+  ble_2_accel_z_mg: number | null;
+  ble_2_battery_percent: number | null;
+  ble_2_rssi_dbm: number | null;
 }
 
 export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';
