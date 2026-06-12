@@ -40,6 +40,7 @@ import { FeaturesPage } from '@/pages/features-page';
 import { LangLayout } from '@/components/i18n/lang-layout';
 import { isSupportedLanguage } from '@/utils/language-utils';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
+import { setFaroView } from '@/lib/faro';
 
 // Lazy loaded components - heavy pages that benefit from code splitting
 // Admin pages (only accessed by admins)
@@ -694,6 +695,10 @@ const router = createBrowserRouter([
     element: <NotFoundPage />,
   },
 ]);
+
+// Tag Faro Web Vitals with the current coarse page on every navigation. Safe to
+// register unconditionally: setFaroView is a no-op until Faro is initialized.
+router.subscribe(state => setFaroView(state.location.pathname));
 
 export function AppRouter() {
   return <RouterProvider router={router} />;

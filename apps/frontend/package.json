@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@better-auth/passkey": "^1.6.12",
+    "@grafana/faro-web-sdk": "^2.7.1",
     "@hookform/resolvers": "^4.1.3",
     "@lucide/lab": "^0.1.2",
     "@radix-ui/react-avatar": "^1.1.11",
