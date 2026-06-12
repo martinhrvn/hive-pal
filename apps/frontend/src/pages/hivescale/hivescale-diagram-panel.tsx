@@ -290,133 +290,62 @@ type GroupedSeriesTuple = readonly [
   groupKey: string,
 ];
 
-const scale1SeriesTuples: SeriesTuple[] = [
-  ['scale1Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--primary)'],
-  [
-    'scale1Temperature',
-    'diagram.series.temp',
-    'temperature',
-    '°C',
-    'var(--chart-2)',
-  ],
-  [
-    'scale1Humidity',
-    'diagram.series.humidity',
-    'humidity',
-    '%',
-    'var(--chart-3)',
-  ],
-  [
-    'scale1Pressure',
-    'diagram.series.pressure',
-    'pressure',
-    'hPa',
-    'var(--chart-4)',
-  ],
-  ['micLeftRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-1)'],
-  [
-    'accel1Vibration',
-    'diagram.series.vibration',
-    'vibration',
-    'mg',
-    'var(--chart-1)',
-  ],
-  [
-    'accel1SwarmBand',
-    'diagram.series.swarmBand',
-    'vibration',
-    'mg',
-    'var(--chart-3)',
-  ],
-  [
-    'beeCounter1In',
-    'diagram.series.beesIn',
-    'beecount',
-    'bees',
-    'var(--chart-3)',
-  ],
-  [
-    'beeCounter1Out',
-    'diagram.series.beesOut',
-    'beecount',
-    'bees',
-    'var(--chart-4)',
-  ],
-  [
-    'beeCounter1Net',
-    'diagram.series.netFlow',
-    'beecount',
-    'bees',
-    'var(--chart-5)',
-  ],
-];
+// Both per-hive scales expose the same set of series — identical labels, axes
+// and units. Only the concrete measurement keys and stroke colours differ, so
+// the shared shape lives here once and each scale supplies its keys/strokes
+// (in matching order) below.
+const scaleSeriesTemplate = [
+  { labelKey: 'diagram.series.weight', axis: 'weight', unit: 'kg' },
+  { labelKey: 'diagram.series.temp', axis: 'temperature', unit: '°C' },
+  { labelKey: 'diagram.series.humidity', axis: 'humidity', unit: '%' },
+  { labelKey: 'diagram.series.pressure', axis: 'pressure', unit: 'hPa' },
+  { labelKey: 'diagram.series.micRms', axis: 'dbfs', unit: 'dBFS' },
+  { labelKey: 'diagram.series.vibration', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.swarmBand', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.beesIn', axis: 'beecount', unit: 'bees' },
+  { labelKey: 'diagram.series.beesOut', axis: 'beecount', unit: 'bees' },
+  { labelKey: 'diagram.series.netFlow', axis: 'beecount', unit: 'bees' },
+] as const satisfies readonly {
+  labelKey: string;
+  axis: SeriesAxis;
+  unit: string;
+}[];
 
-const scale2SeriesTuples: SeriesTuple[] = [
-  [
-    'scale2Weight',
-    'diagram.series.weight',
-    'weight',
-    'kg',
-    'var(--muted-foreground)',
-  ],
-  [
-    'scale2Temperature',
-    'diagram.series.temp',
-    'temperature',
-    '°C',
-    'var(--chart-4)',
-  ],
-  [
-    'scale2Humidity',
-    'diagram.series.humidity',
-    'humidity',
-    '%',
-    'var(--chart-5)',
-  ],
-  [
-    'scale2Pressure',
-    'diagram.series.pressure',
-    'pressure',
-    'hPa',
-    'var(--chart-1)',
-  ],
-  ['micRightRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-2)'],
-  [
-    'accel2Vibration',
-    'diagram.series.vibration',
-    'vibration',
-    'mg',
-    'var(--chart-2)',
-  ],
-  [
-    'accel2SwarmBand',
-    'diagram.series.swarmBand',
-    'vibration',
-    'mg',
-    'var(--chart-4)',
-  ],
-  [
-    'beeCounter2In',
-    'diagram.series.beesIn',
-    'beecount',
-    'bees',
-    'var(--chart-3)',
-  ],
-  [
-    'beeCounter2Out',
-    'diagram.series.beesOut',
-    'beecount',
-    'bees',
-    'var(--chart-5)',
-  ],
-  [
-    'beeCounter2Net',
-    'diagram.series.netFlow',
-    'beecount',
-    'bees',
-    'var(--primary)',
-  ],
-];
+type ScaleSeriesStyling = readonly [key: SeriesKey, stroke: string];
+
+const buildScaleSeriesTuples = (
+  styling: readonly ScaleSeriesStyling[],
+): SeriesTuple[] =>
+  scaleSeriesTemplate.map(({ labelKey, axis, unit }, i) => {
+    const [key, stroke] = styling[i];
+    return [key, labelKey, axis, unit, stroke];
+  });
+
+const scale1SeriesTuples: SeriesTuple[] = buildScaleSeriesTuples([
+  ['scale1Weight', 'var(--primary)'],
+  ['scale1Temperature', 'var(--chart-2)'],
+  ['scale1Humidity', 'var(--chart-3)'],
+  ['scale1Pressure', 'var(--chart-4)'],
+  ['micLeftRms', 'var(--chart-1)'],
+  ['accel1Vibration', 'var(--chart-1)'],
+  ['accel1SwarmBand', 'var(--chart-3)'],
+  ['beeCounter1In', 'var(--chart-3)'],
+  ['beeCounter1Out', 'var(--chart-4)'],
+  ['beeCounter1Net', 'var(--chart-5)'],
+]);
+
+const scale2SeriesTuples: SeriesTuple[] = buildScaleSeriesTuples([
+  ['scale2Weight', 'var(--muted-foreground)'],
+  ['scale2Temperature', 'var(--chart-4)'],
+  ['scale2Humidity', 'var(--chart-5)'],
+  ['scale2Pressure', 'var(--chart-1)'],
+  ['micRightRms', 'var(--chart-2)'],
+  ['accel2Vibration', 'var(--chart-2)'],
+  ['accel2SwarmBand', 'var(--chart-4)'],
+  ['beeCounter2In', 'var(--chart-3)'],
+  ['beeCounter2Out', 'var(--chart-5)'],
+  ['beeCounter2Net', 'var(--primary)'],
+]);
 
 const ambientAndOffGridSeriesTuples: GroupedSeriesTuple[] = [
   [
