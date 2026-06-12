@@ -45,6 +45,10 @@ services:
       SENTRY_ENVIRONMENT: '${SENTRY_ENVIRONMENT}'
       VITE_SENTRY_DSN: '${VITE_SENTRY_DSN}'
       VITE_SENTRY_ENVIRONMENT: '${VITE_SENTRY_ENVIRONMENT}'
+      # Grafana Faro RUM collector endpoint (Alloy faro.receiver), reachable
+      # from the browser. Served to the client via /env.js.
+      VITE_FARO_URL: '${VITE_FARO_URL}'
+      VITE_FARO_ENVIRONMENT: '${VITE_FARO_ENVIRONMENT}'
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PASS: ${SMTP_PASS}
       SMTP_PORT: ${SMTP_PORT}

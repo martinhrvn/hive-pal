@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Activity,
   Battery,
@@ -238,6 +240,7 @@ const axisOrder: SeriesAxis[] = [
 
 const axisPresentation: Record<
   SeriesAxis,
+  { labelKey: string; unit: string; Icon: LucideIcon }
   { labelKey: string; unit: string; Icon: LucideIcon }
 > = {
   weight: { labelKey: 'diagram.axis.weight', unit: 'kg', Icon: Scale },
