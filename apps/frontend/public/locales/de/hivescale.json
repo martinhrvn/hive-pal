@@ -264,27 +264,14 @@
     "weight": "Gewicht",
     "hiveTemp": "Stocktemperatur",
     "rmsSound": "RMS-Schall",
-    "temperature": "Temperatur",
-    "humidity": "Luftfeuchtigkeit",
-    "voltage": "Spannung",
-    "charge": "Ladung",
-    "alert": "Alarm",
-    "alertOn": "Alarm",
-    "alertOff": "Kein Alarm",
-    "loadVoltage": "Lastspannung",
-    "current": "Strom",
-    "power": "Leistung",
-    "ambient": {
-      "title": "Umgebung",
-      "description": "Außensensor"
-    },
-    "battery": {
-      "title": "Batterie",
-      "description": "MAX17048-Ladestandsmesser"
-    },
-    "solar": {
-      "title": "Solareingang",
-      "description": "INA219-Panel-Monitor"
+    "ambientTemperature": "Außentemperatur",
+    "ambientHumidity": "Außenluftfeuchtigkeit",
+    "batteryCharge": "Akkuladung",
+    "solarInput": "Solareingang",
+    "charging": "Lädt",
+    "general": {
+      "title": "Allgemein",
+      "description": "Umgebung & Stromversorgung"
     }
   },
   "diagram": {

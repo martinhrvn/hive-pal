@@ -264,27 +264,14 @@
     "weight": "Weight",
     "hiveTemp": "Hive temp",
     "rmsSound": "RMS sound",
-    "temperature": "Temperature",
-    "humidity": "Humidity",
-    "voltage": "Voltage",
-    "charge": "Charge",
-    "alert": "Alert",
-    "alertOn": "Alert",
-    "alertOff": "No alert",
-    "loadVoltage": "Load voltage",
-    "current": "Current",
-    "power": "Power",
-    "ambient": {
-      "title": "Ambient",
-      "description": "Outside sensor"
-    },
-    "battery": {
-      "title": "Battery",
-      "description": "MAX17048 fuel gauge"
-    },
-    "solar": {
-      "title": "Solar input",
-      "description": "INA219 panel monitor"
+    "ambientTemperature": "Ambient temperature",
+    "ambientHumidity": "Ambient humidity",
+    "batteryCharge": "Battery charge",
+    "solarInput": "Solar input",
+    "charging": "Charging",
+    "general": {
+      "title": "General",
+      "description": "Ambient & power"
     }
   },
   "diagram": {

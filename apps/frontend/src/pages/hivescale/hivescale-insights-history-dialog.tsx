@@ -33,6 +33,10 @@ interface HiveScaleInsightsHistoryDialogProps {
   deviceId: string;
   scale1Name: string;
   scale2Name: string;
+  /** When set, only show history entries for this scale/hive channel. */
+  channel?: 1 | 2;
+  /** Render an icon-only trigger suitable for inline placement in a panel. */
+  compact?: boolean;
 }
 
 type StatusFilter = 'all' | HiveScaleInsightStatus;
@@ -150,6 +154,8 @@ export function HiveScaleInsightsHistoryDialog({
   deviceId,
   scale1Name,
   scale2Name,
+  channel,
+  compact = false,
 }: HiveScaleInsightsHistoryDialogProps) {
   const { t } = useTranslation('hivescale');
   const [open, setOpen] = useState(false);
@@ -164,23 +170,51 @@ export function HiveScaleInsightsHistoryDialog({
     { enabled: open },
   );
 
-  const entries = useMemo(
-    () => history.data?.alerts ?? [],
-    [history.data?.alerts],
-  );
+  const entries = useMemo(() => {
+    const all = history.data?.alerts ?? [];
+    return channel ? all.filter(entry => entry.channel === channel) : all;
+  }, [history.data?.alerts, channel]);
+
+  // The backend response counts are device-wide, so derive the displayed
+  // totals from the (possibly channel-filtered) entries instead.
+  const shownCount = entries.length;
+  const activeCount = entries.filter(
+    entry => entry.status === 'active',
+  ).length;
+
+  const hiveName = channel
+    ? channelLabel(channel, scale1Name, scale2Name, t)
+    : null;
+
+  const title = hiveName
+    ? `${t('history.title')} · ${hiveName}`
+    : t('history.title');
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" size="sm" className="gap-1.5">
-          <History className="h-4 w-4" />
-          {t('history.button')}
-        </Button>
+        {compact ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5 text-muted-foreground hover:text-foreground"
+            title={t('history.button')}
+            aria-label={t('history.button')}
+          >
+            <History className="h-3.5 w-3.5" />
+          </Button>
+        ) : (
+          <Button type="button" variant="outline" size="sm" className="gap-1.5">
+            <History className="h-4 w-4" />
+            {t('history.button')}
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] max-w-2xl overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {t('history.title')}
+            {title}
             {history.isFetching && (
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             )}
@@ -207,8 +241,8 @@ export function HiveScaleInsightsHistoryDialog({
           {history.data && (
             <span className="text-xs text-muted-foreground">
               {t('history.summary', {
-                count: history.data.count,
-                active: history.data.active_count,
+                count: shownCount,
+                active: activeCount,
               })}
             </span>
           )}

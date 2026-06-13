@@ -3,7 +3,7 @@ import { FormEvent, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
-  Battery,
+  BatteryCharging,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -14,7 +14,6 @@ import {
   Plus,
   RefreshCw,
   Square,
-  Sun,
   Thermometer,
   Trash2,
   Upload,
@@ -109,18 +108,6 @@ const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
     ? value.toFixed(digits)
     : '—';
-
-const hasTelemetryValue = (...values: unknown[]) =>
-  values.some(value => value !== null && value !== undefined && value !== '');
-
-const statusOrDash = (
-  value: boolean | null | undefined,
-  trueLabel = 'OK',
-  falseLabel = 'No',
-) => {
-  if (value === null || value === undefined) return '—';
-  return value ? trueLabel : falseLabel;
-};
 
 const HIVESCALE_DATE_RANGE_STORAGE_KEY = 'hivescale.diagram.dateRange';
 
@@ -244,12 +231,14 @@ function LatestValuePanel({
   rows,
   badge,
   insight,
+  historyAction,
 }: Readonly<{
   title: string;
   description: string;
   icon: LucideIcon;
-  rows: { label: string; value: string }[];
+  rows: { label: string; value: ReactNode }[];
   badge?: ReactNode;
+  historyAction?: ReactNode;
   insight?: {
     severity: HiveScaleInsightSeverity | null;
     count: number;
@@ -305,8 +294,9 @@ function LatestValuePanel({
 
             {insight && (
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-xs text-muted-foreground">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
                   {t('common.insight')}
+                  {historyAction}
                 </span>
                 {hasAlerts ? (
                   <button
@@ -2500,20 +2490,9 @@ export function HiveScalePage() {
     device => device.device_id === selectedDeviceId,
   );
   const latest = latestMeasurement(measurements.data);
-  const latestBatteryVoltage =
-    latest?.battery_voltage_v ?? latest?.battery_voltage;
-  const hasBatteryTelemetry = hasTelemetryValue(
-    latestBatteryVoltage,
-    latest?.battery_soc_percent,
-    latest?.battery_monitor_ok,
-    latest?.battery_alert,
-  );
-  const hasSolarTelemetry = hasTelemetryValue(
-    latest?.solar_monitor_ok,
-    latest?.solar_load_voltage_v,
-    latest?.solar_current_ma,
-    latest?.solar_power_mw,
-  );
+  // The MAX17048 fuel gauge reports state-of-charge above 100% while the cell
+  // is actively taking charge, so we treat >100% as the "charging" signal.
+  const isBatteryCharging = (latest?.battery_soc_percent ?? 0) > 100;
 
   useEffect(() => {
     if (latest?.calibration_mode === false && isCalibrationPolling) {
@@ -2574,13 +2553,6 @@ export function HiveScalePage() {
           <p className="text-muted-foreground">{t('page.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
-          {selectedDevice && (
-            <HiveScaleInsightsHistoryDialog
-              deviceId={selectedDevice.device_id}
-              scale1Name={scale1Name}
-              scale2Name={scale2Name}
-            />
-          )}
           <Button
             type="button"
             variant="outline"
@@ -2644,6 +2616,15 @@ export function HiveScalePage() {
               isLoading: insights.isLoading,
               isError: insights.isError,
             }}
+            historyAction={
+              <HiveScaleInsightsHistoryDialog
+                deviceId={selectedDevice.device_id}
+                scale1Name={scale1Name}
+                scale2Name={scale2Name}
+                channel={1}
+                compact
+              />
+            }
           />
           <LatestValuePanel
             title={scale2Name}
@@ -2678,68 +2659,52 @@ export function HiveScalePage() {
               isLoading: insights.isLoading,
               isError: insights.isError,
             }}
+            historyAction={
+              <HiveScaleInsightsHistoryDialog
+                deviceId={selectedDevice.device_id}
+                scale1Name={scale1Name}
+                scale2Name={scale2Name}
+                channel={2}
+                compact
+              />
+            }
           />
           <LatestValuePanel
-            title={t('panel.ambient.title')}
-            description={t('panel.ambient.description')}
+            title={t('panel.general.title')}
+            description={t('panel.general.description')}
             icon={Droplets}
             rows={[
               {
-                label: t('panel.temperature'),
+                label: t('panel.ambientTemperature'),
                 value: `${numberOrDash(latest?.ambient_temp_c)} °C`,
               },
               {
-                label: t('panel.humidity'),
+                label: t('panel.ambientHumidity'),
                 value: `${numberOrDash(latest?.ambient_humidity_percent, 0)}%`,
+              },
+              {
+                label: t('panel.batteryCharge'),
+                value: (
+                  <span className="flex items-center gap-1.5">
+                    {isBatteryCharging && (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400"
+                        title={t('panel.charging')}
+                      >
+                        <BatteryCharging className="h-3.5 w-3.5" aria-hidden />
+                        {t('panel.charging')}
+                      </span>
+                    )}
+                    {`${numberOrDash(latest?.battery_soc_percent, 0)}%`}
+                  </span>
+                ),
+              },
+              {
+                label: t('panel.solarInput'),
+                value: `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`,
               },
             ]}
           />
-          {hasBatteryTelemetry && (
-            <LatestValuePanel
-              title={t('panel.battery.title')}
-              description={t('panel.battery.description')}
-              icon={Battery}
-              rows={[
-                {
-                  label: t('panel.voltage'),
-                  value: `${numberOrDash(latestBatteryVoltage, 2)} V`,
-                },
-                {
-                  label: t('panel.charge'),
-                  value: `${numberOrDash(latest?.battery_soc_percent, 0)}%`,
-                },
-                {
-                  label: t('panel.alert'),
-                  value: statusOrDash(
-                    latest?.battery_alert,
-                    t('panel.alertOn'),
-                    t('panel.alertOff'),
-                  ),
-                },
-              ]}
-            />
-          )}
-          {hasSolarTelemetry && (
-            <LatestValuePanel
-              title={t('panel.solar.title')}
-              description={t('panel.solar.description')}
-              icon={Sun}
-              rows={[
-                {
-                  label: t('panel.loadVoltage'),
-                  value: `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`,
-                },
-                {
-                  label: t('panel.current'),
-                  value: `${numberOrDash(latest?.solar_current_ma, 0)} mA`,
-                },
-                {
-                  label: t('panel.power'),
-                  value: `${numberOrDash(latest?.solar_power_mw, 0)} mW`,
-                },
-              ]}
-            />
-          )}
         </div>
       )}
 
