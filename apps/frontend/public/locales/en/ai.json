@@ -34,5 +34,24 @@
   "suggestion": {
     "conflict": "Conflicts with existing value",
     "willFill": "Will fill this field"
+  },
+  "frameAnalysis": {
+    "title": "Frame analysis",
+    "description": "Detect and classify comb cells in this photo.",
+    "analyze": "Analyze frame",
+    "analyzing": "Analyzing…",
+    "reanalyze": "Re-analyze",
+    "totalCells_one": "{{count}} cell detected",
+    "totalCells_other": "{{count}} cells detected",
+    "error": "Analysis failed",
+    "classes": {
+      "egg": "Eggs",
+      "larvae": "Larvae",
+      "cappedBrood": "Capped brood",
+      "honey": "Honey",
+      "pollen": "Pollen",
+      "nectar": "Nectar",
+      "other": "Other"
+    }
   }
 }

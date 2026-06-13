@@ -1,0 +1,17 @@
+# Offline conversion tooling only (NOT shipped in the runtime image).
+# Used by convert_models.py to turn DeepBee's Keras .h5 weights into .onnx.
+#
+# These pins target PYTHON 3.6 — DeepBee's segmentation model stores a Keras
+# Lambda as marshaled 3.6 bytecode that newer Python can't load. The supported
+# path is the Docker image in Dockerfile.convert (run via ./convert.sh).
+#
+# If you install these locally you MUST be on Python 3.6, and you must force
+# h5py 2.10 over TF's h5py 3.x pin afterwards, or loading Keras-2.3 .h5 fails:
+#     pip install -r requirements-convert.txt
+#     pip install --no-deps --force-reinstall h5py==2.10.0
+numpy==1.19.5
+protobuf==3.19.6
+tensorflow-cpu==2.6.2
+tf2onnx==1.9.3
+onnx==1.10.2
+gdown==4.6.4

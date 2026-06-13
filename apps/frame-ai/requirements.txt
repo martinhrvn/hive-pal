@@ -1,0 +1,5 @@
+# Runtime dependencies (no TensorFlow — inference runs on onnxruntime).
+flask==3.0.3
+onnxruntime==1.18.0
+numpy==1.26.4
+opencv-python-headless==4.9.0.80

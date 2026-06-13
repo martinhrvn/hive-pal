@@ -1,0 +1,23 @@
+# One-time, OFFLINE model conversion image (.h5 -> .onnx).
+#
+# Pinned to Python 3.6 ON PURPOSE: DeepBee's segmentation model contains a Keras
+# Lambda layer whose function is stored as marshaled Python 3.6 bytecode. Only a
+# 3.6 interpreter can unmarshal it — newer Python raises
+# "EOFError: EOF read where object expected". tf2onnx then traces the model, so
+# the Lambda becomes concrete ONNX ops and the output runs on any modern
+# onnxruntime. This image is never used at runtime.
+FROM python:3.6-slim
+
+# Install TensorFlow 2.6 (last line to support py3.6) + tf2onnx, then force the
+# legacy h5py 2.10 over TF's h5py 3.x pin — h5py 3 can't read Keras-2.3 .h5
+# string attributes ("'str' object has no attribute 'decode'").
+RUN pip install --no-cache-dir \
+      numpy==1.19.5 \
+      protobuf==3.19.6 \
+      tensorflow-cpu==2.6.2 \
+      tf2onnx==1.9.3 \
+      onnx==1.10.2 \
+      gdown==4.6.4 \
+ && pip install --no-cache-dir --no-deps --force-reinstall h5py==2.10.0
+
+WORKDIR /work

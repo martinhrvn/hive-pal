@@ -42,6 +42,7 @@ import { PhotosModule } from './photos/photos.module';
 import { DocumentsModule } from './documents/documents.module';
 import { InspectionAudioModule } from './inspection-audio/inspection-audio.module';
 import { AiModule } from './ai/ai.module';
+import { FrameAnalysisModule } from './frame-analysis/frame-analysis.module';
 import { ApiarySharingModule } from './apiary-sharing/apiary-sharing.module';
 import { WorkerTokensModule } from './worker-tokens/worker-tokens.module';
 import { WorkerJobsModule } from './worker-jobs/worker-jobs.module';
@@ -95,6 +96,7 @@ import { AccountTransferModule } from './account-transfer/account-transfer.modul
     PhotosModule,
     DocumentsModule,
     AiModule,
+    FrameAnalysisModule,
     InspectionAudioModule,
     ApiarySharingModule,
     WorkerTokensModule,

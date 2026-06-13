@@ -1,0 +1,5 @@
+# Source Keras weights are large and fetched only for (re)conversion — not committed.
+*.h5
+# The converted .onnx models ARE committed (small, MIT-derived) so the service
+# runs with no conversion step. See ../README.md.
+!.gitignore

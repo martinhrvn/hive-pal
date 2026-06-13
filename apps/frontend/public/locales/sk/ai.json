@@ -34,5 +34,25 @@
   "suggestion": {
     "conflict": "Conflicts with existing value",
     "willFill": "Will fill this field"
+  },
+  "frameAnalysis": {
+    "title": "Analýza plástu",
+    "description": "Rozpozná a klasifikuje bunky plástu na tejto fotke.",
+    "analyze": "Analyzovať plást",
+    "analyzing": "Analyzujem…",
+    "reanalyze": "Analyzovať znova",
+    "totalCells_one": "Rozpoznaná {{count}} bunka",
+    "totalCells_few": "Rozpoznané {{count}} bunky",
+    "totalCells_other": "Rozpoznaných {{count}} buniek",
+    "error": "Analýza zlyhala",
+    "classes": {
+      "egg": "Vajíčka",
+      "larvae": "Larvy",
+      "cappedBrood": "Zaviečkovaný plod",
+      "honey": "Med",
+      "pollen": "Peľ",
+      "nectar": "Nektár",
+      "other": "Ostatné"
+    }
   }
 }

@@ -936,10 +936,24 @@ model Photo {
   featureOfApiary Apiary? @relation("ApiaryFeaturePhoto")
   featureOfHive   Hive?   @relation("HiveFeaturePhoto")
 
+  frameAnalysis FrameAnalysis?
+
   @@index([hiveId])
   @@index([apiaryId])
   @@index([inspectionId])
   @@index([hiveId, date])
+}
+
+// DeepBee comb-cell classification result for a frame photo (see apps/frame-ai)
+model FrameAnalysis {
+  id           String   @id @default(uuid())
+  photoId      String   @unique
+  photo        Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  result       Json     // FrameAnalysisResult: totalCells, counts, percentages, modelVersion
+  modelVersion String
+  createdAt    DateTime @default(now())
+
+  @@index([photoId])
 }
 
 // Document attached to an apiary or hive

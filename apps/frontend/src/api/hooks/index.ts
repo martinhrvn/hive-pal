@@ -6,6 +6,7 @@ export * from './useAuth';
 export * from './useBatchInspections';
 export * from './useCalendar';
 export * from './useEquipmentNew';
+export * from './useFrameAnalysis';
 export * from './useFrameSizes';
 export * from './useHarvests';
 export * from './useHives';

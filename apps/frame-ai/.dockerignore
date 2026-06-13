@@ -1,0 +1,6 @@
+model/*.h5
+model/*.onnx
+__pycache__/
+*.pyc
+.env
+README.md

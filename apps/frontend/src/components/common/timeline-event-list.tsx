@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { FrameAnalysisDialog } from '@/components/frame-analysis-dialog';
 import {
   Select,
   SelectContent,
@@ -885,19 +886,22 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                   caption={photo.caption}
                 />
               </div>
-              {onDeletePhoto && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-stone-400 hover:text-destructive opacity-0 group-hover/row:opacity-100 transition-opacity"
-                  onClick={e => {
-                    e.stopPropagation();
-                    onDeletePhoto(photo);
-                  }}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              )}
+              <div className="flex items-start gap-1">
+                <FrameAnalysisDialog photoId={photo.id} />
+                {onDeletePhoto && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-stone-400 hover:text-destructive opacity-0 group-hover/row:opacity-100 transition-opacity"
+                    onClick={e => {
+                      e.stopPropagation();
+                      onDeletePhoto(photo);
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
             </div>
           )}
 

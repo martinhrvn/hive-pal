@@ -1,0 +1,18 @@
+services:
+  hivepal-frame-ai:
+    build:
+      context: .
+    image: hivepal-frame-ai:latest
+    container_name: hivepal-frame-ai
+    environment:
+      FRAME_AI_API_KEY: ${FRAME_AI_API_KEY:-}
+      MODEL_DIR: /app/model
+      MODEL_VERSION: deepbee-1.0
+      PORT: "8009"
+    ports:
+      - "8009:8009"
+    restart: unless-stopped
+    volumes:
+      # DeepBee ONNX models — see README.md for how to populate this
+      # directory (segmentation.onnx + classification.onnx).
+      - ./model:/app/model:ro
