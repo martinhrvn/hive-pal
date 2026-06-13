@@ -118,6 +118,21 @@
     "minutes": "Minutes",
     "seconds": "Seconds"
   },
+  "months": {
+    "selectMonth": "Select month",
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
   "weather": {
     "selectHiveToView": "Select a hive with an apiary to view weather",
     "unableToLoad": "Unable to load weather data",

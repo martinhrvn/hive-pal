@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -7,19 +8,10 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   FormDescription,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.tsx';
 import {
   Card,
   CardContent,
@@ -30,6 +22,11 @@ import {
 import { useUpdateHive } from '@/api/hooks';
 import { toast } from 'sonner';
 import type { HiveDetailResponse } from 'shared-schemas';
+import {
+  MonthSelectField,
+  NumberInputField,
+  defaultHiveSettings,
+} from '../components/hive-settings-fields';
 
 const hiveSettingsSchema = z.object({
   settings: z.object({
@@ -56,40 +53,13 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
   hive,
   onHiveUpdated,
 }) => {
+  const { t } = useTranslation(['hive', 'common']);
   const { mutate: updateHive, isPending } = useUpdateHive();
-
-  const monthOptions = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
-  ];
-
-  // Default settings
-  const defaultSettings = {
-    autumnFeeding: {
-      startMonth: 8,
-      endMonth: 10,
-      amountKg: 12,
-    },
-    inspection: {
-      frequencyDays: 7,
-      calendarEnabled: true,
-    },
-  };
 
   const form = useForm<HiveSettingsFormData>({
     resolver: zodResolver(hiveSettingsSchema),
     defaultValues: {
-      settings: hive?.settings || defaultSettings,
+      settings: hive?.settings || defaultHiveSettings,
     },
   });
 
@@ -106,11 +76,11 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
       },
       {
         onSuccess: () => {
-          toast.success('Hive settings updated successfully');
+          toast.success(t('hive:settings.updateSuccess'));
           onHiveUpdated();
         },
         onError: error => {
-          toast.error('Failed to update hive settings');
+          toast.error(t('hive:settings.updateError'));
           console.error('Update hive settings error:', error);
         },
       },
@@ -118,18 +88,15 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
   };
 
   if (!hive) {
-    return <div>Loading...</div>;
+    return <div>{t('common:status.loading')}</div>;
   }
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Hive Settings</CardTitle>
-          <CardDescription>
-            Configure feeding schedules and inspection frequencies specific to
-            this hive.
-          </CardDescription>
+          <CardTitle>{t('hive:settings.title')}</CardTitle>
+          <CardDescription>{t('hive:settings.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -137,110 +104,37 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
               {/* Autumn Feeding Settings */}
               <div className="space-y-4">
                 <div className="pb-2 border-b">
-                  <h3 className="text-lg font-medium">Autumn Feeding</h3>
+                  <h3 className="text-lg font-medium">
+                    {t('hive:settings.autumnFeeding')}
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Define the autumn feeding window and target amount for this
-                    hive.
+                    {t('hive:settings.autumnFeedingDescription')}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
+                  <MonthSelectField
                     control={form.control}
                     name="settings.autumnFeeding.startMonth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Month</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={value =>
-                              field.onChange(Number(value))
-                            }
-                            value={field.value?.toString()}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select month" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {monthOptions.map(month => (
-                                <SelectItem
-                                  key={month.value}
-                                  value={month.value.toString()}
-                                >
-                                  {month.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormDescription>
-                          When to begin autumn feeding
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label={t('hive:settings.startMonth')}
+                    description={t('hive:settings.startMonthDescription')}
                   />
 
-                  <FormField
+                  <MonthSelectField
                     control={form.control}
                     name="settings.autumnFeeding.endMonth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Month</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={value =>
-                              field.onChange(Number(value))
-                            }
-                            value={field.value?.toString()}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select month" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {monthOptions.map(month => (
-                                <SelectItem
-                                  key={month.value}
-                                  value={month.value.toString()}
-                                >
-                                  {month.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormDescription>
-                          When to end autumn feeding
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label={t('hive:settings.endMonth')}
+                    description={t('hive:settings.endMonthDescription')}
                   />
 
-                  <FormField
+                  <NumberInputField
                     control={form.control}
                     name="settings.autumnFeeding.amountKg"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Target Amount (kg)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.1"
-                            min="0"
-                            placeholder="12"
-                            {...field}
-                            onChange={e =>
-                              field.onChange(Number(e.target.value) || 0)
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Target feeding amount in sugar equivalent
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label={t('hive:settings.targetAmount')}
+                    step="0.1"
+                    min={0}
+                    placeholder="12"
+                    description={t('hive:settings.targetAmountDescription')}
                   />
                 </div>
               </div>
@@ -248,37 +142,24 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
               {/* Inspection Settings */}
               <div className="space-y-4">
                 <div className="pb-2 border-b">
-                  <h3 className="text-lg font-medium">Inspection Schedule</h3>
+                  <h3 className="text-lg font-medium">
+                    {t('hive:settings.inspectionSchedule')}
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Set the preferred inspection frequency for this hive.
+                    {t('hive:settings.inspectionScheduleDescription')}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
+                  <NumberInputField
                     control={form.control}
                     name="settings.inspection.frequencyDays"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Inspection Frequency (days)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="365"
-                            placeholder="7"
-                            {...field}
-                            onChange={e =>
-                              field.onChange(Number(e.target.value) || 7)
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          How often to inspect this hive (in days)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label={t('hive:settings.inspectionFrequency')}
+                    min={1}
+                    max={365}
+                    placeholder="7"
+                    fallback={7}
+                    description={t('hive:settings.inspectionFrequencyDescription')}
                   />
 
                   <FormField
@@ -287,9 +168,11 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel>Show in calendar</FormLabel>
+                          <FormLabel>
+                            {t('hive:settings.showInCalendar')}
+                          </FormLabel>
                           <FormDescription>
-                            Include scheduled inspections in the calendar feed
+                            {t('hive:settings.showInCalendarDescription')}
                           </FormDescription>
                         </div>
                         <FormControl>
@@ -306,7 +189,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
 
               <div className="flex justify-end pt-4">
                 <Button type="submit" disabled={isPending}>
-                  {isPending ? 'Saving...' : 'Save Settings'}
+                  {isPending
+                    ? t('hive:settings.saving')
+                    : t('hive:settings.save')}
                 </Button>
               </div>
             </form>

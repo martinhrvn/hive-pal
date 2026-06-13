@@ -112,6 +112,21 @@
     "minutes": "Minúty",
     "seconds": "Sekundy"
   },
+  "months": {
+    "selectMonth": "Vyberte mesiac",
+    "january": "Január",
+    "february": "Február",
+    "march": "Marec",
+    "april": "Apríl",
+    "may": "Máj",
+    "june": "Jún",
+    "july": "Júl",
+    "august": "August",
+    "september": "September",
+    "october": "Október",
+    "november": "November",
+    "december": "December"
+  },
   "weather": {
     "selectHiveToView": "Vyberte úľ s včelnicou na zobrazenie počasia",
     "unableToLoad": "Nie je možné načítať údaje o počasí",
