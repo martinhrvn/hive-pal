@@ -1,4 +1,5 @@
 import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
   FormControl,
   FormDescription,
@@ -16,20 +17,20 @@ import {
   SelectValue,
 } from '@/components/ui/select.tsx';
 
-export const monthOptions = [
-  { value: 1, label: 'January' },
-  { value: 2, label: 'February' },
-  { value: 3, label: 'March' },
-  { value: 4, label: 'April' },
-  { value: 5, label: 'May' },
-  { value: 6, label: 'June' },
-  { value: 7, label: 'July' },
-  { value: 8, label: 'August' },
-  { value: 9, label: 'September' },
-  { value: 10, label: 'October' },
-  { value: 11, label: 'November' },
-  { value: 12, label: 'December' },
-];
+const MONTHS = [
+  { value: 1, key: 'january' },
+  { value: 2, key: 'february' },
+  { value: 3, key: 'march' },
+  { value: 4, key: 'april' },
+  { value: 5, key: 'may' },
+  { value: 6, key: 'june' },
+  { value: 7, key: 'july' },
+  { value: 8, key: 'august' },
+  { value: 9, key: 'september' },
+  { value: 10, key: 'october' },
+  { value: 11, key: 'november' },
+  { value: 12, key: 'december' },
+] as const;
 
 export const defaultHiveSettings = {
   autumnFeeding: {
@@ -57,6 +58,7 @@ export function MonthSelectField<T extends FieldValues>({
   label,
   description,
 }: BaseFieldProps<T>) {
+  const { t } = useTranslation('common');
   return (
     <FormField
       control={control}
@@ -70,15 +72,15 @@ export function MonthSelectField<T extends FieldValues>({
               value={field.value?.toString()}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select month" />
+                <SelectValue placeholder={t('months.selectMonth')} />
               </SelectTrigger>
               <SelectContent>
-                {monthOptions.map(month => (
+                {MONTHS.map(month => (
                   <SelectItem
                     key={month.value}
                     value={month.value.toString()}
                   >
-                    {month.label}
+                    {t(`months.${month.key}`)}
                   </SelectItem>
                 ))}
               </SelectContent>

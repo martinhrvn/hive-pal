@@ -323,7 +323,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
               type="button"
               className="w-full justify-between"
             >
-              Advanced Settings
+              {t('hive:settings.advancedTitle')}
               {isAdvancedOpen ? (
                 <ChevronUp className="h-4 w-4" />
               ) : (
@@ -333,26 +333,26 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-4 pt-4">
             <div className="text-sm text-muted-foreground mb-2">
-              Configure feeding and inspection preferences for this hive
+              {t('hive:settings.advancedDescription')}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <MonthSelectField
                 control={form.control}
                 name="settings.autumnFeeding.startMonth"
-                label="Autumn Feeding Start"
+                label={t('hive:settings.feedingStart')}
               />
 
               <MonthSelectField
                 control={form.control}
                 name="settings.autumnFeeding.endMonth"
-                label="Autumn Feeding End"
+                label={t('hive:settings.feedingEnd')}
               />
 
               <NumberInputField
                 control={form.control}
                 name="settings.autumnFeeding.amountKg"
-                label="Target Autumn Feeding (kg)"
+                label={t('hive:settings.targetFeedingKg')}
                 step="0.1"
                 min={0}
                 placeholder="12"
@@ -361,7 +361,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
               <NumberInputField
                 control={form.control}
                 name="settings.inspection.frequencyDays"
-                label="Inspection Frequency (days)"
+                label={t('hive:settings.inspectionFrequency')}
                 min={1}
                 max={365}
                 placeholder="7"
@@ -378,7 +378,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
               type="button"
               className="w-full justify-between"
             >
-              Box Configuration
+              {t('hive:boxConfigurator.title')}
               {isBoxConfigOpen ? (
                 <ChevronUp className="h-4 w-4" />
               ) : (
@@ -426,7 +426,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                   htmlFor="configure-boxes"
                   className="text-sm font-medium"
                 >
-                  Configure initial box setup
+                  {t('hive:settings.configureBoxes')}
                 </label>
               </div>
 
