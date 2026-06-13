@@ -59,6 +59,11 @@ import {
   FeaturePhotoPicker,
   FeaturePhotoPickerRef,
 } from '@/components/feature-photo-picker';
+import {
+  MonthSelectField,
+  NumberInputField,
+  defaultHiveSettings,
+} from './hive-settings-fields';
 
 const hiveSchema = z.object({
   name: z.string(),
@@ -108,36 +113,11 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     label: `${apiary.name}${apiary.location ? ` (${apiary.location})` : ''}`,
   }));
 
-  const monthOptions = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
-  ];
-
   const form = useForm<HiveFormData>({
     resolver: zodResolver(hiveSchema),
     defaultValues: {
       apiaryId: activeApiaryId ?? undefined,
-      settings: {
-        autumnFeeding: {
-          startMonth: 8,
-          endMonth: 10,
-          amountKg: 12,
-        },
-        inspection: {
-          frequencyDays: 7,
-          calendarEnabled: true,
-        },
-      },
+      settings: defaultHiveSettings,
     },
   });
 
@@ -357,112 +337,35 @@ export const HiveForm: React.FC<HiveFormProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
+              <MonthSelectField
                 control={form.control}
                 name="settings.autumnFeeding.startMonth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Autumn Feeding Start</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={value => field.onChange(Number(value))}
-                        value={field.value?.toString()}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select month" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {monthOptions.map(month => (
-                            <SelectItem
-                              key={month.value}
-                              value={month.value.toString()}
-                            >
-                              {month.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Autumn Feeding Start"
               />
 
-              <FormField
+              <MonthSelectField
                 control={form.control}
                 name="settings.autumnFeeding.endMonth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Autumn Feeding End</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={value => field.onChange(Number(value))}
-                        value={field.value?.toString()}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select month" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {monthOptions.map(month => (
-                            <SelectItem
-                              key={month.value}
-                              value={month.value.toString()}
-                            >
-                              {month.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Autumn Feeding End"
               />
 
-              <FormField
+              <NumberInputField
                 control={form.control}
                 name="settings.autumnFeeding.amountKg"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Target Autumn Feeding (kg)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        placeholder="12"
-                        {...field}
-                        onChange={e =>
-                          field.onChange(Number(e.target.value) || 0)
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Target Autumn Feeding (kg)"
+                step="0.1"
+                min={0}
+                placeholder="12"
               />
 
-              <FormField
+              <NumberInputField
                 control={form.control}
                 name="settings.inspection.frequencyDays"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Inspection Frequency (days)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="365"
-                        placeholder="7"
-                        {...field}
-                        onChange={e =>
-                          field.onChange(Number(e.target.value) || 7)
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Inspection Frequency (days)"
+                min={1}
+                max={365}
+                placeholder="7"
+                fallback={7}
               />
             </div>
           </CollapsibleContent>

@@ -7,19 +7,10 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   FormDescription,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.tsx';
 import {
   Card,
   CardContent,
@@ -30,6 +21,11 @@ import {
 import { useUpdateHive } from '@/api/hooks';
 import { toast } from 'sonner';
 import type { HiveDetailResponse } from 'shared-schemas';
+import {
+  MonthSelectField,
+  NumberInputField,
+  defaultHiveSettings,
+} from '../components/hive-settings-fields';
 
 const hiveSettingsSchema = z.object({
   settings: z.object({
@@ -58,38 +54,10 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
 }) => {
   const { mutate: updateHive, isPending } = useUpdateHive();
 
-  const monthOptions = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
-  ];
-
-  // Default settings
-  const defaultSettings = {
-    autumnFeeding: {
-      startMonth: 8,
-      endMonth: 10,
-      amountKg: 12,
-    },
-    inspection: {
-      frequencyDays: 7,
-      calendarEnabled: true,
-    },
-  };
-
   const form = useForm<HiveSettingsFormData>({
     resolver: zodResolver(hiveSettingsSchema),
     defaultValues: {
-      settings: hive?.settings || defaultSettings,
+      settings: hive?.settings || defaultHiveSettings,
     },
   });
 
@@ -145,102 +113,28 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
+                  <MonthSelectField
                     control={form.control}
                     name="settings.autumnFeeding.startMonth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Month</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={value =>
-                              field.onChange(Number(value))
-                            }
-                            value={field.value?.toString()}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select month" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {monthOptions.map(month => (
-                                <SelectItem
-                                  key={month.value}
-                                  value={month.value.toString()}
-                                >
-                                  {month.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormDescription>
-                          When to begin autumn feeding
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Start Month"
+                    description="When to begin autumn feeding"
                   />
 
-                  <FormField
+                  <MonthSelectField
                     control={form.control}
                     name="settings.autumnFeeding.endMonth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Month</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={value =>
-                              field.onChange(Number(value))
-                            }
-                            value={field.value?.toString()}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select month" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {monthOptions.map(month => (
-                                <SelectItem
-                                  key={month.value}
-                                  value={month.value.toString()}
-                                >
-                                  {month.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormDescription>
-                          When to end autumn feeding
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="End Month"
+                    description="When to end autumn feeding"
                   />
 
-                  <FormField
+                  <NumberInputField
                     control={form.control}
                     name="settings.autumnFeeding.amountKg"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Target Amount (kg)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.1"
-                            min="0"
-                            placeholder="12"
-                            {...field}
-                            onChange={e =>
-                              field.onChange(Number(e.target.value) || 0)
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Target feeding amount in sugar equivalent
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Target Amount (kg)"
+                    step="0.1"
+                    min={0}
+                    placeholder="12"
+                    description="Target feeding amount in sugar equivalent"
                   />
                 </div>
               </div>
@@ -255,30 +149,15 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
+                  <NumberInputField
                     control={form.control}
                     name="settings.inspection.frequencyDays"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Inspection Frequency (days)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="365"
-                            placeholder="7"
-                            {...field}
-                            onChange={e =>
-                              field.onChange(Number(e.target.value) || 7)
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          How often to inspect this hive (in days)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Inspection Frequency (days)"
+                    min={1}
+                    max={365}
+                    placeholder="7"
+                    fallback={7}
+                    description="How often to inspect this hive (in days)"
                   />
 
                   <FormField
