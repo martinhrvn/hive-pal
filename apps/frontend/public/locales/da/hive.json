@@ -275,6 +275,8 @@
             "note": "Notat",
             "maintenance": "{{status}} {{component}}",
             "maintenanceDefault": "Vedligehold"
-        }
+        },
+        "sendToAssistant": "Send til AI assistent",
+        "failedToSendToAssistant": "Kunne ikke åbne assistent"
     }
 }
