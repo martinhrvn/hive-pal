@@ -87,7 +87,9 @@
                 "framesLabel": "Antal rammer tilføjet/fjernet",
                 "framesHint": "Angiv et positivt tal for rammer tilføjet, eller et negativt tal for rammer fjernet",
                 "notesOptional": "Noter (frivilligt)",
-                "notesPlaceholder": "Tilføj eventuelle yderligere omkring ændring i rammer"
+                "notesPlaceholder": "Tilføj eventuelle yderligere omkring ændring i rammer",
+                "warningNoFramesToRemove": "Ingen rammer kan fjernes.",
+                "warningExceedsCapacity": "Dette overskrider kapaciteten i yngelmagasinet ({{capacity}} rammer). Tilføj et nyt magasin først."
             },
             "note_section": {
                 "title": "Notat",
@@ -238,7 +240,8 @@
         "frameCounts": {
             "title": "Forekomst af yngel",
             "totalFrames": "{{count}} rammer i alt",
-            "framesOf": "/ {{total}} rammer"
+            "framesOf": "/ {{total}} rammer",
+            "frameDeltaHint": "Rammer tilføjet/fjernet under denne inspektion"
         },
         "eggsFrames": "Æg",
         "uncappedBroodFrames": "Åben yngel",
@@ -306,7 +309,12 @@
         "allInspections": "Alle inspektioner",
         "recentInspections": "Seneste inspektioner",
         "goBack": "Tilbage",
-        "deleteFailed": "Sletning af inspektion fejlede"
+        "deleteFailed": "Sletning af inspektion fejlede",
+        "frameModificationAdded": "Denne inspektion tilføjede {{count}} ramme(r) til stadet.",
+        "frameModificationRemoved": "Denne inspektion fjernede {{count}} ramme(r) fra stadet.",
+        "frameModificationQuestion": "Vil du beholde det opdaterede antal rammer eller rulle tilbage?",
+        "deleteKeepFrames": "Slet og behold antal rammer",
+        "deleteRevertFrames": "Slet og rul antal rammer tilbage"
     },
     "schedule": {
         "title": "Planlæg inspektion",
@@ -432,6 +440,58 @@
         "retry": "Prøv igen",
         "retrySuccess": "Opbygning af magasin er blevet gemt",
         "retryFailed": "Forespørgslen fejlede. Prøv venligst igen.",
-        "dismiss": "Afvis"
+        "dismiss": "Afvis",
+        "retryDisabled": "Forsøg igen deaktiveret (5 forsøg brugt)",
+        "stalePayload": "Opbygningen af stadet er ændret. Magasin opdateringen kan ikke forsøges igen.",
+        "stalePayloadMessage": "Stade opbygningen har ændret sig siden opdateringen fejlede. Opdater venligst siden for at den aktuelle tilstand.",
+        "maxRetriesReached": "Maksimale antal forsøg nået. Kontakt venligst support hvis fejlen forbliver."
+    },
+    "mobile": {
+        "vitals": {
+            "title": "Styrke og yngel",
+            "hint": "Bistyrke, forseglet og åben yngel"
+        },
+        "stores": {
+            "title": "Beholdninger",
+            "hint": "Honning og pollen"
+        },
+        "queen": {
+            "title": "Dronning",
+            "hint": "Så du hende? Nogen dronningeceller?",
+            "yes": "Set",
+            "no": "Ikke set",
+            "notLooked": "Kiggede ikke efter"
+        },
+        "mediaNotes": {
+            "title": "Medier og noter",
+            "hint": "Evt fotos, lydoptagelser eller skrevne noter",
+            "addPhoto": "Tilføj foto",
+            "recordingNumber": "Optagelse {{n}}",
+            "removeRecording": "Fjern optagelse",
+            "removePhoto": "Fjern foto",
+            "notesPlaceholder": "Øvrige ting, der er værd at huske?"
+        },
+        "review": {
+            "title": "Gennemsyn",
+            "hint": "Kontroller opsummering, og gem så.",
+            "readyToSave": "Klar til at gemme",
+            "save": "Gem inspektion",
+            "invalid": "Gennemse venligst dine inputs",
+            "hasNotes": "Noter tilføjet",
+            "cellTypes": "Celletyper"
+        }
+    },
+    "audioQuick": {
+        "recordingFor": "Lyd inspektion for",
+        "prompt": "Tryk for at starte optagelse. Inspektionen bliver oprettet når optagelsen starter.",
+        "tapToStart": "Tryk forr starte",
+        "tapToStop": "Tryk for at stoppe og gemme",
+        "start": "Start optagelse",
+        "starting": "Starter...",
+        "stop": "Stop optagelse",
+        "uploading": "Gemmer optagelse...",
+        "uploadFailed": "Upload af optagelse fejlede. Inspektionen er blevet gemt.",
+        "tryAgain": "Prøv igen",
+        "unsupported": "Lydoptagelse er ikke understøttet i denne browser."
     }
 }
