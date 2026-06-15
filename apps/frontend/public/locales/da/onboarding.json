@@ -25,5 +25,36 @@
         "title": "Tillykke!",
         "description": "Du har nu oprettet din første bigård og dit første stade. Du er nu klar til at holde styr på alle dine aktiviteter med Hive-Pal!",
         "action": "Gå til kontrolpanelet"
+    },
+    "nudges": {
+        "addHive": {
+            "title": "Det ser ud til at du er ny her",
+            "description": "Tilføj din første stade og begynd at registrere inspektioner og aktivitet.",
+            "action": "Tilføj stade"
+        },
+        "addLocation": {
+            "title": "Hent vejrudsigt for din bigård",
+            "description": "Tilføj placering af din bigård for at få adgang til vejrudsigter.",
+            "action": "Tilføj placering"
+        }
+    },
+    "empty": {
+        "noApiary": {
+            "title": "Opret din første bigård",
+            "description": "En bigård er det sted hvor dine stadder er placeret. Opret en for at komme i gang.",
+            "action": "Opret bigård",
+            "guided": "Foretrækker du en guidet opsætning?"
+        },
+        "noHives": {
+            "title": "Endnu ingen stader",
+            "description": "Tilføj dit første stade for at kunne starte med at følge det.",
+            "action": "Tilføj dit første stade"
+        },
+        "noLocation": {
+            "title": "Tilføj en placering for vejret",
+            "description": "Tilføj din bigårds placering for at få vejrudsigten.",
+            "action": "Tilføj placering",
+            "dismiss": "Afvis"
+        }
     }
 }
