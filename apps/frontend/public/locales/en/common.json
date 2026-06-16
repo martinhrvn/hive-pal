@@ -416,7 +416,36 @@
     "tip3Title": "Thick syrup (2:1)",
     "tip3Description": "Best for fall/autumn feeding to build up winter stores. Bees can store it quickly with less effort to evaporate excess water.",
     "tip4Title": "General tips",
-    "tip4Description": "Always use white granulated sugar — never brown sugar, molasses, or artificial sweeteners. Do not boil the syrup as it can create HMF (hydroxymethylfurfural) which is toxic to bees. Feed in the evening to reduce robbing."
+    "tip4Description": "Always use white granulated sugar — never brown sugar, molasses, or artificial sweeteners. Do not boil the syrup as it can create HMF (hydroxymethylfurfural) which is toxic to bees. Feed in the evening to reduce robbing.",
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "question": "What sugar-to-water ratio should I use to feed bees?",
+          "answer": "Use 1:1 syrup (equal parts sugar and water by weight) in spring to stimulate brood rearing, 3:2 as a general-purpose feed, and 2:1 (two parts sugar to one part water) in fall to build winter stores. Thick syrup is easier for bees to convert to capped stores; thin syrup mimics a nectar flow."
+        },
+        {
+          "question": "When should I feed bees thin (1:1) syrup?",
+          "answer": "Feed 1:1 syrup in spring or whenever you want to stimulate brood rearing. Its water content mimics a natural nectar flow, encouraging the queen to lay and the colony to build up."
+        },
+        {
+          "question": "When should I feed bees thick (2:1) syrup?",
+          "answer": "Feed 2:1 syrup in late summer and fall to help colonies build winter stores. The lower water content means bees spend less energy evaporating it before capping."
+        },
+        {
+          "question": "Can I use brown sugar, honey, or molasses to make bee syrup?",
+          "answer": "No. Use only white granulated cane or beet sugar. Brown sugar, molasses, and unrefined sweeteners contain compounds that cause dysentery in bees. Honey from unknown sources can also transmit disease."
+        },
+        {
+          "question": "Should I boil sugar syrup for bees?",
+          "answer": "No. Heat the water until warm enough to dissolve the sugar, but do not boil. Boiling sugar syrup produces hydroxymethylfurfural (HMF), which is toxic to bees."
+        },
+        {
+          "question": "How much sugar do I need for one liter of 1:1 syrup?",
+          "answer": "For one liter of finished 1:1 syrup, you need roughly 715 g of water and 715 g of white granulated sugar. The exact amounts depend on the ratio and final volume — this calculator computes them based on sucrose displacement."
+        }
+      ]
+    }
   },
   "liebefelder": {
     "title": "Liebefelder Schätzmethode",
@@ -619,7 +648,28 @@
     "fact3Title": "The egg stage",
     "fact3Description": "All three castes share the same 3-day egg stage. The queen lays each egg vertically in the cell; it gradually tilts over before hatching.",
     "fact4Title": "Capping timing",
-    "fact4Description": "Workers cap queen cells on day 8, worker cells on day 9, and drone cells on day 10. Spotting capped cells helps identify what's developing inside."
+    "fact4Description": "Workers cap queen cells on day 8, worker cells on day 9, and drone cells on day 10. Spotting capped cells helps identify what's developing inside.",
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "question": "How long does it take for a honey bee to develop?",
+          "answer": "Queens emerge after 16 days, workers after 21 days, and drones after 24 days. All three pass through four stages — egg (3 days), larva, pupa, and adult — but the larval and pupal stages differ in length by caste."
+        },
+        {
+          "question": "When are worker bee cells capped?",
+          "answer": "Worker brood cells are capped on day 9, when the larva spins its cocoon and enters the pupal stage. Worker bees emerge on day 21."
+        },
+        {
+          "question": "When are queen cells capped and when do queens emerge?",
+          "answer": "Queen cells are capped on day 8 and virgin queens emerge on day 16 from the egg being laid. Queens develop fastest because they are fed royal jelly throughout the larval stage."
+        },
+        {
+          "question": "How long do drones take to emerge?",
+          "answer": "Drones take 24 days from egg to emergence — the longest of any caste. Drone cells are capped around day 10."
+        }
+      ]
+    }
   },
   "swarmManagement": {
     "backToOverview": "Back to Swarm Management",
@@ -792,7 +842,36 @@
         "There may be heavy lifting.",
         "Regular inspections are essential.",
         "You MUST understand the basics."
-      ]
+      ],
+      "faq": {
+        "title": "Frequently asked questions",
+        "items": [
+          {
+            "question": "What is the Demaree method?",
+            "answer": "The Demaree method is a classic swarm-control technique that vertically separates the laying queen from most of the brood within a single hive. The queen stays below a queen excluder on largely empty comb; the brood is moved above two or more honey supers so the colony stays together while swarm pressure eases."
+          },
+          {
+            "question": "When should I use the Demaree method?",
+            "answer": "Use the Demaree method on strong colonies showing clear swarm pressure — heavy congestion, charged queen cells, or a colony pushing hard into a flow — when you want to keep the colony intact rather than splitting it."
+          },
+          {
+            "question": "When should I inspect after a Demaree setup?",
+            "answer": "Inspect at day 7-8, day 14-15, and day 21-22 after the setup. The day 7-8 check is the most critical — emergency queen cells started during the swarm impulse must be removed before they approach emergence around day 14-16."
+          },
+          {
+            "question": "Does the Demaree method create a separate split or nucleus colony?",
+            "answer": "No. Unlike an artificial swarm or Pagden split, the Demaree method keeps all the bees in one hive. The colony remains a single working unit which often preserves honey-gathering momentum better than splitting."
+          },
+          {
+            "question": "What equipment do I need for the Demaree method?",
+            "answer": "You need a queen excluder (sometimes two), a spare brood box with drawn comb or foundation, and at least two honey supers to stack between the queen and the relocated brood."
+          },
+          {
+            "question": "What is the biggest risk with the Demaree method?",
+            "answer": "Missing a queen cell in the upper brood box during the day 7-8 check is the biggest risk — the colony can still swarm if a virgin queen emerges above the excluder. Shaking bees off every brood frame helps spot all cells."
+          }
+        ]
+      }
     },
     "planner": {
       "title": "Demaree inspection planner",
@@ -1075,6 +1154,7 @@
         "title": "Everything you need to <accent>tend</accent> your hives.",
         "lede": "Professional tools designed by beekeepers, for beekeepers — to keep colonies healthy, productive, and well-documented through every season.",
         "pillars": "Four pillars · built into one platform",
+        "seeAll": "Explore all features",
         "items": {
           "apiary": {
             "title": "Apiary management",
@@ -1140,6 +1220,10 @@
           "swarm": {
             "title": "Swarm Management",
             "body": "Step-by-step Demaree swarm-control workflow with follow-up timing and an inspection planner."
+          },
+          "liebefelder": {
+            "title": "Liebefelder Estimation Method",
+            "body": "Estimate colony strength — bees, brood, pollen and feed — by counting comb eighths, with seasonal evaluation guidelines."
           }
         }
       },

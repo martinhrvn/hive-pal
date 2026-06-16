@@ -15,7 +15,14 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Pill } from '@/components/common/pill';
-import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
+import {
+  ToolMeta,
+  ToolPageHeader,
+  TipsCard,
+  ToolFaq,
+  buildFaqJsonLd,
+  type FaqItem,
+} from '@/components/tool-page';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import type { UnitPreference } from '@/utils/unit-conversion';
 
@@ -132,6 +139,11 @@ export function SyrupCalculatorPage() {
   const sugarDisplay = formatWeight(results.sugarGrams);
   const totalDisplay = formatWeight(results.totalGrams);
 
+  // Visible FAQ and FAQPage structured data share one translated source.
+  const faqItems = t('syrupCalculator.faq.items', {
+    returnObjects: true,
+  }) as FaqItem[];
+
   const handleContainerSelect = (valueLiters: number) => {
     setSelectedContainer(valueLiters);
     setIsCustomContainer(false);
@@ -207,59 +219,7 @@ export function SyrupCalculatorPage() {
           },
         ],
       },
-      {
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What sugar-to-water ratio should I use to feed bees?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Use 1:1 syrup (equal parts sugar and water by weight) in spring to stimulate brood rearing, 3:2 as a general-purpose feed, and 2:1 (two parts sugar to one part water) in fall to build winter stores. Thick syrup is easier for bees to convert to capped stores; thin syrup mimics a nectar flow.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When should I feed bees thin (1:1) syrup?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Feed 1:1 syrup in spring or whenever you want to stimulate brood rearing. Its water content mimics a natural nectar flow, encouraging the queen to lay and the colony to build up.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When should I feed bees thick (2:1) syrup?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Feed 2:1 syrup in late summer and fall to help colonies build winter stores. The lower water content means bees spend less energy evaporating it before capping.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I use brown sugar, honey, or molasses to make bee syrup?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'No. Use only white granulated cane or beet sugar. Brown sugar, molasses, and unrefined sweeteners contain compounds that cause dysentery in bees. Honey from unknown sources can also transmit disease.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Should I boil sugar syrup for bees?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'No. Heat the water until warm enough to dissolve the sugar, but do not boil. Boiling sugar syrup produces hydroxymethylfurfural (HMF), which is toxic to bees.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How much sugar do I need for one liter of 1:1 syrup?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'For one liter of finished 1:1 syrup, you need roughly 715 g of water and 715 g of white granulated sugar. The exact amounts depend on the ratio and final volume — this calculator computes them based on sucrose displacement.',
-            },
-          },
-        ],
-      },
+      buildFaqJsonLd(faqItems),
     ],
   };
 
@@ -466,6 +426,8 @@ export function SyrupCalculatorPage() {
             </ol>
           </CardContent>
         </Card>
+
+        <ToolFaq title={t('syrupCalculator.faq.title')} items={faqItems} />
       </MainContent>
 
       <PageAside>

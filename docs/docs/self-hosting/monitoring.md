@@ -116,7 +116,7 @@ The React frontend ships **real-user monitoring** with the
 Core Web Vitals (LCP, CLS, INP, FCP, TTFB), frontend errors, and session info in
 the browser and sends them to a **Grafana Alloy** `faro.receiver`, which forwards
 them to your existing **Loki**. Grafana then visualizes p75 per page (the
-"Frontend — Web Vitals (Faro)" row in the Hive-Pal dashboard).
+"Frontend RUM — Web Vitals (Faro)" row in the **Hive-Pal · Operations** dashboard).
 
 ```
 Browser (Faro Web SDK)

@@ -22,7 +22,14 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Pill } from '@/components/common/pill';
-import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
+import {
+  ToolMeta,
+  ToolPageHeader,
+  TipsCard,
+  ToolFaq,
+  buildFaqJsonLd,
+  type FaqItem,
+} from '@/components/tool-page';
 import { cn } from '@/lib/utils';
 
 type BeeType = 'queen' | 'worker' | 'drone';
@@ -175,6 +182,11 @@ export function BroodTimelinePage() {
 
   const beeData = BEE_DATA[selectedBeeType];
 
+  // Visible FAQ and FAQPage structured data share one translated source.
+  const faqItems = t('broodTimeline.faq.items', {
+    returnObjects: true,
+  }) as FaqItem[];
+
   const handleBeeTypeSelect = (type: BeeType) => {
     setSelectedBeeType(type);
     setShowComparison(false);
@@ -217,43 +229,7 @@ export function BroodTimelinePage() {
           url: 'https://hivepal.app',
         },
       },
-      {
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'How long does it take for a honey bee to develop?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Queens emerge after 16 days, workers after 21 days, and drones after 24 days. All three pass through four stages — egg (3 days), larva, pupa, and adult — but the larval and pupal stages differ in length by caste.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When are worker bee cells capped?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Worker brood cells are capped on day 9, when the larva spins its cocoon and enters the pupal stage. Worker bees emerge on day 21.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When are queen cells capped and when do queens emerge?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Queen cells are capped on day 8 and virgin queens emerge on day 16 from the egg being laid. Queens develop fastest because they are fed royal jelly throughout the larval stage.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How long do drones take to emerge?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Drones take 24 days from egg to emergence — the longest of any caste. Drone cells are capped around day 10.',
-            },
-          },
-        ],
-      },
+      buildFaqJsonLd(faqItems),
     ],
   };
 
@@ -466,6 +442,8 @@ export function BroodTimelinePage() {
             )}
           </CardContent>
         </Card>
+
+        <ToolFaq title={t('broodTimeline.faq.title')} items={faqItems} />
       </MainContent>
 
       <PageAside>

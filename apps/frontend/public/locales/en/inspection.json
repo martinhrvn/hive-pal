@@ -337,6 +337,7 @@
     },
     "photos": {
       "title": "Photos",
+      "takePhoto": "Take Photo",
       "addPhoto": "Add Photo",
       "pendingUpload": "{{count}} pending upload",
       "uploadWarning": "Photos will be uploaded when you save the inspection.",
