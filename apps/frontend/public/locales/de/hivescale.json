@@ -272,7 +272,8 @@
     "general": {
       "title": "Allgemein",
       "description": "Umgebung & Stromversorgung"
-    }
+    },
+    "humidity": "Stockfeuchtigkeit"
   },
   "diagram": {
     "title": "Messungen",
@@ -306,7 +307,9 @@
       "solarCurrent": "Solarstrom",
       "solarPower": "Solarleistung",
       "humidity": "{{name}} Luftfeuchte",
-      "pressure": "{{name}} Luftdruck"
+      "pressure": "{{name}} Luftdruck",
+      "fanningBand": "{{name}} Fächelband (30–100 Hz)",
+      "activityBand": "{{name}} Aktivitätsband (100–200 Hz)"
     },
     "group": {
       "ambient": "Umgebung",
@@ -392,7 +395,11 @@
         "label": "Hoch",
         "description": "Harmonische Obertöne"
       }
-    }
+    },
+    "rmsToggleShow": "RMS-Pegel anzeigen",
+    "rmsToggleHide": "RMS-Pegel ausblenden",
+    "rmsTitle": "RMS-Schallpegel",
+    "rmsSeries": "{{name}} RMS"
   },
   "beecounter": {
     "title": "Fluglochzähler",

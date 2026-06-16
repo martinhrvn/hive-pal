@@ -2603,8 +2603,8 @@ export function HiveScalePage() {
                 value: `${numberOrDash(latest?.hive_1_temp_c)} °C`,
               },
               {
-                label: t('panel.rmsSound'),
-                value: `${numberOrDash(latest?.mic_left_rms_dbfs)} dBFS`,
+                label: t('panel.humidity'),
+                value: `${numberOrDash(latest?.ble_1_humidity_percent, 0)}%`,
               },
             ]}
             insight={{
@@ -2646,8 +2646,8 @@ export function HiveScalePage() {
                 value: `${numberOrDash(latest?.hive_2_temp_c)} °C`,
               },
               {
-                label: t('panel.rmsSound'),
-                value: `${numberOrDash(latest?.mic_right_rms_dbfs)} dBFS`,
+                label: t('panel.humidity'),
+                value: `${numberOrDash(latest?.ble_2_humidity_percent, 0)}%`,
               },
             ]}
             insight={{

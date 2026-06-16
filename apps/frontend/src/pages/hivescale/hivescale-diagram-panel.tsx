@@ -114,8 +114,12 @@ type SeriesKey =
   | 'beeCounter2Net'
   | 'accel1Vibration'
   | 'accel1SwarmBand'
+  | 'accel1FanningBand'
+  | 'accel1ActivityBand'
   | 'accel2Vibration'
-  | 'accel2SwarmBand';
+  | 'accel2SwarmBand'
+  | 'accel2FanningBand'
+  | 'accel2ActivityBand';
 
 interface DiagramSeries {
   key: SeriesKey;
@@ -196,8 +200,12 @@ const defaultVisibleSeries: VisibleSeriesMap = {
   beeCounter2Net: false,
   accel1Vibration: false,
   accel1SwarmBand: false,
+  accel1FanningBand: false,
+  accel1ActivityBand: false,
   accel2Vibration: false,
   accel2SwarmBand: false,
+  accel2FanningBand: false,
+  accel2ActivityBand: false,
 };
 
 const defaultAxisSettings: AxisScaleSettings = {
@@ -302,6 +310,8 @@ const scaleSeriesTemplate = [
   { labelKey: 'diagram.series.micRms', axis: 'dbfs', unit: 'dBFS' },
   { labelKey: 'diagram.series.vibration', axis: 'vibration', unit: 'mg' },
   { labelKey: 'diagram.series.swarmBand', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.fanningBand', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.activityBand', axis: 'vibration', unit: 'mg' },
   { labelKey: 'diagram.series.beesIn', axis: 'beecount', unit: 'bees' },
   { labelKey: 'diagram.series.beesOut', axis: 'beecount', unit: 'bees' },
   { labelKey: 'diagram.series.netFlow', axis: 'beecount', unit: 'bees' },
@@ -329,6 +339,8 @@ const scale1SeriesTuples: SeriesTuple[] = buildScaleSeriesTuples([
   ['micLeftRms', 'var(--chart-1)'],
   ['accel1Vibration', 'var(--chart-1)'],
   ['accel1SwarmBand', 'var(--chart-3)'],
+  ['accel1FanningBand', 'var(--chart-4)'],
+  ['accel1ActivityBand', 'var(--chart-5)'],
   ['beeCounter1In', 'var(--chart-3)'],
   ['beeCounter1Out', 'var(--chart-4)'],
   ['beeCounter1Net', 'var(--chart-5)'],
@@ -342,6 +354,8 @@ const scale2SeriesTuples: SeriesTuple[] = buildScaleSeriesTuples([
   ['micRightRms', 'var(--chart-2)'],
   ['accel2Vibration', 'var(--chart-2)'],
   ['accel2SwarmBand', 'var(--chart-4)'],
+  ['accel2FanningBand', 'var(--chart-1)'],
+  ['accel2ActivityBand', 'var(--chart-5)'],
   ['beeCounter2In', 'var(--chart-3)'],
   ['beeCounter2Out', 'var(--chart-5)'],
   ['beeCounter2Net', 'var(--primary)'],
@@ -995,11 +1009,23 @@ export const HiveScaleDiagramPanel = ({
             accel1SwarmBand: accel1Ok
               ? toFiniteNumber(item.accel_1_band_swarm_mg)
               : null,
+            accel1FanningBand: accel1Ok
+              ? toFiniteNumber(item.accel_1_band_fanning_mg)
+              : null,
+            accel1ActivityBand: accel1Ok
+              ? toFiniteNumber(item.accel_1_band_activity_mg)
+              : null,
             accel2Vibration: accel2Ok
               ? toFiniteNumber(item.accel_2_rms_mg)
               : null,
             accel2SwarmBand: accel2Ok
               ? toFiniteNumber(item.accel_2_band_swarm_mg)
+              : null,
+            accel2FanningBand: accel2Ok
+              ? toFiniteNumber(item.accel_2_band_fanning_mg)
+              : null,
+            accel2ActivityBand: accel2Ok
+              ? toFiniteNumber(item.accel_2_band_activity_mg)
               : null,
           };
         })

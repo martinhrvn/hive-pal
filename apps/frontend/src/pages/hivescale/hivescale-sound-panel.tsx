@@ -263,6 +263,106 @@ function FftBandChart({
   );
 }
 
+/**
+ * RMS sound-level line chart — overall loudness (dBFS) per channel over time.
+ * A simpler companion to the FFT band charts for spotting broad changes in
+ * colony volume.
+ */
+function RmsLineChart({
+  data,
+  leftName,
+  rightName,
+  dateRange,
+}: {
+  data: {
+    timestamp: number;
+    measuredAt: string;
+    left: number | null;
+    right: number | null;
+  }[];
+  leftName: string;
+  rightName: string;
+  dateRange: HiveScaleDateRange;
+}) {
+  const { t } = useTranslation('hivescale');
+  const visibleData = useMemo(() => {
+    const startMs = dateRange.startAt
+      ? new Date(dateRange.startAt).getTime()
+      : Number.NEGATIVE_INFINITY;
+    const endMs = dateRange.endAt
+      ? new Date(dateRange.endAt).getTime()
+      : Number.POSITIVE_INFINITY;
+    return data.filter(d => d.timestamp >= startMs && d.timestamp <= endMs);
+  }, [data, dateRange]);
+
+  if (!visibleData.length) {
+    return (
+      <div className="flex h-72 items-center justify-center text-sm text-muted-foreground">
+        <Activity className="mr-2 h-4 w-4" />
+        {t('sound.noDataForChannel', { name: `${leftName} / ${rightName}` })}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <p className="mb-2 text-sm font-medium">{t('sound.rmsTitle')}</p>
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={visibleData}
+            margin={{ top: 4, right: 8, bottom: 4, left: 4 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              domain={[
+                dateRange.startAt
+                  ? new Date(dateRange.startAt).getTime()
+                  : 'dataMin',
+                dateRange.endAt
+                  ? new Date(dateRange.endAt).getTime()
+                  : 'dataMax',
+              ]}
+              scale="time"
+              type="number"
+              tickFormatter={formatChartTick}
+              minTickGap={40}
+            />
+            <YAxis unit=" dBFS" width={72} domain={['auto', 'auto']} />
+            <Tooltip
+              labelFormatter={value => formatDateTime(Number(value))}
+              formatter={(value, name) => [
+                typeof value === 'number' ? `${value.toFixed(1)} dBFS` : '—',
+                name,
+              ]}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="left"
+              name={t('sound.rmsSeries', { name: leftName })}
+              stroke="var(--chart-1)"
+              dot={false}
+              connectNulls
+              isAnimationActive={false}
+            />
+            <Line
+              type="monotone"
+              dataKey="right"
+              name={t('sound.rmsSeries', { name: rightName })}
+              stroke="var(--chart-2)"
+              dot={false}
+              connectNulls
+              isAnimationActive={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Band legend / reference table
 // ---------------------------------------------------------------------------
@@ -331,6 +431,7 @@ export function HiveScaleSoundPanel({
 }) {
   const { t } = useTranslation('hivescale');
   const [isOpen, setIsOpen] = useState(false);
+  const [showRms, setShowRms] = useState(false);
 
   // Map mic channels to hive display names (left = scale 1, right = scale 2),
   // with sensible fallbacks if a name is empty.
@@ -403,6 +504,20 @@ export function HiveScaleSoundPanel({
     [sorted],
   );
 
+  // RMS sound-level line chart data — both channels on one chart
+  const rmsData = useMemo(
+    () =>
+      sorted
+        .map(m => ({
+          timestamp: new Date(m.measured_at).getTime(),
+          measuredAt: m.measured_at,
+          left: toFiniteNumber(m.mic_left_rms_dbfs),
+          right: toFiniteNumber(m.mic_right_rms_dbfs),
+        }))
+        .filter(d => Number.isFinite(d.timestamp)),
+    [sorted],
+  );
+
   // Don't render the card at all if there's no mic data and not loading
   if (!isLoading && !hasMicData) return null;
 
@@ -457,6 +572,33 @@ export function HiveScaleSoundPanel({
               </div>
             ) : (
               <>
+                {/* RMS sound-level toggle */}
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant={showRms ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setShowRms(prev => !prev)}
+                  >
+                    {showRms
+                      ? t('sound.rmsToggleHide')
+                      : t('sound.rmsToggleShow')}
+                  </Button>
+                </div>
+
+                {/* RMS sound-level chart (both channels) */}
+                {showRms && (
+                  <>
+                    <RmsLineChart
+                      data={rmsData}
+                      leftName={leftName}
+                      rightName={rightName}
+                      dateRange={dateRange}
+                    />
+                    <div className="my-1 border-t" />
+                  </>
+                )}
+
                 {/* FFT band charts per channel */}
                 <div className="grid gap-6 xl:grid-cols-2">
                   <FftBandChart

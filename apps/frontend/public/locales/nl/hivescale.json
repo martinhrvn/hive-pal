@@ -272,7 +272,8 @@
     "general": {
       "title": "General",
       "description": "Ambient & power"
-    }
+    },
+    "humidity": "Hive humidity"
   },
   "diagram": {
     "title": "Measurements",
@@ -304,7 +305,9 @@
       "solarCurrent": "Solar current",
       "solarPower": "Solar power",
       "humidity": "{{name}} vochtigheid",
-      "pressure": "{{name}} luchtdruk"
+      "pressure": "{{name}} luchtdruk",
+      "fanningBand": "{{name}} fanning band (30–100 Hz)",
+      "activityBand": "{{name}} activity band (100–200 Hz)"
     },
     "group": {
       "ambient": "Ambient",
@@ -389,7 +392,11 @@
         "label": "High",
         "description": "Harmonic overtones"
       }
-    }
+    },
+    "rmsToggleShow": "Show RMS level",
+    "rmsToggleHide": "Hide RMS level",
+    "rmsTitle": "RMS sound level",
+    "rmsSeries": "{{name}} RMS"
   },
   "beecounter": {
     "title": "Entrance Counter",
