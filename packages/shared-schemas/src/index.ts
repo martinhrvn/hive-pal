@@ -21,6 +21,7 @@ export * from './quick-checks';
 export * from './features';
 export * from './shares';
 export * from './photos';
+export * from './frame-analysis';
 export * from './documents';
 export * from './worker-tokens';
 export * from './admin-media';
