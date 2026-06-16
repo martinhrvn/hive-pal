@@ -34,12 +34,73 @@ const PUBLIC_ROUTES = [
   '/tools/brood-timeline',
   '/tools/swarm-management',
   '/tools/swarm-management/demaree',
+  '/tools/liebefelder',
   '/releases',
   '/privacy-policy',
 ];
 
 // Unprefixed-only URLs kept in the sitemap (not prerendered/localized).
-const EXTRA_SITEMAP_ROUTES = ['/login', '/register'];
+// Auth pages (/login, /register) are intentionally excluded: they render only
+// the SPA shell, so advertising them invites "crawled, not indexed" verdicts.
+const EXTRA_SITEMAP_ROUTES = [];
+
+// Per-route marker that decides whether a *localized* variant is worth emitting.
+// A localized URL is only generated (file + sitemap entry + hreflang) when that
+// page actually has a translation for the language; otherwise it would render the
+// English fallback and become a near-duplicate of the canonical English page —
+// which Google reports as "crawled, currently not indexed". English (the default)
+// is always generated. `{ ns, key }` points at the page's translation subtree in
+// the loaded namespace bundle; `null` means the page is English-only (e.g. the
+// language-neutral release notes, or pages with no translations yet).
+// A representative *prose* leaf key per page (intro/lede/description — never a
+// proper-noun title like "Demaree Method" that is identical across languages).
+// `hasTranslation` compares its value to English, so a translated intro reliably
+// marks the page as localized while an English placeholder does not. Keep in sync
+// with PUBLIC_PAGE_TRANSLATION_MARKERS in src/utils/language-utils.ts.
+const ROUTE_TRANSLATION_MARKERS = {
+  '/': { ns: 'common', key: 'marketing.landing.hero.lede' },
+  '/features': { ns: 'common', key: 'marketing.features.hero.lede' },
+  '/tools': { ns: 'common', key: 'marketing.toolsIndex.intro' },
+  '/tools/syrup-calculator': { ns: 'common', key: 'syrupCalculator.intro' },
+  '/tools/brood-timeline': { ns: 'common', key: 'broodTimeline.intro' },
+  '/tools/swarm-management': { ns: 'common', key: 'swarmManagement.intro' },
+  '/tools/swarm-management/demaree': {
+    ns: 'common',
+    key: 'swarmManagement.demaree.description',
+  },
+  '/tools/liebefelder': { ns: 'common', key: 'liebefelder.intro' },
+  '/releases': null,
+  '/privacy-policy': null,
+};
+
+function getNestedKey(obj, keyPath) {
+  return keyPath
+    .split('.')
+    .reduce((acc, k) => (acc == null ? acc : acc[k]), obj);
+}
+
+// True if `namespaces` has a real translation at the marker key — i.e. a
+// non-empty value that differs from the English source. A value identical to
+// English is an untranslated placeholder (common while Weblate catches up) and is
+// treated as not translated, so we don't emit an English near-duplicate.
+function hasTranslation(namespaces, enNamespaces, marker) {
+  if (!marker) return false;
+  const value = getNestedKey(namespaces?.[marker.ns], marker.key);
+  if (value == null || value === '') return false;
+  return value !== getNestedKey(enNamespaces?.[marker.ns], marker.key);
+}
+
+// The languages a route should be emitted in: English always, plus every other
+// language that genuinely translates the page.
+function availableLanguagesForRoute(neutral, languages, namespacesByLang) {
+  const marker = ROUTE_TRANSLATION_MARKERS[neutral];
+  const en = namespacesByLang[DEFAULT_LANGUAGE];
+  return languages.filter(
+    lang =>
+      lang === DEFAULT_LANGUAGE ||
+      hasTranslation(namespacesByLang[lang], en, marker),
+  );
+}
 
 function localizedPath(neutralPath, lang) {
   if (lang === DEFAULT_LANGUAGE) return neutralPath;
@@ -87,9 +148,24 @@ function cleanTemplate(html) {
     );
 }
 
+// Drop `hreflang` alternate links for languages this page is not emitted in, so
+// the static HTML only advertises real, indexable alternates (reciprocal with the
+// sitemap). PublicMeta always renders the full language set; pruning happens here,
+// at build time, so the app code stays language-agnostic. `x-default` is kept.
+function filterAlternateLinks(html, availableLangs) {
+  const keep = new Set([...availableLangs, 'x-default']);
+  return html.replace(
+    /<link\b[^>]*\brel="alternate"[^>]*>\n?/g,
+    match => {
+      const lang = /\bhreflang="([^"]+)"/i.exec(match)?.[1];
+      return lang && !keep.has(lang) ? '' : match;
+    },
+  );
+}
+
 // Build the page HTML by injecting the SSR output into the client template,
 // stripping the template's static SEO tags so they don't duplicate Helmet's.
-function buildPage(template, { appHtml, head, htmlAttributes }) {
+function buildPage(template, { appHtml, head, htmlAttributes }, availableLangs) {
   let html = template;
 
   if (htmlAttributes) {
@@ -112,19 +188,25 @@ function buildPage(template, { appHtml, head, htmlAttributes }) {
   // react-helmet-async serializes the JSX `hrefLang` prop verbatim; emit the
   // canonical lowercase `hreflang` attribute in the static HTML.
   html = html.replaceAll(' hrefLang=', ' hreflang=');
+  if (availableLangs) html = filterAlternateLinks(html, availableLangs);
   return html;
 }
 
-function buildSitemap(languages) {
+function buildSitemap(languages, namespacesByLang) {
   const urlBlocks = PUBLIC_ROUTES.map(neutral => {
+    const availableLangs = availableLanguagesForRoute(
+      neutral,
+      languages,
+      namespacesByLang,
+    );
     const alternates = [
-      ...languages.map(
+      ...availableLangs.map(
         lang =>
           `      <xhtml:link rel="alternate" hreflang="${lang}" href="${SITE_URL}${localizedPath(neutral, lang)}" />`,
       ),
       `      <xhtml:link rel="alternate" hreflang="x-default" href="${SITE_URL}${localizedPath(neutral, DEFAULT_LANGUAGE)}" />`,
     ].join('\n');
-    return languages
+    return availableLangs
       .map(
         lang =>
           `  <url>\n    <loc>${SITE_URL}${localizedPath(neutral, lang)}</loc>\n${alternates}\n  </url>`,
@@ -177,24 +259,45 @@ async function main() {
     `Prerendering ${PUBLIC_ROUTES.length} routes × ${languages.length} languages`,
   );
 
+  // Preloaded i18n resources per language (each with English fallback).
+  const resourcesByLang = {};
   for (const lang of languages) {
-    const resources = { [lang]: namespacesByLang[lang] };
+    resourcesByLang[lang] = { [lang]: namespacesByLang[lang] };
     if (lang !== DEFAULT_LANGUAGE) {
-      resources[DEFAULT_LANGUAGE] = namespacesByLang[DEFAULT_LANGUAGE];
+      resourcesByLang[lang][DEFAULT_LANGUAGE] = namespacesByLang[DEFAULT_LANGUAGE];
     }
+  }
 
-    for (const neutral of PUBLIC_ROUTES) {
+  let pruned = 0;
+  for (const neutral of PUBLIC_ROUTES) {
+    // Only emit localized variants for languages that actually translate the page;
+    // English-fallback variants are near-duplicates and stay unindexed.
+    const availableLangs = availableLanguagesForRoute(
+      neutral,
+      languages,
+      namespacesByLang,
+    );
+    pruned += languages.length - availableLangs.length;
+
+    for (const lang of availableLangs) {
       const urlPath = localizedPath(neutral, lang);
-      const result = render(urlPath, lang, resources);
-      const page = buildPage(template, result);
+      const result = render(urlPath, lang, resourcesByLang[lang]);
+      const page = buildPage(template, result, availableLangs);
       const outPath = outputFile(urlPath);
       await mkdir(path.dirname(outPath), { recursive: true });
       await writeFile(outPath, page, 'utf-8');
       console.log(`  ✓ ${urlPath}`);
     }
   }
+  console.log(
+    `Skipped ${pruned} untranslated localized variant(s) (English fallback — left to the canonical page).`,
+  );
 
-  await writeFile(path.join(DIST, 'sitemap.xml'), buildSitemap(languages), 'utf-8');
+  await writeFile(
+    path.join(DIST, 'sitemap.xml'),
+    buildSitemap(languages, namespacesByLang),
+    'utf-8',
+  );
   console.log('  ✓ sitemap.xml');
 }
 

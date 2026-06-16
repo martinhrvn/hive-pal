@@ -20,6 +20,7 @@ import {
   Beaker,
   Bug,
   Waypoints,
+  Microscope,
   ArrowUpRight,
 } from 'lucide-react';
 
@@ -36,6 +37,7 @@ const TOOL_CARDS = [
   { to: '/tools/syrup-calculator', key: 'syrup', icon: <Beaker className="h-5 w-5" /> },
   { to: '/tools/brood-timeline', key: 'brood', icon: <Bug className="h-5 w-5" /> },
   { to: '/tools/swarm-management', key: 'swarm', icon: <Waypoints className="h-5 w-5" /> },
+  { to: '/tools/liebefelder', key: 'liebefelder', icon: <Microscope className="h-5 w-5" /> },
 ] as const;
 
 export function LandingPage() {
@@ -196,6 +198,13 @@ export function LandingPage() {
               >
                 {t('marketing.landing.features.pillars')}
               </p>
+              <Link
+                to={localize('/features')}
+                className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-stone-900 underline-offset-4 hover:underline"
+              >
+                {t('marketing.landing.features.seeAll')}
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </div>
 
             <div className="lg:col-span-7">

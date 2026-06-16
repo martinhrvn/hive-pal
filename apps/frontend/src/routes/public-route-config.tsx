@@ -6,6 +6,7 @@ import { SyrupCalculatorPage } from '@/pages/tools/syrup-calculator-page';
 import { BroodTimelinePage } from '@/pages/tools/brood-timeline-page';
 import { SwarmManagementOverviewPage } from '@/pages/tools/swarm-management-overview-page';
 import { DemareeMethodPage } from '@/pages/tools/demaree-method-page';
+import { LiebefelderPage } from '@/pages/tools/liebefelder-page';
 import { ReleasesPage } from '@/pages/releases';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
 import { PublicLayout } from '@/components/layout/public-layout';
@@ -21,6 +22,7 @@ const toolsChildren: RouteObject[] = [
   { path: 'brood-timeline', element: <BroodTimelinePage /> },
   { path: 'swarm-management', element: <SwarmManagementOverviewPage /> },
   { path: 'swarm-management/demaree', element: <DemareeMethodPage /> },
+  { path: 'liebefelder', element: <LiebefelderPage /> },
 ];
 
 const langChildren: RouteObject[] = [

@@ -302,6 +302,71 @@
       "noApiary": "Vyberte včelnicu na zobrazenie štatistík"
     }
   },
+  "syrupCalculator": {
+    "title": "Kalkulačka cukrového roztoku",
+    "description": "Vypočítajte množstvo cukru a vody pre kŕmny roztok",
+    "intro": "Bezplatná kalkulačka cukrového roztoku pre včelárov. Roztok 1:1 (riedky) použite na jarné podnietenie, 3:2 (stredný) ako univerzálne krmivo a 2:1 (hustý) na jesenné kŕmenie a budovanie zimných zásob. Vyberte objem nádoby a pomer — presné hmotnosti cukru a vody sa vypočítajú z vytlačenia objemu sacharózou tak, aby hotový roztok naplnil vašu nádobu.",
+    "units": "Jednotky",
+    "unitsDescription": "Prepínajte medzi metrickými a imperiálnymi jednotkami",
+    "metric": "Metrické (L, g, kg)",
+    "imperial": "Imperiálne (qt, gal, lb)",
+    "ratio": "Pomer roztoku",
+    "ratioDescription": "Pomer cukru k vode (podľa hmotnosti a objemu)",
+    "thin": "Riedky (1:1)",
+    "medium": "Stredný (3:2)",
+    "thick": "Hustý (2:1)",
+    "containerSize": "Veľkosť nádoby",
+    "containerDescription": "Celkový objem roztoku, ktorý chcete pripraviť",
+    "customSize": "Vlastná",
+    "results": "Výsledky",
+    "water": "Voda",
+    "sugar": "Cukor",
+    "totalWeight": "Celková hmotnosť",
+    "instructions": "Postup",
+    "step1": "Odmerajte {{water}} vody",
+    "step2": "Vodu zohrejte, kým nebude teplá (nie vriaca)",
+    "step3": "Pridajte {{sugar}} bieleho kryštálového cukru",
+    "step4": "Miešajte, kým sa cukor úplne nerozpustí",
+    "step5": "Pred kŕmením nechajte roztok vychladnúť na izbovú teplotu",
+    "tips": "Tipy a návod na použitie",
+    "tip1Title": "Riedky roztok (1:1)",
+    "tip1Description": "Najvhodnejší na jarné kŕmenie na podnietenie plodovania a napodobnenie znášky. Použite ho, keď včely potrebujú povzbudiť k rozvoju.",
+    "tip2Title": "Stredný roztok (3:2)",
+    "tip2Description": "Dobrý univerzálny roztok. Funguje na jarné podnietenie aj na ľahké jesenné kŕmenie.",
+    "tip3Title": "Hustý roztok (2:1)",
+    "tip3Description": "Najvhodnejší na jesenné kŕmenie a budovanie zimných zásob. Včely ho dokážu rýchlo uložiť s menšou námahou na odparenie prebytočnej vody.",
+    "tip4Title": "Všeobecné tipy",
+    "tip4Description": "Používajte vždy biely kryštálový cukor — nikdy nie hnedý cukor, melasu ani umelé sladidlá. Roztok nevarte, pretože môže vzniknúť HMF (hydroxymetylfurfural), ktorý je pre včely toxický. Kŕmte večer, aby ste obmedzili lúpež.",
+    "faq": {
+      "title": "Časté otázky",
+      "items": [
+        {
+          "question": "Aký pomer cukru a vody mám použiť na kŕmenie včiel?",
+          "answer": "Roztok 1:1 (rovnaké diely cukru a vody podľa hmotnosti) použite na jar na podnietenie plodovania, 3:2 ako univerzálne krmivo a 2:1 (dva diely cukru na jeden diel vody) na jeseň na budovanie zimných zásob. Hustý roztok včely ľahšie premenia na zaviečkované zásoby; riedky roztok napodobňuje znášku."
+        },
+        {
+          "question": "Kedy mám včelám podávať riedky roztok (1:1)?",
+          "answer": "Riedky roztok 1:1 podávajte na jar alebo vždy, keď chcete podnietiť plodovanie. Jeho obsah vody napodobňuje prirodzenú znášku a povzbudzuje matku ku kladeniu a včelstvo k rozvoju."
+        },
+        {
+          "question": "Kedy mám včelám podávať hustý roztok (2:1)?",
+          "answer": "Hustý roztok 2:1 podávajte koncom leta a na jeseň, aby si včelstvá vybudovali zimné zásoby. Nižší obsah vody znamená, že včely spotrebujú menej energie na jej odparenie pred zaviečkovaním."
+        },
+        {
+          "question": "Môžem na roztok použiť hnedý cukor, med alebo melasu?",
+          "answer": "Nie. Používajte iba biely kryštálový trstinový alebo repný cukor. Hnedý cukor, melasa a nerafinované sladidlá obsahujú látky, ktoré u včiel spôsobujú hnačku. Med z neznámych zdrojov môže navyše prenášať choroby."
+        },
+        {
+          "question": "Mám cukrový roztok pre včely variť?",
+          "answer": "Nie. Vodu zohrejte len natoľko, aby sa cukor rozpustil, ale nevarte ju. Varením cukrového roztoku vzniká hydroxymetylfurfural (HMF), ktorý je pre včely toxický."
+        },
+        {
+          "question": "Koľko cukru potrebujem na jeden liter roztoku 1:1?",
+          "answer": "Na jeden liter hotového roztoku 1:1 potrebujete približne 715 g vody a 715 g bieleho kryštálového cukru. Presné množstvá závisia od pomeru a konečného objemu — túto kalkulačku počíta na základe vytlačenia objemu sacharózou."
+        }
+      ]
+    }
+  },
   "swarmManagement": {
     "backToOverview": "Back to Swarm Management",
     "eyebrow": "Swarm control guidance",

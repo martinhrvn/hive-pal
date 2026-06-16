@@ -131,6 +131,11 @@ const config: Config = {
           label: 'Documentation',
         },
         {
+          href: 'https://hivepal.app',
+          label: 'Open App',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/martinhrvn/hive-pal',
           label: 'GitHub',
           position: 'right',
@@ -160,6 +165,14 @@ const config: Config = {
         {
           title: 'Project',
           items: [
+            {
+              label: 'Hive-Pal App',
+              href: 'https://hivepal.app',
+            },
+            {
+              label: 'Free Tools',
+              href: 'https://hivepal.app/tools',
+            },
             {
               label: 'GitHub',
               href: 'https://github.com/martinhrvn/hive-pal',

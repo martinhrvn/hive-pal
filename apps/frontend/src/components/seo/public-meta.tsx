@@ -2,8 +2,10 @@ import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  DEFAULT_LANGUAGE,
   getAlternates,
   getCanonicalUrl,
+  isPublicPathTranslated,
   isSupportedLanguage,
   normalizeLanguageCode,
 } from '@/utils/language-utils';
@@ -46,7 +48,13 @@ export function PublicMeta({
       ? lang
       : normalizeLanguageCode(i18n.language);
 
-  const canonical = getCanonicalUrl(path, currentLang);
+  // A localized page that only renders the English fallback is a near-duplicate of
+  // the canonical English page; point its canonical at English so search engines
+  // consolidate the signals instead of flagging "crawled, currently not indexed".
+  const canonicalLang = isPublicPathTranslated(i18n, path, currentLang)
+    ? currentLang
+    : DEFAULT_LANGUAGE;
+  const canonical = getCanonicalUrl(path, canonicalLang);
   const alternates = getAlternates(path);
   const og = ogTitle ?? title;
   const ogDesc = ogDescription ?? description;

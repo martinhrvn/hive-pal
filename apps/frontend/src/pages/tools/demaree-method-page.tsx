@@ -41,6 +41,9 @@ import {
   DotList,
   ToolMeta,
   ToolPageHeader,
+  ToolFaq,
+  buildFaqJsonLd,
+  type FaqItem,
 } from '@/components/tool-page';
 import { cn } from '@/lib/utils';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
@@ -143,6 +146,11 @@ export function DemareeMethodPage() {
   const warnings = useMemo(() => getDemareeWarnings(checkpoints), [checkpoints]);
 
   const selectedHive = hives.find(hive => hive.id === selectedHiveId);
+
+  // Visible FAQ and FAQPage structured data share one translated source.
+  const faqItems = t('swarmManagement.demaree.faq.items', {
+    returnObjects: true,
+  }) as FaqItem[];
 
   const handleGeneratePlan = () => {
     if (!startDate) return;
@@ -316,59 +324,7 @@ export function DemareeMethodPage() {
           },
         ],
       },
-      {
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What is the Demaree method?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'The Demaree method is a classic swarm-control technique that vertically separates the laying queen from most of the brood within a single hive. The queen stays below a queen excluder on largely empty comb; the brood is moved above two or more honey supers so the colony stays together while swarm pressure eases.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When should I use the Demaree method?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Use the Demaree method on strong colonies showing clear swarm pressure — heavy congestion, charged queen cells, or a colony pushing hard into a flow — when you want to keep the colony intact rather than splitting it.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When should I inspect after a Demaree setup?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Inspect at day 7-8, day 14-15, and day 21-22 after the setup. The day 7-8 check is the most critical — emergency queen cells started during the swarm impulse must be removed before they approach emergence around day 14-16.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Does the Demaree method create a separate split or nucleus colony?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'No. Unlike an artificial swarm or Pagden split, the Demaree method keeps all the bees in one hive. The colony remains a single working unit which often preserves honey-gathering momentum better than splitting.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'What equipment do I need for the Demaree method?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'You need a queen excluder (sometimes two), a spare brood box with drawn comb or foundation, and at least two honey supers to stack between the queen and the relocated brood.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'What is the biggest risk with the Demaree method?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Missing a queen cell in the upper brood box during the day 7-8 check is the biggest risk — the colony can still swarm if a virgin queen emerges above the excluder. Shaking bees off every brood frame helps spot all cells.',
-            },
-          },
-        ],
-      },
+      buildFaqJsonLd(faqItems),
     ],
   };
 
@@ -728,6 +684,8 @@ export function DemareeMethodPage() {
             </CardContent>
           </Card>
         </div>
+
+        <ToolFaq title={t('swarmManagement.demaree.faq.title')} items={faqItems} />
       </MainContent>
 
       <PageAside>
