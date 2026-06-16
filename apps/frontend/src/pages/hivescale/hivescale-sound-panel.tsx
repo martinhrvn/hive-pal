@@ -162,6 +162,118 @@ function MicStatusBadge({
 }
 
 /**
+ * One line series on a dBFS time chart.
+ */
+interface DbfsSeries {
+  dataKey: string;
+  name: string;
+  stroke: string;
+}
+
+/**
+ * Clip a timestamped series to the selected date range. Shared by every chart
+ * in this panel so the filtering logic lives in one place.
+ */
+const useVisibleByDateRange = <T extends { timestamp: number }>(
+  data: T[],
+  dateRange: HiveScaleDateRange,
+): T[] =>
+  useMemo(() => {
+    const startMs = dateRange.startAt
+      ? new Date(dateRange.startAt).getTime()
+      : Number.NEGATIVE_INFINITY;
+    const endMs = dateRange.endAt
+      ? new Date(dateRange.endAt).getTime()
+      : Number.POSITIVE_INFINITY;
+    return data.filter(d => d.timestamp >= startMs && d.timestamp <= endMs);
+  }, [data, dateRange]);
+
+/**
+ * Centered "no data" placeholder shown when a chart has nothing to plot.
+ */
+function ChartEmptyState({
+  label,
+  heightClass = 'h-96',
+}: {
+  label: string;
+  heightClass?: string;
+}) {
+  return (
+    <div
+      className={`flex ${heightClass} items-center justify-center text-sm text-muted-foreground`}
+    >
+      <Activity className="mr-2 h-4 w-4" />
+      {label}
+    </div>
+  );
+}
+
+/**
+ * Shared dBFS-over-time line chart scaffold (axes, grid, tooltip, legend).
+ * Callers pass the already date-filtered data and the line series to draw.
+ */
+function DbfsTimeChart({
+  data,
+  dateRange,
+  series,
+  heightClass = 'h-96',
+}: {
+  data: { timestamp: number }[];
+  dateRange: HiveScaleDateRange;
+  series: DbfsSeries[];
+  heightClass?: string;
+}) {
+  return (
+    <div className={heightClass}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={data}
+          margin={{ top: 4, right: 8, bottom: 4, left: 4 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey="timestamp"
+            domain={[
+              dateRange.startAt
+                ? new Date(dateRange.startAt).getTime()
+                : 'dataMin',
+              dateRange.endAt
+                ? new Date(dateRange.endAt).getTime()
+                : 'dataMax',
+            ]}
+            scale="time"
+            type="number"
+            tickFormatter={formatChartTick}
+            minTickGap={40}
+          />
+          <YAxis unit=" dBFS" width={72} domain={['auto', 'auto']} />
+          <Tooltip
+            labelFormatter={value => formatDateTime(Number(value))}
+            formatter={(value, name) => [
+              typeof value === 'number' ? `${value.toFixed(1)} dBFS` : '—',
+              name,
+            ]}
+          />
+          <Legend />
+          {series.map(s => (
+            <Line
+              key={s.dataKey}
+              type="monotone"
+              dataKey={s.dataKey}
+              name={s.name}
+              stroke={s.stroke}
+              dot={false}
+              connectNulls
+              isAnimationActive={false}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+/**
  * FFT band line chart for a single channel over time.
  * Each series is one of the 5 band energies (dBFS) tracked over time.
  */
@@ -185,80 +297,26 @@ function FftBandChart({
   dateRange: HiveScaleDateRange;
 }) {
   const { t } = useTranslation('hivescale');
-  const visibleData = useMemo(() => {
-    const startMs = dateRange.startAt
-      ? new Date(dateRange.startAt).getTime()
-      : Number.NEGATIVE_INFINITY;
-    const endMs = dateRange.endAt
-      ? new Date(dateRange.endAt).getTime()
-      : Number.POSITIVE_INFINITY;
-    return data.filter(
-      d => d.timestamp >= startMs && d.timestamp <= endMs,
-    );
-  }, [data, dateRange]);
+  const visibleData = useVisibleByDateRange(data, dateRange);
 
   if (!visibleData.length) {
     return (
-      <div className="flex h-96 items-center justify-center text-sm text-muted-foreground">
-        <Activity className="mr-2 h-4 w-4" />
-        {t('sound.noDataForChannel', { name: emptyLabel })}
-      </div>
+      <ChartEmptyState label={t('sound.noDataForChannel', { name: emptyLabel })} />
     );
   }
 
   return (
     <div>
       <p className="mb-2 text-sm font-medium">{channelLabel}</p>
-      <div className="h-96">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={visibleData}
-            margin={{ top: 4, right: 8, bottom: 4, left: 4 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              domain={[
-                dateRange.startAt
-                  ? new Date(dateRange.startAt).getTime()
-                  : 'dataMin',
-                dateRange.endAt
-                  ? new Date(dateRange.endAt).getTime()
-                  : 'dataMax',
-              ]}
-              scale="time"
-              type="number"
-              tickFormatter={formatChartTick}
-              minTickGap={40}
-            />
-            <YAxis
-              unit=" dBFS"
-              width={72}
-              domain={['auto', 'auto']}
-            />
-            <Tooltip
-              labelFormatter={value => formatDateTime(Number(value))}
-              formatter={(value, name) => [
-                typeof value === 'number' ? `${value.toFixed(1)} dBFS` : '—',
-                name,
-              ]}
-            />
-            <Legend />
-            {BAND_KEYS.map(band => (
-              <Line
-                key={band}
-                type="monotone"
-                dataKey={band}
-                name={`${t(FFT_BANDS[band].labelKey)} (${FFT_BANDS[band].range})`}
-                stroke={FFT_BANDS[band].fill}
-                dot={false}
-                connectNulls
-                isAnimationActive={false}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <DbfsTimeChart
+        data={visibleData}
+        dateRange={dateRange}
+        series={BAND_KEYS.map(band => ({
+          dataKey: band,
+          name: `${t(FFT_BANDS[band].labelKey)} (${FFT_BANDS[band].range})`,
+          stroke: FFT_BANDS[band].fill,
+        }))}
+      />
     </div>
   );
 }
@@ -285,80 +343,39 @@ function RmsLineChart({
   dateRange: HiveScaleDateRange;
 }) {
   const { t } = useTranslation('hivescale');
-  const visibleData = useMemo(() => {
-    const startMs = dateRange.startAt
-      ? new Date(dateRange.startAt).getTime()
-      : Number.NEGATIVE_INFINITY;
-    const endMs = dateRange.endAt
-      ? new Date(dateRange.endAt).getTime()
-      : Number.POSITIVE_INFINITY;
-    return data.filter(d => d.timestamp >= startMs && d.timestamp <= endMs);
-  }, [data, dateRange]);
+  const visibleData = useVisibleByDateRange(data, dateRange);
 
   if (!visibleData.length) {
     return (
-      <div className="flex h-72 items-center justify-center text-sm text-muted-foreground">
-        <Activity className="mr-2 h-4 w-4" />
-        {t('sound.noDataForChannel', { name: `${leftName} / ${rightName}` })}
-      </div>
+      <ChartEmptyState
+        heightClass="h-72"
+        label={t('sound.noDataForChannel', {
+          name: `${leftName} / ${rightName}`,
+        })}
+      />
     );
   }
 
   return (
     <div>
       <p className="mb-2 text-sm font-medium">{t('sound.rmsTitle')}</p>
-      <div className="h-72">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={visibleData}
-            margin={{ top: 4, right: 8, bottom: 4, left: 4 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              domain={[
-                dateRange.startAt
-                  ? new Date(dateRange.startAt).getTime()
-                  : 'dataMin',
-                dateRange.endAt
-                  ? new Date(dateRange.endAt).getTime()
-                  : 'dataMax',
-              ]}
-              scale="time"
-              type="number"
-              tickFormatter={formatChartTick}
-              minTickGap={40}
-            />
-            <YAxis unit=" dBFS" width={72} domain={['auto', 'auto']} />
-            <Tooltip
-              labelFormatter={value => formatDateTime(Number(value))}
-              formatter={(value, name) => [
-                typeof value === 'number' ? `${value.toFixed(1)} dBFS` : '—',
-                name,
-              ]}
-            />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="left"
-              name={t('sound.rmsSeries', { name: leftName })}
-              stroke="var(--chart-1)"
-              dot={false}
-              connectNulls
-              isAnimationActive={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="right"
-              name={t('sound.rmsSeries', { name: rightName })}
-              stroke="var(--chart-2)"
-              dot={false}
-              connectNulls
-              isAnimationActive={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <DbfsTimeChart
+        data={visibleData}
+        dateRange={dateRange}
+        heightClass="h-72"
+        series={[
+          {
+            dataKey: 'left',
+            name: t('sound.rmsSeries', { name: leftName }),
+            stroke: 'var(--chart-1)',
+          },
+          {
+            dataKey: 'right',
+            name: t('sound.rmsSeries', { name: rightName }),
+            stroke: 'var(--chart-2)',
+          },
+        ]}
+      />
     </div>
   );
 }
