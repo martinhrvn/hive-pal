@@ -272,6 +272,12 @@
     "general": {
       "title": "General",
       "description": "Ambient & power"
+    },
+    "wirelessSensorsBattery": "Wireless sensors battery",
+    "sensorTypes": {
+      "hiveHeart": "HiveHeart",
+      "inHive": "In-hive sensor",
+      "scale": "Scale"
     }
   },
   "diagram": {

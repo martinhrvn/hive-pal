@@ -273,7 +273,13 @@
       "title": "Allgemein",
       "description": "Umgebung & Stromversorgung"
     },
-    "humidity": "Stockfeuchtigkeit"
+    "humidity": "Stockfeuchtigkeit",
+    "wirelessSensorsBattery": "Funksensoren-Akku",
+    "sensorTypes": {
+      "hiveHeart": "HiveHeart",
+      "inHive": "Stocksensor",
+      "scale": "Waage"
+    }
   },
   "diagram": {
     "title": "Messungen",

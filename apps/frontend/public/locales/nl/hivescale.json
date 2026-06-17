@@ -273,7 +273,13 @@
       "title": "General",
       "description": "Ambient & power"
     },
-    "humidity": "Hive humidity"
+    "humidity": "Hive humidity",
+    "wirelessSensorsBattery": "Wireless sensors battery",
+    "sensorTypes": {
+      "hiveHeart": "HiveHeart",
+      "inHive": "In-hive sensor",
+      "scale": "Scale"
+    }
   },
   "diagram": {
     "title": "Measurements",

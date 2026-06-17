@@ -143,6 +143,21 @@ export interface HiveScaleMeasurement {
   ble_2_accel_z_mg: number | null;
   ble_2_battery_percent: number | null;
   ble_2_rssi_dbm: number | null;
+  // beehivemonitoring.com GATT sensors bridged by the ESP32 per hive. The
+  // HiveHeart is an in-hive acoustic sensor (frequency/energy/peak + battery)
+  // and the HiveScale is a wireless weight scale; both report a raw battery
+  // voltage rather than a percentage. These come straight from the HiveScale
+  // backend measurement payload.
+  hiveheart_1_frequency_hz: number | null;
+  hiveheart_1_energy: number | null;
+  hiveheart_1_peak: number | null;
+  hiveheart_1_battery_v: number | null;
+  hiveheart_2_frequency_hz: number | null;
+  hiveheart_2_energy: number | null;
+  hiveheart_2_peak: number | null;
+  hiveheart_2_battery_v: number | null;
+  hivescale_1_battery_v: number | null;
+  hivescale_2_battery_v: number | null;
 }
 
 export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';

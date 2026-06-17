@@ -57,6 +57,7 @@ import {
   type HiveScaleDateRangePreset,
 } from './hivescale-diagram-panel';
 import { HiveScaleSoundPanel } from './hivescale-sound-panel';
+import { WirelessSensorsBattery } from './wireless-sensors-battery';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -2758,6 +2759,16 @@ export function HiveScalePage() {
               {
                 label: t('panel.solarInput'),
                 value: `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`,
+              },
+              {
+                label: t('panel.wirelessSensorsBattery'),
+                value: (
+                  <WirelessSensorsBattery
+                    measurement={latest}
+                    channel1Name={scale1Name}
+                    channel2Name={scale2Name}
+                  />
+                ),
               },
             ]}
           />
