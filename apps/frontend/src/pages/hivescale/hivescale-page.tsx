@@ -179,6 +179,57 @@ const latestMeasurement = (
   )[0];
 };
 
+// How long the battery voltage has to keep climbing before we treat it as a
+// charging signal, and how much sensor jitter we tolerate before considering
+// the trend broken.
+const BATTERY_RISING_WINDOW_MS = 30 * 60 * 1000;
+const BATTERY_VOLTAGE_NOISE_V = 0.005;
+
+const batteryVoltageOf = (measurement: HiveScaleMeasurement) =>
+  measurement.battery_voltage_v ?? measurement.battery_voltage ?? null;
+
+// Returns true when the battery voltage has been rising for at least
+// `windowMs`. We walk backwards from the latest reading through the contiguous
+// "rising" streak (older readings should not be meaningfully higher than newer
+// ones) and report a charge as soon as that streak spans the window with an
+// overall net rise.
+const isBatteryVoltageRising = (
+  measurements: HiveScaleMeasurement[] | undefined,
+  windowMs = BATTERY_RISING_WINDOW_MS,
+) => {
+  if (!measurements?.length) return false;
+
+  const sorted = [...measurements].sort(
+    (a, b) =>
+      new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
+  );
+
+  const latest = sorted[0];
+  const latestVoltage = batteryVoltageOf(latest);
+  if (latestVoltage == null) return false;
+  const latestTime = new Date(latest.measured_at).getTime();
+
+  let newerVoltage = latestVoltage;
+  for (let i = 1; i < sorted.length; i += 1) {
+    const voltage = batteryVoltageOf(sorted[i]);
+    if (voltage == null) break;
+    // The trend is broken if an older reading is meaningfully higher than the
+    // newer one we already accepted (i.e. voltage was falling at that point).
+    if (voltage > newerVoltage + BATTERY_VOLTAGE_NOISE_V) break;
+
+    const elapsed = latestTime - new Date(sorted[i].measured_at).getTime();
+    if (
+      elapsed >= windowMs &&
+      latestVoltage - voltage > BATTERY_VOLTAGE_NOISE_V
+    ) {
+      return true;
+    }
+    newerVoltage = voltage;
+  }
+
+  return false;
+};
+
 const channelName = (
   device: HiveScaleDevice | undefined,
   channelNumber: 1 | 2,
@@ -2492,7 +2543,12 @@ export function HiveScalePage() {
   const latest = latestMeasurement(measurements.data);
   // The MAX17048 fuel gauge reports state-of-charge above 100% while the cell
   // is actively taking charge, so we treat >100% as the "charging" signal.
-  const isBatteryCharging = (latest?.battery_soc_percent ?? 0) > 100;
+  // We also treat a sustained rise in battery voltage (>= 30 minutes) as
+  // charging, since the SoC can plateau at/below 100% while the pack is still
+  // being topped up.
+  const isBatteryCharging =
+    (latest?.battery_soc_percent ?? 0) > 100 ||
+    isBatteryVoltageRising(measurements.data);
 
   useEffect(() => {
     if (latest?.calibration_mode === false && isCalibrationPolling) {
