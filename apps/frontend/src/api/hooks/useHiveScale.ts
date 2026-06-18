@@ -677,7 +677,10 @@ export const useStopHiveScaleCalibrationMode = (
   });
 };
 
-export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter';
+export type HiveScaleFirmwareTarget =
+  | 'hivescale'
+  | 'beecounter'
+  | 'hiveinside';
 
 export interface HiveScaleFirmwareUploadInput {
   file: File;
