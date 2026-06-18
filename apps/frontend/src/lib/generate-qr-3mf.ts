@@ -12,7 +12,7 @@ interface HiveEntry {
 export function generateQR3MF(
   hives: HiveEntry[],
   physicalSizeMm: number,
-): Uint8Array {
+): ArrayBuffer {
   const BASE_HEIGHT_MM = 1.2;
   const MODULE_RAISE_HEIGHT_MM = 0.8;
   const GRID_COLS = Math.ceil(Math.sqrt(hives.length));
@@ -179,7 +179,7 @@ interface ZipEntry {
   data: Uint8Array;
 }
 
-function createZip(files: ZipEntry[]): Uint8Array {
+function createZip(files: ZipEntry[]): ArrayBuffer {
   const enc = new TextEncoder();
   const localParts: Uint8Array[] = [];
   type CDE = { nameBytes: Uint8Array; crc: number; size: number; offset: number };
@@ -253,13 +253,13 @@ function createZip(files: ZipEntry[]): Uint8Array {
 
   const all = [...localParts, ...cdParts, eocd];
   const total = all.reduce((s, p) => s + p.length, 0);
-  const result = new Uint8Array(total);
+  const result = new Uint8Array(new ArrayBuffer(total));
   let pos = 0;
   for (const p of all) {
     result.set(p, pos);
     pos += p.length;
   }
-  return result;
+  return result.buffer;
 }
 
 // CRC-32 with standard polynomial 0xEDB88320
