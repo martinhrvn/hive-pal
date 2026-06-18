@@ -158,11 +158,11 @@ function buildQRMesh(
 }
 
 function v(x: number, y: number, z: number): string {
-  return `<v x="${x.toFixed(4)}" y="${y.toFixed(4)}" z="${z.toFixed(4)}"/>`;
+  return `<vertex x="${x.toFixed(4)}" y="${y.toFixed(4)}" z="${z.toFixed(4)}"/>`;
 }
 
 function t(v1: number, v2: number, v3: number): string {
-  return `<t v1="${v1}" v2="${v2}" v3="${v3}"/>`;
+  return `<triangle v1="${v1}" v2="${v2}" v3="${v3}"/>`;
 }
 
 function escXml(s: string): string {
@@ -178,6 +178,9 @@ interface ZipEntry {
   name: string;
   data: Uint8Array;
 }
+
+// DOS date for 1980-01-01: ((year-1980)<<9) | (month<<5) | day = 0<<9 | 1<<5 | 1
+const DOS_DATE = (1 << 5) | 1;
 
 function createZip(files: ZipEntry[]): ArrayBuffer {
   const enc = new TextEncoder();
@@ -198,7 +201,7 @@ function createZip(files: ZipEntry[]): ArrayBuffer {
     lv.setUint16(6, 0, true); // general purpose flags
     lv.setUint16(8, 0, true); // compression: STORE
     lv.setUint16(10, 0, true); // last mod file time
-    lv.setUint16(12, 0, true); // last mod file date
+    lv.setUint16(12, DOS_DATE, true); // last mod file date (valid: 1980-01-01)
     lv.setUint32(14, crc, true); // CRC-32
     lv.setUint32(18, size, true); // compressed size
     lv.setUint32(22, size, true); // uncompressed size
@@ -223,7 +226,7 @@ function createZip(files: ZipEntry[]): ArrayBuffer {
     cv.setUint16(8, 0, true); // flags
     cv.setUint16(10, 0, true); // compression
     cv.setUint16(12, 0, true); // mod time
-    cv.setUint16(14, 0, true); // mod date
+    cv.setUint16(14, DOS_DATE, true); // mod date (valid: 1980-01-01)
     cv.setUint32(16, entry.crc, true); // CRC-32
     cv.setUint32(20, entry.size, true); // compressed size
     cv.setUint32(24, entry.size, true); // uncompressed size
