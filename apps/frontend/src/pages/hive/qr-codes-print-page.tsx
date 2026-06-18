@@ -9,7 +9,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PrinterIcon, QrCodeIcon, ImageIcon } from 'lucide-react';
+import {
+  PrinterIcon,
+  QrCodeIcon,
+  ImageIcon,
+  BoxIcon,
+  DownloadIcon,
+} from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -20,6 +26,8 @@ import {
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
+import { generateQR3MF } from '@/lib/generate-qr-3mf';
 
 // Lazy load QR code library
 const QRCode = lazy(() =>
@@ -35,6 +43,7 @@ function QRPreviewLoader() {
 }
 
 type QrTarget = 'detail' | 'mobile-wizard' | 'audio';
+type OutputMode = 'paper' | '3d';
 
 const TARGET_PATH: Record<QrTarget, (hiveId: string) => string> = {
   detail: hiveId => `/hives/${hiveId}`,
@@ -49,7 +58,9 @@ export function QRCodesPrintPage() {
   const [layout, setLayout] = useState<'2x3' | '2x4' | '3x3'>('2x3');
   const [includeLogo, setIncludeLogo] = useState(true);
   const [target, setTarget] = useState<QrTarget>('detail');
-  const logoUrl = '/favicon.ico'; // Default to favicon, can be customized
+  const [outputMode, setOutputMode] = useState<OutputMode>('paper');
+  const [physicalSizeMm, setPhysicalSizeMm] = useState<40 | 60 | 80>(60);
+  const logoUrl = '/favicon.ico';
 
   const urlFor = (hiveId: string) =>
     `${window.location.origin}${TARGET_PATH[target](hiveId)}`;
@@ -167,7 +178,6 @@ export function QRCodesPrintPage() {
       </style>
     `;
 
-    // Split QR codes into pages
     const pages = [];
     for (let i = 0; i < selectedHiveData.length; i += gridLayout.perPage) {
       const pageItems = selectedHiveData.slice(i, i + gridLayout.perPage);
@@ -213,13 +223,12 @@ export function QRCodesPrintPage() {
                     ${
                       includeLogo
                         ? `
-                    // Insert QR code first, then configure logo
                     var logo = element.querySelector('.qr-logo');
                     element.insertAdjacentHTML('afterbegin', qrSvg);
-                    
+
                     if (logo) {
                       logo.src = '${logoUrl}';
-                      var logoSize = Math.min(${qrCodeSize} * 0.15, 48); // Logo is 15% of QR code size, max 48px
+                      var logoSize = Math.min(${qrCodeSize} * 0.15, 48);
                       logo.style.width = logoSize + 'px';
                       logo.style.height = logoSize + 'px';
                       logo.style.display = 'block';
@@ -227,7 +236,6 @@ export function QRCodesPrintPage() {
                     }
                     `
                         : `
-                    // No logo, just insert QR code
                     element.innerHTML = qrSvg;
                     `
                     }
@@ -236,12 +244,12 @@ export function QRCodesPrintPage() {
               `;
               })
               .join('\n')}
-            
+
             window.onload = function() {
               setTimeout(function() {
                 window.print();
                 window.close();
-              }, 500); // Small delay to ensure logos load
+              }, 500);
             };
           </script>
         </body>
@@ -250,6 +258,25 @@ export function QRCodesPrintPage() {
 
     printWindow.document.write(htmlContent);
     printWindow.document.close();
+  };
+
+  const handle3DExport = () => {
+    const selectedHiveData = hives?.filter(h => selectedHives.has(h.id)) || [];
+    if (selectedHiveData.length === 0) return;
+
+    const hiveEntries = selectedHiveData.map(hive => ({
+      name: hive.name,
+      url: urlFor(hive.id),
+    }));
+
+    const bytes = generateQR3MF(hiveEntries, physicalSizeMm);
+    const blob = new Blob([bytes], { type: 'application/vnd.ms-package.3dmanufacturing-3dmodel+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hive-qr-codes-${physicalSizeMm}mm.3mf`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   if (isLoading) {
@@ -287,6 +314,7 @@ export function QRCodesPrintPage() {
         <CardContent className="space-y-6">
           {/* Print Settings */}
           <div className="flex flex-wrap gap-4 p-4 bg-muted/50 rounded-lg">
+            {/* QR Target — always visible */}
             <div className="flex-1 min-w-[200px]">
               <Label htmlFor="qr-target">QR Target</Label>
               <Select
@@ -306,57 +334,118 @@ export function QRCodesPrintPage() {
               </Select>
             </div>
 
-            <div className="flex-1 min-w-[200px]">
-              <Label htmlFor="qr-size">QR Code Size</Label>
-              <Select
-                value={qrSize}
-                onValueChange={(value: 'small' | 'medium' | 'large') =>
-                  setQrSize(value)
-                }
-              >
-                <SelectTrigger id="qr-size">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="small">Small (480px)</SelectItem>
-                  <SelectItem value="medium">Medium (640px)</SelectItem>
-                  <SelectItem value="large">Large (960px)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Paper-only: QR Code Size */}
+            {outputMode === 'paper' && (
+              <div className="flex-1 min-w-[200px]">
+                <Label htmlFor="qr-size">QR Code Size</Label>
+                <Select
+                  value={qrSize}
+                  onValueChange={(value: 'small' | 'medium' | 'large') =>
+                    setQrSize(value)
+                  }
+                >
+                  <SelectTrigger id="qr-size">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="small">Small (480px)</SelectItem>
+                    <SelectItem value="medium">Medium (640px)</SelectItem>
+                    <SelectItem value="large">Large (960px)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
-            <div className="flex-1 min-w-[200px]">
-              <Label htmlFor="layout">Page Layout</Label>
-              <Select
-                value={layout}
-                onValueChange={(value: '2x3' | '2x4' | '3x3') =>
-                  setLayout(value)
-                }
-              >
-                <SelectTrigger id="layout">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2x3">2×3 (6 per page)</SelectItem>
-                  <SelectItem value="2x4">2×4 (8 per page)</SelectItem>
-                  <SelectItem value="3x3">3×3 (9 per page)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Paper-only: Page Layout */}
+            {outputMode === 'paper' && (
+              <div className="flex-1 min-w-[200px]">
+                <Label htmlFor="layout">Page Layout</Label>
+                <Select
+                  value={layout}
+                  onValueChange={(value: '2x3' | '2x4' | '3x3') =>
+                    setLayout(value)
+                  }
+                >
+                  <SelectTrigger id="layout">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2x3">2×3 (6 per page)</SelectItem>
+                    <SelectItem value="2x4">2×4 (8 per page)</SelectItem>
+                    <SelectItem value="3x3">3×3 (9 per page)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
-            <div className="flex items-center space-x-2 min-w-[200px]">
-              <Switch
-                id="include-logo"
-                checked={includeLogo}
-                onCheckedChange={setIncludeLogo}
-              />
-              <Label
-                htmlFor="include-logo"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <ImageIcon className="h-4 w-4" />
-                Include Logo
-              </Label>
+            {/* 3D-only: Physical Size */}
+            {outputMode === '3d' && (
+              <div className="flex-1 min-w-[200px]">
+                <Label htmlFor="physical-size">Physical Size</Label>
+                <Select
+                  value={String(physicalSizeMm)}
+                  onValueChange={v =>
+                    setPhysicalSizeMm(Number(v) as 40 | 60 | 80)
+                  }
+                >
+                  <SelectTrigger id="physical-size">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="40">Small (40mm)</SelectItem>
+                    <SelectItem value="60">Medium (60mm)</SelectItem>
+                    <SelectItem value="80">Large (80mm)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Paper-only: Include Logo */}
+            {outputMode === 'paper' && (
+              <div className="flex items-center space-x-2 min-w-[200px]">
+                <Switch
+                  id="include-logo"
+                  checked={includeLogo}
+                  onCheckedChange={setIncludeLogo}
+                />
+                <Label
+                  htmlFor="include-logo"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <ImageIcon className="h-4 w-4" />
+                  Include Logo
+                </Label>
+              </div>
+            )}
+
+            {/* Output Mode Toggle */}
+            <div className="flex items-end ml-auto">
+              <div className="flex rounded-lg border overflow-hidden">
+                <button
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors',
+                    outputMode === 'paper'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-muted-foreground hover:bg-muted',
+                  )}
+                  onClick={() => setOutputMode('paper')}
+                >
+                  <PrinterIcon className="h-4 w-4" />
+                  Print on paper
+                </button>
+                <button
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors border-l',
+                    outputMode === '3d'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-muted-foreground hover:bg-muted',
+                  )}
+                  onClick={() => setOutputMode('3d')}
+                >
+                  <BoxIcon className="h-4 w-4" />
+                  3D Print file
+                </button>
+              </div>
             </div>
           </div>
 
@@ -427,7 +516,7 @@ export function QRCodesPrintPage() {
                               fgColor="#000000"
                             />
                           </Suspense>
-                          {includeLogo && (
+                          {outputMode === 'paper' && includeLogo && (
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="bg-white p-0.5 rounded shadow-sm">
                                 <img
@@ -456,20 +545,40 @@ export function QRCodesPrintPage() {
                   </div>
                 )}
               </div>
+              {outputMode === '3d' && (
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Each QR code will be {physicalSizeMm}mm × {physicalSizeMm}mm
+                  with a 1.2mm base and 0.8mm raised modules. Open the .3mf
+                  file in your slicer (Bambu Studio, PrusaSlicer, etc.).
+                </p>
+              )}
             </div>
           )}
 
-          {/* Print Button */}
-          <Button
-            className="w-full"
-            size="lg"
-            onClick={handlePrint}
-            disabled={selectedHives.size === 0}
-          >
-            <PrinterIcon className="mr-2 h-5 w-5" />
-            Print {selectedHives.size} QR Code
-            {selectedHives.size !== 1 ? 's' : ''}
-          </Button>
+          {/* Action Button */}
+          {outputMode === 'paper' ? (
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={handlePrint}
+              disabled={selectedHives.size === 0}
+            >
+              <PrinterIcon className="mr-2 h-5 w-5" />
+              Print {selectedHives.size} QR Code
+              {selectedHives.size !== 1 ? 's' : ''}
+            </Button>
+          ) : (
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={handle3DExport}
+              disabled={selectedHives.size === 0}
+            >
+              <DownloadIcon className="mr-2 h-5 w-5" />
+              Download .3MF — {selectedHives.size} hive
+              {selectedHives.size !== 1 ? 's' : ''}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>
