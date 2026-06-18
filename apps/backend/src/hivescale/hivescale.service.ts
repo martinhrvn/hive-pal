@@ -40,9 +40,11 @@ interface HiveScaleImportResponse {
   duplicates: number;
 }
 
+export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
+
 export interface HiveScaleFirmwareUploadDto {
   version: string;
-  target?: 'hivescale' | 'beecounter';
+  target?: HiveScaleFirmwareTarget;
   active?: boolean;
 }
 
@@ -50,7 +52,7 @@ export interface HiveScaleFirmwareUploadResult {
   status: string;
   version: string;
   filename: string;
-  target: 'hivescale' | 'beecounter';
+  target: HiveScaleFirmwareTarget;
   active: boolean;
   size_bytes: number;
   crc32: number;
@@ -305,9 +307,13 @@ export class HiveScaleService {
     }
 
     const target = dto.target ?? 'hivescale';
-    if (target !== 'hivescale' && target !== 'beecounter') {
+    if (
+      target !== 'hivescale' &&
+      target !== 'beecounter' &&
+      target !== 'hiveinside'
+    ) {
       throw new BadRequestException(
-        "target must be 'hivescale' or 'beecounter'",
+        "target must be 'hivescale', 'beecounter' or 'hiveinside'",
       );
     }
 

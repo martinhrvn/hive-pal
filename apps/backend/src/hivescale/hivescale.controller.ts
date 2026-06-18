@@ -164,7 +164,9 @@ export class HiveScaleController {
     }
 
     const target =
-      body.target === 'beecounter' || body.target === 'hivescale'
+      body.target === 'beecounter' ||
+      body.target === 'hivescale' ||
+      body.target === 'hiveinside'
         ? body.target
         : undefined;
 

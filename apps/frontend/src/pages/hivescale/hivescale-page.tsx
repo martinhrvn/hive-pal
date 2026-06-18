@@ -2103,6 +2103,7 @@ function FirmwareUploadCard({
               <SelectContent>
                 <SelectItem value="hivescale">HiveScale</SelectItem>
                 <SelectItem value="beecounter">BeeCounter</SelectItem>
+                <SelectItem value="hiveinside">HiveInside</SelectItem>
               </SelectContent>
             </Select>
           </div>
