@@ -1196,6 +1196,35 @@ export const HiveScaleDiagramPanel = ({
     return latest === -Infinity ? null : new Date(latest).toISOString();
   }, [measurements]);
 
+  // Most recent measurement in the loaded range, used to read per-sensor
+  // metadata such as the HiveInside firmware version (reported per hive).
+  const latestMeasurement = useMemo<HiveScaleMeasurement | null>(() => {
+    if (!measurements?.length) return null;
+    let latest: HiveScaleMeasurement | null = null;
+    let latestTs = -Infinity;
+    for (const m of measurements) {
+      const ts = new Date(m.measured_at).getTime();
+      if (Number.isFinite(ts) && ts > latestTs) {
+        latestTs = ts;
+        latest = m;
+      }
+    }
+    return latest;
+  }, [measurements]);
+
+  // HiveInside in-hive sensors report their running firmware over BLE; show the
+  // latest value for each populated hive next to the HiveScale node firmware.
+  const hiveInsideFirmware = useMemo<string[]>(
+    () =>
+      latestMeasurement
+        ? [
+            latestMeasurement.ble_1_firmware_version,
+            latestMeasurement.ble_2_firmware_version,
+          ].filter((v): v is string => typeof v === 'string' && v.length > 0)
+        : [],
+    [latestMeasurement],
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -1228,6 +1257,14 @@ export const HiveScaleDiagramPanel = ({
                 </span>{' '}
                 {selectedDevice.last_firmware_version ?? '—'}
               </span>
+              {hiveInsideFirmware.length > 0 && (
+                <span>
+                  <span className="font-medium text-foreground">
+                    {t('diagram.meta.hiveInsideFirmware')}
+                  </span>{' '}
+                  {hiveInsideFirmware.join(' / ')}
+                </span>
+              )}
             </div>
           </div>
           <Button
