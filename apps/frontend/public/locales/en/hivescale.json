@@ -289,7 +289,8 @@
       "device": "Device:",
       "lastSeen": "Last seen:",
       "lastData": "Last data:",
-      "firmware": "Firmware:"
+      "firmware": "Firmware:",
+      "hiveInsideFirmware": "HiveInside:"
     },
     "range": {
       "all": "All",

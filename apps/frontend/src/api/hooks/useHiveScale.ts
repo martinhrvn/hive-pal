@@ -143,6 +143,10 @@ export interface HiveScaleMeasurement {
   ble_2_accel_z_mg: number | null;
   ble_2_battery_percent: number | null;
   ble_2_rssi_dbm: number | null;
+  // Running firmware version reported by a HiveInside C6 in-hive sensor over
+  // GATT ("fw"). Null for HolyIot/Ruuvi beacons and older payloads.
+  ble_1_firmware_version: string | null;
+  ble_2_firmware_version: string | null;
   // beehivemonitoring.com GATT sensors bridged by the ESP32 per hive. The
   // HiveHeart is an in-hive acoustic sensor (frequency/energy/peak + battery)
   // and the HiveScale is a wireless weight scale; both report a raw battery
