@@ -234,6 +234,15 @@
     "errors": {
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
+    },
+    "hiveinsideOta": {
+      "title": "Trigger HiveInside OTA",
+      "description": "Uploading only registers the firmware. Queue the over-the-air relay to push the active HiveInside release to the paired sensor over BLE. Keep the sensor powered and awake during the update.",
+      "slot": "Sensor slot",
+      "slotOption": "Slot {{slot}}",
+      "queue": "Queue HiveInside OTA",
+      "queueing": "Queuing…",
+      "success": "HiveInside OTA queued for slot {{slot}}."
     }
   },
   "sdData": {

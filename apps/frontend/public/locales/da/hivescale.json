@@ -234,6 +234,15 @@
     "errors": {
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
+    },
+    "hiveinsideOta": {
+      "title": "Udløs HiveInside-OTA",
+      "description": "Upload registrerer kun firmwaren. Sæt den trådløse opdatering i kø for at sende den aktive HiveInside-version til den parrede sensor via BLE. Hold sensoren tændt og vågen under opdateringen.",
+      "slot": "Sensor-slot",
+      "slotOption": "Slot {{slot}}",
+      "queue": "Sæt HiveInside-OTA i kø",
+      "queueing": "Sætter i kø…",
+      "success": "HiveInside-OTA sat i kø for slot {{slot}}."
     }
   },
   "sdData": {
