@@ -295,6 +295,24 @@ export class HiveScaleService {
     );
   }
 
+  queueHiveInsideUpdate(accessToken: string, deviceId: string, slot: 1 | 2) {
+    return this.request(
+      accessToken,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/commands/update-hiveinside`,
+      { params: { slot } },
+    );
+  }
+
+  queueBeeCounterUpdate(accessToken: string, deviceId: string, slot: 1 | 2) {
+    return this.request(
+      accessToken,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/commands/update-beecounter`,
+      { params: { slot } },
+    );
+  }
+
   async uploadFirmware(
     accessToken: string,
     deviceId: string,

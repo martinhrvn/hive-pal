@@ -788,3 +788,46 @@ export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
     },
   });
 };
+
+export interface HiveScaleRelayUpdateResult {
+  status: string;
+  id: number;
+  command_type: string;
+  payload: { slot: number };
+}
+
+/**
+ * Queue a HiveInside OTA relay for the paired sensor in the given slot.
+ *
+ * Uploading a HiveInside binary only *registers* the release; this triggers the
+ * HiveScale to actually download it and relay it to the sensor over BLE. The two
+ * steps are intentionally separate (upload once, then queue per slot).
+ */
+export const useQueueHiveInsideUpdate = (deviceId: string | undefined) => {
+  return useMutation<HiveScaleRelayUpdateResult, Error, { slot: 1 | 2 }>({
+    mutationFn: async ({ slot }) => {
+      try {
+        const response = await apiClient.post<HiveScaleRelayUpdateResult>(
+          `/api/hivescale/devices/${deviceId}/commands/update-hiveinside`,
+          null,
+          { params: { slot } },
+        );
+        return response.data;
+      } catch (error) {
+        // Surface the backend message (e.g. "No active hiveinside firmware
+        // release") instead of Axios' generic status-code text.
+        if (isAxiosError<{ message?: string }>(error)) {
+          const data = error.response?.data;
+          const message =
+            (typeof data === 'object' && data !== null
+              ? data.message
+              : typeof data === 'string'
+                ? data
+                : undefined) ?? error.message;
+          throw new Error(message || 'Failed to queue HiveInside OTA');
+        }
+        throw error;
+      }
+    },
+  });
+};

@@ -37,6 +37,7 @@ import {
   useShareHiveScaleDevice,
   useImportHiveScaleSdData,
   useStartHiveScaleCalibrationMode,
+  useQueueHiveInsideUpdate,
   useStopHiveScaleCalibrationMode,
   useUpdateHiveScaleChannels,
   useUpdateHiveScaleConfig,
@@ -2020,10 +2021,24 @@ function FirmwareUploadCard({
   const [fileInputKey, setFileInputKey] = useState(0);
 
   const uploadFirmware = useUploadHiveScaleFirmware(deviceId);
+  const queueHiveInsideUpdate = useQueueHiveInsideUpdate(deviceId);
+  const [otaSlot, setOtaSlot] = useState<'1' | '2'>('1');
 
   const role = selectedDevice?.role;
   const canManage = role === 'owner' || role === 'admin';
   const disabled = !selectedDevice || !canManage;
+
+  const onQueueHiveInsideOta = () => {
+    if (disabled) return;
+    queueHiveInsideUpdate.mutate(
+      { slot: Number(otaSlot) as 1 | 2 },
+      {
+        onSuccess: () =>
+          toast.success(t('firmware.hiveinsideOta.success', { slot: otaSlot })),
+        onError: error => toast.error(error.message),
+      },
+    );
+  };
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -2146,6 +2161,51 @@ function FirmwareUploadCard({
               : t('firmware.upload')}
           </Button>
         </form>
+
+        {target === 'hiveinside' && (
+          <div className="mt-6 space-y-3 border-t pt-4">
+            <div className="space-y-1">
+              <Label>{t('firmware.hiveinsideOta.title')}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t('firmware.hiveinsideOta.description')}
+              </p>
+            </div>
+            <div className="flex items-end gap-2">
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="hiveinside-ota-slot">
+                  {t('firmware.hiveinsideOta.slot')}
+                </Label>
+                <Select
+                  value={otaSlot}
+                  onValueChange={value => setOtaSlot(value as '1' | '2')}
+                  disabled={disabled || queueHiveInsideUpdate.isPending}
+                >
+                  <SelectTrigger id="hiveinside-ota-slot">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">
+                      {t('firmware.hiveinsideOta.slotOption', { slot: 1 })}
+                    </SelectItem>
+                    <SelectItem value="2">
+                      {t('firmware.hiveinsideOta.slotOption', { slot: 2 })}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={onQueueHiveInsideOta}
+                disabled={disabled || queueHiveInsideUpdate.isPending}
+              >
+                {queueHiveInsideUpdate.isPending
+                  ? t('firmware.hiveinsideOta.queueing')
+                  : t('firmware.hiveinsideOta.queue')}
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

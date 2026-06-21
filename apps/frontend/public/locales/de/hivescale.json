@@ -234,6 +234,15 @@
     "errors": {
       "missingFile": "Wählen Sie eine Firmware-Binärdatei (.bin) zum Hochladen aus.",
       "missingVersion": "Geben Sie eine Version ein, z. B. 0.6.3."
+    },
+    "hiveinsideOta": {
+      "title": "HiveInside-OTA auslösen",
+      "description": "Das Hochladen registriert die Firmware nur. Stoße das Over-the-Air-Update an, um die aktive HiveInside-Version per BLE an den gekoppelten Sensor zu übertragen. Halte den Sensor während des Updates eingeschaltet und wach.",
+      "slot": "Sensor-Slot",
+      "slotOption": "Slot {{slot}}",
+      "queue": "HiveInside-OTA einreihen",
+      "queueing": "Wird eingereiht…",
+      "success": "HiveInside-OTA für Slot {{slot}} eingereiht."
     }
   },
   "sdData": {
