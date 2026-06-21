@@ -1196,22 +1196,6 @@ export const HiveScaleDiagramPanel = ({
     return latest === -Infinity ? null : new Date(latest).toISOString();
   }, [measurements]);
 
-  // Most recent measurement in the loaded range, used to read per-sensor
-  // metadata such as the HiveInside firmware version (reported per hive).
-  const latestMeasurement = useMemo<HiveScaleMeasurement | null>(() => {
-    if (!measurements?.length) return null;
-    let latest: HiveScaleMeasurement | null = null;
-    let latestTs = -Infinity;
-    for (const m of measurements) {
-      const ts = new Date(m.measured_at).getTime();
-      if (Number.isFinite(ts) && ts > latestTs) {
-        latestTs = ts;
-        latest = m;
-      }
-    }
-    return latest;
-  }, [measurements]);
-
   // HiveInside in-hive sensors report their running firmware over BLE; show the
   // latest non-empty value for each populated hive next to the HiveScale node
   // firmware. Searching all loaded measurements (not just the newest row) makes
