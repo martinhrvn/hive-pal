@@ -1213,17 +1213,30 @@ export const HiveScaleDiagramPanel = ({
   }, [measurements]);
 
   // HiveInside in-hive sensors report their running firmware over BLE; show the
-  // latest value for each populated hive next to the HiveScale node firmware.
-  const hiveInsideFirmware = useMemo<string[]>(
-    () =>
-      latestMeasurement
-        ? [
-            latestMeasurement.ble_1_firmware_version,
-            latestMeasurement.ble_2_firmware_version,
-          ].filter((v): v is string => typeof v === 'string' && v.length > 0)
-        : [],
-    [latestMeasurement],
-  );
+  // latest non-empty value for each populated hive next to the HiveScale node
+  // firmware. Searching all loaded measurements (not just the newest row) makes
+  // this robust against cycles where the GATT read failed or the sensor was
+  // absent — the version from an earlier row is still current and useful.
+  const hiveInsideFirmware = useMemo<string[]>(() => {
+    if (!measurements?.length) return [];
+    const sorted = [...measurements].sort(
+      (a, b) =>
+        new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
+    );
+    const newestNonEmpty = (
+      key: 'ble_1_firmware_version' | 'ble_2_firmware_version',
+    ): string | null => {
+      for (const m of sorted) {
+        const v = m[key];
+        if (typeof v === 'string' && v.length > 0) return v;
+      }
+      return null;
+    };
+    return [
+      newestNonEmpty('ble_1_firmware_version'),
+      newestNonEmpty('ble_2_firmware_version'),
+    ].filter((v): v is string => v !== null);
+  }, [measurements]);
 
   return (
     <Card>
