@@ -237,12 +237,14 @@
     },
     "hiveinsideOta": {
       "title": "Udløs HiveInside-OTA",
-      "description": "Upload registrerer kun firmwaren. Sæt den trådløse opdatering i kø for at sende den aktive HiveInside-version til den parrede sensor via BLE. Hold sensoren tændt og vågen under opdateringen.",
+      "description": "Upload af en HiveInside-firmware sætter nu automatisk den trådløse opdatering i kø for begge sensor-slots via BLE. Brug denne til at sætte den aktive version i kø igen til et bestemt slot. Hold sensoren tændt og vågen under opdateringen.",
       "slot": "Sensor-slot",
       "slotOption": "Slot {{slot}}",
       "queue": "Sæt HiveInside-OTA i kø",
       "queueing": "Sætter i kø…",
-      "success": "HiveInside-OTA sat i kø for slot {{slot}}."
+      "success": "HiveInside-OTA sat i kø for slot {{slot}}.",
+      "autoQueued": "HiveInside-OTA automatisk sat i kø for slots {{slots}}.",
+      "autoQueueFailed": "HiveInside-OTA kunne ikke sættes automatisk i kø for slots {{slots}}."
     }
   },
   "sdData": {
