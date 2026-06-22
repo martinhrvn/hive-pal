@@ -79,6 +79,26 @@ export interface HiveScaleFirmwareUploadResult {
   auto_queued_updates?: HiveScaleAutoQueuedUpdate[];
 }
 
+export interface HiveScaleFirmwareStatus {
+  device_id: string;
+  target: string;
+  current_version: string | null;
+  latest_version: string | null;
+  /** True when the latest available release is a global/official build (no owner). */
+  latest_is_official: boolean;
+  approved_version: string | null;
+  update_available: boolean;
+  /** Update available but not yet approved by the owner — the device won't auto-flash. */
+  pending_approval: boolean;
+}
+
+export interface HiveScaleFirmwareApproveResult {
+  status: string;
+  device_id: string;
+  version: string;
+  command_id: number;
+}
+
 export interface HiveScaleClaimDeviceDto {
   claim_code: string;
   display_name?: string;
@@ -443,6 +463,22 @@ export class HiveScaleService {
       }
       throw new BadGatewayException('HiveScale firmware upload failed');
     }
+  }
+
+  getFirmwareStatus(accessToken: string, deviceId: string) {
+    return this.request<HiveScaleFirmwareStatus>(
+      accessToken,
+      'GET',
+      `/api/v1/app/devices/${deviceId}/firmware/status`,
+    );
+  }
+
+  approveFirmware(accessToken: string, deviceId: string) {
+    return this.request<HiveScaleFirmwareApproveResult>(
+      accessToken,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/firmware/approve`,
+    );
   }
 
   async importSdMeasurements(
