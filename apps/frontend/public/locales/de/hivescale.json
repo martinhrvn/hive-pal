@@ -237,12 +237,14 @@
     },
     "hiveinsideOta": {
       "title": "HiveInside-OTA auslösen",
-      "description": "Das Hochladen registriert die Firmware nur. Stoße das Over-the-Air-Update an, um die aktive HiveInside-Version per BLE an den gekoppelten Sensor zu übertragen. Halte den Sensor während des Updates eingeschaltet und wach.",
+      "description": "Das Hochladen einer HiveInside-Firmware reiht das Over-the-Air-Update jetzt automatisch für beide Sensor-Slots per BLE ein. Nutze dies, um die aktive Version erneut an einen bestimmten Slot zu senden. Halte den Sensor während des Updates eingeschaltet und wach.",
       "slot": "Sensor-Slot",
       "slotOption": "Slot {{slot}}",
       "queue": "HiveInside-OTA einreihen",
       "queueing": "Wird eingereiht…",
-      "success": "HiveInside-OTA für Slot {{slot}} eingereiht."
+      "success": "HiveInside-OTA für Slot {{slot}} eingereiht.",
+      "autoQueued": "HiveInside-OTA automatisch für Slots {{slots}} eingereiht.",
+      "autoQueueFailed": "HiveInside-OTA konnte für Slots {{slots}} nicht automatisch eingereiht werden."
     }
   },
   "sdData": {

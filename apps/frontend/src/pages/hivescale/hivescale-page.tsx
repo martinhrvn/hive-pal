@@ -2067,6 +2067,29 @@ function FirmwareUploadCard({
               target: result.target,
             }),
           );
+          // HiveInside uploads also auto-queue the OTA relay to both slots on
+          // the backend; surface which slots were queued (or failed).
+          const autoQueued = result.auto_queued_updates ?? [];
+          const queuedSlots = autoQueued
+            .filter(update => update.status === 'queued')
+            .map(update => update.slot);
+          const failedSlots = autoQueued
+            .filter(update => update.status === 'failed')
+            .map(update => update.slot);
+          if (queuedSlots.length > 0) {
+            toast.success(
+              t('firmware.hiveinsideOta.autoQueued', {
+                slots: queuedSlots.join(', '),
+              }),
+            );
+          }
+          if (failedSlots.length > 0) {
+            toast.error(
+              t('firmware.hiveinsideOta.autoQueueFailed', {
+                slots: failedSlots.join(', '),
+              }),
+            );
+          }
         },
         onError: error => toast.error(error.message),
       },

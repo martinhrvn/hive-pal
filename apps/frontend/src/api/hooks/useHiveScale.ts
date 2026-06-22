@@ -693,6 +693,13 @@ export interface HiveScaleFirmwareUploadInput {
   active?: boolean;
 }
 
+export interface HiveScaleAutoQueuedUpdate {
+  slot: 1 | 2;
+  status: 'queued' | 'failed';
+  command_id?: number;
+  error?: string;
+}
+
 export interface HiveScaleFirmwareUploadResult {
   status: string;
   version: string;
@@ -701,6 +708,11 @@ export interface HiveScaleFirmwareUploadResult {
   active: boolean;
   size_bytes: number;
   crc32: number;
+  /**
+   * For HiveInside uploads, the backend also auto-queues the OTA relay to both
+   * sensor slots (1 & 2). One entry per slot; absent for other targets.
+   */
+  auto_queued_updates?: HiveScaleAutoQueuedUpdate[];
 }
 
 export interface HiveScaleSdImportResult {

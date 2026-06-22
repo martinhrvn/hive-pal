@@ -237,12 +237,14 @@
     },
     "hiveinsideOta": {
       "title": "Trigger HiveInside OTA",
-      "description": "Uploading only registers the firmware. Queue the over-the-air relay to push the active HiveInside release to the paired sensor over BLE. Keep the sensor powered and awake during the update.",
+      "description": "Uploading a HiveInside firmware now automatically queues the OTA relay to both sensor slots over BLE. Use this to re-queue the active release to a specific slot. Keep the sensor powered and awake during the update.",
       "slot": "Sensor slot",
       "slotOption": "Slot {{slot}}",
       "queue": "Queue HiveInside OTA",
       "queueing": "Queuing…",
-      "success": "HiveInside OTA queued for slot {{slot}}."
+      "success": "HiveInside OTA queued for slot {{slot}}.",
+      "autoQueued": "HiveInside OTA auto-queued for slots {{slots}}.",
+      "autoQueueFailed": "Could not auto-queue the HiveInside OTA for slots {{slots}}."
     }
   },
   "sdData": {
