@@ -227,6 +227,20 @@
     "upload": "Upload firmware",
     "uploading": "Uploading…",
     "success": "Firmware {{version}} ({{target}}) uploaded and registered.",
+    "update": {
+      "title": "Firmware update",
+      "description": "Scales never update on their own — you approve each new build here before this scale installs it.",
+      "unavailable": "Firmware status is unavailable right now.",
+      "availableTitle": "Firmware {{version}} is available",
+      "availableBody": "This scale is running {{current}}. Apply to update it to {{version}}.",
+      "officialSuffix": "This is an official build.",
+      "apply": "Apply update",
+      "applying": "Applying…",
+      "applied": "Firmware {{version}} approved — the scale will update on its next check-in.",
+      "queued": "Update {{version}} approved. The scale will install it on its next check-in.",
+      "upToDate": "Firmware is up to date ({{version}}).",
+      "viewerNotice": "Only device owners and admins can apply firmware updates."
+    },
     "notice": {
       "noPermission": "Only device owners and admins can upload firmware. Your role is “{{role}}”.",
       "selectDevice": "Select a claimed device to upload firmware."

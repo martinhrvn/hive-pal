@@ -193,6 +193,28 @@ export class HiveScaleController {
     );
   }
 
+  @Get('devices/:deviceId/firmware/status')
+  getFirmwareStatus(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.hiveScaleService.getFirmwareStatus(
+      this.extractToken(req),
+      deviceId,
+    );
+  }
+
+  @Post('devices/:deviceId/firmware/approve')
+  approveFirmware(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.hiveScaleService.approveFirmware(
+      this.extractToken(req),
+      deviceId,
+    );
+  }
+
   @Post('devices/:deviceId/commands/update-hiveinside')
   queueHiveInsideUpdate(
     @Req() req: RequestWithUser,

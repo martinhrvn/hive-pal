@@ -26,10 +26,12 @@ import { toast } from 'sonner';
 import { useHivesWithBoxes } from '@/api/hooks/useHives';
 import { useInspections } from '@/api/hooks/useInspections';
 import {
+  useApproveHiveScaleFirmware,
   useClaimHiveScaleDevice,
   useFitHiveScaleTempCompensation,
   useHiveScaleDeviceConfig,
   useHiveScaleDevices,
+  useHiveScaleFirmwareStatus,
   useHiveScaleMeasurements,
   useHiveScaleMembers,
   useRemoveHiveScaleDevice,
@@ -2006,6 +2008,123 @@ function DeviceStatusCard({
   );
 }
 
+function FirmwareUpdateCard({
+  selectedDevice,
+  deviceId,
+}: Readonly<{
+  selectedDevice: HiveScaleDevice | undefined;
+  deviceId: string | undefined;
+}>) {
+  const { t } = useTranslation('hivescale');
+  const role = selectedDevice?.role;
+  const canManage = role === 'owner' || role === 'admin';
+
+  const statusQuery = useHiveScaleFirmwareStatus(deviceId, {
+    enabled: !!selectedDevice,
+  });
+  const approveFirmware = useApproveHiveScaleFirmware(deviceId);
+
+  if (!selectedDevice) return null;
+
+  const status = statusQuery.data;
+
+  const onApply = () => {
+    approveFirmware.mutate(undefined, {
+      onSuccess: result =>
+        toast.success(
+          t('firmware.update.applied', { version: result.version }),
+        ),
+      onError: error => toast.error(error.message),
+    });
+  };
+
+  let body: ReactNode;
+  if (statusQuery.isLoading) {
+    body = (
+      <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
+    );
+  } else if (!status) {
+    body = (
+      <p className="text-sm text-muted-foreground">
+        {t('firmware.update.unavailable')}
+      </p>
+    );
+  } else if (status.update_available && status.pending_approval) {
+    body = (
+      <div className="space-y-3">
+        <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-3">
+          <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium">
+              {t('firmware.update.availableTitle', {
+                version: status.latest_version,
+              })}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t('firmware.update.availableBody', {
+                current: status.current_version ?? '—',
+                version: status.latest_version,
+              })}
+              {status.latest_is_official
+                ? ` ${t('firmware.update.officialSuffix')}`
+                : ''}
+            </p>
+          </div>
+        </div>
+        {canManage ? (
+          <Button
+            type="button"
+            className="w-full"
+            onClick={onApply}
+            disabled={approveFirmware.isPending}
+          >
+            {approveFirmware.isPending
+              ? t('firmware.update.applying')
+              : t('firmware.update.apply')}
+          </Button>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {t('firmware.update.viewerNotice')}
+          </p>
+        )}
+      </div>
+    );
+  } else if (status.update_available && !status.pending_approval) {
+    body = (
+      <div className="flex items-start gap-2 rounded-md border p-3">
+        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+        <p className="text-sm text-muted-foreground">
+          {t('firmware.update.queued', { version: status.latest_version })}
+        </p>
+      </div>
+    );
+  } else {
+    body = (
+      <div className="flex items-center gap-2">
+        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+        <p className="text-sm text-muted-foreground">
+          {t('firmware.update.upToDate', {
+            version: status.current_version ?? '—',
+          })}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <RefreshCw className="h-5 w-5" />
+          {t('firmware.update.title')}
+        </CardTitle>
+        <CardDescription>{t('firmware.update.description')}</CardDescription>
+      </CardHeader>
+      <CardContent>{body}</CardContent>
+    </Card>
+  );
+}
+
 function FirmwareUploadCard({
   selectedDevice,
   deviceId,
@@ -2487,6 +2606,10 @@ function ScaleSetupPanel({
                 deviceId={selectedDeviceId}
               />
               <SdDataUploadCard
+                selectedDevice={selectedDevice}
+                deviceId={selectedDeviceId}
+              />
+              <FirmwareUpdateCard
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
               />

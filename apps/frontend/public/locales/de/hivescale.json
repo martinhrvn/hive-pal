@@ -227,6 +227,20 @@
     "upload": "Firmware hochladen",
     "uploading": "Wird hochgeladen…",
     "success": "Firmware {{version}} ({{target}}) hochgeladen und registriert.",
+    "update": {
+      "title": "Firmware-Update",
+      "description": "Waagen aktualisieren sich nie von selbst – Sie geben hier jede neue Version frei, bevor diese Waage sie installiert.",
+      "unavailable": "Firmware-Status ist derzeit nicht verfügbar.",
+      "availableTitle": "Firmware {{version}} ist verfügbar",
+      "availableBody": "Diese Waage läuft mit {{current}}. Übernehmen, um sie auf {{version}} zu aktualisieren.",
+      "officialSuffix": "Dies ist eine offizielle Version.",
+      "apply": "Update übernehmen",
+      "applying": "Wird übernommen…",
+      "applied": "Firmware {{version}} freigegeben – die Waage aktualisiert sich bei der nächsten Verbindung.",
+      "queued": "Update {{version}} freigegeben. Die Waage installiert es bei der nächsten Verbindung.",
+      "upToDate": "Firmware ist aktuell ({{version}}).",
+      "viewerNotice": "Nur Gerätebesitzer und Admins können Firmware-Updates übernehmen."
+    },
     "notice": {
       "noPermission": "Nur Gerätebesitzer und Admins können Firmware hochladen. Ihre Rolle ist „{{role}}“.",
       "selectDevice": "Wählen Sie ein beanspruchtes Gerät aus, um Firmware hochzuladen."

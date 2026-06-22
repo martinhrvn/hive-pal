@@ -280,6 +280,8 @@ const HIVESCALE_KEYS = {
     deviceId: string | undefined,
     query: HiveScaleInsightsHistoryQuery | undefined,
   ) => [...HIVESCALE_KEYS.all, 'insightsHistory', deviceId, query] as const,
+  firmwareStatus: (deviceId: string | undefined) =>
+    [...HIVESCALE_KEYS.all, 'firmwareStatus', deviceId] as const,
 };
 
 export const useHiveScaleDevices = () => {
@@ -681,10 +683,7 @@ export const useStopHiveScaleCalibrationMode = (
   });
 };
 
-export type HiveScaleFirmwareTarget =
-  | 'hivescale'
-  | 'beecounter'
-  | 'hiveinside';
+export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
 
 export interface HiveScaleFirmwareUploadInput {
   file: File;
@@ -796,6 +795,80 @@ export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
     },
     onSuccess: () => {
       // last_firmware_version is surfaced in the devices list, so refresh it.
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+export interface HiveScaleFirmwareStatus {
+  device_id: string;
+  target: string;
+  current_version: string | null;
+  latest_version: string | null;
+  /** True when the latest available release is a global/official build (no owner). */
+  latest_is_official: boolean;
+  approved_version: string | null;
+  update_available: boolean;
+  /** Update available but not yet approved — the device will not auto-flash. */
+  pending_approval: boolean;
+}
+
+export interface HiveScaleFirmwareApproveResult {
+  status: string;
+  device_id: string;
+  version: string;
+  command_id: number;
+}
+
+export const useHiveScaleFirmwareStatus = (
+  deviceId: string | undefined,
+  options: { enabled?: boolean } = {},
+) => {
+  return useQuery<HiveScaleFirmwareStatus>({
+    queryKey: HIVESCALE_KEYS.firmwareStatus(deviceId),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleFirmwareStatus>(
+        `/api/hivescale/devices/${deviceId}/firmware/status`,
+      );
+      return response.data;
+    },
+    enabled: !!deviceId && (options.enabled ?? true),
+    staleTime: 60 * 1000,
+  });
+};
+
+export const useApproveHiveScaleFirmware = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<HiveScaleFirmwareApproveResult, Error, void>({
+    mutationFn: async () => {
+      try {
+        const response = await apiClient.post<HiveScaleFirmwareApproveResult>(
+          `/api/hivescale/devices/${deviceId}/firmware/approve`,
+        );
+        return response.data;
+      } catch (error) {
+        // Surface the backend message (e.g. "No firmware release available…")
+        // instead of Axios' generic status-code string.
+        if (isAxiosError<{ message?: string }>(error)) {
+          const data = error.response?.data;
+          const message =
+            (typeof data === 'object' && data !== null
+              ? data.message
+              : typeof data === 'string'
+                ? data
+                : undefined) ?? error.message;
+          throw new Error(message || 'Firmware approval failed');
+        }
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      // Approval flips pending_approval and queues an update; refresh both the
+      // status notice and the devices list (last_firmware_version).
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.firmwareStatus(deviceId),
+      });
       queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
     },
   });
