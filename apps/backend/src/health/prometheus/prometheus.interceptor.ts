@@ -83,7 +83,20 @@ export class PrometheusInterceptor implements NestInterceptor {
     // Strip query params
     const baseUrl = url.split('?')[0];
 
-    // Replace specific IDs with :id to group similar endpoints
-    return baseUrl.replace(/\/[0-9a-f]{8,36}(?=\/|$)/g, '/:id');
+    // Replace path segments that look like IDs with :id so similar endpoints
+    // (e.g. /api/actions/<uuid>) collapse into a single time series instead of
+    // fragmenting the metrics one per id.
+    return (
+      baseUrl
+        // UUIDs (8-4-4-4-12 hex with hyphens)
+        .replace(
+          /\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?=\/|$)/g,
+          '/:id',
+        )
+        // Purely numeric ids
+        .replace(/\/\d+(?=\/|$)/g, '/:id')
+        // Other long opaque tokens (cuid, long hex, etc.)
+        .replace(/\/[0-9a-zA-Z_-]{16,}(?=\/|$)/g, '/:id')
+    );
   }
 }
