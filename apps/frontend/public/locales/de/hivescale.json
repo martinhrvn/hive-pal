@@ -310,6 +310,7 @@
     "title": "Messungen",
     "subtitle": "Gewicht, Temperatur und Flugaktivität im Zeitverlauf",
     "noMeasurements": "Keine Messungen für den ausgewählten Zeitraum.",
+    "noDataForSeries": "Keine Daten im ausgewählten Zeitraum.",
     "meta": {
       "device": "Gerät:",
       "lastSeen": "Zuletzt gesehen:",

@@ -284,6 +284,7 @@
     "title": "Measurements",
     "subtitle": "Weight, temperature, and entrance activity over time",
     "noMeasurements": "No measurements for the selected range.",
+    "noDataForSeries": "No data in the selected range.",
     "meta": {
       "device": "Device:",
       "lastSeen": "Last seen:",

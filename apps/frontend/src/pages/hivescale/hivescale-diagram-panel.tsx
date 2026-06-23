@@ -54,6 +54,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import { BeeLoadingMessages } from './hivescale-loading-messages';
 import type {
   HiveScaleDevice,
@@ -1046,6 +1047,25 @@ export const HiveScaleDiagramPanel = ({
     });
   }, [chartData, dateRange]);
 
+  // Which series actually carry at least one finite reading in the visible
+  // window. Series without data are greyed out (and not toggleable) so the user
+  // can tell at a glance which sensors this device is reporting for the range.
+  const availableSeriesKeys = useMemo(() => {
+    const available = new Set<SeriesKey>();
+    const keys = series.map(s => s.key);
+    for (const row of visibleChartData) {
+      for (const key of keys) {
+        if (available.has(key)) continue;
+        const value = row[key as keyof typeof row];
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          available.add(key);
+        }
+      }
+      if (available.size === keys.length) break;
+    }
+    return available;
+  }, [series, visibleChartData]);
+
   const axisDomains = useMemo(() => {
     const domains: Partial<Record<SeriesAxis, AxisDomain | undefined>> = {};
     for (const axis of axisOrder) {
@@ -1348,24 +1368,46 @@ export const HiveScaleDiagramPanel = ({
                     {section.subgroup}
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {section.items.map(s => (
-                      <Badge
-                        key={s.key}
-                        variant={visibleSeries[s.key] ? 'default' : 'outline'}
-                        className="cursor-pointer select-none"
-                        style={
-                          visibleSeries[s.key]
-                            ? {
-                                backgroundColor: s.stroke,
-                                borderColor: s.stroke,
-                              }
-                            : { borderColor: s.stroke, color: s.stroke }
-                        }
-                        onClick={() => toggleSeries(s.key)}
-                      >
-                        {s.label}
-                      </Badge>
-                    ))}
+                    {section.items.map(s => {
+                      // Only grey out once we actually have measurements loaded —
+                      // while loading (empty data) every series would otherwise
+                      // appear unavailable.
+                      const hasData =
+                        !visibleChartData.length ||
+                        availableSeriesKeys.has(s.key);
+                      const isActive = visibleSeries[s.key];
+                      return (
+                        <Badge
+                          key={s.key}
+                          variant={isActive ? 'default' : 'outline'}
+                          aria-disabled={!hasData}
+                          title={
+                            hasData ? undefined : t('diagram.noDataForSeries')
+                          }
+                          className={cn(
+                            'select-none',
+                            hasData
+                              ? 'cursor-pointer'
+                              : 'cursor-not-allowed opacity-40',
+                          )}
+                          style={
+                            !hasData
+                              ? undefined
+                              : isActive
+                                ? {
+                                    backgroundColor: s.stroke,
+                                    borderColor: s.stroke,
+                                  }
+                                : { borderColor: s.stroke, color: s.stroke }
+                          }
+                          onClick={
+                            hasData ? () => toggleSeries(s.key) : undefined
+                          }
+                        >
+                          {s.label}
+                        </Badge>
+                      );
+                    })}
                   </div>
                 </div>
               ))}
