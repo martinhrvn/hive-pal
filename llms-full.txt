@@ -1,0 +1,3645 @@
+# Hive-Pal Documentation
+
+> Documentation for Hive-Pal, an open-source, self-hostable beekeeping management application.
+
+This file contains all documentation content in a single document following the llmstxt.org standard.
+
+## Quick Start Wizard
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Head from '@docusaurus/Head';
+
+<Head>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'Get started with Hive-Pal',
+      description:
+        'Install Hive-Pal with Docker, access the app, and create your first apiary and hive.',
+      step: [
+        { '@type': 'HowToStep', name: 'Choose an installation method', text: 'Run Hive-Pal with the single-container Docker image, or set it up manually for development.' },
+        { '@type': 'HowToStep', name: 'Access the application', text: 'Open the app in your browser (port 80 for Docker, 5173 for the dev server).' },
+        { '@type': 'HowToStep', name: 'Sign in or create an account', text: 'Log in with the admin credentials, or sign up with email and password, magic link, or a passkey.' },
+        { '@type': 'HowToStep', name: 'Run the setup wizard', text: 'Create your first apiary and add your first hive.' },
+        { '@type': 'HowToStep', name: 'Explore key features', text: 'Use the quick-actions menu, dashboard, and mobile-friendly inspection flows.' },
+      ],
+    })}
+  </script>
+</Head>
+
+# Quick Start Wizard
+
+Welcome to Hive-Pal! This interactive guide will help you get up and running in minutes. Follow these steps to set up your beekeeping management system.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+- Docker and Docker Compose installed (for Docker setup)
+- Node.js 22+ and PostgreSQL (for manual setup)
+- A modern web browser
+
+## Step 1: Choose Your Installation Method
+
+<Tabs>
+  <TabItem value="docker" label="Docker (Recommended)" default>
+
+### Docker Installation
+
+The fastest way to get started. Hive-Pal ships as a **single container** that serves both the API and the web app. Create a `docker-compose.yaml`:
+
+```yaml
+services:
+  app:
+    image: ghcr.io/martinhrvn/hive-pal:latest
+    ports:
+      - '80:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/beekeeper
+      BETTER_AUTH_SECRET: replace_me_with_a_random_string
+      BETTER_AUTH_URL: http://localhost
+      FRONTEND_URL: http://localhost
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: changeme123
+      STORAGE_TYPE: local
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: beekeeper
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  uploads:
+```
+
+Then start it:
+
+```bash
+docker compose up -d
+```
+
+:::tip
+On startup the app automatically:
+- Waits for PostgreSQL to be ready
+- Runs database migrations
+- Creates the admin user from `ADMIN_EMAIL` / `ADMIN_PASSWORD`
+- Serves the web app and API on the same port
+
+Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`. See the [Installation Guide](../installation) for all options.
+:::
+
+  </TabItem>
+  <TabItem value="manual" label="Manual Installation">
+
+### Manual Installation
+
+For advanced users who want more control over the setup.
+
+```bash
+# Clone the repository
+git clone https://github.com/martinhrvn/hive-pal.git
+cd hive-pal
+
+# Install dependencies
+pnpm install
+
+# Set up environment files
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
+
+# Configure your database in apps/backend/.env
+# DATABASE_URL="postgresql://user:password@localhost:5432/hivepal"
+
+# Run database migrations
+cd apps/backend
+pnpm prisma migrate dev
+
+# Start the application
+cd ../..
+pnpm dev
+```
+
+  </TabItem>
+</Tabs>
+
+## Step 2: Access the Application
+
+Once the containers are running:
+
+1. Open your browser and navigate to `http://localhost` (Docker) — or `http://localhost:5173` if you used the manual/development setup.
+2. You should see the Hive-Pal landing page.
+
+:::note
+- **Docker:** the whole app (web + API) is served on the port you mapped (`80` in the example above)
+- **Manual/dev:** frontend on **5173**, backend API on **3000**
+- API documentation is available at `/api-docs` on the backend
+:::
+
+## Step 3: Sign In or Create an Account
+
+  
+    [Video: Account Registration Process - Coming Soon]
+  
+
+For a fresh self-hosted install, log in with the `ADMIN_EMAIL` / `ADMIN_PASSWORD` you set in the compose file. To create additional accounts:
+
+1. Click **"Get Started"** on the landing page, then **"Sign Up"**.
+2. Enter your email and password and accept the privacy policy.
+3. Click **"Create Account"**.
+
+Hive-Pal supports three sign-in methods (see the [Login guide](../user-guide/login)):
+
+- **Email & password** — always available
+- **Magic link** — passwordless email sign-in (requires email to be configured)
+- **Passkey** — biometric or hardware-key sign-in
+
+:::tip
+Magic links and password resets require a mail provider (SMTP or Resend). See [Configuration → Email](../self-hosting/configuration#email).
+:::
+
+## Step 4: Initial Setup Wizard
+
+When you first log into Hive-Pal, you'll be automatically guided through a setup wizard that helps you create your first apiary and hive.
+
+### The Setup Process
+
+The wizard consists of four steps:
+
+#### Step 1: Welcome Screen
+- Introduction to Hive-Pal
+- Overview of what you'll set up
+- Click **"Get Started"** to begin
+
+#### Step 2: Create Your First Apiary
+- **Apiary Name**: Enter a descriptive name (e.g., "Home Garden", "Smith Farm")
+- **Location**: Add address or description
+- **GPS Coordinates** (optional): For weather integration
+- **Notes** (optional): Any additional information
+- The apiary is created immediately upon submission
+
+#### Step 3: Add Your First Hive
+- **Hive Name/Identifier**: Choose a unique name or number
+- **Hive Type**: Select from available options
+- **Status**: Set initial status (Active, Preparing, etc.)
+- **Installation Date**: When the hive was set up
+- The hive is automatically assigned to the apiary you just created
+
+#### Step 4: Setup Complete
+- Confirmation that your initial setup is finished
+- Click **"Go to Dashboard"** to start using Hive-Pal
+- You now have your first apiary with one hive ready to track!
+
+## Step 5: Explore Key Features
+
+### Quick Actions Menu (FAB)
+
+The floating action button (FAB) in the bottom right corner provides quick access to three primary actions:
+- **Add Inspection** (Blue): Record a new hive inspection
+- **Schedule Inspection** (Purple): Plan future inspections
+- **Add Actions** (Green): Record treatments, feeding, or other management actions across multiple hives
+
+### Dashboard Overview
+
+Your dashboard displays:
+- Recent inspections
+- Upcoming scheduled tasks
+- Weather forecast for your apiaries
+- Quick statistics
+
+### Mobile Usage
+
+Hive-Pal is fully responsive and works great on mobile devices:
+- Record inspections in the field
+- Quick access to hive history
+- Offline capability (data syncs when reconnected)
+
+## What's Next?
+
+Now that you're set up, explore these features:
+
+- [**Apiary Management**](../user-guide/apiaries) - Organize multiple locations
+- [**Hive Management**](../user-guide/hives) - Track individual colonies
+- [**Inspection Records**](../user-guide/inspections) - Document colony health
+- [**Queen Management**](../user-guide/queens) - Track queen lineage
+- [**Weather Integration**](../user-guide/weather) - Monitor conditions
+- [**HiveScale Integration**](../user-guide/hivescale) - Connect live beehive scales and off-grid telemetry
+
+## Need Help?
+
+- Check our [Troubleshooting Guide](../troubleshooting)
+- Visit the [GitHub repository](https://github.com/martinhrvn/hive-pal) for updates
+- Report issues or request features through [GitHub Issues](https://github.com/martinhrvn/hive-pal/issues)
+
+## Video Tutorial
+
+  
+    [Complete Video Walkthrough - Coming Soon]
+  
+
+---
+
+:::success Congratulations!
+You've successfully set up Hive-Pal and are ready to manage your apiaries digitally. Happy beekeeping! 🐝
+:::
+
+---
+
+## Account & Settings
+
+
+Manage your account and personal preferences from the **Settings** area (`/settings`).
+
+## Changing Your Password
+
+Update your password from your account settings (`/account/change-password`). On some installations you may be prompted to change a password on first login (for example, the seeded admin account).
+
+## Files
+
+The **Files** page (`/files`) lists documents and uploads associated with your account. Where files live depends on your server's [storage configuration](../self-hosting/configuration#file-storage) — local disk or S3-compatible storage.
+
+## Data Transfer
+
+Export your whole account or import a previous export from **Settings → Data Transfer**. See [Import & Export](./import-export).
+
+## Sign-In Methods
+
+Add a [passkey](./login#passkeys) or rely on password and [magic-link](./login#magic-link) sign-in. See [Logging In](./login).
+
+## FAQ
+
+**How do I export everything?**
+Use [Import & Export](./import-export) for a full account zip. Self-hosters should also keep [server backups](../self-hosting/backup-restore).
+
+**Where are my uploaded photos and audio stored?**
+In your server's configured storage backend — see [Configuration → File Storage](../self-hosting/configuration#file-storage).
+
+---
+
+## Apiary Management
+
+
+An apiary is your main context in Hive-Pal. All data displayed throughout the application is for your currently selected apiary.
+
+## Video Tutorial
+
+  
+    [Video: Apiary Management - Coming Soon]
+  
+
+## Understanding Apiaries
+
+### Context Switching
+Apiaries serve as the main organizational context in Hive-Pal. When you select an apiary, all displayed information (hives, inspections, tasks, etc.) relates to that specific location.
+
+![Apiary Dropdown in Sidebar](/img/screenshots/apiary/sidebar-dropdown.png)
+
+### Switching Between Apiaries
+- Use the apiary dropdown in the top-left sidebar
+- Click to see all your apiaries
+- Select different apiary to switch context
+- All dashboard data updates automatically
+
+## Creating an Apiary
+
+To create a new apiary, you need:
+
+### Required Information
+- **Name**: Descriptive name for the location (e.g., "Home Garden", "Johnson Farm")
+- **Location Description**: Brief description of the site
+- **GPS Coordinates**: Latitude and longitude for weather integration
+
+### Creation Steps
+1. Click the **"+"** button or use FAB menu
+2. Select **"New Apiary"**
+3. Fill in the required fields:
+   - Enter apiary name
+   - Add location description
+   - Set GPS coordinates (click on map or enter manually)
+4. Click **"Save"**
+
+![Apiary Creation Form](/img/screenshots/apiary/creation-form.png)
+
+## Hive Layout Grid
+
+### Dashboard Display
+The top section of your dashboard shows a visual grid layout of all hives in the current apiary. This provides an at-a-glance view of your hive arrangement.
+
+![Dashboard Hive Grid Layout](/img/screenshots/apiary/dashboard-grid.png)
+
+### Configuring Layout
+1. Navigate to apiary details
+2. Click **"Hives"**
+3. Drag and position hives in the grid
+4. The grid adjusts to the number of hives in row/column
+5. Layout saves automatically
+
+![Grid Configuration Interface](/img/screenshots/apiary/grid-configuration.png)
+
+### Grid Benefits
+- Visual representation of physical hive placement
+- Quick status overview of all hives
+- Easy identification of hive locations
+- Matches your actual apiary layout
+
+## Managing Apiaries
+
+### Editing Apiary Details
+- Click edit button on apiary details page
+- Update name, description, or coordinates
+- Changes apply immediately
+
+### Deleting an Apiary
+> **Warning**: Deleting an apiary removes all associated hives and data
+
+1. Navigate to apiary settings
+2. Click **"Delete Apiary"**
+3. Confirm deletion by typing apiary name
+
+## Best Practices
+
+- Use descriptive names that identify the location clearly
+- Keep GPS coordinates accurate for weather data
+- Set up the grid layout to match your physical arrangement
+- Switch contexts using the sidebar dropdown, not by navigating between pages
+
+---
+
+## Apiary Assistant
+
+
+The Assistant (`/assistant`) lets you ask questions about your operation in plain language and get answers drawn from your own Hive-Pal records — useful for comparing hives and spotting outliers.
+
+## What You Can Ask
+
+- Compare colonies — "which hives are weakest right now?"
+- Surface follow-ups — "which hives need feeding?"
+- Review recent activity across an apiary without clicking through each hive.
+
+## How It Works
+
+The Assistant reads your apiary and hive data to answer questions. As with any AI feature, treat its answers as a helpful starting point and verify against the underlying [inspections](./inspections) before making decisions.
+
+## FAQ
+
+**Does it use my data?**
+Yes — its answers are grounded in your apiaries, hives, and inspection records so they're relevant to your operation.
+
+**Should I rely on it for treatment decisions?**
+Use it to surface and summarize information, but confirm against your actual records and your own judgement before acting.
+
+---
+
+## Audio & AI Transcription
+
+
+Inspecting a hive often leaves your hands full. Hive-Pal lets you **speak your observations** and have them transcribed and turned into structured inspection data automatically — so you can keep your eyes on the bees.
+
+## When to Use It
+
+- You want a hands-free way to capture observations in the field.
+- You'd rather talk through an inspection than tap through a form.
+- You want a voice record attached to the inspection for later reference.
+
+## Recording Audio
+
+There are two ways to record:
+
+- **Audio Quick Inspection** (`/hives/:id/inspect/audio`) — a streamlined page focused on recording a voice note for a hive.
+- **Within an inspection** — the standard inspection form has an audio section where you can attach a recording.
+
+When you save, the recording is uploaded with the inspection.
+
+## How Transcription & Analysis Work
+
+Processing happens in two stages after upload:
+
+1. **Transcription** — a worker converts your recording to text. The audio card shows the status: *waiting → transcribing → completed* (or *failed*).
+2. **AI analysis** — once transcribed, you can trigger analysis. The AI reads the transcript and suggests values for inspection fields (ratings, observations, actions).
+
+You stay in control: review the transcription (edit it if needed), then **merge** the AI's suggestions into the inspection form. Nothing is saved to your inspection until you accept it.
+
+## Requirements
+
+- **File storage** must be enabled (local or S3) to store recordings — see [Configuration → File Storage](../self-hosting/configuration#file-storage).
+- The transcription/analysis worker must be running for processing to complete.
+
+## FAQ
+
+**Is my audio kept?**
+Recordings are stored in your configured file storage (your own server with local storage, or your S3 bucket). As a self-hosted app, the data stays under your control.
+
+**Can I edit the transcription?**
+Yes. The transcribed text is editable before you run analysis or merge it into the inspection.
+
+**Do I have to accept the AI's suggestions?**
+No. Suggestions are proposed as mergeable values — you choose what to apply to the inspection.
+
+**What if transcription fails?**
+The audio card shows a *failed* state; you can retry. Check that the worker is running and file storage is configured.
+
+---
+
+## Batch Inspections
+
+
+A **batch inspection** groups several hives into a single inspection run so you can work through an apiary efficiently — open the batch, inspect each hive in turn, and track progress as you go.
+
+## When to Use It
+
+- You're inspecting most or all hives in an apiary on the same day.
+- You want a single record of an apiary-wide inspection session.
+- You're working through hives sequentially in the field and want to track which are done.
+
+## Creating a Batch
+
+You can create a batch in two ways:
+
+- From the **Batch Inspections** page (`/batch-inspections`), start a new batch and select the hives to include.
+- From the [Scheduled Inspections](./scheduled-inspections) page, choose **Create as batch** when scheduling multiple hives — this produces a named batch ready to run.
+
+## Running a Batch
+
+1. Open the batch from the **Batch Inspections** list.
+2. Choose **Start** to enter the inspection wizard.
+3. Inspect each hive in turn using the standard [inspection](./inspections) form. The wizard moves you from one hive to the next.
+4. Progress is saved as you go — you can leave and resume later.
+
+## Batch Status
+
+Each batch shows its progress:
+
+- **Draft** — created but not started.
+- **In progress** — some hives inspected, others remaining.
+- **Completed** — every hive in the batch has been inspected.
+
+You can delete a batch at any time from the list.
+
+## FAQ
+
+**Can I add or remove hives after creating a batch?**
+Manage the batch from its detail page. The batch tracks which hives are inspected and which remain.
+
+**Do batch inspections create normal inspection records?**
+Yes — each hive you inspect within a batch produces a standard inspection that appears on that hive's timeline with full scoring.
+
+**What's the difference between a batch and a scheduled inspection?**
+A [scheduled inspection](./scheduled-inspections) is a plan for a future date. A batch is a grouped run you work through. You can create a batch directly from the scheduling page.
+
+---
+
+## Bulk Add
+
+
+When you do the same thing to many hives — feed the whole apiary, treat for varroa across the board, or introduce a batch of queens — **Bulk Add** lets you stage it once and apply it to every selected hive.
+
+## When to Use It
+
+- Feeding or treating many hives with the same product on the same day.
+- Recording the same management action across an apiary.
+- Introducing queens to several hives at once.
+
+## Three Types
+
+Bulk Add (`/actions/bulk`) has three tabs:
+
+- **Action** — feeding, treatment, frame changes, or notes.
+- **Inspection** — a shared inspection applied to each selected hive.
+- **Queen** — add a queen record to each selected hive.
+
+## How It Works
+
+1. Open **Bulk Add** and pick a tab for what you want to add.
+2. **Select hives** using the searchable list — choose as many as you like.
+3. **Configure** the action, inspection, or queen using the builder for that type, and pick a date.
+4. **Add to queue** — the item is staged for the selected hives.
+5. Repeat to stage more items (e.g. a feeding *and* a treatment) if needed. You can edit or remove staged items before submitting.
+6. **Submit** — everything in the queue is created across the chosen hives. Hive-Pal reports how many succeeded and flags any failures.
+
+## FAQ
+
+**Can I mix actions, inspections, and queens in one submission?**
+Yes — stage items from different tabs into the queue, then submit them together.
+
+**What happens if one hive fails?**
+Bulk Add reports per-item success and failure counts so you can see exactly which entries didn't go through and retry them.
+
+**Does a bulk inspection score each hive?**
+Yes — each hive receives a normal inspection record with scoring, just created in bulk.
+
+---
+
+## Calendar
+
+
+The calendar (`/calendar`) gives you a single timeline of inspection activity across all your hives and apiaries — what you've done and what's coming up.
+
+## What You'll See
+
+- **Completed inspections** on the days they happened.
+- **[Scheduled inspections](./scheduled-inspections)** on their planned dates.
+- An at-a-glance view to spot gaps and plan the next visit.
+
+## Using It
+
+- Browse by month to review activity and upcoming work.
+- Use it alongside [Scheduled Inspections](./scheduled-inspections) to plan around the weather forecast.
+
+## FAQ
+
+**Does the calendar show all my apiaries?**
+Yes — it aggregates inspection activity across every apiary you have access to.
+
+**Can I subscribe to it in my own calendar app?**
+Hive-Pal can generate iCal feeds for calendar integration (these use a signed token). Check your settings for the feed URL.
+
+---
+
+## Equipment Management
+
+
+Comprehensive equipment tracking and management system that spans across all your apiaries. Plan your inventory needs, track equipment location and condition, and generate shopping lists based on your operation's growth targets.
+
+## Video Tutorial
+
+  
+    [Video: Equipment Management System - Coming Soon]
+  
+
+## System Overview
+
+The equipment management system provides centralized tracking across all your apiaries with intelligent capacity planning and automated shopping list generation.
+
+### Key Features
+- **Cross-Apiary Tracking**: Manage equipment inventory across all locations
+- **Customizable Equipment Types**: Track standard items and add custom equipment
+- **Capacity Planning**: Set target multipliers for growth planning
+- **Per-Hive Requirements**: Configure how much of each item you need per hive
+- **Shopping List Generation**: Automatically calculate what you need to purchase
+- **Override Capabilities**: Manually adjust any calculated values
+
+![Equipment Dashboard](/img/screenshots/equipment/dashboard.png)
+
+## Equipment Configuration
+
+### Standard Equipment Types
+
+The system comes pre-configured with common beekeeping equipment:
+
+#### Hive Components
+- **Boxes**:
+  - Deep boxes (brood chambers)
+  - Shallow boxes (honey supers)
+  - Medium boxes
+- **Bottom Boards**: Solid and screened options
+- **Covers**: Inner covers and telescoping covers
+- **Queen Excluders**: Plastic and metal variants
+
+#### Frames and Foundation
+- **Frames**: Deep, medium, and shallow frames
+- **Foundation**: Wax, plastic, or foundationless
+- **Frame spacing**: 8-frame, 10-frame configurations
+
+#### Feeding Supplies
+- **Sugar**: Granulated sugar for syrup and emergency feeding
+- **Feeders**: Top feeders, frame feeders, entrance feeders
+- **Pollen Substitutes**: Patties and dry feed
+
+### Adding Custom Equipment
+
+Create custom equipment types for specialized items:
+
+1. Navigate to **Equipment Settings**
+2. Click **Add Custom Equipment Type**
+3. Configure:
+   - Equipment name and category
+   - Unit of measurement (pieces, kg, liters, etc.)
+   - Default per-hive requirement
+   - Minimum stock level
+
+![Custom Equipment Setup](/img/screenshots/equipment/custom-setup.png)
+
+## Capacity Planning System
+
+### Target Multiplier Configuration
+
+The target multiplier helps you plan for growth and maintain adequate reserves:
+
+#### How It Works
+- **Set a multiplier** (e.g., 1.5x)
+- **System calculates** equipment needs based on current hive count
+- **Example**: With 4 hives and 1.5x multiplier:
+  - Target capacity: 6 hives
+  - Equipment calculated for 6 hives
+  - Ensures 50% growth capability
+
+#### Setting Multipliers
+1. Go to **Equipment → Settings**
+2. Set **Global Target Multiplier** (applies to all equipment)
+3. Override per equipment type if needed:
+   - Boxes might need 2x for rotation
+   - Frames might need 1.2x for replacements
+   - Tools might need 1x (no extras needed)
+
+![Capacity Planning](/img/screenshots/equipment/capacity-planning.png)
+
+### Per-Hive Requirements
+
+Configure how much of each item you need per hive:
+
+#### Standard Requirements
+Common per-hive configurations:
+- **Deep Boxes**: 2 per hive (brood chambers)
+- **Shallow Boxes**: 3-4 per hive (honey supers)
+- **Frames**: 10 per box (for 10-frame equipment)
+- **Bottom Board**: 1 per hive
+- **Cover**: 1 per hive
+- **Queen Excluder**: 1 per hive
+- **Sugar**: 15-25 kg per hive annually
+
+#### Customizing Requirements
+1. Select equipment type
+2. Click **Edit Requirements**
+3. Adjust:
+   - Base amount per hive
+   - Seasonal variations
+   - Location-specific needs
+
+### Manual Overrides
+
+Override any calculated value with static numbers:
+
+#### When to Use Overrides
+- **Bulk purchases**: Set minimum order quantities
+- **Shared equipment**: Items used across multiple operations
+- **Special circumstances**: Unique requirements for specific apiaries
+- **Fixed inventory**: Items you want to maintain at specific levels
+
+#### Setting Overrides
+1. Navigate to equipment item
+2. Click **Override Calculated Need**
+3. Enter static value
+4. Add note explaining override reason
+
+![Manual Override Example](/img/screenshots/equipment/override.png)
+
+## Shopping List Generation
+
+### Automatic Calculation
+
+The system generates shopping lists by:
+
+1. **Counting current hives** across all apiaries
+2. **Applying target multiplier** for growth planning
+3. **Calculating needs** based on per-hive requirements
+4. **Comparing with current inventory**
+5. **Generating purchase list** of items needed
+
+### Shopping List Features
+
+#### List Contents
+- Item name and specifications
+- Quantity needed
+- Current inventory level
+- Deficit amount
+
+#### Filtering and Sorting
+- Filter by category
+- Group by equipment type
+
+![Shopping List View](/img/screenshots/equipment/shopping-list.png)
+
+### Example Scenario
+
+**Current Setup**:
+- 4 active hives
+- Target multiplier: 1.5x
+- Target capacity: 6 hives
+
+**Equipment Calculation**:
+```
+Deep Boxes:
+- Need: 6 hives × 2 boxes = 12 boxes
+- Have: 8 boxes
+- Buy: 4 boxes
+
+Frames (Deep):
+- Need: 12 boxes × 10 frames = 120 frames
+- Have: 85 frames  
+- Buy: 35 frames (or 4 boxes of 10)
+
+Sugar (Annual):
+- Need: 6 hives × 20 kg = 120 kg
+- Have: 30 kg
+- Buy: 90 kg
+```
+
+## Inventory Management
+
+### Location Tracking
+
+Track where equipment is located:
+
+#### Assignment Options
+- **In Use**: Assigned to specific hive
+- **Apiary Storage**: Stored at apiary location
+- **Central Storage**: Main equipment warehouse
+- **Out for Repair**: Temporarily unavailable
+- **On Order**: Purchased but not received
+
+### Condition Monitoring
+
+Track equipment condition and lifecycle:
+
+#### Condition States
+- **New**: Unused equipment
+- **Good**: Fully functional
+- **Fair**: Usable but showing wear
+- **Poor**: Needs repair or replacement soon
+- **Retired**: No longer usable
+
+#### Maintenance Tracking
+- Schedule regular maintenance
+- Log repairs and refurbishment
+- Plan replacement cycles
+
+![Inventory Status](/img/screenshots/equipment/inventory.png)
+
+## Seasonal Planning
+
+### Spring Requirements
+- Additional boxes for swarm control
+- Frames and foundation for expansion
+- Swarm capture equipment
+- Queen rearing supplies
+
+### Summer Needs
+- Honey supers and frames
+- Extraction equipment availability
+- Queen excluders for honey production
+- Shade boards and ventilation
+
+### Autumn Preparation
+- Feeding equipment
+- Sugar for winter stores
+- Mouse guards and entrance reducers
+- Insulation materials
+
+## Best Practices
+
+### Inventory Management
+- **Regular Updates**: Count inventory at least seasonally
+- **Accurate Tracking**: Update location when moving equipment
+- **Condition Assessment**: Check equipment during inspections
+- **Timely Ordering**: Purchase before peak season demand
+
+### Capacity Planning
+- **Conservative Multipliers**: Start with 1.3-1.5x for steady growth
+- **Seasonal Adjustments**: Increase multipliers before swarm season
+- **Review Annually**: Adjust based on actual growth
+- **Consider Losses**: Factor in potential colony losses
+
+### Equipment Standards
+- **Standardize Types**: Use consistent equipment across apiaries
+- **Quality over Quantity**: Invest in durable equipment
+- **Proper Storage**: Protect equipment from weather and pests
+- **Regular Maintenance**: Clean and repair between seasons
+
+### Record Keeping
+- **Maintenance Logs**: Document all repairs
+- **Disposal Records**: Track retired equipment
+- **Location History**: Track equipment movements
+
+### Common Issues
+
+**Shopping list seems incorrect**:
+- Verify current inventory counts
+- Check target multiplier settings
+- Review per-hive requirements
+- Look for manual overrides
+
+**Equipment not showing in available list**:
+- Check location assignment
+- Verify condition status
+- Ensure not marked as retired
+- Review filtering settings
+
+**Capacity calculations off**:
+- Confirm active hive count
+- Check for archived hives included
+- Verify multiplier settings
+- Review seasonal adjustments
+
+## Related Features
+
+- [Apiaries](./apiaries) - Manage multiple locations
+- [Hives](./hives) - Individual hive management
+- [Inspections](./inspections) - Track equipment during inspections
+- [Harvest](./harvest) - Equipment for honey processing
+
+---
+
+## FAB Quick Actions
+
+# Floating Action Button (FAB)
+
+Quick access to common beekeeping actions from any screen.
+
+## Overview
+
+The Floating Action Button (FAB) appears in the bottom-right corner of your screen, providing instant access to frequently used actions without navigating through menus.
+
+## Available Actions
+
+The FAB provides three primary quick actions:
+
+### 1. Add Inspection
+- **Icon**: Clipboard with plus
+- **Color**: Blue
+- **Function**: Navigate directly to the inspection creation form
+- **Use when**: Recording a new hive inspection
+
+### 2. Schedule Inspection  
+- **Icon**: Calendar
+- **Color**: Purple
+- **Function**: Open the inspection scheduling interface
+- **Use when**: Planning future inspections
+
+### 3. Add Actions
+- **Icon**: Plus sign
+- **Color**: Green
+- **Function**: Access bulk actions page
+- **Use when**: Recording treatments, feeding, or other management actions across multiple hives
+
+## How to Use
+
+### Desktop
+1. Look for the floating button in the bottom-right corner
+2. Click to expand the action menu
+3. Hover over actions to see labels
+4. Click your desired action
+
+### Mobile
+1. Find the FAB at the bottom-right of your screen
+2. Tap to expand available actions
+3. Actions appear with labels for easy selection
+4. Tap outside the menu to close
+
+## Interface Behavior
+
+- **Single tap/click**: Expands the menu showing all three actions
+- **Animation**: Actions slide up with a smooth animation
+- **Labels**: Action names appear next to icons on desktop
+- **Backdrop**: Mobile shows a semi-transparent backdrop when open
+- **Close**: Click/tap the X or outside the menu to close
+
+## Best Practices
+
+- **Quick recording**: Use the FAB immediately after hive visits for quick inspection entry
+- **Bulk operations**: Use "Add Actions" when applying the same treatment to multiple hives
+- **Schedule ahead**: Use scheduling for planning your inspection rounds
+- **Mobile field use**: The FAB is optimized for one-handed operation in the field
+
+---
+
+## Sending Feedback
+
+
+Share your feedback and help improve Hive-Pal.
+
+## How to Send Feedback
+
+Access the feedback feature through the main menu or settings to quickly submit suggestions, report issues, or share your experience.
+
+![Feedback Interface](/img/screenshots/feedback/submit_feedback.gif)
+
+### Quick Steps
+1. Click the **Feedback** button in the app menu
+2. Select feedback type (bug report, feature request, or general feedback)
+3. Write your message with specific details
+4. Optionally attach screenshots for clarity
+5. Submit your feedback
+
+## Feedback Types
+
+- **Bug Reports**: Describe issues with steps to reproduce
+- **Feature Requests**: Suggest new features or improvements
+- **General Feedback**: Share your experience or suggestions
+
+## Tips for Good Feedback
+
+- Be specific about what happened or what you'd like to see
+- Include relevant details like hive/apiary names if applicable
+- Attach screenshots when reporting visual issues
+- Mention the steps that led to an issue
+
+## What Happens Next
+
+Your feedback is reviewed by the development team and prioritized based on impact and feasibility. You'll receive updates through the app when your feedback is addressed in new releases.
+
+## Related Features
+
+- [FAB Actions](./fab-actions) - Quick access to common tasks
+- [Overview](./overview) - Understanding the dashboard
+
+---
+
+## Harvest Management
+
+
+Track and manage honey harvests across multiple hives with proportional yield calculation.
+
+## Starting a Harvest
+
+To begin recording a harvest:
+
+1. Navigate to the main menu
+2. Select "Harvest" from the side menu
+3. Click "Start Harvest" button
+4. Enter the harvest date
+5. Select which hives you're harvesting from using checkboxes
+6. Input the number of frames you're taking from each selected hive
+
+This creates a **draft harvest entry** that you can edit until you're ready to finalize.
+
+## Recording Yield
+
+After extracting the honey:
+
+1. Open your draft harvest entry
+2. Enter the total yield (weight of honey harvested)
+3. Review the harvest details
+4. Make any necessary adjustments to:
+   - Hives included
+   - Number of frames per hive
+   - Total yield amount
+
+## Finalizing the Harvest
+
+Once you're satisfied with the harvest data:
+
+1. Click "Finalize Harvest"
+2. The system automatically:
+   - Calculates proportional yield for each hive based on frame count
+   - Adds harvest entries to individual hive records
+   - Updates the harvest table with the completed harvest
+
+## Proportional Calculation
+
+The yield distribution works as follows:
+- Total frames from all hives are counted
+- Each hive's percentage is calculated (hive frames ÷ total frames)
+- Yield is distributed proportionally to each hive
+- Individual hive records are updated with their share
+
+**Example:** 
+- Hive A: 10 frames
+- Hive B: 5 frames  
+- Total yield: 30kg
+- Hive A receives: 20kg (66.7%)
+- Hive B receives: 10kg (33.3%)
+
+## Harvest Table
+
+Completed harvests appear in the harvest table showing:
+- Harvest date
+- Participating hives
+- Total frames harvested
+- Total yield
+- Individual hive contributions
+
+## Best Practices
+
+- **Frame counting**: Be accurate with frame counts for proper yield attribution
+- **Draft review**: Take time to review before finalizing
+- **Timely recording**: Enter yield data soon after extraction
+- **Consistent units**: Use the same weight units across all harvests
+
+---
+
+## Hive Management
+
+
+Manage your hives with comprehensive tools for tracking status, configuration, and colony health. Each hive provides detailed insights and management capabilities.
+
+## Video Tutorial
+
+  
+    [Video: Hive Management - Coming Soon]
+  
+
+## Overview Tab
+
+### Main Display
+The overview tab presents key information at a glance:
+
+- **Hive Score**: Overall health and performance rating (explained in inspection documentation)
+- **Queen Status**: Current queen information if present
+- **Feeding Details**: Active feeding programs and schedules
+- **Colony Strength**: Current population estimate
+- **Last Inspection**: Date and key findings
+
+![Hive Overview Screen](/img/screenshots/hive/overview.png)
+
+### Activity Timeline
+Track all hive events in chronological order:
+
+- **Event Types**: Inspections, treatments, feeding, queen events, harvests
+- **Filtering Options**:
+  - Filter by event type
+  - Date range selection
+  - Search within notes
+- **Quick Actions**:
+  - Add note directly to timeline
+  - Create new action item
+  - Mark events as important
+
+![Activity Timeline](/img/screenshots/hive/timeline.png)
+
+### Right Side Panel
+Quick access to important information and actions:
+
+#### Active Alerts
+- Overdue inspections
+- Treatment reminders
+- Feeding schedules
+- Queen issues
+- Disease warnings
+
+#### Weather Widget
+- Current conditions at hive location
+- 7-day forecast
+- Temperature trends
+- Precipitation alerts
+- Foraging conditions
+
+#### Quick Actions
+- **Add Inspection**: Quick entry form
+- **Schedule Inspection**: Set future date
+- **Add Queen**: Link or create queen record
+- **Edit Hive**: Modify hive details
+- **Print QR Code**: Generate hive label with link
+- **Remove Hive**: Archive or delete
+
+## Analytics Tab
+
+### Performance Graphs
+Visualize hive metrics over time:
+
+#### Hive Score Tracking
+- Score trends with configurable time periods
+- 24 hours, 7 days, 30 days, 90 days, 1 year
+- Compare with apiary average
+- Identify patterns and anomalies
+
+#### Additional Metrics
+- Population estimates
+- Honey production
+- Varroa levels
+- Treatment effectiveness
+- Queen performance
+
+![Analytics Dashboard](/img/screenshots/hive/analytics.png)
+
+## Box Configurator Tab
+
+### Visual Box Management
+Configure your hive's physical structure:
+
+#### Box Setup
+- **Add/Remove Boxes**: Build your hive stack
+- **Box Types**: 
+  - Brood box
+  - Honey super
+  - Feeder
+  - Other specialized equipment
+- **Frame Configuration**: Set frame count per box (8, 10, custom)
+- **Color Coding**: Assign colors for visual identification
+- **Drag to Reorder**: Arrange boxes to match physical setup
+
+#### Box Details
+- Track box age and condition
+- Note foundation type
+- Monitor comb status
+- Schedule maintenance
+
+![Box Configurator](/img/screenshots/hive/box-config.png)
+
+## Settings Tab
+
+### Hive Configuration
+Customize hive-specific settings:
+
+#### Basic Settings
+- **Hive Name/Number**: Unique identifier
+- **Location**: Position within apiary
+- **Type**: Langstroth, Top Bar, Warre, etc.
+- **Status**: Active, inactive, combining, etc.
+
+#### Inspection Schedule
+- **Frequency**: Set inspection intervals
+- **Season Adjustments**: Different schedules for active/dormant seasons
+- **Reminder Preferences**: Email, push, in-app notifications
+- **Auto-scheduling**: Generate recurring inspections
+
+#### Feeding Management
+- **Autumn Feeding Period**: 
+  - Start and end dates
+  - Target sugar amount (kg/lbs)
+  - Feeding method (syrup ratio, fondant, etc.)
+- **Spring Feeding**: Stimulative feeding schedule
+- **Emergency Feeding**: Quick-access presets
+
+#### Advanced Settings
+- **Disease Monitoring**: Thresholds and alerts
+- **Queen Tracking**: Marking system and replacement schedule
+- **Production Goals**: Honey targets and tracking
+- **Notes Template**: Default inspection form fields
+
+![Settings Panel](/img/screenshots/hive/settings.png)
+
+- **Consistent Naming**: Use systematic identifiers
+- **Regular Updates**: Keep status current
+- **Complete Profiles**: Fill all relevant fields
+- **Photo Documentation**: Visual progress tracking
+- **Timely Inspections**: Follow your schedule
+
+## Related Features
+
+- [Inspections](./inspections) - Record detailed observations
+- [Queen Management](./queens) - Track queen lineage
+- [Harvest Tracking](./harvest) - Monitor production
+- [Equipment Management](./equipment) - Manage resources
+
+---
+
+## HiveScale Integration
+
+
+Hive-Pal can connect to a self-hosted HiveScale backend to show live beehive scale data inside the Hive-Pal interface.
+
+HiveScale devices are ESP32-based dual hive scales. They can report weights, hive temperatures, ambient conditions, sensor health, and optional off-grid telemetry such as battery state, solar current, and SIM7080G cellular signal.
+
+---
+
+## What you can do
+
+- Claim a HiveScale device with a pairing code.
+- View the latest weight for scale 1 and scale 2.
+- View hive and ambient temperature readings.
+- Rename scale channels to match your Hive-Pal hive names.
+- View historical charts for weight and temperature.
+- Overlay inspection events on HiveScale charts.
+- Manage device sharing with other Hive-Pal users.
+- Adjust send interval and calibration settings when you have permission.
+- Monitor off-grid status for battery, solar, and cellular-enabled devices.
+- Import an SD card backup downloaded from the scale to recover offline readings.
+
+---
+
+## Requirements
+
+Your administrator or self-hosting setup must provide:
+
+| Requirement | Description |
+|---|---|
+| HiveScale backend | A running HiveScale FastAPI service |
+| HiveScale device | ESP32 scale firmware flashed with a claim code |
+| Hive-Pal backend config | `HIVESCALE_API_BASE_URL` and `HIVESCALE_SERVICE_API_KEY` set |
+| Matching HiveScale service key | HiveScale must use the same key as `HIVEPAL_SERVICE_API_KEY` |
+| Shared JWT secret | HiveScale must trust the same `JWT_SECRET` as Hive-Pal so it can validate forwarded user tokens |
+
+If HiveScale is not configured, the HiveScale page may show backend configuration errors.
+
+---
+
+## Claim a device
+
+1. Make sure the physical HiveScale device has already sent at least one measurement to the HiveScale backend.
+2. Open **HiveScale** from the main navigation.
+3. Enter the device claim code.
+4. Optionally enter a display name and names for scale 1 and scale 2.
+5. Submit the form.
+
+After claiming, the device appears in the device selector and starts showing latest measurements.
+
+---
+
+## Readings and status cards
+
+The HiveScale page shows the latest measurement from the selected device.
+
+### Core readings
+
+| Card | Source field |
+|---|---|
+| Scale 1 weight | `scale_1_weight_kg` |
+| Scale 2 weight | `scale_2_weight_kg` |
+| Hive 1 temperature | `hive_1_temp_c` |
+| Hive 2 temperature | `hive_2_temp_c` |
+| Ambient temperature | `ambient_temp_c` |
+| Ambient humidity | `ambient_humidity_percent` |
+| Firmware/config status | `firmware_version`, `config_version` |
+| Sensor status | `sd_ok`, `rtc_ok`, `sht_ok` |
+
+### Off-grid readings
+
+Off-grid cards appear when the HiveScale firmware sends the optional fields.
+
+| Card | Source fields |
+|---|---|
+| Battery voltage | `battery_voltage_v` or `battery_voltage` |
+| Battery state of charge | `battery_soc_percent` |
+| Battery alert | `battery_alert` |
+| Battery monitor status | `battery_monitor_ok` |
+| Solar/load voltage | `solar_load_voltage_v` |
+| Solar current | `solar_current_ma` |
+| Solar power | `solar_power_mw` |
+| Solar monitor status | `solar_monitor_ok` |
+| Network transport | `network_transport` |
+| Cellular status | `cellular_ok` |
+| Cellular signal quality | `cellular_csq` |
+
+---
+
+## Charts
+
+The chart panel supports preset and custom ranges. Use it to compare weight changes, temperature patterns, battery charge, solar input, and cellular signal over time.
+
+Inspection events from Hive-Pal are shown as markers so you can correlate hive interventions with weight changes.
+
+---
+
+## Scale channel names
+
+Scale 1 and scale 2 can be renamed to match your Hive-Pal hive names. Owners and admins can edit these names. Viewers can see the names but cannot change them.
+
+Recommended naming examples:
+
+- `Hive A - left scale`
+- `Hive B - right scale`
+- `Back garden Buckfast`
+- `Apiary 2 Carnica`
+
+---
+
+## Calibration mode
+
+Calibration mode temporarily switches the scale from normal battery-saving sleep to fast readings. This is useful when you need immediate feedback while taring or applying a known weight.
+
+Typical workflow:
+
+1. Start calibration mode.
+2. Remove weight from the platform and tare the target channel.
+3. Place a known weight on the platform.
+4. Apply the calibration value.
+5. Stop calibration mode so the device returns to its normal send interval and deep-sleep behavior.
+
+Calibration controls require owner or admin access.
+
+---
+
+## Import SD card data
+
+Every HiveScale device keeps a backup of its readings on its SD card, even
+when it cannot reach the backend. If your scale has been offline or off-grid
+for a while, you can recover those missing readings by downloading them from
+the device and uploading them into Hive-Pal.
+
+### 1. Download the backup from the scale
+
+Put the device into AP (setup) mode and download its SD data:
+
+1. Press the device's setup button to start AP mode (a `HiveScale-Setup-XXXX`
+   Wi-Fi network appears).
+2. Connect to that network and open `http://192.168.4.1`.
+3. Choose **Download all SD data (.tar)** to save `hivescale-sd-data.tar`.
+
+See the HiveScale firmware documentation for the full AP-mode procedure,
+including how to enter setup mode while the device is in deep sleep.
+
+### 2. Upload it into Hive-Pal
+
+1. Open **HiveScale** and select the claimed device.
+2. Find the **Import SD card data** card.
+3. Choose the file you downloaded — either the `hivescale-sd-data.tar` archive
+   or an extracted `measurements.ndjson` file.
+4. Select **Upload SD data**.
+
+Hive-Pal reads the readings out of the file and adds them to the device's
+history. After it finishes you'll see how many new readings were imported and
+how many duplicates were skipped.
+
+### Good to know
+
+- **Re-uploading is safe.** Hive-Pal recognises readings it already has, so
+  uploading the same file twice will not create duplicates — it simply reports
+  them as skipped.
+- **Duplicates are normal.** When the device was online, those readings already
+  reached the backend, so only the offline gaps are added.
+- **Owner or admin only.** Viewers can see the card but cannot import.
+- **No need to prune the file.** You can upload the entire backup each time;
+  only genuinely new readings are stored.
+
+---
+
+## Sharing and roles
+
+HiveScale roles are enforced by the HiveScale backend.
+
+| Role | View readings | Edit config and names | Share device |
+|---|---:|---:|---:|
+| Owner | Yes | Yes | Yes |
+| Admin | Yes | Yes | No |
+| Viewer | Yes | No | No |
+
+Owners can share a HiveScale device with another Hive-Pal user by email address. The recipient must already have a Hive-Pal account.
+
+---
+
+## Troubleshooting
+
+### I cannot claim the device
+
+The device must send a measurement with the claim code before Hive-Pal can claim it. Check the HiveScale backend logs and the ESP32 serial monitor.
+
+### The page shows no measurements
+
+Verify that the selected device has a recent `last_seen_at` timestamp and that the HiveScale backend is reachable from the Hive-Pal backend.
+
+### Off-grid cards are blank
+
+The firmware may not be built with `ENABLE_INA219_SOLAR`, `ENABLE_MAX17048_BATTERY`, or `ENABLE_SIM7080G`, or the connected HiveScale backend may not be returning those fields.
+
+### SD import says no measurements were found
+
+Make sure you uploaded the HiveScale backup file — the `hivescale-sd-data.tar`
+download or an extracted `measurements.ndjson` — and not another file. An empty
+or truncated download can also cause this. Try downloading the SD data from the
+device again.
+
+### Cellular status is poor
+
+Check antenna position, SIM/APN settings, modem power stability, and whether the device can attach to LTE-M/NB-IoT at the installation site.
+
+---
+
+## Import & Export
+
+
+Export your entire account to a zip file for a personal backup or to migrate to another Hive-Pal instance, then import it back when you need to.
+
+## When to Use It
+
+- Keeping your own off-server backup of your beekeeping records.
+- Moving your data to a different Hive-Pal installation.
+- Archiving a season's records.
+
+## Exporting Your Data
+
+1. Go to **Settings → Data Transfer** (`/settings/data-transfer`).
+2. Start an **export**. The job runs in the background — large accounts can take a little while.
+3. When the job shows **completed**, download the zip file.
+
+## Importing Data
+
+1. On the same page, choose **import** and select a previously exported zip file.
+2. The import runs as a background job; watch its status in the job history.
+
+## Job History
+
+The Data Transfer page lists your export and import jobs with their status — **pending, running, completed,** or **failed** — so you can download finished exports or remove old jobs.
+
+:::tip Server backups are separate
+This account-level export is for your convenience. If you self-host, you should **also** keep regular server-side database backups — see [Backup & Restore](../self-hosting/backup-restore).
+:::
+
+## FAQ
+
+**What's included in the export?**
+Your account's beekeeping data — apiaries, hives, inspections, queens, and related records — packaged as a zip.
+
+**Can I import into a different Hive-Pal instance?**
+Yes, that's a primary use case for migrating between servers.
+
+**Is HiveScale data included?**
+HiveScale measurement data lives on the HiveScale backend, which remains its source of truth. See [HiveScale](./hivescale).
+
+---
+
+## Inspections
+
+# Hive Inspections
+
+Record detailed hive inspections to track colony health, development, and management actions over time.
+
+Inspections are the heart of Hive-Pal. Beyond the standard form described here, you can also record them in several faster ways:
+
+- **[Quick Check](./quick-check)** — a lightweight, tag-based observation when you don't need full ratings.
+- **[Batch Inspections](./batch-inspections)** — inspect many hives in one guided run.
+- **[Scheduled Inspections](./scheduled-inspections)** — plan inspections ahead using the weather forecast.
+- **[Audio & AI Transcription](./audio-ai)** — speak your notes and let AI turn them into structured data.
+- **[Bulk Add](./bulk-add)** — apply the same inspection, action, or queen to many hives at once.
+
+## Inspection Modes: Subjective vs Data-Driven
+
+Each apiary chooses how its inspection form works, set in the apiary's settings (`Inspection type`):
+
+- **Subjective** — you rate colony characteristics on a **0–10 scale** based on your own judgement (the default; described under [Observations](#observations) below). Best for quick, consistent trend-tracking.
+- **Data-driven** — you record **concrete counts** (such as frames of brood, bees, honey, and pollen) instead of ratings. Best if you prefer objective, repeatable measurements.
+
+The inspection form adapts automatically to the apiary's mode, showing only the relevant fields. Scores and trends are calculated for both modes, so you can compare hives within an apiary regardless of which style you use.
+
+:::tip
+Pick one mode per apiary and stick with it — mixing styles within the same apiary makes trends harder to read. You can run different apiaries in different modes.
+:::
+
+## Creating an Inspection
+
+### Basic Information
+
+**Hive Selection**
+Select the hive you're inspecting from the dropdown menu. The list shows all active hives in your apiaries.
+
+**Inspection Date**
+Choose the date of your inspection. You can:
+- Record past inspections
+- Schedule future inspections (these appear in your calendar)
+- Auto-populate weather data for past dates
+
+## Weather Information
+
+The inspection form automatically populates weather data when available for the selected date and apiary.
+
+**Temperature**
+- Automatically filled from stored weather data
+- Can be manually adjusted if needed
+- Displayed in your preferred units (°C or °F)
+
+**Weather Conditions**
+Choose from four condition types:
+- ☀️ Sunny
+- ⛅ Partly Cloudy
+- ☁️ Cloudy
+- 🌧️ Rainy
+
+*Note: Weather auto-population only works for past dates where weather data has been recorded for the apiary.*
+
+## Observations
+
+Rate colony characteristics on a scale from 0-10, where 0 indicates absence/poor condition and 10 indicates excellent condition.
+
+### Understanding the Rating System
+
+The observation ratings are subjective evaluations based on your assessment of the hive. You can use whatever criteria you see fit for each rating - what constitutes a "10" for colony strength in your apiary may differ from another beekeeper's standards. The key purpose of these ratings is to track progression and changes over time, allowing you to identify trends in colony health and development. For this reason, it's important to maintain consistent rating criteria across all your inspections. Your personal rating scale will become more refined with experience, helping you quickly identify when a colony deviates from its normal patterns.
+
+### Rating Fields
+
+**Colony Strength** (0-10)
+Overall vigor and population size of the colony
+
+**Capped Brood** (0-10)
+Amount of sealed/pupating brood
+
+**Uncapped Brood** (0-10)
+Amount of eggs and larvae
+
+**Honey Stores** (0-10)
+Quantity of stored honey
+
+**Pollen Stores** (0-10)
+Quantity of stored pollen/bee bread
+
+**Queen Cells** (0-10)
+Number of queen cells present
+
+### Additional Observations
+
+**Queen Seen** (checkbox)
+Check if you visually confirmed the queen's presence
+
+**Conditional Fields**
+When Queen Cells rating > 0, two additional options appear:
+- **Swarm Cells**: Indicates preparation for swarming
+- **Supersedure Cells**: Indicates queen replacement
+
+## Actions
+
+Document management actions performed during the inspection.
+
+### Feeding
+Track supplemental feeding:
+- Feed type (sugar syrup, pollen patty, etc.)
+- Quantity and unit
+- Concentration (for syrups)
+- Notes
+
+### Treatment
+Record pest/disease treatments:
+- Product used
+- Amount applied
+- Unit of measurement
+- Application notes
+
+### Frames
+Document frame management:
+- Number of frames added/removed
+- Frame manipulation details
+- Notes
+
+### Note
+Add action-specific observations or tasks:
+- Custom action descriptions
+- Important observations
+- Follow-up reminders
+
+## Notes
+
+Add general inspection notes, observations, or reminders that don't fit into specific categories.
+
+## Inspection Scoring System
+
+Hive Pal automatically calculates inspection scores to help track colony health trends.
+
+### Score Components
+
+**Population Score**
+Weighted average of:
+- Colony Strength (weight: 2)
+- Capped Brood (weight: 1)
+- Uncapped Brood (weight: 1)
+
+**Stores Score**
+Weighted average of:
+- Honey Stores (weight: 2)
+- Pollen Stores (weight: 1)
+
+**Queen Score**
+Complex calculation including:
+- Queen Cells (inverted: fewer is better, weight: 2)
+- Capped Brood (weight: 2)
+- Uncapped Brood (weight: 2)
+- Swarm Cells (negative indicator, weight: 1)
+- Supersedure Cells (negative indicator, weight: 1)
+- Queen Seen (positive indicator, weight: 1)
+
+**Overall Score**
+Weighted combination:
+- Population Score (weight: 2)
+- Stores Score (weight: 1)
+- Queen Score (weight: 1)
+
+### Automatic Warnings
+
+The system generates warnings for critical conditions:
+- **No Brood**: Both capped and uncapped brood are 0
+- **Swarm Preparation**: Queen cells present with swarm cells checked
+- **Supersedure**: Queen cells present with supersedure cells checked
+
+### Confidence Level
+
+Indicates data completeness (0-100%):
+- Based on how many score categories have data
+- Higher confidence = more complete inspection data
+
+## Saving Inspections
+
+**Save Options**
+- **Save**: Saves inspection as draft (can be edited later)
+- **Save and Complete**: Marks inspection as completed
+- **Scheduled Inspections**: Automatically marked as completed when saved
+
+## Best Practices
+
+1. **Consistency**: Use the same rating criteria across all inspections
+2. **Timeliness**: Record inspections immediately while details are fresh
+3. **Completeness**: Fill in as many observations as possible for better scoring accuracy
+4. **Weather Tracking**: Ensure your apiary has weather integration for automatic data
+5. **Action Documentation**: Record all management actions for complete hive history
+6. **Regular Schedule**: Maintain consistent inspection intervals for trend analysis
+
+---
+
+## Logging In
+
+import Head from '@docusaurus/Head';
+
+<Head>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Which Hive-Pal sign-in method is most secure?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Passkeys are the strongest option — phishing-resistant with nothing to leak. Magic links avoid stored passwords. Password login works everywhere.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'My magic link or reset email never arrives — why?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Your server needs a working mail provider (SMTP or Resend). Configure it and verify FROM_EMAIL is an address your provider is allowed to send from.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'My passkey will not register. What is wrong?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'WebAuthn requires a secure context: HTTPS in production (or localhost in development), and the server PASSKEY_RP_ID must match your domain.',
+          },
+        },
+      ],
+    })}
+  </script>
+</Head>
+
+# Logging In
+
+Hive-Pal uses [Better Auth](https://www.better-auth.com/) and supports three ways to sign in. Pick whichever suits you — they all reach the same account.
+
+## Email & Password
+
+The classic method, always available.
+
+1. Open the login page and enter your **email** and **password**.
+2. Sign in.
+
+Forgot your password? Use **Forgot password** to receive a reset link by email (requires your server to have email configured).
+
+## Magic Link
+
+Passwordless sign-in by email — no password to remember.
+
+1. Choose **Magic link** on the login page.
+2. Enter your email; Hive-Pal sends a one-time sign-in link.
+3. Open the link to be signed in. Links are short-lived for security.
+
+Magic links require a configured mail provider (SMTP or Resend). See [Configuration → Email](../self-hosting/configuration#email).
+
+## Passkeys
+
+Sign in with your device's biometrics or a hardware security key (WebAuthn) — fast and phishing-resistant.
+
+1. Choose **Passkey** on the login page.
+2. Authenticate with your fingerprint, face, device PIN, or security key.
+
+Passkeys require a **secure context**: HTTPS in production (or `localhost` in development), and the server's `PASSKEY_RP_ID` set to your domain. See [Configuration → Authentication](../self-hosting/configuration#authentication).
+
+## Creating an Account
+
+1. From the login page, choose **Sign Up**.
+2. Enter your email and password.
+3. Accept the privacy policy (required); newsletter opt-in is optional.
+4. Create your account.
+
+On a fresh self-hosted install, the first admin account is created automatically from the `ADMIN_EMAIL` / `ADMIN_PASSWORD` you configured — see the [Installation Guide](../installation).
+
+## FAQ
+
+**Which method is most secure?**
+Passkeys are the strongest option (phishing-resistant and nothing to leak). Magic links avoid stored passwords. Password login works everywhere.
+
+**Magic link or reset email never arrives — why?**
+Your server needs a working mail provider. See [Troubleshooting](../troubleshooting#magic-links-or-password-resets-not-arriving).
+
+**My passkey won't register.**
+You must be on HTTPS (or `localhost`) and the server's `PASSKEY_RP_ID` must match your domain. See [Troubleshooting](../troubleshooting#passkeys-not-working).
+
+---
+
+## User Guide Overview
+
+
+This guide will help you get the most out of Hive-Pal for your beekeeping management. Below is an overview of the main features and functionality.
+
+## Getting Started
+
+After [installing Hive-Pal](../installation.md), you'll need to:
+
+1. **Create an account**: Register with your email and password
+2. **Set up your first apiary**: Create at least one apiary to get started
+3. **Add hives**: Add your existing hives to the system
+4. **Record inspections**: Begin tracking your hive inspections
+
+## Main Features
+
+### Getting Around
+
+- **[Apiary Management](./apiaries.md)** — create and manage multiple apiary locations with GPS and notes.
+- **[Hive Management](./hives.md)** — track individual hives, box setup, status, and history.
+- **[Quick Actions (FAB)](./fab-actions.md)** — the floating button for fast inspection, scheduling, and actions.
+
+### Inspections
+
+- **[Inspections](./inspections.md)** — detailed records with subjective ratings or data-driven counts.
+- **[Quick Check](./quick-check.md)** — fast, tag-based field observations.
+- **[Batch Inspections](./batch-inspections.md)** — inspect many hives in one guided run.
+- **[Scheduled Inspections](./scheduled-inspections.md)** — plan ahead using the weather forecast.
+- **[Audio & AI Transcription](./audio-ai.md)** — speak your notes and let AI structure them.
+- **[Bulk Add](./bulk-add.md)** — apply an inspection, action, or queen to many hives at once.
+
+### Colony Management
+
+- **[Queen Management](./queens.md)** — details, marking, movement history, and transfers.
+- **[Equipment](./equipment.md)** — plan and track equipment against target hive counts.
+- **[Harvests](./harvest.md)** — log and track honey harvests.
+- **[Weather](./weather.md)** — forecasts and conditions tied to your apiaries.
+
+### Data & Devices
+
+- **[QR Codes](./qr-codes.md)** — print labels that scan straight to a hive or inspection.
+- **[Import & Export](./import-export.md)** — back up or migrate your account data.
+- **[Calendar](./calendar.md)** — past and upcoming inspections across all apiaries.
+- **[Reports & Analytics](./reports.md)** — trends for health, feeding, scores, and honey.
+- **[Apiary Assistant](./assistant.md)** — ask questions about your hives in plain language.
+- **[HiveScale Integration](./hivescale.md)** — live weight, temperature, and off-grid telemetry from HiveScale devices.
+
+### Tools & Account
+
+- **[Beekeeping Tools](./tools.md)** — free syrup calculator, brood timeline, and swarm management.
+- **[Logging In](./login.md)** — password, magic link, and passkey sign-in.
+- **[Account & Settings](./account-settings.md)** — password, files, and preferences.
+
+## Mobile Usage
+
+Hive-Pal is designed with mobile usage in mind, making it ideal for:
+
+- Recording inspections while at the apiary
+- Quickly checking hive histories in the field
+- Adding notes and observations on the go
+
+## Data Privacy
+
+As a self-hosted application, all your beekeeping data remains under your control. Your sensitive information never leaves your server unless you choose to export it.
+
+## Getting Help
+
+If you encounter issues or have questions about using Hive-Pal:
+
+- Check the [troubleshooting section](../troubleshooting.md)
+- Visit the [GitHub repository](https://github.com/martinhrvn/hive-pal) for the latest updates
+- Report bugs or request features through GitHub issues
+
+---
+
+## QR Codes
+
+
+Print a QR code for each hive and stick it on the lid. Scanning it on your phone jumps straight to that hive — perfect for starting an inspection without searching for the hive in a list.
+
+## What a QR Code Links To
+
+When you generate codes you choose where they point:
+
+- **Hive detail page** — opens the hive's overview.
+- **Mobile inspection wizard** — jumps directly into a new inspection for that hive.
+- **Audio quick inspection** — opens the [audio recording](./audio-ai) flow for that hive.
+
+## Printing QR Codes in Bulk
+
+Use the print page (`/hives/qr-codes/print`) to lay out codes for many hives at once:
+
+1. **Select the hives** to include.
+2. Choose a **size** (small, medium, large) and a **layout** (e.g. 2×3, 2×4, 3×3 per page).
+3. Optionally include the **Hive-Pal logo** on each label.
+4. Pick the **target** the codes link to (detail page, inspection wizard, or audio quick).
+5. Print the page and attach the labels to your hives.
+
+## Single-Hive QR Code
+
+You can also grab a QR code for one hive from its detail page — open the QR code dialog from the hive's side menu.
+
+## FAQ
+
+**Do I need an internet connection to scan?**
+Scanning opens a URL to your Hive-Pal instance, so the device needs to reach your server (over your network or the internet, depending on your setup).
+
+**Can I make the codes open straight into an inspection?**
+Yes — choose the mobile inspection wizard (or audio quick) as the target when generating the codes.
+
+**What should I print them on?**
+Weatherproof labels hold up best on hive lids exposed to sun and rain.
+
+---
+
+## Queen Management
+
+
+Track individual queens across your operation — their details, where they've lived, and when they were replaced.
+
+## Adding a Queen
+
+You can add a queen from a hive's detail page (the side menu's **Add Queen** option) or from the **Queens** section.
+
+Record details such as:
+
+- **Name / identifier** — an optional label for the queen.
+- **Marking color** — the international year color (White, Yellow, Red, Green, Blue).
+- **Year** — the queen's birth/marking year.
+- **Source** — breeder, swarm, supersedure, etc.
+- **Race / strain** — genetic background.
+- **Installation date** — when she was introduced to the hive.
+- **Notes** — anything else worth recording.
+
+When you add a queen to a hive that already has an active queen, the new queen becomes active and the previous one is marked as replaced.
+
+## Queen History & Movements
+
+Each queen has a detail page (`/queens/:queenId`) showing her full timeline:
+
+- **Movement history** — every hive the queen has lived in, with dates.
+- **Status** — whether she is currently active or has been replaced.
+- **Details** — marking, source, race, and notes.
+
+On a hive's detail page, the **Queen History** tab lists the active queen plus any past queens for that hive, so you can see the colony's full requeening history.
+
+## Transferring a Queen
+
+To move a queen from one hive to another, use the **transfer** option on the queen's detail page. The move is recorded in her movement history, so the timeline stays accurate for both hives.
+
+## Best Practices
+
+- **Color marking** — follow the international color code so the queen's age is readable at a glance.
+- **Record the source** — knowing whether a queen came from a breeder, a swarm, or supersedure helps with future selection.
+- **Log replacements promptly** — adding the new queen marks the old one replaced and keeps the hive's history clean.
+
+## FAQ
+
+**What happens to the old queen when I add a new one?**
+She's automatically marked as replaced; the new queen becomes the hive's active queen.
+
+**Can I see everywhere a queen has been?**
+Yes — the queen's detail page shows her complete movement history across hives.
+
+**How do I move a queen without losing her history?**
+Use the transfer action rather than deleting and re-adding — it preserves the timeline.
+
+---
+
+## Quick Check
+
+
+A **Quick Check** records a lightweight observation about a hive without the detail of a full [inspection](./inspections). Use it for fast walk-bys — "calm and active", "needs a super", "spotted varroa" — when you don't need ratings or scoring.
+
+## When to Use It
+
+- You're walking the apiary and want to jot a quick status.
+- You notice something worth remembering (a reminder) but aren't doing a full inspection.
+- You want to attach a photo or two to the hive's timeline.
+
+## Recording a Quick Check
+
+1. Open a hive's detail page and choose **Quick Check** from the side menu (or the quick-action button).
+2. Tap one or more **Observation** tags to describe what you see:
+   - *Calm, Defensive, Aggressive, Nervous*
+   - *Varroa Present, Small Hive Beetle, Wax Moths, Ants Present*
+   - *Healthy, Active, Sluggish, Thriving*
+3. Optionally tap **Reminder** tags for follow-up items:
+   - *Honey Bound, Overcrowded, Needs Super, Queen Issues, Requires Treatment, Low Stores, Prepare for Winter*
+4. Add an optional **Note** (up to 2,000 characters).
+5. Attach up to **5 photos** if file storage is enabled.
+6. Tap **Save Quick Check**.
+
+You need at least one tag or a note to save. The check is timestamped and appears on the hive's timeline alongside inspections.
+
+## Quick Check vs Inspection
+
+| | Quick Check | Inspection |
+|---|---|---|
+| Effort | Seconds | A few minutes |
+| Ratings / scoring | No | Yes |
+| Actions (feeding, treatment) | No | Yes |
+| Photos | Yes (up to 5) | Yes |
+| Best for | Field notes, reminders | Full colony assessment |
+
+## FAQ
+
+**Does a quick check affect hive scores?**
+No. Quick checks are observational notes only — they don't feed the inspection scoring system. Use a full [inspection](./inspections) when you want scores and trends.
+
+**Can I add photos?**
+Yes, up to five per quick check, when your installation has file storage enabled.
+
+**Where do quick checks show up?**
+On the hive's timeline, interleaved with inspections and other events.
+
+---
+
+## Reports & Analytics
+
+
+The reports dashboard (`/reports`) turns your inspection and harvest records into trends and charts so you can see how your colonies are doing over time.
+
+## What's Included
+
+- **Health trends** — colony health and inspection scores across the season.
+- **Feeding** — supplemental feeding over time.
+- **Hive scores** — population, stores, and queen scores tracked per hive.
+- **Honey production** — harvest totals (see [Harvests](./harvest)).
+
+## Filtering
+
+Choose the period you want to analyze — year-to-date or a custom date range — to focus on a season or compare across time.
+
+## Exporting
+
+Export reports to **CSV** (for spreadsheets) or **PDF** (for sharing or records).
+
+## FAQ
+
+**Where does the data come from?**
+From your [inspections](./inspections), feeding [actions](./inspections#actions), and [harvests](./harvest). The more consistently you record, the more useful the trends.
+
+**Can I export raw data?**
+Use CSV export here for charts, or the full [account export](./import-export) for a complete data dump.
+
+---
+
+## Scheduled Inspections
+
+
+Plan inspections in advance so they show up on your [calendar](./calendar) and you can pick the best weather window. Schedule a single hive or many at once.
+
+## When to Use It
+
+- You want to plan the week's apiary work around the weather.
+- You're coordinating inspections across multiple hives or apiaries.
+- You want upcoming inspections to appear on your dashboard and calendar.
+
+## Scheduling Inspections
+
+1. Go to **Schedule Inspection** (`/inspections/schedule`), reachable from the quick-action menu.
+2. Select the hives you want to inspect. You can filter and select several across an apiary.
+3. Review the **weather forecast** shown for the apiary — temperature, humidity, and wind for the coming days — to choose a good date.
+4. Pick a **date** (and optionally a specific time, or leave it as an all-day plan).
+5. Add an optional note.
+6. Choose how to create them:
+   - **Individual** scheduled inspections, one per hive, or
+   - A single **[batch](./batch-inspections)** you can run through in one session (give it a name).
+7. Submit.
+
+## What Happens Next
+
+- Scheduled inspections appear on your [calendar](./calendar) and dashboard as upcoming tasks.
+- When you open and save a scheduled inspection, it is automatically marked **completed** (unlike a manual inspection, which you save as draft or explicitly complete).
+
+## FAQ
+
+**Where does the weather forecast come from?**
+From the weather integration tied to the apiary's GPS location. See [Weather](./weather).
+
+**Can I schedule the same date for many hives?**
+Yes — select multiple hives, pick the date, and either create individual inspections or one batch.
+
+**Do I have to inspect on the scheduled day?**
+No. A scheduled inspection is a plan; you can complete it whenever you actually do the work, or reschedule it.
+
+---
+
+## Beekeeping Tools
+
+
+Hive-Pal includes a set of free, open-source beekeeping tools (`/tools`) that anyone can use — **no account or login required**. They're handy references whether or not you track hives in Hive-Pal.
+
+## Sugar Syrup Calculator
+
+Work out exactly how much sugar and water to mix for a target volume of syrup at common ratios:
+
+- **1:1** (spring stimulative feeding)
+- **3:2**
+- **2:1** (autumn / winter stores)
+
+Results are available in metric or imperial units.
+
+Path: `/tools/syrup-calculator`
+
+## Brood Development Timeline
+
+Visualize the development stages of queen, worker, and drone brood with day counts — useful for timing inspections, predicting emergence, and planning swarm-control interventions.
+
+Path: `/tools/brood-timeline`
+
+## Swarm Management
+
+A step-by-step reference for swarm control, including the **Demaree method** with follow-up timing.
+
+- Overview: `/tools/swarm-management`
+- Demaree walkthrough: `/tools/swarm-management/demaree`
+
+## FAQ
+
+**Do I need an account to use the tools?**
+No. The tools are public and work without logging in.
+
+**Are the tools accurate for my climate?**
+They're general-purpose references. Adapt timings and feeding to your local conditions and your colonies' needs.
+
+---
+
+## Weather Integration
+
+
+Monitor weather conditions and their impact on your apiaries.
+
+## Video Tutorial
+
+  
+    [Video: Weather Features - Coming Soon]
+  
+
+## Current Conditions
+
+### Live Weather
+- Temperature and humidity
+- Wind speed/direction
+- Precipitation
+- UV index
+
+### Apiary-Specific
+- GPS-based accuracy
+- Microclimate notes
+- Multiple locations
+
+## Forecasting
+
+### Short-term
+- 7-day forecast
+- Hourly breakdown
+- Inspection planning
+
+### Seasonal Outlook
+- Long-range trends
+- Bloom predictions
+- Nectar flow timing
+
+## Alerts
+
+### Weather Warnings
+- Severe weather alerts
+- Temperature extremes
+- High winds
+- Heavy rain
+
+### Custom Thresholds
+- Set your own limits
+- Activity recommendations
+- Treatment windows
+
+## Historical Data
+
+### Weather History
+- Past conditions
+- Correlation with inspections
+- Productivity analysis
+
+### Trends
+- Year-over-year comparison
+- Climate patterns
+- Seasonal shifts
+
+## Integration Features
+
+### Inspection Planning
+- Optimal inspection days
+- Weather windows
+- Automatic suggestions
+
+### Activity Correlation
+- Link weather to outcomes
+- Foraging predictions
+- Swarm likelihood
+
+## Best Practices
+
+- Check before inspections
+- Monitor extreme events
+- Track seasonal patterns
+- Document microclimate
+- Plan around weather
+
+---
+
+## Backup & Restore
+
+
+Protect your beekeeping data with reliable backup and restore procedures.
+
+## Automated Backups
+
+### Database Backups
+```bash
+#!/bin/bash
+# backup-db.sh
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/backups/database"
+mkdir -p $BACKUP_DIR
+
+# PostgreSQL backup
+pg_dump -U postgres beekeeper | gzip > $BACKUP_DIR/beekeeper_$DATE.sql.gz
+
+# Cleanup old backups (keep 30 days)
+find $BACKUP_DIR -name "*.sql.gz" -mtime +30 -delete
+```
+
+### File Backups
+```bash
+#!/bin/bash  
+# backup-files.sh
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/backups/files"
+UPLOAD_DIR="/data/uploads"
+
+mkdir -p $BACKUP_DIR
+tar -czf $BACKUP_DIR/uploads_$DATE.tar.gz -C $UPLOAD_DIR .
+```
+
+### Cron Scheduling
+```bash
+# Add to crontab
+crontab -e
+
+# Database backup daily at 2 AM
+0 2 * * * /scripts/backup-db.sh
+
+# File backup daily at 3 AM  
+0 3 * * * /scripts/backup-files.sh
+
+# Weekly full backup
+0 1 * * 0 /scripts/backup-full.sh
+```
+
+## Manual Backups
+
+### Database Export
+```bash
+# Full database
+pg_dump -U postgres -h localhost beekeeper > backup.sql
+
+# Schema only
+pg_dump -U postgres -h localhost --schema-only beekeeper > schema.sql
+
+# Data only
+pg_dump -U postgres -h localhost --data-only beekeeper > data.sql
+```
+
+### Specific Tables
+```bash
+# Backup specific tables
+pg_dump -U postgres -h localhost -t users -t apiaries beekeeper > partial.sql
+```
+
+### Files Export
+```bash
+# Copy upload directory
+cp -r /data/uploads /backups/uploads_backup
+
+# Create compressed archive
+tar -czf uploads_backup.tar.gz uploads/
+```
+
+## Docker Backups
+
+### Container Data
+```bash
+# Database container backup
+docker-compose exec postgres pg_dump -U postgres beekeeper > backup.sql
+
+# Volume backup
+docker run --rm -v hive-pal_postgres_data:/data -v $(pwd):/backup alpine tar czf /backup/postgres_data.tar.gz /data
+```
+
+### Full Stack Backup
+```bash
+# Stop containers
+docker-compose down
+
+# Backup volumes
+docker run --rm -v hive-pal_postgres_data:/postgres -v hive-pal_uploads:/uploads -v $(pwd):/backup alpine tar czf /backup/full_backup.tar.gz /postgres /uploads
+
+# Restart
+docker-compose up -d
+```
+
+## Restore Procedures
+
+### Database Restore
+```bash
+# Drop and recreate database
+dropdb -U postgres beekeeper
+createdb -U postgres beekeeper
+
+# Restore from backup
+psql -U postgres beekeeper < backup.sql
+
+# Or from compressed backup
+gunzip -c backup.sql.gz | psql -U postgres beekeeper
+```
+
+### Partial Restore
+```bash
+# Restore specific tables
+psql -U postgres beekeeper < partial_backup.sql
+
+# Restore with conflict handling
+psql -U postgres beekeeper -c "TRUNCATE TABLE users CASCADE;"
+psql -U postgres beekeeper < users_backup.sql
+```
+
+### File Restore
+```bash
+# Restore uploads directory
+rm -rf /data/uploads
+tar -xzf uploads_backup.tar.gz -C /var/lib/hive-pal/
+
+# Set permissions
+chown -R hive-pal:hive-pal /data/uploads
+chmod -R 755 /data/uploads
+```
+
+### Docker Restore
+```bash
+# Stop containers
+docker-compose down
+
+# Restore volumes
+docker run --rm -v hive-pal_postgres_data:/data -v $(pwd):/backup alpine tar xzf /backup/postgres_data.tar.gz -C /
+
+# Start containers (migrations run automatically on startup)
+docker compose up -d
+```
+
+## Cloud Backups
+
+### AWS S3
+```bash
+# Install AWS CLI
+aws configure
+
+# Upload backup
+aws s3 cp backup.sql.gz s3://your-backup-bucket/hive-pal/$(date +%Y%m%d)/
+
+# Download backup
+aws s3 cp s3://your-backup-bucket/hive-pal/20241201/backup.sql.gz .
+```
+
+### Google Cloud Storage
+```bash
+# Install gcloud
+gcloud auth login
+
+# Upload
+gsutil cp backup.sql.gz gs://your-backup-bucket/hive-pal/
+
+# Download  
+gsutil cp gs://your-backup-bucket/hive-pal/backup.sql.gz .
+```
+
+## Monitoring Backups
+
+### Backup Verification
+```bash
+#!/bin/bash
+# verify-backup.sh
+
+# Check if backup file exists and is recent
+BACKUP_FILE="/backups/database/$(date +%Y%m%d)_*.sql.gz"
+if [ ! -f $BACKUP_FILE ]; then
+    echo "ERROR: No backup found for today"
+    exit 1
+fi
+
+# Check backup file size
+SIZE=$(stat -f%z $BACKUP_FILE 2>/dev/null || stat -c%s $BACKUP_FILE)
+if [ $SIZE -lt 1000000 ]; then  # Less than 1MB
+    echo "WARNING: Backup file seems too small"
+fi
+
+echo "Backup verification complete"
+```
+
+### Automated Testing
+```bash
+# Test restore process
+createdb test_restore
+gunzip -c backup.sql.gz | psql test_restore
+dropdb test_restore
+```
+
+## Disaster Recovery
+
+### Recovery Planning
+1. **Identify critical data**
+2. **Set recovery time objectives (RTO)**
+3. **Set recovery point objectives (RPO)**
+4. **Document procedures**
+5. **Test regularly**
+
+### Emergency Procedures
+```bash
+# Quick restore checklist
+# 1. Stop application
+sudo systemctl stop hive-pal
+
+# 2. Restore database
+dropdb beekeeper && createdb beekeeper
+psql beekeeper < latest_backup.sql
+
+# 3. Restore files
+tar -xzf latest_files_backup.tar.gz -C /var/lib/hive-pal/
+
+# 4. Start application
+sudo systemctl start hive-pal
+```
+
+## Best Practices
+
+### Backup Strategy
+- **3-2-1 Rule**: 3 copies, 2 different media, 1 offsite
+- **Regular schedule**: Daily database, weekly files
+- **Test restores**: Monthly verification
+- **Monitor success**: Automated alerts
+
+### Security
+- Encrypt backup files
+- Secure storage locations
+- Access control
+- Audit backup access
+
+### Documentation
+- Keep recovery procedures updated
+- Document backup locations
+- Maintain restore checklists
+- Train team members
+
+### Automation
+- Use configuration management
+- Monitor backup jobs
+- Alert on failures
+- Verify backup integrity
+
+---
+
+## Configuration
+
+
+Hive-Pal is configured entirely through environment variables on the app container. This page is the complete reference.
+
+## Required
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string, e.g. `postgres://postgres:postgres@postgres:5432/beekeeper` |
+| `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies. Use 32+ random chars: `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | Public base URL where the app and `/api/auth/*` are served, e.g. `https://hive.example.com` |
+| `FRONTEND_URL` | Public URL of the app. Used in email links and as a trusted auth origin |
+| `ADMIN_EMAIL` | Initial admin account email (seeded on startup) |
+| `ADMIN_PASSWORD` | Initial admin password (plaintext; hashed on first run) |
+
+:::note Single-container deployments
+Because the app serves the frontend and API from the same origin, you do **not** need to set `VITE_API_URL` or `API_URL` for the standard single-container deployment. Those are only relevant for split frontend/backend or local development setups.
+:::
+
+## Authentication
+
+Hive-Pal authenticates with [Better Auth](https://www.better-auth.com/). Beyond the required `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL`:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PASSKEY_RP_ID` | WebAuthn relying-party ID for passkeys. Set to your domain in production | `localhost` |
+| `COOKIE_DOMAIN` | Set when frontend and backend share a parent domain across subdomains (e.g. `.example.com`) | — |
+| `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins | — |
+| `JWT_SECRET` | Signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs (see note below). Generate with `openssl rand -base64 32` | — |
+
+:::info JWT_SECRET is not for login
+`JWT_SECRET` is **not** used for user authentication (that's Better Auth). It only signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs. Set it only if you use those features.
+:::
+
+## Email
+
+Email powers magic-link sign-in and password-reset messages. Hive-Pal supports **Resend** or **SMTP** and auto-selects based on what's configured. Without email, password and passkey login still work, but magic links and password resets do not.
+
+| Variable | Description |
+|----------|-------------|
+| `MAIL_PROVIDER` | Force a provider: `resend`, `smtp`, or `none`. Auto-selects if unset |
+| `FROM_EMAIL` | Sender address for outgoing mail |
+| `RESEND_API_KEY` | API key for the Resend provider |
+| `SMTP_HOST` | SMTP server hostname |
+| `SMTP_PORT` | SMTP server port (e.g. `587` or `465`) |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password (for Gmail, use an App Password) |
+| `SMTP_SECURE` | `true` for port 465 (SSL), `false` for 587 (TLS) |
+| `SMTP_REJECT_UNAUTHORIZED` | Reject invalid TLS certs. Default `true`; set `false` for self-signed certs |
+
+## File Storage
+
+Hive-Pal stores uploaded audio recordings and photos in either the local filesystem or S3-compatible object storage. Choose with `STORAGE_TYPE`.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `STORAGE_TYPE` | `local` or `s3` | `s3` |
+| `STORAGE_LOCAL_PATH` | Directory for local storage. In Docker this is backed by the `uploads` volume | `/data/uploads` |
+| `AUDIO_MAX_FILE_SIZE` | Max upload size in bytes | `52428800` (50 MB) |
+
+### Local storage
+
+The simplest option — no external services. Mount a volume at `/data/uploads`:
+
+```bash
+STORAGE_TYPE=local
+STORAGE_LOCAL_PATH=/data/uploads
+```
+
+Download URLs are signed, time-limited paths (HMAC-SHA256 with `JWT_SECRET`), so they behave like S3 pre-signed URLs.
+
+### S3-compatible storage
+
+Use AWS S3, MinIO, or any S3-compatible service:
+
+```bash
+STORAGE_TYPE=s3
+S3_ENDPOINT=https://s3.us-east-1.amazonaws.com  # or your MinIO endpoint
+S3_REGION=us-east-1
+S3_BUCKET=hivepal-uploads
+S3_ACCESS_KEY_ID=your_key
+S3_SECRET_ACCESS_KEY=your_secret
+```
+
+## HiveScale Integration
+
+Hive-Pal can proxy live data from a separate HiveScale backend.
+
+| Variable | Description |
+|----------|-------------|
+| `HIVESCALE_API_BASE_URL` | Base URL of the HiveScale backend |
+| `HIVESCALE_SERVICE_API_KEY` | Shared service key used by Hive-Pal to call HiveScale |
+| `JWT_SECRET` | Signs the per-user tokens Hive-Pal forwards to HiveScale |
+
+The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` on the HiveScale backend, and `JWT_SECRET` must match HiveScale's `HIVEPAL_JWT_SECRET` so it can verify the forwarded user tokens. HiveScale remains the source of truth for measurements, device roles, off-grid telemetry, and calibration; Hive-Pal only proxies authenticated user requests. See the [HiveScale guide](../user-guide/hivescale).
+
+## Error Tracking (Optional)
+
+Configure [Sentry](https://sentry.io/) to monitor errors in production.
+
+| Variable | Description |
+|----------|-------------|
+| `SENTRY_DSN` | Backend Sentry DSN |
+| `SENTRY_ENVIRONMENT` | Backend environment label (e.g. `production`) |
+| `VITE_SENTRY_DSN` | Frontend Sentry DSN |
+| `VITE_SENTRY_ENVIRONMENT` | Frontend environment label |
+
+## Other
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NODE_ENV` | Runtime mode | `production` |
+
+## Best Practices
+
+- Never commit secrets to version control — use an `.env` file or your orchestrator's secret store.
+- Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32` and keep it stable; changing it invalidates existing sessions.
+- Set `BETTER_AUTH_URL`, `FRONTEND_URL`, and `PASSKEY_RP_ID` to your real public domain before going live.
+- Configure email so users can reset passwords and use magic links.
+
+---
+
+## Docker Setup
+
+
+Hive-Pal runs as a **single container** that serves both the API and the web app. A production deployment is just two services: the app and PostgreSQL.
+
+## Quick Start
+
+Create a `docker-compose.yaml`:
+
+```yaml
+services:
+  app:
+    image: ghcr.io/martinhrvn/hive-pal:latest
+    ports:
+      - '80:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/beekeeper
+      BETTER_AUTH_SECRET: replace_me_with_a_random_string
+      BETTER_AUTH_URL: https://hive.example.com
+      FRONTEND_URL: https://hive.example.com
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: changeme123
+      STORAGE_TYPE: local
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: beekeeper
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  uploads:
+```
+
+Then start it:
+
+```bash
+docker compose up -d
+```
+
+The app is available on port `80`. For the full environment-variable reference see [Configuration](./configuration).
+
+## Which Compose File Should I Use?
+
+The repository ships several compose files for different scenarios. **For a normal self-hosted deployment, use `docker-compose.prod.yaml`** (or the Traefik variant if you want automatic HTTPS). The compose block in [Quick Start](#quick-start) above is a trimmed version of it.
+
+### Deployment files (repository root)
+
+| File | Use it for | App image | Notable host ports |
+|------|------------|-----------|--------------------|
+| `docker-compose.prod.yaml` | **Production** — the standard self-hosted deployment | Prebuilt `ghcr.io/martinhrvn/hive-pal:latest` | App `80` → `3000` |
+| `docker-compose.traefik.yaml` | Production behind **Traefik** with automatic Let's Encrypt TLS | Prebuilt image | Traefik `80` / `443` → app `3000` |
+| `docker-compose.yaml` | **Building the image from source** and running it | Built locally from `Dockerfile` | App `3000`, DB `6543` → `5432` |
+| `docker-compose.preview.yml` | Preview / staging environment, built from source | Built locally from `Dockerfile` | App `3000` |
+| `docker-compose.local.yaml` | **Legacy** split build (separate frontend + backend images) — superseded by the single container | Two locally-built images | DB `6543` → `5432` |
+
+:::note Why PostgreSQL maps to 6543
+The build/development compose files publish PostgreSQL as `6543:5432` so it doesn't clash with a PostgreSQL already running on your machine. Inside the Docker network the database is always reached on `5432`. The production files don't publish the database to the host at all.
+:::
+
+### Optional add-on overlays
+
+These are layered on top of a deployment with `-f` and are entirely optional:
+
+| File | Adds |
+|------|------|
+| `apps/backend/docker-compose.yml` | Local **PostgreSQL + MinIO** for development (`pnpm db:up`) — MinIO console on `9001` |
+| `apps/hivescale/docker-compose.hivescale.yaml` | An optional **HiveScale** backend sidecar — see [HiveScale](../user-guide/hivescale) |
+| `apps/ai-app/docker-compose.worker.yml` | The **AI worker** (audio transcription + analysis) with a bundled Ollama model server (`11434`) — see [Audio & AI Transcription](../user-guide/audio-ai) |
+| `apps/ai-app/docker-compose.ai.ollama.yml` | An alternative AI service + Ollama setup (`8008`, `11434`) |
+
+For example, to run production with the HiveScale sidecar:
+
+```bash
+docker compose -f docker-compose.prod.yaml -f apps/hivescale/docker-compose.hivescale.yaml up -d
+```
+
+## How the Container Works
+
+The image is a multi-stage build that compiles the frontend and backend, then copies the frontend's static bundle into the backend so a single NestJS process serves everything:
+
+- **`/api/*`** → the NestJS REST API (and `/api/auth/*` for Better Auth).
+- **everything else** → the React single-page app, served via `ServeStaticModule`.
+
+On every container start, the entrypoint script:
+
+1. Waits for the database to accept connections.
+2. Runs `prisma migrate deploy` to apply any pending migrations.
+3. Runs the admin seed script to create/promote the `ADMIN_EMAIL` user (idempotent; non-fatal if it fails).
+4. Starts the application.
+
+You don't need to run migrations manually — updating the image and restarting is enough.
+
+## Persistent Data
+
+Two things need persistent volumes:
+
+| Path | Purpose |
+|------|---------|
+| `/var/lib/postgresql/data` | PostgreSQL database |
+| `/data/uploads` | Local file storage (audio, photos) when `STORAGE_TYPE=local` |
+
+If you use S3-compatible storage (`STORAGE_TYPE=s3`), only the database needs a volume. See [Configuration → File Storage](./configuration#file-storage).
+
+## Production Deployment
+
+### Reverse Proxy & SSL
+
+Run Hive-Pal behind a reverse proxy (nginx, Caddy, Traefik) that terminates TLS and forwards to the app's port `3000`. Set `BETTER_AUTH_URL` and `FRONTEND_URL` to your public HTTPS URL, and set `PASSKEY_RP_ID` to your domain so passkeys work.
+
+Example nginx server block:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name hive.example.com;
+
+    ssl_certificate     /etc/ssl/certs/hive.example.com.pem;
+    ssl_certificate_key /etc/ssl/private/hive.example.com.key;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;  # host port mapped to the app's 3000
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+When the frontend and API share a parent domain across subdomains, set `COOKIE_DOMAIN` (e.g. `.example.com`) so session cookies are shared.
+
+### Health Checks
+
+The app exposes a health endpoint at `/api/health`. The compose healthcheck already polls it; use the same endpoint for external uptime monitoring. See [Monitoring](./monitoring).
+
+## Backups
+
+Back up the PostgreSQL database regularly:
+
+```bash
+docker compose exec postgres pg_dump -U postgres beekeeper > backup.sql
+```
+
+Also back up the `uploads` volume if you use local storage. See [Backup & Restore](./backup-restore) for a full strategy.
+
+## Updates
+
+```bash
+# Pull the latest image and recreate (migrations run automatically)
+docker pull ghcr.io/martinhrvn/hive-pal:latest
+docker compose up -d
+```
+
+## Troubleshooting
+
+```bash
+# View application logs
+docker compose logs -f app
+
+# Confirm the database is healthy
+docker compose ps
+
+# Restart the app
+docker compose restart app
+```
+
+See the [Troubleshooting guide](../troubleshooting) for common issues such as login failures and database connection errors.
+
+---
+
+## Manual Setup
+
+
+Running from source is intended for **development and customization**. For production self-hosting, the [single-container Docker setup](./docker-setup) is strongly recommended — it builds the frontend and backend together and runs migrations for you.
+
+## Prerequisites
+
+- **Node.js 22+**
+- **PNPM** (`npm install -g pnpm`)
+- **PostgreSQL 14+** (or use the bundled Docker database — see below)
+
+## 1. Clone and Install
+
+```bash
+git clone https://github.com/martinhrvn/hive-pal.git
+cd hive-pal
+pnpm install
+```
+
+This is a PNPM workspace managed by Turborepo. The app lives in `apps/frontend` and `apps/backend`; shared Zod schemas are in `packages/shared-schemas`.
+
+## 2. Database
+
+The quickest way to get a database is the bundled Docker compose helper:
+
+```bash
+cd apps/backend
+pnpm db:up          # starts PostgreSQL in Docker
+```
+
+Or point `DATABASE_URL` at any existing PostgreSQL 14+ instance.
+
+## 3. Configure Environment
+
+Create `apps/backend/.env` (and `apps/frontend/.env` for the dev server). At minimum the backend needs:
+
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/beekeeper?schema=public"
+BETTER_AUTH_SECRET=replace_me_with_a_random_string   # openssl rand -base64 32
+BETTER_AUTH_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5173
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=changeme123
+```
+
+See [Configuration](./configuration) for the full list. For the frontend dev server set `VITE_API_URL=http://localhost:3000` in `apps/frontend/.env`.
+
+## 4. Generate Client and Run Migrations
+
+From `apps/backend`:
+
+```bash
+pnpm prisma:generate   # generate the Prisma client
+prisma migrate dev     # apply migrations to the database
+pnpm seed              # optional: seed test data
+```
+
+## 5. Start the App
+
+From the repository root:
+
+```bash
+pnpm dev
+```
+
+This starts both services:
+
+- **Frontend** — `http://localhost:5173`
+- **Backend API** — `http://localhost:3000/api`
+- **API docs (Swagger)** — `http://localhost:3000/api-docs`
+
+## Building for Production
+
+To produce production builds without Docker:
+
+```bash
+turbo build
+```
+
+In production the backend serves the frontend's static build from its own `static/` directory (the same arrangement the Docker image uses). You'll need a process manager and reverse proxy to run it reliably — at which point the [Docker image](./docker-setup) does all of this for you, so prefer it unless you have a specific reason not to.
+
+## Updating
+
+```bash
+git pull origin main
+pnpm install
+cd apps/backend && pnpm prisma migrate deploy
+turbo build
+```
+
+---
+
+## Monitoring
+
+
+Monitor your Hive-Pal installation with comprehensive logging and metrics.
+
+## Health Monitoring
+
+### Application Health
+```bash
+# Health check endpoint
+curl http://localhost:3000/api/health
+
+# Response format
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00Z",
+  "uptime": 3600,
+  "database": "connected",
+  "version": "1.0.0"
+}
+```
+
+### Database Health
+```sql
+-- Connection status
+SELECT count(*) FROM pg_stat_activity;
+
+-- Database size
+SELECT pg_size_pretty(pg_database_size('beekeeper'));
+
+-- Table statistics
+SELECT schemaname,tablename,n_tup_ins,n_tup_upd,n_tup_del 
+FROM pg_stat_user_tables;
+```
+
+## Logging
+
+### Application Logs
+```json
+{
+  "timestamp": "2024-01-01T00:00:00Z",
+  "level": "info",
+  "message": "User login successful",
+  "userId": "123",
+  "ip": "192.168.1.100",
+  "userAgent": "Mozilla/5.0..."
+}
+```
+
+### Log Aggregation
+```bash
+# Using journalctl
+journalctl -u hive-pal -f
+
+# Using Docker
+docker-compose logs -f backend
+
+# Custom log parser
+tail -f /var/log/hive-pal/app.log | jq '.'
+```
+
+## Metrics Collection
+
+### Prometheus Integration
+Metrics are served from a dedicated internal port (`METRICS_PORT`, default
+`9100`) by a standalone HTTP server — **not** on the public `:3000` API. Keep
+this port unpublished and scrape it from a Prometheus instance on the same
+Docker network so metrics are never exposed to the internet.
+
+```yaml
+# prometheus.yml
+scrape_configs:
+  - job_name: 'hive-pal'
+    static_configs:
+      - targets: ['backend:9100']
+    metrics_path: /metrics
+    scrape_interval: 15s
+```
+
+### Key Metrics
+- Request count and duration
+- Database query performance  
+- Memory and CPU usage
+- Error rates
+- User session duration
+
+## Grafana Dashboards
+
+### System Metrics
+- CPU usage
+- Memory consumption
+- Disk I/O
+- Network traffic
+
+### Application Metrics
+- API response times
+- Database connections
+- User activity
+- Error rates
+
+### Business Metrics
+- User registrations
+- Inspection records
+- Data growth
+
+## Frontend Observability (Web Vitals)
+
+The React frontend ships **real-user monitoring** with the
+[Grafana Faro Web SDK](https://grafana.com/oss/faro/). It automatically captures
+Core Web Vitals (LCP, CLS, INP, FCP, TTFB), frontend errors, and session info in
+the browser and sends them to a **Grafana Alloy** `faro.receiver`, which forwards
+them to your existing **Loki**. Grafana then visualizes p75 per page (the
+"Frontend RUM — Web Vitals (Faro)" row in the **Hive-Pal · Operations** dashboard).
+
+```
+Browser (Faro Web SDK)
+   │  POST /collect   (LCP/CLS/INP/FCP/TTFB, errors)
+   ▼
+Grafana Alloy (faro.receiver)
+   │  logs
+   ▼
+Loki  ──►  Grafana (LogQL p75 panels)
+```
+
+### Enable on the frontend
+
+Set the collector URL so the backend serves it to the browser via `/env.js`:
+
+```bash
+# Public URL of the Alloy faro.receiver, reachable from the browser
+VITE_FARO_URL=https://collector.example.com/collect
+VITE_FARO_ENVIRONMENT=production
+```
+
+When `VITE_FARO_URL` is empty, Faro stays disabled (e.g. local dev). Sentry error
+tracking is unaffected — Faro is additive.
+
+### Run the Alloy collector
+
+Alloy runs alongside your monitoring stack (Grafana/Prometheus/Loki). The config
+is version-controlled at [`alloy/config.alloy`](https://github.com/martinhrvn/hive-pal/blob/main/alloy/config.alloy):
+
+```alloy
+faro.receiver "frontend" {
+  server {
+    listen_address       = "0.0.0.0"
+    listen_port          = 12347
+    cors_allowed_origins = ["https://your-frontend.example.com"]
+  }
+  sourcemaps { download = true }
+  output { logs = [loki.write.faro.receiver] }
+}
+
+loki.write "faro" {
+  endpoint { url = "http://loki:3100/loki/api/v1/push" }
+  external_labels = { app = "hivepal-frontend" }
+}
+```
+
+Add it to your monitoring `docker-compose`:
+
+```yaml
+services:
+  alloy:
+    image: grafana/alloy:latest
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --server.http.listen-addr=0.0.0.0:12345
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+    environment:
+      ALLOY_FARO_CORS_ORIGINS: https://your-frontend.example.com
+      LOKI_PUSH_URL: http://loki:3100/loki/api/v1/push
+    ports:
+      - "12347:12347"   # Faro receiver — expose publicly (TLS via your proxy)
+```
+
+The Faro receiver on `:12347` must be reachable from users' browsers, so expose
+it through your reverse proxy with TLS and keep `cors_allowed_origins` tight.
+`VITE_FARO_URL` points at `https://<that-host>/collect`.
+
+### Loki datasource
+
+Grafana provisions a Loki datasource at
+[`grafana/provisioning/datasources/loki.yml`](https://github.com/martinhrvn/hive-pal/blob/main/grafana/provisioning/datasources/loki.yml)
+(`url: http://loki:3100`). Explore frontend telemetry with:
+
+```logql
+{app="hivepal-frontend"}                         # all Faro signals
+{app="hivepal-frontend"} | logfmt | kind=`measurement`   # Web Vitals
+{app="hivepal-frontend"} | logfmt | kind=`exception`     # frontend errors
+```
+
+:::note
+The dashboard panels unwrap measurement fields named `value_lcp` / `value_inp` /
+`value_cls` and group by `view_name`. Field names can vary across Faro/Alloy
+versions — inspect a real measurement log line in **Explore** and adjust the panel
+queries if your version differs.
+:::
+
+## Alerting
+
+### Alert Rules
+```yaml
+# alerts.yml
+groups:
+  - name: hive-pal
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: High error rate detected
+
+      - alert: DatabaseConnections
+        expr: pg_stat_activity_count > 80
+        for: 2m
+        labels:
+          severity: warning
+```
+
+### Notification Channels
+- Email alerts
+- Slack integration
+- Webhook notifications
+- SMS alerts (via services)
+
+## Log Management
+
+### Log Rotation
+```bash
+# logrotate configuration
+/var/log/hive-pal/*.log {
+    daily
+    missingok
+    rotate 30
+    compress
+    delaycompress
+    notifempty
+    create 0644 hive-pal hive-pal
+    postrotate
+        systemctl reload hive-pal
+    endscript
+}
+```
+
+### Centralized Logging
+```yaml
+# docker-compose with Loki
+services:
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/log:/var/log:ro
+      - ./promtail-config.yml:/etc/promtail/config.yml
+```
+
+## Performance Monitoring
+
+### Database Performance
+```sql
+-- Slow queries
+SELECT query, mean_time, calls
+FROM pg_stat_statements
+ORDER BY mean_time DESC
+LIMIT 10;
+
+-- Index usage
+SELECT schemaname,tablename,attname,n_distinct,correlation
+FROM pg_stats
+WHERE tablename = 'inspections';
+```
+
+### Application Performance
+```bash
+# Memory usage
+ps aux | grep hive-pal
+
+# File descriptor usage
+lsof -p $(pgrep -f hive-pal) | wc -l
+
+# Network connections
+netstat -an | grep :3000
+```
+
+## Security Monitoring
+
+### Access Logs
+- Failed login attempts
+- Suspicious IP addresses
+- Unusual access patterns
+- API abuse detection
+
+### Security Alerts
+```bash
+# Monitor failed logins
+tail -f /var/log/hive-pal/app.log | grep "login failed"
+
+# Check for brute force attempts
+grep "authentication failed" /var/log/hive-pal/app.log | \
+  awk '{print $4}' | sort | uniq -c | sort -nr
+```
+
+## Troubleshooting
+
+### Common Issues
+- High memory usage
+- Database connection limits
+- Disk space exhaustion  
+- SSL certificate expiration
+
+### Debug Tools
+```bash
+# Process monitoring
+htop
+iotop
+
+# Network debugging
+tcpdump -i eth0 port 3000
+
+# Database debugging
+pg_stat_activity
+pg_locks
+```
+
+## Monitoring Best Practices
+
+### Metrics Strategy
+- Monitor what matters
+- Set meaningful thresholds
+- Avoid alert fatigue
+- Regular review and tuning
+
+### Log Management
+- Structured logging
+- Appropriate log levels
+- Log retention policies
+- Security considerations
+
+### Performance Tuning
+- Regular performance reviews
+- Capacity planning
+- Bottleneck identification
+- Optimization implementation
+
+---
+
+## System Requirements
+
+
+Minimum and recommended specifications for self-hosting Hive-Pal.
+
+## Minimum Requirements
+
+### Hardware
+- **CPU**: 2 cores
+- **RAM**: 2 GB
+- **Storage**: 10 GB
+- **Network**: Stable internet connection
+
+### Software
+- **OS**: Linux, macOS, or Windows
+- **Docker**: Version 20.10+
+- **Docker Compose**: Version 2.0+
+- **Node.js**: Version 22+ (for manual setup only)
+- **PostgreSQL**: Version 14+
+
+## Recommended Specifications
+
+### Hardware
+- **CPU**: 4+ cores
+- **RAM**: 4+ GB
+- **Storage**: 20+ GB SSD
+- **Network**: Broadband connection
+
+### For Production
+- **CPU**: 4-8 cores
+- **RAM**: 8+ GB
+- **Storage**: 50+ GB SSD
+- **Backup**: Automated backup solution
+- **SSL**: Valid SSL certificate
+
+## User Capacity
+
+### Small (1-10 users)
+- Minimum requirements sufficient
+- Single server setup (app + PostgreSQL)
+
+### Medium (10-50 users)
+- Recommended specifications
+- Dedicated PostgreSQL volume on SSD
+
+### Large (50+ users)
+- Dedicated database server
+- Reverse proxy / load balancing
+- Monitoring infrastructure
+
+## Network Requirements
+
+### Ports
+- **3000**: App container (serves both the web app and the API)
+- **5432**: PostgreSQL
+- **80/443**: Public web traffic (via your reverse proxy → app port 3000)
+- **5173**: Frontend dev server (manual/development setup only)
+
+### Bandwidth
+- **Per user**: ~1 MB/day average
+- **Peak usage**: During sync operations
+- **Images**: Consider storage impact
+
+## Browser Support
+
+### Desktop
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+### Mobile
+- iOS Safari 14+
+- Chrome Mobile
+- Firefox Mobile
+
+## Additional Considerations
+
+- Regular backups essential
+- SSL certificate required for production
+- Domain name recommended
+- Email service for notifications
+
+---
+
+## Installation Guide
+
+import Head from '@docusaurus/Head';
+
+<Head>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'Install Hive-Pal with Docker',
+      description:
+        'Deploy Hive-Pal as a single Docker container with a PostgreSQL database.',
+      step: [
+        { '@type': 'HowToStep', name: 'Create a docker-compose.yaml', text: 'Define the single-container app service (ghcr.io/martinhrvn/hive-pal:latest) and a PostgreSQL 14 service, with the required environment variables.' },
+        { '@type': 'HowToStep', name: 'Start the application', text: 'Run docker compose up -d. The app waits for the database, runs migrations, and seeds the admin user automatically.' },
+        { '@type': 'HowToStep', name: 'Access the application', text: 'Open the app in your browser and log in with the admin credentials you configured.' },
+      ],
+    })}
+  </script>
+</Head>
+
+# Installation Guide
+
+Hive-Pal ships as a **single Docker image** (`ghcr.io/martinhrvn/hive-pal:latest`) that bundles the NestJS API and the React frontend together — the backend serves the web app as static files on port `3000`. You only need to run two containers: the app and a PostgreSQL database.
+
+## Prerequisites
+
+- Docker and Docker Compose
+- A PostgreSQL 14 database (the compose file below runs one for you)
+
+## Docker Installation (Recommended)
+
+### 1. Create a docker-compose.yaml file
+
+```yaml
+services:
+  app:
+    image: ghcr.io/martinhrvn/hive-pal:latest
+    ports:
+      - '80:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/beekeeper
+      BETTER_AUTH_SECRET: replace_me_with_a_random_string
+      BETTER_AUTH_URL: http://localhost
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: changeme123
+      FRONTEND_URL: http://localhost
+      STORAGE_TYPE: local # 'local' for filesystem, 's3' for S3-compatible storage
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: beekeeper
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d beekeeper']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  uploads:
+```
+
+:::tip Generate a secret
+`BETTER_AUTH_SECRET` signs your login sessions. Generate a strong value with:
+
+```bash
+openssl rand -base64 32
+```
+:::
+
+### 2. Start the application
+
+```bash
+docker compose up -d
+```
+
+On startup the app container automatically waits for PostgreSQL, runs database migrations (`prisma migrate deploy`), and creates/promotes the admin user from `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+
+### 3. Access the application
+
+Open `http://localhost` and log in with the admin credentials you configured. From there you can register additional users, or sign in with a magic link or passkey once email is configured (see [Authentication](#authentication)).
+
+## Required Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | Secret used to sign Better Auth sessions/cookies (32+ chars; `openssl rand -base64 32`) |
+| `BETTER_AUTH_URL` | Public base URL where the app (and `/api/auth/*`) is served, e.g. `https://hive.example.com` |
+| `ADMIN_EMAIL` | Initial admin account email |
+| `ADMIN_PASSWORD` | Initial admin password (plaintext; hashed on first run) |
+| `FRONTEND_URL` | Public URL of the app — used in email links and as a trusted origin |
+
+For the complete reference, including authentication, email, storage, and integrations, see [Configuration](./self-hosting/configuration).
+
+## Authentication
+
+Hive-Pal uses [Better Auth](https://www.better-auth.com/) for authentication, exposed under `/api/auth/*`. Three sign-in methods are supported:
+
+- **Email & password** — always available.
+- **Magic link** — passwordless email sign-in. Requires email to be configured (SMTP or Resend).
+- **Passkeys (WebAuthn)** — biometric / hardware-key sign-in. Set `PASSKEY_RP_ID` to your domain in production (defaults to `localhost`).
+
+Magic links and password resets need a working mail provider. Configure SMTP or Resend as described in [Configuration → Email](./self-hosting/configuration#email).
+
+## Optional HiveScale Integration
+
+To show live HiveScale device data inside Hive-Pal, run a HiveScale backend and set these variables on the app:
+
+```bash
+HIVESCALE_API_BASE_URL=https://hivescale.example.com
+HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
+```
+
+The same secret must be configured on HiveScale as `HIVEPAL_SERVICE_API_KEY`. Once connected, the HiveScale page can claim devices and display weight, temperature, battery, solar, and cellular telemetry. See the [HiveScale guide](./user-guide/hivescale).
+
+## Manual Installation (Development)
+
+For local development without Docker:
+
+```bash
+# Clone the repository
+git clone https://github.com/martinhrvn/hive-pal.git
+cd hive-pal
+
+# Install dependencies
+pnpm install
+
+# Start the development servers (frontend + backend)
+pnpm dev
+```
+
+The frontend runs on `http://localhost:5173` and the backend on `http://localhost:3000`. See [Manual Setup](./self-hosting/manual-setup) for full details including the database.
+
+## Updating Hive-Pal
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/martinhrvn/hive-pal:latest
+
+# Recreate the containers (migrations run automatically on start)
+docker compose up -d
+```
+
+Always [back up your database](./self-hosting/backup-restore) before updating.
+
+---
+
+## Introduction to Hive-Pal
+
+
+Welcome to Hive-Pal, a modern beekeeping management application designed for both mobile and desktop use. Track your apiaries, hives, inspections, and more with our intuitive interface.
+
+## What is Hive-Pal?
+
+Hive-Pal is a self-hostable application built to help beekeepers manage their operations with ease. Whether you're a hobbyist with a few hives or managing multiple apiaries, Hive-Pal provides the tools you need to track your beekeeping activities efficiently.
+
+## Key Features
+
+- **Apiary & Hive Management**: Track multiple apiaries and hives with location, status, and configuration
+- **Flexible Inspections**: Record detailed inspections with subjective ratings or data-driven counts, plus [quick checks](./user-guide/quick-check), [batch](./user-guide/batch-inspections) and [scheduled](./user-guide/scheduled-inspections) inspections, and [bulk add](./user-guide/bulk-add)
+- **Audio & AI Transcription**: Speak your observations and let AI turn them into structured inspection data
+- **Queen Management**: Track queen marking, movement history, and replacements
+- **Harvests, Equipment & Reports**: Log honey harvests, plan equipment, and visualize trends over time
+- **QR Codes & Calendar**: Scan straight to a hive and plan your season at a glance
+- **Modern Sign-In**: Password, passwordless magic link, or passkey (WebAuthn) via Better Auth
+- **Mobile-First Design**: Optimized for field use with easy data entry
+- **HiveScale Integration**: View live hive weight, temperature, battery, solar, and cellular telemetry from self-hosted HiveScale devices
+- **Free Tools**: Public [syrup calculator, brood timeline, and swarm-management](./user-guide/tools) guides
+
+## Why Hive-Pal?
+
+Beekeeping requires careful observation and record-keeping. Hive-Pal simplifies this process by providing:
+
+- **Centralized Records**: Keep all your beekeeping data in one place
+- **Historical Tracking**: Review past inspections and colony development
+- **Informed Decision Making**: Use data to improve your beekeeping practices
+- **Self-Hosted**: Maintain control of your data by hosting the application yourself
+- **Hardware-Friendly**: Pair HiveScale devices with your Hive-Pal account and correlate scale data with inspections
+
+---
+
+## Troubleshooting
+
+import Head from '@docusaurus/Head';
+
+<Head>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Why will my Hive-Pal Docker containers not start?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Make sure the host port you mapped for the app is free (80 in the example compose, or 3000 if mapped directly), verify your Docker install, and inspect the logs with docker compose logs app and docker compose logs postgres. PostgreSQL listens on 5432 inside the Docker network and only needs a free host port if you publish it.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Why can I not log in with valid credentials?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Hive-Pal uses Better Auth. Ensure BETTER_AUTH_SECRET is set and stable, and that BETTER_AUTH_URL and FRONTEND_URL match the public URL you are accessing. For cross-subdomain setups, set COOKIE_DOMAIN.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Why are magic links or password reset emails not arriving?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'These require a configured mail provider (SMTP or Resend). Confirm the mail variables are set, check the app logs for send errors, and verify FROM_EMAIL is allowed by your provider.',
+          },
+        },
+      ],
+    })}
+  </script>
+</Head>
+
+# Troubleshooting
+
+This guide addresses common issues you might encounter while using Hive-Pal.
+
+## Installation Issues
+
+### Docker Container Won't Start
+
+If your Docker containers fail to start:
+
+1. Check that the **host port you mapped for the app** is free (`80` in the example compose, or `3000` if you mapped it directly):
+   ```bash
+   sudo lsof -i :80
+   ```
+   PostgreSQL listens on `5432` **inside** the Docker network and only needs a free host port if you publish it. The development compose files deliberately map it to `6543` (`6543:5432`) to avoid clashing with a PostgreSQL already running on your machine.
+
+2. Verify your Docker and Docker Compose installation:
+   ```bash
+   docker --version
+   docker compose version
+   ```
+
+3. Check container logs for errors (the app is a single container):
+   ```bash
+   docker compose logs app
+   docker compose logs postgres
+   ```
+
+### Database Connection Errors
+
+If the backend can't connect to the database:
+
+1. Ensure your `DATABASE_URL` environment variable is correctly formatted
+2. Check if the PostgreSQL container is running:
+   ```bash
+   docker-compose ps
+   ```
+3. Try to connect to the database manually to verify credentials:
+   ```bash
+   docker compose exec postgres psql -U postgres -d beekeeper
+   ```
+
+## Login Issues
+
+### Can't Create Admin Account
+
+If you're having trouble with the initial admin account:
+
+1. Verify that the `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables are set correctly
+2. Check the app logs for the seeding step (it runs on every startup):
+   ```bash
+   docker compose logs app | grep -i admin
+   ```
+3. Try restarting the app container:
+   ```bash
+   docker compose restart app
+   ```
+
+### Login Authentication Failures
+
+Hive-Pal uses [Better Auth](https://www.better-auth.com/) for sign-in. If you can't log in with valid credentials:
+
+1. Check that you're using the correct email/password combination.
+2. Verify `BETTER_AUTH_SECRET` is set and **stable** — changing it invalidates all existing sessions.
+3. Verify `BETTER_AUTH_URL` and `FRONTEND_URL` match the public URL you're accessing. A mismatch causes session cookies to be rejected.
+4. For cross-subdomain setups, set `COOKIE_DOMAIN` (e.g. `.example.com`).
+5. Clear your browser cookies and cache, then try again.
+6. Check the app logs for authentication errors:
+   ```bash
+   docker compose logs app | grep -i auth
+   ```
+
+### Magic Links or Password Resets Not Arriving
+
+Magic-link sign-in and password resets require a configured mail provider:
+
+1. Confirm SMTP or Resend variables are set (see [Configuration → Email](./self-hosting/configuration#email)).
+2. Check the app logs for mail-send errors.
+3. Verify `FROM_EMAIL` is an address your provider is allowed to send from.
+
+### Passkeys Not Working
+
+1. Ensure you're on **HTTPS** (WebAuthn requires a secure context, except on `localhost`).
+2. Set `PASSKEY_RP_ID` to your domain (it defaults to `localhost`).
+
+## Performance Issues
+
+### Slow Page Loading
+
+If the application is running slowly:
+
+1. Check your server's resources (CPU, memory, disk space)
+2. Consider allocating more resources to Docker if available
+3. Check for excessive database growth:
+   ```bash
+   docker exec -it postgres psql -U postgres -d beekeeper -c "SELECT pg_size_pretty(pg_database_size('beekeeper'));"
+   ```
+
+### Mobile Device Issues
+
+For problems on mobile devices:
+
+1. Ensure you're using a modern mobile browser (Chrome, Safari, Firefox)
+2. Check if your device has a stable internet connection
+3. Try clearing the browser cache and cookies
+
+## Data Issues
+
+### Missing Hives or Inspections
+
+If data appears to be missing:
+
+1. Check if you're viewing the correct apiary
+2. Verify filters are not excluding the data you're looking for
+3. Check if another user may have modified the data
+
+### Can't Add or Edit Records
+
+If you can't create or modify records:
+
+1. Ensure you're logged in with an account that has appropriate permissions
+2. Check if the form has validation errors (look for red error messages)
+3. Verify the backend logs for any error messages:
+   ```bash
+   docker-compose logs backend
+   ```
+
+## Backup and Recovery
+
+### Creating a Database Backup
+
+To back up your Hive-Pal data:
+
+```bash
+docker exec -t postgres pg_dump -U postgres -d beekeeper > beekeeper_backup_$(date +%Y%m%d).sql
+```
+
+### Restoring from Backup
+
+To restore from a backup:
+
+```bash
+# Stop the containers
+docker-compose down
+
+# Start just the database
+docker-compose up -d postgres
+
+# Wait for PostgreSQL to start
+sleep 10
+
+# Restore the database
+cat your_backup_file.sql | docker exec -i postgres psql -U postgres -d beekeeper
+
+# Start the remaining services
+docker-compose up -d
+```
+
+## Getting Additional Help
+
+If you continue experiencing issues:
+
+1. Check the [GitHub repository](https://github.com/martinhrvn/hive-pal) for known issues
+2. Submit a detailed bug report including:
+   - Steps to reproduce the issue
+   - Expected behavior
+   - Actual behavior
+   - Docker and environment information
+   - Relevant logs
