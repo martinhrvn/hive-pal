@@ -227,6 +227,20 @@
     "upload": "Upload firmware",
     "uploading": "Uploading…",
     "success": "Firmware {{version}} ({{target}}) uploaded and registered.",
+    "update": {
+      "title": "Firmware update",
+      "description": "Scales never update on their own — you approve each new build here before this scale installs it.",
+      "unavailable": "Firmware status is unavailable right now.",
+      "availableTitle": "Firmware {{version}} is available",
+      "availableBody": "This scale is running {{current}}. Apply to update it to {{version}}.",
+      "officialSuffix": "This is an official build.",
+      "apply": "Apply update",
+      "applying": "Applying…",
+      "applied": "Firmware {{version}} approved — the scale will update on its next check-in.",
+      "queued": "Update {{version}} approved. The scale will install it on its next check-in.",
+      "upToDate": "Firmware is up to date ({{version}}).",
+      "viewerNotice": "Only device owners and admins can apply firmware updates."
+    },
     "notice": {
       "noPermission": "Only device owners and admins can upload firmware. Your role is “{{role}}”.",
       "selectDevice": "Select a claimed device to upload firmware."
@@ -234,6 +248,17 @@
     "errors": {
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
+    },
+    "hiveinsideOta": {
+      "title": "Trigger HiveInside OTA",
+      "description": "Uploading a HiveInside firmware now automatically queues the OTA relay to both sensor slots over BLE. Use this to re-queue the active release to a specific slot. Keep the sensor powered and awake during the update.",
+      "slot": "Sensor slot",
+      "slotOption": "Slot {{slot}}",
+      "queue": "Queue HiveInside OTA",
+      "queueing": "Queuing…",
+      "success": "HiveInside OTA queued for slot {{slot}}.",
+      "autoQueued": "HiveInside OTA auto-queued for slots {{slots}}.",
+      "autoQueueFailed": "Could not auto-queue the HiveInside OTA for slots {{slots}}."
     }
   },
   "sdData": {
@@ -264,38 +289,34 @@
     "weight": "Weight",
     "hiveTemp": "Hive temp",
     "rmsSound": "RMS sound",
-    "temperature": "Temperature",
-    "humidity": "Humidity",
-    "voltage": "Voltage",
-    "charge": "Charge",
-    "alert": "Alert",
-    "alertOn": "Alert",
-    "alertOff": "No alert",
-    "loadVoltage": "Load voltage",
-    "current": "Current",
-    "power": "Power",
-    "ambient": {
-      "title": "Ambient",
-      "description": "Outside sensor"
+    "ambientTemperature": "Ambient temperature",
+    "ambientHumidity": "Ambient humidity",
+    "batteryCharge": "Battery charge",
+    "solarInput": "Solar input",
+    "charging": "Charging",
+    "general": {
+      "title": "General",
+      "description": "Ambient & power"
     },
-    "battery": {
-      "title": "Battery",
-      "description": "MAX17048 fuel gauge"
-    },
-    "solar": {
-      "title": "Solar input",
-      "description": "INA219 panel monitor"
+    "humidity": "Hive humidity",
+    "wirelessSensorsBattery": "Wireless sensors battery",
+    "sensorTypes": {
+      "hiveHeart": "HiveHeart",
+      "inHive": "In-hive sensor",
+      "scale": "Scale"
     }
   },
   "diagram": {
     "title": "Measurements",
     "subtitle": "Weight, temperature, and entrance activity over time",
     "noMeasurements": "No measurements for the selected range.",
+    "noDataForSeries": "No data in the selected range.",
     "meta": {
       "device": "Device:",
       "lastSeen": "Last seen:",
       "lastData": "Last data:",
-      "firmware": "Firmware:"
+      "firmware": "Firmware:",
+      "hiveInsideFirmware": "HiveInside:"
     },
     "range": {
       "all": "All",
@@ -306,6 +327,8 @@
       "weight": "{{name}} weight",
       "temp": "{{name}} temp",
       "micRms": "{{name}} mic RMS",
+      "vibration": "{{name}} vibration",
+      "swarmBand": "{{name}} swarm band (8–30 Hz)",
       "beesIn": "{{name}} bees in",
       "beesOut": "{{name}} bees out",
       "netFlow": "{{name}} net flow",
@@ -315,7 +338,11 @@
       "batteryCharge": "Battery charge",
       "solarVoltage": "Solar voltage",
       "solarCurrent": "Solar current",
-      "solarPower": "Solar power"
+      "solarPower": "Solar power",
+      "humidity": "{{name}} humidity",
+      "pressure": "{{name}} pressure",
+      "fanningBand": "{{name}} fanning band (30–100 Hz)",
+      "activityBand": "{{name}} activity band (100–200 Hz)"
     },
     "group": {
       "ambient": "Ambient",
@@ -330,7 +357,9 @@
       "current": "Current",
       "power": "Power",
       "sound": "Sound",
-      "beecount": "Bee count"
+      "beecount": "Bee count",
+      "vibration": "Vibration",
+      "pressure": "Pressure"
     },
     "marker": {
       "inspection": "Inspection",
@@ -399,7 +428,11 @@
         "label": "High",
         "description": "Harmonic overtones"
       }
-    }
+    },
+    "rmsToggleShow": "Show RMS level",
+    "rmsToggleHide": "Hide RMS level",
+    "rmsTitle": "RMS sound level",
+    "rmsSeries": "{{name}} RMS"
   },
   "beecounter": {
     "title": "Entrance Counter",

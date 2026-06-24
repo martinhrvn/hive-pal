@@ -3,7 +3,7 @@ import { FormEvent, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
-  Battery,
+  BatteryCharging,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -14,7 +14,6 @@ import {
   Plus,
   RefreshCw,
   Square,
-  Sun,
   Thermometer,
   Trash2,
   Upload,
@@ -27,10 +26,12 @@ import { toast } from 'sonner';
 import { useHivesWithBoxes } from '@/api/hooks/useHives';
 import { useInspections } from '@/api/hooks/useInspections';
 import {
+  useApproveHiveScaleFirmware,
   useClaimHiveScaleDevice,
   useFitHiveScaleTempCompensation,
   useHiveScaleDeviceConfig,
   useHiveScaleDevices,
+  useHiveScaleFirmwareStatus,
   useHiveScaleMeasurements,
   useHiveScaleMembers,
   useRemoveHiveScaleDevice,
@@ -38,6 +39,7 @@ import {
   useShareHiveScaleDevice,
   useImportHiveScaleSdData,
   useStartHiveScaleCalibrationMode,
+  useQueueHiveInsideUpdate,
   useStopHiveScaleCalibrationMode,
   useUpdateHiveScaleChannels,
   useUpdateHiveScaleConfig,
@@ -58,6 +60,7 @@ import {
   type HiveScaleDateRangePreset,
 } from './hivescale-diagram-panel';
 import { HiveScaleSoundPanel } from './hivescale-sound-panel';
+import { WirelessSensorsBattery } from './wireless-sensors-battery';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -109,18 +112,6 @@ const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
     ? value.toFixed(digits)
     : '—';
-
-const hasTelemetryValue = (...values: unknown[]) =>
-  values.some(value => value !== null && value !== undefined && value !== '');
-
-const statusOrDash = (
-  value: boolean | null | undefined,
-  trueLabel = 'OK',
-  falseLabel = 'No',
-) => {
-  if (value === null || value === undefined) return '—';
-  return value ? trueLabel : falseLabel;
-};
 
 const HIVESCALE_DATE_RANGE_STORAGE_KEY = 'hivescale.diagram.dateRange';
 
@@ -192,6 +183,57 @@ const latestMeasurement = (
   )[0];
 };
 
+// How long the battery voltage has to keep climbing before we treat it as a
+// charging signal, and how much sensor jitter we tolerate before considering
+// the trend broken.
+const BATTERY_RISING_WINDOW_MS = 30 * 60 * 1000;
+const BATTERY_VOLTAGE_NOISE_V = 0.005;
+
+const batteryVoltageOf = (measurement: HiveScaleMeasurement) =>
+  measurement.battery_voltage_v ?? measurement.battery_voltage ?? null;
+
+// Returns true when the battery voltage has been rising for at least
+// `windowMs`. We walk backwards from the latest reading through the contiguous
+// "rising" streak (older readings should not be meaningfully higher than newer
+// ones) and report a charge as soon as that streak spans the window with an
+// overall net rise.
+const isBatteryVoltageRising = (
+  measurements: HiveScaleMeasurement[] | undefined,
+  windowMs = BATTERY_RISING_WINDOW_MS,
+) => {
+  if (!measurements?.length) return false;
+
+  const sorted = [...measurements].sort(
+    (a, b) =>
+      new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
+  );
+
+  const latest = sorted[0];
+  const latestVoltage = batteryVoltageOf(latest);
+  if (latestVoltage == null) return false;
+  const latestTime = new Date(latest.measured_at).getTime();
+
+  let newerVoltage = latestVoltage;
+  for (let i = 1; i < sorted.length; i += 1) {
+    const voltage = batteryVoltageOf(sorted[i]);
+    if (voltage == null) break;
+    // The trend is broken if an older reading is meaningfully higher than the
+    // newer one we already accepted (i.e. voltage was falling at that point).
+    if (voltage > newerVoltage + BATTERY_VOLTAGE_NOISE_V) break;
+
+    const elapsed = latestTime - new Date(sorted[i].measured_at).getTime();
+    if (
+      elapsed >= windowMs &&
+      latestVoltage - voltage > BATTERY_VOLTAGE_NOISE_V
+    ) {
+      return true;
+    }
+    newerVoltage = voltage;
+  }
+
+  return false;
+};
+
 const channelName = (
   device: HiveScaleDevice | undefined,
   channelNumber: 1 | 2,
@@ -244,12 +286,14 @@ function LatestValuePanel({
   rows,
   badge,
   insight,
+  historyAction,
 }: Readonly<{
   title: string;
   description: string;
   icon: LucideIcon;
-  rows: { label: string; value: string }[];
+  rows: { label: string; value: ReactNode }[];
   badge?: ReactNode;
+  historyAction?: ReactNode;
   insight?: {
     severity: HiveScaleInsightSeverity | null;
     count: number;
@@ -305,8 +349,9 @@ function LatestValuePanel({
 
             {insight && (
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-xs text-muted-foreground">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
                   {t('common.insight')}
+                  {historyAction}
                 </span>
                 {hasAlerts ? (
                   <button
@@ -1963,6 +2008,123 @@ function DeviceStatusCard({
   );
 }
 
+function FirmwareUpdateCard({
+  selectedDevice,
+  deviceId,
+}: Readonly<{
+  selectedDevice: HiveScaleDevice | undefined;
+  deviceId: string | undefined;
+}>) {
+  const { t } = useTranslation('hivescale');
+  const role = selectedDevice?.role;
+  const canManage = role === 'owner' || role === 'admin';
+
+  const statusQuery = useHiveScaleFirmwareStatus(deviceId, {
+    enabled: !!selectedDevice,
+  });
+  const approveFirmware = useApproveHiveScaleFirmware(deviceId);
+
+  if (!selectedDevice) return null;
+
+  const status = statusQuery.data;
+
+  const onApply = () => {
+    approveFirmware.mutate(undefined, {
+      onSuccess: result =>
+        toast.success(
+          t('firmware.update.applied', { version: result.version }),
+        ),
+      onError: error => toast.error(error.message),
+    });
+  };
+
+  let body: ReactNode;
+  if (statusQuery.isLoading) {
+    body = (
+      <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
+    );
+  } else if (!status) {
+    body = (
+      <p className="text-sm text-muted-foreground">
+        {t('firmware.update.unavailable')}
+      </p>
+    );
+  } else if (status.update_available && status.pending_approval) {
+    body = (
+      <div className="space-y-3">
+        <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-3">
+          <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium">
+              {t('firmware.update.availableTitle', {
+                version: status.latest_version,
+              })}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t('firmware.update.availableBody', {
+                current: status.current_version ?? '—',
+                version: status.latest_version,
+              })}
+              {status.latest_is_official
+                ? ` ${t('firmware.update.officialSuffix')}`
+                : ''}
+            </p>
+          </div>
+        </div>
+        {canManage ? (
+          <Button
+            type="button"
+            className="w-full"
+            onClick={onApply}
+            disabled={approveFirmware.isPending}
+          >
+            {approveFirmware.isPending
+              ? t('firmware.update.applying')
+              : t('firmware.update.apply')}
+          </Button>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {t('firmware.update.viewerNotice')}
+          </p>
+        )}
+      </div>
+    );
+  } else if (status.update_available && !status.pending_approval) {
+    body = (
+      <div className="flex items-start gap-2 rounded-md border p-3">
+        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+        <p className="text-sm text-muted-foreground">
+          {t('firmware.update.queued', { version: status.latest_version })}
+        </p>
+      </div>
+    );
+  } else {
+    body = (
+      <div className="flex items-center gap-2">
+        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+        <p className="text-sm text-muted-foreground">
+          {t('firmware.update.upToDate', {
+            version: status.current_version ?? '—',
+          })}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <RefreshCw className="h-5 w-5" />
+          {t('firmware.update.title')}
+        </CardTitle>
+        <CardDescription>{t('firmware.update.description')}</CardDescription>
+      </CardHeader>
+      <CardContent>{body}</CardContent>
+    </Card>
+  );
+}
+
 function FirmwareUploadCard({
   selectedDevice,
   deviceId,
@@ -1978,10 +2140,24 @@ function FirmwareUploadCard({
   const [fileInputKey, setFileInputKey] = useState(0);
 
   const uploadFirmware = useUploadHiveScaleFirmware(deviceId);
+  const queueHiveInsideUpdate = useQueueHiveInsideUpdate(deviceId);
+  const [otaSlot, setOtaSlot] = useState<'1' | '2'>('1');
 
   const role = selectedDevice?.role;
   const canManage = role === 'owner' || role === 'admin';
   const disabled = !selectedDevice || !canManage;
+
+  const onQueueHiveInsideOta = () => {
+    if (disabled) return;
+    queueHiveInsideUpdate.mutate(
+      { slot: Number(otaSlot) as 1 | 2 },
+      {
+        onSuccess: () =>
+          toast.success(t('firmware.hiveinsideOta.success', { slot: otaSlot })),
+        onError: error => toast.error(error.message),
+      },
+    );
+  };
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -2010,6 +2186,29 @@ function FirmwareUploadCard({
               target: result.target,
             }),
           );
+          // HiveInside uploads also auto-queue the OTA relay to both slots on
+          // the backend; surface which slots were queued (or failed).
+          const autoQueued = result.auto_queued_updates ?? [];
+          const queuedSlots = autoQueued
+            .filter(update => update.status === 'queued')
+            .map(update => update.slot);
+          const failedSlots = autoQueued
+            .filter(update => update.status === 'failed')
+            .map(update => update.slot);
+          if (queuedSlots.length > 0) {
+            toast.success(
+              t('firmware.hiveinsideOta.autoQueued', {
+                slots: queuedSlots.join(', '),
+              }),
+            );
+          }
+          if (failedSlots.length > 0) {
+            toast.error(
+              t('firmware.hiveinsideOta.autoQueueFailed', {
+                slots: failedSlots.join(', '),
+              }),
+            );
+          }
         },
         onError: error => toast.error(error.message),
       },
@@ -2061,6 +2260,7 @@ function FirmwareUploadCard({
               <SelectContent>
                 <SelectItem value="hivescale">HiveScale</SelectItem>
                 <SelectItem value="beecounter">BeeCounter</SelectItem>
+                <SelectItem value="hiveinside">HiveInside</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -2103,6 +2303,51 @@ function FirmwareUploadCard({
               : t('firmware.upload')}
           </Button>
         </form>
+
+        {target === 'hiveinside' && (
+          <div className="mt-6 space-y-3 border-t pt-4">
+            <div className="space-y-1">
+              <Label>{t('firmware.hiveinsideOta.title')}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t('firmware.hiveinsideOta.description')}
+              </p>
+            </div>
+            <div className="flex items-end gap-2">
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="hiveinside-ota-slot">
+                  {t('firmware.hiveinsideOta.slot')}
+                </Label>
+                <Select
+                  value={otaSlot}
+                  onValueChange={value => setOtaSlot(value as '1' | '2')}
+                  disabled={disabled || queueHiveInsideUpdate.isPending}
+                >
+                  <SelectTrigger id="hiveinside-ota-slot">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">
+                      {t('firmware.hiveinsideOta.slotOption', { slot: 1 })}
+                    </SelectItem>
+                    <SelectItem value="2">
+                      {t('firmware.hiveinsideOta.slotOption', { slot: 2 })}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={onQueueHiveInsideOta}
+                disabled={disabled || queueHiveInsideUpdate.isPending}
+              >
+                {queueHiveInsideUpdate.isPending
+                  ? t('firmware.hiveinsideOta.queueing')
+                  : t('firmware.hiveinsideOta.queue')}
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -2364,6 +2609,10 @@ function ScaleSetupPanel({
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
               />
+              <FirmwareUpdateCard
+                selectedDevice={selectedDevice}
+                deviceId={selectedDeviceId}
+              />
               <FirmwareUploadCard
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
@@ -2500,20 +2749,14 @@ export function HiveScalePage() {
     device => device.device_id === selectedDeviceId,
   );
   const latest = latestMeasurement(measurements.data);
-  const latestBatteryVoltage =
-    latest?.battery_voltage_v ?? latest?.battery_voltage;
-  const hasBatteryTelemetry = hasTelemetryValue(
-    latestBatteryVoltage,
-    latest?.battery_soc_percent,
-    latest?.battery_monitor_ok,
-    latest?.battery_alert,
-  );
-  const hasSolarTelemetry = hasTelemetryValue(
-    latest?.solar_monitor_ok,
-    latest?.solar_load_voltage_v,
-    latest?.solar_current_ma,
-    latest?.solar_power_mw,
-  );
+  // The MAX17048 fuel gauge reports state-of-charge above 100% while the cell
+  // is actively taking charge, so we treat >100% as the "charging" signal.
+  // We also treat a sustained rise in battery voltage (>= 30 minutes) as
+  // charging, since the SoC can plateau at/below 100% while the pack is still
+  // being topped up.
+  const isBatteryCharging =
+    (latest?.battery_soc_percent ?? 0) > 100 ||
+    isBatteryVoltageRising(measurements.data);
 
   useEffect(() => {
     if (latest?.calibration_mode === false && isCalibrationPolling) {
@@ -2574,13 +2817,6 @@ export function HiveScalePage() {
           <p className="text-muted-foreground">{t('page.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
-          {selectedDevice && (
-            <HiveScaleInsightsHistoryDialog
-              deviceId={selectedDevice.device_id}
-              scale1Name={scale1Name}
-              scale2Name={scale2Name}
-            />
-          )}
           <Button
             type="button"
             variant="outline"
@@ -2631,8 +2867,8 @@ export function HiveScalePage() {
                 value: `${numberOrDash(latest?.hive_1_temp_c)} °C`,
               },
               {
-                label: t('panel.rmsSound'),
-                value: `${numberOrDash(latest?.mic_left_rms_dbfs)} dBFS`,
+                label: t('panel.humidity'),
+                value: `${numberOrDash(latest?.ble_1_humidity_percent, 0)}%`,
               },
             ]}
             insight={{
@@ -2644,6 +2880,15 @@ export function HiveScalePage() {
               isLoading: insights.isLoading,
               isError: insights.isError,
             }}
+            historyAction={
+              <HiveScaleInsightsHistoryDialog
+                deviceId={selectedDevice.device_id}
+                scale1Name={scale1Name}
+                scale2Name={scale2Name}
+                channel={1}
+                compact
+              />
+            }
           />
           <LatestValuePanel
             title={scale2Name}
@@ -2665,8 +2910,8 @@ export function HiveScalePage() {
                 value: `${numberOrDash(latest?.hive_2_temp_c)} °C`,
               },
               {
-                label: t('panel.rmsSound'),
-                value: `${numberOrDash(latest?.mic_right_rms_dbfs)} dBFS`,
+                label: t('panel.humidity'),
+                value: `${numberOrDash(latest?.ble_2_humidity_percent, 0)}%`,
               },
             ]}
             insight={{
@@ -2678,68 +2923,62 @@ export function HiveScalePage() {
               isLoading: insights.isLoading,
               isError: insights.isError,
             }}
+            historyAction={
+              <HiveScaleInsightsHistoryDialog
+                deviceId={selectedDevice.device_id}
+                scale1Name={scale1Name}
+                scale2Name={scale2Name}
+                channel={2}
+                compact
+              />
+            }
           />
           <LatestValuePanel
-            title={t('panel.ambient.title')}
-            description={t('panel.ambient.description')}
+            title={t('panel.general.title')}
+            description={t('panel.general.description')}
             icon={Droplets}
             rows={[
               {
-                label: t('panel.temperature'),
+                label: t('panel.ambientTemperature'),
                 value: `${numberOrDash(latest?.ambient_temp_c)} °C`,
               },
               {
-                label: t('panel.humidity'),
+                label: t('panel.ambientHumidity'),
                 value: `${numberOrDash(latest?.ambient_humidity_percent, 0)}%`,
+              },
+              {
+                label: t('panel.batteryCharge'),
+                value: (
+                  <span className="flex items-center gap-1.5">
+                    {isBatteryCharging && (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400"
+                        title={t('panel.charging')}
+                      >
+                        <BatteryCharging className="h-3.5 w-3.5" aria-hidden />
+                        {t('panel.charging')}
+                      </span>
+                    )}
+                    {`${numberOrDash(latest?.battery_soc_percent, 0)}%`}
+                  </span>
+                ),
+              },
+              {
+                label: t('panel.solarInput'),
+                value: `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`,
+              },
+              {
+                label: t('panel.wirelessSensorsBattery'),
+                value: (
+                  <WirelessSensorsBattery
+                    measurement={latest}
+                    channel1Name={scale1Name}
+                    channel2Name={scale2Name}
+                  />
+                ),
               },
             ]}
           />
-          {hasBatteryTelemetry && (
-            <LatestValuePanel
-              title={t('panel.battery.title')}
-              description={t('panel.battery.description')}
-              icon={Battery}
-              rows={[
-                {
-                  label: t('panel.voltage'),
-                  value: `${numberOrDash(latestBatteryVoltage, 2)} V`,
-                },
-                {
-                  label: t('panel.charge'),
-                  value: `${numberOrDash(latest?.battery_soc_percent, 0)}%`,
-                },
-                {
-                  label: t('panel.alert'),
-                  value: statusOrDash(
-                    latest?.battery_alert,
-                    t('panel.alertOn'),
-                    t('panel.alertOff'),
-                  ),
-                },
-              ]}
-            />
-          )}
-          {hasSolarTelemetry && (
-            <LatestValuePanel
-              title={t('panel.solar.title')}
-              description={t('panel.solar.description')}
-              icon={Sun}
-              rows={[
-                {
-                  label: t('panel.loadVoltage'),
-                  value: `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`,
-                },
-                {
-                  label: t('panel.current'),
-                  value: `${numberOrDash(latest?.solar_current_ma, 0)} mA`,
-                },
-                {
-                  label: t('panel.power'),
-                  value: `${numberOrDash(latest?.solar_power_mw, 0)} mW`,
-                },
-              ]}
-            />
-          )}
         </div>
       )}
 

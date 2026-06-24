@@ -8,12 +8,14 @@ import {
   Download,
   Droplets,
   Frame,
+  Gauge,
   Scale,
   PackagePlus,
   Pill,
   Sun,
   Thermometer,
   Utensils,
+  Waves,
   Wrench,
   Zap,
   type LucideIcon,
@@ -52,6 +54,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import { BeeLoadingMessages } from './hivescale-loading-messages';
 import type {
   HiveScaleDevice,
@@ -77,18 +80,24 @@ type SeriesAxis =
   | 'weight'
   | 'temperature'
   | 'humidity'
+  | 'pressure'
   | 'voltage'
   | 'percent'
   | 'current'
   | 'power'
   | 'dbfs'
-  | 'beecount';
+  | 'beecount'
+  | 'vibration';
 
 type SeriesKey =
   | 'scale1Weight'
   | 'scale1Temperature'
+  | 'scale1Humidity'
+  | 'scale1Pressure'
   | 'scale2Weight'
   | 'scale2Temperature'
+  | 'scale2Humidity'
+  | 'scale2Pressure'
   | 'ambientTemperature'
   | 'ambientHumidity'
   | 'batteryVoltage'
@@ -103,7 +112,15 @@ type SeriesKey =
   | 'beeCounter1Net'
   | 'beeCounter2In'
   | 'beeCounter2Out'
-  | 'beeCounter2Net';
+  | 'beeCounter2Net'
+  | 'accel1Vibration'
+  | 'accel1SwarmBand'
+  | 'accel1FanningBand'
+  | 'accel1ActivityBand'
+  | 'accel2Vibration'
+  | 'accel2SwarmBand'
+  | 'accel2FanningBand'
+  | 'accel2ActivityBand';
 
 interface DiagramSeries {
   key: SeriesKey;
@@ -151,7 +168,7 @@ interface AxisScaleSettings {
 type AxisScaleSettingsMap = Record<SeriesAxis, AxisScaleSettings>;
 
 interface StoredDiagramSettings {
-  version: 5;
+  version: 6;
   visibleSeries: VisibleSeriesMap;
   axes: AxisScaleSettingsMap;
 }
@@ -161,8 +178,12 @@ const diagramSettingsStoragePrefix = 'hivepal:hivescale-diagram:';
 const defaultVisibleSeries: VisibleSeriesMap = {
   scale1Weight: true,
   scale1Temperature: true,
+  scale1Humidity: false,
+  scale1Pressure: false,
   scale2Weight: true,
   scale2Temperature: true,
+  scale2Humidity: false,
+  scale2Pressure: false,
   ambientTemperature: false,
   ambientHumidity: false,
   batteryVoltage: false,
@@ -178,6 +199,14 @@ const defaultVisibleSeries: VisibleSeriesMap = {
   beeCounter2In: false,
   beeCounter2Out: false,
   beeCounter2Net: false,
+  accel1Vibration: false,
+  accel1SwarmBand: false,
+  accel1FanningBand: false,
+  accel1ActivityBand: false,
+  accel2Vibration: false,
+  accel2SwarmBand: false,
+  accel2FanningBand: false,
+  accel2ActivityBand: false,
 };
 
 const defaultAxisSettings: AxisScaleSettings = {
@@ -188,18 +217,24 @@ const defaultAxisSettings: AxisScaleSettings = {
 };
 
 const getDefaultDiagramSettings = (): StoredDiagramSettings => ({
-  version: 5,
+  version: 6,
   visibleSeries: { ...defaultVisibleSeries },
   axes: {
     weight: { ...defaultAxisSettings, side: 'left' },
     temperature: { ...defaultAxisSettings, side: 'right' },
     humidity: { ...defaultAxisSettings, side: 'right' },
+    pressure: { ...defaultAxisSettings, side: 'right' },
     voltage: { ...defaultAxisSettings, side: 'right' },
     percent: { ...defaultAxisSettings, side: 'right' },
     current: { ...defaultAxisSettings, side: 'right' },
     power: { ...defaultAxisSettings, side: 'right' },
     dbfs: { ...defaultAxisSettings, side: 'right' },
     beecount: { ...defaultAxisSettings, scaleMode: 'zeroToMax', side: 'right' },
+    vibration: {
+      ...defaultAxisSettings,
+      scaleMode: 'zeroToMax',
+      side: 'right',
+    },
   },
 });
 
@@ -216,12 +251,14 @@ const axisOrder: SeriesAxis[] = [
   'weight',
   'temperature',
   'humidity',
+  'pressure',
   'voltage',
   'percent',
   'current',
   'power',
   'dbfs',
   'beecount',
+  'vibration',
 ];
 
 const axisPresentation: Record<
@@ -235,12 +272,14 @@ const axisPresentation: Record<
     Icon: Thermometer,
   },
   humidity: { labelKey: 'diagram.axis.humidity', unit: '%', Icon: Droplets },
+  pressure: { labelKey: 'diagram.axis.pressure', unit: 'hPa', Icon: Gauge },
   voltage: { labelKey: 'diagram.axis.voltage', unit: 'V', Icon: Battery },
   percent: { labelKey: 'diagram.axis.percent', unit: '%', Icon: Battery },
   current: { labelKey: 'diagram.axis.current', unit: 'mA', Icon: Zap },
   power: { labelKey: 'diagram.axis.power', unit: 'mW', Icon: Sun },
   dbfs: { labelKey: 'diagram.axis.sound', unit: 'dBFS', Icon: Activity },
   beecount: { labelKey: 'diagram.axis.beecount', unit: 'bees', Icon: Activity },
+  vibration: { labelKey: 'diagram.axis.vibration', unit: 'mg', Icon: Waves },
 };
 
 type SeriesTuple = readonly [
@@ -260,32 +299,126 @@ type GroupedSeriesTuple = readonly [
   groupKey: string,
 ];
 
-const scale1SeriesTuples: SeriesTuple[] = [
-  ['scale1Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--primary)'],
-  ['scale1Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-2)'],
-  ['micLeftRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-1)'],
-  ['beeCounter1In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
-  ['beeCounter1Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-4)'],
-  ['beeCounter1Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--chart-5)'],
-];
+// Both per-hive scales expose the same set of series — identical labels, axes
+// and units. Only the concrete measurement keys and stroke colours differ, so
+// the shared shape lives here once and each scale supplies its keys/strokes
+// (in matching order) below.
+const scaleSeriesTemplate = [
+  { labelKey: 'diagram.series.weight', axis: 'weight', unit: 'kg' },
+  { labelKey: 'diagram.series.temp', axis: 'temperature', unit: '°C' },
+  { labelKey: 'diagram.series.humidity', axis: 'humidity', unit: '%' },
+  { labelKey: 'diagram.series.pressure', axis: 'pressure', unit: 'hPa' },
+  { labelKey: 'diagram.series.micRms', axis: 'dbfs', unit: 'dBFS' },
+  { labelKey: 'diagram.series.vibration', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.swarmBand', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.fanningBand', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.activityBand', axis: 'vibration', unit: 'mg' },
+  { labelKey: 'diagram.series.beesIn', axis: 'beecount', unit: 'bees' },
+  { labelKey: 'diagram.series.beesOut', axis: 'beecount', unit: 'bees' },
+  { labelKey: 'diagram.series.netFlow', axis: 'beecount', unit: 'bees' },
+] as const satisfies readonly {
+  labelKey: string;
+  axis: SeriesAxis;
+  unit: string;
+}[];
 
-const scale2SeriesTuples: SeriesTuple[] = [
-  ['scale2Weight', 'diagram.series.weight', 'weight', 'kg', 'var(--muted-foreground)'],
-  ['scale2Temperature', 'diagram.series.temp', 'temperature', '°C', 'var(--chart-4)'],
-  ['micRightRms', 'diagram.series.micRms', 'dbfs', 'dBFS', 'var(--chart-2)'],
-  ['beeCounter2In', 'diagram.series.beesIn', 'beecount', 'bees', 'var(--chart-3)'],
-  ['beeCounter2Out', 'diagram.series.beesOut', 'beecount', 'bees', 'var(--chart-5)'],
-  ['beeCounter2Net', 'diagram.series.netFlow', 'beecount', 'bees', 'var(--primary)'],
-];
+type ScaleSeriesStyling = readonly [key: SeriesKey, stroke: string];
+
+const buildScaleSeriesTuples = (
+  styling: readonly ScaleSeriesStyling[],
+): SeriesTuple[] =>
+  scaleSeriesTemplate.map(({ labelKey, axis, unit }, i) => {
+    const [key, stroke] = styling[i];
+    return [key, labelKey, axis, unit, stroke];
+  });
+
+const scale1SeriesTuples: SeriesTuple[] = buildScaleSeriesTuples([
+  ['scale1Weight', 'var(--primary)'],
+  ['scale1Temperature', 'var(--chart-2)'],
+  ['scale1Humidity', 'var(--chart-3)'],
+  ['scale1Pressure', 'var(--chart-4)'],
+  ['micLeftRms', 'var(--chart-1)'],
+  ['accel1Vibration', 'var(--chart-1)'],
+  ['accel1SwarmBand', 'var(--chart-3)'],
+  ['accel1FanningBand', 'var(--chart-4)'],
+  ['accel1ActivityBand', 'var(--chart-5)'],
+  ['beeCounter1In', 'var(--chart-3)'],
+  ['beeCounter1Out', 'var(--chart-4)'],
+  ['beeCounter1Net', 'var(--chart-5)'],
+]);
+
+const scale2SeriesTuples: SeriesTuple[] = buildScaleSeriesTuples([
+  ['scale2Weight', 'var(--muted-foreground)'],
+  ['scale2Temperature', 'var(--chart-4)'],
+  ['scale2Humidity', 'var(--chart-5)'],
+  ['scale2Pressure', 'var(--chart-1)'],
+  ['micRightRms', 'var(--chart-2)'],
+  ['accel2Vibration', 'var(--chart-2)'],
+  ['accel2SwarmBand', 'var(--chart-4)'],
+  ['accel2FanningBand', 'var(--chart-1)'],
+  ['accel2ActivityBand', 'var(--chart-5)'],
+  ['beeCounter2In', 'var(--chart-3)'],
+  ['beeCounter2Out', 'var(--chart-5)'],
+  ['beeCounter2Net', 'var(--primary)'],
+]);
 
 const ambientAndOffGridSeriesTuples: GroupedSeriesTuple[] = [
-  ['ambientTemperature', 'diagram.series.ambientTemp', 'temperature', '°C', 'var(--chart-5)', 'diagram.group.ambient'],
-  ['ambientHumidity', 'diagram.series.ambientHumidity', 'humidity', '%', 'var(--chart-3)', 'diagram.group.ambient'],
-  ['batteryVoltage', 'diagram.series.batteryVoltage', 'voltage', 'V', 'var(--destructive)', 'diagram.group.offGrid'],
-  ['batterySoc', 'diagram.series.batteryCharge', 'percent', '%', 'var(--chart-1)', 'diagram.group.offGrid'],
-  ['solarLoadVoltage', 'diagram.series.solarVoltage', 'voltage', 'V', 'var(--chart-2)', 'diagram.group.offGrid'],
-  ['solarCurrent', 'diagram.series.solarCurrent', 'current', 'mA', 'var(--chart-3)', 'diagram.group.offGrid'],
-  ['solarPower', 'diagram.series.solarPower', 'power', 'mW', 'var(--chart-4)', 'diagram.group.offGrid'],
+  [
+    'ambientTemperature',
+    'diagram.series.ambientTemp',
+    'temperature',
+    '°C',
+    'var(--chart-5)',
+    'diagram.group.ambient',
+  ],
+  [
+    'ambientHumidity',
+    'diagram.series.ambientHumidity',
+    'humidity',
+    '%',
+    'var(--chart-3)',
+    'diagram.group.ambient',
+  ],
+  [
+    'batteryVoltage',
+    'diagram.series.batteryVoltage',
+    'voltage',
+    'V',
+    'var(--destructive)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'batterySoc',
+    'diagram.series.batteryCharge',
+    'percent',
+    '%',
+    'var(--chart-1)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'solarLoadVoltage',
+    'diagram.series.solarVoltage',
+    'voltage',
+    'V',
+    'var(--chart-2)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'solarCurrent',
+    'diagram.series.solarCurrent',
+    'current',
+    'mA',
+    'var(--chart-3)',
+    'diagram.group.offGrid',
+  ],
+  [
+    'solarPower',
+    'diagram.series.solarPower',
+    'power',
+    'mW',
+    'var(--chart-4)',
+    'diagram.group.offGrid',
+  ],
 ];
 
 const toHiveSeries = (
@@ -551,10 +684,10 @@ const loadDiagramSettings = (deviceId: string): StoredDiagramSettings => {
     );
     if (!raw) return getDefaultDiagramSettings();
     const parsed = JSON.parse(raw) as Partial<StoredDiagramSettings>;
-    // version 5 adds beecount series — reset if older
-    if (parsed.version !== 5) return getDefaultDiagramSettings();
+    // version 6 adds accelerometer/vibration series — reset if older
+    if (parsed.version !== 6) return getDefaultDiagramSettings();
     return {
-      version: 5,
+      version: 6,
       visibleSeries: mergeVisibleSeries(parsed.visibleSeries),
       axes: mergeAxisSettings(parsed.axes),
     };
@@ -829,6 +962,10 @@ export const HiveScaleDiagramPanel = ({
           // Zero-counts from an ok counter are valid; only suppress if counter is not ok
           const counter1Ok = item.bee_counter_1_ok !== false;
           const counter2Ok = item.bee_counter_2_ok !== false;
+          // Same for the accelerometers: a missing/not-ok sensor must show as a
+          // gap, not a misleading 0 mg "perfectly still" reading.
+          const accel1Ok = item.accel_1_ok !== false;
+          const accel2Ok = item.accel_2_ok !== false;
           return {
             timestamp: new Date(item.measured_at).getTime(),
             measuredAt: item.measured_at,
@@ -843,6 +980,13 @@ export const HiveScaleDiagramPanel = ({
             ),
             scale1Temperature: cleanTemperature(item.hive_1_temp_c),
             scale2Temperature: cleanTemperature(item.hive_2_temp_c),
+            // In-hive humidity & barometric pressure from the paired HolyIot
+            // 25015 BLE sensor (per hive). The HiveScale backend promotes these
+            // to ble_N_* columns; older payloads without a BLE sensor send null.
+            scale1Humidity: toFiniteNumber(item.ble_1_humidity_percent),
+            scale2Humidity: toFiniteNumber(item.ble_2_humidity_percent),
+            scale1Pressure: toFiniteNumber(item.ble_1_pressure_hpa),
+            scale2Pressure: toFiniteNumber(item.ble_2_pressure_hpa),
             ambientTemperature: cleanTemperature(item.ambient_temp_c),
             ambientHumidity: toFiniteNumber(item.ambient_humidity_percent),
             batteryVoltage: toFiniteNumber(
@@ -860,6 +1004,30 @@ export const HiveScaleDiagramPanel = ({
             beeCounter2In: counter2Ok ? bc2In : null,
             beeCounter2Out: counter2Ok ? bc2Out : null,
             beeCounter2Net: counter2Ok ? bc2Net : null,
+            accel1Vibration: accel1Ok
+              ? toFiniteNumber(item.accel_1_rms_mg)
+              : null,
+            accel1SwarmBand: accel1Ok
+              ? toFiniteNumber(item.accel_1_band_swarm_mg)
+              : null,
+            accel1FanningBand: accel1Ok
+              ? toFiniteNumber(item.accel_1_band_fanning_mg)
+              : null,
+            accel1ActivityBand: accel1Ok
+              ? toFiniteNumber(item.accel_1_band_activity_mg)
+              : null,
+            accel2Vibration: accel2Ok
+              ? toFiniteNumber(item.accel_2_rms_mg)
+              : null,
+            accel2SwarmBand: accel2Ok
+              ? toFiniteNumber(item.accel_2_band_swarm_mg)
+              : null,
+            accel2FanningBand: accel2Ok
+              ? toFiniteNumber(item.accel_2_band_fanning_mg)
+              : null,
+            accel2ActivityBand: accel2Ok
+              ? toFiniteNumber(item.accel_2_band_activity_mg)
+              : null,
           };
         })
         .filter(item => Number.isFinite(item.timestamp)),
@@ -878,6 +1046,25 @@ export const HiveScaleDiagramPanel = ({
       return true;
     });
   }, [chartData, dateRange]);
+
+  // Which series actually carry at least one finite reading in the visible
+  // window. Series without data are greyed out (and not toggleable) so the user
+  // can tell at a glance which sensors this device is reporting for the range.
+  const availableSeriesKeys = useMemo(() => {
+    const available = new Set<SeriesKey>();
+    const keys = series.map(s => s.key);
+    for (const row of visibleChartData) {
+      for (const key of keys) {
+        if (available.has(key)) continue;
+        const value = row[key as keyof typeof row];
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          available.add(key);
+        }
+      }
+      if (available.size === keys.length) break;
+    }
+    return available;
+  }, [series, visibleChartData]);
 
   const axisDomains = useMemo(() => {
     const domains: Partial<Record<SeriesAxis, AxisDomain | undefined>> = {};
@@ -1029,6 +1216,32 @@ export const HiveScaleDiagramPanel = ({
     return latest === -Infinity ? null : new Date(latest).toISOString();
   }, [measurements]);
 
+  // HiveInside in-hive sensors report their running firmware over BLE; show the
+  // latest non-empty value for each populated hive next to the HiveScale node
+  // firmware. Searching all loaded measurements (not just the newest row) makes
+  // this robust against cycles where the GATT read failed or the sensor was
+  // absent — the version from an earlier row is still current and useful.
+  const hiveInsideFirmware = useMemo<string[]>(() => {
+    if (!measurements?.length) return [];
+    const sorted = [...measurements].sort(
+      (a, b) =>
+        new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
+    );
+    const newestNonEmpty = (
+      key: 'ble_1_firmware_version' | 'ble_2_firmware_version',
+    ): string | null => {
+      for (const m of sorted) {
+        const v = m[key];
+        if (typeof v === 'string' && v.length > 0) return v;
+      }
+      return null;
+    };
+    return [
+      newestNonEmpty('ble_1_firmware_version'),
+      newestNonEmpty('ble_2_firmware_version'),
+    ].filter((v): v is string => v !== null);
+  }, [measurements]);
+
   return (
     <Card>
       <CardHeader>
@@ -1061,6 +1274,14 @@ export const HiveScaleDiagramPanel = ({
                 </span>{' '}
                 {selectedDevice.last_firmware_version ?? '—'}
               </span>
+              {hiveInsideFirmware.length > 0 && (
+                <span>
+                  <span className="font-medium text-foreground">
+                    {t('diagram.meta.hiveInsideFirmware')}
+                  </span>{' '}
+                  {hiveInsideFirmware.join(' / ')}
+                </span>
+              )}
             </div>
           </div>
           <Button
@@ -1147,24 +1368,46 @@ export const HiveScaleDiagramPanel = ({
                     {section.subgroup}
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {section.items.map(s => (
-                      <Badge
-                        key={s.key}
-                        variant={visibleSeries[s.key] ? 'default' : 'outline'}
-                        className="cursor-pointer select-none"
-                        style={
-                          visibleSeries[s.key]
-                            ? {
-                                backgroundColor: s.stroke,
-                                borderColor: s.stroke,
-                              }
-                            : { borderColor: s.stroke, color: s.stroke }
-                        }
-                        onClick={() => toggleSeries(s.key)}
-                      >
-                        {s.label}
-                      </Badge>
-                    ))}
+                    {section.items.map(s => {
+                      // Only grey out once we actually have measurements loaded —
+                      // while loading (empty data) every series would otherwise
+                      // appear unavailable.
+                      const hasData =
+                        !visibleChartData.length ||
+                        availableSeriesKeys.has(s.key);
+                      const isActive = visibleSeries[s.key];
+                      return (
+                        <Badge
+                          key={s.key}
+                          variant={isActive ? 'default' : 'outline'}
+                          aria-disabled={!hasData}
+                          title={
+                            hasData ? undefined : t('diagram.noDataForSeries')
+                          }
+                          className={cn(
+                            'select-none',
+                            hasData
+                              ? 'cursor-pointer'
+                              : 'cursor-not-allowed opacity-40',
+                          )}
+                          style={
+                            !hasData
+                              ? undefined
+                              : isActive
+                                ? {
+                                    backgroundColor: s.stroke,
+                                    borderColor: s.stroke,
+                                  }
+                                : { borderColor: s.stroke, color: s.stroke }
+                          }
+                          onClick={
+                            hasData ? () => toggleSeries(s.key) : undefined
+                          }
+                        >
+                          {s.label}
+                        </Badge>
+                      );
+                    })}
                   </div>
                 </div>
               ))}
@@ -1220,10 +1463,12 @@ export const HiveScaleDiagramPanel = ({
                   const { unit } = axisPresentation[axis];
                   const settings = axisScaleSettings[axis];
                   const unitWidths: Partial<Record<SeriesAxis, number>> = {
+                    pressure: 74,
                     current: 58,
                     power: 62,
                     dbfs: 68,
                     beecount: 62,
+                    vibration: 58,
                   };
                   return (
                     <YAxis
@@ -1385,7 +1630,9 @@ export const HiveScaleDiagramPanel = ({
                         </Label>
                         <Input
                           className="h-7 text-xs"
-                          placeholder={t('diagram.axisSettings.autoPlaceholder')}
+                          placeholder={t(
+                            'diagram.axisSettings.autoPlaceholder',
+                          )}
                           value={settings.customMin}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {
@@ -1400,7 +1647,9 @@ export const HiveScaleDiagramPanel = ({
                         </Label>
                         <Input
                           className="h-7 text-xs"
-                          placeholder={t('diagram.axisSettings.autoPlaceholder')}
+                          placeholder={t(
+                            'diagram.axisSettings.autoPlaceholder',
+                          )}
                           value={settings.customMax}
                           onChange={e =>
                             updateAxisScaleSettings(axis, {

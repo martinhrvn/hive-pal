@@ -264,33 +264,28 @@
     "weight": "Weight",
     "hiveTemp": "Hive temp",
     "rmsSound": "RMS sound",
-    "temperature": "Temperature",
-    "humidity": "Humidity",
-    "voltage": "Voltage",
-    "charge": "Charge",
-    "alert": "Alert",
-    "alertOn": "Alert",
-    "alertOff": "No alert",
-    "loadVoltage": "Load voltage",
-    "current": "Current",
-    "power": "Power",
-    "ambient": {
-      "title": "Ambient",
-      "description": "Outside sensor"
+    "ambientTemperature": "Ambient temperature",
+    "ambientHumidity": "Ambient humidity",
+    "batteryCharge": "Battery charge",
+    "solarInput": "Solar input",
+    "charging": "Charging",
+    "general": {
+      "title": "General",
+      "description": "Ambient & power"
     },
-    "battery": {
-      "title": "Battery",
-      "description": "MAX17048 fuel gauge"
-    },
-    "solar": {
-      "title": "Solar input",
-      "description": "INA219 panel monitor"
+    "humidity": "Hive humidity",
+    "wirelessSensorsBattery": "Wireless sensors battery",
+    "sensorTypes": {
+      "hiveHeart": "HiveHeart",
+      "inHive": "In-hive sensor",
+      "scale": "Scale"
     }
   },
   "diagram": {
     "title": "Measurements",
     "subtitle": "Weight, temperature, and entrance activity over time",
     "noMeasurements": "No measurements for the selected range.",
+    "noDataForSeries": "No data in the selected range.",
     "meta": {
       "device": "Device:",
       "lastSeen": "Last seen:",
@@ -315,7 +310,11 @@
       "batteryCharge": "Battery charge",
       "solarVoltage": "Solar voltage",
       "solarCurrent": "Solar current",
-      "solarPower": "Solar power"
+      "solarPower": "Solar power",
+      "humidity": "{{name}} vochtigheid",
+      "pressure": "{{name}} luchtdruk",
+      "fanningBand": "{{name}} fanning band (30–100 Hz)",
+      "activityBand": "{{name}} activity band (100–200 Hz)"
     },
     "group": {
       "ambient": "Ambient",
@@ -330,7 +329,8 @@
       "current": "Current",
       "power": "Power",
       "sound": "Sound",
-      "beecount": "Bee count"
+      "beecount": "Bee count",
+      "pressure": "Luchtdruk"
     },
     "marker": {
       "inspection": "Inspection",
@@ -399,7 +399,11 @@
         "label": "High",
         "description": "Harmonic overtones"
       }
-    }
+    },
+    "rmsToggleShow": "Show RMS level",
+    "rmsToggleHide": "Hide RMS level",
+    "rmsTitle": "RMS sound level",
+    "rmsSeries": "{{name}} RMS"
   },
   "beecounter": {
     "title": "Entrance Counter",

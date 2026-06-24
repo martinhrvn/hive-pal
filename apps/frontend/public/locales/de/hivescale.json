@@ -227,6 +227,20 @@
     "upload": "Firmware hochladen",
     "uploading": "Wird hochgeladen…",
     "success": "Firmware {{version}} ({{target}}) hochgeladen und registriert.",
+    "update": {
+      "title": "Firmware-Update",
+      "description": "Waagen aktualisieren sich nie von selbst – Sie geben hier jede neue Version frei, bevor diese Waage sie installiert.",
+      "unavailable": "Firmware-Status ist derzeit nicht verfügbar.",
+      "availableTitle": "Firmware {{version}} ist verfügbar",
+      "availableBody": "Diese Waage läuft mit {{current}}. Übernehmen, um sie auf {{version}} zu aktualisieren.",
+      "officialSuffix": "Dies ist eine offizielle Version.",
+      "apply": "Update übernehmen",
+      "applying": "Wird übernommen…",
+      "applied": "Firmware {{version}} freigegeben – die Waage aktualisiert sich bei der nächsten Verbindung.",
+      "queued": "Update {{version}} freigegeben. Die Waage installiert es bei der nächsten Verbindung.",
+      "upToDate": "Firmware ist aktuell ({{version}}).",
+      "viewerNotice": "Nur Gerätebesitzer und Admins können Firmware-Updates übernehmen."
+    },
     "notice": {
       "noPermission": "Nur Gerätebesitzer und Admins können Firmware hochladen. Ihre Rolle ist „{{role}}“.",
       "selectDevice": "Wählen Sie ein beanspruchtes Gerät aus, um Firmware hochzuladen."
@@ -234,6 +248,17 @@
     "errors": {
       "missingFile": "Wählen Sie eine Firmware-Binärdatei (.bin) zum Hochladen aus.",
       "missingVersion": "Geben Sie eine Version ein, z. B. 0.6.3."
+    },
+    "hiveinsideOta": {
+      "title": "HiveInside-OTA auslösen",
+      "description": "Das Hochladen einer HiveInside-Firmware reiht das Over-the-Air-Update jetzt automatisch für beide Sensor-Slots per BLE ein. Nutze dies, um die aktive Version erneut an einen bestimmten Slot zu senden. Halte den Sensor während des Updates eingeschaltet und wach.",
+      "slot": "Sensor-Slot",
+      "slotOption": "Slot {{slot}}",
+      "queue": "HiveInside-OTA einreihen",
+      "queueing": "Wird eingereiht…",
+      "success": "HiveInside-OTA für Slot {{slot}} eingereiht.",
+      "autoQueued": "HiveInside-OTA automatisch für Slots {{slots}} eingereiht.",
+      "autoQueueFailed": "HiveInside-OTA konnte für Slots {{slots}} nicht automatisch eingereiht werden."
     }
   },
   "sdData": {
@@ -264,33 +289,28 @@
     "weight": "Gewicht",
     "hiveTemp": "Stocktemperatur",
     "rmsSound": "RMS-Schall",
-    "temperature": "Temperatur",
-    "humidity": "Luftfeuchtigkeit",
-    "voltage": "Spannung",
-    "charge": "Ladung",
-    "alert": "Alarm",
-    "alertOn": "Alarm",
-    "alertOff": "Kein Alarm",
-    "loadVoltage": "Lastspannung",
-    "current": "Strom",
-    "power": "Leistung",
-    "ambient": {
-      "title": "Umgebung",
-      "description": "Außensensor"
+    "ambientTemperature": "Außentemperatur",
+    "ambientHumidity": "Außenluftfeuchtigkeit",
+    "batteryCharge": "Akkuladung",
+    "solarInput": "Solareingang",
+    "charging": "Lädt",
+    "general": {
+      "title": "Allgemein",
+      "description": "Umgebung & Stromversorgung"
     },
-    "battery": {
-      "title": "Batterie",
-      "description": "MAX17048-Ladestandsmesser"
-    },
-    "solar": {
-      "title": "Solareingang",
-      "description": "INA219-Panel-Monitor"
+    "humidity": "Stockfeuchtigkeit",
+    "wirelessSensorsBattery": "Funksensoren-Akku",
+    "sensorTypes": {
+      "hiveHeart": "HiveHeart",
+      "inHive": "Stocksensor",
+      "scale": "Waage"
     }
   },
   "diagram": {
     "title": "Messungen",
     "subtitle": "Gewicht, Temperatur und Flugaktivität im Zeitverlauf",
     "noMeasurements": "Keine Messungen für den ausgewählten Zeitraum.",
+    "noDataForSeries": "Keine Daten im ausgewählten Zeitraum.",
     "meta": {
       "device": "Gerät:",
       "lastSeen": "Zuletzt gesehen:",
@@ -306,6 +326,8 @@
       "weight": "{{name}} Gewicht",
       "temp": "{{name}} Temperatur",
       "micRms": "{{name}} Mikro-RMS",
+      "vibration": "{{name}} Vibration",
+      "swarmBand": "{{name}} Schwarmband (8–30 Hz)",
       "beesIn": "{{name}} Bienen rein",
       "beesOut": "{{name}} Bienen raus",
       "netFlow": "{{name}} Nettofluss",
@@ -315,7 +337,11 @@
       "batteryCharge": "Batterieladung",
       "solarVoltage": "Solarspannung",
       "solarCurrent": "Solarstrom",
-      "solarPower": "Solarleistung"
+      "solarPower": "Solarleistung",
+      "humidity": "{{name}} Luftfeuchte",
+      "pressure": "{{name}} Luftdruck",
+      "fanningBand": "{{name}} Fächelband (30–100 Hz)",
+      "activityBand": "{{name}} Aktivitätsband (100–200 Hz)"
     },
     "group": {
       "ambient": "Umgebung",
@@ -330,7 +356,9 @@
       "current": "Strom",
       "power": "Leistung",
       "sound": "Schall",
-      "beecount": "Bienenanzahl"
+      "beecount": "Bienenanzahl",
+      "vibration": "Vibration",
+      "pressure": "Luftdruck"
     },
     "marker": {
       "inspection": "Inspektion",
@@ -399,7 +427,11 @@
         "label": "Hoch",
         "description": "Harmonische Obertöne"
       }
-    }
+    },
+    "rmsToggleShow": "RMS-Pegel anzeigen",
+    "rmsToggleHide": "RMS-Pegel ausblenden",
+    "rmsTitle": "RMS-Schallpegel",
+    "rmsSeries": "{{name}} RMS"
   },
   "beecounter": {
     "title": "Fluglochzähler",

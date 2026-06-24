@@ -36,6 +36,15 @@ const SD_IMPORT_MAX_FILE_SIZE = Number(
   process.env.HIVESCALE_SD_IMPORT_MAX_FILE_SIZE ?? 250 * 1024 * 1024,
 );
 
+// Firmware-relay commands target a sub-device paired in slot 1 or 2. Default to
+// slot 1 when omitted and reject anything else.
+function parseRelaySlot(raw?: string): 1 | 2 {
+  if (raw === undefined || raw === '') return 1;
+  if (raw === '1') return 1;
+  if (raw === '2') return 2;
+  throw new BadRequestException('slot must be 1 or 2');
+}
+
 @ApiTags('hivescale')
 @Controller('hivescale')
 @UseGuards(JwtAuthGuard)
@@ -164,7 +173,9 @@ export class HiveScaleController {
     }
 
     const target =
-      body.target === 'beecounter' || body.target === 'hivescale'
+      body.target === 'beecounter' ||
+      body.target === 'hivescale' ||
+      body.target === 'hiveinside'
         ? body.target
         : undefined;
 
@@ -179,6 +190,54 @@ export class HiveScaleController {
         // and default to true when omitted.
         active: body.active === undefined ? true : body.active !== 'false',
       },
+    );
+  }
+
+  @Get('devices/:deviceId/firmware/status')
+  getFirmwareStatus(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.hiveScaleService.getFirmwareStatus(
+      this.extractToken(req),
+      deviceId,
+    );
+  }
+
+  @Post('devices/:deviceId/firmware/approve')
+  approveFirmware(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.hiveScaleService.approveFirmware(
+      this.extractToken(req),
+      deviceId,
+    );
+  }
+
+  @Post('devices/:deviceId/commands/update-hiveinside')
+  queueHiveInsideUpdate(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @Query('slot') slot?: string,
+  ) {
+    return this.hiveScaleService.queueHiveInsideUpdate(
+      this.extractToken(req),
+      deviceId,
+      parseRelaySlot(slot),
+    );
+  }
+
+  @Post('devices/:deviceId/commands/update-beecounter')
+  queueBeeCounterUpdate(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+    @Query('slot') slot?: string,
+  ) {
+    return this.hiveScaleService.queueBeeCounterUpdate(
+      this.extractToken(req),
+      deviceId,
+      parseRelaySlot(slot),
     );
   }
 

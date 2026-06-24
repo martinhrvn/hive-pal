@@ -40,20 +40,63 @@ interface HiveScaleImportResponse {
   duplicates: number;
 }
 
+export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
+
 export interface HiveScaleFirmwareUploadDto {
   version: string;
-  target?: 'hivescale' | 'beecounter';
+  target?: HiveScaleFirmwareTarget;
   active?: boolean;
+}
+
+export interface HiveScaleRelayUpdateResult {
+  status: string;
+  id: number;
+  command_type: string;
+  payload: { slot: number };
+}
+
+export interface HiveScaleAutoQueuedUpdate {
+  slot: 1 | 2;
+  status: 'queued' | 'failed';
+  command_id?: number;
+  error?: string;
 }
 
 export interface HiveScaleFirmwareUploadResult {
   status: string;
   version: string;
   filename: string;
-  target: 'hivescale' | 'beecounter';
+  target: HiveScaleFirmwareTarget;
   active: boolean;
   size_bytes: number;
   crc32: number;
+  /**
+   * When a HiveInside image is uploaded as the active release, HivePal also
+   * auto-queues the OTA relay to the in-hive sensors (slots 1 & 2) so that
+   * uploading and updating are a single action. One entry per slot; omitted for
+   * non-HiveInside uploads and inactive releases.
+   */
+  auto_queued_updates?: HiveScaleAutoQueuedUpdate[];
+}
+
+export interface HiveScaleFirmwareStatus {
+  device_id: string;
+  target: string;
+  current_version: string | null;
+  latest_version: string | null;
+  /** True when the latest available release is a global/official build (no owner). */
+  latest_is_official: boolean;
+  approved_version: string | null;
+  update_available: boolean;
+  /** Update available but not yet approved by the owner — the device won't auto-flash. */
+  pending_approval: boolean;
+}
+
+export interface HiveScaleFirmwareApproveResult {
+  status: string;
+  device_id: string;
+  version: string;
+  command_id: number;
 }
 
 export interface HiveScaleClaimDeviceDto {
@@ -293,6 +336,59 @@ export class HiveScaleService {
     );
   }
 
+  queueHiveInsideUpdate(accessToken: string, deviceId: string, slot: 1 | 2) {
+    return this.request<HiveScaleRelayUpdateResult>(
+      accessToken,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/commands/update-hiveinside`,
+      { params: { slot } },
+    );
+  }
+
+  /**
+   * Queue the HiveInside OTA relay for both sensor slots, best-effort. Used after
+   * a HiveInside firmware upload so a published release is pushed to the in-hive
+   * sensors without a separate manual step. A slot with no paired sensor simply
+   * yields a no-op command on the HiveScale, so we always queue both and report
+   * the per-slot outcome instead of failing the upload.
+   */
+  private async queueHiveInsideUpdateAllSlots(
+    accessToken: string,
+    deviceId: string,
+  ): Promise<HiveScaleAutoQueuedUpdate[]> {
+    const slots: Array<1 | 2> = [1, 2];
+    const results: HiveScaleAutoQueuedUpdate[] = [];
+    for (const slot of slots) {
+      try {
+        const queued = await this.queueHiveInsideUpdate(
+          accessToken,
+          deviceId,
+          slot,
+        );
+        results.push({ slot, status: 'queued', command_id: queued.id });
+      } catch (error) {
+        results.push({
+          slot,
+          status: 'failed',
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Failed to queue HiveInside update',
+        });
+      }
+    }
+    return results;
+  }
+
+  queueBeeCounterUpdate(accessToken: string, deviceId: string, slot: 1 | 2) {
+    return this.request(
+      accessToken,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/commands/update-beecounter`,
+      { params: { slot } },
+    );
+  }
+
   async uploadFirmware(
     accessToken: string,
     deviceId: string,
@@ -305,9 +401,13 @@ export class HiveScaleService {
     }
 
     const target = dto.target ?? 'hivescale';
-    if (target !== 'hivescale' && target !== 'beecounter') {
+    if (
+      target !== 'hivescale' &&
+      target !== 'beecounter' &&
+      target !== 'hiveinside'
+    ) {
       throw new BadRequestException(
-        "target must be 'hivescale' or 'beecounter'",
+        "target must be 'hivescale', 'beecounter' or 'hiveinside'",
       );
     }
 
@@ -339,13 +439,46 @@ export class HiveScaleService {
           'X-HivePal-Service-Key': this.requireServiceApiKey(),
         },
       });
-      return response.data;
+
+      const result = response.data;
+
+      // Uploading a HiveInside image used to only *register* the release; the OTA
+      // relay then had to be triggered separately. We now auto-queue the relay to
+      // the in-hive sensors (both slots) right after a successful upload so that
+      // publishing a HiveInside build also pushes it. Only do this for an *active*
+      // release: queuing relays the latest active release, so an inactive upload
+      // would otherwise relay an older build. Best-effort — the upload has already
+      // succeeded, so queue failures are reported per slot rather than thrown.
+      if (result.target === 'hiveinside' && result.active) {
+        result.auto_queued_updates = await this.queueHiveInsideUpdateAllSlots(
+          accessToken,
+          deviceId,
+        );
+      }
+
+      return result;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         this.handleAxiosError(error);
       }
       throw new BadGatewayException('HiveScale firmware upload failed');
     }
+  }
+
+  getFirmwareStatus(accessToken: string, deviceId: string) {
+    return this.request<HiveScaleFirmwareStatus>(
+      accessToken,
+      'GET',
+      `/api/v1/app/devices/${deviceId}/firmware/status`,
+    );
+  }
+
+  approveFirmware(accessToken: string, deviceId: string) {
+    return this.request<HiveScaleFirmwareApproveResult>(
+      accessToken,
+      'POST',
+      `/api/v1/app/devices/${deviceId}/firmware/approve`,
+    );
   }
 
   async importSdMeasurements(
