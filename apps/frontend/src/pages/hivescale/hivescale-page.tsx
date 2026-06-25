@@ -24,7 +24,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHivesWithBoxes } from '@/api/hooks/useHives';
-import { useInspections } from '@/api/hooks/useInspections';
 import {
   useApproveHiveScaleFirmware,
   useClaimHiveScaleDevice,
@@ -54,12 +53,11 @@ import {
 } from '@/api/hooks/useHiveScale';
 import {
   createPresetDateRange,
-  HiveScaleDiagramPanel,
   measurementLimitForRange,
   type HiveScaleDateRange,
   type HiveScaleDateRangePreset,
 } from './hivescale-diagram-panel';
-import { HiveScaleSoundPanel } from './hivescale-sound-panel';
+import { HiveScaleModularDashboard } from './hivescale-modular-dashboard';
 import { WirelessSensorsBattery } from './wireless-sensors-battery';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -2008,7 +2006,7 @@ function DeviceStatusCard({
   );
 }
 
-function FirmwareUpdateCard({
+function FirmwareUpdateStatusSection({
   selectedDevice,
   deviceId,
 }: Readonly<{
@@ -2112,16 +2110,18 @@ function FirmwareUpdateCard({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <RefreshCw className="h-5 w-5" />
-          {t('firmware.update.title')}
-        </CardTitle>
-        <CardDescription>{t('firmware.update.description')}</CardDescription>
-      </CardHeader>
-      <CardContent>{body}</CardContent>
-    </Card>
+    <div className="space-y-3 rounded-md border p-3">
+      <div className="flex items-start gap-2">
+        <RefreshCw className="mt-0.5 h-4 w-4 shrink-0" />
+        <div>
+          <p className="text-sm font-medium">{t('firmware.update.title')}</p>
+          <p className="text-xs text-muted-foreground">
+            {t('firmware.update.description')}
+          </p>
+        </div>
+      </div>
+      {body}
+    </div>
   );
 }
 
@@ -2243,6 +2243,15 @@ function FirmwareUploadCard({
       </CardHeader>
       <CardContent>
         {firmwareNotice}
+
+        {selectedDevice && (
+          <div className="mb-6">
+            <FirmwareUpdateStatusSection
+              selectedDevice={selectedDevice}
+              deviceId={deviceId}
+            />
+          </div>
+        )}
 
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
@@ -2609,10 +2618,6 @@ function ScaleSetupPanel({
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
               />
-              <FirmwareUpdateCard
-                selectedDevice={selectedDevice}
-                deviceId={selectedDeviceId}
-              />
               <FirmwareUploadCard
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
@@ -2703,11 +2708,6 @@ export function HiveScalePage() {
   }, [insights.data?.alerts]);
   const removeDevice = useRemoveHiveScaleDevice();
   const hives = useHivesWithBoxes(undefined, { enabled: true });
-  const inspections = useInspections({
-    startDate: dateRange.preset === 'all' ? undefined : dateRange.startAt,
-    endDate: dateRange.endAt,
-  });
-
   const hiveNameOptions = useMemo(
     () =>
       [
@@ -2778,7 +2778,6 @@ export function HiveScalePage() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['hivescale'] }),
         queryClient.invalidateQueries({ queryKey: ['hives'] }),
-        queryClient.invalidateQueries({ queryKey: ['inspections'] }),
       ]);
     } catch (error) {
       toast.error(
@@ -2983,26 +2982,17 @@ export function HiveScalePage() {
       )}
 
       {selectedDevice && (
-        <HiveScaleDiagramPanel
+        <HiveScaleModularDashboard
           selectedDevice={selectedDevice}
           measurements={measurements.data}
-          isLoading={measurements.isLoading}
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
           scale1Name={scale1Name}
           scale2Name={scale2Name}
-          inspections={inspections.data}
-          hives={hives.data}
-        />
-      )}
-
-      {selectedDevice && (
-        <HiveScaleSoundPanel
-          measurements={measurements.data}
-          isLoading={measurements.isLoading}
-          dateRange={dateRange}
-          scale1Name={scale1Name}
-          scale2Name={scale2Name}
+          alerts={insights.data?.alerts ?? []}
+          insightsLoading={insights.isLoading}
+          insightsError={insights.isError}
+          isBatteryCharging={isBatteryCharging}
         />
       )}
     </div>
