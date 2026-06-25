@@ -15,6 +15,51 @@ export interface HiveScaleDevice {
   };
 }
 
+// A single hive carried by one HiveScale ESP32. Firmware v0.20.0+ reports up to
+// 18 hives per device (NAU7802 scales behind a TCA9548A mux, DS18B20 by ROM,
+// per-hive BLE / accelerometer / bee-counter), delivered by the HiveScale
+// backend as the `hives` array on every measurement (see `HiveScaleMeasurement`).
+//
+// The shape mirrors the backend `hive_readings` rows. For historical / legacy
+// (pre-v0.20.0) rows the backend synthesizes hives 1–2 from the flat
+// scale_N_*/hive_N_* columns, which carry a subset of these fields — so the
+// nested sensor blocks and their members are all optional/nullable.
+export interface HiveScaleHiveReading {
+  index: number; // 1..18
+  name?: string | null;
+  weight_kg: number | null;
+  raw_weight: number | null;
+  scale_source?: string | null; // hx711 | nau7802 | ...
+  temp_c: number | null;
+  temp_source?: string | null; // ds18b20 | ble | hiveheart
+  humidity_percent: number | null;
+  accel?: {
+    ok: boolean | null;
+    sample_count?: number | null;
+    range_g?: number | null;
+    rms_mg: number | null;
+    peak_mg: number | null;
+    band_swarm_mg: number | null;
+    band_fanning_mg: number | null;
+    band_activity_mg: number | null;
+  } | null;
+  ble?: {
+    present?: boolean | null;
+    sensor_type?: string | null;
+    humidity_percent: number | null;
+    pressure_hpa: number | null;
+    battery_percent?: number | null;
+    rssi_dbm?: number | null;
+  } | null;
+  bee_counter?: {
+    ok: boolean | null;
+    total_in: number | null;
+    total_out: number | null;
+    interval_in: number | null;
+    interval_out: number | null;
+  } | null;
+}
+
 export interface HiveScaleMeasurement {
   id: number;
   device_id: string;
@@ -162,6 +207,13 @@ export interface HiveScaleMeasurement {
   hiveheart_2_battery_v: number | null;
   hivescale_1_battery_v: number | null;
   hivescale_2_battery_v: number | null;
+  // Normalized per-hive readings — up to 18 hives per device (firmware v0.20.0+).
+  // This is the source of truth for reading every hive; the flat scale_1/scale_2
+  // (and hive_1/2, accel_1/2, ble_1/2, bee_counter_1/2) fields above remain as a
+  // 1–2 mirror for legacy consumers. Backfilled from the legacy columns for old
+  // rows, so it is present on every measurement (only `undefined` on the rare
+  // row with no data at all).
+  hives?: HiveScaleHiveReading[];
 }
 
 export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';
