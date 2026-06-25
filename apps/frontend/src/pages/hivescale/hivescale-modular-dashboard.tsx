@@ -283,7 +283,7 @@ const defaultWidgets: DashboardWidget[] = [
     id: 'default-temperature-heatmap',
     ...widgetTemplates.temperatureHeatmap,
   },
-].map(({ description: _description, Icon: _Icon, ...widget }) => widget);
+].map(({ id, kind, title, size }) => ({ id, kind, title, size }));
 
 const createWidgetId = (kind: DashboardWidgetKind) =>
   `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
