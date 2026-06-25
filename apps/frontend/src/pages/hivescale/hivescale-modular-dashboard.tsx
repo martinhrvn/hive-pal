@@ -57,6 +57,7 @@ import {
   type HiveScaleDateRangePreset,
 } from './hivescale-diagram-panel';
 import { severityConfig } from './hivescale-insights-card';
+import { BeeLoadingMessages } from './hivescale-loading-messages';
 import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';
 
 const MAX_HIVE_SLOTS = 18;
@@ -2328,23 +2329,19 @@ function VibrationWidget({
 
 const temperaturePanelClass = (tempC: number | null): string => {
   if (tempC === null) return 'border-muted bg-muted/20';
-  if (tempC < 20) {
+  if (tempC < 33) {
     return 'border-sky-300 bg-sky-50/80 dark:border-sky-900 dark:bg-sky-950/30';
   }
-  if (tempC < 32) {
+  if (tempC <= 36) {
     return 'border-emerald-300 bg-emerald-50/80 dark:border-emerald-900 dark:bg-emerald-950/30';
-  }
-  if (tempC < 36) {
-    return 'border-amber-300 bg-amber-50/80 dark:border-amber-900 dark:bg-amber-950/30';
   }
   return 'border-red-300 bg-red-50/80 dark:border-red-900 dark:bg-red-950/30';
 };
 
 const temperatureBarClass = (tempC: number | null): string => {
   if (tempC === null) return 'bg-muted-foreground/20';
-  if (tempC < 20) return 'bg-sky-500';
-  if (tempC < 32) return 'bg-emerald-500';
-  if (tempC < 36) return 'bg-amber-500';
+  if (tempC < 33) return 'bg-sky-500';
+  if (tempC <= 36) return 'bg-emerald-500';
   return 'bg-red-500';
 };
 
@@ -2405,10 +2402,9 @@ function TemperatureHeatmapWidget({ slots }: Readonly<{ slots: HiveSlot[] }>) {
         })}
       </div>
       <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-        <span className="rounded-full border border-sky-300 px-2 py-0.5">cool &lt;20 °C</span>
-        <span className="rounded-full border border-emerald-300 px-2 py-0.5">normal 20–32 °C</span>
-        <span className="rounded-full border border-amber-300 px-2 py-0.5">warm 32–36 °C</span>
-        <span className="rounded-full border border-red-300 px-2 py-0.5">hot ≥36 °C</span>
+        <span className="rounded-full border border-sky-300 px-2 py-0.5">low &lt;33 °C</span>
+        <span className="rounded-full border border-emerald-300 px-2 py-0.5">optimal brood 33–36 °C</span>
+        <span className="rounded-full border border-red-300 px-2 py-0.5">high &gt;36 °C</span>
       </div>
     </div>
   );
@@ -2798,6 +2794,7 @@ function renderWidget({
   slots,
   alerts,
   selectedDeviceId,
+  measurementsLoading,
   insightsLoading,
   insightsError,
 }: {
@@ -2810,11 +2807,22 @@ function renderWidget({
   slots: HiveSlot[];
   alerts: HiveScaleInsightAlert[];
   selectedDeviceId: string;
+  measurementsLoading: boolean;
   insightsLoading: boolean;
   insightsError: boolean;
 }) {
   const activeHiveIndexes = selectedHiveIndexes.slice(0, 8);
   const activeAlertHiveIndexes = new Set(activeHiveIndexes);
+  const isDiagramWidget = widget.kind !== 'insights' && widget.kind !== 'dataQuality';
+
+  if (measurementsLoading && isDiagramWidget) {
+    return (
+      <BeeLoadingMessages
+        intervalMs={1000}
+        className="h-72 rounded-md border border-dashed"
+      />
+    );
+  }
 
   switch (widget.kind) {
     case 'weightComparison':
@@ -2902,6 +2910,7 @@ function renderWidget({
 export function HiveScaleModularDashboard({
   selectedDevice,
   measurements,
+  measurementsLoading,
   dateRange,
   onDateRangeChange,
   scale1Name,
@@ -2913,6 +2922,7 @@ export function HiveScaleModularDashboard({
 }: Readonly<{
   selectedDevice: HiveScaleDevice;
   measurements: HiveScaleMeasurement[] | undefined;
+  measurementsLoading: boolean;
   dateRange: HiveScaleDateRange;
   onDateRangeChange: (range: HiveScaleDateRange) => void;
   scale1Name: string;
@@ -3084,6 +3094,7 @@ export function HiveScaleModularDashboard({
                 slots: mappedSlots,
                 alerts,
                 selectedDeviceId: selectedDevice.device_id,
+                measurementsLoading,
                 insightsLoading,
                 insightsError,
               })}

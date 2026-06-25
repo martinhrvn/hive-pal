@@ -3186,6 +3186,7 @@ export function HiveScalePage() {
         <HiveScaleModularDashboard
           selectedDevice={selectedDevice}
           measurements={measurements.data}
+          measurementsLoading={measurements.isLoading}
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
           scale1Name={scale1Name}
