@@ -263,7 +263,7 @@ const chartColors = [
 
 const escapeCsvField = (value: unknown): string => {
   const text = value === null || value === undefined ? '' : String(value);
-  if (text.includes(',') || text.includes('\"') || text.includes('\n')) {
+  if (text.includes(',') || text.includes('"') || text.includes('\n')) {
     return `"${text.replace(/"/g, '""')}"`;
   }
   return text;
