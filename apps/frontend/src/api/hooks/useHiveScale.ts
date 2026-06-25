@@ -50,6 +50,25 @@ export interface HiveScaleHiveReading {
     band_fanning_mg: number | null;
     band_activity_mg: number | null;
   } | null;
+  sound?: {
+    ok?: boolean | null;
+    rms_dbfs?: number | null;
+    peak_dbfs?: number | null;
+    band_sub_bass_dbfs?: number | null;
+    band_hum_dbfs?: number | null;
+    band_piping_dbfs?: number | null;
+    band_stress_dbfs?: number | null;
+    band_high_dbfs?: number | null;
+    frequency_hz?: number | null;
+    energy?: number | null;
+    peak?: number | null;
+  } | null;
+  hiveheart?: {
+    frequency_hz?: number | null;
+    energy?: number | null;
+    peak?: number | null;
+    battery_v?: number | null;
+  } | null;
   ble?: {
     present?: boolean | null;
     sensor_type?: string | null;
@@ -493,7 +512,7 @@ export interface HiveScaleInsightAlert {
   id: string;
   category: HiveScaleInsightCategory;
   severity: HiveScaleInsightSeverity;
-  channel: 1 | 2;
+  channel: number;
   title: string;
   description: string;
   window_start: string | null;
@@ -535,7 +554,7 @@ export interface HiveScaleInsightHistoryEntry {
   id: number;
   alert_key: string;
   category: HiveScaleInsightCategory;
-  channel: 1 | 2;
+  channel: number;
   severity: HiveScaleInsightSeverity;
   peak_severity: HiveScaleInsightSeverity;
   title: string;

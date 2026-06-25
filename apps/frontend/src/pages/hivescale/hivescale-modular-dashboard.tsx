@@ -48,6 +48,8 @@ import {
   type HiveScaleDateRange,
   type HiveScaleDateRangePreset,
 } from './hivescale-diagram-panel';
+import { severityConfig } from './hivescale-insights-card';
+import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';
 
 const MAX_HIVE_SLOTS = 18;
 const DASHBOARD_STORAGE_VERSION = 1;
@@ -183,6 +185,17 @@ type HiveMetricKey =
   | 'fanningBand'
   | 'activityBand';
 
+type SoundMetricKey =
+  | 'rmsDbfs'
+  | 'subBass'
+  | 'hum'
+  | 'piping'
+  | 'stress'
+  | 'high'
+  | 'hiveHeartFrequency'
+  | 'hiveHeartEnergy'
+  | 'hiveHeartPeak';
+
 type DeviceMetricKey = 'batterySoc' | 'batteryVoltage' | 'solarPower';
 
 type DashboardWidgetKind =
@@ -192,6 +205,7 @@ type DashboardWidgetKind =
   | 'beeTraffic'
   | 'soundRms'
   | 'vibration'
+  | 'configurableDiagram'
   | 'temperatureHeatmap'
   | 'insights'
   | 'dataQuality';
@@ -241,6 +255,248 @@ const dateRangePresets = [
   'all',
 ] as const satisfies readonly HiveScaleDateRangePreset[];
 
+
+type ConfigurableMetricAxis =
+  | 'weight'
+  | 'temperature'
+  | 'humidity'
+  | 'pressure'
+  | 'beecount'
+  | 'vibration'
+  | 'dbfs'
+  | 'frequency'
+  | 'energy'
+  | 'percent'
+  | 'voltage'
+  | 'power';
+
+type ConfigurableMetricDefinition = {
+  key: string;
+  label: string;
+  unit: string;
+  axis: ConfigurableMetricAxis;
+  group: string;
+} & (
+  | { source: 'hive'; hiveMetric: HiveMetricKey }
+  | { source: 'sound'; soundMetric: SoundMetricKey }
+  | { source: 'device'; deviceMetric: DeviceMetricKey }
+);
+
+const configurableMetricAxes: Record<
+  ConfigurableMetricAxis,
+  { unit: string; width: number; orientation: 'left' | 'right' }
+> = {
+  weight: { unit: 'kg', width: 54, orientation: 'left' },
+  temperature: { unit: '°C', width: 54, orientation: 'right' },
+  humidity: { unit: '%', width: 46, orientation: 'right' },
+  pressure: { unit: 'hPa', width: 68, orientation: 'right' },
+  beecount: { unit: 'bees', width: 58, orientation: 'right' },
+  vibration: { unit: 'mg', width: 54, orientation: 'right' },
+  dbfs: { unit: 'dBFS', width: 66, orientation: 'right' },
+  frequency: { unit: 'Hz', width: 58, orientation: 'right' },
+  energy: { unit: '', width: 50, orientation: 'right' },
+  percent: { unit: '%', width: 46, orientation: 'right' },
+  voltage: { unit: 'V', width: 46, orientation: 'right' },
+  power: { unit: 'mW', width: 58, orientation: 'right' },
+};
+
+const configurableMetrics: ConfigurableMetricDefinition[] = [
+  {
+    key: 'weight',
+    label: 'Weight',
+    unit: 'kg',
+    axis: 'weight',
+    group: 'Scale',
+    source: 'hive',
+    hiveMetric: 'weight',
+  },
+  {
+    key: 'temperature',
+    label: 'Temperature',
+    unit: '°C',
+    axis: 'temperature',
+    group: 'Climate',
+    source: 'hive',
+    hiveMetric: 'temperature',
+  },
+  {
+    key: 'humidity',
+    label: 'Humidity',
+    unit: '%',
+    axis: 'humidity',
+    group: 'Climate',
+    source: 'hive',
+    hiveMetric: 'humidity',
+  },
+  {
+    key: 'pressure',
+    label: 'Pressure',
+    unit: 'hPa',
+    axis: 'pressure',
+    group: 'Climate',
+    source: 'hive',
+    hiveMetric: 'pressure',
+  },
+  {
+    key: 'beeIn',
+    label: 'Bees in',
+    unit: 'bees',
+    axis: 'beecount',
+    group: 'Bee traffic',
+    source: 'hive',
+    hiveMetric: 'beeIn',
+  },
+  {
+    key: 'beeOut',
+    label: 'Bees out',
+    unit: 'bees',
+    axis: 'beecount',
+    group: 'Bee traffic',
+    source: 'hive',
+    hiveMetric: 'beeOut',
+  },
+  {
+    key: 'beeNet',
+    label: 'Net flow',
+    unit: 'bees',
+    axis: 'beecount',
+    group: 'Bee traffic',
+    source: 'hive',
+    hiveMetric: 'beeNet',
+  },
+  {
+    key: 'vibration',
+    label: 'Vibration RMS',
+    unit: 'mg',
+    axis: 'vibration',
+    group: 'Vibration',
+    source: 'hive',
+    hiveMetric: 'vibration',
+  },
+  {
+    key: 'swarmBand',
+    label: 'Swarm band',
+    unit: 'mg',
+    axis: 'vibration',
+    group: 'Vibration',
+    source: 'hive',
+    hiveMetric: 'swarmBand',
+  },
+  {
+    key: 'fanningBand',
+    label: 'Fanning band',
+    unit: 'mg',
+    axis: 'vibration',
+    group: 'Vibration',
+    source: 'hive',
+    hiveMetric: 'fanningBand',
+  },
+  {
+    key: 'activityBand',
+    label: 'Activity band',
+    unit: 'mg',
+    axis: 'vibration',
+    group: 'Vibration',
+    source: 'hive',
+    hiveMetric: 'activityBand',
+  },
+  {
+    key: 'soundRms',
+    label: 'Sound RMS',
+    unit: 'dBFS',
+    axis: 'dbfs',
+    group: 'Sound',
+    source: 'sound',
+    soundMetric: 'rmsDbfs',
+  },
+  {
+    key: 'soundHum',
+    label: 'Hum band',
+    unit: 'dBFS',
+    axis: 'dbfs',
+    group: 'Sound',
+    source: 'sound',
+    soundMetric: 'hum',
+  },
+  {
+    key: 'soundPiping',
+    label: 'Piping band',
+    unit: 'dBFS',
+    axis: 'dbfs',
+    group: 'Sound',
+    source: 'sound',
+    soundMetric: 'piping',
+  },
+  {
+    key: 'soundStress',
+    label: 'Stress band',
+    unit: 'dBFS',
+    axis: 'dbfs',
+    group: 'Sound',
+    source: 'sound',
+    soundMetric: 'stress',
+  },
+  {
+    key: 'hiveHeartFrequency',
+    label: 'HiveHeart frequency',
+    unit: 'Hz',
+    axis: 'frequency',
+    group: 'Sound',
+    source: 'sound',
+    soundMetric: 'hiveHeartFrequency',
+  },
+  {
+    key: 'hiveHeartEnergy',
+    label: 'HiveHeart energy',
+    unit: '',
+    axis: 'energy',
+    group: 'Sound',
+    source: 'sound',
+    soundMetric: 'hiveHeartEnergy',
+  },
+  {
+    key: 'batterySoc',
+    label: 'Battery charge',
+    unit: '%',
+    axis: 'percent',
+    group: 'Device',
+    source: 'device',
+    deviceMetric: 'batterySoc',
+  },
+  {
+    key: 'batteryVoltage',
+    label: 'Battery voltage',
+    unit: 'V',
+    axis: 'voltage',
+    group: 'Device',
+    source: 'device',
+    deviceMetric: 'batteryVoltage',
+  },
+  {
+    key: 'solarPower',
+    label: 'Solar power',
+    unit: 'mW',
+    axis: 'power',
+    group: 'Device',
+    source: 'device',
+    deviceMetric: 'solarPower',
+  },
+];
+
+const configurableMetricsByGroup = configurableMetrics.reduce(
+  (groups, metric) => {
+    groups[metric.group] = [...(groups[metric.group] ?? []), metric];
+    return groups;
+  },
+  {} as Record<string, ConfigurableMetricDefinition[]>,
+);
+
+const defaultConfigurableMetricKeys = [
+  'weight',
+  'temperature',
+  'humidity',
+] as const;
+
 const widgetTemplates: Record<
   DashboardWidgetKind,
   Omit<DashboardWidget, 'id'> & { description: string; Icon: LucideIcon }
@@ -275,16 +531,23 @@ const widgetTemplates: Record<
   },
   soundRms: {
     kind: 'soundRms',
-    title: 'Sound RMS',
+    title: 'Sound / acoustic bands',
     size: 'half',
-    description: 'Stereo microphone loudness trend for the device.',
+    description: 'Per-hive acoustic RMS and FFT/HiveHeart bands when available.',
     Icon: Activity,
   },
   vibration: {
     kind: 'vibration',
     title: 'Vibration bands',
     size: 'half',
-    description: 'RMS vibration and swarm band signals.',
+    description: 'RMS vibration, swarm, fanning, and activity bands.',
+    Icon: Activity,
+  },
+  configurableDiagram: {
+    kind: 'configurableDiagram',
+    title: 'Configurable diagram',
+    size: 'wide',
+    description: 'Choose the hive, sound, traffic, climate, and device metrics to plot.',
     Icon: Activity,
   },
   temperatureHeatmap: {
@@ -524,6 +787,168 @@ const hiveMetricValue = (
       return null;
   }
 };
+
+
+type UnknownRecord = Record<string, unknown>;
+
+const asRecord = (value: unknown): UnknownRecord | null =>
+  value && typeof value === 'object' ? (value as UnknownRecord) : null;
+
+const firstFiniteNumber = (...values: unknown[]): number | null => {
+  for (const value of values) {
+    const parsed = toFiniteNumber(value);
+    if (parsed !== null) return parsed;
+  }
+  return null;
+};
+
+const recordValue = (record: UnknownRecord | null, key: string): unknown =>
+  record ? record[key] : undefined;
+
+const nestedRecord = (
+  record: UnknownRecord | null,
+  key: string,
+): UnknownRecord | null => asRecord(recordValue(record, key));
+
+const perHiveSoundMetricValue = (
+  hive: HiveScaleHiveReading | null,
+  metric: SoundMetricKey,
+): number | null => {
+  if (!hive) return null;
+
+  const hiveRecord = hive as HiveScaleHiveReading & UnknownRecord;
+  const sound =
+    nestedRecord(hiveRecord, 'sound') ??
+    nestedRecord(hiveRecord, 'audio') ??
+    nestedRecord(hiveRecord, 'mic') ??
+    nestedRecord(hiveRecord, 'acoustic');
+  const bands =
+    nestedRecord(sound, 'bands') ?? nestedRecord(sound, 'fft_bands') ?? null;
+  const hiveHeart =
+    nestedRecord(hiveRecord, 'hiveheart') ??
+    nestedRecord(hiveRecord, 'hive_heart') ??
+    nestedRecord(hiveRecord, 'acoustic_sensor');
+
+  switch (metric) {
+    case 'rmsDbfs':
+      return firstFiniteNumber(
+        recordValue(sound, 'rms_dbfs'),
+        recordValue(sound, 'rms_dBFS'),
+        recordValue(sound, 'rms'),
+        recordValue(hiveHeart, 'rms_dbfs'),
+      );
+    case 'subBass':
+      return firstFiniteNumber(
+        recordValue(sound, 'band_sub_bass_dbfs'),
+        recordValue(sound, 'sub_bass_dbfs'),
+        recordValue(bands, 'sub_bass_dbfs'),
+        recordValue(bands, 'sub_bass'),
+      );
+    case 'hum':
+      return firstFiniteNumber(
+        recordValue(sound, 'band_hum_dbfs'),
+        recordValue(sound, 'hum_dbfs'),
+        recordValue(bands, 'hum_dbfs'),
+        recordValue(bands, 'hum'),
+      );
+    case 'piping':
+      return firstFiniteNumber(
+        recordValue(sound, 'band_piping_dbfs'),
+        recordValue(sound, 'piping_dbfs'),
+        recordValue(bands, 'piping_dbfs'),
+        recordValue(bands, 'piping'),
+      );
+    case 'stress':
+      return firstFiniteNumber(
+        recordValue(sound, 'band_stress_dbfs'),
+        recordValue(sound, 'stress_dbfs'),
+        recordValue(bands, 'stress_dbfs'),
+        recordValue(bands, 'stress'),
+      );
+    case 'high':
+      return firstFiniteNumber(
+        recordValue(sound, 'band_high_dbfs'),
+        recordValue(sound, 'high_dbfs'),
+        recordValue(bands, 'high_dbfs'),
+        recordValue(bands, 'high'),
+      );
+    case 'hiveHeartFrequency':
+      return firstFiniteNumber(
+        recordValue(hiveHeart, 'frequency_hz'),
+        recordValue(hiveHeart, 'dominant_frequency_hz'),
+        recordValue(sound, 'frequency_hz'),
+      );
+    case 'hiveHeartEnergy':
+      return firstFiniteNumber(
+        recordValue(hiveHeart, 'energy'),
+        recordValue(sound, 'energy'),
+      );
+    case 'hiveHeartPeak':
+      return firstFiniteNumber(
+        recordValue(hiveHeart, 'peak'),
+        recordValue(sound, 'peak'),
+        recordValue(sound, 'peak_dbfs'),
+      );
+    default:
+      return null;
+  }
+};
+
+const legacySoundMetricValue = (
+  measurement: HiveScaleMeasurement,
+  hiveIndex: number,
+  metric: SoundMetricKey,
+): number | null => {
+  if (hiveIndex !== 1 && hiveIndex !== 2) return null;
+
+  const channel = hiveIndex === 1 ? 'left' : 'right';
+  const hiveHeartPrefix = hiveIndex === 1 ? 'hiveheart_1' : 'hiveheart_2';
+  const measurementRecord = measurement as HiveScaleMeasurement & UnknownRecord;
+  const micValue = (suffix: string) =>
+    recordValue(measurementRecord, `mic_${channel}_${suffix}`);
+  const hiveHeartValue = (suffix: string) =>
+    recordValue(measurementRecord, `${hiveHeartPrefix}_${suffix}`);
+
+  switch (metric) {
+    case 'rmsDbfs':
+      return firstFiniteNumber(micValue('rms_dbfs'));
+    case 'subBass':
+      return firstFiniteNumber(micValue('band_sub_bass_dbfs'));
+    case 'hum':
+      return firstFiniteNumber(micValue('band_hum_dbfs'));
+    case 'piping':
+      return firstFiniteNumber(micValue('band_piping_dbfs'));
+    case 'stress':
+      return firstFiniteNumber(micValue('band_stress_dbfs'));
+    case 'high':
+      return firstFiniteNumber(micValue('band_high_dbfs'));
+    case 'hiveHeartFrequency':
+      return firstFiniteNumber(hiveHeartValue('frequency_hz'));
+    case 'hiveHeartEnergy':
+      return firstFiniteNumber(hiveHeartValue('energy'));
+    case 'hiveHeartPeak':
+      return firstFiniteNumber(hiveHeartValue('peak'));
+    default:
+      return null;
+  }
+};
+
+const soundMetricValue = (
+  measurement: HiveScaleMeasurement,
+  hive: HiveScaleHiveReading | null,
+  hiveIndex: number,
+  metric: SoundMetricKey,
+): number | null =>
+  perHiveSoundMetricValue(hive, metric) ??
+  legacySoundMetricValue(measurement, hiveIndex, metric);
+
+const soundSeriesKey = (hiveIndex: number, metric: SoundMetricKey) =>
+  `hive${hiveIndex}_sound_${metric}`;
+
+const configSeriesKey = (hiveIndex: number, metricKey: string) =>
+  `cfg_hive${hiveIndex}_${metricKey}`;
+
+const configDeviceSeriesKey = (metricKey: string) => `cfg_device_${metricKey}`;
 
 const deviceMetricValue = (
   measurement: HiveScaleMeasurement,
@@ -1332,65 +1757,159 @@ function BeeTrafficWidget({
   );
 }
 
+
+const soundMetricLabels: Record<SoundMetricKey, { label: string; unit: string; axis: ConfigurableMetricAxis }> = {
+  rmsDbfs: { label: 'RMS', unit: 'dBFS', axis: 'dbfs' },
+  subBass: { label: 'Sub-bass', unit: 'dBFS', axis: 'dbfs' },
+  hum: { label: 'Hum', unit: 'dBFS', axis: 'dbfs' },
+  piping: { label: 'Piping', unit: 'dBFS', axis: 'dbfs' },
+  stress: { label: 'Stress', unit: 'dBFS', axis: 'dbfs' },
+  high: { label: 'High', unit: 'dBFS', axis: 'dbfs' },
+  hiveHeartFrequency: { label: 'HiveHeart frequency', unit: 'Hz', axis: 'frequency' },
+  hiveHeartEnergy: { label: 'HiveHeart energy', unit: '', axis: 'energy' },
+  hiveHeartPeak: { label: 'HiveHeart peak', unit: '', axis: 'energy' },
+};
+
+const soundWidgetMetrics: SoundMetricKey[] = [
+  'rmsDbfs',
+  'subBass',
+  'hum',
+  'piping',
+  'stress',
+  'high',
+  'hiveHeartFrequency',
+  'hiveHeartEnergy',
+  'hiveHeartPeak',
+];
+
+const vibrationWidgetMetrics: HiveMetricKey[] = [
+  'vibration',
+  'swarmBand',
+  'fanningBand',
+  'activityBand',
+];
+
+const vibrationMetricLabels: Record<string, string> = {
+  vibration: 'RMS',
+  swarmBand: 'Swarm band',
+  fanningBand: 'Fanning band',
+  activityBand: 'Activity band',
+};
+
+const hasSeriesData = (rows: ChartRow[], key: string) =>
+  rows.some(row => typeof row[key] === 'number');
+
 function SoundRmsWidget({
   measurements,
   dateRange,
+  fallbackNames,
+  hiveIndexes,
+  hiveNames,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
+  fallbackNames: HiveFallbackNames;
+  hiveIndexes: number[];
+  hiveNames: Record<number, string>;
 }>) {
+  const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
-      filterMeasurementsByDateRange(measurements, dateRange).map(measurement => ({
-        timestamp: new Date(measurement.measured_at).getTime(),
-        measuredAt: measurement.measured_at,
-        left: toFiniteNumber(measurement.mic_left_rms_dbfs),
-        right: toFiniteNumber(measurement.mic_right_rms_dbfs),
-      })),
-    [dateRange, measurements],
-  );
-  const hasData = rows.some(
-    row => typeof row.left === 'number' || typeof row.right === 'number',
+      filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
+        const hiveMap = new Map(
+          measurementHiveReadings(measurement, fallbackNames).map(hive => [
+            hive.index,
+            hive,
+          ]),
+        );
+        const row: ChartRow = {
+          timestamp: new Date(measurement.measured_at).getTime(),
+          measuredAt: measurement.measured_at,
+        };
+
+        for (const hiveIndex of visibleHives) {
+          const hive = hiveMap.get(hiveIndex) ?? null;
+          for (const metric of soundWidgetMetrics) {
+            row[soundSeriesKey(hiveIndex, metric)] = soundMetricValue(
+              measurement,
+              hive,
+              hiveIndex,
+              metric,
+            );
+          }
+        }
+        return row;
+      }),
+    [dateRange, fallbackNames, measurements, visibleHives],
   );
 
-  if (!rows.length || !hasData) {
-    return <EmptyWidgetState label="No stereo microphone data for this range." />;
+  const activeMetrics = soundWidgetMetrics.filter(metric =>
+    visibleHives.some(index => hasSeriesData(rows, soundSeriesKey(index, metric))),
+  );
+  const activeAxes = [
+    ...new Set(activeMetrics.map(metric => soundMetricLabels[metric].axis)),
+  ] as ConfigurableMetricAxis[];
+
+  if (!rows.length || !activeMetrics.length) {
+    return <EmptyWidgetState label="No per-hive acoustic data for the selected hives." />;
   }
 
   return (
-    <div className="h-72">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            minTickGap={32}
-            scale="time"
-            tickFormatter={formatChartTick}
-            type="number"
-            domain={chartDomainForDateRange(dateRange)}
-          />
-          <YAxis unit=" dBFS" width={68} domain={['auto', 'auto']} />
-          <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="left"
-            name="Left channel"
-            stroke="var(--chart-1)"
-            dot={false}
-            isAnimationActive={false}
-          />
-          <Line
-            type="monotone"
-            dataKey="right"
-            name="Right channel"
-            stroke="var(--chart-2)"
-            dot={false}
-            isAnimationActive={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="space-y-2">
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              minTickGap={32}
+              scale="time"
+              tickFormatter={formatChartTick}
+              type="number"
+              domain={chartDomainForDateRange(dateRange)}
+            />
+            {activeAxes.map((axis, index) => {
+              const axisConfig = configurableMetricAxes[axis];
+              return (
+                <YAxis
+                  key={axis}
+                  yAxisId={axis}
+                  orientation={index === 0 ? 'left' : 'right'}
+                  unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
+                  width={axisConfig.width}
+                  domain={['auto', 'auto']}
+                />
+              );
+            })}
+            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+            <Legend />
+            {visibleHives.flatMap((hiveIndex, hivePosition) =>
+              activeMetrics
+                .filter(metric => hasSeriesData(rows, soundSeriesKey(hiveIndex, metric)))
+                .map((metric, metricPosition) => (
+                  <Line
+                    key={`${hiveIndex}-${metric}`}
+                    yAxisId={soundMetricLabels[metric].axis}
+                    type="monotone"
+                    dataKey={soundSeriesKey(hiveIndex, metric)}
+                    name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${soundMetricLabels[metric].label}`}
+                    stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                    strokeDasharray={metric === 'rmsDbfs' ? undefined : '4 2'}
+                    dot={false}
+                    connectNulls={false}
+                    strokeWidth={metric === 'rmsDbfs' ? 1.8 : 1.3}
+                    isAnimationActive={false}
+                  />
+                )),
+            )}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Shows per-hive acoustic readings first. Legacy left/right microphone data is
+        mapped to the configured hive names for slots 1 and 2 when no per-hive
+        acoustic block is present.
+      </p>
     </div>
   );
 }
@@ -1408,29 +1927,87 @@ function VibrationWidget({
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
 }>) {
+  const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
       buildHiveMetricChartRows({
         measurements,
         dateRange,
         fallbackNames,
-        hiveIndexes,
-        metrics: ['vibration'],
+        hiveIndexes: visibleHives,
+        metrics: vibrationWidgetMetrics,
       }),
-    [dateRange, fallbackNames, hiveIndexes, measurements],
+    [dateRange, fallbackNames, measurements, visibleHives],
+  );
+  const activeMetrics = vibrationWidgetMetrics.filter(metric =>
+    visibleHives.some(index => hasSeriesData(rows, seriesKey(index, metric))),
   );
 
+  if (!rows.length || !activeMetrics.length) {
+    return <EmptyWidgetState label="No vibration or accelerometer band data for the selected hives." />;
+  }
+
   return (
-    <HiveLineChart
-      rows={rows}
-      hiveIndexes={hiveIndexes}
-      metric="vibration"
-      hiveNames={hiveNames}
-      unit="mg"
-      dateRange={dateRange}
-    />
+    <div className="h-72">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey="timestamp"
+            minTickGap={32}
+            scale="time"
+            tickFormatter={formatChartTick}
+            type="number"
+            domain={chartDomainForDateRange(dateRange)}
+          />
+          <YAxis unit=" mg" width={58} domain={[0, 'auto']} />
+          <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+          <Legend />
+          {visibleHives.flatMap((hiveIndex, hivePosition) =>
+            activeMetrics
+              .filter(metric => hasSeriesData(rows, seriesKey(hiveIndex, metric)))
+              .map((metric, metricPosition) => (
+                <Line
+                  key={`${hiveIndex}-${metric}`}
+                  type="monotone"
+                  dataKey={seriesKey(hiveIndex, metric)}
+                  name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${vibrationMetricLabels[metric]}`}
+                  stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                  strokeDasharray={metric === 'vibration' ? undefined : '4 2'}
+                  dot={false}
+                  connectNulls={false}
+                  strokeWidth={metric === 'vibration' ? 1.8 : 1.3}
+                  isAnimationActive={false}
+                />
+              )),
+          )}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
+
+const temperaturePanelClass = (tempC: number | null): string => {
+  if (tempC === null) return 'border-muted bg-muted/20';
+  if (tempC < 20) {
+    return 'border-sky-300 bg-sky-50/80 dark:border-sky-900 dark:bg-sky-950/30';
+  }
+  if (tempC < 32) {
+    return 'border-emerald-300 bg-emerald-50/80 dark:border-emerald-900 dark:bg-emerald-950/30';
+  }
+  if (tempC < 36) {
+    return 'border-amber-300 bg-amber-50/80 dark:border-amber-900 dark:bg-amber-950/30';
+  }
+  return 'border-red-300 bg-red-50/80 dark:border-red-900 dark:bg-red-950/30';
+};
+
+const temperatureBarClass = (tempC: number | null): string => {
+  if (tempC === null) return 'bg-muted-foreground/20';
+  if (tempC < 20) return 'bg-sky-500';
+  if (tempC < 32) return 'bg-emerald-500';
+  if (tempC < 36) return 'bg-amber-500';
+  return 'bg-red-500';
+};
 
 function TemperatureHeatmapWidget({ slots }: Readonly<{ slots: HiveSlot[] }>) {
   const temps = slots
@@ -1448,16 +2025,19 @@ function TemperatureHeatmapWidget({ slots }: Readonly<{ slots: HiveSlot[] }>) {
               ? 0
               : Math.max(0, Math.min(1, (slot.tempC - min) / (max - min)));
           return (
-            <div key={slot.index} className="rounded-md border p-2">
+            <div
+              key={slot.index}
+              className={`rounded-md border p-2 ${temperaturePanelClass(slot.tempC)}`}
+            >
               <div className="mb-1 flex items-center justify-between gap-2 text-xs">
                 <span className="truncate font-medium">{slot.name}</span>
-                <span className="text-muted-foreground">
+                <span className="font-medium">
                   {numberOrDash(slot.tempC)} °C
                 </span>
               </div>
-              <div className="h-2 rounded-full bg-muted">
+              <div className="h-2 rounded-full bg-background/70">
                 <div
-                  className="h-2 rounded-full bg-primary"
+                  className={`h-2 rounded-full ${temperatureBarClass(slot.tempC)}`}
                   style={{ width: `${slot.tempC === null ? 0 : 20 + normalized * 80}%` }}
                 />
               </div>
@@ -1465,68 +2045,268 @@ function TemperatureHeatmapWidget({ slots }: Readonly<{ slots: HiveSlot[] }>) {
           );
         })}
       </div>
-      <p className="text-xs text-muted-foreground">
-        Uses latest visible reading per hive. Empty bars indicate missing
-        temperature data.
-      </p>
+      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+        <span className="rounded-full border border-sky-300 px-2 py-0.5">cool &lt;20 °C</span>
+        <span className="rounded-full border border-emerald-300 px-2 py-0.5">normal 20–32 °C</span>
+        <span className="rounded-full border border-amber-300 px-2 py-0.5">warm 32–36 °C</span>
+        <span className="rounded-full border border-red-300 px-2 py-0.5">hot ≥36 °C</span>
+      </div>
     </div>
   );
 }
 
+const formatInsightTitle = (
+  alert: HiveScaleInsightAlert,
+  hiveNames: Record<number, string>,
+): string =>
+  alert.title.replace(/\((?:hive|scale)\s*(\d+)\)/gi, (match, channel) => {
+    const hiveName = hiveNames[Number(channel)];
+    return hiveName ? `(${hiveName})` : match;
+  });
+
 function InsightsWidget({
   alerts,
   hiveNames,
+  selectedDeviceId,
+  scale1Name,
+  scale2Name,
   isLoading,
   isError,
 }: Readonly<{
   alerts: HiveScaleInsightAlert[];
   hiveNames: Record<number, string>;
+  selectedDeviceId: string;
+  scale1Name: string;
+  scale2Name: string;
   isLoading: boolean;
   isError: boolean;
 }>) {
+  const historyButton = (
+    <HiveScaleInsightsHistoryDialog
+      deviceId={selectedDeviceId}
+      scale1Name={hiveNames[1] ?? scale1Name}
+      scale2Name={hiveNames[2] ?? scale2Name}
+    />
+  );
+
   if (isLoading) return <EmptyWidgetState label="Loading insights..." />;
   if (isError) return <EmptyWidgetState label="Insights are unavailable." />;
   if (!alerts.length) {
     return (
-      <div className="flex h-72 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
-        <CheckCircle2 className="mr-2 h-4 w-4" />
-        No active alerts for this device.
+      <div className="space-y-3">
+        <div className="flex justify-end">{historyButton}</div>
+        <div className="flex h-64 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
+          <CheckCircle2 className="mr-2 h-4 w-4" />
+          No active alerts for the selected hives.
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
-      {alerts.slice(0, 6).map(alert => (
-        <div key={alert.id} className="rounded-md border p-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium">{alert.title}</p>
-              <p className="text-xs text-muted-foreground">
-                {hiveNames[alert.channel] ?? `Hive ${alert.channel}`} ·{' '}
-                {alert.category} · confidence {Math.round(alert.confidence * 100)}%
+      <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+        <span>
+          Showing {alerts.length} active alert{alerts.length === 1 ? '' : 's'} for
+          the selected hives.
+        </span>
+        {historyButton}
+      </div>
+      <div className={`space-y-3 ${alerts.length > 4 ? 'max-h-[28rem] overflow-y-auto pr-1' : ''}`}>
+        {alerts.map(alert => {
+          const cfg = severityConfig[alert.severity] ?? severityConfig.info;
+          return (
+            <div key={alert.id} className={`rounded-md border p-3 ${cfg.rowClass}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium">{formatInsightTitle(alert, hiveNames)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {hiveNames[alert.channel] ?? `Hive ${alert.channel}`} ·{' '}
+                    {alert.category} · confidence {Math.round(alert.confidence * 100)}%
+                  </p>
+                </div>
+                <Badge variant="outline" className={`shrink-0 ${cfg.badgeClass}`}>
+                  {alert.severity}
+                </Badge>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {alert.description}
               </p>
             </div>
-            <Badge
-              variant={
-                alert.severity === 'critical' || alert.severity === 'warning'
-                  ? 'destructive'
-                  : 'outline'
-              }
-              className="shrink-0"
-            >
-              {alert.severity}
-            </Badge>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ConfigurableDiagramWidget({
+  measurements,
+  dateRange,
+  fallbackNames,
+  hiveIndexes,
+  hiveNames,
+}: Readonly<{
+  measurements: HiveScaleMeasurement[] | undefined;
+  dateRange: HiveScaleDateRange;
+  fallbackNames: HiveFallbackNames;
+  hiveIndexes: number[];
+  hiveNames: Record<number, string>;
+}>) {
+  const visibleHives = useMemo(() => hiveIndexes.slice(0, 6), [hiveIndexes]);
+  const [selectedMetricKeys, setSelectedMetricKeys] = useState<string[]>([
+    ...defaultConfigurableMetricKeys,
+  ]);
+  const selectedMetrics = useMemo(
+    () => configurableMetrics.filter(metric => selectedMetricKeys.includes(metric.key)),
+    [selectedMetricKeys],
+  );
+  const rows = useMemo(
+    () =>
+      filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
+        const hiveMap = new Map(
+          measurementHiveReadings(measurement, fallbackNames).map(hive => [
+            hive.index,
+            hive,
+          ]),
+        );
+        const row: ChartRow = {
+          timestamp: new Date(measurement.measured_at).getTime(),
+          measuredAt: measurement.measured_at,
+        };
+
+        for (const metric of selectedMetrics) {
+          if (metric.source === 'device') {
+            row[configDeviceSeriesKey(metric.key)] = deviceMetricValue(
+              measurement,
+              metric.deviceMetric,
+            );
+            continue;
+          }
+
+          for (const hiveIndex of visibleHives) {
+            const hive = hiveMap.get(hiveIndex) ?? null;
+            row[configSeriesKey(hiveIndex, metric.key)] =
+              metric.source === 'hive'
+                ? hiveMetricValue(hive, metric.hiveMetric)
+                : soundMetricValue(measurement, hive, hiveIndex, metric.soundMetric);
+          }
+        }
+        return row;
+      }),
+    [dateRange, fallbackNames, measurements, selectedMetrics, visibleHives],
+  );
+
+  const toggleMetric = (key: string) => {
+    setSelectedMetricKeys(current =>
+      current.includes(key)
+        ? current.filter(item => item !== key)
+        : [...current, key],
+    );
+  };
+
+  const activeMetrics = selectedMetrics.filter(metric => {
+    if (metric.source === 'device') return hasSeriesData(rows, configDeviceSeriesKey(metric.key));
+    return visibleHives.some(index => hasSeriesData(rows, configSeriesKey(index, metric.key)));
+  });
+  const activeAxes = [
+    ...new Set(activeMetrics.map(metric => metric.axis)),
+  ] as ConfigurableMetricAxis[];
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-3 rounded-md border p-3">
+        {Object.entries(configurableMetricsByGroup).map(([group, metrics]) => (
+          <div key={group} className="space-y-1">
+            <p className="text-xs font-medium text-muted-foreground">{group}</p>
+            <div className="flex flex-wrap gap-1">
+              {metrics.map(metric => {
+                const selected = selectedMetricKeys.includes(metric.key);
+                return (
+                  <Badge
+                    key={metric.key}
+                    variant={selected ? 'default' : 'outline'}
+                    className="cursor-pointer select-none"
+                    onClick={() => toggleMetric(metric.key)}
+                  >
+                    {metric.label}
+                  </Badge>
+                );
+              })}
+            </div>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            {alert.description}
-          </p>
+        ))}
+      </div>
+
+      {!rows.length || !activeMetrics.length ? (
+        <EmptyWidgetState label="Select at least one metric with data for the selected hives and range." />
+      ) : (
+        <div className="h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="timestamp"
+                minTickGap={32}
+                scale="time"
+                tickFormatter={formatChartTick}
+                type="number"
+                domain={chartDomainForDateRange(dateRange)}
+              />
+              {activeAxes.map((axis, index) => {
+                const axisConfig = configurableMetricAxes[axis];
+                return (
+                  <YAxis
+                    key={axis}
+                    yAxisId={axis}
+                    orientation={index === 0 ? 'left' : 'right'}
+                    unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
+                    width={axisConfig.width}
+                    domain={axis === 'percent' ? [0, 100] : ['auto', 'auto']}
+                  />
+                );
+              })}
+              <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+              <Legend />
+              {activeMetrics.flatMap((metric, metricPosition) => {
+                if (metric.source === 'device') {
+                  return [
+                    <Line
+                      key={metric.key}
+                      yAxisId={metric.axis}
+                      type="monotone"
+                      dataKey={configDeviceSeriesKey(metric.key)}
+                      name={metric.label}
+                      stroke={chartColors[metricPosition % chartColors.length]}
+                      strokeWidth={1.7}
+                      dot={false}
+                      connectNulls={false}
+                      isAnimationActive={false}
+                    />,
+                  ];
+                }
+
+                return visibleHives
+                  .filter(index => hasSeriesData(rows, configSeriesKey(index, metric.key)))
+                  .map((hiveIndex, hivePosition) => (
+                    <Line
+                      key={`${hiveIndex}-${metric.key}`}
+                      yAxisId={metric.axis}
+                      type="monotone"
+                      dataKey={configSeriesKey(hiveIndex, metric.key)}
+                      name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${metric.label}`}
+                      stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                      strokeDasharray={metricPosition === 0 ? undefined : '4 2'}
+                      strokeWidth={metricPosition === 0 ? 1.7 : 1.3}
+                      dot={false}
+                      connectNulls={false}
+                      isAnimationActive={false}
+                    />
+                  ));
+              })}
+            </LineChart>
+          </ResponsiveContainer>
         </div>
-      ))}
-      {alerts.length > 6 && (
-        <p className="text-xs text-muted-foreground">
-          +{alerts.length - 6} more active alerts
-        </p>
       )}
     </div>
   );
@@ -1622,6 +2402,7 @@ function renderWidget({
   hiveNames,
   slots,
   alerts,
+  selectedDeviceId,
   insightsLoading,
   insightsError,
 }: {
@@ -1633,15 +2414,12 @@ function renderWidget({
   hiveNames: Record<number, string>;
   slots: HiveSlot[];
   alerts: HiveScaleInsightAlert[];
+  selectedDeviceId: string;
   insightsLoading: boolean;
   insightsError: boolean;
 }) {
-  const activeHiveIndexes = selectedHiveIndexes.length
-    ? selectedHiveIndexes.slice(0, 8)
-    : slots
-        .filter(slot => slot.hasData)
-        .slice(0, 4)
-        .map(slot => slot.index);
+  const activeHiveIndexes = selectedHiveIndexes.slice(0, 8);
+  const activeAlertHiveIndexes = new Set(activeHiveIndexes);
 
   switch (widget.kind) {
     case 'weightComparison':
@@ -1676,10 +2454,28 @@ function renderWidget({
         />
       );
     case 'soundRms':
-      return <SoundRmsWidget measurements={measurements} dateRange={dateRange} />;
+      return (
+        <SoundRmsWidget
+          measurements={measurements}
+          dateRange={dateRange}
+          fallbackNames={fallbackNames}
+          hiveIndexes={activeHiveIndexes}
+          hiveNames={hiveNames}
+        />
+      );
     case 'vibration':
       return (
         <VibrationWidget
+          measurements={measurements}
+          dateRange={dateRange}
+          fallbackNames={fallbackNames}
+          hiveIndexes={activeHiveIndexes}
+          hiveNames={hiveNames}
+        />
+      );
+    case 'configurableDiagram':
+      return (
+        <ConfigurableDiagramWidget
           measurements={measurements}
           dateRange={dateRange}
           fallbackNames={fallbackNames}
@@ -1692,8 +2488,11 @@ function renderWidget({
     case 'insights':
       return (
         <InsightsWidget
-          alerts={alerts}
+          alerts={alerts.filter(alert => activeAlertHiveIndexes.has(alert.channel))}
           hiveNames={hiveNames}
+          selectedDeviceId={selectedDeviceId}
+          scale1Name={fallbackNames.scale1Name}
+          scale2Name={fallbackNames.scale2Name}
           isLoading={insightsLoading}
           isError={insightsError}
         />
@@ -1889,6 +2688,7 @@ export function HiveScaleModularDashboard({
                 hiveNames,
                 slots: mappedSlots,
                 alerts,
+                selectedDeviceId: selectedDevice.device_id,
                 insightsLoading,
                 insightsError,
               })}
