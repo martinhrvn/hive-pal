@@ -1,9 +1,17 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from 'react';
 import {
   Activity,
   Battery,
   CheckCircle2,
   ChevronDown,
+  Download,
   Info,
   Plus,
   Thermometer,
@@ -237,6 +245,13 @@ type ResolvedDateRangeBounds = {
   endMs?: number;
 };
 
+type AxisBound = number | 'auto';
+type AxisDomain = [AxisBound, AxisBound];
+type AxisScaleSetting = { min: string; max: string };
+type AxisScaleSettingsMap = Record<string, AxisScaleSetting>;
+type AxisScaleDefinition = { id: string; label: string; unit?: string };
+type CsvColumn = { header: string; value: (row: ChartRow) => unknown };
+
 const chartColors = [
   'var(--primary)',
   'var(--chart-2)',
@@ -245,6 +260,185 @@ const chartColors = [
   'var(--chart-5)',
   'var(--muted-foreground)',
 ];
+
+const escapeCsvField = (value: unknown): string => {
+  const text = value === null || value === undefined ? '' : String(value);
+  if (text.includes(',') || text.includes('\"') || text.includes('\n')) {
+    return `"${text.replace(/"/g, '""')}"`;
+  }
+  return text;
+};
+
+const downloadChartCsv = (
+  filename: string,
+  rows: ChartRow[],
+  columns: CsvColumn[],
+) => {
+  if (!rows.length || !columns.length || typeof document === 'undefined') return;
+
+  const header = ['measured_at', 'timestamp', ...columns.map(column => column.header)];
+  const csvRows = rows.map(row =>
+    [
+      row.measuredAt,
+      new Date(Number(row.timestamp)).toISOString(),
+      ...columns.map(column => column.value(row)),
+    ]
+      .map(escapeCsvField)
+      .join(','),
+  );
+  const blob = new Blob([[header.map(escapeCsvField).join(','), ...csvRows].join('\n')], {
+    type: 'text/csv;charset=utf-8',
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = `${filename.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.csv`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+};
+
+const parseAxisBound = (value: string): number | null => {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const axisDomain = (
+  settings: AxisScaleSettingsMap,
+  axisId: string,
+  fallback: AxisDomain,
+): AxisDomain => {
+  const setting = settings[axisId];
+  if (!setting) return fallback;
+  return [
+    parseAxisBound(setting.min) ?? fallback[0],
+    parseAxisBound(setting.max) ?? fallback[1],
+  ];
+};
+
+const axisBoundLabel = (value: string | undefined) =>
+  value?.trim() ? value.trim() : 'auto';
+
+function AxisScaleControls({
+  axes,
+  settings,
+  onSettingsChange,
+}: Readonly<{
+  axes: AxisScaleDefinition[];
+  settings: AxisScaleSettingsMap;
+  onSettingsChange: Dispatch<SetStateAction<AxisScaleSettingsMap>>;
+}>) {
+  const updateBound = (axisId: string, bound: keyof AxisScaleSetting) => {
+    const current = settings[axisId]?.[bound] ?? '';
+    const next = globalThis.prompt?.(
+      `Set ${axisId} y_${bound}. Leave empty for auto.`,
+      current,
+    );
+    if (next === undefined || next === null) return;
+    const trimmed = next.trim();
+    if (trimmed && !Number.isFinite(Number(trimmed))) {
+      globalThis.alert?.('Please enter a valid number, or leave the field empty for auto.');
+      return;
+    }
+    onSettingsChange(existing => ({
+      ...existing,
+      [axisId]: {
+        min: existing[axisId]?.min ?? '',
+        max: existing[axisId]?.max ?? '',
+        [bound]: trimmed,
+      },
+    }));
+  };
+
+  const resetAxis = (axisId: string) => {
+    onSettingsChange(existing => {
+      const next = { ...existing };
+      delete next[axisId];
+      return next;
+    });
+  };
+
+  if (!axes.length) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-1 text-xs">
+      {axes.map(axis => {
+        const setting = settings[axis.id];
+        return (
+          <div
+            key={axis.id}
+            className="flex flex-wrap items-center gap-1 rounded-md border px-2 py-1"
+          >
+            <span className="font-medium">
+              {axis.label}
+              {axis.unit ? ` (${axis.unit})` : ''}
+            </span>
+            <button
+              type="button"
+              className="rounded border px-1.5 py-0.5 text-muted-foreground hover:text-foreground"
+              onClick={() => updateBound(axis.id, 'min')}
+            >
+              y_min: {axisBoundLabel(setting?.min)}
+            </button>
+            <button
+              type="button"
+              className="rounded border px-1.5 py-0.5 text-muted-foreground hover:text-foreground"
+              onClick={() => updateBound(axis.id, 'max')}
+            >
+              y_max: {axisBoundLabel(setting?.max)}
+            </button>
+            {(setting?.min || setting?.max) && (
+              <button
+                type="button"
+                className="rounded border px-1.5 py-0.5 text-muted-foreground hover:text-foreground"
+                onClick={() => resetAxis(axis.id)}
+              >
+                reset
+              </button>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ChartControls({
+  csvFilename,
+  csvRows,
+  csvColumns,
+  axes,
+  axisScales,
+  onAxisScalesChange,
+}: Readonly<{
+  csvFilename: string;
+  csvRows: ChartRow[];
+  csvColumns: CsvColumn[];
+  axes: AxisScaleDefinition[];
+  axisScales: AxisScaleSettingsMap;
+  onAxisScalesChange: Dispatch<SetStateAction<AxisScaleSettingsMap>>;
+}>) {
+  return (
+    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+      <AxisScaleControls
+        axes={axes}
+        settings={axisScales}
+        onSettingsChange={onAxisScalesChange}
+      />
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        onClick={() => downloadChartCsv(csvFilename, csvRows, csvColumns)}
+        disabled={!csvRows.length || !csvColumns.length}
+      >
+        <Download className="mr-1 h-3.5 w-3.5" />
+        Download CSV
+      </Button>
+    </div>
+  );
+}
 
 const dateRangePresets = [
   '24h',
@@ -1410,51 +1604,70 @@ function HiveLineChart({
   dateRange: HiveScaleDateRange;
   heightClass?: string;
 }>) {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const hasData = rows.some(row =>
     hiveIndexes.some(index => typeof row[seriesKey(index, metric)] === 'number'),
   );
+  const csvColumns: CsvColumn[] = hiveIndexes.map(index => ({
+    header: `${hiveNames[index] ?? `Hive ${index}`} (${unit})`,
+    value: row => row[seriesKey(index, metric)],
+  }));
 
   if (!rows.length || !hasData) {
     return <EmptyWidgetState label="No data for the selected hives and range." />;
   }
 
   return (
-    <div className={heightClass}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            minTickGap={32}
-            scale="time"
-            tickFormatter={formatChartTick}
-            type="number"
-            domain={chartDomainForDateRange(dateRange)}
-          />
-          <YAxis unit={` ${unit}`} width={64} domain={['auto', 'auto']} />
-          <Tooltip
-            labelFormatter={(value: unknown) => formatDateTime(Number(value))}
-            formatter={(value: unknown, name: unknown) => [
-              typeof value === 'number' ? `${value.toFixed(1)} ${unit}` : '--',
-              String(name),
-            ]}
-          />
-          <Legend />
-          {hiveIndexes.map((index, i) => (
-            <Line
-              key={index}
-              type="monotone"
-              dataKey={seriesKey(index, metric)}
-              name={hiveNames[index] ?? `Hive ${index}`}
-              stroke={chartColors[i % chartColors.length]}
-              dot={false}
-              connectNulls={false}
-              strokeWidth={1.6}
-              isAnimationActive={false}
+    <div>
+      <ChartControls
+        csvFilename={`hivescale-${metric}`}
+        csvRows={rows}
+        csvColumns={csvColumns}
+        axes={[{ id: 'main', label: metric, unit }]}
+        axisScales={axisScales}
+        onAxisScalesChange={setAxisScales}
+      />
+      <div className={heightClass}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              minTickGap={32}
+              scale="time"
+              tickFormatter={formatChartTick}
+              type="number"
+              domain={chartDomainForDateRange(dateRange)}
             />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
+            <YAxis
+              unit={` ${unit}`}
+              width={64}
+              domain={axisDomain(axisScales, 'main', ['auto', 'auto'])}
+            />
+            <Tooltip
+              labelFormatter={(value: unknown) => formatDateTime(Number(value))}
+              formatter={(value: unknown, name: unknown) => [
+                typeof value === 'number' ? `${value.toFixed(1)} ${unit}` : '--',
+                String(name),
+              ]}
+            />
+            <Legend />
+            {hiveIndexes.map((index, i) => (
+              <Line
+                key={index}
+                type="monotone"
+                dataKey={seriesKey(index, metric)}
+                name={hiveNames[index] ?? `Hive ${index}`}
+                stroke={chartColors[i % chartColors.length]}
+                dot={false}
+                connectNulls={false}
+                strokeWidth={1.6}
+                isAnimationActive={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
@@ -1509,6 +1722,7 @@ function ClimateWidget({
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
 }>) {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -1528,65 +1742,93 @@ function ClimateWidget({
         typeof row[seriesKey(index, 'humidity')] === 'number',
     ),
   );
+  const csvColumns: CsvColumn[] = visibleHives.flatMap(index => [
+    {
+      header: `${hiveNames[index] ?? `Hive ${index}`} temp (°C)`,
+      value: row => row[seriesKey(index, 'temperature')],
+    },
+    {
+      header: `${hiveNames[index] ?? `Hive ${index}`} RH (%)`,
+      value: row => row[seriesKey(index, 'humidity')],
+    },
+  ]);
 
   if (!rows.length || !hasData) {
     return <EmptyWidgetState label="No climate data for the selected range." />;
   }
 
   return (
-    <div className="h-72">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            minTickGap={32}
-            scale="time"
-            tickFormatter={formatChartTick}
-            type="number"
-            domain={chartDomainForDateRange(dateRange)}
-          />
-          <YAxis yAxisId="temperature" unit=" C" width={56} domain={['auto', 'auto']} />
-          <YAxis
-            yAxisId="humidity"
-            orientation="right"
-            unit=" %"
-            width={48}
-            domain={[0, 100]}
-          />
-          <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-          <Legend />
-          {visibleHives.map((index, i) => (
-            <Line
-              key={`${index}-temp`}
+    <div>
+      <ChartControls
+        csvFilename="hivescale-climate"
+        csvRows={rows}
+        csvColumns={csvColumns}
+        axes={[
+          { id: 'temperature', label: 'Temperature', unit: '°C' },
+          { id: 'humidity', label: 'Humidity', unit: '%' },
+        ]}
+        axisScales={axisScales}
+        onAxisScalesChange={setAxisScales}
+      />
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              minTickGap={32}
+              scale="time"
+              tickFormatter={formatChartTick}
+              type="number"
+              domain={chartDomainForDateRange(dateRange)}
+            />
+            <YAxis
               yAxisId="temperature"
-              type="monotone"
-              dataKey={seriesKey(index, 'temperature')}
-              name={`${hiveNames[index] ?? `Hive ${index}`} temp`}
-              stroke={chartColors[i % chartColors.length]}
-              dot={false}
-              connectNulls={false}
-              strokeWidth={1.6}
-              isAnimationActive={false}
+              unit=" °C"
+              width={56}
+              domain={axisDomain(axisScales, 'temperature', ['auto', 'auto'])}
             />
-          ))}
-          {visibleHives.map((index, i) => (
-            <Line
-              key={`${index}-humidity`}
+            <YAxis
               yAxisId="humidity"
-              type="monotone"
-              dataKey={seriesKey(index, 'humidity')}
-              name={`${hiveNames[index] ?? `Hive ${index}`} RH`}
-              stroke={chartColors[(i + 3) % chartColors.length]}
-              strokeDasharray="4 2"
-              dot={false}
-              connectNulls={false}
-              strokeWidth={1.4}
-              isAnimationActive={false}
+              orientation="right"
+              unit=" %"
+              width={48}
+              domain={axisDomain(axisScales, 'humidity', [0, 100])}
             />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
+            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+            <Legend />
+            {visibleHives.map((index, i) => (
+              <Line
+                key={`${index}-temp`}
+                yAxisId="temperature"
+                type="monotone"
+                dataKey={seriesKey(index, 'temperature')}
+                name={`${hiveNames[index] ?? `Hive ${index}`} temp`}
+                stroke={chartColors[i % chartColors.length]}
+                dot={false}
+                connectNulls={false}
+                strokeWidth={1.6}
+                isAnimationActive={false}
+              />
+            ))}
+            {visibleHives.map((index, i) => (
+              <Line
+                key={`${index}-humidity`}
+                yAxisId="humidity"
+                type="monotone"
+                dataKey={seriesKey(index, 'humidity')}
+                name={`${hiveNames[index] ?? `Hive ${index}`} RH`}
+                stroke={chartColors[(i + 3) % chartColors.length]}
+                strokeDasharray="4 2"
+                dot={false}
+                connectNulls={false}
+                strokeWidth={1.4}
+                isAnimationActive={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
@@ -1598,6 +1840,7 @@ function PowerWidget({
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
 }>) {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const rows = useMemo(
     () =>
       filterMeasurementsByDateRange(measurements, dateRange).map(measurement => ({
@@ -1615,63 +1858,94 @@ function PowerWidget({
       typeof row.batteryVoltage === 'number' ||
       typeof row.solarPower === 'number',
   );
+  const csvColumns: CsvColumn[] = [
+    { header: 'Battery charge (%)', value: row => row.batterySoc },
+    { header: 'Battery voltage (V)', value: row => row.batteryVoltage },
+    { header: 'Solar power (mW)', value: row => row.solarPower },
+  ];
 
   if (!rows.length || !hasData) {
     return <EmptyWidgetState label="No power data for the selected range." />;
   }
 
   return (
-    <div className="h-72">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            minTickGap={32}
-            scale="time"
-            tickFormatter={formatChartTick}
-            type="number"
-            domain={chartDomainForDateRange(dateRange)}
-          />
-          <YAxis yAxisId="percent" unit=" %" width={48} domain={[0, 'auto']} />
-          <YAxis
-            yAxisId="voltage"
-            orientation="right"
-            unit=" V"
-            width={48}
-            domain={['auto', 'auto']}
-          />
-          <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-          <Legend />
-          <Line
-            yAxisId="percent"
-            type="monotone"
-            dataKey="batterySoc"
-            name="Battery charge"
-            stroke="var(--primary)"
-            dot={false}
-            isAnimationActive={false}
-          />
-          <Line
-            yAxisId="voltage"
-            type="monotone"
-            dataKey="batteryVoltage"
-            name="Battery voltage"
-            stroke="var(--chart-2)"
-            dot={false}
-            isAnimationActive={false}
-          />
-          <Line
-            yAxisId="voltage"
-            type="monotone"
-            dataKey="solarPower"
-            name="Solar power (mW)"
-            stroke="var(--chart-3)"
-            dot={false}
-            isAnimationActive={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+    <div>
+      <ChartControls
+        csvFilename="hivescale-power"
+        csvRows={rows}
+        csvColumns={csvColumns}
+        axes={[
+          { id: 'percent', label: 'Charge', unit: '%' },
+          { id: 'voltage', label: 'Voltage', unit: 'V' },
+          { id: 'power', label: 'Power', unit: 'mW' },
+        ]}
+        axisScales={axisScales}
+        onAxisScalesChange={setAxisScales}
+      />
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              minTickGap={32}
+              scale="time"
+              tickFormatter={formatChartTick}
+              type="number"
+              domain={chartDomainForDateRange(dateRange)}
+            />
+            <YAxis
+              yAxisId="percent"
+              unit=" %"
+              width={48}
+              domain={axisDomain(axisScales, 'percent', [0, 'auto'])}
+            />
+            <YAxis
+              yAxisId="voltage"
+              orientation="right"
+              unit=" V"
+              width={48}
+              domain={axisDomain(axisScales, 'voltage', ['auto', 'auto'])}
+            />
+            <YAxis
+              yAxisId="power"
+              orientation="right"
+              unit=" mW"
+              width={58}
+              domain={axisDomain(axisScales, 'power', ['auto', 'auto'])}
+            />
+            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+            <Legend />
+            <Line
+              yAxisId="percent"
+              type="monotone"
+              dataKey="batterySoc"
+              name="Battery charge"
+              stroke="var(--primary)"
+              dot={false}
+              isAnimationActive={false}
+            />
+            <Line
+              yAxisId="voltage"
+              type="monotone"
+              dataKey="batteryVoltage"
+              name="Battery voltage"
+              stroke="var(--chart-2)"
+              dot={false}
+              isAnimationActive={false}
+            />
+            <Line
+              yAxisId="power"
+              type="monotone"
+              dataKey="solarPower"
+              name="Solar power"
+              stroke="var(--chart-3)"
+              dot={false}
+              isAnimationActive={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
@@ -1687,6 +1961,7 @@ function BeeTrafficWidget({
   fallbackNames: HiveFallbackNames;
   hiveIndexes: number[];
 }>) {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const rows = useMemo(
     () =>
       filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
@@ -1720,39 +1995,59 @@ function BeeTrafficWidget({
   const hasData = rows.some(
     row => typeof row.inCount === 'number' || typeof row.outCount === 'number',
   );
+  const csvColumns: CsvColumn[] = [
+    { header: 'Bees in', value: row => row.inCount },
+    { header: 'Bees out', value: row => row.outCount },
+    { header: 'Net flow', value: row => row.net },
+  ];
 
   if (!rows.length || !hasData) {
     return <EmptyWidgetState label="No bee counter data for the selected hives." />;
   }
 
   return (
-    <div className="h-72">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            minTickGap={32}
-            scale="time"
-            tickFormatter={formatChartTick}
-            type="number"
-            domain={chartDomainForDateRange(dateRange)}
-          />
-          <YAxis width={56} />
-          <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-          <Legend />
-          <Bar dataKey="inCount" name="In" fill="var(--chart-3)" />
-          <Bar dataKey="outCount" name="Out" fill="var(--chart-4)" />
-          <Line
-            type="monotone"
-            dataKey="net"
-            name="Net"
-            stroke="var(--primary)"
-            dot={false}
-            isAnimationActive={false}
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+    <div>
+      <ChartControls
+        csvFilename="hivescale-bee-traffic"
+        csvRows={rows}
+        csvColumns={csvColumns}
+        axes={[{ id: 'beecount', label: 'Bee count', unit: 'bees' }]}
+        axisScales={axisScales}
+        onAxisScalesChange={setAxisScales}
+      />
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              minTickGap={32}
+              scale="time"
+              tickFormatter={formatChartTick}
+              type="number"
+              domain={chartDomainForDateRange(dateRange)}
+            />
+            <YAxis
+              yAxisId="beecount"
+              width={56}
+              domain={axisDomain(axisScales, 'beecount', ['auto', 'auto'])}
+            />
+            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+            <Legend />
+            <Bar yAxisId="beecount" dataKey="inCount" name="In" fill="var(--chart-3)" />
+            <Bar yAxisId="beecount" dataKey="outCount" name="Out" fill="var(--chart-4)" />
+            <Line
+              yAxisId="beecount"
+              type="monotone"
+              dataKey="net"
+              name="Net"
+              stroke="var(--primary)"
+              dot={false}
+              isAnimationActive={false}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
@@ -1812,6 +2107,7 @@ function SoundRmsWidget({
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
 }>) {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -1849,6 +2145,14 @@ function SoundRmsWidget({
   const activeAxes = [
     ...new Set(activeMetrics.map(metric => soundMetricLabels[metric].axis)),
   ] as ConfigurableMetricAxis[];
+  const csvColumns: CsvColumn[] = visibleHives.flatMap(hiveIndex =>
+    activeMetrics
+      .filter(metric => hasSeriesData(rows, soundSeriesKey(hiveIndex, metric)))
+      .map(metric => ({
+        header: `${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${soundMetricLabels[metric].label}${soundMetricLabels[metric].unit ? ` (${soundMetricLabels[metric].unit})` : ''}`,
+        value: row => row[soundSeriesKey(hiveIndex, metric)],
+      })),
+  );
 
   if (!rows.length || !activeMetrics.length) {
     return <EmptyWidgetState label="No per-hive acoustic data for the selected hives." />;
@@ -1856,6 +2160,18 @@ function SoundRmsWidget({
 
   return (
     <div className="space-y-2">
+      <ChartControls
+        csvFilename="hivescale-acoustic-bands"
+        csvRows={rows}
+        csvColumns={csvColumns}
+        axes={activeAxes.map(axis => ({
+          id: axis,
+          label: axis,
+          unit: configurableMetricAxes[axis].unit,
+        }))}
+        axisScales={axisScales}
+        onAxisScalesChange={setAxisScales}
+      />
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
@@ -1877,7 +2193,7 @@ function SoundRmsWidget({
                   orientation={index === 0 ? 'left' : 'right'}
                   unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
                   width={axisConfig.width}
-                  domain={['auto', 'auto']}
+                  domain={axisDomain(axisScales, axis, ['auto', 'auto'])}
                 />
               );
             })}
@@ -1927,6 +2243,7 @@ function VibrationWidget({
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
 }>) {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -1942,47 +2259,69 @@ function VibrationWidget({
   const activeMetrics = vibrationWidgetMetrics.filter(metric =>
     visibleHives.some(index => hasSeriesData(rows, seriesKey(index, metric))),
   );
+  const csvColumns: CsvColumn[] = visibleHives.flatMap(hiveIndex =>
+    activeMetrics
+      .filter(metric => hasSeriesData(rows, seriesKey(hiveIndex, metric)))
+      .map(metric => ({
+        header: `${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${vibrationMetricLabels[metric]} (mg)`,
+        value: row => row[seriesKey(hiveIndex, metric)],
+      })),
+  );
 
   if (!rows.length || !activeMetrics.length) {
     return <EmptyWidgetState label="No vibration or accelerometer band data for the selected hives." />;
   }
 
   return (
-    <div className="h-72">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            minTickGap={32}
-            scale="time"
-            tickFormatter={formatChartTick}
-            type="number"
-            domain={chartDomainForDateRange(dateRange)}
-          />
-          <YAxis unit=" mg" width={58} domain={[0, 'auto']} />
-          <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-          <Legend />
-          {visibleHives.flatMap((hiveIndex, hivePosition) =>
-            activeMetrics
-              .filter(metric => hasSeriesData(rows, seriesKey(hiveIndex, metric)))
-              .map((metric, metricPosition) => (
-                <Line
-                  key={`${hiveIndex}-${metric}`}
-                  type="monotone"
-                  dataKey={seriesKey(hiveIndex, metric)}
-                  name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${vibrationMetricLabels[metric]}`}
-                  stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
-                  strokeDasharray={metric === 'vibration' ? undefined : '4 2'}
-                  dot={false}
-                  connectNulls={false}
-                  strokeWidth={metric === 'vibration' ? 1.8 : 1.3}
-                  isAnimationActive={false}
-                />
-              )),
-          )}
-        </LineChart>
-      </ResponsiveContainer>
+    <div>
+      <ChartControls
+        csvFilename="hivescale-vibration-bands"
+        csvRows={rows}
+        csvColumns={csvColumns}
+        axes={[{ id: 'vibration', label: 'Vibration', unit: 'mg' }]}
+        axisScales={axisScales}
+        onAxisScalesChange={setAxisScales}
+      />
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              minTickGap={32}
+              scale="time"
+              tickFormatter={formatChartTick}
+              type="number"
+              domain={chartDomainForDateRange(dateRange)}
+            />
+            <YAxis
+              unit=" mg"
+              width={58}
+              domain={axisDomain(axisScales, 'vibration', [0, 'auto'])}
+            />
+            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+            <Legend />
+            {visibleHives.flatMap((hiveIndex, hivePosition) =>
+              activeMetrics
+                .filter(metric => hasSeriesData(rows, seriesKey(hiveIndex, metric)))
+                .map((metric, metricPosition) => (
+                  <Line
+                    key={`${hiveIndex}-${metric}`}
+                    type="monotone"
+                    dataKey={seriesKey(hiveIndex, metric)}
+                    name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${vibrationMetricLabels[metric]}`}
+                    stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                    strokeDasharray={metric === 'vibration' ? undefined : '4 2'}
+                    dot={false}
+                    connectNulls={false}
+                    strokeWidth={metric === 'vibration' ? 1.8 : 1.3}
+                    isAnimationActive={false}
+                  />
+                )),
+            )}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
@@ -2010,14 +2349,34 @@ const temperatureBarClass = (tempC: number | null): string => {
 };
 
 function TemperatureHeatmapWidget({ slots }: Readonly<{ slots: HiveSlot[] }>) {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const temps = slots
     .map(slot => slot.tempC)
     .filter((value): value is number => typeof value === 'number');
   const min = temps.length ? Math.min(...temps) : 0;
   const max = temps.length ? Math.max(...temps) : 1;
+  const csvRow = slots.reduce<ChartRow>(
+    (row, slot) => ({
+      ...row,
+      [`hive${slot.index}_temperature`]: slot.tempC,
+    }),
+    { timestamp: Date.now(), measuredAt: new Date().toISOString() },
+  );
+  const csvColumns: CsvColumn[] = slots.map(slot => ({
+    header: `${slot.name} temperature (°C)`,
+    value: row => row[`hive${slot.index}_temperature`],
+  }));
 
   return (
     <div className="space-y-3">
+      <ChartControls
+        csvFilename="hivescale-temperature-heatmap"
+        csvRows={[csvRow]}
+        csvColumns={csvColumns}
+        axes={[]}
+        axisScales={axisScales}
+        onAxisScalesChange={setAxisScales}
+      />
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {slots.map(slot => {
           const normalized =
@@ -2154,6 +2513,7 @@ function ConfigurableDiagramWidget({
   hiveNames: Record<number, string>;
 }>) {
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 6), [hiveIndexes]);
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const [selectedMetricKeys, setSelectedMetricKeys] = useState<string[]>([
     ...defaultConfigurableMetricKeys,
   ]);
@@ -2212,6 +2572,23 @@ function ConfigurableDiagramWidget({
   const activeAxes = [
     ...new Set(activeMetrics.map(metric => metric.axis)),
   ] as ConfigurableMetricAxis[];
+  const csvColumns: CsvColumn[] = activeMetrics.flatMap(metric => {
+    if (metric.source === 'device') {
+      return [
+        {
+          header: `${metric.label}${metric.unit ? ` (${metric.unit})` : ''}`,
+          value: (row: ChartRow) => row[configDeviceSeriesKey(metric.key)],
+        },
+      ];
+    }
+
+    return visibleHives
+      .filter(index => hasSeriesData(rows, configSeriesKey(index, metric.key)))
+      .map(index => ({
+        header: `${hiveNames[index] ?? `Hive ${index}`} ${metric.label}${metric.unit ? ` (${metric.unit})` : ''}`,
+        value: (row: ChartRow) => row[configSeriesKey(index, metric.key)],
+      }));
+  });
 
   return (
     <div className="space-y-4">
@@ -2241,72 +2618,90 @@ function ConfigurableDiagramWidget({
       {!rows.length || !activeMetrics.length ? (
         <EmptyWidgetState label="Select at least one metric with data for the selected hives and range." />
       ) : (
-        <div className="h-96">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="timestamp"
-                minTickGap={32}
-                scale="time"
-                tickFormatter={formatChartTick}
-                type="number"
-                domain={chartDomainForDateRange(dateRange)}
-              />
-              {activeAxes.map((axis, index) => {
-                const axisConfig = configurableMetricAxes[axis];
-                return (
-                  <YAxis
-                    key={axis}
-                    yAxisId={axis}
-                    orientation={index === 0 ? 'left' : 'right'}
-                    unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
-                    width={axisConfig.width}
-                    domain={axis === 'percent' ? [0, 100] : ['auto', 'auto']}
-                  />
-                );
-              })}
-              <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-              <Legend />
-              {activeMetrics.flatMap((metric, metricPosition) => {
-                if (metric.source === 'device') {
-                  return [
-                    <Line
-                      key={metric.key}
-                      yAxisId={metric.axis}
-                      type="monotone"
-                      dataKey={configDeviceSeriesKey(metric.key)}
-                      name={metric.label}
-                      stroke={chartColors[metricPosition % chartColors.length]}
-                      strokeWidth={1.7}
-                      dot={false}
-                      connectNulls={false}
-                      isAnimationActive={false}
-                    />,
-                  ];
-                }
-
-                return visibleHives
-                  .filter(index => hasSeriesData(rows, configSeriesKey(index, metric.key)))
-                  .map((hiveIndex, hivePosition) => (
-                    <Line
-                      key={`${hiveIndex}-${metric.key}`}
-                      yAxisId={metric.axis}
-                      type="monotone"
-                      dataKey={configSeriesKey(hiveIndex, metric.key)}
-                      name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${metric.label}`}
-                      stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
-                      strokeDasharray={metricPosition === 0 ? undefined : '4 2'}
-                      strokeWidth={metricPosition === 0 ? 1.7 : 1.3}
-                      dot={false}
-                      connectNulls={false}
-                      isAnimationActive={false}
+        <>
+          <ChartControls
+            csvFilename="hivescale-configurable-diagram"
+            csvRows={rows}
+            csvColumns={csvColumns}
+            axes={activeAxes.map(axis => ({
+              id: axis,
+              label: axis,
+              unit: configurableMetricAxes[axis].unit,
+            }))}
+            axisScales={axisScales}
+            onAxisScalesChange={setAxisScales}
+          />
+          <div className="h-96">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="timestamp"
+                  minTickGap={32}
+                  scale="time"
+                  tickFormatter={formatChartTick}
+                  type="number"
+                  domain={chartDomainForDateRange(dateRange)}
+                />
+                {activeAxes.map((axis, index) => {
+                  const axisConfig = configurableMetricAxes[axis];
+                  return (
+                    <YAxis
+                      key={axis}
+                      yAxisId={axis}
+                      orientation={index === 0 ? 'left' : 'right'}
+                      unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
+                      width={axisConfig.width}
+                      domain={axisDomain(
+                        axisScales,
+                        axis,
+                        axis === 'percent' ? [0, 100] : ['auto', 'auto'],
+                      )}
                     />
-                  ));
-              })}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+                  );
+                })}
+                <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
+                <Legend />
+                {activeMetrics.flatMap((metric, metricPosition) => {
+                  if (metric.source === 'device') {
+                    return [
+                      <Line
+                        key={metric.key}
+                        yAxisId={metric.axis}
+                        type="monotone"
+                        dataKey={configDeviceSeriesKey(metric.key)}
+                        name={metric.label}
+                        stroke={chartColors[metricPosition % chartColors.length]}
+                        strokeWidth={1.7}
+                        dot={false}
+                        connectNulls={false}
+                        isAnimationActive={false}
+                      />,
+                    ];
+                  }
+
+                  return visibleHives
+                    .filter(index => hasSeriesData(rows, configSeriesKey(index, metric.key)))
+                    .map((hiveIndex, hivePosition) => (
+                      <Line
+                        key={`${hiveIndex}-${metric.key}`}
+                        yAxisId={metric.axis}
+                        type="monotone"
+                        dataKey={configSeriesKey(hiveIndex, metric.key)}
+                        name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${metric.label}`}
+                        stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                        strokeDasharray={metricPosition === 0 ? undefined : '4 2'}
+                        strokeWidth={metricPosition === 0 ? 1.7 : 1.3}
+                        dot={false}
+                        connectNulls={false}
+                        isAnimationActive={false}
+                      />
+                    ));
+                })}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </>
       )}
     </div>
   );
