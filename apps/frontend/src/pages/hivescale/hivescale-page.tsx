@@ -124,16 +124,22 @@ const emptyHiveMappings = (): HiveMappingBySlot =>
 
 const normalizeHiveMappings = (
   mappings: Partial<Record<number | string, unknown>> | readonly unknown[],
-): HiveMappingBySlot =>
-  Object.fromEntries(
+): HiveMappingBySlot => {
+  const rawValueForSlot = (slot: number, index: number): unknown => {
+    if (Array.isArray(mappings)) return mappings[index];
+
+    const mappingRecord = mappings as Partial<Record<string, unknown>>;
+    return mappingRecord[String(slot)];
+  };
+
+  return Object.fromEntries(
     Array.from({ length: MAX_HIVE_SLOTS }, (_, i) => {
       const slot = i + 1;
-      const rawValue = Array.isArray(mappings)
-        ? mappings[i]
-        : (mappings[slot] ?? mappings[String(slot)]);
+      const rawValue = rawValueForSlot(slot, i);
       return [slot, typeof rawValue === 'string' ? rawValue.trim() : ''];
     }),
   ) as HiveMappingBySlot;
+};
 
 const hiveMappingStorageKey = (deviceId: string) =>
   `${HIVE_MAPPING_STORAGE_PREFIX}${deviceId}:v1`;
