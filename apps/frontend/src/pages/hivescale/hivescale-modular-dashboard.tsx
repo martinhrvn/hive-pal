@@ -3,13 +3,12 @@ import {
   Activity,
   Battery,
   CheckCircle2,
-  Clock,
+  ChevronDown,
   Info,
   Plus,
   Thermometer,
   Trash2,
   Weight,
-  Zap,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -33,6 +32,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import type {
   HiveScaleDevice,
   HiveScaleHiveReading,
@@ -111,6 +115,43 @@ const formatRelativeTime = (value: string | null | undefined): string => {
   return '--';
 };
 
+const resolveDateRangeBounds = (
+  dateRange: HiveScaleDateRange,
+): ResolvedDateRangeBounds => {
+  if (dateRange.preset === 'all') return {};
+
+  const effectiveRange =
+    dateRange.preset === 'custom'
+      ? dateRange
+      : createPresetDateRange(dateRange.preset);
+  const startMs = effectiveRange.startAt
+    ? new Date(effectiveRange.startAt).getTime()
+    : undefined;
+  const explicitEndMs = effectiveRange.endAt
+    ? new Date(effectiveRange.endAt).getTime()
+    : undefined;
+
+  return {
+    startMs:
+      startMs !== undefined && Number.isFinite(startMs) ? startMs : undefined,
+    // Preset ranges should always mean "from now backwards", never an open
+    // future range. Custom ranges keep their explicit end when one is set.
+    endMs:
+      dateRange.preset === 'custom'
+        ? explicitEndMs !== undefined && Number.isFinite(explicitEndMs)
+          ? explicitEndMs
+          : Date.now()
+        : Date.now(),
+  };
+};
+
+const chartDomainForDateRange = (
+  dateRange: HiveScaleDateRange,
+): [number | 'dataMin', number | 'dataMax'] => {
+  const { startMs, endMs } = resolveDateRangeBounds(dateRange);
+  return [startMs ?? 'dataMin', endMs ?? 'dataMax'];
+};
+
 type HiveFallbackNames = {
   scale1Name: string;
   scale2Name: string;
@@ -173,6 +214,13 @@ type ChartRow = {
   timestamp: number;
   measuredAt: string;
   [key: string]: string | number | null;
+};
+
+type MappedHiveNames = Record<number, string>;
+
+type ResolvedDateRangeBounds = {
+  startMs?: number;
+  endMs?: number;
 };
 
 const chartColors = [
@@ -582,12 +630,7 @@ const filterMeasurementsByDateRange = (
   measurements: HiveScaleMeasurement[] | undefined,
   dateRange: HiveScaleDateRange,
 ) => {
-  const startMs = dateRange.startAt
-    ? new Date(dateRange.startAt).getTime()
-    : Number.NEGATIVE_INFINITY;
-  const endMs = dateRange.endAt
-    ? new Date(dateRange.endAt).getTime()
-    : Number.POSITIVE_INFINITY;
+  const { startMs, endMs } = resolveDateRangeBounds(dateRange);
 
   return [...(measurements ?? [])]
     .sort(
@@ -596,7 +639,10 @@ const filterMeasurementsByDateRange = (
     )
     .filter(measurement => {
       const ts = new Date(measurement.measured_at).getTime();
-      return Number.isFinite(ts) && ts >= startMs && ts <= endMs;
+      if (!Number.isFinite(ts)) return false;
+      if (startMs !== undefined && ts < startMs) return false;
+      if (endMs !== undefined && ts > endMs) return false;
+      return true;
     });
 };
 
@@ -680,188 +726,198 @@ function DateRangeControls({
   );
 }
 
-function HealthMetric({
-  title,
-  value,
-  detail,
-  icon,
-}: Readonly<{
-  title: string;
-  value: ReactNode;
-  detail: string;
-  icon: ReactNode;
-}>) {
-  return (
-    <Card>
-      <CardContent className="flex items-start gap-3 p-4">
-        <div className="rounded-full bg-muted p-2">{icon}</div>
-        <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">{title}</p>
-          <p className="truncate text-lg font-semibold">{value}</p>
-          <p className="truncate text-xs text-muted-foreground">{detail}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
-function DeviceHealthStrip({
-  selectedDevice,
-  latest,
-  slots,
-  alertCount,
-  isBatteryCharging,
-}: Readonly<{
-  selectedDevice: HiveScaleDevice;
-  latest: HiveScaleMeasurement | undefined;
-  slots: HiveSlot[];
-  alertCount: number;
-  isBatteryCharging: boolean;
-}>) {
-  const hivesWithData = slots.filter(slot => slot.hasData).length;
-  const storageOk = [latest?.sd_ok, latest?.rtc_ok, latest?.sht_ok].filter(
-    value => value === true,
-  ).length;
-  const solarPower = latest?.solar_power_mw;
-
-  return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-      <HealthMetric
-        title="Last data"
-        value={formatRelativeTime(latest?.measured_at)}
-        detail={formatDateTime(latest?.measured_at)}
-        icon={<Clock className="h-4 w-4" />}
-      />
-      <HealthMetric
-        title="Hives online"
-        value={`${hivesWithData}/${MAX_HIVE_SLOTS}`}
-        detail="slots with recent readings"
-        icon={<Activity className="h-4 w-4" />}
-      />
-      <HealthMetric
-        title="Battery"
-        value={
-          <span className="inline-flex items-center gap-1">
-            {numberOrDash(latest?.battery_soc_percent, 0)}%
-            {isBatteryCharging && <Zap className="h-4 w-4" />}
-          </span>
-        }
-        detail={isBatteryCharging ? 'charging' : 'state of charge'}
-        icon={<Battery className="h-4 w-4" />}
-      />
-      <HealthMetric
-        title="Solar"
-        value={
-          solarPower === null || solarPower === undefined
-            ? `${numberOrDash(latest?.solar_load_voltage_v, 2)} V`
-            : `${numberOrDash(solarPower, 0)} mW`
-        }
-        detail="input power"
-        icon={<Zap className="h-4 w-4" />}
-      />
-      <HealthMetric
-        title="Firmware"
-        value={selectedDevice.last_firmware_version ?? latest?.firmware_version ?? '--'}
-        detail={`last seen ${formatRelativeTime(selectedDevice.last_seen_at)}`}
-        icon={<CheckCircle2 className="h-4 w-4" />}
-      />
-      <HealthMetric
-        title="Insights"
-        value={alertCount > 0 ? `${alertCount} active` : 'All clear'}
-        detail={`device checks ${storageOk}/3 ok`}
-        icon={<Info className="h-4 w-4" />}
-      />
-    </div>
+const latestHiveInsideFirmwareSummary = (
+  measurements: HiveScaleMeasurement[] | undefined,
+  fallbackNames: HiveFallbackNames,
+): string => {
+  if (!measurements?.length) return '--';
+  const versions = new Set<string>();
+  const sorted = [...measurements].sort(
+    (a, b) =>
+      new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
   );
-}
+
+  for (const measurement of sorted) {
+    for (const value of [
+      measurement.ble_1_firmware_version,
+      measurement.ble_2_firmware_version,
+    ]) {
+      if (typeof value === 'string' && value.trim()) {
+        versions.add(value.trim());
+      }
+    }
+
+    for (const hive of measurementHiveReadings(measurement, fallbackNames)) {
+      const firmwareVersion = hive.ble?.firmware_version;
+      if (typeof firmwareVersion === 'string' && firmwareVersion.trim()) {
+        versions.add(firmwareVersion.trim());
+      }
+    }
+
+    if (versions.size > 0) break;
+  }
+
+  return versions.size > 0 ? [...versions].join(' / ') : '--';
+};
+
 
 function HiveOverviewGrid({
   slots,
   selectedHiveIndexes,
   onToggleHive,
   alertsByHive,
+  selectedDevice,
+  latest,
+  hiveInsideFirmware,
 }: Readonly<{
   slots: HiveSlot[];
   selectedHiveIndexes: number[];
   onToggleHive: (index: number) => void;
   alertsByHive: Record<number, HiveScaleInsightAlert[]>;
+  selectedDevice: HiveScaleDevice;
+  latest: HiveScaleMeasurement | undefined;
+  hiveInsideFirmware: string;
 }>) {
+  const [isOpen, setIsOpen] = useState(true);
+  const hivesWithData = slots.filter(slot => slot.hasData).length;
+  const hivescaleFirmware =
+    selectedDevice.last_firmware_version ?? latest?.firmware_version ?? '--';
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <CardTitle>Hive overview</CardTitle>
-            <CardDescription>
-              Compact status for up to 18 hives. Select tiles to drive the
-              dashboard widgets below.
-            </CardDescription>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+            <div className="space-y-2">
+              <div>
+                <CardTitle>Hive overview</CardTitle>
+                <CardDescription>
+                  Compact status for mapped hives. Select tiles to drive the
+                  dashboard widgets below.
+                </CardDescription>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>
+                  Last data{' '}
+                  <span className="font-medium text-foreground">
+                    {formatRelativeTime(latest?.measured_at)}
+                  </span>
+                </span>
+                <span>
+                  Hives online{' '}
+                  <span className="font-medium text-foreground">
+                    {hivesWithData}/{slots.length || 0}
+                  </span>
+                </span>
+                <span>
+                  HiveScale FW{' '}
+                  <span className="font-medium text-foreground">
+                    {hivescaleFirmware}
+                  </span>
+                </span>
+                <span>
+                  HiveInside FW{' '}
+                  <span className="font-medium text-foreground">
+                    {hiveInsideFirmware}
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline">{selectedHiveIndexes.length} selected</Badge>
+              <CollapsibleTrigger asChild>
+                <Button type="button" variant="outline" size="sm">
+                  {isOpen ? 'Hide overview' : 'Show overview'}
+                  <ChevronDown
+                    className={`ml-2 h-4 w-4 transition-transform ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+            </div>
           </div>
-          <Badge variant="outline">
-            {selectedHiveIndexes.length || 0} selected
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
-          {slots.map(slot => {
-            const selected = selectedHiveIndexes.includes(slot.index);
-            const alerts = alertsByHive[slot.index] ?? [];
-            return (
-              <button
-                key={slot.index}
-                type="button"
-                onClick={() => onToggleHive(slot.index)}
-                className={`rounded-lg border p-3 text-left transition hover:border-primary ${
-                  selected ? 'border-primary bg-primary/5' : 'bg-card'
-                } ${slot.hasData ? '' : 'opacity-70'}`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{slot.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Slot {slot.index}
-                    </p>
-                  </div>
-                  {alerts.length > 0 ? (
-                    <Badge variant="destructive" className="shrink-0 text-[10px]">
-                      {alerts.length}
-                    </Badge>
-                  ) : slot.hasData ? (
-                    <Badge variant="outline" className="shrink-0 text-[10px]">
-                      OK
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary" className="shrink-0 text-[10px]">
-                      No data
-                    </Badge>
-                  )}
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                  <div>
-                    <p className="text-muted-foreground">Weight</p>
-                    <p className="font-semibold">{numberOrDash(slot.weightKg)} kg</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Temp</p>
-                    <p className="font-semibold">{numberOrDash(slot.tempC)} C</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">RH</p>
-                    <p className="font-semibold">
-                      {numberOrDash(slot.humidityPercent, 0)}%
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-3 truncate text-xs text-muted-foreground">
-                  {slot.sensorSummary}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CollapsibleContent>
+          <CardContent>
+            {slots.length ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+                {slots.map(slot => {
+                  const selected = selectedHiveIndexes.includes(slot.index);
+                  const alerts = alertsByHive[slot.index] ?? [];
+                  return (
+                    <button
+                      key={slot.index}
+                      type="button"
+                      onClick={() => onToggleHive(slot.index)}
+                      className={`rounded-lg border p-3 text-left transition hover:border-primary ${
+                        selected ? 'border-primary bg-primary/5' : 'bg-card'
+                      } ${slot.hasData ? '' : 'opacity-70'}`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">
+                            {slot.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Slot {slot.index}
+                          </p>
+                        </div>
+                        {alerts.length > 0 ? (
+                          <Badge
+                            variant="destructive"
+                            className="shrink-0 text-[10px]"
+                          >
+                            {alerts.length}
+                          </Badge>
+                        ) : slot.hasData ? (
+                          <Badge variant="outline" className="shrink-0 text-[10px]">
+                            OK
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="shrink-0 text-[10px]">
+                            No data
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                        <div>
+                          <p className="text-muted-foreground">Weight</p>
+                          <p className="font-semibold">
+                            {numberOrDash(slot.weightKg)} kg
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Temp</p>
+                          <p className="font-semibold">
+                            {numberOrDash(slot.tempC)} °C
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">RH</p>
+                          <p className="font-semibold">
+                            {numberOrDash(slot.humidityPercent, 0)}%
+                          </p>
+                        </div>
+                      </div>
+                      <p className="mt-3 truncate text-xs text-muted-foreground">
+                        {slot.sensorSummary}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex min-h-24 items-center justify-center rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
+                Map HiveScale slots to HivePal hives in the device setup panel to
+                show overview tiles here.
+              </div>
+            )}
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 }
 
@@ -918,6 +974,7 @@ function HiveLineChart({
   metric,
   hiveNames,
   unit,
+  dateRange,
   heightClass = 'h-72',
 }: Readonly<{
   rows: ChartRow[];
@@ -925,6 +982,7 @@ function HiveLineChart({
   metric: HiveMetricKey;
   hiveNames: Record<number, string>;
   unit: string;
+  dateRange: HiveScaleDateRange;
   heightClass?: string;
 }>) {
   const hasData = rows.some(row =>
@@ -946,6 +1004,7 @@ function HiveLineChart({
             scale="time"
             tickFormatter={formatChartTick}
             type="number"
+            domain={chartDomainForDateRange(dateRange)}
           />
           <YAxis unit={` ${unit}`} width={64} domain={['auto', 'auto']} />
           <Tooltip
@@ -1007,6 +1066,7 @@ function WeightComparisonWidget({
       metric="weight"
       hiveNames={hiveNames}
       unit="kg"
+      dateRange={dateRange}
     />
   );
 }
@@ -1059,6 +1119,7 @@ function ClimateWidget({
             scale="time"
             tickFormatter={formatChartTick}
             type="number"
+            domain={chartDomainForDateRange(dateRange)}
           />
           <YAxis yAxisId="temperature" unit=" C" width={56} domain={['auto', 'auto']} />
           <YAxis
@@ -1145,6 +1206,7 @@ function PowerWidget({
             scale="time"
             tickFormatter={formatChartTick}
             type="number"
+            domain={chartDomainForDateRange(dateRange)}
           />
           <YAxis yAxisId="percent" unit=" %" width={48} domain={[0, 'auto']} />
           <YAxis
@@ -1249,6 +1311,7 @@ function BeeTrafficWidget({
             scale="time"
             tickFormatter={formatChartTick}
             type="number"
+            domain={chartDomainForDateRange(dateRange)}
           />
           <YAxis width={56} />
           <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
@@ -1305,6 +1368,7 @@ function SoundRmsWidget({
             scale="time"
             tickFormatter={formatChartTick}
             type="number"
+            domain={chartDomainForDateRange(dateRange)}
           />
           <YAxis unit=" dBFS" width={68} domain={['auto', 'auto']} />
           <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
@@ -1363,6 +1427,7 @@ function VibrationWidget({
       metric="vibration"
       hiveNames={hiveNames}
       unit="mg"
+      dateRange={dateRange}
     />
   );
 }
@@ -1387,7 +1452,7 @@ function TemperatureHeatmapWidget({ slots }: Readonly<{ slots: HiveSlot[] }>) {
               <div className="mb-1 flex items-center justify-between gap-2 text-xs">
                 <span className="truncate font-medium">{slot.name}</span>
                 <span className="text-muted-foreground">
-                  {numberOrDash(slot.tempC)} C
+                  {numberOrDash(slot.tempC)} °C
                 </span>
               </div>
               <div className="h-2 rounded-full bg-muted">
@@ -1647,10 +1712,10 @@ export function HiveScaleModularDashboard({
   onDateRangeChange,
   scale1Name,
   scale2Name,
+  hiveMappings,
   alerts,
   insightsLoading,
   insightsError,
-  isBatteryCharging,
 }: Readonly<{
   selectedDevice: HiveScaleDevice;
   measurements: HiveScaleMeasurement[] | undefined;
@@ -1658,10 +1723,10 @@ export function HiveScaleModularDashboard({
   onDateRangeChange: (range: HiveScaleDateRange) => void;
   scale1Name: string;
   scale2Name: string;
+  hiveMappings: MappedHiveNames;
   alerts: HiveScaleInsightAlert[];
   insightsLoading: boolean;
   insightsError: boolean;
-  isBatteryCharging: boolean;
 }>) {
   const fallbackNames = useMemo(
     () => ({ scale1Name, scale2Name }),
@@ -1672,17 +1737,37 @@ export function HiveScaleModularDashboard({
     () => buildHiveSlots(latest, fallbackNames),
     [fallbackNames, latest],
   );
+  const mappedSlots = useMemo(
+    () =>
+      slots
+        .map(slot => {
+          const mappedName = hiveMappings[slot.index]?.trim();
+          return mappedName ? { ...slot, name: mappedName } : null;
+        })
+        .filter((slot): slot is HiveSlot => slot !== null),
+    [hiveMappings, slots],
+  );
   const hiveNames = useMemo(
     () =>
-      Object.fromEntries(slots.map(slot => [slot.index, slot.name])) as Record<
+      Object.fromEntries(mappedSlots.map(slot => [slot.index, slot.name])) as Record<
         number,
         string
       >,
-    [slots],
+    [mappedSlots],
   );
-  const availableHiveIndexes = useMemo(
-    () => slots.filter(slot => slot.hasData).map(slot => slot.index),
-    [slots],
+  const availableHiveIndexes = useMemo(() => {
+    const withData = mappedSlots
+      .filter(slot => slot.hasData)
+      .map(slot => slot.index);
+    return withData.length ? withData : mappedSlots.map(slot => slot.index);
+  }, [mappedSlots]);
+  const mappedHiveIndexes = useMemo(
+    () => mappedSlots.map(slot => slot.index),
+    [mappedSlots],
+  );
+  const hiveInsideFirmware = useMemo(
+    () => latestHiveInsideFirmwareSummary(measurements, fallbackNames),
+    [fallbackNames, measurements],
   );
   const [selectedHiveIndexes, setSelectedHiveIndexes] = useState<number[]>([]);
   const [widgets, setWidgets] = useState<DashboardWidget[]>(() =>
@@ -1696,10 +1781,11 @@ export function HiveScaleModularDashboard({
   }, [selectedDevice.device_id]);
 
   useEffect(() => {
-    setSelectedHiveIndexes(current =>
-      current.length ? current : availableHiveIndexes.slice(0, 4),
-    );
-  }, [availableHiveIndexes]);
+    setSelectedHiveIndexes(current => {
+      const valid = current.filter(index => mappedHiveIndexes.includes(index));
+      return valid.length ? valid : availableHiveIndexes.slice(0, 4);
+    });
+  }, [availableHiveIndexes, mappedHiveIndexes]);
 
   useEffect(() => {
     saveDashboardSettings(selectedDevice.device_id, widgets);
@@ -1745,19 +1831,14 @@ export function HiveScaleModularDashboard({
 
   return (
     <div className="space-y-4">
-      <DeviceHealthStrip
-        selectedDevice={selectedDevice}
-        latest={latest}
-        slots={slots}
-        alertCount={alerts.length}
-        isBatteryCharging={isBatteryCharging}
-      />
-
       <HiveOverviewGrid
-        slots={slots}
+        slots={mappedSlots}
         selectedHiveIndexes={selectedHiveIndexes}
         onToggleHive={toggleHive}
         alertsByHive={alertsByHive}
+        selectedDevice={selectedDevice}
+        latest={latest}
+        hiveInsideFirmware={hiveInsideFirmware}
       />
 
       <div className="flex flex-col gap-3 rounded-lg border bg-card p-4 md:flex-row md:items-center md:justify-between">
@@ -1806,7 +1887,7 @@ export function HiveScaleModularDashboard({
                 fallbackNames,
                 selectedHiveIndexes,
                 hiveNames,
-                slots,
+                slots: mappedSlots,
                 alerts,
                 insightsLoading,
                 insightsError,

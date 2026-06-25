@@ -2,6 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { apiClient } from '../client';
 
+export interface HiveScaleChannelMapping {
+  index: number;
+  display_name?: string | null;
+  hive_id?: string | null;
+}
+
 export interface HiveScaleDevice {
   device_id: string;
   display_name: string | null;
@@ -12,6 +18,7 @@ export interface HiveScaleDevice {
   channels: {
     scale_1: string | null;
     scale_2: string | null;
+    hives?: HiveScaleChannelMapping[] | null;
   };
 }
 
@@ -46,6 +53,7 @@ export interface HiveScaleHiveReading {
   ble?: {
     present?: boolean | null;
     sensor_type?: string | null;
+    firmware_version?: string | null;
     humidity_percent: number | null;
     pressure_hpa: number | null;
     battery_percent?: number | null;
@@ -282,6 +290,7 @@ export interface HiveScaleTempCompensationFitResult {
 export interface HiveScaleChannelsPatch {
   scale_1_display_name?: string;
   scale_2_display_name?: string;
+  hives?: HiveScaleChannelMapping[];
 }
 
 export interface HiveScaleCalibrationModeStartInput {

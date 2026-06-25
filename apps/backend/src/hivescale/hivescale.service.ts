@@ -135,6 +135,11 @@ export interface HiveScaleTempCompensationFitDto {
 export interface HiveScaleChannelsPatchDto {
   scale_1_display_name?: string;
   scale_2_display_name?: string;
+  hives?: {
+    index: number;
+    display_name?: string | null;
+    hive_id?: string | null;
+  }[];
 }
 
 export interface HiveScaleShareDeviceDto {
