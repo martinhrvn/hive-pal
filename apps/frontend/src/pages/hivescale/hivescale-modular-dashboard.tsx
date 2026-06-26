@@ -4,6 +4,8 @@ import {
   useRef,
   useState,
   type Dispatch,
+  type DragEvent as ReactDragEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
   type SetStateAction,
 } from 'react';
@@ -13,7 +15,9 @@ import {
   CheckCircle2,
   ChevronDown,
   Download,
+  GripVertical,
   Info,
+  Maximize2,
   Plus,
   Thermometer,
   Trash2,
@@ -62,7 +66,7 @@ import { BeeLoadingMessages } from './hivescale-loading-messages';
 import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';
 
 const MAX_HIVE_SLOTS = 18;
-const DASHBOARD_STORAGE_VERSION = 1;
+const DASHBOARD_STORAGE_VERSION = 2;
 const dashboardStoragePrefix = 'hivepal:hivescale-dashboard:';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
@@ -222,15 +226,21 @@ type DashboardWidgetKind =
 
 type DashboardWidgetSize = 'half' | 'wide';
 
+type DashboardWidgetLayout = {
+  w: number;
+  h: number;
+};
+
 type DashboardWidget = {
   id: string;
   kind: DashboardWidgetKind;
   title: string;
   size: DashboardWidgetSize;
+  layout: DashboardWidgetLayout;
 };
 
 type StoredDashboardSettings = {
-  version: typeof DASHBOARD_STORAGE_VERSION;
+  version: number;
   widgets: DashboardWidget[];
 };
 
@@ -278,6 +288,95 @@ const chartColors = [
   'var(--chart-5)',
   'var(--muted-foreground)',
 ];
+
+const DASHBOARD_GRID_COLUMNS = 4;
+const DASHBOARD_GRID_ROW_HEIGHT_PX = 192;
+const DASHBOARD_GRID_GAP_PX = 16;
+const DASHBOARD_MIN_WIDGET_WIDTH = 1;
+const DASHBOARD_MAX_WIDGET_WIDTH = DASHBOARD_GRID_COLUMNS;
+const DASHBOARD_MIN_WIDGET_HEIGHT = 1;
+const DASHBOARD_MAX_WIDGET_HEIGHT = 8;
+
+const defaultDashboardLayouts: Record<DashboardWidgetSize, DashboardWidgetLayout> = {
+  half: { w: 2, h: 3 },
+  wide: { w: 4, h: 3 },
+};
+
+const clampInteger = (
+  value: unknown,
+  min: number,
+  max: number,
+  fallback: number,
+) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(max, Math.round(parsed)));
+};
+
+const normalizeDashboardLayout = (
+  layout: Partial<DashboardWidgetLayout> | null | undefined,
+  fallback: DashboardWidgetLayout = defaultDashboardLayouts.half,
+): DashboardWidgetLayout => ({
+  w: clampInteger(
+    layout?.w,
+    DASHBOARD_MIN_WIDGET_WIDTH,
+    DASHBOARD_MAX_WIDGET_WIDTH,
+    fallback.w,
+  ),
+  h: clampInteger(
+    layout?.h,
+    DASHBOARD_MIN_WIDGET_HEIGHT,
+    DASHBOARD_MAX_WIDGET_HEIGHT,
+    fallback.h,
+  ),
+});
+
+const dashboardChartHeightPx = (layout: DashboardWidgetLayout) =>
+  Math.max(260, Math.min(760, layout.h * 128 - 48));
+
+const dashboardWidgetGridClass = (layout: DashboardWidgetLayout) => {
+  const width = clampInteger(
+    layout.w,
+    DASHBOARD_MIN_WIDGET_WIDTH,
+    DASHBOARD_MAX_WIDGET_WIDTH,
+    defaultDashboardLayouts.half.w,
+  );
+  const height = clampInteger(
+    layout.h,
+    DASHBOARD_MIN_WIDGET_HEIGHT,
+    DASHBOARD_MAX_WIDGET_HEIGHT,
+    defaultDashboardLayouts.half.h,
+  );
+  const mdColSpanByWidth: Record<number, string> = {
+    1: 'md:col-span-1',
+    2: 'md:col-span-2',
+    3: 'md:col-span-2',
+    4: 'md:col-span-2',
+  };
+  const xlColSpanByWidth: Record<number, string> = {
+    1: 'xl:col-span-1',
+    2: 'xl:col-span-2',
+    3: 'xl:col-span-3',
+    4: 'xl:col-span-4',
+  };
+  const rowSpanByHeight: Record<number, string> = {
+    1: 'row-span-1',
+    2: 'row-span-2',
+    3: 'row-span-3',
+    4: 'row-span-4',
+    5: 'row-span-5',
+    6: 'row-span-6',
+    7: 'row-span-7',
+    8: 'row-span-8',
+  };
+
+  return [
+    'col-span-1',
+    mdColSpanByWidth[width],
+    xlColSpanByWidth[width],
+    rowSpanByHeight[height],
+  ].join(' ');
+};
 
 const escapeCsvField = (value: unknown): string => {
   const text = value === null || value === undefined ? '' : String(value);
@@ -895,6 +994,7 @@ const widgetTemplates: Record<
     kind: 'weightComparison',
     title: 'Weight comparison',
     size: 'wide',
+    layout: { w: 4, h: 3 },
     description: 'Compare selected hives over the current date range.',
     Icon: Weight,
   },
@@ -902,6 +1002,7 @@ const widgetTemplates: Record<
     kind: 'climate',
     title: 'Hive climate',
     size: 'half',
+    layout: { w: 2, h: 3 },
     description: 'Temperature and humidity for selected hives.',
     Icon: Thermometer,
   },
@@ -909,6 +1010,7 @@ const widgetTemplates: Record<
     kind: 'power',
     title: 'Power health',
     size: 'half',
+    layout: { w: 2, h: 3 },
     description: 'Battery charge, battery voltage, and solar input.',
     Icon: Battery,
   },
@@ -916,6 +1018,7 @@ const widgetTemplates: Record<
     kind: 'beeTraffic',
     title: 'Bee traffic',
     size: 'half',
+    layout: { w: 2, h: 3 },
     description: 'Aggregate in/out traffic and net flow.',
     Icon: Activity,
   },
@@ -923,6 +1026,7 @@ const widgetTemplates: Record<
     kind: 'soundRms',
     title: 'Sound / acoustic bands',
     size: 'half',
+    layout: { w: 2, h: 3 },
     description: 'Per-hive acoustic RMS and FFT/HiveHeart bands when available.',
     Icon: Activity,
   },
@@ -930,6 +1034,7 @@ const widgetTemplates: Record<
     kind: 'vibration',
     title: 'Vibration bands',
     size: 'half',
+    layout: { w: 2, h: 3 },
     description: 'RMS vibration, swarm, fanning, and activity bands.',
     Icon: Activity,
   },
@@ -937,6 +1042,7 @@ const widgetTemplates: Record<
     kind: 'configurableDiagram',
     title: 'Configurable diagram',
     size: 'wide',
+    layout: { w: 4, h: 4 },
     description: 'Choose the hive, sound, traffic, climate, and device metrics to plot.',
     Icon: Activity,
   },
@@ -944,6 +1050,7 @@ const widgetTemplates: Record<
     kind: 'temperatureHeatmap',
     title: 'Temperature heatmap',
     size: 'wide',
+    layout: { w: 4, h: 2 },
     description: 'Compact all-hive temperature overview.',
     Icon: Thermometer,
   },
@@ -951,6 +1058,7 @@ const widgetTemplates: Record<
     kind: 'insights',
     title: 'Insights feed',
     size: 'half',
+    layout: { w: 2, h: 2 },
     description: 'Active alerts and evidence snippets.',
     Icon: Info,
   },
@@ -958,6 +1066,7 @@ const widgetTemplates: Record<
     kind: 'dataQuality',
     title: 'Data quality',
     size: 'half',
+    layout: { w: 2, h: 2 },
     description: 'Sensor availability and missing readings.',
     Icon: CheckCircle2,
   },
@@ -984,37 +1093,75 @@ const defaultWidgets: DashboardWidget[] = [
     id: 'default-temperature-heatmap',
     ...widgetTemplates.temperatureHeatmap,
   },
-].map(({ id, kind, title, size }) => ({ id, kind, title, size }));
+].map(({ id, kind, title, size, layout }) => ({
+  id,
+  kind,
+  title,
+  size,
+  layout: { ...layout },
+}));
 
 const createWidgetId = (kind: DashboardWidgetKind) =>
   `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-const dashboardStorageKey = (deviceId: string) =>
-  `${dashboardStoragePrefix}${deviceId}:v${DASHBOARD_STORAGE_VERSION}`;
+const dashboardStorageKey = (deviceId: string, version = DASHBOARD_STORAGE_VERSION) =>
+  `${dashboardStoragePrefix}${deviceId}:v${version}`;
+
+const normalizeDashboardWidget = (value: unknown): DashboardWidget | null => {
+  if (!value || typeof value !== 'object') return null;
+  const raw = value as Partial<DashboardWidget> & { layout?: Partial<DashboardWidgetLayout> };
+  if (
+    typeof raw.id !== 'string' ||
+    typeof raw.kind !== 'string' ||
+    !(raw.kind in widgetTemplates)
+  ) {
+    return null;
+  }
+
+  const kind = raw.kind as DashboardWidgetKind;
+  const template = widgetTemplates[kind];
+  const size: DashboardWidgetSize =
+    raw.size === 'half' || raw.size === 'wide' ? raw.size : template.size;
+  const layout = normalizeDashboardLayout(
+    raw.layout,
+    template.layout ?? defaultDashboardLayouts[size],
+  );
+
+  return {
+    id: raw.id,
+    kind,
+    title: typeof raw.title === 'string' && raw.title.trim() ? raw.title : template.title,
+    size,
+    layout,
+  };
+};
+
+const cloneDefaultWidgets = () =>
+  defaultWidgets.map(widget => ({
+    ...widget,
+    layout: { ...widget.layout },
+  }));
 
 const loadDashboardSettings = (deviceId: string): DashboardWidget[] => {
-  if (typeof globalThis.window === 'undefined') return defaultWidgets;
+  if (typeof globalThis.window === 'undefined') return cloneDefaultWidgets();
 
-  try {
-    const raw = globalThis.localStorage.getItem(dashboardStorageKey(deviceId));
-    if (!raw) return defaultWidgets;
-    const parsed = JSON.parse(raw) as Partial<StoredDashboardSettings>;
-    if (parsed.version !== DASHBOARD_STORAGE_VERSION) return defaultWidgets;
-    if (!Array.isArray(parsed.widgets) || !parsed.widgets.length) {
-      return defaultWidgets;
+  for (const key of [dashboardStorageKey(deviceId), dashboardStorageKey(deviceId, 1)]) {
+    try {
+      const raw = globalThis.localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as Partial<StoredDashboardSettings>;
+      if (!Array.isArray(parsed.widgets) || !parsed.widgets.length) continue;
+
+      const widgets = parsed.widgets
+        .map(normalizeDashboardWidget)
+        .filter((widget): widget is DashboardWidget => widget !== null);
+      if (widgets.length) return widgets;
+    } catch {
+      // Ignore broken user-specific dashboard state and keep trying fallbacks.
     }
-
-    return parsed.widgets.filter(
-      (widget): widget is DashboardWidget =>
-        typeof widget?.id === 'string' &&
-        typeof widget?.kind === 'string' &&
-        widget.kind in widgetTemplates &&
-        typeof widget?.title === 'string' &&
-        (widget.size === 'half' || widget.size === 'wide'),
-    );
-  } catch {
-    return defaultWidgets;
   }
+
+  return cloneDefaultWidgets();
 };
 
 const saveDashboardSettings = (deviceId: string, widgets: DashboardWidget[]) => {
@@ -1023,7 +1170,13 @@ const saveDashboardSettings = (deviceId: string, widgets: DashboardWidget[]) => 
   try {
     const value: StoredDashboardSettings = {
       version: DASHBOARD_STORAGE_VERSION,
-      widgets,
+      widgets: widgets.map(widget => ({
+        ...widget,
+        layout: normalizeDashboardLayout(
+          widget.layout,
+          widgetTemplates[widget.kind].layout,
+        ),
+      })),
     };
     globalThis.localStorage.setItem(
       dashboardStorageKey(deviceId),
@@ -1739,37 +1892,84 @@ function HiveOverviewGrid({
 function WidgetShell({
   title,
   description,
-  size,
+  layout,
+  isEditing,
+  isDragging,
   onRemove,
+  onDragStart,
+  onDragEnd,
+  onResizeStart,
   children,
 }: Readonly<{
   title: string;
   description: string;
-  size: DashboardWidgetSize;
+  layout: DashboardWidgetLayout;
+  isEditing: boolean;
+  isDragging: boolean;
   onRemove: () => void;
+  onDragStart: (event: ReactDragEvent<HTMLButtonElement>) => void;
+  onDragEnd: (event: ReactDragEvent<HTMLButtonElement>) => void;
+  onResizeStart: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   children: ReactNode;
 }>) {
   return (
-    <Card className={size === 'wide' ? 'xl:col-span-2' : undefined}>
+    <Card
+      className={`relative flex h-full flex-col overflow-hidden transition ${
+        isEditing ? 'ring-1 ring-dashed ring-muted-foreground/30' : ''
+      } ${isDragging ? 'opacity-50' : ''}`}
+    >
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 shrink-0"
-            onClick={onRemove}
-            aria-label={`Remove ${title}`}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <div className="flex shrink-0 items-center gap-1">
+            {isEditing && (
+              <>
+                <Badge variant="secondary" className="text-[10px]">
+                  {layout.w} x {layout.h}
+                </Badge>
+                <button
+                  type="button"
+                  draggable
+                  className="inline-flex h-8 w-8 cursor-grab items-center justify-center rounded-md border bg-background text-muted-foreground hover:text-foreground active:cursor-grabbing"
+                  onDragStart={onDragStart}
+                  onDragEnd={onDragEnd}
+                  aria-label={`Move ${title}`}
+                  title="Drag to move this widget"
+                >
+                  <GripVertical className="h-4 w-4" />
+                </button>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={onRemove}
+                  aria-label={`Remove ${title}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className={`flex-1 ${isEditing ? 'pb-9' : ''}`}>
+        {children}
+      </CardContent>
+      {isEditing && (
+        <button
+          type="button"
+          className="absolute bottom-2 right-2 inline-flex h-7 w-7 cursor-nwse-resize items-center justify-center rounded-md border bg-background/95 text-muted-foreground shadow-sm hover:text-foreground"
+          onPointerDown={onResizeStart}
+          aria-label={`Resize ${title}`}
+          title="Drag to resize this widget"
+        >
+          <Maximize2 className="h-3.5 w-3.5" />
+        </button>
+      )}
     </Card>
   );
 }
@@ -1790,7 +1990,7 @@ function HiveLineChart({
   hiveNames,
   unit,
   dateRange,
-  heightClass = 'h-72',
+  chartHeightPx = 288,
 }: Readonly<{
   rows: ChartRow[];
   hiveIndexes: number[];
@@ -1798,7 +1998,7 @@ function HiveLineChart({
   hiveNames: Record<number, string>;
   unit: string;
   dateRange: HiveScaleDateRange;
-  heightClass?: string;
+  chartHeightPx?: number;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
@@ -1824,7 +2024,7 @@ function HiveLineChart({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div className={heightClass}>
+      <div style={{ height: chartHeightPx }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -1877,12 +2077,14 @@ function WeightComparisonWidget({
   fallbackNames,
   hiveIndexes,
   hiveNames,
+  chartHeightPx = 288,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
   fallbackNames: HiveFallbackNames;
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
+  chartHeightPx?: number;
 }>) {
   const rows = useMemo(
     () =>
@@ -1904,6 +2106,7 @@ function WeightComparisonWidget({
       hiveNames={hiveNames}
       unit="kg"
       dateRange={dateRange}
+      chartHeightPx={chartHeightPx}
     />
   );
 }
@@ -1914,12 +2117,14 @@ function ClimateWidget({
   fallbackNames,
   hiveIndexes,
   hiveNames,
+  chartHeightPx = 288,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
   fallbackNames: HiveFallbackNames;
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
+  chartHeightPx?: number;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
@@ -1970,7 +2175,7 @@ function ClimateWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div className="h-72">
+      <div style={{ height: chartHeightPx }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -2040,9 +2245,11 @@ function ClimateWidget({
 function PowerWidget({
   measurements,
   dateRange,
+  chartHeightPx = 288,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
+  chartHeightPx?: number;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
@@ -2087,7 +2294,7 @@ function PowerWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div className="h-72">
+      <div style={{ height: chartHeightPx }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -2166,11 +2373,13 @@ function BeeTrafficWidget({
   dateRange,
   fallbackNames,
   hiveIndexes,
+  chartHeightPx = 288,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
   fallbackNames: HiveFallbackNames;
   hiveIndexes: number[];
+  chartHeightPx?: number;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
@@ -2227,7 +2436,7 @@ function BeeTrafficWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div className="h-72">
+      <div style={{ height: chartHeightPx }}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -2314,12 +2523,14 @@ function SoundRmsWidget({
   fallbackNames,
   hiveIndexes,
   hiveNames,
+  chartHeightPx = 288,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
   fallbackNames: HiveFallbackNames;
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
+  chartHeightPx?: number;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
@@ -2387,7 +2598,7 @@ function SoundRmsWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div className="h-72">
+      <div style={{ height: chartHeightPx }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -2457,12 +2668,14 @@ function VibrationWidget({
   fallbackNames,
   hiveIndexes,
   hiveNames,
+  chartHeightPx = 288,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
   fallbackNames: HiveFallbackNames;
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
+  chartHeightPx?: number;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
   const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
@@ -2504,7 +2717,7 @@ function VibrationWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div className="h-72">
+      <div style={{ height: chartHeightPx }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -2724,12 +2937,14 @@ function ConfigurableDiagramWidget({
   fallbackNames,
   hiveIndexes,
   hiveNames,
+  chartHeightPx = 384,
 }: Readonly<{
   measurements: HiveScaleMeasurement[] | undefined;
   dateRange: HiveScaleDateRange;
   fallbackNames: HiveFallbackNames;
   hiveIndexes: number[];
   hiveNames: Record<number, string>;
+  chartHeightPx?: number;
 }>) {
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 6), [hiveIndexes]);
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
@@ -2851,7 +3066,7 @@ function ConfigurableDiagramWidget({
             axisScales={axisScales}
             onAxisScalesChange={setAxisScales}
           />
-          <div className="h-96">
+          <div style={{ height: chartHeightPx }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -3005,6 +3220,9 @@ function AddWidgetPanel({
                 <p className="text-sm text-muted-foreground">
                   {template.description}
                 </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Default size {template.layout.w} x {template.layout.h}
+                </p>
               </button>
             );
           })}
@@ -3027,6 +3245,7 @@ function renderWidget({
   measurementsLoading,
   insightsLoading,
   insightsError,
+  chartHeightPx,
 }: {
   widget: DashboardWidget;
   measurements: HiveScaleMeasurement[] | undefined;
@@ -3040,6 +3259,7 @@ function renderWidget({
   measurementsLoading: boolean;
   insightsLoading: boolean;
   insightsError: boolean;
+  chartHeightPx: number;
 }) {
   const activeHiveIndexes = selectedHiveIndexes.slice(0, 8);
   const activeAlertHiveIndexes = new Set(activeHiveIndexes);
@@ -3047,10 +3267,12 @@ function renderWidget({
 
   if (measurementsLoading && isDiagramWidget) {
     return (
-      <BeeLoadingMessages
-        intervalMs={1000}
-        className="h-72 rounded-md border border-dashed"
-      />
+      <div style={{ minHeight: chartHeightPx }}>
+        <BeeLoadingMessages
+          intervalMs={1000}
+          className="h-full min-h-72 rounded-md border border-dashed"
+        />
+      </div>
     );
   }
 
@@ -3063,6 +3285,7 @@ function renderWidget({
           fallbackNames={fallbackNames}
           hiveIndexes={activeHiveIndexes}
           hiveNames={hiveNames}
+          chartHeightPx={chartHeightPx}
         />
       );
     case 'climate':
@@ -3073,10 +3296,17 @@ function renderWidget({
           fallbackNames={fallbackNames}
           hiveIndexes={activeHiveIndexes}
           hiveNames={hiveNames}
+          chartHeightPx={chartHeightPx}
         />
       );
     case 'power':
-      return <PowerWidget measurements={measurements} dateRange={dateRange} />;
+      return (
+        <PowerWidget
+          measurements={measurements}
+          dateRange={dateRange}
+          chartHeightPx={chartHeightPx}
+        />
+      );
     case 'beeTraffic':
       return (
         <BeeTrafficWidget
@@ -3084,6 +3314,7 @@ function renderWidget({
           dateRange={dateRange}
           fallbackNames={fallbackNames}
           hiveIndexes={activeHiveIndexes}
+          chartHeightPx={chartHeightPx}
         />
       );
     case 'soundRms':
@@ -3094,6 +3325,7 @@ function renderWidget({
           fallbackNames={fallbackNames}
           hiveIndexes={activeHiveIndexes}
           hiveNames={hiveNames}
+          chartHeightPx={chartHeightPx}
         />
       );
     case 'vibration':
@@ -3104,6 +3336,7 @@ function renderWidget({
           fallbackNames={fallbackNames}
           hiveIndexes={activeHiveIndexes}
           hiveNames={hiveNames}
+          chartHeightPx={chartHeightPx}
         />
       );
     case 'configurableDiagram':
@@ -3114,6 +3347,7 @@ function renderWidget({
           fallbackNames={fallbackNames}
           hiveIndexes={activeHiveIndexes}
           hiveNames={hiveNames}
+          chartHeightPx={chartHeightPx}
         />
       );
     case 'temperatureHeatmap':
@@ -3207,7 +3441,11 @@ export function HiveScaleModularDashboard({
   const [widgets, setWidgets] = useState<DashboardWidget[]>(() =>
     loadDashboardSettings(selectedDevice.device_id),
   );
+  const dashboardGridRef = useRef<HTMLDivElement | null>(null);
   const [showAddWidget, setShowAddWidget] = useState(false);
+  const [dashboardEditing, setDashboardEditing] = useState(false);
+  const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
+  const [dropTargetWidgetId, setDropTargetWidgetId] = useState<string | null>(null);
 
   useEffect(() => {
     setWidgets(loadDashboardSettings(selectedDevice.device_id));
@@ -3250,6 +3488,7 @@ export function HiveScaleModularDashboard({
         kind,
         title: template.title,
         size: template.size,
+        layout: { ...template.layout },
       },
     ]);
     setShowAddWidget(false);
@@ -3260,7 +3499,145 @@ export function HiveScaleModularDashboard({
   };
 
   const resetDashboard = () => {
-    setWidgets(defaultWidgets);
+    setWidgets(cloneDefaultWidgets());
+  };
+
+  const updateWidgetLayout = (
+    widgetId: string,
+    layout: Partial<DashboardWidgetLayout>,
+  ) => {
+    setWidgets(current =>
+      current.map(widget =>
+        widget.id === widgetId
+          ? {
+              ...widget,
+              layout: normalizeDashboardLayout(
+                { ...widget.layout, ...layout },
+                widgetTemplates[widget.kind].layout,
+              ),
+            }
+          : widget,
+      ),
+    );
+  };
+
+  const moveWidget = (draggedId: string, targetId: string | null) => {
+    if (targetId === draggedId) return;
+
+    setWidgets(current => {
+      const dragged = current.find(widget => widget.id === draggedId);
+      if (!dragged) return current;
+
+      const remaining = current.filter(widget => widget.id !== draggedId);
+      const targetIndex = targetId
+        ? remaining.findIndex(widget => widget.id === targetId)
+        : remaining.length;
+      const insertIndex = targetIndex >= 0 ? targetIndex : remaining.length;
+
+      return [
+        ...remaining.slice(0, insertIndex),
+        dragged,
+        ...remaining.slice(insertIndex),
+      ];
+    });
+  };
+
+  const startWidgetDrag = (
+    widgetId: string,
+    event: ReactDragEvent<HTMLButtonElement>,
+  ) => {
+    if (!dashboardEditing) return;
+    setDraggedWidgetId(widgetId);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', widgetId);
+  };
+
+  const finishWidgetDrag = () => {
+    setDraggedWidgetId(null);
+    setDropTargetWidgetId(null);
+  };
+
+  const handleWidgetDragOver = (
+    widgetId: string,
+    event: ReactDragEvent<HTMLDivElement>,
+  ) => {
+    if (!dashboardEditing || !draggedWidgetId || draggedWidgetId === widgetId) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    setDropTargetWidgetId(widgetId);
+  };
+
+  const handleWidgetDrop = (
+    widgetId: string,
+    event: ReactDragEvent<HTMLDivElement>,
+  ) => {
+    if (!dashboardEditing) return;
+    event.preventDefault();
+    const draggedId = event.dataTransfer.getData('text/plain') || draggedWidgetId;
+    if (draggedId) moveWidget(draggedId, widgetId);
+    finishWidgetDrag();
+  };
+
+  const handleEndDrop = (event: ReactDragEvent<HTMLDivElement>) => {
+    if (!dashboardEditing) return;
+    event.preventDefault();
+    const draggedId = event.dataTransfer.getData('text/plain') || draggedWidgetId;
+    if (draggedId) moveWidget(draggedId, null);
+    finishWidgetDrag();
+  };
+
+  const beginWidgetResize = (
+    widget: DashboardWidget,
+    event: ReactPointerEvent<HTMLButtonElement>,
+  ) => {
+    if (!dashboardEditing || typeof document === 'undefined') return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const startLayout = normalizeDashboardLayout(
+      widget.layout,
+      widgetTemplates[widget.kind].layout,
+    );
+    const gridElement = dashboardGridRef.current;
+    const gridRect = gridElement?.getBoundingClientRect();
+    let columnWidth = 240;
+    let gapPx = DASHBOARD_GRID_GAP_PX;
+
+    if (gridElement && gridRect && typeof globalThis.window !== 'undefined') {
+      const styles = globalThis.window.getComputedStyle(gridElement);
+      gapPx = Number.parseFloat(styles.columnGap) || DASHBOARD_GRID_GAP_PX;
+      const columnCount = Math.max(
+        1,
+        styles.gridTemplateColumns.split(' ').filter(Boolean).length,
+      );
+      columnWidth = Math.max(
+        80,
+        (gridRect.width - gapPx * (columnCount - 1)) / columnCount,
+      );
+    }
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const applyResize = (clientX: number, clientY: number) => {
+      const widthDelta = Math.round((clientX - startX) / (columnWidth + gapPx));
+      const heightDelta = Math.round(
+        (clientY - startY) / (DASHBOARD_GRID_ROW_HEIGHT_PX + gapPx),
+      );
+      updateWidgetLayout(widget.id, {
+        w: startLayout.w + widthDelta,
+        h: startLayout.h + heightDelta,
+      });
+    };
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      applyResize(moveEvent.clientX, moveEvent.clientY);
+    };
+    const onPointerUp = () => {
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+    };
+
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp, { once: true });
   };
 
   return (
@@ -3279,8 +3656,9 @@ export function HiveScaleModularDashboard({
         <div>
           <h2 className="text-xl font-semibold">My dashboard</h2>
           <p className="text-sm text-muted-foreground">
-            User-configurable widgets. The selected hives above control hive-based
-            charts.
+            {dashboardEditing
+              ? 'Edit mode: drag the handle to move widgets and drag the corner to resize them on a 4-column grid.'
+              : 'User-configurable widgets. The selected hives above control hive-based charts.'}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -3288,6 +3666,13 @@ export function HiveScaleModularDashboard({
             dateRange={dateRange}
             onDateRangeChange={onDateRangeChange}
           />
+          <Button
+            type="button"
+            variant={dashboardEditing ? 'default' : 'outline'}
+            onClick={() => setDashboardEditing(editing => !editing)}
+          >
+            {dashboardEditing ? 'Done' : 'Edit dashboard'}
+          </Button>
           <Button
             type="button"
             variant="outline"
@@ -3304,32 +3689,87 @@ export function HiveScaleModularDashboard({
 
       {showAddWidget && <AddWidgetPanel onAddWidget={addWidget} />}
 
+      {dashboardEditing && (
+        <div className="rounded-lg border border-dashed bg-muted/30 p-3 text-sm text-muted-foreground">
+          Dashboard edit mode is active. Use the grip handle in each widget header
+          to move it, and drag the lower-right corner to resize width or height.
+          Layout changes are saved automatically for this HiveScale device.
+        </div>
+      )}
+
       {widgets.length ? (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {widgets.map(widget => (
-            <WidgetShell
-              key={widget.id}
-              title={widget.title}
-              description={widgetTemplates[widget.kind].description}
-              size={widget.size}
-              onRemove={() => removeWidget(widget.id)}
+        <div
+          ref={dashboardGridRef}
+          className="grid auto-rows-[minmax(12rem,auto)] grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+        >
+          {widgets.map(widget => {
+            const layout = normalizeDashboardLayout(
+              widget.layout,
+              widgetTemplates[widget.kind].layout,
+            );
+            const isDragging = draggedWidgetId === widget.id;
+            const isDropTarget =
+              dropTargetWidgetId === widget.id && draggedWidgetId !== widget.id;
+
+            return (
+              <div
+                key={widget.id}
+                className={`${dashboardWidgetGridClass(layout)} ${
+                  isDropTarget
+                    ? 'rounded-xl ring-2 ring-primary ring-offset-2 ring-offset-background'
+                    : ''
+                }`}
+                onDragOver={event => handleWidgetDragOver(widget.id, event)}
+                onDrop={event => handleWidgetDrop(widget.id, event)}
+              >
+                <WidgetShell
+                  title={widget.title}
+                  description={widgetTemplates[widget.kind].description}
+                  layout={layout}
+                  isEditing={dashboardEditing}
+                  isDragging={isDragging}
+                  onRemove={() => removeWidget(widget.id)}
+                  onDragStart={event => startWidgetDrag(widget.id, event)}
+                  onDragEnd={finishWidgetDrag}
+                  onResizeStart={event => beginWidgetResize(widget, event)}
+                >
+                  {renderWidget({
+                    widget,
+                    measurements,
+                    dateRange,
+                    fallbackNames,
+                    selectedHiveIndexes,
+                    hiveNames,
+                    slots: mappedSlots,
+                    alerts,
+                    selectedDeviceId: selectedDevice.device_id,
+                    measurementsLoading,
+                    insightsLoading,
+                    insightsError,
+                    chartHeightPx: dashboardChartHeightPx(layout),
+                  })}
+                </WidgetShell>
+              </div>
+            );
+          })}
+          {dashboardEditing && widgets.length > 1 && (
+            <div
+              className={`col-span-1 flex min-h-24 items-center justify-center rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground md:col-span-2 xl:col-span-4 ${
+                dropTargetWidgetId === '__dashboard-end'
+                  ? 'border-primary bg-primary/5 text-foreground'
+                  : ''
+              }`}
+              onDragOver={event => {
+                if (!draggedWidgetId) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                setDropTargetWidgetId('__dashboard-end');
+              }}
+              onDrop={handleEndDrop}
             >
-              {renderWidget({
-                widget,
-                measurements,
-                dateRange,
-                fallbackNames,
-                selectedHiveIndexes,
-                hiveNames,
-                slots: mappedSlots,
-                alerts,
-                selectedDeviceId: selectedDevice.device_id,
-                measurementsLoading,
-                insightsLoading,
-                insightsError,
-              })}
-            </WidgetShell>
-          ))}
+              Drop here to move a widget to the end of the dashboard.
+            </div>
+          )}
         </div>
       ) : (
         <Card>
