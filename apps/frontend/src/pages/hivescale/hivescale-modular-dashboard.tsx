@@ -1,6 +1,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type Dispatch,
   type ReactNode,
@@ -252,6 +253,21 @@ type AxisScaleSetting = { min: string; max: string };
 type AxisScaleSettingsMap = Record<string, AxisScaleSetting>;
 type AxisScaleDefinition = { id: string; label: string; unit?: string };
 type CsvColumn = { header: string; value: (row: ChartRow) => unknown };
+type AxisBoundary = keyof AxisScaleSetting;
+type AxisScaleEditorState = {
+  axisId: string;
+  boundary: AxisBoundary;
+  value: string;
+};
+type RechartsYAxisTickProps = {
+  x?: number;
+  y?: number;
+  fill?: string;
+  index?: number;
+  visibleTicksCount?: number;
+  textAnchor?: string;
+  payload?: { value?: unknown };
+};
 
 const chartColors = [
   'var(--primary)',
@@ -299,10 +315,16 @@ const downloadChartCsv = (
 };
 
 const parseAxisBound = (value: string): number | null => {
-  const trimmed = value.trim();
+  const trimmed = value.trim().replace(',', '.');
   if (!trimmed) return null;
   const parsed = Number(trimmed);
   return Number.isFinite(parsed) ? parsed : null;
+};
+
+const sanitizeAxisBoundInput = (value: string): string | null => {
+  const trimmed = value.trim().replace(',', '.');
+  if (!trimmed) return '';
+  return Number.isFinite(Number(trimmed)) ? trimmed : null;
 };
 
 const axisDomain = (
@@ -321,6 +343,208 @@ const axisDomain = (
 const axisBoundLabel = (value: string | undefined) =>
   value?.trim() ? value.trim() : 'auto';
 
+const hasCustomAxisBound = (settings: AxisScaleSettingsMap, axisId: string) => {
+  const setting = settings[axisId];
+  return Boolean(setting?.min.trim() || setting?.max.trim());
+};
+
+const updateAxisBoundSetting = (
+  onSettingsChange: Dispatch<SetStateAction<AxisScaleSettingsMap>>,
+  axisId: string,
+  boundary: AxisBoundary,
+  value: string,
+) => {
+  const sanitized = sanitizeAxisBoundInput(value);
+  if (sanitized === null) return false;
+
+  onSettingsChange(existing => {
+    const nextSetting: AxisScaleSetting = {
+      min: existing[axisId]?.min ?? '',
+      max: existing[axisId]?.max ?? '',
+      [boundary]: sanitized,
+    };
+
+    if (!nextSetting.min && !nextSetting.max) {
+      const next = { ...existing };
+      delete next[axisId];
+      return next;
+    }
+
+    return { ...existing, [axisId]: nextSetting };
+  });
+
+  return true;
+};
+
+function AxisBoundEditorInput({
+  editor,
+  onChange,
+  onCommit,
+  onCancel,
+}: Readonly<{
+  editor: AxisScaleEditorState;
+  onChange: (value: string) => void;
+  onCommit: () => boolean;
+  onCancel: () => void;
+}>) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }, [editor.axisId, editor.boundary]);
+
+  return (
+    <input
+      ref={inputRef}
+      aria-label={`Set ${editor.axisId} y_${editor.boundary}`}
+      className="h-6 w-[4.75rem] rounded border bg-background px-1 text-xs text-foreground shadow-sm outline-none focus:ring-1 focus:ring-ring"
+      inputMode="decimal"
+      placeholder="auto"
+      value={editor.value}
+      onBlur={() => {
+        const ok = onCommit();
+        if (!ok) inputRef.current?.focus();
+      }}
+      onChange={event => onChange(event.target.value)}
+      onClick={event => event.stopPropagation()}
+      onKeyDown={event => {
+        if (event.key === 'Enter') {
+          event.currentTarget.blur();
+          return;
+        }
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          onCancel();
+        }
+      }}
+      title="Leave empty and press Enter for auto"
+    />
+  );
+}
+
+function ClickableYAxisTick({
+  axisId,
+  displayUnit,
+  orientation = 'left',
+  settings,
+  editor,
+  setEditor,
+  onSettingsChange,
+  ...props
+}: Readonly<
+  RechartsYAxisTickProps & {
+    axisId: string;
+    displayUnit?: string;
+    orientation?: 'left' | 'right';
+    settings: AxisScaleSettingsMap;
+    editor: AxisScaleEditorState | null;
+    setEditor: Dispatch<SetStateAction<AxisScaleEditorState | null>>;
+    onSettingsChange: Dispatch<SetStateAction<AxisScaleSettingsMap>>;
+  }
+>) {
+  const x = props.x ?? 0;
+  const y = props.y ?? 0;
+  const tickIndex = props.index ?? -1;
+  const tickCount = props.visibleTicksCount ?? 0;
+  const boundary: AxisBoundary | null =
+    tickIndex >= 0 && tickCount > 0
+      ? tickIndex === 0
+        ? 'min'
+        : tickIndex === tickCount - 1
+          ? 'max'
+          : null
+      : null;
+  const tickValue = props.payload?.value;
+  const rawLabel = tickValue === undefined || tickValue === null ? '' : String(tickValue);
+  const label = `${rawLabel}${displayUnit ?? ''}`;
+  const isEditing =
+    boundary !== null && editor?.axisId === axisId && editor.boundary === boundary;
+  const inputWidth = 78;
+  const inputX = Math.max(0, x - inputWidth + 2);
+
+  if (isEditing) {
+    return (
+      <foreignObject x={inputX} y={y - 13} width={inputWidth} height={28}>
+        <AxisBoundEditorInput
+          editor={editor}
+          onChange={value =>
+            setEditor(current =>
+              current?.axisId === axisId && current.boundary === boundary
+                ? { ...current, value }
+                : current,
+            )
+          }
+          onCancel={() => setEditor(null)}
+          onCommit={() => {
+            const ok = updateAxisBoundSetting(
+              onSettingsChange,
+              axisId,
+              boundary,
+              editor.value,
+            );
+            if (ok) setEditor(null);
+            return ok;
+          }}
+        />
+      </foreignObject>
+    );
+  }
+
+  const startEdit = () => {
+    if (!boundary) return;
+    setEditor({
+      axisId,
+      boundary,
+      value: settings[axisId]?.[boundary] || rawLabel,
+    });
+  };
+
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={4}
+      textAnchor={props.textAnchor ?? (orientation === 'right' ? 'start' : 'end')}
+      fill={props.fill ?? 'currentColor'}
+      className={boundary ? 'cursor-pointer select-none hover:fill-foreground' : undefined}
+      onClick={startEdit}
+      role={boundary ? 'button' : undefined}
+      aria-label={boundary ? `Set ${axisId} y_${boundary}` : undefined}
+    >
+      {boundary && <title>Click to set y_{boundary}; clear for auto</title>}
+      {label}
+    </text>
+  );
+}
+
+function useAxisScaleEditor(
+  settings: AxisScaleSettingsMap,
+  onSettingsChange: Dispatch<SetStateAction<AxisScaleSettingsMap>>,
+) {
+  const [editor, setEditor] = useState<AxisScaleEditorState | null>(null);
+
+  const tick = (
+    axisId: string,
+    orientation: 'left' | 'right' = 'left',
+    displayUnit?: string,
+  ) =>
+    (props: RechartsYAxisTickProps) => (
+      <ClickableYAxisTick
+        {...props}
+        axisId={axisId}
+        displayUnit={displayUnit}
+        orientation={orientation}
+        settings={settings}
+        editor={editor}
+        setEditor={setEditor}
+        onSettingsChange={onSettingsChange}
+      />
+    );
+
+  return { tick };
+}
+
 function AxisScaleControls({
   axes,
   settings,
@@ -330,28 +554,6 @@ function AxisScaleControls({
   settings: AxisScaleSettingsMap;
   onSettingsChange: Dispatch<SetStateAction<AxisScaleSettingsMap>>;
 }>) {
-  const updateBound = (axisId: string, bound: keyof AxisScaleSetting) => {
-    const current = settings[axisId]?.[bound] ?? '';
-    const next = globalThis.prompt?.(
-      `Set ${axisId} y_${bound}. Leave empty for auto.`,
-      current,
-    );
-    if (next === undefined || next === null) return;
-    const trimmed = next.trim();
-    if (trimmed && !Number.isFinite(Number(trimmed))) {
-      globalThis.alert?.('Please enter a valid number, or leave the field empty for auto.');
-      return;
-    }
-    onSettingsChange(existing => ({
-      ...existing,
-      [axisId]: {
-        min: existing[axisId]?.min ?? '',
-        max: existing[axisId]?.max ?? '',
-        [bound]: trimmed,
-      },
-    }));
-  };
-
   const resetAxis = (axisId: string) => {
     onSettingsChange(existing => {
       const next = { ...existing };
@@ -375,20 +577,9 @@ function AxisScaleControls({
               {axis.label}
               {axis.unit ? ` (${axis.unit})` : ''}
             </span>
-            <button
-              type="button"
-              className="rounded border px-1.5 py-0.5 text-muted-foreground hover:text-foreground"
-              onClick={() => updateBound(axis.id, 'min')}
-            >
-              y_min: {axisBoundLabel(setting?.min)}
-            </button>
-            <button
-              type="button"
-              className="rounded border px-1.5 py-0.5 text-muted-foreground hover:text-foreground"
-              onClick={() => updateBound(axis.id, 'max')}
-            >
-              y_max: {axisBoundLabel(setting?.max)}
-            </button>
+            <span className="text-muted-foreground">
+              y_min {axisBoundLabel(setting?.min)} · y_max {axisBoundLabel(setting?.max)}
+            </span>
             {(setting?.min || setting?.max) && (
               <button
                 type="button"
@@ -401,6 +592,9 @@ function AxisScaleControls({
           </div>
         );
       })}
+      <span className="text-muted-foreground">
+        Click the lowest or highest y-axis label to edit. Clear the value for auto.
+      </span>
     </div>
   );
 }
@@ -1606,6 +1800,7 @@ function HiveLineChart({
   heightClass?: string;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
   const hasData = rows.some(row =>
     hiveIndexes.some(index => typeof row[seriesKey(index, metric)] === 'number'),
   );
@@ -1644,6 +1839,8 @@ function HiveLineChart({
               unit={` ${unit}`}
               width={64}
               domain={axisDomain(axisScales, 'main', ['auto', 'auto'])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'main')}
+              tick={axisScaleEditor.tick('main', 'left', ` ${unit}`)}
             />
             <Tooltip
               labelFormatter={(value: unknown) => formatDateTime(Number(value))}
@@ -1724,6 +1921,7 @@ function ClimateWidget({
   hiveNames: Record<number, string>;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -1788,6 +1986,8 @@ function ClimateWidget({
               unit=" °C"
               width={56}
               domain={axisDomain(axisScales, 'temperature', ['auto', 'auto'])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'temperature')}
+              tick={axisScaleEditor.tick('temperature', 'left', ' °C')}
             />
             <YAxis
               yAxisId="humidity"
@@ -1795,6 +1995,8 @@ function ClimateWidget({
               unit=" %"
               width={48}
               domain={axisDomain(axisScales, 'humidity', [0, 100])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'humidity')}
+              tick={axisScaleEditor.tick('humidity', 'right', ' %')}
             />
             <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
             <Legend />
@@ -1842,6 +2044,7 @@ function PowerWidget({
   dateRange: HiveScaleDateRange;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
   const rows = useMemo(
     () =>
       filterMeasurementsByDateRange(measurements, dateRange).map(measurement => ({
@@ -1900,6 +2103,8 @@ function PowerWidget({
               unit=" %"
               width={48}
               domain={axisDomain(axisScales, 'percent', [0, 'auto'])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'percent')}
+              tick={axisScaleEditor.tick('percent', 'left', ' %')}
             />
             <YAxis
               yAxisId="voltage"
@@ -1907,6 +2112,8 @@ function PowerWidget({
               unit=" V"
               width={48}
               domain={axisDomain(axisScales, 'voltage', ['auto', 'auto'])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'voltage')}
+              tick={axisScaleEditor.tick('voltage', 'right', ' V')}
             />
             <YAxis
               yAxisId="power"
@@ -1914,6 +2121,8 @@ function PowerWidget({
               unit=" mW"
               width={58}
               domain={axisDomain(axisScales, 'power', ['auto', 'auto'])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'power')}
+              tick={axisScaleEditor.tick('power', 'right', ' mW')}
             />
             <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
             <Legend />
@@ -1963,6 +2172,7 @@ function BeeTrafficWidget({
   hiveIndexes: number[];
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
   const rows = useMemo(
     () =>
       filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
@@ -2032,6 +2242,8 @@ function BeeTrafficWidget({
               yAxisId="beecount"
               width={56}
               domain={axisDomain(axisScales, 'beecount', ['auto', 'auto'])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'beecount')}
+              tick={axisScaleEditor.tick('beecount')}
             />
             <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
             <Legend />
@@ -2109,6 +2321,7 @@ function SoundRmsWidget({
   hiveNames: Record<number, string>;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -2195,6 +2408,12 @@ function SoundRmsWidget({
                   unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
                   width={axisConfig.width}
                   domain={axisDomain(axisScales, axis, ['auto', 'auto'])}
+                  allowDataOverflow={hasCustomAxisBound(axisScales, axis)}
+                  tick={axisScaleEditor.tick(
+                    axis,
+                    index === 0 ? 'left' : 'right',
+                    axisConfig.unit ? ` ${axisConfig.unit}` : undefined,
+                  )}
                 />
               );
             })}
@@ -2245,6 +2464,7 @@ function VibrationWidget({
   hiveNames: Record<number, string>;
 }>) {
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -2299,6 +2519,8 @@ function VibrationWidget({
               unit=" mg"
               width={58}
               domain={axisDomain(axisScales, 'vibration', [0, 'auto'])}
+              allowDataOverflow={hasCustomAxisBound(axisScales, 'vibration')}
+              tick={axisScaleEditor.tick('vibration', 'left', ' mg')}
             />
             <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
             <Legend />
@@ -2510,6 +2732,7 @@ function ConfigurableDiagramWidget({
 }>) {
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 6), [hiveIndexes]);
   const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
   const [selectedMetricKeys, setSelectedMetricKeys] = useState<string[]>([
     ...defaultConfigurableMetricKeys,
   ]);
@@ -2652,6 +2875,12 @@ function ConfigurableDiagramWidget({
                         axisScales,
                         axis,
                         axis === 'percent' ? [0, 100] : ['auto', 'auto'],
+                      )}
+                      allowDataOverflow={hasCustomAxisBound(axisScales, axis)}
+                      tick={axisScaleEditor.tick(
+                        axis,
+                        index === 0 ? 'left' : 'right',
+                        axisConfig.unit ? ` ${axisConfig.unit}` : undefined,
                       )}
                     />
                   );
