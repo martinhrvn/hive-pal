@@ -259,13 +259,14 @@ type AxisScaleEditorState = {
   boundary: AxisBoundary;
   value: string;
 };
+type SvgTextAnchor = 'inherit' | 'start' | 'middle' | 'end';
 type RechartsYAxisTickProps = {
   x?: number;
   y?: number;
   fill?: string;
   index?: number;
   visibleTicksCount?: number;
-  textAnchor?: string;
+  textAnchor?: SvgTextAnchor;
   payload?: { value?: unknown };
 };
 
