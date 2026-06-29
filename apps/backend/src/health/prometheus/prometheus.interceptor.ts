@@ -27,23 +27,16 @@ export class PrometheusInterceptor implements NestInterceptor {
     const url = typeof req?.url === 'string' ? req.url : 'UNKNOWN';
 
     const endpoint = this.normalizeEndpoint(url);
+    const start = Date.now();
 
     return next.handle().pipe(
-      tap((data) => {
+      tap(() => {
         // Type-safe way to get response properties
         const res = httpContext.getResponse<{ statusCode?: number }>();
         const statusCode =
           typeof res?.statusCode === 'number' ? res.statusCode : 200;
 
-        // Increment API calls counter
-        this.prometheusService.incrementApiCalls(
-          String(method),
-          String(endpoint),
-          Number(statusCode),
-        );
-
-        // Specific metrics for entity counts
-        this.trackEntityCounts(endpoint, data);
+        this.record(method, endpoint, statusCode, start);
       }),
       catchError((err: unknown) => {
         const statusCode = err instanceof HttpException ? err.getStatus() : 500;
@@ -52,22 +45,37 @@ export class PrometheusInterceptor implements NestInterceptor {
             ? (err as Error).name
             : 'UnknownError';
 
-        // Increment API error counter
+        // Classify the error
         this.prometheusService.incrementApiErrors(
           String(method),
           String(endpoint),
           String(errorType),
         );
 
-        // Increment API calls counter with error status
-        this.prometheusService.incrementApiCalls(
-          String(method),
-          String(endpoint),
-          Number(statusCode),
-        );
+        this.record(method, endpoint, statusCode, start);
 
         return throwError(() => err);
       }),
+    );
+  }
+
+  private record(
+    method: string,
+    endpoint: string,
+    statusCode: number,
+    start: number,
+  ): void {
+    const durationSeconds = (Date.now() - start) / 1000;
+    this.prometheusService.incrementApiCalls(
+      String(method),
+      String(endpoint),
+      Number(statusCode),
+    );
+    this.prometheusService.observeHttpRequest(
+      String(method),
+      String(endpoint),
+      Number(statusCode),
+      durationSeconds,
     );
   }
 
@@ -75,31 +83,20 @@ export class PrometheusInterceptor implements NestInterceptor {
     // Strip query params
     const baseUrl = url.split('?')[0];
 
-    // Replace specific IDs with :id to group similar endpoints
-    return baseUrl.replace(/\/[0-9a-f]{8,36}(?=\/|$)/g, '/:id');
-  }
-
-  private trackEntityCounts(endpoint: string, data: unknown): void {
-    try {
-      // Update entity counts based on response data when retrieving lists
-      if (Array.isArray(data)) {
-        if (endpoint === '/api/hives') {
-          this.prometheusService.setHivesCount(data.length);
-        } else if (endpoint === '/api/apiaries') {
-          this.prometheusService.setApiariesCount(data.length);
-        } else if (endpoint === '/api/queens') {
-          this.prometheusService.setQueensCount(data.length);
-        } else if (endpoint === '/api/inspections') {
-          this.prometheusService.setInspectionsCount(data.length);
-        }
-      }
-    } catch (error: unknown) {
-      const errorStack =
-        typeof (error as { stack?: string })?.stack === 'string'
-          ? String((error as { stack: string }).stack)
-          : undefined;
-
-      this.logger.warn('Error tracking entity counts', errorStack);
-    }
+    // Replace path segments that look like IDs with :id so similar endpoints
+    // (e.g. /api/actions/<uuid>) collapse into a single time series instead of
+    // fragmenting the metrics one per id.
+    return (
+      baseUrl
+        // UUIDs (8-4-4-4-12 hex with hyphens)
+        .replace(
+          /\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?=\/|$)/g,
+          '/:id',
+        )
+        // Purely numeric ids
+        .replace(/\/\d+(?=\/|$)/g, '/:id')
+        // Other long opaque tokens (cuid, long hex, etc.)
+        .replace(/\/[0-9a-zA-Z_-]{16,}(?=\/|$)/g, '/:id')
+    );
   }
 }

@@ -4,11 +4,10 @@ import { WeatherController } from './weather.controller';
 import { WeatherScheduler } from './weather.scheduler';
 import { WeatherEventHandler } from './weather.event-handler';
 import { PrismaService } from '../prisma/prisma.service';
-import { ScheduleModule } from '@nestjs/schedule';
 import { PrometheusModule } from '../health/prometheus/prometheus.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), PrometheusModule],
+  imports: [PrometheusModule],
   providers: [
     WeatherService,
     WeatherScheduler,

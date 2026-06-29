@@ -8,6 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { Observation, Prisma } from '@/prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
+import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -113,6 +114,7 @@ export class InspectionsService {
   constructor(
     private prisma: PrismaService,
     private metricService: MetricsService,
+    private prometheus: PrometheusService,
     private actionsService: ActionsService,
     private logger: CustomLoggerService,
     private eventEmitter: EventEmitter2,
@@ -246,7 +248,7 @@ export class InspectionsService {
       ...inspectionData
     } = createInspectionDto;
 
-    return this.prisma.$transaction(
+    const created = await this.prisma.$transaction(
       async (tx): Promise<CreateInspectionResponse> => {
         const status =
           createInspectionDto.status ||
@@ -326,6 +328,9 @@ export class InspectionsService {
         };
       },
     );
+
+    this.prometheus.incrementInspectionsCreated();
+    return created;
   }
 
   async findAll(

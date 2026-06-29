@@ -3,7 +3,9 @@ import {
   ExecutionContext,
   CanActivate,
   SetMetadata,
+  ForbiddenException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 import { AuthGuard } from '@thallesp/nestjs-better-auth';
 import { fromNodeHeaders } from 'better-auth/node';
@@ -14,7 +16,8 @@ export enum Role {
   USER = 'USER',
 }
 
-export const Roles = (...roles: Role[]) => SetMetadata('ROLES', roles);
+export const ROLES_KEY = 'ROLES';
+export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
 
 export const JwtAuthGuard = AuthGuard;
 
@@ -40,7 +43,29 @@ export class OptionalJwtAuthGuard implements CanActivate {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  canActivate(): boolean {
+  constructor(private readonly reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    // No @Roles() on the route — any authenticated user may pass.
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+
+    // request.user is populated by JwtAuthGuard (better-auth AuthGuard), and
+    // includes `role` via the customSession plugin. RolesGuard must run after it.
+    const { user } = context
+      .switchToHttp()
+      .getRequest<Request & { user?: { role?: Role } }>();
+
+    if (!user || !user.role || !requiredRoles.includes(user.role)) {
+      throw new ForbiddenException('Insufficient role');
+    }
+
     return true;
   }
 }

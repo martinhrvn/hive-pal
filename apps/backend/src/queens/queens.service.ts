@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import {
   CreateQueen,
@@ -11,7 +12,10 @@ import {
 
 @Injectable()
 export class QueensService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private prometheus: PrometheusService,
+  ) {}
 
   private mapQueenToResponse(queen: {
     id: string;
@@ -90,6 +94,7 @@ export class QueensService {
       });
     }
 
+    this.prometheus.incrementQueensCreated();
     return this.mapQueenToResponse(queen);
   }
 

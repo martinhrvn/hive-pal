@@ -29,6 +29,22 @@ interface OpenMeteoResponse {
 
 const ACTIVE_USER_THRESHOLD_DAYS = 5;
 
+// How often hourly weather is refreshed by the scheduler.
+const HOURLY_FETCH_INTERVAL_HOURS = 3;
+
+// Freshness windows for the per-apiary guards. Any fetch whose data is younger
+// than these is skipped, so no trigger (cron or user.login) can stack redundant
+// OpenMeteo calls. The hourly window is slightly under the cron interval so the
+// scheduled run itself is never skipped.
+const HOURLY_FRESH_MS = (HOURLY_FETCH_INTERVAL_HOURS - 0.5) * 60 * 60 * 1000;
+const DAILY_FRESH_MS = 20 * 60 * 60 * 1000;
+
+// Which forecast types a weather update should fetch.
+interface WeatherUpdateOptions {
+  hourly: boolean;
+  daily: boolean;
+}
+
 @Injectable()
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name);
@@ -184,6 +200,7 @@ export class WeatherService {
     const currentWeatherData: Prisma.WeatherCreateInput = {
       apiary: { connect: { id: apiaryId } },
       timestamp: currentTimestamp,
+      fetchedAt: new Date(),
       temperature: temperature_2m[currentIndex],
       feelsLike: apparent_temperature[currentIndex],
       humidity: Math.round(relative_humidity_2m[currentIndex]),
@@ -288,6 +305,7 @@ export class WeatherService {
       const forecastData: Prisma.WeatherForecastCreateInput = {
         apiary: { connect: { id: apiaryId } },
         date,
+        fetchedAt: new Date(),
         temperatureMax: temperature_2m_max[i],
         temperatureMin: temperature_2m_min[i],
         humidity: Math.round(relative_humidity_2m_mean[i]),
@@ -320,9 +338,85 @@ export class WeatherService {
   }
 
   /**
+   * Whether hourly weather for this apiary was fetched recently enough to skip.
+   */
+  private async isHourlyFresh(apiaryId: string): Promise<boolean> {
+    const latest = await this.prisma.weather.findFirst({
+      where: { apiaryId },
+      orderBy: { fetchedAt: 'desc' },
+      select: { fetchedAt: true },
+    });
+
+    return (
+      !!latest && latest.fetchedAt.getTime() > Date.now() - HOURLY_FRESH_MS
+    );
+  }
+
+  /**
+   * Whether the daily forecast for this apiary was fetched recently enough to skip.
+   */
+  private async isDailyFresh(apiaryId: string): Promise<boolean> {
+    const latest = await this.prisma.weatherForecast.findFirst({
+      where: { apiaryId },
+      orderBy: { fetchedAt: 'desc' },
+      select: { fetchedAt: true },
+    });
+
+    return !!latest && latest.fetchedAt.getTime() > Date.now() - DAILY_FRESH_MS;
+  }
+
+  /**
+   * Fetch and persist weather for a single apiary, honouring the requested
+   * forecast types and per-type freshness guards. The guards keep OpenMeteo
+   * usage bounded regardless of how often this is triggered (scheduler or
+   * user.login). A throttle delay is only applied when an API call was made.
+   */
+  private async updateApiaryWeather(
+    apiary: { id: string; latitude: number | null; longitude: number | null },
+    options: WeatherUpdateOptions,
+  ): Promise<void> {
+    if (apiary.latitude === null || apiary.longitude === null) return;
+
+    let fetched = false;
+
+    try {
+      if (options.hourly && !(await this.isHourlyFresh(apiary.id))) {
+        const hourlyData = await this.fetchHourlyWeather(
+          apiary.latitude,
+          apiary.longitude,
+        );
+        await this.saveHourlyWeather(apiary.id, hourlyData);
+        fetched = true;
+      }
+
+      if (options.daily && !(await this.isDailyFresh(apiary.id))) {
+        const dailyData = await this.fetchDailyForecast(
+          apiary.latitude,
+          apiary.longitude,
+        );
+        await this.saveDailyForecast(apiary.id, dailyData);
+        fetched = true;
+      }
+
+      // Small delay between live API calls to stay well under rate limits
+      if (fetched) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to update weather for apiary ${apiary.id}:`,
+        error,
+      );
+    }
+  }
+
+  /**
    * Update weather for all apiaries belonging to a specific user
    */
-  async updateUserApiariesWeather(userId: string): Promise<void> {
+  async updateUserApiariesWeather(
+    userId: string,
+    options: WeatherUpdateOptions = { hourly: true, daily: true },
+  ): Promise<void> {
     const apiaries = await this.prisma.apiary.findMany({
       where: {
         userId,
@@ -336,35 +430,16 @@ export class WeatherService {
     );
 
     for (const apiary of apiaries) {
-      if (apiary.latitude === null || apiary.longitude === null) continue;
-
-      try {
-        const hourlyData = await this.fetchHourlyWeather(
-          apiary.latitude,
-          apiary.longitude,
-        );
-        await this.saveHourlyWeather(apiary.id, hourlyData);
-
-        const dailyData = await this.fetchDailyForecast(
-          apiary.latitude,
-          apiary.longitude,
-        );
-        await this.saveDailyForecast(apiary.id, dailyData);
-
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      } catch (error) {
-        this.logger.error(
-          `Failed to update weather for apiary ${apiary.id}:`,
-          error,
-        );
-      }
+      await this.updateApiaryWeather(apiary, options);
     }
   }
 
   /**
    * Update weather for all apiaries with coordinates (only active users)
    */
-  async updateAllApiariesWeather(): Promise<void> {
+  async updateAllApiariesWeather(
+    options: WeatherUpdateOptions = { hourly: true, daily: true },
+  ): Promise<void> {
     const activeThreshold = new Date();
     activeThreshold.setDate(
       activeThreshold.getDate() - ACTIVE_USER_THRESHOLD_DAYS,
@@ -385,31 +460,7 @@ export class WeatherService {
     );
 
     for (const apiary of apiaries) {
-      if (apiary.latitude === null || apiary.longitude === null) continue;
-
-      try {
-        // Fetch and save hourly weather
-        const hourlyData = await this.fetchHourlyWeather(
-          apiary.latitude,
-          apiary.longitude,
-        );
-        await this.saveHourlyWeather(apiary.id, hourlyData);
-
-        // Fetch and save daily forecast
-        const dailyData = await this.fetchDailyForecast(
-          apiary.latitude,
-          apiary.longitude,
-        );
-        await this.saveDailyForecast(apiary.id, dailyData);
-
-        // Add a small delay to avoid hitting API rate limits
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      } catch (error) {
-        this.logger.error(
-          `Failed to update weather for apiary ${apiary.id}:`,
-          error,
-        );
-      }
+      await this.updateApiaryWeather(apiary, options);
     }
 
     this.logger.log('Weather update completed for all apiaries');

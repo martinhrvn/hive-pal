@@ -1,0 +1,45 @@
+// Grafana Alloy configuration for Hive Pal frontend real-user monitoring.
+//
+// The browser-side Grafana Faro Web SDK (see apps/frontend/src/lib/faro.ts)
+// POSTs Web Vitals (LCP, CLS, INP, FCP, TTFB), errors and session data to the
+// faro.receiver endpoint below. Alloy forwards them as structured logs to the
+// existing Loki instance, where Grafana visualizes them (p75 per page) via
+// LogQL. See docs/docs/self-hosting/monitoring.md.
+//
+// This file is version-controlled here for reference; the Alloy service itself
+// runs in the external monitoring stack alongside Grafana/Prometheus/Loki.
+
+faro.receiver "frontend" {
+	server {
+		listen_address = "0.0.0.0"
+		listen_port    = 12347
+
+		// Only accept beacons from the deployed frontend origin(s). The browser
+		// sends a cross-origin POST, so the origin must be allow-listed here.
+		// Override via the ALLOY_FARO_CORS_ORIGINS environment variable
+		// (comma-separated) if your domain differs.
+		cors_allowed_origins = split(",", coalesce(sys.env("ALLOY_FARO_CORS_ORIGINS"), "https://hivepal.app"))
+	}
+
+	// Download published source maps to de-minify frontend error stack traces.
+	sourcemaps {
+		download = true
+	}
+
+	output {
+		logs = [loki.write.faro.receiver]
+	}
+}
+
+loki.write "faro" {
+	endpoint {
+		url = coalesce(sys.env("LOKI_PUSH_URL"), "http://loki:3100/loki/api/v1/push")
+	}
+
+	// Static stream label so dashboards can target frontend telemetry with
+	// {app="hivepal-frontend"}. Per-page breakdown is done at query time from
+	// the `view_name` field (kept out of stream labels to bound cardinality).
+	external_labels = {
+		app = "hivepal-frontend",
+	}
+}

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Camera, Loader2, Info, X, Plus } from 'lucide-react';
+import { Camera, Loader2, Info, X, ImagePlus } from 'lucide-react';
 import {
   useInspectionPhotos,
   useUploadInspectionPhoto,
@@ -34,6 +34,7 @@ export function PhotosSection({
   const { t } = useTranslation('inspection');
   const isNewInspection = !inspectionId;
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { data: features } = useFeatures();
 
   const { data: existingPhotos = [], isLoading } = useInspectionPhotos(
@@ -166,7 +167,7 @@ export function PhotosSection({
         </div>
       )}
 
-      {/* Add photo button */}
+      {/* Add photo buttons */}
       <input
         ref={fileInputRef}
         type="file"
@@ -175,22 +176,43 @@ export function PhotosSection({
         className="hidden"
         onChange={handleFileSelect}
       />
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept={ACCEPTED_TYPES}
+        capture="environment"
+        className="hidden"
+        onChange={handleFileSelect}
+      />
       {canAddMore ? (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
-          className="w-full border-dashed"
-        >
-          {isUploading ? (
-            <Loader2 className="mr-2 size-4 animate-spin" />
-          ) : (
-            <Plus className="mr-2 size-4" />
-          )}
-          {t('inspection:form.photos.addPhoto')}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => cameraInputRef.current?.click()}
+            disabled={isUploading}
+            className="flex-1 border-dashed"
+          >
+            {isUploading ? (
+              <Loader2 className="mr-2 size-4 animate-spin" />
+            ) : (
+              <Camera className="mr-2 size-4" />
+            )}
+            {t('inspection:form.photos.takePhoto')}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="flex-1 border-dashed"
+          >
+            <ImagePlus className="mr-2 size-4" />
+            {t('inspection:form.photos.addPhoto')}
+          </Button>
+        </div>
       ) : (
         <p className="text-xs text-muted-foreground">
           {t('inspection:form.photos.maxReached', { max: MAX_PHOTOS })}

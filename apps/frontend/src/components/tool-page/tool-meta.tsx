@@ -1,10 +1,9 @@
-import { Helmet } from 'react-helmet-async';
-
-const SITE_URL = 'https://hivepal.app';
+import { PublicMeta } from '@/components/seo/public-meta';
 
 interface ToolMetaProps {
   readonly title: string;
   readonly description: string;
+  /** Language-neutral path, e.g. '/tools/syrup-calculator'. */
   readonly path: string;
   readonly ogTitle?: string;
   readonly ogDescription?: string;
@@ -12,34 +11,10 @@ interface ToolMetaProps {
   readonly structuredData?: object;
 }
 
-export function ToolMeta({
-  title,
-  description,
-  path,
-  ogTitle,
-  ogDescription,
-  twitterCard = 'summary',
-  structuredData,
-}: ToolMetaProps) {
-  const url = `${SITE_URL}${path}`;
-  const og = ogTitle ?? title;
-  const ogDesc = ogDescription ?? description;
-
-  return (
-    <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <link rel="canonical" href={url} />
-      <meta property="og:title" content={og} />
-      <meta property="og:description" content={ogDesc} />
-      <meta property="og:url" content={url} />
-      <meta property="og:type" content="website" />
-      <meta property="twitter:card" content={twitterCard} />
-      <meta property="twitter:title" content={og} />
-      <meta property="twitter:description" content={ogDesc} />
-      {structuredData && (
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-      )}
-    </Helmet>
-  );
+/**
+ * Thin wrapper around {@link PublicMeta} kept for the existing tool-page call
+ * sites. Adds the language-aware canonical + hreflang alternates automatically.
+ */
+export function ToolMeta(props: ToolMetaProps) {
+  return <PublicMeta {...props} />;
 }

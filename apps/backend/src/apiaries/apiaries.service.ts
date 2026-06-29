@@ -3,6 +3,7 @@ import { Prisma } from '@/prisma/client';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileUploadService } from '../storage/file-upload.service';
+import { PrometheusService } from '../health/prometheus/prometheus.service';
 import {
   ApiaryResponse,
   ApiaryListResponse,
@@ -18,6 +19,7 @@ export class ApiariesService {
     private prisma: PrismaService,
     private logger: CustomLoggerService,
     private fileUpload: FileUploadService,
+    private prometheus: PrometheusService,
   ) {
     this.logger.setContext('ApiariesService');
   }
@@ -59,6 +61,7 @@ export class ApiariesService {
       featurePhoto: { id: string; storageKey: string } | null;
       userId: string;
       members?: Array<{ role: 'OWNER' | 'EDITOR' | 'VIEWER' }>;
+      _count?: { hives: number };
     },
     userId: string,
   ): Promise<ApiaryResponse> {
@@ -74,6 +77,7 @@ export class ApiariesService {
       latitude: apiary.latitude,
       longitude: apiary.longitude,
       settings: this.parseSettings(apiary.settings),
+      ...(apiary._count && { hiveCount: apiary._count.hives }),
       ...featurePhotoFields,
       ...(apiary.members && {
         role: isOwner ? ('OWNER' as const) : apiary.members[0]?.role,
@@ -106,6 +110,7 @@ export class ApiariesService {
     });
 
     this.logger.log(`Apiary created with ID: ${apiary.id}`);
+    this.prometheus.incrementApiariesCreated();
     return this.mapApiaryToResponse(apiary, userId);
   }
 
@@ -123,6 +128,7 @@ export class ApiariesService {
             where: { userId, status: 'ACTIVE' },
             select: { role: true },
           },
+          _count: { select: { hives: true } },
         },
       }),
       this.prisma.apiaryMember.count({
@@ -152,6 +158,7 @@ export class ApiariesService {
           where: { userId, status: 'ACTIVE' },
           select: { role: true },
         },
+        _count: { select: { hives: true } },
       },
     });
 

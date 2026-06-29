@@ -21,8 +21,8 @@ Minimum and recommended specifications for self-hosting Hive-Pal.
 - **OS**: Linux, macOS, or Windows
 - **Docker**: Version 20.10+
 - **Docker Compose**: Version 2.0+
-- **Node.js**: Version 18+ (for manual setup)
-- **PostgreSQL**: Version 14+ (for manual setup)
+- **Node.js**: Version 22+ (for manual setup only)
+- **PostgreSQL**: Version 14+
 
 ## Recommended Specifications
 
@@ -43,27 +43,24 @@ Minimum and recommended specifications for self-hosting Hive-Pal.
 
 ### Small (1-10 users)
 - Minimum requirements sufficient
-- Single server setup
-- SQLite or PostgreSQL
+- Single server setup (app + PostgreSQL)
 
 ### Medium (10-50 users)
 - Recommended specifications
-- PostgreSQL required
-- Consider Redis for caching
+- Dedicated PostgreSQL volume on SSD
 
 ### Large (50+ users)
 - Dedicated database server
-- Load balancing
-- CDN for static assets
+- Reverse proxy / load balancing
 - Monitoring infrastructure
 
 ## Network Requirements
 
 ### Ports
-- **3000**: Backend API
-- **5173**: Frontend (development)
+- **3000**: App container (serves both the web app and the API)
 - **5432**: PostgreSQL
-- **80/443**: Web traffic
+- **80/443**: Public web traffic (via your reverse proxy → app port 3000)
+- **5173**: Frontend dev server (manual/development setup only)
 
 ### Bandwidth
 - **Per user**: ~1 MB/day average

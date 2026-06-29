@@ -24,9 +24,7 @@ describe('AssistantService', () => {
     >
   >;
   let ai: Mocked<Pick<AssistantAiService, 'assertEnabled' | 'streamChat'>>;
-  let contextBuilder: Mocked<
-    Pick<ContextBuilderService, 'buildSystemMessage'>
-  >;
+  let contextBuilder: Mocked<Pick<ContextBuilderService, 'buildSystemMessage'>>;
 
   beforeEach(() => {
     repository = {

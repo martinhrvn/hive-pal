@@ -19,6 +19,7 @@ import {
   ScheduleInspectionPage,
 } from '@/pages/inspection';
 import { CreateQueenPage, EditQueenPage, QueenDetailPage, QueenListPage } from '@/pages/queen';
+import { TodoListPage } from '@/pages/todo';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 import {
@@ -34,7 +35,12 @@ import { SharedPage } from '@/pages/shared/shared-page';
 import { JoinApiaryPage } from '@/pages/join/join-apiary-page';
 import { EditableRoute } from './editable-route';
 import { ToolRoute } from './tool-route';
+import { LandingPage } from '@/pages/landing-page';
+import { FeaturesPage } from '@/pages/features-page';
+import { LangLayout } from '@/components/i18n/lang-layout';
+import { isSupportedLanguage } from '@/utils/language-utils';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
+import { setFaroView } from '@/lib/faro';
 
 // Lazy loaded components - heavy pages that benefit from code splitting
 // Admin pages (only accessed by admins)
@@ -164,6 +170,11 @@ const DemareeMethodPage = lazyWithRetry(() =>
     default: m.DemareeMethodPage,
   })),
 );
+const LiebefelderPage = lazyWithRetry(() =>
+  import('@/pages/tools/liebefelder-page').then(m => ({
+    default: m.LiebefelderPage,
+  })),
+);
 
 const HiveScalePage = lazyWithRetry(() =>
   import('@/pages/hivescale/hivescale-page').then(m => ({
@@ -201,6 +212,89 @@ function PageLoader() {
 // Wrapper for lazy-loaded components
 function LazyPage({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<PageLoader />}>{children}</Suspense>;
+}
+
+// Public tool routes, reused both at the unprefixed path and under `/:lang`.
+function buildToolsChildren() {
+  return [
+    {
+      index: true,
+      element: (
+        <LazyPage>
+          <ToolsIndexPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'syrup-calculator',
+      element: (
+        <LazyPage>
+          <SyrupCalculatorPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'brood-timeline',
+      element: (
+        <LazyPage>
+          <BroodTimelinePage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'swarm-management',
+      element: (
+        <LazyPage>
+          <SwarmManagementOverviewPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'swarm-management/demaree',
+      element: (
+        <LazyPage>
+          <DemareeMethodPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'liebefelder',
+      element: (
+        <LazyPage>
+          <LiebefelderPage />
+        </LazyPage>
+      ),
+    },
+  ];
+}
+
+// Public, SEO-indexed pages. Mounted under `/:lang` so each language gets its
+// own crawlable URL. The English (default) versions stay at the unprefixed
+// paths declared separately below and remain canonical.
+function buildPublicRoutes() {
+  return [
+    {
+      index: true,
+      element: <LandingPage />,
+    },
+    {
+      path: 'features',
+      element: <FeaturesPage />,
+    },
+    {
+      path: 'tools',
+      element: <ToolRoute />,
+      children: buildToolsChildren(),
+    },
+    {
+      path: 'releases',
+      element: <ReleasesPage />,
+    },
+    {
+      path: 'privacy-policy',
+      element: <PrivacyPolicyPage />,
+    },
+  ];
 }
 
 const router = createBrowserRouter([
@@ -332,6 +426,10 @@ const router = createBrowserRouter([
       {
         path: '/queens/:queenId',
         element: <QueenDetailPage />,
+      },
+      {
+        path: '/todos',
+        element: <TodoListPage />,
       },
       {
         path: '/harvests',
@@ -531,52 +629,15 @@ const router = createBrowserRouter([
     path: '/tools',
     element: <ToolRoute />,
     errorElement: <GenericErrorPage />,
-    children: [
-      {
-        index: true,
-        element: (
-          <LazyPage>
-            <ToolsIndexPage />
-          </LazyPage>
-        ),
-      },
-      {
-        path: 'syrup-calculator',
-        element: (
-          <LazyPage>
-            <SyrupCalculatorPage />
-          </LazyPage>
-        ),
-      },
-      {
-        path: 'brood-timeline',
-        element: (
-          <LazyPage>
-            <BroodTimelinePage />
-          </LazyPage>
-        ),
-      },
-      {
-        path: 'swarm-management',
-        element: (
-          <LazyPage>
-            <SwarmManagementOverviewPage />
-          </LazyPage>
-        ),
-      },
-      {
-        path: 'swarm-management/demaree',
-        element: (
-          <LazyPage>
-            <DemareeMethodPage />
-          </LazyPage>
-        ),
-      },
-    ],
+    children: buildToolsChildren(),
   },
   {
     path: '/releases',
     element: <ReleasesPage />,
+  },
+  {
+    path: '/features',
+    element: <FeaturesPage />,
   },
   {
     path: '/hives/:hiveId/inspect/mobile',
@@ -615,10 +676,29 @@ const router = createBrowserRouter([
     element: <PrivacyPolicyPage />,
   },
   {
+    // Language-prefixed public pages (e.g. /da/tools/syrup-calculator). Static
+    // public paths above are matched first, so this only captures genuine
+    // first-segment language codes. Unsupported codes render the 404 page.
+    path: '/:lang',
+    loader: ({ params }) => {
+      if (!params.lang || !isSupportedLanguage(params.lang)) {
+        throw new Response('Not Found', { status: 404 });
+      }
+      return null;
+    },
+    element: <LangLayout />,
+    errorElement: <NotFoundPage />,
+    children: buildPublicRoutes(),
+  },
+  {
     path: '*',
     element: <NotFoundPage />,
   },
 ]);
+
+// Tag Faro Web Vitals with the current coarse page on every navigation. Safe to
+// register unconditionally: setFaroView is a no-op until Faro is initialized.
+router.subscribe(state => setFaroView(state.location.pathname));
 
 export function AppRouter() {
   return <RouterProvider router={router} />;

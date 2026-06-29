@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef } from 'react';
+import { lazy, Suspense, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +8,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { PrinterIcon, QrCodeIcon } from 'lucide-react';
+
+type QrTarget = 'detail' | 'mobile-wizard' | 'audio';
+
+const TARGET_PATH: Record<QrTarget, (hiveId: string) => string> = {
+  detail: hiveId => `/hives/${hiveId}`,
+  'mobile-wizard': hiveId => `/hives/${hiveId}/inspect/mobile`,
+  audio: hiveId => `/hives/${hiveId}/inspect/audio`,
+};
 
 // Lazy load QR code library
 const QRCode = lazy(() =>
@@ -30,9 +46,10 @@ interface QRCodeDialogProps {
 
 export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const [target, setTarget] = useState<QrTarget>('detail');
 
-  // Construct the full URL for the hive detail page
-  const hiveUrl = `${window.location.origin}/hives/${hiveId}`;
+  // Construct the full URL for the selected target
+  const hiveUrl = `${window.location.origin}${TARGET_PATH[target](hiveId)}`;
 
   const handlePrint = () => {
     const printContent = qrCodeRef.current;
@@ -124,10 +141,29 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
         <DialogHeader>
           <DialogTitle>QR Code for {hiveName}</DialogTitle>
           <DialogDescription>
-            Scan this QR code to quickly access this hive's detail page
+            Scan this QR code to quickly open the selected destination for this
+            hive
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center space-y-4 py-4">
+          <div className="w-full space-y-1.5">
+            <Label htmlFor="qr-target">QR Target</Label>
+            <Select
+              value={target}
+              onValueChange={(value: QrTarget) => setTarget(value)}
+            >
+              <SelectTrigger id="qr-target">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="detail">Hive detail page</SelectItem>
+                <SelectItem value="mobile-wizard">
+                  Mobile inspection wizard
+                </SelectItem>
+                <SelectItem value="audio">Quick audio inspection</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div ref={qrCodeRef} className="bg-white p-4 rounded-lg border">
             <Suspense fallback={<QRLoader />}>
               <QRCode

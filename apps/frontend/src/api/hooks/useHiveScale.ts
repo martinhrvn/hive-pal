@@ -22,6 +22,12 @@ export interface HiveScaleMeasurement {
   received_at: string;
   scale_1_weight_kg: number | null;
   scale_2_weight_kg: number | null;
+  // Temperature-compensated weights from the HiveScale backend. When
+  // compensation is disabled these equal the raw weights and
+  // tempco_applied is false, so they can be read unconditionally.
+  scale_1_weight_kg_compensated?: number | null;
+  scale_2_weight_kg_compensated?: number | null;
+  tempco_applied?: boolean | null;
   hive_1_temp_c: number | null;
   hive_2_temp_c: number | null;
   ambient_temp_c: number | null;
@@ -60,11 +66,11 @@ export interface HiveScaleMeasurement {
   mic_right_peak_dbfs: number | null;
   mic_right_rms_normalized: number | null;
   // FFT band energy per channel (dBFS, arduinoFFT)
-  mic_left_band_sub_bass_dbfs: number | null;   //   50–150 Hz
-  mic_left_band_hum_dbfs: number | null;         // 150–300 Hz  (colony hum ~200 Hz)
-  mic_left_band_piping_dbfs: number | null;      // 300–550 Hz  (queen piping)
-  mic_left_band_stress_dbfs: number | null;      // 550–1500 Hz (agitated / robbing)
-  mic_left_band_high_dbfs: number | null;        // 1500–3000 Hz (harmonic overtones)
+  mic_left_band_sub_bass_dbfs: number | null; //   50–150 Hz
+  mic_left_band_hum_dbfs: number | null; // 150–300 Hz  (colony hum ~200 Hz)
+  mic_left_band_piping_dbfs: number | null; // 300–550 Hz  (queen piping)
+  mic_left_band_stress_dbfs: number | null; // 550–1500 Hz (agitated / robbing)
+  mic_left_band_high_dbfs: number | null; // 1500–3000 Hz (harmonic overtones)
   mic_right_band_sub_bass_dbfs: number | null;
   mic_right_band_hum_dbfs: number | null;
   mic_right_band_piping_dbfs: number | null;
@@ -100,7 +106,65 @@ export interface HiveScaleMeasurement {
   bee_counter_2_busy_retries: number | null;
   bee_counter_2_read_attempts: number | null;
   bee_counter_2_latch_succeeded: boolean | null;
+  // Accelerometer (LIS3DH / LIS2DH12 per-hive vibration, mg, AC/gravity-removed)
+  accel_1_ok: boolean | null;
+  accel_1_sample_rate_hz: number | null;
+  accel_1_sample_count: number | null;
+  accel_1_range_g: number | null;
+  accel_1_rms_mg: number | null;
+  accel_1_peak_mg: number | null;
+  accel_1_band_swarm_mg: number | null; //   8–30 Hz  (~20 Hz pre-swarm signal)
+  accel_1_band_fanning_mg: number | null; //  30–100 Hz (fanning / ventilation)
+  accel_1_band_activity_mg: number | null; // 100–200 Hz (general activity)
+  accel_2_ok: boolean | null;
+  accel_2_sample_rate_hz: number | null;
+  accel_2_sample_count: number | null;
+  accel_2_range_g: number | null;
+  accel_2_rms_mg: number | null;
+  accel_2_peak_mg: number | null;
+  accel_2_band_swarm_mg: number | null;
+  accel_2_band_fanning_mg: number | null;
+  accel_2_band_activity_mg: number | null;
+  // HolyIot 25015 in-hive BLE sensor (SHT40 + LPS22HB + LIS2DH12), bridged by
+  // the ESP32 per hive. Temperature is delivered via hive_N_temp_c and the
+  // per-hive acceleration via accel_N_*; humidity and barometric pressure are
+  // promoted to their own columns. Battery/RSSI/raw axes are diagnostic.
+  ble_1_humidity_percent: number | null;
+  ble_1_pressure_hpa: number | null;
+  ble_1_accel_x_mg: number | null;
+  ble_1_accel_y_mg: number | null;
+  ble_1_accel_z_mg: number | null;
+  ble_1_battery_percent: number | null;
+  ble_1_rssi_dbm: number | null;
+  ble_2_humidity_percent: number | null;
+  ble_2_pressure_hpa: number | null;
+  ble_2_accel_x_mg: number | null;
+  ble_2_accel_y_mg: number | null;
+  ble_2_accel_z_mg: number | null;
+  ble_2_battery_percent: number | null;
+  ble_2_rssi_dbm: number | null;
+  // Running firmware version reported by a HiveInside C6 in-hive sensor over
+  // GATT ("fw"). Null for HolyIot/Ruuvi beacons and older payloads.
+  ble_1_firmware_version: string | null;
+  ble_2_firmware_version: string | null;
+  // beehivemonitoring.com GATT sensors bridged by the ESP32 per hive. The
+  // HiveHeart is an in-hive acoustic sensor (frequency/energy/peak + battery)
+  // and the HiveScale is a wireless weight scale; both report a raw battery
+  // voltage rather than a percentage. These come straight from the HiveScale
+  // backend measurement payload.
+  hiveheart_1_frequency_hz: number | null;
+  hiveheart_1_energy: number | null;
+  hiveheart_1_peak: number | null;
+  hiveheart_1_battery_v: number | null;
+  hiveheart_2_frequency_hz: number | null;
+  hiveheart_2_energy: number | null;
+  hiveheart_2_peak: number | null;
+  hiveheart_2_battery_v: number | null;
+  hivescale_1_battery_v: number | null;
+  hivescale_2_battery_v: number | null;
 }
+
+export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';
 
 export interface HiveScaleDeviceConfig {
   device_id: string;
@@ -110,6 +174,12 @@ export interface HiveScaleDeviceConfig {
   scale2_offset: number;
   scale2_factor: number;
   config_version: number;
+  // Load-cell temperature compensation (corrected in the HiveScale backend).
+  tempco_enabled: boolean;
+  tempco_source: HiveScaleTempcoSource;
+  tempco_ref_temp_c: number;
+  scale1_tempco_kg_per_c: number;
+  scale2_tempco_kg_per_c: number;
 }
 
 export interface ClaimHiveScaleDeviceInput {
@@ -125,6 +195,36 @@ export interface HiveScaleConfigPatch {
   scale1_factor?: number;
   scale2_offset?: number;
   scale2_factor?: number;
+  tempco_enabled?: boolean;
+  tempco_source?: HiveScaleTempcoSource;
+  tempco_ref_temp_c?: number;
+  scale1_tempco_kg_per_c?: number;
+  scale2_tempco_kg_per_c?: number;
+}
+
+export interface HiveScaleTempCompensationFitInput {
+  scale: 1 | 2;
+  lookback_days?: number;
+  temp_source?: HiveScaleTempcoSource;
+  calibration_mode_only?: boolean;
+  apply?: boolean;
+}
+
+export interface HiveScaleTempCompensationFitResult {
+  ok: boolean;
+  reason?: string;
+  scale: 1 | 2;
+  temp_source: HiveScaleTempcoSource;
+  applied: boolean;
+  coeff_kg_per_c: number;
+  ref_temp_c: number;
+  intercept_kg?: number | null;
+  r_squared: number | null;
+  n: number;
+  temp_min_c: number | null;
+  temp_max_c: number | null;
+  window_start?: string;
+  window_end?: string;
 }
 
 export interface HiveScaleChannelsPatch {
@@ -180,6 +280,8 @@ const HIVESCALE_KEYS = {
     deviceId: string | undefined,
     query: HiveScaleInsightsHistoryQuery | undefined,
   ) => [...HIVESCALE_KEYS.all, 'insightsHistory', deviceId, query] as const,
+  firmwareStatus: (deviceId: string | undefined) =>
+    [...HIVESCALE_KEYS.all, 'firmwareStatus', deviceId] as const,
 };
 
 export const useHiveScaleDevices = () => {
@@ -409,7 +511,10 @@ export const useClaimHiveScaleDevice = () => {
 
   return useMutation({
     mutationFn: async (data: ClaimHiveScaleDeviceInput) => {
-      const response = await apiClient.post('/api/hivescale/devices/claim', data);
+      const response = await apiClient.post(
+        '/api/hivescale/devices/claim',
+        data,
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -423,7 +528,9 @@ export const useRemoveHiveScaleDevice = () => {
 
   return useMutation({
     mutationFn: async (deviceId: string) => {
-      const response = await apiClient.delete(`/api/hivescale/devices/${deviceId}`);
+      const response = await apiClient.delete(
+        `/api/hivescale/devices/${deviceId}`,
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -444,7 +551,39 @@ export const useUpdateHiveScaleConfig = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.config(deviceId),
+      });
+    },
+  });
+};
+
+export const useFitHiveScaleTempCompensation = (
+  deviceId: string | undefined,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    HiveScaleTempCompensationFitResult,
+    Error,
+    HiveScaleTempCompensationFitInput
+  >({
+    mutationFn: async data => {
+      const response = await apiClient.post<HiveScaleTempCompensationFitResult>(
+        `/api/hivescale/devices/${deviceId}/temp-compensation/fit`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: result => {
+      // A successful applied fit writes the coefficient back to the config, so
+      // refresh it. Measurements gain new compensated values too.
+      if (result.applied) {
+        queryClient.invalidateQueries({
+          queryKey: HIVESCALE_KEYS.config(deviceId),
+        });
+        queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
+      }
     },
   });
 };
@@ -478,7 +617,9 @@ export const useShareHiveScaleDevice = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.members(deviceId),
+      });
     },
   });
 };
@@ -494,12 +635,16 @@ export const useRevokeHiveScaleMember = (deviceId: string | undefined) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.members(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.members(deviceId),
+      });
     },
   });
 };
 
-export const useStartHiveScaleCalibrationMode = (deviceId: string | undefined) => {
+export const useStartHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -511,12 +656,16 @@ export const useStartHiveScaleCalibrationMode = (deviceId: string | undefined) =
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.config(deviceId),
+      });
     },
   });
 };
 
-export const useStopHiveScaleCalibrationMode = (deviceId: string | undefined) => {
+export const useStopHiveScaleCalibrationMode = (
+  deviceId: string | undefined,
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -527,18 +676,27 @@ export const useStopHiveScaleCalibrationMode = (deviceId: string | undefined) =>
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.config(deviceId) });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.config(deviceId),
+      });
     },
   });
 };
 
-export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter';
+export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
 
 export interface HiveScaleFirmwareUploadInput {
   file: File;
   version: string;
   target: HiveScaleFirmwareTarget;
   active?: boolean;
+}
+
+export interface HiveScaleAutoQueuedUpdate {
+  slot: 1 | 2;
+  status: 'queued' | 'failed';
+  command_id?: number;
+  error?: string;
 }
 
 export interface HiveScaleFirmwareUploadResult {
@@ -549,6 +707,11 @@ export interface HiveScaleFirmwareUploadResult {
   active: boolean;
   size_bytes: number;
   crc32: number;
+  /**
+   * For HiveInside uploads, the backend also auto-queues the OTA relay to both
+   * sensor slots (1 & 2). One entry per slot; absent for other targets.
+   */
+  auto_queued_updates?: HiveScaleAutoQueuedUpdate[];
 }
 
 export interface HiveScaleSdImportResult {
@@ -609,7 +772,11 @@ export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
 export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
   const queryClient = useQueryClient();
 
-  return useMutation<HiveScaleFirmwareUploadResult, Error, HiveScaleFirmwareUploadInput>({
+  return useMutation<
+    HiveScaleFirmwareUploadResult,
+    Error,
+    HiveScaleFirmwareUploadInput
+  >({
     mutationFn: async ({ file, version, target, active = true }) => {
       const formData = new FormData();
       // Field order/names must match the FastAPI File()/Form() parameters.
@@ -629,6 +796,123 @@ export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
     onSuccess: () => {
       // last_firmware_version is surfaced in the devices list, so refresh it.
       queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+export interface HiveScaleFirmwareStatus {
+  device_id: string;
+  target: string;
+  current_version: string | null;
+  latest_version: string | null;
+  /** True when the latest available release is a global/official build (no owner). */
+  latest_is_official: boolean;
+  approved_version: string | null;
+  update_available: boolean;
+  /** Update available but not yet approved — the device will not auto-flash. */
+  pending_approval: boolean;
+}
+
+export interface HiveScaleFirmwareApproveResult {
+  status: string;
+  device_id: string;
+  version: string;
+  command_id: number;
+}
+
+export const useHiveScaleFirmwareStatus = (
+  deviceId: string | undefined,
+  options: { enabled?: boolean } = {},
+) => {
+  return useQuery<HiveScaleFirmwareStatus>({
+    queryKey: HIVESCALE_KEYS.firmwareStatus(deviceId),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleFirmwareStatus>(
+        `/api/hivescale/devices/${deviceId}/firmware/status`,
+      );
+      return response.data;
+    },
+    enabled: !!deviceId && (options.enabled ?? true),
+    staleTime: 60 * 1000,
+  });
+};
+
+export const useApproveHiveScaleFirmware = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<HiveScaleFirmwareApproveResult, Error, void>({
+    mutationFn: async () => {
+      try {
+        const response = await apiClient.post<HiveScaleFirmwareApproveResult>(
+          `/api/hivescale/devices/${deviceId}/firmware/approve`,
+        );
+        return response.data;
+      } catch (error) {
+        // Surface the backend message (e.g. "No firmware release available…")
+        // instead of Axios' generic status-code string.
+        if (isAxiosError<{ message?: string }>(error)) {
+          const data = error.response?.data;
+          const message =
+            (typeof data === 'object' && data !== null
+              ? data.message
+              : typeof data === 'string'
+                ? data
+                : undefined) ?? error.message;
+          throw new Error(message || 'Firmware approval failed');
+        }
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      // Approval flips pending_approval and queues an update; refresh both the
+      // status notice and the devices list (last_firmware_version).
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.firmwareStatus(deviceId),
+      });
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+export interface HiveScaleRelayUpdateResult {
+  status: string;
+  id: number;
+  command_type: string;
+  payload: { slot: number };
+}
+
+/**
+ * Queue a HiveInside OTA relay for the paired sensor in the given slot.
+ *
+ * Uploading a HiveInside binary only *registers* the release; this triggers the
+ * HiveScale to actually download it and relay it to the sensor over BLE. The two
+ * steps are intentionally separate (upload once, then queue per slot).
+ */
+export const useQueueHiveInsideUpdate = (deviceId: string | undefined) => {
+  return useMutation<HiveScaleRelayUpdateResult, Error, { slot: 1 | 2 }>({
+    mutationFn: async ({ slot }) => {
+      try {
+        const response = await apiClient.post<HiveScaleRelayUpdateResult>(
+          `/api/hivescale/devices/${deviceId}/commands/update-hiveinside`,
+          null,
+          { params: { slot } },
+        );
+        return response.data;
+      } catch (error) {
+        // Surface the backend message (e.g. "No active hiveinside firmware
+        // release") instead of Axios' generic status-code text.
+        if (isAxiosError<{ message?: string }>(error)) {
+          const data = error.response?.data;
+          const message =
+            (typeof data === 'object' && data !== null
+              ? data.message
+              : typeof data === 'string'
+                ? data
+                : undefined) ?? error.message;
+          throw new Error(message || 'Failed to queue HiveInside OTA');
+        }
+        throw error;
+      }
     },
   });
 };

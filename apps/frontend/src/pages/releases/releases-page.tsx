@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -8,9 +7,12 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useReleaseNotes } from '@/hooks/use-release-notes';
 import { Github, ArrowLeft, Home } from 'lucide-react';
+import { PublicMeta } from '@/components/seo/public-meta';
+import { useLocalizedPath } from '@/hooks/use-language-navigation';
 
 export function ReleasesPage() {
   const { t } = useTranslation('common');
+  const localize = useLocalizedPath();
   const { releaseNotes, loadReleaseNotes, isLoading } = useReleaseNotes();
 
   useEffect(() => {
@@ -31,21 +33,18 @@ export function ReleasesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-green-50 w-full">
-      <Helmet>
-        <title>Release Notes - Hive Pal</title>
-        <meta
-          name="description"
-          content="Stay up to date with the latest Hive Pal features, improvements, and bug fixes. See what's new in each release."
-        />
-        <link rel="canonical" href="https://hivepal.app/releases" />
-      </Helmet>
+      <PublicMeta
+        title="Release Notes - Hive Pal"
+        description="Stay up to date with the latest Hive Pal features, improvements, and bug fixes. See what's new in each release."
+        path="/releases"
+      />
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Link
-                to="/"
+                to={localize('/')}
                 className="flex items-center hover:opacity-80 transition-opacity"
               >
                 <div className="text-2xl font-bold text-amber-600">🐝</div>
@@ -59,7 +58,7 @@ export function ReleasesPage() {
             </div>
             <nav className="hidden md:flex items-center space-x-6">
               <Link
-                to="/"
+                to={localize('/')}
                 className="text-gray-600 hover:text-gray-900 text-sm font-medium flex items-center gap-1"
               >
                 <Home className="h-4 w-4" />
@@ -91,7 +90,7 @@ export function ReleasesPage() {
         {/* Breadcrumb */}
         <div className="mb-6">
           <Link
-            to="/"
+            to={localize('/')}
             className="text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center gap-1 inline-flex"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -181,7 +180,10 @@ export function ReleasesPage() {
             </p>
 
             <div className="flex justify-center space-x-6 mb-8">
-              <Link to="/" className="text-gray-400 hover:text-white text-sm">
+              <Link
+                to={localize('/')}
+                className="text-gray-400 hover:text-white text-sm"
+              >
                 Home
               </Link>
               <a

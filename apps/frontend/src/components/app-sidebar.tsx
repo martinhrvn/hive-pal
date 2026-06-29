@@ -16,6 +16,8 @@ import {
   Wrench,
   Scale,
   BotMessageSquare,
+  BookOpen,
+  ListTodo,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFeatures } from '@/api/hooks/useFeatures';
@@ -74,6 +76,18 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
         {
           title: t('navigation.allQueens'),
           url: '/queens',
+        },
+      ],
+    },
+    {
+      title: t('navigation.todos', { defaultValue: 'Todos' }),
+      url: '/todos',
+      icon: ListTodo,
+      isActive: true,
+      items: [
+        {
+          title: t('navigation.allTodos', { defaultValue: 'All Todos' }),
+          url: '/todos',
         },
       ],
     },
@@ -180,12 +194,24 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
           }),
           url: '/tools/swarm-management',
         },
+        {
+          title: t('navigation.liebefelder', {
+            defaultValue: 'Liebefelder Method',
+          }),
+          url: '/tools/liebefelder',
+        },
       ],
     },
     {
       title: t('navigation.settings', { defaultValue: 'Settings' }),
       url: '/settings',
       icon: Settings2,
+    },
+    {
+      title: t('navigation.documentation', { defaultValue: 'Documentation' }),
+      url: 'https://docs.hivepal.app',
+      icon: BookOpen,
+      external: true,
     },
     {
       title: t('feedback.sendFeedback', { defaultValue: 'Send Feedback' }),

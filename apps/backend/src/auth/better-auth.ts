@@ -20,6 +20,24 @@ const prismaForAuth = new PrismaClient({
 const isBcryptHash = (hash: string): boolean =>
   hash.startsWith('$2a$') || hash.startsWith('$2b$') || hash.startsWith('$2y$');
 
+// Whether auth cookies get the `Secure` attribute.
+//
+// Browsers silently drop `Secure` cookies sent over plain http on every host
+// except localhost, so a deployment served over http (e.g. a LAN host/IP
+// behind a TLS-less reverse proxy) MUST issue non-Secure cookies or login
+// breaks with no server-side error (the session cookie is set but never stored
+// or replayed by the browser).
+//
+// Precedence:
+//   1. BETTER_AUTH_SECURE_COOKIES=true|false — explicit override
+//   2. otherwise: Secure only when BETTER_AUTH_URL is https:// — i.e. derived
+//      from the protocol the app is actually served over (this also matches
+//      Better Auth's own default behaviour).
+const useSecureCookies =
+  process.env.BETTER_AUTH_SECURE_COOKIES !== undefined
+    ? process.env.BETTER_AUTH_SECURE_COOKIES.toLowerCase() === 'true'
+    : (process.env.BETTER_AUTH_URL ?? '').startsWith('https://');
+
 export const auth = betterAuth({
   database: prismaAdapter(prismaForAuth, { provider: 'postgresql' }),
   secret: process.env.BETTER_AUTH_SECRET,
@@ -70,11 +88,17 @@ export const auth = betterAuth({
   },
 
   advanced: {
+    // Apply the Secure decision globally so EVERY auth cookie agrees
+    // (session_token, the session_data cache cookie, CSRF, etc.). Previously
+    // only session_token carried an override, which left session_data Secure
+    // while session_token wasn't (or vice versa) and silently broke sessions
+    // over http. See the `useSecureCookies` definition above.
+    useSecureCookies,
     cookies: {
       session_token: {
         attributes: {
           sameSite: 'lax',
-          secure: process.env.NODE_ENV === 'production',
+          secure: useSecureCookies,
           ...(process.env.COOKIE_DOMAIN
             ? { domain: process.env.COOKIE_DOMAIN }
             : {}),
@@ -155,13 +179,25 @@ export const auth = betterAuth({
         after: async (session) => {
           const dbUser = await authDeps.prisma.user.findUnique({
             where: { id: session.userId },
-            select: { lastLoginAt: true, email: true },
+            select: { lastLoginAt: true, email: true, role: true },
           });
           if (!dbUser) return;
           const previousLoginAt = dbUser.lastLoginAt;
+          // Self-heal the configured admin account: whoever logs in with
+          // ADMIN_EMAIL always gets the ADMIN role, regardless of how/when the
+          // account was created (covers signups that pre-date or bypass the
+          // startup seed). Comparison is case-insensitive.
+          const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
+          const promoteToAdmin =
+            !!adminEmail &&
+            dbUser.email.toLowerCase() === adminEmail &&
+            dbUser.role !== 'ADMIN';
           await authDeps.prisma.user.update({
             where: { id: session.userId },
-            data: { lastLoginAt: new Date() },
+            data: {
+              lastLoginAt: new Date(),
+              ...(promoteToAdmin ? { role: 'ADMIN' } : {}),
+            },
           });
           authDeps.eventEmitter.emit(
             'user.login',

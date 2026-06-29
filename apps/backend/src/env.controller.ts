@@ -14,6 +14,8 @@ export class EnvController {
 export interface EnvConfig {
   VITE_SENTRY_DSN: string;
   VITE_SENTRY_ENVIRONMENT: string;
+  VITE_FARO_URL: string;
+  VITE_FARO_ENVIRONMENT: string;
 }
 
 export function buildEnvConfig(
@@ -22,5 +24,7 @@ export function buildEnvConfig(
   return {
     VITE_SENTRY_DSN: env.VITE_SENTRY_DSN || '',
     VITE_SENTRY_ENVIRONMENT: env.VITE_SENTRY_ENVIRONMENT || '',
+    VITE_FARO_URL: env.VITE_FARO_URL || '',
+    VITE_FARO_ENVIRONMENT: env.VITE_FARO_ENVIRONMENT || '',
   };
 }

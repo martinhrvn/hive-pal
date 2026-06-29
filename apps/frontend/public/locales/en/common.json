@@ -7,6 +7,8 @@
     "inspections": "Inspections",
     "queens": "Queens",
     "allQueens": "All Queens",
+    "todos": "Todos",
+    "allTodos": "All Todos",
     "settings": "Settings",
     "admin": "Admin",
     "users": "Users",
@@ -31,7 +33,9 @@
     "tools": "Tools",
     "syrupCalculator": "Syrup Calculator",
     "broodTimeline": "Brood Timeline",
-    "swarmManagement": "Swarm Management"
+    "swarmManagement": "Swarm Management",
+    "liebefelder": "Liebefelder Method",
+    "documentation": "Documentation"
   },
   "actions": {
     "save": "Save",
@@ -114,6 +118,21 @@
     "minutes": "Minutes",
     "seconds": "Seconds"
   },
+  "months": {
+    "selectMonth": "Select month",
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
   "weather": {
     "selectHiveToView": "Select a hive with an apiary to view weather",
     "unableToLoad": "Unable to load weather data",
@@ -174,7 +193,20 @@
     "passkeyDeleteFailed": "Failed to delete passkey",
     "saveSettings": "Save Settings",
     "preferencesUpdated": "Your preferences have been updated successfully.",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "dangerZone": "Danger Zone",
+    "dangerZoneDescription": "Irreversible actions for your account.",
+    "deleteAccount": "Delete account",
+    "deleteAccountDescription": "Permanently delete your account and all your apiaries, hives, inspections, photos, and other data. This cannot be undone. Export your data first if you want to keep a copy.",
+    "deleteAccountConfirmTitle": "Delete your account?",
+    "deleteAccountConfirmDescription": "This permanently deletes your account and all data you own. Apiaries shared with you by others are unaffected, and content you contributed to others' apiaries is kept but anonymized. This action cannot be undone.",
+    "deleteAccountExportReminder": "Want to keep a copy? Export your data before deleting.",
+    "deleteAccountExportLink": "Export my data",
+    "deleteAccountTypeEmail": "Type your email address {{email}} to confirm:",
+    "deleteAccountButton": "Delete my account",
+    "deleteAccountDeleting": "Deleting account...",
+    "accountDeleted": "Your account has been deleted.",
+    "deleteAccountFailed": "Failed to delete account. Please try again."
   },
   "feedback": {
     "title": "Send Feedback",
@@ -384,7 +416,191 @@
     "tip3Title": "Thick syrup (2:1)",
     "tip3Description": "Best for fall/autumn feeding to build up winter stores. Bees can store it quickly with less effort to evaporate excess water.",
     "tip4Title": "General tips",
-    "tip4Description": "Always use white granulated sugar — never brown sugar, molasses, or artificial sweeteners. Do not boil the syrup as it can create HMF (hydroxymethylfurfural) which is toxic to bees. Feed in the evening to reduce robbing."
+    "tip4Description": "Always use white granulated sugar — never brown sugar, molasses, or artificial sweeteners. Do not boil the syrup as it can create HMF (hydroxymethylfurfural) which is toxic to bees. Feed in the evening to reduce robbing.",
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "question": "What sugar-to-water ratio should I use to feed bees?",
+          "answer": "Use 1:1 syrup (equal parts sugar and water by weight) in spring to stimulate brood rearing, 3:2 as a general-purpose feed, and 2:1 (two parts sugar to one part water) in fall to build winter stores. Thick syrup is easier for bees to convert to capped stores; thin syrup mimics a nectar flow."
+        },
+        {
+          "question": "When should I feed bees thin (1:1) syrup?",
+          "answer": "Feed 1:1 syrup in spring or whenever you want to stimulate brood rearing. Its water content mimics a natural nectar flow, encouraging the queen to lay and the colony to build up."
+        },
+        {
+          "question": "When should I feed bees thick (2:1) syrup?",
+          "answer": "Feed 2:1 syrup in late summer and fall to help colonies build winter stores. The lower water content means bees spend less energy evaporating it before capping."
+        },
+        {
+          "question": "Can I use brown sugar, honey, or molasses to make bee syrup?",
+          "answer": "No. Use only white granulated cane or beet sugar. Brown sugar, molasses, and unrefined sweeteners contain compounds that cause dysentery in bees. Honey from unknown sources can also transmit disease."
+        },
+        {
+          "question": "Should I boil sugar syrup for bees?",
+          "answer": "No. Heat the water until warm enough to dissolve the sugar, but do not boil. Boiling sugar syrup produces hydroxymethylfurfural (HMF), which is toxic to bees."
+        },
+        {
+          "question": "How much sugar do I need for one liter of 1:1 syrup?",
+          "answer": "For one liter of finished 1:1 syrup, you need roughly 715 g of water and 715 g of white granulated sugar. The exact amounts depend on the ratio and final volume — this calculator computes them based on sucrose displacement."
+        }
+      ]
+    }
+  },
+  "liebefelder": {
+    "title": "Liebefelder Schätzmethode",
+    "description": "Colony strength estimator",
+    "intro": "The Liebefelder method estimates colony strength by assessing comb area in eighths (1/8 steps): how much is covered with bees, brood, pollen, and feed. Estimation values and seasonal guidelines are based on the population-estimation cheat sheet by Dr. Pia Aumeier, Germany.",
+    "source": "Source: Dr. Pia Aumeier, Germany",
+    "frameType": {
+      "title": "Frame type",
+      "description": "Choose the frame format used in your hive — it determines the estimation values per eighth.",
+      "custom": "Custom",
+      "customDescription": "Enter your own estimation values for one eighth of a comb side."
+    },
+    "counts": {
+      "title": "Counts — total eighths",
+      "description": "Sum the eighths of comb area across all comb sides for each category. One eighth holds about {{bees}} bees ({{frame}}). Brood and stores are optional — they are needed for split evaluation and feed assessment."
+    },
+    "fields": {
+      "bees": "Bees",
+      "beesHint": "comb area covered with a layer of bees, both sides counted",
+      "cappedWorkerBrood": "Capped worker brood",
+      "cappedWorkerBroodHint": "emerges within 0–12 days",
+      "openWorkerBrood": "Open worker brood",
+      "openWorkerBroodHint": "emerges within 13–21 days",
+      "droneBrood": "Drone brood",
+      "droneBroodHint": "capped 0–14 d, open 15–24 d",
+      "pollen": "Pollen",
+      "pollenHint": "stored bee bread",
+      "feed": "Feed / honey",
+      "feedHint": "capped or open stores"
+    },
+    "result": {
+      "title": "Result",
+      "empty": "Enter your eighth counts above to see the estimate.",
+      "bees": "Bees",
+      "wabengassen": "Wabengassen",
+      "wabengassenNote": "≈ 1,000 bees each",
+      "strengthField": "Strength field",
+      "strengthFieldNote": "for inspection",
+      "cappedBrood": "Capped worker brood",
+      "openBrood": "Open worker brood",
+      "droneBrood": "Drone brood",
+      "cells": "cells",
+      "pollen": "Pollen",
+      "feed": "Feed / honey",
+      "emergeNote": "Within the next 12 days, ~{{cells}} bees will emerge from the capped worker brood — roughly {{gassen}} additional Wabengassen. Expand the hive in time."
+    },
+    "evaluation": {
+      "title": "Seasonal evaluation",
+      "description": "Compare the measured colony against the seasonal benchmarks by Dr. Pia Aumeier, Germany.",
+      "selectPrompt": "Select a context to evaluate the colony.",
+      "enterCountsFirst": "Enter your counts above first.",
+      "contexts": {
+        "split_mid_may": "Split by mid-May",
+        "split_end_may": "Split by end of May",
+        "split_mid_june": "Split by mid-June",
+        "winter_aug": "Wintering, mid-August",
+        "winter_oct": "Wintering, end of October"
+      },
+      "checks": {
+        "minBees": "≥ {{min}} bees (measured: ~{{measured}})",
+        "minCappedBrood": "≥ {{min}} capped worker brood cells (measured: ~{{measured}})",
+        "minOpenBrood": "≥ {{min}} open worker brood cells (measured: ~{{measured}})"
+      },
+      "splitNote": "A broodless mating split (Begattungsableger) created by mid-May needs only ≥ 1,000 bees and no brood.",
+      "winterAug": {
+        "check": "> 15,000 bees regardless of brood (measured: ~{{measured}})",
+        "note": "Applies to established colonies in mid-August: a colony this strong hangs through into the floor across more than 5 Wabengassen. Weaker, shrinking colonies and this year's splits are assessed at the end of October instead."
+      },
+      "winterOct": {
+        "ready": "Ready for winter — ~{{bees}} bees on {{gassen}} Wabengassen (5 or more occupied gaps; over 5,000 bees).",
+        "minimal": "Minimal wintering strength — ~{{bees}} bees on 4 Wabengassen (around 5,000 bees).",
+        "atRisk": "Strongly at risk of winter loss — ~{{bees}} bees on {{gassen}} Wabengassen (3 or fewer occupied gaps; under 5,000 bees). Combine or dissolve.",
+        "note": "Assess as late as possible, after a cold night (≈ 5 °C), by counting the Wabengassen occupied by bees."
+      }
+    },
+    "reference": {
+      "title": "One eighth of a {{frame}} comb side contains…",
+      "bees": "Bees",
+      "drones": "Drones",
+      "workerBroodCells": "Worker brood (capped/open)",
+      "droneBroodCells": "Drone brood (capped/open)",
+      "pollenG": "Pollen",
+      "feedG": "Feed / honey",
+      "cellsValue": "{{value}} cells"
+    },
+    "tips": {
+      "coverage": {
+        "title": "How to assess coverage",
+        "pullFrames": {
+          "title": "Pull out each frame",
+          "description": "Remove one frame at a time. Look straight at each side and estimate in eighths how much of the comb surface is covered with bees, brood, pollen, or feed."
+        },
+        "bothSides": {
+          "title": "Count both sides",
+          "description": "Each frame has two sides. A frame fully covered with bees on both sides adds 16 eighths to the total."
+        },
+        "roundDown": {
+          "title": "Round down when in doubt",
+          "description": "Underestimating is safer than overestimating — round to the nearest lower eighth."
+        }
+      },
+      "emergence": {
+        "title": "When does the brood emerge?",
+        "capped": {
+          "title": "Capped worker brood",
+          "description": "All currently capped worker cells emerge within 0–12 days."
+        },
+        "open": {
+          "title": "Open worker brood",
+          "description": "Open worker cells emerge within 13–21 days."
+        },
+        "drone": {
+          "title": "Drone brood",
+          "description": "Capped drone cells emerge within 0–14 days, open drone cells within 15–24 days."
+        },
+        "ruleOfThumb": {
+          "title": "Rule of thumb",
+          "description": "About 1,000 emerged bees fill one Wabengasse — expand the hive before the colony outgrows it."
+        }
+      },
+      "feed": {
+        "title": "Required feed stores",
+        "yearRound": {
+          "title": "Throughout the year",
+          "description": "At least 1 kg of feed at all times — for production colonies and splits alike."
+        },
+        "warmRegion": {
+          "title": "Wintering, warm region (e.g. NRW)",
+          "description": "Production colonies: 13 kg pure sugar = 18 kg / 13 L syrup ≈ 8 full Zander combs. Splits: 10 kg sugar = 14 kg / 10 L syrup ≈ 6 full Zander combs."
+        },
+        "coolRegion": {
+          "title": "Wintering, cool region (e.g. BW, Bavaria)",
+          "description": "Production colonies: 20 kg pure sugar = 28 kg / 20 L syrup ≈ 12 full Zander combs. Splits: 15 kg sugar = 21 kg / 15 L syrup ≈ 9 full Zander combs."
+        },
+        "spring": {
+          "title": "Before the spring flow (Feb–Mar)",
+          "description": "In a wet, cold early spring: at least 10 kg of feed remaining."
+        }
+      },
+      "development": {
+        "title": "Development times until emergence",
+        "queen": {
+          "title": "Queen — 16 days",
+          "description": "From the egg (swarm or silent supersedure): 3 d egg + 5 d larva + 8 d pupa. Emergency cells started from a ~2-day-old larva emerge after just 11 days. One queen per colony."
+        },
+        "worker": {
+          "title": "Worker — 21 days",
+          "description": "From the fertilized egg: 3 d egg + 6 d larva + 12 d pupa. A colony holds 5,000–40,000 workers."
+        },
+        "drone": {
+          "title": "Drone — 24 days",
+          "description": "From the unfertilized egg: 3 d egg + 7 d larva + 14 d pupa. A colony holds 0–1,000 drones."
+        }
+      }
+    }
   },
   "broodTimeline": {
     "title": "Brood Development Timeline",
@@ -432,7 +648,28 @@
     "fact3Title": "The egg stage",
     "fact3Description": "All three castes share the same 3-day egg stage. The queen lays each egg vertically in the cell; it gradually tilts over before hatching.",
     "fact4Title": "Capping timing",
-    "fact4Description": "Workers cap queen cells on day 8, worker cells on day 9, and drone cells on day 10. Spotting capped cells helps identify what's developing inside."
+    "fact4Description": "Workers cap queen cells on day 8, worker cells on day 9, and drone cells on day 10. Spotting capped cells helps identify what's developing inside.",
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "question": "How long does it take for a honey bee to develop?",
+          "answer": "Queens emerge after 16 days, workers after 21 days, and drones after 24 days. All three pass through four stages — egg (3 days), larva, pupa, and adult — but the larval and pupal stages differ in length by caste."
+        },
+        {
+          "question": "When are worker bee cells capped?",
+          "answer": "Worker brood cells are capped on day 9, when the larva spins its cocoon and enters the pupal stage. Worker bees emerge on day 21."
+        },
+        {
+          "question": "When are queen cells capped and when do queens emerge?",
+          "answer": "Queen cells are capped on day 8 and virgin queens emerge on day 16 from the egg being laid. Queens develop fastest because they are fed royal jelly throughout the larval stage."
+        },
+        {
+          "question": "How long do drones take to emerge?",
+          "answer": "Drones take 24 days from egg to emergence — the longest of any caste. Drone cells are capped around day 10."
+        }
+      ]
+    }
   },
   "swarmManagement": {
     "backToOverview": "Back to Swarm Management",
@@ -605,7 +842,36 @@
         "There may be heavy lifting.",
         "Regular inspections are essential.",
         "You MUST understand the basics."
-      ]
+      ],
+      "faq": {
+        "title": "Frequently asked questions",
+        "items": [
+          {
+            "question": "What is the Demaree method?",
+            "answer": "The Demaree method is a classic swarm-control technique that vertically separates the laying queen from most of the brood within a single hive. The queen stays below a queen excluder on largely empty comb; the brood is moved above two or more honey supers so the colony stays together while swarm pressure eases."
+          },
+          {
+            "question": "When should I use the Demaree method?",
+            "answer": "Use the Demaree method on strong colonies showing clear swarm pressure — heavy congestion, charged queen cells, or a colony pushing hard into a flow — when you want to keep the colony intact rather than splitting it."
+          },
+          {
+            "question": "When should I inspect after a Demaree setup?",
+            "answer": "Inspect at day 7-8, day 14-15, and day 21-22 after the setup. The day 7-8 check is the most critical — emergency queen cells started during the swarm impulse must be removed before they approach emergence around day 14-16."
+          },
+          {
+            "question": "Does the Demaree method create a separate split or nucleus colony?",
+            "answer": "No. Unlike an artificial swarm or Pagden split, the Demaree method keeps all the bees in one hive. The colony remains a single working unit which often preserves honey-gathering momentum better than splitting."
+          },
+          {
+            "question": "What equipment do I need for the Demaree method?",
+            "answer": "You need a queen excluder (sometimes two), a spare brood box with drawn comb or foundation, and at least two honey supers to stack between the queen and the relocated brood."
+          },
+          {
+            "question": "What is the biggest risk with the Demaree method?",
+            "answer": "Missing a queen cell in the upper brood box during the day 7-8 check is the biggest risk — the colony can still swarm if a virgin queen emerges above the excluder. Shaking bees off every brood frame helps spot all cells."
+          }
+        ]
+      }
     },
     "planner": {
       "title": "Demaree inspection planner",
@@ -816,6 +1082,353 @@
         "inspectionMany": "{{count}} inspections",
         "queenOne": "{{count}} queen",
         "queenMany": "{{count}} queens"
+      }
+    }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Features",
+      "freeTools": "Free tools",
+      "documentation": "Documentation",
+      "releaseNotes": "Release notes",
+      "github": "GitHub",
+      "signIn": "Sign in",
+      "startFree": "Start free"
+    },
+    "footer": {
+      "tagline": "Free, open-source beekeeping management. Making the craft simpler, more productive, and a little more enjoyable.",
+      "product": "Product",
+      "features": "Features",
+      "freeTools": "Free tools",
+      "releaseNotes": "Release notes",
+      "project": "Project",
+      "documentation": "Documentation",
+      "reportIssue": "Report an issue",
+      "privacyPolicy": "Privacy policy",
+      "source": "Source",
+      "github": "GitHub",
+      "signIn": "Sign in",
+      "createAccount": "Create account",
+      "copyright": "© 2025 Hive Pal · MIT Licensed",
+      "builtWith": "Built with care for beekeepers everywhere."
+    },
+    "ai": {
+      "eyebrow": "Voice & AI",
+      "title": "Inspect with your voice,<br/><accent>not your keyboard</accent>.",
+      "lede": "Hive Pal records audio during inspections, transcribes it automatically, and uses AI to draft structured notes — so the busywork happens while you’re still at the apiary.",
+      "items": {
+        "record": {
+          "title": "Record at the hive",
+          "body": "Tap record on your phone, talk through what you see on each frame, and move on. Recordings upload straight into the inspection — even if you lose signal mid-yard."
+        },
+        "transcribe": {
+          "title": "Automatic transcription",
+          "body": "Whisper-powered speech-to-text turns every recording into a searchable transcript attached to the inspection. Multilingual out of the box."
+        },
+        "draft": {
+          "title": "AI-drafted notes",
+          "body": "Local LLMs extract queen sightings, brood patterns, treatments, and observations into a pre-filled inspection — you just review and save."
+        }
+      },
+      "assuranceLead": "Your recordings, your models.",
+      "assuranceBody": "The AI stack runs on open-source models (faster-whisper + Ollama) and can be self-hosted alongside your data — or run as a pull worker on your home machine.",
+      "assuranceNote": "No third-party cloud required"
+    },
+    "landing": {
+      "meta": {
+        "title": "Hive Pal — AI-Powered Beekeeping Management Software",
+        "description": "Manage your beehives efficiently with Hive Pal. Record voice notes at the hive and let AI transcribe and draft your inspections. Open source, self-hostable, and free for early adopters.",
+        "ogTitle": "Hive Pal — AI-Powered Beekeeping Management Software",
+        "ogDescription": "Free, open-source beekeeping platform with AI voice inspections. Record audio in the apiary and let AI draft your inspection notes automatically."
+      },
+      "hero": {
+        "badge": "New · AI voice inspections",
+        "title": "Your open-source<br/>beekeeping <accent>companion</accent>.",
+        "lede": "Record voice notes at the hive. Let AI transcribe and draft your inspections automatically — so you keep your hands on the frames, not the keyboard.",
+        "ctaSignup": "Sign up — it’s free",
+        "ctaSelfHost": "Self-host",
+        "tagline": "MIT licensed · self-hostable · voice-first"
+      },
+      "features": {
+        "label": "Modern beekeeping",
+        "title": "Everything you need to <accent>tend</accent> your hives.",
+        "lede": "Professional tools designed by beekeepers, for beekeepers — to keep colonies healthy, productive, and well-documented through every season.",
+        "pillars": "Four pillars · built into one platform",
+        "seeAll": "Explore all features",
+        "items": {
+          "apiary": {
+            "title": "Apiary management",
+            "body": "Organize and track multiple apiaries with detailed location information, weather data, and site-specific notes."
+          },
+          "inspections": {
+            "title": "Hive inspections",
+            "body": "Schedule and record detailed inspections with customizable checklists, photos, and health assessments."
+          },
+          "queen": {
+            "title": "Queen tracking",
+            "body": "Monitor queen performance, breeding records, and replacement schedules to maintain strong colonies."
+          },
+          "harvest": {
+            "title": "Harvest management",
+            "body": "Track honey production, processing dates, and yields across seasons and hive locations."
+          }
+        }
+      },
+      "run": {
+        "label": "How to run it",
+        "title": "Self-host, or let us <accent>run it</accent> for you.",
+        "lede": "Two ways to use Hive Pal — both free, both run the same open-source code.",
+        "selfHosted": {
+          "title": "Self-hosted",
+          "badge": "Free, forever",
+          "body": "Full control over your data and infrastructure. Run it on your own server, your laptop, a Raspberry Pi — wherever suits you.",
+          "items": [
+            "MIT licensed — read, fork, ship",
+            "Host anywhere Docker runs",
+            "Your data stays on your hardware",
+            "Community support via GitHub"
+          ],
+          "cta": "Read the docs"
+        },
+        "hosted": {
+          "title": "Hosted by us",
+          "badge": "Free",
+          "body": "Zero setup required. We run the servers, handle updates, and keep things ticking. Same open-source app — just on our hardware.",
+          "items": [
+            "Sign up and go — no installation",
+            "Automatic updates & backups",
+            "Best-effort uptime, monitored",
+            "Community support via GitHub"
+          ],
+          "cta": "Sign up — it’s free"
+        }
+      },
+      "tools": {
+        "label": "Free tools",
+        "title": "Free tools, no signup.",
+        "lede": "Handy calculators and planners you can use directly in the browser — bookmark them for the apiary.",
+        "seeAll": "See all tools",
+        "items": {
+          "syrup": {
+            "title": "Sugar Syrup Calculator",
+            "body": "Precise sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size. Metric or imperial."
+          },
+          "brood": {
+            "title": "Brood Development Timeline",
+            "body": "Visualize queen, worker, and drone brood stages with day counts and project dates from any starting day."
+          },
+          "swarm": {
+            "title": "Swarm Management",
+            "body": "Step-by-step Demaree swarm-control workflow with follow-up timing and an inspection planner."
+          },
+          "liebefelder": {
+            "title": "Liebefelder Estimation Method",
+            "body": "Estimate colony strength — bees, brood, pollen and feed — by counting comb eighths, with seasonal evaluation guidelines."
+          }
+        }
+      },
+      "cta": {
+        "title": "Give it a <accent>try</accent>.",
+        "lede": "Sign up for the hosted version, or grab the source and run it yourself. Either way, it’s free.",
+        "signup": "Sign up free",
+        "github": "View on GitHub"
+      }
+    },
+    "features": {
+      "meta": {
+        "title": "Features — Everything Hive Pal Does for Beekeepers",
+        "description": "Explore every Hive Pal feature: AI voice inspections with automatic transcription, hive and queen management, batch inspections, planning and reports, harvest tracking, collaboration, and open-source, self-hostable, privacy-first software.",
+        "ogTitle": "Hive Pal Features — AI Voice Inspections & Beekeeping Management",
+        "ogDescription": "AI voice inspections, hive & queen management, planning, reports, collaboration, and open-source self-hosting. See everything Hive Pal does."
+      },
+      "hero": {
+        "eyebrow": "Everything in one place",
+        "title": "Everything you need to <accent>run the bees</accent>.",
+        "lede": "Hive Pal brings voice-first AI inspections, colony and queen records, planning, reports, and collaboration into a single open-source platform — free to use and yours to host.",
+        "ctaSignup": "Sign up — it’s free",
+        "ctaSelfHost": "Self-host",
+        "tagline": "MIT licensed · self-hostable · voice-first"
+      },
+      "groups": {
+        "inspections": {
+          "label": "Inspections & record-keeping",
+          "title": "Every inspection, captured in detail",
+          "lede": "Record what you see at the hive with structured, repeatable inspections — then find it again the moment you need it.",
+          "items": {
+            "structured": {
+              "title": "Structured inspections",
+              "body": "Log brood pattern, stores, temperament, space, and queen status with consistent fields, so colonies are comparable across visits and seasons."
+            },
+            "quickChecks": {
+              "title": "Quick checks",
+              "body": "A lightweight inspection flow for fast yard walk-throughs when you only need to note the essentials and move on."
+            },
+            "batch": {
+              "title": "Batch inspections",
+              "body": "Inspect a whole apiary in one sitting — step through every hive in sequence without re-opening each record by hand."
+            },
+            "scheduled": {
+              "title": "Scheduled inspections & reminders",
+              "body": "Plan future visits and get release-note and task reminders so nothing slips between sessions."
+            },
+            "photos": {
+              "title": "Photos & observations",
+              "body": "Attach photos and free-text notes to any inspection to document disease signs, comb, or anything worth a second look."
+            },
+            "actions": {
+              "title": "Actions & treatments",
+              "body": "Record feeding, treatments, and management actions as part of the inspection, building a full history per colony."
+            }
+          }
+        },
+        "colony": {
+          "label": "Colony & hive management",
+          "title": "Organize apiaries, hives, and queens",
+          "lede": "A clear model of your operation — from yards down to individual frames and queen lineages.",
+          "items": {
+            "apiaries": {
+              "title": "Multiple apiaries",
+              "body": "Group hives by location with site-specific notes and local weather context for each yard."
+            },
+            "hiveConfig": {
+              "title": "Hive configuration",
+              "body": "Track boxes, frames, and configuration per hive so the record reflects the real equipment in the field."
+            },
+            "queens": {
+              "title": "Queen tracking",
+              "body": "Follow each queen’s marking, origin, lineage, performance, and replacement history to keep colonies strong."
+            },
+            "equipment": {
+              "title": "Equipment planning",
+              "body": "Plan and account for boxes, frames, and gear across your hives so you know what to build before the season."
+            },
+            "qrCodes": {
+              "title": "QR codes",
+              "body": "Generate and print QR labels for hives, then scan in the apiary to jump straight to the right record."
+            },
+            "hiveScale": {
+              "title": "Hive scale monitoring",
+              "body": "Connect hive scales to follow weight trends — nectar flow, consumption, and overwintering at a glance."
+            }
+          }
+        },
+        "planning": {
+          "label": "Planning & insight",
+          "title": "See the season, not just the day",
+          "lede": "Turn your records into a plan and a picture of how the operation is doing.",
+          "items": {
+            "calendar": {
+              "title": "Calendar",
+              "body": "A unified calendar of inspections and scheduled tasks across every apiary, so the week ahead is always visible."
+            },
+            "reports": {
+              "title": "Reports & analytics",
+              "body": "Roll your data up into colony-health and productivity reports to spot trends and weak hives early."
+            },
+            "harvest": {
+              "title": "Harvest tracking",
+              "body": "Record honey harvests, processing dates, and yields across hives and seasons to measure real output."
+            },
+            "assistant": {
+              "title": "AI assistant",
+              "body": "Ask questions about your apiary and get help making sense of your records, right inside the app."
+            },
+            "bulkActions": {
+              "title": "Bulk actions",
+              "body": "Apply the same action across many hives at once instead of editing them one by one."
+            }
+          }
+        },
+        "collaboration": {
+          "label": "Collaboration & sharing",
+          "title": "Beekeeping is rarely a solo job",
+          "lede": "Work the bees with partners, clubs, or mentees — and share what matters without handing over the keys.",
+          "items": {
+            "sharing": {
+              "title": "Apiary sharing",
+              "body": "Invite other beekeepers to collaborate on an apiary so the whole team works from the same records."
+            },
+            "inviteLinks": {
+              "title": "Invite links",
+              "body": "Share a join link to bring someone into an apiary quickly, without manual account juggling."
+            },
+            "sharedViews": {
+              "title": "Shared views",
+              "body": "Give read access to colonies or data so a mentor or club can follow along without editing."
+            }
+          }
+        },
+        "data": {
+          "label": "Your data, your rules",
+          "title": "Open source, private, and portable",
+          "lede": "Hive Pal is free software you can run yourself — your records stay yours.",
+          "items": {
+            "openSource": {
+              "title": "Open source (MIT)",
+              "body": "The entire app is MIT-licensed. Read it, fork it, audit it, or contribute — no black boxes."
+            },
+            "selfHostable": {
+              "title": "Self-hostable",
+              "body": "Run it anywhere Docker runs: a server, a laptop, or a Raspberry Pi. The hosted version runs the same code."
+            },
+            "importExport": {
+              "title": "Import & export",
+              "body": "Move your data in and out freely. Your beekeeping history is never locked inside the app."
+            },
+            "privacyAI": {
+              "title": "Privacy-first AI",
+              "body": "The voice and AI stack uses open models (faster-whisper + Ollama) and can run on your own hardware — no third-party cloud required."
+            },
+            "multilingual": {
+              "title": "Multilingual",
+              "body": "Use Hive Pal in your language, with community translations managed through Weblate and growing over time."
+            },
+            "pwa": {
+              "title": "Installable & offline-ready",
+              "body": "Install it as a PWA on your phone and keep working in the apiary even when the signal drops."
+            }
+          }
+        }
+      },
+      "tools": {
+        "label": "No signup required",
+        "title": "Free tools you can use right now",
+        "lede": "Calculators and planners that work in the browser, no account needed — a taste of how Hive Pal thinks about beekeeping.",
+        "seeAll": "See all tools"
+      },
+      "cta": {
+        "title": "Ready to <accent>try it</accent>?",
+        "lede": "Sign up for the hosted version, or grab the source and run it yourself. Either way, it’s free.",
+        "signup": "Sign up free",
+        "github": "View on GitHub"
+      }
+    },
+    "toolsIndex": {
+      "meta": {
+        "title": "Free Beekeeping Tools — Hive Pal",
+        "description": "Free, open-source calculators and reference guides for beekeepers. Sugar syrup calculator, brood development timeline, and swarm management workflows.",
+        "ogDescription": "Free calculators and reference guides for beekeepers — no signup required."
+      },
+      "eyebrow": "Free Tools",
+      "title": "Beekeeping tools, no signup required",
+      "intro": "Open-source calculators and reference guides you can use directly in the browser. Bookmark them for the apiary.",
+      "items": {
+        "syrup": {
+          "title": "Sugar Syrup Calculator",
+          "body": "Precise sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size. Metric or imperial."
+        },
+        "brood": {
+          "title": "Brood Development Timeline",
+          "body": "Visualize queen, worker, and drone brood stages with day counts and project dates from any starting day."
+        },
+        "swarm": {
+          "title": "Swarm Management",
+          "body": "Step-by-step Demaree swarm-control workflow with follow-up timing and an inspection planner."
+        },
+        "liebefelder": {
+          "title": "Liebefelder Schätzmethode",
+          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+        }
       }
     }
   }

@@ -69,7 +69,7 @@ function extractNdjsonFromTar(buffer: Buffer): string {
     const header = buffer.subarray(offset, offset + 512);
 
     // A block of all-zero bytes marks the end of the archive.
-    if (header.every(byte => byte === 0)) break;
+    if (header.every((byte) => byte === 0)) break;
 
     const name = readNulTerminated(header.toString('latin1', 0, 100));
     // Size is a 0-padded octal string in bytes 124..136.
@@ -81,7 +81,10 @@ function extractNdjsonFromTar(buffer: Buffer): string {
     offset += 512;
     if (!Number.isFinite(size) || size < 0) break;
 
-    if ((typeFlag === '0' || typeFlag === '\0' || typeFlag === '') && /\.ndjson$/i.test(name)) {
+    if (
+      (typeFlag === '0' || typeFlag === '\0' || typeFlag === '') &&
+      /\.ndjson$/i.test(name)
+    ) {
       chunks.push(buffer.toString('utf8', offset, offset + size));
     }
 
@@ -104,9 +107,7 @@ export function parseSdMeasurements(
   const isTar =
     (filename ? /\.tar$/i.test(filename) : false) || looksLikeTar(buffer);
 
-  const text = isTar
-    ? extractNdjsonFromTar(buffer)
-    : buffer.toString('utf8');
+  const text = isTar ? extractNdjsonFromTar(buffer) : buffer.toString('utf8');
 
   return parseNdjson(text);
 }

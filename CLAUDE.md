@@ -131,7 +131,7 @@ SENTRY_DSN=                # Optional error tracking
 
 ### Monitoring & Logging
 - Winston logger with Loki integration for centralized logging
-- Prometheus metrics exposed at `/metrics`
+- Prometheus metrics exposed at `/metrics` on a dedicated internal port (`METRICS_PORT`, default 9100) via a standalone HTTP server — intentionally not on the public `/api` surface (see `apps/backend/src/health/prometheus/metrics-server.ts`)
 - Health checks at `/health`
 - Custom logging interceptor tracks all API requests
 

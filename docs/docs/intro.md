@@ -14,12 +14,16 @@ Hive-Pal is a self-hostable application built to help beekeepers manage their op
 
 ## Key Features
 
-- **Apiary Management**: Create and track multiple apiaries with location information
-- **Hive Tracking**: Monitor hives, their status, and configuration
-- **Inspection Workflows**: Record detailed inspections with observations and actions
-- **Queen Management**: Track queen lineage and replacement history
+- **Apiary & Hive Management**: Track multiple apiaries and hives with location, status, and configuration
+- **Flexible Inspections**: Record detailed inspections with subjective ratings or data-driven counts, plus [quick checks](./user-guide/quick-check), [batch](./user-guide/batch-inspections) and [scheduled](./user-guide/scheduled-inspections) inspections, and [bulk add](./user-guide/bulk-add)
+- **Audio & AI Transcription**: Speak your observations and let AI turn them into structured inspection data
+- **Queen Management**: Track queen marking, movement history, and replacements
+- **Harvests, Equipment & Reports**: Log honey harvests, plan equipment, and visualize trends over time
+- **QR Codes & Calendar**: Scan straight to a hive and plan your season at a glance
+- **Modern Sign-In**: Password, passwordless magic link, or passkey (WebAuthn) via Better Auth
 - **Mobile-First Design**: Optimized for field use with easy data entry
 - **HiveScale Integration**: View live hive weight, temperature, battery, solar, and cellular telemetry from self-hosted HiveScale devices
+- **Free Tools**: Public [syrup calculator, brood timeline, and swarm-management](./user-guide/tools) guides
 
 ## Why Hive-Pal?
 
@@ -30,9 +34,3 @@ Beekeeping requires careful observation and record-keeping. Hive-Pal simplifies 
 - **Informed Decision Making**: Use data to improve your beekeeping practices
 - **Self-Hosted**: Maintain control of your data by hosting the application yourself
 - **Hardware-Friendly**: Pair HiveScale devices with your Hive-Pal account and correlate scale data with inspections
-
-## Project Status
-
-<div class="bee-highlight">
-⚠️ <strong>IMPORTANT</strong>: This project is very much a Work In Progress. Features may be incomplete or change significantly.
-</div>

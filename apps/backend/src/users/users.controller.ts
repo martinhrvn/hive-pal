@@ -9,6 +9,7 @@ import {
   UseGuards,
   NotFoundException,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import {
   JwtAuthGuard,
@@ -272,5 +273,20 @@ export class UsersController {
   ): Promise<UserResponse> {
     this.logger.log(`User ${req.user.id} updating profile`);
     return this.usersService.updateUserInfo(req.user.id, updateData);
+  }
+
+  @Delete('me')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Delete the authenticated user account and all data they own. ' +
+      'Contributions to apiaries owned by others are kept but anonymized.',
+  })
+  @ApiResponse({ status: 204, description: 'Account deleted' })
+  async deleteMyAccount(@Req() req: RequestWithUser): Promise<void> {
+    this.logger.log(`User ${req.user.id} deleting their own account`);
+    await this.usersService.deleteAccount(req.user.id);
   }
 }

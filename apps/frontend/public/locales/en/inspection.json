@@ -118,6 +118,8 @@
     "details": "Details",
     "createInspection": "Create Inspection",
     "addInspection": "Add Inspection",
+    "mobileInspection": "Mobile Inspection",
+    "audioInspection": "Audio Inspection",
     "scheduleInspection": "Schedule Inspection",
     "refreshData": "Refresh Data",
     "exportCSV": "Export to CSV",
@@ -335,6 +337,7 @@
     },
     "photos": {
       "title": "Photos",
+      "takePhoto": "Take Photo",
       "addPhoto": "Add Photo",
       "pendingUpload": "{{count}} pending upload",
       "uploadWarning": "Photos will be uploaded when you save the inspection.",

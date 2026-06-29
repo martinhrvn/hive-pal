@@ -5,6 +5,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { registerSW } from 'virtual:pwa-register';
 import './index.css';
 import './lib/i18n';
+import { initFaro } from './lib/faro';
 import App from './App.tsx';
 
 // Register PWA service worker using auto-update behavior.
@@ -56,6 +57,10 @@ Sentry.init({
   sendDefaultPii: true,
   sendClientReports: true,
 });
+
+// Grafana Faro real-user monitoring (Web Vitals -> Alloy -> Loki -> Grafana).
+// No-op unless VITE_FARO_URL is configured.
+initFaro();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

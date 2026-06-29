@@ -1,0 +1,45 @@
+{
+  "list": {
+    "title": "Úlohy",
+    "caption": "Sledujte úlohy pre túto včelnicu.",
+    "empty": "Zatiaľ žiadne úlohy.",
+    "emptyOpen": "Žiadne otvorené úlohy. Výborná práca!",
+    "showCompleted": "Zobraziť dokončené"
+  },
+  "quickAdd": {
+    "placeholder": "Pridať úlohu…",
+    "button": "Pridať"
+  },
+  "hive": {
+    "title": "Úlohy",
+    "empty": "Pre tento úľ nie sú žiadne úlohy."
+  },
+  "edit": {
+    "title": "Upraviť úlohu",
+    "description": "Upravte podrobnosti tejto úlohy.",
+    "success": "Úloha aktualizovaná",
+    "error": "Nepodarilo sa aktualizovať úlohu"
+  },
+  "delete": {
+    "success": "Úloha vymazaná",
+    "error": "Nepodarilo sa vymazať úlohu"
+  },
+  "fields": {
+    "title": "Názov",
+    "description": "Popis",
+    "dueDate": "Termín",
+    "hive": "Úľ"
+  },
+  "form": {
+    "titlePlaceholder": "Čo je potrebné urobiť?",
+    "descriptionPlaceholder": "Pridať ďalšie podrobnosti…",
+    "hivePlaceholder": "Vyberte úľ",
+    "noHive": "Bez úľa"
+  },
+  "validation": {
+    "titleRequired": "Názov je povinný"
+  },
+  "actions": {
+    "toggleComplete": "Prepnúť dokončenie"
+  }
+}
