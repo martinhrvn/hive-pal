@@ -40,7 +40,15 @@ interface HiveScaleImportResponse {
   duplicates: number;
 }
 
-export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
+// 'hivehub' is the new name for the main-board firmware target (formerly
+// 'hivescale'). The HiveHub backend accepts the 'hivehub' alias and normalizes
+// it back to 'hivescale' internally, so we forward whichever value the client
+// sends and keep accepting the legacy 'hivescale' value too.
+export type HiveScaleFirmwareTarget =
+  | 'hivehub'
+  | 'hivescale'
+  | 'beecounter'
+  | 'hiveinside';
 
 export interface HiveScaleFirmwareUploadDto {
   version: string;
@@ -174,20 +182,36 @@ export class HiveScaleService {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
-    this.baseUrl = (
-      this.configService.get<string>('HIVESCALE_API_BASE_URL') ?? ''
-    )
-      .trim()
-      .replace(/\/$/, '');
-    this.serviceApiKey = (
-      this.configService.get<string>('HIVESCALE_SERVICE_API_KEY') ?? ''
-    ).trim();
+    // HiveScale was renamed to HiveHub. Prefer the new HIVEHUB_* variables but
+    // keep accepting the legacy HIVESCALE_* names so existing deployments keep
+    // working without a config change. firstConfigured() skips empty values so
+    // a blank HIVEHUB_* (e.g. passed through unset by docker-compose) still
+    // falls back to a populated HIVESCALE_*.
+    this.baseUrl = this.firstConfigured(
+      'HIVEHUB_API_BASE_URL',
+      'HIVESCALE_API_BASE_URL',
+    ).replace(/\/$/, '');
+    this.serviceApiKey = this.firstConfigured(
+      'HIVEHUB_SERVICE_API_KEY',
+      'HIVESCALE_SERVICE_API_KEY',
+    );
+  }
+
+  /** Return the first env var that is set to a non-empty (trimmed) value. */
+  private firstConfigured(...keys: string[]): string {
+    for (const key of keys) {
+      const value = (this.configService.get<string>(key) ?? '').trim();
+      if (value) {
+        return value;
+      }
+    }
+    return '';
   }
 
   private requireBaseUrl(): string {
     if (!this.baseUrl) {
       throw new InternalServerErrorException(
-        'HIVESCALE_API_BASE_URL is not configured on the HivePal backend',
+        'HIVEHUB_API_BASE_URL (or legacy HIVESCALE_API_BASE_URL) is not configured on the HivePal backend',
       );
     }
     return this.baseUrl;
@@ -196,7 +220,7 @@ export class HiveScaleService {
   private requireServiceApiKey(): string {
     if (!this.serviceApiKey) {
       throw new InternalServerErrorException(
-        'HIVESCALE_SERVICE_API_KEY is not configured on the HivePal backend',
+        'HIVEHUB_SERVICE_API_KEY (or legacy HIVESCALE_SERVICE_API_KEY) is not configured on the HivePal backend',
       );
     }
     return this.serviceApiKey;
@@ -405,14 +429,15 @@ export class HiveScaleService {
       throw new BadRequestException('version is required');
     }
 
-    const target = dto.target ?? 'hivescale';
+    const target = dto.target ?? 'hivehub';
     if (
+      target !== 'hivehub' &&
       target !== 'hivescale' &&
       target !== 'beecounter' &&
       target !== 'hiveinside'
     ) {
       throw new BadRequestException(
-        "target must be 'hivescale', 'beecounter' or 'hiveinside'",
+        "target must be 'hivehub', 'beecounter' or 'hiveinside'",
       );
     }
 

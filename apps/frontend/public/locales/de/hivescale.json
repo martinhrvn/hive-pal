@@ -34,38 +34,38 @@
     ]
   },
   "page": {
-    "title": "HiveScale",
-    "subtitle": "Live-Visualisierung von Gewicht und Temperatur aus Ihrem separaten HiveScale-Backend.",
+    "title": "HiveHub",
+    "subtitle": "Live-Visualisierung von Gewicht und Temperatur aus Ihrem separaten HiveHub-Backend.",
     "refresh": "Aktualisieren",
     "refreshing": "Wird aktualisiert…",
-    "refreshError": "HiveScale-Daten konnten nicht aktualisiert werden.",
+    "refreshError": "HiveHub-Daten konnten nicht aktualisiert werden.",
     "removeConfirm": "{{name}} aus Ihrem HivePal-Konto entfernen? Sie können das Gerät mit dem Claim-Code wieder hinzufügen, sofern kein anderer Benutzer mehr Zugriff hat.",
-    "removeSuccess": "HiveScale-Gerät aus Ihrem Konto entfernt."
+    "removeSuccess": "HiveHub-Gerät aus Ihrem Konto entfernt."
   },
   "setup": {
     "title": "Geräte",
-    "description": "Wählen oder entfernen Sie ein beanspruchtes HiveScale-Gerät. Öffnen Sie die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren.",
+    "description": "Wählen oder entfernen Sie ein beanspruchtes HiveHub-Gerät. Öffnen Sie die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren.",
     "removeScale": "Waage entfernen",
     "noDevices": "Noch keine Geräte beansprucht – öffnen Sie die Einrichtung, um eines hinzuzufügen.",
     "hide": "Einrichtung ausblenden",
     "show": "Einrichtung anzeigen"
   },
   "claim": {
-    "title": "HiveScale-Gerät beanspruchen",
+    "title": "HiveHub-Gerät beanspruchen",
     "description": "Claim-Codes werden von der Firmware zusammen mit den Messungen gesendet, bis das Gerät beansprucht ist.",
     "claimCode": "Claim-Code",
     "displayName": "Anzeigename",
     "displayNamePlaceholder": "Bienenwaage Nord",
     "claim": "Gerät beanspruchen",
     "claiming": "Wird beansprucht…",
-    "success": "HiveScale-Gerät beansprucht.",
+    "success": "HiveHub-Gerät beansprucht.",
     "errors": {
       "missingCode": "Geben Sie den auf dem Gerät aufgedruckten/konfigurierten Claim-Code ein."
     }
   },
   "mapping": {
     "title": "Waagenzuordnung",
-    "description": "Diese Bezeichnungen bleiben in HiveScale. Später ist dies der richtige Ort, um Waage 1/2 für Inspektionsmarkierungen den HivePal-Bienenstock-IDs zuzuordnen.",
+    "description": "Diese Bezeichnungen bleiben in HiveHub. Später ist dies der richtige Ort, um Waage 1/2 für Inspektionsmarkierungen den HivePal-Bienenstock-IDs zuzuordnen.",
     "scale1Label": "Anzeigename für Waage 1",
     "scale2Label": "Anzeigename für Waage 2",
     "hiveNamePlaceholder": "Bienenstocknamen auswählen oder eingeben",
@@ -85,7 +85,7 @@
     "admin": "Admin",
     "sharing_progress": "Wird geteilt…",
     "grantAccess": "Zugriff gewähren",
-    "shareSuccess": "HiveScale-Zugriff geteilt.",
+    "shareSuccess": "HiveHub-Zugriff geteilt.",
     "accessRevoked": "Zugriff entzogen.",
     "revokeAccess": "Zugriff entziehen",
     "errors": {
@@ -174,7 +174,7 @@
       "emptyCaptured": "Leerer Messwert von {{scaleName}} erfasst.",
       "weightedCaptured": "Belasteter Messwert von {{scaleName}} erfasst.",
       "calibrationSaved": "Kalibrierung von {{scaleName}} gespeichert.",
-      "configUpdated": "HiveScale-Konfiguration aktualisiert.",
+      "configUpdated": "HiveHub-Konfiguration aktualisiert.",
       "offsetSet": "Offset von {{scaleName}} auf den neuesten Rohwert gesetzt.",
       "factorCalculated": "Faktor von {{scaleName}} berechnet: {{factor}}"
     },

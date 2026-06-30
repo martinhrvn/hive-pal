@@ -166,7 +166,7 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
         ]
       : []),
     {
-      title: t('navigation.hivescale', { defaultValue: 'HiveScale' }),
+      title: t('navigation.hivehub', { defaultValue: 'HiveHub' }),
       url: '/hivescale',
       icon: Scale,
       isActive: true,
