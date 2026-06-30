@@ -763,7 +763,14 @@ export const useStopHiveScaleCalibrationMode = (
   });
 };
 
-export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
+// 'hivehub' is the new name for the main-board firmware target (formerly
+// 'hivescale'). The HiveHub backend accepts the 'hivehub' alias; the legacy
+// 'hivescale' value stays valid for older clients.
+export type HiveScaleFirmwareTarget =
+  | 'hivehub'
+  | 'hivescale'
+  | 'beecounter'
+  | 'hiveinside';
 
 export interface HiveScaleFirmwareUploadInput {
   file: File;

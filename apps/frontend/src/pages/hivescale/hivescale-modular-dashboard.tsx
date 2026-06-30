@@ -1878,7 +1878,7 @@ function HiveOverviewGrid({
               </div>
             ) : (
               <div className="flex min-h-24 items-center justify-center rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
-                Map HiveScale slots to HivePal hives in the device setup panel to
+                Map HiveHub slots to HivePal hives in the device setup panel to
                 show overview tiles here.
               </div>
             )}
@@ -3693,7 +3693,7 @@ export function HiveScaleModularDashboard({
         <div className="rounded-lg border border-dashed bg-muted/30 p-3 text-sm text-muted-foreground">
           Dashboard edit mode is active. Use the grip handle in each widget header
           to move it, and drag the lower-right corner to resize width or height.
-          Layout changes are saved automatically for this HiveScale device.
+          Layout changes are saved automatically for this HiveHub device.
         </div>
       )}
 

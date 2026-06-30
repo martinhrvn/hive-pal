@@ -32,6 +32,10 @@ services:
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       AUDIO_MAX_FILE_SIZE: ${AUDIO_MAX_FILE_SIZE:-52428800}
+      # HiveScale was renamed to HiveHub. The backend prefers HIVEHUB_* and
+      # falls back to the legacy HIVESCALE_* names, so either set works.
+      HIVEHUB_API_BASE_URL: ${HIVEHUB_API_BASE_URL:-}
+      HIVEHUB_SERVICE_API_KEY: ${HIVEHUB_SERVICE_API_KEY:-}
       HIVESCALE_API_BASE_URL: ${HIVESCALE_API_BASE_URL:-}
       HIVESCALE_SERVICE_API_KEY: ${HIVESCALE_SERVICE_API_KEY:-}
     volumes:

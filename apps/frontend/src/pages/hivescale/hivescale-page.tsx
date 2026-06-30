@@ -1913,7 +1913,7 @@ function ScaleMappingCard({
       <CardHeader>
         <CardTitle>{t('mapping.title')}</CardTitle>
         <CardDescription>
-          Map HiveScale slots to HivePal hives. Only mapped slots appear in the
+          Map HiveHub slots to HivePal hives. Only mapped slots appear in the
           hive overview and hive-based dashboard widgets.
         </CardDescription>
       </CardHeader>
@@ -1969,8 +1969,8 @@ function ScaleMappingCard({
             <DialogHeader>
               <DialogTitle>
                 {editingSlot === null
-                  ? 'Map HiveScale slot'
-                  : `Map HiveScale slot ${editingSlot}`}
+                  ? 'Map HiveHub slot'
+                  : `Map HiveHub slot ${editingSlot}`}
               </DialogTitle>
               <DialogDescription>
                 Select an existing HivePal hive or type a new display name.
@@ -2320,7 +2320,7 @@ function FirmwareUploadCard({
   const { t } = useTranslation('hivescale');
   const [file, setFile] = useState<File | null>(null);
   const [version, setVersion] = useState('');
-  const [target, setTarget] = useState<HiveScaleFirmwareTarget>('hivescale');
+  const [target, setTarget] = useState<HiveScaleFirmwareTarget>('hivehub');
   // Reset key lets us clear the native file input after a successful upload.
   const [fileInputKey, setFileInputKey] = useState(0);
 
@@ -2452,7 +2452,7 @@ function FirmwareUploadCard({
                 <SelectValue placeholder={t('firmware.selectType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="hivescale">HiveScale</SelectItem>
+                <SelectItem value="hivehub">HiveHub</SelectItem>
                 <SelectItem value="beecounter">BeeCounter</SelectItem>
                 <SelectItem value="hiveinside">HiveInside</SelectItem>
               </SelectContent>
