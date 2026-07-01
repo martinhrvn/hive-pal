@@ -289,6 +289,22 @@ const chartColors = [
   'var(--muted-foreground)',
 ];
 
+// Shared configuration for the time-series widgets so the chart scaffold
+// (margin, time X-axis and tooltip label) lives in one place.
+const TIME_SERIES_CHART_MARGIN = { top: 8, right: 12, bottom: 4, left: 0 } as const;
+
+const timeSeriesXAxisProps = (dateRange: HiveScaleDateRange) =>
+  ({
+    dataKey: 'timestamp',
+    minTickGap: 32,
+    scale: 'time',
+    tickFormatter: formatChartTick,
+    type: 'number',
+    domain: chartDomainForDateRange(dateRange),
+  }) as const;
+
+const formatTimeAxisTooltipLabel = (value: unknown) => formatDateTime(Number(value));
+
 const DASHBOARD_GRID_COLUMNS = 4;
 const DASHBOARD_GRID_ROW_HEIGHT_PX = 192;
 const DASHBOARD_GRID_GAP_PX = 16;
@@ -1102,7 +1118,7 @@ const defaultWidgets: DashboardWidget[] = [
 }));
 
 const createWidgetId = (kind: DashboardWidgetKind) =>
-  `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  `${kind}-${crypto.randomUUID()}`;
 
 const dashboardStorageKey = (deviceId: string, version = DASHBOARD_STORAGE_VERSION) =>
   `${dashboardStoragePrefix}${deviceId}:v${version}`;
@@ -1983,6 +1999,69 @@ function EmptyWidgetState({ label }: Readonly<{ label: string }>) {
   );
 }
 
+// Shared chart frame for the time-series widgets. The caller passes the
+// widget-specific Y axes and series as children; the frame renders the common
+// container, grid, time X-axis, tooltip and legend around them.
+function TimeSeriesChart({
+  rows,
+  dateRange,
+  chartHeightPx,
+  variant = 'line',
+  tooltipFormatter,
+  children,
+}: Readonly<{
+  rows: ChartRow[];
+  dateRange: HiveScaleDateRange;
+  chartHeightPx: number;
+  variant?: 'line' | 'composed';
+  tooltipFormatter?: (value: unknown, name: unknown) => [string, string];
+  children: ReactNode;
+}>) {
+  const ChartComponent = variant === 'composed' ? ComposedChart : LineChart;
+  return (
+    <div style={{ height: chartHeightPx }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ChartComponent data={rows} margin={TIME_SERIES_CHART_MARGIN}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis {...timeSeriesXAxisProps(dateRange)} />
+          {children}
+          <Tooltip
+            labelFormatter={formatTimeAxisTooltipLabel}
+            formatter={tooltipFormatter}
+          />
+          <Legend />
+        </ChartComponent>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+// Renders the Y axes for widgets whose axes are driven by the shared
+// configurable-metric axis table (acoustic and configurable-diagram widgets).
+const renderConfigurableYAxes = (
+  activeAxes: ConfigurableMetricAxis[],
+  axisScales: AxisScaleSettingsMap,
+  axisScaleEditor: ReturnType<typeof useAxisScaleEditor>,
+  defaultDomain: (axis: ConfigurableMetricAxis) => AxisDomain,
+) =>
+  activeAxes.map((axis, index) => {
+    const axisConfig = configurableMetricAxes[axis];
+    const orientation = index === 0 ? 'left' : 'right';
+    const unitLabel = axisConfig.unit ? ` ${axisConfig.unit}` : undefined;
+    return (
+      <YAxis
+        key={axis}
+        yAxisId={axis}
+        orientation={orientation}
+        unit={unitLabel}
+        width={axisConfig.width}
+        domain={axisDomain(axisScales, axis, defaultDomain(axis))}
+        allowDataOverflow={hasCustomAxisBound(axisScales, axis)}
+        tick={axisScaleEditor.tick(axis, orientation, unitLabel)}
+      />
+    );
+  });
+
 function HiveLineChart({
   rows,
   hiveIndexes,
@@ -2024,49 +2103,36 @@ function HiveLineChart({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div style={{ height: chartHeightPx }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              minTickGap={32}
-              scale="time"
-              tickFormatter={formatChartTick}
-              type="number"
-              domain={chartDomainForDateRange(dateRange)}
-            />
-            <YAxis
-              unit={` ${unit}`}
-              width={64}
-              domain={axisDomain(axisScales, 'main', ['auto', 'auto'])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'main')}
-              tick={axisScaleEditor.tick('main', 'left', ` ${unit}`)}
-            />
-            <Tooltip
-              labelFormatter={(value: unknown) => formatDateTime(Number(value))}
-              formatter={(value: unknown, name: unknown) => [
-                typeof value === 'number' ? `${value.toFixed(1)} ${unit}` : '--',
-                String(name),
-              ]}
-            />
-            <Legend />
-            {hiveIndexes.map((index, i) => (
-              <Line
-                key={index}
-                type="monotone"
-                dataKey={seriesKey(index, metric)}
-                name={hiveNames[index] ?? `Hive ${index}`}
-                stroke={chartColors[i % chartColors.length]}
-                dot={false}
-                connectNulls={false}
-                strokeWidth={1.6}
-                isAnimationActive={false}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <TimeSeriesChart
+        rows={rows}
+        dateRange={dateRange}
+        chartHeightPx={chartHeightPx}
+        tooltipFormatter={(value, name) => [
+          typeof value === 'number' ? `${value.toFixed(1)} ${unit}` : '--',
+          String(name),
+        ]}
+      >
+        <YAxis
+          unit={` ${unit}`}
+          width={64}
+          domain={axisDomain(axisScales, 'main', ['auto', 'auto'])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'main')}
+          tick={axisScaleEditor.tick('main', 'left', ` ${unit}`)}
+        />
+        {hiveIndexes.map((index, i) => (
+          <Line
+            key={index}
+            type="monotone"
+            dataKey={seriesKey(index, metric)}
+            name={hiveNames[index] ?? `Hive ${index}`}
+            stroke={chartColors[i % chartColors.length]}
+            dot={false}
+            connectNulls={false}
+            strokeWidth={1.6}
+            isAnimationActive={false}
+          />
+        ))}
+      </TimeSeriesChart>
     </div>
   );
 }
@@ -2175,69 +2241,54 @@ function ClimateWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div style={{ height: chartHeightPx }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              minTickGap={32}
-              scale="time"
-              tickFormatter={formatChartTick}
-              type="number"
-              domain={chartDomainForDateRange(dateRange)}
-            />
-            <YAxis
-              yAxisId="temperature"
-              unit=" °C"
-              width={56}
-              domain={axisDomain(axisScales, 'temperature', ['auto', 'auto'])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'temperature')}
-              tick={axisScaleEditor.tick('temperature', 'left', ' °C')}
-            />
-            <YAxis
-              yAxisId="humidity"
-              orientation="right"
-              unit=" %"
-              width={48}
-              domain={axisDomain(axisScales, 'humidity', [0, 100])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'humidity')}
-              tick={axisScaleEditor.tick('humidity', 'right', ' %')}
-            />
-            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-            <Legend />
-            {visibleHives.map((index, i) => (
-              <Line
-                key={`${index}-temp`}
-                yAxisId="temperature"
-                type="monotone"
-                dataKey={seriesKey(index, 'temperature')}
-                name={`${hiveNames[index] ?? `Hive ${index}`} temp`}
-                stroke={chartColors[i % chartColors.length]}
-                dot={false}
-                connectNulls={false}
-                strokeWidth={1.6}
-                isAnimationActive={false}
-              />
-            ))}
-            {visibleHives.map((index, i) => (
-              <Line
-                key={`${index}-humidity`}
-                yAxisId="humidity"
-                type="monotone"
-                dataKey={seriesKey(index, 'humidity')}
-                name={`${hiveNames[index] ?? `Hive ${index}`} RH`}
-                stroke={chartColors[(i + 3) % chartColors.length]}
-                strokeDasharray="4 2"
-                dot={false}
-                connectNulls={false}
-                strokeWidth={1.4}
-                isAnimationActive={false}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <TimeSeriesChart rows={rows} dateRange={dateRange} chartHeightPx={chartHeightPx}>
+        <YAxis
+          yAxisId="temperature"
+          unit=" °C"
+          width={56}
+          domain={axisDomain(axisScales, 'temperature', ['auto', 'auto'])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'temperature')}
+          tick={axisScaleEditor.tick('temperature', 'left', ' °C')}
+        />
+        <YAxis
+          yAxisId="humidity"
+          orientation="right"
+          unit=" %"
+          width={48}
+          domain={axisDomain(axisScales, 'humidity', [0, 100])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'humidity')}
+          tick={axisScaleEditor.tick('humidity', 'right', ' %')}
+        />
+        {visibleHives.map((index, i) => (
+          <Line
+            key={`${index}-temp`}
+            yAxisId="temperature"
+            type="monotone"
+            dataKey={seriesKey(index, 'temperature')}
+            name={`${hiveNames[index] ?? `Hive ${index}`} temp`}
+            stroke={chartColors[i % chartColors.length]}
+            dot={false}
+            connectNulls={false}
+            strokeWidth={1.6}
+            isAnimationActive={false}
+          />
+        ))}
+        {visibleHives.map((index, i) => (
+          <Line
+            key={`${index}-humidity`}
+            yAxisId="humidity"
+            type="monotone"
+            dataKey={seriesKey(index, 'humidity')}
+            name={`${hiveNames[index] ?? `Hive ${index}`} RH`}
+            stroke={chartColors[(i + 3) % chartColors.length]}
+            strokeDasharray="4 2"
+            dot={false}
+            connectNulls={false}
+            strokeWidth={1.4}
+            isAnimationActive={false}
+          />
+        ))}
+      </TimeSeriesChart>
     </div>
   );
 }
@@ -2294,76 +2345,61 @@ function PowerWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div style={{ height: chartHeightPx }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              minTickGap={32}
-              scale="time"
-              tickFormatter={formatChartTick}
-              type="number"
-              domain={chartDomainForDateRange(dateRange)}
-            />
-            <YAxis
-              yAxisId="percent"
-              unit=" %"
-              width={48}
-              domain={axisDomain(axisScales, 'percent', [0, 'auto'])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'percent')}
-              tick={axisScaleEditor.tick('percent', 'left', ' %')}
-            />
-            <YAxis
-              yAxisId="voltage"
-              orientation="right"
-              unit=" V"
-              width={48}
-              domain={axisDomain(axisScales, 'voltage', ['auto', 'auto'])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'voltage')}
-              tick={axisScaleEditor.tick('voltage', 'right', ' V')}
-            />
-            <YAxis
-              yAxisId="power"
-              orientation="right"
-              unit=" mW"
-              width={58}
-              domain={axisDomain(axisScales, 'power', ['auto', 'auto'])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'power')}
-              tick={axisScaleEditor.tick('power', 'right', ' mW')}
-            />
-            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-            <Legend />
-            <Line
-              yAxisId="percent"
-              type="monotone"
-              dataKey="batterySoc"
-              name="Battery charge"
-              stroke="var(--primary)"
-              dot={false}
-              isAnimationActive={false}
-            />
-            <Line
-              yAxisId="voltage"
-              type="monotone"
-              dataKey="batteryVoltage"
-              name="Battery voltage"
-              stroke="var(--chart-2)"
-              dot={false}
-              isAnimationActive={false}
-            />
-            <Line
-              yAxisId="power"
-              type="monotone"
-              dataKey="solarPower"
-              name="Solar power"
-              stroke="var(--chart-3)"
-              dot={false}
-              isAnimationActive={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <TimeSeriesChart rows={rows} dateRange={dateRange} chartHeightPx={chartHeightPx}>
+        <YAxis
+          yAxisId="percent"
+          unit=" %"
+          width={48}
+          domain={axisDomain(axisScales, 'percent', [0, 'auto'])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'percent')}
+          tick={axisScaleEditor.tick('percent', 'left', ' %')}
+        />
+        <YAxis
+          yAxisId="voltage"
+          orientation="right"
+          unit=" V"
+          width={48}
+          domain={axisDomain(axisScales, 'voltage', ['auto', 'auto'])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'voltage')}
+          tick={axisScaleEditor.tick('voltage', 'right', ' V')}
+        />
+        <YAxis
+          yAxisId="power"
+          orientation="right"
+          unit=" mW"
+          width={58}
+          domain={axisDomain(axisScales, 'power', ['auto', 'auto'])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'power')}
+          tick={axisScaleEditor.tick('power', 'right', ' mW')}
+        />
+        <Line
+          yAxisId="percent"
+          type="monotone"
+          dataKey="batterySoc"
+          name="Battery charge"
+          stroke="var(--primary)"
+          dot={false}
+          isAnimationActive={false}
+        />
+        <Line
+          yAxisId="voltage"
+          type="monotone"
+          dataKey="batteryVoltage"
+          name="Battery voltage"
+          stroke="var(--chart-2)"
+          dot={false}
+          isAnimationActive={false}
+        />
+        <Line
+          yAxisId="power"
+          type="monotone"
+          dataKey="solarPower"
+          name="Solar power"
+          stroke="var(--chart-3)"
+          dot={false}
+          isAnimationActive={false}
+        />
+      </TimeSeriesChart>
     </div>
   );
 }
@@ -2436,41 +2472,31 @@ function BeeTrafficWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div style={{ height: chartHeightPx }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              minTickGap={32}
-              scale="time"
-              tickFormatter={formatChartTick}
-              type="number"
-              domain={chartDomainForDateRange(dateRange)}
-            />
-            <YAxis
-              yAxisId="beecount"
-              width={56}
-              domain={axisDomain(axisScales, 'beecount', ['auto', 'auto'])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'beecount')}
-              tick={axisScaleEditor.tick('beecount')}
-            />
-            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-            <Legend />
-            <Bar yAxisId="beecount" dataKey="inCount" name="In" fill="var(--chart-3)" />
-            <Bar yAxisId="beecount" dataKey="outCount" name="Out" fill="var(--chart-4)" />
-            <Line
-              yAxisId="beecount"
-              type="monotone"
-              dataKey="net"
-              name="Net"
-              stroke="var(--primary)"
-              dot={false}
-              isAnimationActive={false}
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
+      <TimeSeriesChart
+        rows={rows}
+        dateRange={dateRange}
+        chartHeightPx={chartHeightPx}
+        variant="composed"
+      >
+        <YAxis
+          yAxisId="beecount"
+          width={56}
+          domain={axisDomain(axisScales, 'beecount', ['auto', 'auto'])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'beecount')}
+          tick={axisScaleEditor.tick('beecount')}
+        />
+        <Bar yAxisId="beecount" dataKey="inCount" name="In" fill="var(--chart-3)" />
+        <Bar yAxisId="beecount" dataKey="outCount" name="Out" fill="var(--chart-4)" />
+        <Line
+          yAxisId="beecount"
+          type="monotone"
+          dataKey="net"
+          name="Net"
+          stroke="var(--primary)"
+          dot={false}
+          isAnimationActive={false}
+        />
+      </TimeSeriesChart>
     </div>
   );
 }
@@ -2598,61 +2624,31 @@ function SoundRmsWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div style={{ height: chartHeightPx }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              minTickGap={32}
-              scale="time"
-              tickFormatter={formatChartTick}
-              type="number"
-              domain={chartDomainForDateRange(dateRange)}
-            />
-            {activeAxes.map((axis, index) => {
-              const axisConfig = configurableMetricAxes[axis];
-              return (
-                <YAxis
-                  key={axis}
-                  yAxisId={axis}
-                  orientation={index === 0 ? 'left' : 'right'}
-                  unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
-                  width={axisConfig.width}
-                  domain={axisDomain(axisScales, axis, ['auto', 'auto'])}
-                  allowDataOverflow={hasCustomAxisBound(axisScales, axis)}
-                  tick={axisScaleEditor.tick(
-                    axis,
-                    index === 0 ? 'left' : 'right',
-                    axisConfig.unit ? ` ${axisConfig.unit}` : undefined,
-                  )}
-                />
-              );
-            })}
-            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-            <Legend />
-            {visibleHives.flatMap((hiveIndex, hivePosition) =>
-              activeMetrics
-                .filter(metric => hasSeriesData(rows, soundSeriesKey(hiveIndex, metric)))
-                .map((metric, metricPosition) => (
-                  <Line
-                    key={`${hiveIndex}-${metric}`}
-                    yAxisId={soundMetricLabels[metric].axis}
-                    type="monotone"
-                    dataKey={soundSeriesKey(hiveIndex, metric)}
-                    name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${soundMetricLabels[metric].label}`}
-                    stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
-                    strokeDasharray={metric === 'rmsDbfs' ? undefined : '4 2'}
-                    dot={false}
-                    connectNulls={false}
-                    strokeWidth={metric === 'rmsDbfs' ? 1.8 : 1.3}
-                    isAnimationActive={false}
-                  />
-                )),
-            )}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <TimeSeriesChart rows={rows} dateRange={dateRange} chartHeightPx={chartHeightPx}>
+        {renderConfigurableYAxes(activeAxes, axisScales, axisScaleEditor, () => [
+          'auto',
+          'auto',
+        ])}
+        {visibleHives.flatMap((hiveIndex, hivePosition) =>
+          activeMetrics
+            .filter(metric => hasSeriesData(rows, soundSeriesKey(hiveIndex, metric)))
+            .map((metric, metricPosition) => (
+              <Line
+                key={`${hiveIndex}-${metric}`}
+                yAxisId={soundMetricLabels[metric].axis}
+                type="monotone"
+                dataKey={soundSeriesKey(hiveIndex, metric)}
+                name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${soundMetricLabels[metric].label}`}
+                stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                strokeDasharray={metric === 'rmsDbfs' ? undefined : '4 2'}
+                dot={false}
+                connectNulls={false}
+                strokeWidth={metric === 'rmsDbfs' ? 1.8 : 1.3}
+                isAnimationActive={false}
+              />
+            )),
+        )}
+      </TimeSeriesChart>
       <p className="text-xs text-muted-foreground">
         Shows per-hive acoustic readings first. Legacy left/right microphone data is
         mapped to the configured hive names for slots 1 and 2 when no per-hive
@@ -2717,48 +2713,33 @@ function VibrationWidget({
         axisScales={axisScales}
         onAxisScalesChange={setAxisScales}
       />
-      <div style={{ height: chartHeightPx }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              minTickGap={32}
-              scale="time"
-              tickFormatter={formatChartTick}
-              type="number"
-              domain={chartDomainForDateRange(dateRange)}
-            />
-            <YAxis
-              unit=" mg"
-              width={58}
-              domain={axisDomain(axisScales, 'vibration', [0, 'auto'])}
-              allowDataOverflow={hasCustomAxisBound(axisScales, 'vibration')}
-              tick={axisScaleEditor.tick('vibration', 'left', ' mg')}
-            />
-            <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-            <Legend />
-            {visibleHives.flatMap((hiveIndex, hivePosition) =>
-              activeMetrics
-                .filter(metric => hasSeriesData(rows, seriesKey(hiveIndex, metric)))
-                .map((metric, metricPosition) => (
-                  <Line
-                    key={`${hiveIndex}-${metric}`}
-                    type="monotone"
-                    dataKey={seriesKey(hiveIndex, metric)}
-                    name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${vibrationMetricLabels[metric]}`}
-                    stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
-                    strokeDasharray={metric === 'vibration' ? undefined : '4 2'}
-                    dot={false}
-                    connectNulls={false}
-                    strokeWidth={metric === 'vibration' ? 1.8 : 1.3}
-                    isAnimationActive={false}
-                  />
-                )),
-            )}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <TimeSeriesChart rows={rows} dateRange={dateRange} chartHeightPx={chartHeightPx}>
+        <YAxis
+          unit=" mg"
+          width={58}
+          domain={axisDomain(axisScales, 'vibration', [0, 'auto'])}
+          allowDataOverflow={hasCustomAxisBound(axisScales, 'vibration')}
+          tick={axisScaleEditor.tick('vibration', 'left', ' mg')}
+        />
+        {visibleHives.flatMap((hiveIndex, hivePosition) =>
+          activeMetrics
+            .filter(metric => hasSeriesData(rows, seriesKey(hiveIndex, metric)))
+            .map((metric, metricPosition) => (
+              <Line
+                key={`${hiveIndex}-${metric}`}
+                type="monotone"
+                dataKey={seriesKey(hiveIndex, metric)}
+                name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${vibrationMetricLabels[metric]}`}
+                stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                strokeDasharray={metric === 'vibration' ? undefined : '4 2'}
+                dot={false}
+                connectNulls={false}
+                strokeWidth={metric === 'vibration' ? 1.8 : 1.3}
+                isAnimationActive={false}
+              />
+            )),
+        )}
+      </TimeSeriesChart>
     </div>
   );
 }
@@ -3066,82 +3047,54 @@ function ConfigurableDiagramWidget({
             axisScales={axisScales}
             onAxisScalesChange={setAxisScales}
           />
-          <div style={{ height: chartHeightPx }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="timestamp"
-                  minTickGap={32}
-                  scale="time"
-                  tickFormatter={formatChartTick}
-                  type="number"
-                  domain={chartDomainForDateRange(dateRange)}
-                />
-                {activeAxes.map((axis, index) => {
-                  const axisConfig = configurableMetricAxes[axis];
-                  return (
-                    <YAxis
-                      key={axis}
-                      yAxisId={axis}
-                      orientation={index === 0 ? 'left' : 'right'}
-                      unit={axisConfig.unit ? ` ${axisConfig.unit}` : undefined}
-                      width={axisConfig.width}
-                      domain={axisDomain(
-                        axisScales,
-                        axis,
-                        axis === 'percent' ? [0, 100] : ['auto', 'auto'],
-                      )}
-                      allowDataOverflow={hasCustomAxisBound(axisScales, axis)}
-                      tick={axisScaleEditor.tick(
-                        axis,
-                        index === 0 ? 'left' : 'right',
-                        axisConfig.unit ? ` ${axisConfig.unit}` : undefined,
-                      )}
-                    />
-                  );
-                })}
-                <Tooltip labelFormatter={(value: unknown) => formatDateTime(Number(value))} />
-                <Legend />
-                {activeMetrics.flatMap((metric, metricPosition) => {
-                  if (metric.source === 'device') {
-                    return [
-                      <Line
-                        key={metric.key}
-                        yAxisId={metric.axis}
-                        type="monotone"
-                        dataKey={configDeviceSeriesKey(metric.key)}
-                        name={metric.label}
-                        stroke={chartColors[metricPosition % chartColors.length]}
-                        strokeWidth={1.7}
-                        dot={false}
-                        connectNulls={false}
-                        isAnimationActive={false}
-                      />,
-                    ];
-                  }
+          <TimeSeriesChart
+            rows={rows}
+            dateRange={dateRange}
+            chartHeightPx={chartHeightPx}
+          >
+            {renderConfigurableYAxes(
+              activeAxes,
+              axisScales,
+              axisScaleEditor,
+              axis => (axis === 'percent' ? [0, 100] : ['auto', 'auto']),
+            )}
+            {activeMetrics.flatMap((metric, metricPosition) => {
+              if (metric.source === 'device') {
+                return [
+                  <Line
+                    key={metric.key}
+                    yAxisId={metric.axis}
+                    type="monotone"
+                    dataKey={configDeviceSeriesKey(metric.key)}
+                    name={metric.label}
+                    stroke={chartColors[metricPosition % chartColors.length]}
+                    strokeWidth={1.7}
+                    dot={false}
+                    connectNulls={false}
+                    isAnimationActive={false}
+                  />,
+                ];
+              }
 
-                  return visibleHives
-                    .filter(index => hasSeriesData(rows, configSeriesKey(index, metric.key)))
-                    .map((hiveIndex, hivePosition) => (
-                      <Line
-                        key={`${hiveIndex}-${metric.key}`}
-                        yAxisId={metric.axis}
-                        type="monotone"
-                        dataKey={configSeriesKey(hiveIndex, metric.key)}
-                        name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${metric.label}`}
-                        stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
-                        strokeDasharray={metricPosition === 0 ? undefined : '4 2'}
-                        strokeWidth={metricPosition === 0 ? 1.7 : 1.3}
-                        dot={false}
-                        connectNulls={false}
-                        isAnimationActive={false}
-                      />
-                    ));
-                })}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+              return visibleHives
+                .filter(index => hasSeriesData(rows, configSeriesKey(index, metric.key)))
+                .map((hiveIndex, hivePosition) => (
+                  <Line
+                    key={`${hiveIndex}-${metric.key}`}
+                    yAxisId={metric.axis}
+                    type="monotone"
+                    dataKey={configSeriesKey(hiveIndex, metric.key)}
+                    name={`${hiveNames[hiveIndex] ?? `Hive ${hiveIndex}`} ${metric.label}`}
+                    stroke={chartColors[(hivePosition + metricPosition) % chartColors.length]}
+                    strokeDasharray={metricPosition === 0 ? undefined : '4 2'}
+                    strokeWidth={metricPosition === 0 ? 1.7 : 1.3}
+                    dot={false}
+                    connectNulls={false}
+                    isAnimationActive={false}
+                  />
+                ));
+            })}
+          </TimeSeriesChart>
         </>
       )}
     </div>
