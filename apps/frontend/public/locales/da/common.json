@@ -75,10 +75,11 @@
     "allQueens": "Alle dronninger",
     "calendar": "Kalender",
     "equipment": "Materiel",
-    "actions": "Handlinger",
+    "actions": "Massetilføjelse",
     "tools": "Værktøjer",
     "syrupCalculator": "Sirups beregner",
-    "broodTimeline": "Yngel tidslinie"
+    "broodTimeline": "Yngel tidslinie",
+    "swarmManagement": "Sværm styring"
   },
   "messages": {
     "confirmDelete": "Er du sikker på at du vil slette denne?",
@@ -180,7 +181,12 @@
     "photos": "Fotos",
     "documents": "Dokumenter",
     "fromInspection": "Fra inspektion",
-    "maintenance": "Vedligehold"
+    "maintenance": "Vedligehold",
+    "today": "I dag",
+    "yesterday": "I går",
+    "filterEventType": "Type",
+    "filterDateRange": "Område",
+    "filterHive": "Stade"
   },
   "reports": {
     "title": "Rappoter",
@@ -301,7 +307,21 @@
     "changePassword": "Skift password på din konto",
     "saveSettings": "Gem indstillinger",
     "preferencesUpdated": "Dine indstillinger er blevet gemt.",
-    "saving": "Gemmer..."
+    "saving": "Gemmer...",
+    "passkeys": "Passkeys",
+    "passkeysDescription": "Log ind uden password ved hjælp af biometri på din enhed, eller en sikkerheds nøgle",
+    "passkeyNamePlaceholder": "Navn (fx Macbook Touch ID)",
+    "passkeyAdd": "Tilføj passkey",
+    "passkeyAdding": "Tilføjer…",
+    "passkeyRemove": "Fjern",
+    "passkeyUnnamed": "Passkey uden navn",
+    "passkeyAddedOn": "Tilføjet {{date}}",
+    "passkeysLoading": "Henter…",
+    "passkeysEmpty": "Ingen passkeys tilføjet.",
+    "passkeysLoadFailed": "Hentning af passkeys fejlede",
+    "passkeyAddFailed": "Fejl ved tilføjelse af passkey",
+    "passkeyAddCancelled": "Registrering af passkey blev afbrudt eller fejlede",
+    "passkeyDeleteFailed": "Sletning af passkey fejlede"
   },
   "quickAdd": {
     "title": "Opret ny post",
@@ -325,7 +345,9 @@
     "deleteTitle": "Slet foto?",
     "deleteDescription": "Denne handling kan ikke fortrydes. Dette sletter dit foto permanent.",
     "deleted": "Foto slettet",
-    "deleteFailed": "Sletning af foto fejlede"
+    "deleteFailed": "Sletning af foto fejlede",
+    "replace": "Udskift",
+    "featurePhoto": "Fremhævet foto"
   },
   "document": {
     "title": "Tilføj dokument",
@@ -359,7 +381,24 @@
     "hive": "Stade",
     "size": "Størrelse",
     "download": "Download",
-    "delete": "Slet"
+    "delete": "Slet",
+    "audio": "Lyd",
+    "status": "Status",
+    "sendToAi": "Send til AI",
+    "sendAllPending": "Send alt til AI ({{count}})",
+    "sentToAi": "Starter AI for {{count}} optagelser",
+    "audioStatus": {
+      "notTranscribed": "Ikke transskriberet",
+      "queued": "Sat i kø",
+      "transcribing": "Transkriberer…",
+      "failed": "Transkription fejlede",
+      "transcribed": "Transkriberet",
+      "analyzing": "Analyserer…",
+      "analysisFailed": "Analyse fejlede",
+      "ready": "AI forslag er klar"
+    },
+    "audioDeleteTitle": "Slet lydoptagelse?",
+    "audioDeleted": "Lyd slettet"
   },
   "swarmManagement": {
     "backToOverview": "Back to Swarm Management",
@@ -530,7 +569,8 @@
         "There may be heavy lifting.",
         "Regular inspections are essential.",
         "You MUST understand the basics."
-      ]
+      ],
+      "intro": "Demaree metoden er en klassisk teknik, der giver stærke familier af honningbier. Den bibebolder familien intakt, men fjerner trængsel. Dronningen forbliver under dronningegitteret, med jomfrutavler til at lægge æg i; størstedelen af ynglen flyttes over 2 honningmagasiner, så dronningens feromoner ikke når yngellejet. Opfølgning skal ske på dag 7-8, dag 14-15 og dag 21.22 for at fjerne nødceller før de kryber."
     },
     "planner": {
       "title": "Demaree inspection planner",
@@ -591,7 +631,13 @@
             "Schedule any additional inspection you want beyond the standard plan."
           ]
         }
-      }
+      },
+      "signInTitle": "Log ind for at planlægge dine inspektioner",
+      "signInDescription": "Opret en gratis konto for at oprette Demarere kontrolpunkter, forbind dem til en af dine stader, og gem dem som en planlagt inspektion.",
+      "signInCta": "Log ind",
+      "registerCta": "Opret gratis konto",
+      "atAGlanceTitle": "Overblik",
+      "atAGlanceDescription": "Hurtig reference over standard Demaree opfølgning."
     },
     "warnings": {
       "bannerTitle": "Timing warnings",
@@ -607,7 +653,8 @@
         "title": "Checkpoint order is no longer chronological",
         "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
       }
-    }
+    },
+    "intro": "Gratis reference guide i at kontrollere sværmning af honningbier. Sammenlign kendte metoder, som Demaree, planlægning opfølgende inspektioner, og reducer risikoen for at miste familie til sværmning, under det travle forårstræk."
   },
   "footer": {
     "privacyPolicy": "Privatlivspolitik"
@@ -641,7 +688,12 @@
     "tip3Title": "Tyk sirup (2:1)",
     "tip3Description": "Bedst til indfodring før vinter. Bierne kan hurtigt sætte det i tavler pga lavt indhold af vand.",
     "tip4Title": "Generelle tips",
-    "tip4Description": "Brug altid hvid, granuleret sikker - aldrig rørsukker, brown farin, sirup eller kunstige sødestoffer. Flydende foder må ikke koges, da der kan dannes HMF (hydroxymethylfurfural), der er giftigt for bierne. Fodring bør ske om aftenen for at reducere risiko for røveri."
+    "tip4Description": "Brug altid hvid, granuleret sikker - aldrig rørsukker, brown farin, sirup eller kunstige sødestoffer. Flydende foder må ikke koges, da der kan dannes HMF (hydroxymethylfurfural), der er giftigt for bierne. Fodring bør ske om aftenen for at reducere risiko for røveri.",
+    "intro": "Gratis sukker sirups beregner til biavlere. Brug 1:1 (tynd) sirup for at stimulere vækst om foråret, 3:2 (medium) som generel foder og 2:1 (tyk) til indvintring. Vælg størrelse på beholder og blandingsforhold - den eksakte mængde af mand og sukker beregnes så det passer til størrelsen på din beholder.",
+    "units": "Enheder",
+    "unitsDescription": "Skift mellem metrisk system og imperiske enheder",
+    "metric": "Metrisk (L, g, kg)",
+    "imperial": "Imperisk (qt, gal, lb)"
   },
   "broodTimeline": {
     "title": "Yngeludvikling tidslinie",
@@ -688,7 +740,8 @@
     "fact3Title": "Æggefasen",
     "fact3Description": "Alle 3 bityper deler den samme æggeperiode. Dronningen lægger ægget lodret i cellen - det vipper gradvist til siden inden det knækker.",
     "fact4Title": "Tidspunkt for forsegling",
-    "fact4Description": "Arbejderne forsegler dronningeceller på dag 8, arbejder celler på dag 9 og drone celler på dag 10. Når man observerer forseglede celler er det en hjælp til at se hvad der udvikler sig indeni."
+    "fact4Description": "Arbejderne forsegler dronningeceller på dag 8, arbejder celler på dag 9 og drone celler på dag 10. Når man observerer forseglede celler er det en hjælp til at se hvad der udvikler sig indeni.",
+    "intro": "Følg udviklingen af honning bien fra æg til fuldvoksen. Dronningen kryber efter 16 dage, arbejdere efter 21 og droner efter 24 - fordelt over 4 stadier: Æg, larve, puppe og voksen. Vælg en start dato for at se hvornår cellen er forseglet og bien kryber."
   },
   "marketing": {
     "toolsIndex": {
@@ -697,6 +750,82 @@
           "title": "Liebefelder Schätzmethode",
           "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
         }
+      }
+    }
+  },
+  "bulkAdd": {
+    "title": "Massetilføj",
+    "subtitle": "Vælg en dato og det stade det gælder for, opret en handling, inspektion eller en dronning, og tilføj det så til køen.",
+    "loading": "Henter stader…",
+    "sections": {
+      "when": "Når",
+      "hives": "Stader",
+      "what": "Hvad",
+      "queue": "Kø"
+    },
+    "tabs": {
+      "actions": "Handlinger",
+      "inspections": "Inspektioner",
+      "queens": "Dronninger"
+    },
+    "hives": {
+      "filterPlaceholder": "Filtrer stader",
+      "selectAll": "Vælg alle",
+      "clearVisible": "Ryd synlige",
+      "noMatches": "Ingen stader matcher \"{{filter}}\""
+    },
+    "datePlaceholder": "Vælg en dato",
+    "applyHint": "Udfør på {{count}} stade den {{date}}",
+    "applyHintPlural": "Udfør på {{count}} stader den {{date}}",
+    "selectHivesHint": "Vælg mindst én stade til venstre",
+    "addToQueue": {
+      "action": "Tilføj handling til køen",
+      "inspection": "Tilføj inspektion til køen",
+      "queen": "Tilføj dronning til køen"
+    },
+    "queue": {
+      "clear": "Ryd",
+      "emptyTitle": "Køen er tom",
+      "emptyBody": "Byg noget til venstre og tilføj det til køen.",
+      "submit": "Indsend",
+      "submitOne": "Indsend {{count}} emne",
+      "submitMany": "Indsend {{count}} emner",
+      "submitting": "Indsender…"
+    },
+    "kind": {
+      "action": "Handling",
+      "inspection": "Inspektion",
+      "queen": "Dronning"
+    },
+    "edit": {
+      "title": "Rediger handling",
+      "hive": "Stade",
+      "type": "Type",
+      "date": "Dato",
+      "cancel": "Afbryd",
+      "save": "Gem ændringer"
+    },
+    "errors": {
+      "noHives": "Vælg venligst mindst ét stade",
+      "emptyAction": "Tilføj mindst én handling at sende til køen",
+      "emptyInspection": "Udfyld nogle af inspektionsfelterne først",
+      "emptyQueen": "Udfyld detaljer om dronningen først",
+      "noItems": "Ikke noget at indsende"
+    },
+    "toast": {
+      "addedOne": "Tilføjede {{count}} emne til køen",
+      "addedMany": "Tilføjede {{count}} emner til køen",
+      "actionUpdated": "Handling opdateret",
+      "createdOne": "Oprettede {{count}} emne: {{breakdown}}",
+      "createdMany": "Oprettede {{count}} emner: {{breakdown}}",
+      "partial": "Oprettede {{success}}, fejlede {{failed}}. Fejlede emner forbliver i køen.",
+      "breakdown": {
+        "actionOne": "{{count}} handling",
+        "actionMany": "{{count}} handlinger",
+        "inspectionOne": "{{count}} inspektion",
+        "inspectionMany": "{{count}} inspektioner",
+        "queenOne": "{{count}} dronning",
+        "queenMany": "{{count}} dronninger"
       }
     }
   }

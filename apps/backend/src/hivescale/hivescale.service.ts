@@ -40,6 +40,8 @@ interface HiveScaleImportResponse {
   duplicates: number;
 }
 
+export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
+
 // 'hivehub' is the new name for the main-board firmware target (formerly
 // 'hivescale'). The HiveHub backend accepts the 'hivehub' alias and normalizes
 // it back to 'hivescale' internally, so we forward whichever value the client
@@ -70,14 +72,56 @@ export interface HiveScaleAutoQueuedUpdate {
   error?: string;
 }
 
+export interface HiveScaleRelayUpdateResult {
+  status: string;
+  id: number;
+  command_type: string;
+  payload: { slot: number };
+}
+
+export interface HiveScaleAutoQueuedUpdate {
+  slot: 1 | 2;
+  status: 'queued' | 'failed';
+  command_id?: number;
+  error?: string;
+}
+
 export interface HiveScaleFirmwareUploadResult {
   status: string;
   version: string;
   filename: string;
   target: HiveScaleFirmwareTarget;
+  target: HiveScaleFirmwareTarget;
   active: boolean;
   size_bytes: number;
   crc32: number;
+  /**
+   * When a HiveInside image is uploaded as the active release, HivePal also
+   * auto-queues the OTA relay to the in-hive sensors (slots 1 & 2) so that
+   * uploading and updating are a single action. One entry per slot; omitted for
+   * non-HiveInside uploads and inactive releases.
+   */
+  auto_queued_updates?: HiveScaleAutoQueuedUpdate[];
+}
+
+export interface HiveScaleFirmwareStatus {
+  device_id: string;
+  target: string;
+  current_version: string | null;
+  latest_version: string | null;
+  /** True when the latest available release is a global/official build (no owner). */
+  latest_is_official: boolean;
+  approved_version: string | null;
+  update_available: boolean;
+  /** Update available but not yet approved by the owner — the device won't auto-flash. */
+  pending_approval: boolean;
+}
+
+export interface HiveScaleFirmwareApproveResult {
+  status: string;
+  device_id: string;
+  version: string;
+  command_id: number;
   /**
    * When a HiveInside image is uploaded as the active release, HivePal also
    * auto-queues the OTA relay to the in-hive sensors (slots 1 & 2) so that

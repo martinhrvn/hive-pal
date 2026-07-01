@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
   BatteryCharging,
+  BatteryCharging,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -31,6 +32,7 @@ import {
   useHiveScaleDeviceConfig,
   useHiveScaleDevices,
   useHiveScaleFirmwareStatus,
+  useHiveScaleFirmwareStatus,
   useHiveScaleMeasurements,
   useHiveScaleMembers,
   useRemoveHiveScaleDevice,
@@ -38,6 +40,7 @@ import {
   useShareHiveScaleDevice,
   useImportHiveScaleSdData,
   useStartHiveScaleCalibrationMode,
+  useQueueHiveInsideUpdate,
   useQueueHiveInsideUpdate,
   useStopHiveScaleCalibrationMode,
   useUpdateHiveScaleChannels,
@@ -2327,10 +2330,24 @@ function FirmwareUploadCard({
   const uploadFirmware = useUploadHiveScaleFirmware(deviceId);
   const queueHiveInsideUpdate = useQueueHiveInsideUpdate(deviceId);
   const [otaSlot, setOtaSlot] = useState<'1' | '2'>('1');
+  const queueHiveInsideUpdate = useQueueHiveInsideUpdate(deviceId);
+  const [otaSlot, setOtaSlot] = useState<'1' | '2'>('1');
 
   const role = selectedDevice?.role;
   const canManage = role === 'owner' || role === 'admin';
   const disabled = !selectedDevice || !canManage;
+
+  const onQueueHiveInsideOta = () => {
+    if (disabled) return;
+    queueHiveInsideUpdate.mutate(
+      { slot: Number(otaSlot) as 1 | 2 },
+      {
+        onSuccess: () =>
+          toast.success(t('firmware.hiveinsideOta.success', { slot: otaSlot })),
+        onError: error => toast.error(error.message),
+      },
+    );
+  };
 
   const onQueueHiveInsideOta = () => {
     if (disabled) return;
@@ -2371,6 +2388,29 @@ function FirmwareUploadCard({
               target: result.target,
             }),
           );
+          // HiveInside uploads also auto-queue the OTA relay to both slots on
+          // the backend; surface which slots were queued (or failed).
+          const autoQueued = result.auto_queued_updates ?? [];
+          const queuedSlots = autoQueued
+            .filter(update => update.status === 'queued')
+            .map(update => update.slot);
+          const failedSlots = autoQueued
+            .filter(update => update.status === 'failed')
+            .map(update => update.slot);
+          if (queuedSlots.length > 0) {
+            toast.success(
+              t('firmware.hiveinsideOta.autoQueued', {
+                slots: queuedSlots.join(', '),
+              }),
+            );
+          }
+          if (failedSlots.length > 0) {
+            toast.error(
+              t('firmware.hiveinsideOta.autoQueueFailed', {
+                slots: failedSlots.join(', '),
+              }),
+            );
+          }
           // HiveInside uploads also auto-queue the OTA relay to both slots on
           // the backend; surface which slots were queued (or failed).
           const autoQueued = result.auto_queued_updates ?? [];
@@ -2806,6 +2846,10 @@ function ScaleSetupPanel({
                 deviceId={selectedDeviceId}
               />
               <SdDataUploadCard
+                selectedDevice={selectedDevice}
+                deviceId={selectedDeviceId}
+              />
+              <FirmwareUpdateCard
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
               />
