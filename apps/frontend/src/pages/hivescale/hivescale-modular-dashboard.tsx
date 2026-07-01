@@ -661,6 +661,15 @@ function useAxisScaleEditor(
   return { tick };
 }
 
+// Every chart widget keeps its own axis-scale state plus the tick editor bound
+// to it. Centralising the pair keeps the widget bodies free of duplicated
+// boilerplate.
+function useChartAxisScales() {
+  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
+  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+  return { axisScales, setAxisScales, axisScaleEditor };
+}
+
 function AxisScaleControls({
   axes,
   settings,
@@ -1633,6 +1642,35 @@ const filterMeasurementsByDateRange = (
 const seriesKey = (hiveIndex: number, metric: HiveMetricKey) =>
   `hive${hiveIndex}_${metric}`;
 
+type HiveReadingMap = Map<number, HiveScaleHiveReading>;
+
+// Builds the base time-series rows for a widget: filters by date range and
+// hands each row (already seeded with timestamp/measuredAt plus a per-index
+// hive lookup) to the caller so it can populate the metric columns it needs.
+const mapMeasurementRows = (
+  measurements: HiveScaleMeasurement[] | undefined,
+  dateRange: HiveScaleDateRange,
+  fallbackNames: HiveFallbackNames,
+  fillRow: (
+    row: ChartRow,
+    context: { measurement: HiveScaleMeasurement; hiveMap: HiveReadingMap },
+  ) => void,
+): ChartRow[] =>
+  filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
+    const hiveMap: HiveReadingMap = new Map(
+      measurementHiveReadings(measurement, fallbackNames).map(hive => [
+        hive.index,
+        hive,
+      ]),
+    );
+    const row: ChartRow = {
+      timestamp: new Date(measurement.measured_at).getTime(),
+      measuredAt: measurement.measured_at,
+    };
+    fillRow(row, { measurement, hiveMap });
+    return row;
+  });
+
 const buildHiveMetricChartRows = ({
   measurements,
   dateRange,
@@ -1646,26 +1684,13 @@ const buildHiveMetricChartRows = ({
   hiveIndexes: number[];
   metrics: HiveMetricKey[];
 }): ChartRow[] =>
-  filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
-    const hiveMap = new Map(
-      measurementHiveReadings(measurement, fallbackNames).map(hive => [
-        hive.index,
-        hive,
-      ]),
-    );
-    const row: ChartRow = {
-      timestamp: new Date(measurement.measured_at).getTime(),
-      measuredAt: measurement.measured_at,
-    };
-
+  mapMeasurementRows(measurements, dateRange, fallbackNames, (row, { hiveMap }) => {
     for (const hiveIndex of hiveIndexes) {
       const hive = hiveMap.get(hiveIndex) ?? null;
       for (const metric of metrics) {
         row[seriesKey(hiveIndex, metric)] = hiveMetricValue(hive, metric);
       }
     }
-
-    return row;
   });
 
 const latestMeasurement = (measurements: HiveScaleMeasurement[] | undefined) => {
@@ -2062,6 +2087,26 @@ const renderConfigurableYAxes = (
     );
   });
 
+// Shared prop shapes for the chart widgets. Most widgets consume the same
+// measurement/date-range/hive inputs, so declaring the types once keeps the
+// widget signatures free of repeated boilerplate.
+type ChartWidgetBaseProps = Readonly<{
+  measurements: HiveScaleMeasurement[] | undefined;
+  dateRange: HiveScaleDateRange;
+  chartHeightPx?: number;
+}>;
+
+type HiveTrafficWidgetProps = ChartWidgetBaseProps &
+  Readonly<{
+    fallbackNames: HiveFallbackNames;
+    hiveIndexes: number[];
+  }>;
+
+type HiveChartWidgetProps = HiveTrafficWidgetProps &
+  Readonly<{
+    hiveNames: Record<number, string>;
+  }>;
+
 function HiveLineChart({
   rows,
   hiveIndexes,
@@ -2079,8 +2124,7 @@ function HiveLineChart({
   dateRange: HiveScaleDateRange;
   chartHeightPx?: number;
 }>) {
-  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
-  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+  const { axisScales, setAxisScales, axisScaleEditor } = useChartAxisScales();
   const hasData = rows.some(row =>
     hiveIndexes.some(index => typeof row[seriesKey(index, metric)] === 'number'),
   );
@@ -2144,14 +2188,7 @@ function WeightComparisonWidget({
   hiveIndexes,
   hiveNames,
   chartHeightPx = 288,
-}: Readonly<{
-  measurements: HiveScaleMeasurement[] | undefined;
-  dateRange: HiveScaleDateRange;
-  fallbackNames: HiveFallbackNames;
-  hiveIndexes: number[];
-  hiveNames: Record<number, string>;
-  chartHeightPx?: number;
-}>) {
+}: HiveChartWidgetProps) {
   const rows = useMemo(
     () =>
       buildHiveMetricChartRows({
@@ -2184,16 +2221,8 @@ function ClimateWidget({
   hiveIndexes,
   hiveNames,
   chartHeightPx = 288,
-}: Readonly<{
-  measurements: HiveScaleMeasurement[] | undefined;
-  dateRange: HiveScaleDateRange;
-  fallbackNames: HiveFallbackNames;
-  hiveIndexes: number[];
-  hiveNames: Record<number, string>;
-  chartHeightPx?: number;
-}>) {
-  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
-  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+}: HiveChartWidgetProps) {
+  const { axisScales, setAxisScales, axisScaleEditor } = useChartAxisScales();
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -2297,13 +2326,8 @@ function PowerWidget({
   measurements,
   dateRange,
   chartHeightPx = 288,
-}: Readonly<{
-  measurements: HiveScaleMeasurement[] | undefined;
-  dateRange: HiveScaleDateRange;
-  chartHeightPx?: number;
-}>) {
-  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
-  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+}: ChartWidgetBaseProps) {
+  const { axisScales, setAxisScales, axisScaleEditor } = useChartAxisScales();
   const rows = useMemo(
     () =>
       filterMeasurementsByDateRange(measurements, dateRange).map(measurement => ({
@@ -2410,24 +2434,11 @@ function BeeTrafficWidget({
   fallbackNames,
   hiveIndexes,
   chartHeightPx = 288,
-}: Readonly<{
-  measurements: HiveScaleMeasurement[] | undefined;
-  dateRange: HiveScaleDateRange;
-  fallbackNames: HiveFallbackNames;
-  hiveIndexes: number[];
-  chartHeightPx?: number;
-}>) {
-  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
-  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+}: HiveTrafficWidgetProps) {
+  const { axisScales, setAxisScales, axisScaleEditor } = useChartAxisScales();
   const rows = useMemo(
     () =>
-      filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
-        const hiveMap = new Map(
-          measurementHiveReadings(measurement, fallbackNames).map(hive => [
-            hive.index,
-            hive,
-          ]),
-        );
+      mapMeasurementRows(measurements, dateRange, fallbackNames, (row, { hiveMap }) => {
         let inCount = 0;
         let outCount = 0;
         let hasCounter = false;
@@ -2439,13 +2450,9 @@ function BeeTrafficWidget({
           inCount += inValue ?? 0;
           outCount += outValue ?? 0;
         }
-        return {
-          timestamp: new Date(measurement.measured_at).getTime(),
-          measuredAt: measurement.measured_at,
-          inCount: hasCounter ? inCount : null,
-          outCount: hasCounter ? outCount : null,
-          net: hasCounter ? inCount - outCount : null,
-        };
+        row.inCount = hasCounter ? inCount : null;
+        row.outCount = hasCounter ? outCount : null;
+        row.net = hasCounter ? inCount - outCount : null;
       }),
     [dateRange, fallbackNames, hiveIndexes, measurements],
   );
@@ -2550,44 +2557,29 @@ function SoundRmsWidget({
   hiveIndexes,
   hiveNames,
   chartHeightPx = 288,
-}: Readonly<{
-  measurements: HiveScaleMeasurement[] | undefined;
-  dateRange: HiveScaleDateRange;
-  fallbackNames: HiveFallbackNames;
-  hiveIndexes: number[];
-  hiveNames: Record<number, string>;
-  chartHeightPx?: number;
-}>) {
-  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
-  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+}: HiveChartWidgetProps) {
+  const { axisScales, setAxisScales, axisScaleEditor } = useChartAxisScales();
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
-      filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
-        const hiveMap = new Map(
-          measurementHiveReadings(measurement, fallbackNames).map(hive => [
-            hive.index,
-            hive,
-          ]),
-        );
-        const row: ChartRow = {
-          timestamp: new Date(measurement.measured_at).getTime(),
-          measuredAt: measurement.measured_at,
-        };
-
-        for (const hiveIndex of visibleHives) {
-          const hive = hiveMap.get(hiveIndex) ?? null;
-          for (const metric of soundWidgetMetrics) {
-            row[soundSeriesKey(hiveIndex, metric)] = soundMetricValue(
-              measurement,
-              hive,
-              hiveIndex,
-              metric,
-            );
+      mapMeasurementRows(
+        measurements,
+        dateRange,
+        fallbackNames,
+        (row, { measurement, hiveMap }) => {
+          for (const hiveIndex of visibleHives) {
+            const hive = hiveMap.get(hiveIndex) ?? null;
+            for (const metric of soundWidgetMetrics) {
+              row[soundSeriesKey(hiveIndex, metric)] = soundMetricValue(
+                measurement,
+                hive,
+                hiveIndex,
+                metric,
+              );
+            }
           }
-        }
-        return row;
-      }),
+        },
+      ),
     [dateRange, fallbackNames, measurements, visibleHives],
   );
 
@@ -2665,16 +2657,8 @@ function VibrationWidget({
   hiveIndexes,
   hiveNames,
   chartHeightPx = 288,
-}: Readonly<{
-  measurements: HiveScaleMeasurement[] | undefined;
-  dateRange: HiveScaleDateRange;
-  fallbackNames: HiveFallbackNames;
-  hiveIndexes: number[];
-  hiveNames: Record<number, string>;
-  chartHeightPx?: number;
-}>) {
-  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
-  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+}: HiveChartWidgetProps) {
+  const { axisScales, setAxisScales, axisScaleEditor } = useChartAxisScales();
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 4), [hiveIndexes]);
   const rows = useMemo(
     () =>
@@ -2919,17 +2903,9 @@ function ConfigurableDiagramWidget({
   hiveIndexes,
   hiveNames,
   chartHeightPx = 384,
-}: Readonly<{
-  measurements: HiveScaleMeasurement[] | undefined;
-  dateRange: HiveScaleDateRange;
-  fallbackNames: HiveFallbackNames;
-  hiveIndexes: number[];
-  hiveNames: Record<number, string>;
-  chartHeightPx?: number;
-}>) {
+}: HiveChartWidgetProps) {
   const visibleHives = useMemo(() => hiveIndexes.slice(0, 6), [hiveIndexes]);
-  const [axisScales, setAxisScales] = useState<AxisScaleSettingsMap>({});
-  const axisScaleEditor = useAxisScaleEditor(axisScales, setAxisScales);
+  const { axisScales, setAxisScales, axisScaleEditor } = useChartAxisScales();
   const [selectedMetricKeys, setSelectedMetricKeys] = useState<string[]>([
     ...defaultConfigurableMetricKeys,
   ]);
@@ -2939,37 +2915,30 @@ function ConfigurableDiagramWidget({
   );
   const rows = useMemo(
     () =>
-      filterMeasurementsByDateRange(measurements, dateRange).map(measurement => {
-        const hiveMap = new Map(
-          measurementHiveReadings(measurement, fallbackNames).map(hive => [
-            hive.index,
-            hive,
-          ]),
-        );
-        const row: ChartRow = {
-          timestamp: new Date(measurement.measured_at).getTime(),
-          measuredAt: measurement.measured_at,
-        };
+      mapMeasurementRows(
+        measurements,
+        dateRange,
+        fallbackNames,
+        (row, { measurement, hiveMap }) => {
+          for (const metric of selectedMetrics) {
+            if (metric.source === 'device') {
+              row[configDeviceSeriesKey(metric.key)] = deviceMetricValue(
+                measurement,
+                metric.deviceMetric,
+              );
+              continue;
+            }
 
-        for (const metric of selectedMetrics) {
-          if (metric.source === 'device') {
-            row[configDeviceSeriesKey(metric.key)] = deviceMetricValue(
-              measurement,
-              metric.deviceMetric,
-            );
-            continue;
+            for (const hiveIndex of visibleHives) {
+              const hive = hiveMap.get(hiveIndex) ?? null;
+              row[configSeriesKey(hiveIndex, metric.key)] =
+                metric.source === 'hive'
+                  ? hiveMetricValue(hive, metric.hiveMetric)
+                  : soundMetricValue(measurement, hive, hiveIndex, metric.soundMetric);
+            }
           }
-
-          for (const hiveIndex of visibleHives) {
-            const hive = hiveMap.get(hiveIndex) ?? null;
-            row[configSeriesKey(hiveIndex, metric.key)] =
-              metric.source === 'hive'
-                ? hiveMetricValue(hive, metric.hiveMetric)
-                : soundMetricValue(measurement, hive, hiveIndex, metric.soundMetric);
-          }
-        }
-        return row;
-      }),
+        },
+      ),
     [dateRange, fallbackNames, measurements, selectedMetrics, visibleHives],
   );
 
