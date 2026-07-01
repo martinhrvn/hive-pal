@@ -3,6 +3,11 @@ import { FieldPath, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Minus, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InspectionFormData } from './schema';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
@@ -34,6 +39,7 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
   onAcceptSuggestion,
   onDismissSuggestion,
 }: FrameCounterProps<TName>) => {
+  const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
   const hasTotalFrames = totalFrames != null && totalFrames > 0;
 
@@ -119,11 +125,32 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
                   <Minus className="h-6 w-6" />
                 </Button>
 
-                {/* Count display */}
+                {/* Count display — shows "count / total" (e.g. 1/16) with a
+                    tooltip breaking down how many frames remain unassigned for
+                    this type. Both update live as the +/- buttons change the
+                    value. */}
                 <div className="flex-1 flex flex-col items-center gap-0.5">
-                  <span className="text-3xl font-bold tabular-nums leading-none">
-                    {currentValue ?? '—'}
-                  </span>
+                  {hasTotalFrames && currentValue != null ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="text-3xl font-bold tabular-nums leading-none cursor-default">
+                          {currentValue}
+                          <span className="text-base font-normal text-muted-foreground align-baseline">
+                            /{totalFrames}
+                          </span>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {t('observations.frameCounts.framesUnassigned', {
+                          count: totalFrames - currentValue,
+                        })}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <span className="text-3xl font-bold tabular-nums leading-none">
+                      {currentValue ?? '—'}
+                    </span>
+                  )}
                   {pct != null && (
                     <span className="text-xs text-muted-foreground">
                       {pct}%
