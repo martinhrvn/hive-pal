@@ -103,6 +103,8 @@
       "title": "Brood Nest Counts",
       "totalFrames": "{{count}} frames total",
       "framesOf": "/ {{total}} frames",
+      "framesUnassigned_one": "Currently {{count}} frame unassigned",
+      "framesUnassigned_other": "Currently {{count}} frames unassigned",
       "frameDeltaHint": "Frames added/removed during this inspection"
     },
     "eggsFrames": "Eggs",
