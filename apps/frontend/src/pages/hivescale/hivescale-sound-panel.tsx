@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/collapsible';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { HiveScaleMeasurement } from '@/api/hooks/useHiveScale';
-import type { HiveScaleDateRange } from './hivescale-diagram-panel';
+import type { HiveScaleDateRange } from './hivescale-date-range';
 
 // ---------------------------------------------------------------------------
 // Types

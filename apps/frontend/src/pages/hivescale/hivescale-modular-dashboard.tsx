@@ -60,7 +60,7 @@ import {
   createPresetDateRange,
   type HiveScaleDateRange,
   type HiveScaleDateRangePreset,
-} from './hivescale-diagram-panel';
+} from './hivescale-date-range';
 import { severityConfig } from './hivescale-insights-card';
 import { BeeLoadingMessages } from './hivescale-loading-messages';
 import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';

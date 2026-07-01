@@ -57,7 +57,7 @@ import {
   measurementLimitForRange,
   type HiveScaleDateRange,
   type HiveScaleDateRangePreset,
-} from './hivescale-diagram-panel';
+} from './hivescale-date-range';
 import { HiveScaleModularDashboard } from './hivescale-modular-dashboard';
 import { WirelessSensorsBattery } from './wireless-sensors-battery';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
