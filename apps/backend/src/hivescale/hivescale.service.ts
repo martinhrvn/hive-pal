@@ -40,8 +40,6 @@ interface HiveScaleImportResponse {
   duplicates: number;
 }
 
-export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
-
 // 'hivehub' is the new name for the main-board firmware target (formerly
 // 'hivescale'). The HiveHub backend accepts the 'hivehub' alias and normalizes
 // it back to 'hivescale' internally, so we forward whichever value the client
@@ -72,25 +70,10 @@ export interface HiveScaleAutoQueuedUpdate {
   error?: string;
 }
 
-export interface HiveScaleRelayUpdateResult {
-  status: string;
-  id: number;
-  command_type: string;
-  payload: { slot: number };
-}
-
-export interface HiveScaleAutoQueuedUpdate {
-  slot: 1 | 2;
-  status: 'queued' | 'failed';
-  command_id?: number;
-  error?: string;
-}
-
 export interface HiveScaleFirmwareUploadResult {
   status: string;
   version: string;
   filename: string;
-  target: HiveScaleFirmwareTarget;
   target: HiveScaleFirmwareTarget;
   active: boolean;
   size_bytes: number;
