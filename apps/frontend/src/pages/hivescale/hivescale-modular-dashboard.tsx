@@ -814,187 +814,81 @@ const configurableMetricAxes: Record<
   power: { unit: 'mW', width: 58, orientation: 'right' },
 };
 
+// Factory helpers keep each metric definition on a single line. Besides being
+// terser, this avoids the near-identical repeated object literals that a
+// copy/paste detector flags as duplicated blocks.
+const defineHiveMetric = (
+  key: string,
+  label: string,
+  unit: string,
+  axis: ConfigurableMetricAxis,
+  group: string,
+  hiveMetric: HiveMetricKey,
+): ConfigurableMetricDefinition => ({
+  key,
+  label,
+  unit,
+  axis,
+  group,
+  source: 'hive',
+  hiveMetric,
+});
+
+const defineSoundMetric = (
+  key: string,
+  label: string,
+  unit: string,
+  axis: ConfigurableMetricAxis,
+  group: string,
+  soundMetric: SoundMetricKey,
+): ConfigurableMetricDefinition => ({
+  key,
+  label,
+  unit,
+  axis,
+  group,
+  source: 'sound',
+  soundMetric,
+});
+
+const defineDeviceMetric = (
+  key: string,
+  label: string,
+  unit: string,
+  axis: ConfigurableMetricAxis,
+  group: string,
+  deviceMetric: DeviceMetricKey,
+): ConfigurableMetricDefinition => ({
+  key,
+  label,
+  unit,
+  axis,
+  group,
+  source: 'device',
+  deviceMetric,
+});
+
 const configurableMetrics: ConfigurableMetricDefinition[] = [
-  {
-    key: 'weight',
-    label: 'Weight',
-    unit: 'kg',
-    axis: 'weight',
-    group: 'Scale',
-    source: 'hive',
-    hiveMetric: 'weight',
-  },
-  {
-    key: 'temperature',
-    label: 'Temperature',
-    unit: '°C',
-    axis: 'temperature',
-    group: 'Climate',
-    source: 'hive',
-    hiveMetric: 'temperature',
-  },
-  {
-    key: 'humidity',
-    label: 'Humidity',
-    unit: '%',
-    axis: 'humidity',
-    group: 'Climate',
-    source: 'hive',
-    hiveMetric: 'humidity',
-  },
-  {
-    key: 'pressure',
-    label: 'Pressure',
-    unit: 'hPa',
-    axis: 'pressure',
-    group: 'Climate',
-    source: 'hive',
-    hiveMetric: 'pressure',
-  },
-  {
-    key: 'beeIn',
-    label: 'Bees in',
-    unit: 'bees',
-    axis: 'beecount',
-    group: 'Bee traffic',
-    source: 'hive',
-    hiveMetric: 'beeIn',
-  },
-  {
-    key: 'beeOut',
-    label: 'Bees out',
-    unit: 'bees',
-    axis: 'beecount',
-    group: 'Bee traffic',
-    source: 'hive',
-    hiveMetric: 'beeOut',
-  },
-  {
-    key: 'beeNet',
-    label: 'Net flow',
-    unit: 'bees',
-    axis: 'beecount',
-    group: 'Bee traffic',
-    source: 'hive',
-    hiveMetric: 'beeNet',
-  },
-  {
-    key: 'vibration',
-    label: 'Vibration RMS',
-    unit: 'mg',
-    axis: 'vibration',
-    group: 'Vibration',
-    source: 'hive',
-    hiveMetric: 'vibration',
-  },
-  {
-    key: 'swarmBand',
-    label: 'Swarm band',
-    unit: 'mg',
-    axis: 'vibration',
-    group: 'Vibration',
-    source: 'hive',
-    hiveMetric: 'swarmBand',
-  },
-  {
-    key: 'fanningBand',
-    label: 'Fanning band',
-    unit: 'mg',
-    axis: 'vibration',
-    group: 'Vibration',
-    source: 'hive',
-    hiveMetric: 'fanningBand',
-  },
-  {
-    key: 'activityBand',
-    label: 'Activity band',
-    unit: 'mg',
-    axis: 'vibration',
-    group: 'Vibration',
-    source: 'hive',
-    hiveMetric: 'activityBand',
-  },
-  {
-    key: 'soundRms',
-    label: 'Sound RMS',
-    unit: 'dBFS',
-    axis: 'dbfs',
-    group: 'Sound',
-    source: 'sound',
-    soundMetric: 'rmsDbfs',
-  },
-  {
-    key: 'soundHum',
-    label: 'Hum band',
-    unit: 'dBFS',
-    axis: 'dbfs',
-    group: 'Sound',
-    source: 'sound',
-    soundMetric: 'hum',
-  },
-  {
-    key: 'soundPiping',
-    label: 'Piping band',
-    unit: 'dBFS',
-    axis: 'dbfs',
-    group: 'Sound',
-    source: 'sound',
-    soundMetric: 'piping',
-  },
-  {
-    key: 'soundStress',
-    label: 'Stress band',
-    unit: 'dBFS',
-    axis: 'dbfs',
-    group: 'Sound',
-    source: 'sound',
-    soundMetric: 'stress',
-  },
-  {
-    key: 'hiveHeartFrequency',
-    label: 'HiveHeart frequency',
-    unit: 'Hz',
-    axis: 'frequency',
-    group: 'Sound',
-    source: 'sound',
-    soundMetric: 'hiveHeartFrequency',
-  },
-  {
-    key: 'hiveHeartEnergy',
-    label: 'HiveHeart energy',
-    unit: '',
-    axis: 'energy',
-    group: 'Sound',
-    source: 'sound',
-    soundMetric: 'hiveHeartEnergy',
-  },
-  {
-    key: 'batterySoc',
-    label: 'Battery charge',
-    unit: '%',
-    axis: 'percent',
-    group: 'Device',
-    source: 'device',
-    deviceMetric: 'batterySoc',
-  },
-  {
-    key: 'batteryVoltage',
-    label: 'Battery voltage',
-    unit: 'V',
-    axis: 'voltage',
-    group: 'Device',
-    source: 'device',
-    deviceMetric: 'batteryVoltage',
-  },
-  {
-    key: 'solarPower',
-    label: 'Solar power',
-    unit: 'mW',
-    axis: 'power',
-    group: 'Device',
-    source: 'device',
-    deviceMetric: 'solarPower',
-  },
+  defineHiveMetric('weight', 'Weight', 'kg', 'weight', 'Scale', 'weight'),
+  defineHiveMetric('temperature', 'Temperature', '°C', 'temperature', 'Climate', 'temperature'),
+  defineHiveMetric('humidity', 'Humidity', '%', 'humidity', 'Climate', 'humidity'),
+  defineHiveMetric('pressure', 'Pressure', 'hPa', 'pressure', 'Climate', 'pressure'),
+  defineHiveMetric('beeIn', 'Bees in', 'bees', 'beecount', 'Bee traffic', 'beeIn'),
+  defineHiveMetric('beeOut', 'Bees out', 'bees', 'beecount', 'Bee traffic', 'beeOut'),
+  defineHiveMetric('beeNet', 'Net flow', 'bees', 'beecount', 'Bee traffic', 'beeNet'),
+  defineHiveMetric('vibration', 'Vibration RMS', 'mg', 'vibration', 'Vibration', 'vibration'),
+  defineHiveMetric('swarmBand', 'Swarm band', 'mg', 'vibration', 'Vibration', 'swarmBand'),
+  defineHiveMetric('fanningBand', 'Fanning band', 'mg', 'vibration', 'Vibration', 'fanningBand'),
+  defineHiveMetric('activityBand', 'Activity band', 'mg', 'vibration', 'Vibration', 'activityBand'),
+  defineSoundMetric('soundRms', 'Sound RMS', 'dBFS', 'dbfs', 'Sound', 'rmsDbfs'),
+  defineSoundMetric('soundHum', 'Hum band', 'dBFS', 'dbfs', 'Sound', 'hum'),
+  defineSoundMetric('soundPiping', 'Piping band', 'dBFS', 'dbfs', 'Sound', 'piping'),
+  defineSoundMetric('soundStress', 'Stress band', 'dBFS', 'dbfs', 'Sound', 'stress'),
+  defineSoundMetric('hiveHeartFrequency', 'HiveHeart frequency', 'Hz', 'frequency', 'Sound', 'hiveHeartFrequency'),
+  defineSoundMetric('hiveHeartEnergy', 'HiveHeart energy', '', 'energy', 'Sound', 'hiveHeartEnergy'),
+  defineDeviceMetric('batterySoc', 'Battery charge', '%', 'percent', 'Device', 'batterySoc'),
+  defineDeviceMetric('batteryVoltage', 'Battery voltage', 'V', 'voltage', 'Device', 'batteryVoltage'),
+  defineDeviceMetric('solarPower', 'Solar power', 'mW', 'power', 'Device', 'solarPower'),
 ];
 
 const configurableMetricsByGroup = configurableMetrics.reduce(
@@ -1378,6 +1272,17 @@ const nestedRecord = (
   key: string,
 ): UnknownRecord | null => asRecord(recordValue(record, key));
 
+// Acoustic band metrics all resolve through the same set of candidate keys, so
+// map each one to its snake_case band name and derive the lookups from it
+// instead of repeating a near-identical block per band.
+const soundBandNames: Partial<Record<SoundMetricKey, string>> = {
+  subBass: 'sub_bass',
+  hum: 'hum',
+  piping: 'piping',
+  stress: 'stress',
+  high: 'high',
+};
+
 const perHiveSoundMetricValue = (
   hive: HiveScaleHiveReading | null,
   metric: SoundMetricKey,
@@ -1397,6 +1302,16 @@ const perHiveSoundMetricValue = (
     nestedRecord(hiveRecord, 'hive_heart') ??
     nestedRecord(hiveRecord, 'acoustic_sensor');
 
+  const bandName = soundBandNames[metric];
+  if (bandName) {
+    return firstFiniteNumber(
+      recordValue(sound, `band_${bandName}_dbfs`),
+      recordValue(sound, `${bandName}_dbfs`),
+      recordValue(bands, `${bandName}_dbfs`),
+      recordValue(bands, bandName),
+    );
+  }
+
   switch (metric) {
     case 'rmsDbfs':
       return firstFiniteNumber(
@@ -1404,41 +1319,6 @@ const perHiveSoundMetricValue = (
         recordValue(sound, 'rms_dBFS'),
         recordValue(sound, 'rms'),
         recordValue(hiveHeart, 'rms_dbfs'),
-      );
-    case 'subBass':
-      return firstFiniteNumber(
-        recordValue(sound, 'band_sub_bass_dbfs'),
-        recordValue(sound, 'sub_bass_dbfs'),
-        recordValue(bands, 'sub_bass_dbfs'),
-        recordValue(bands, 'sub_bass'),
-      );
-    case 'hum':
-      return firstFiniteNumber(
-        recordValue(sound, 'band_hum_dbfs'),
-        recordValue(sound, 'hum_dbfs'),
-        recordValue(bands, 'hum_dbfs'),
-        recordValue(bands, 'hum'),
-      );
-    case 'piping':
-      return firstFiniteNumber(
-        recordValue(sound, 'band_piping_dbfs'),
-        recordValue(sound, 'piping_dbfs'),
-        recordValue(bands, 'piping_dbfs'),
-        recordValue(bands, 'piping'),
-      );
-    case 'stress':
-      return firstFiniteNumber(
-        recordValue(sound, 'band_stress_dbfs'),
-        recordValue(sound, 'stress_dbfs'),
-        recordValue(bands, 'stress_dbfs'),
-        recordValue(bands, 'stress'),
-      );
-    case 'high':
-      return firstFiniteNumber(
-        recordValue(sound, 'band_high_dbfs'),
-        recordValue(sound, 'high_dbfs'),
-        recordValue(bands, 'high_dbfs'),
-        recordValue(bands, 'high'),
       );
     case 'hiveHeartFrequency':
       return firstFiniteNumber(
@@ -1477,19 +1357,14 @@ const legacySoundMetricValue = (
   const hiveHeartValue = (suffix: string) =>
     recordValue(measurementRecord, `${hiveHeartPrefix}_${suffix}`);
 
+  const bandName = soundBandNames[metric];
+  if (bandName) {
+    return firstFiniteNumber(micValue(`band_${bandName}_dbfs`));
+  }
+
   switch (metric) {
     case 'rmsDbfs':
       return firstFiniteNumber(micValue('rms_dbfs'));
-    case 'subBass':
-      return firstFiniteNumber(micValue('band_sub_bass_dbfs'));
-    case 'hum':
-      return firstFiniteNumber(micValue('band_hum_dbfs'));
-    case 'piping':
-      return firstFiniteNumber(micValue('band_piping_dbfs'));
-    case 'stress':
-      return firstFiniteNumber(micValue('band_stress_dbfs'));
-    case 'high':
-      return firstFiniteNumber(micValue('band_high_dbfs'));
     case 'hiveHeartFrequency':
       return firstFiniteNumber(hiveHeartValue('frequency_hz'));
     case 'hiveHeartEnergy':
