@@ -34,38 +34,38 @@
     ]
   },
   "page": {
-    "title": "HiveScale",
-    "subtitle": "Live weight and temperature visualisation from your separate HiveScale backend.",
+    "title": "HiveHub",
+    "subtitle": "Live weight and temperature visualisation from your separate HiveHub backend.",
     "refresh": "Refresh",
     "refreshing": "Refreshing…",
-    "refreshError": "Could not refresh HiveScale data.",
+    "refreshError": "Could not refresh HiveHub data.",
     "removeConfirm": "Remove {{name}} from your HivePal account? You can add it again with the claim code when no other users still have access.",
-    "removeSuccess": "HiveScale device removed from your account."
+    "removeSuccess": "HiveHub device removed from your account."
   },
   "setup": {
     "title": "Devices",
-    "description": "Select or remove a claimed HiveScale device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
+    "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
     "noDevices": "No devices claimed yet — open the setup to add one.",
     "hide": "Hide setup",
     "show": "Show setup"
   },
   "claim": {
-    "title": "Claim HiveScale device",
+    "title": "Claim HiveHub device",
     "description": "Claim codes are sent by the firmware with measurements until the device is claimed.",
     "claimCode": "Claim code",
     "displayName": "Display name",
     "displayNamePlaceholder": "Hive scale north",
     "claim": "Claim device",
     "claiming": "Claiming…",
-    "success": "HiveScale device claimed.",
+    "success": "HiveHub device claimed.",
     "errors": {
       "missingCode": "Enter the claim code printed/configured for the device."
     }
   },
   "mapping": {
     "title": "Scale mapping",
-    "description": "These labels stay in HiveScale. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
+    "description": "These labels stay in HiveHub. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
     "scale1Label": "Display name for Scale 1",
     "scale2Label": "Display name for Scale 2",
     "hiveNamePlaceholder": "Select or type a hive name",
@@ -85,7 +85,7 @@
     "admin": "Admin",
     "sharing_progress": "Sharing…",
     "grantAccess": "Grant access",
-    "shareSuccess": "HiveScale access shared.",
+    "shareSuccess": "HiveHub access shared.",
     "accessRevoked": "Access revoked.",
     "revokeAccess": "Revoke access",
     "errors": {
@@ -174,7 +174,7 @@
       "emptyCaptured": "{{scaleName}} empty reading captured.",
       "weightedCaptured": "{{scaleName}} weighted reading captured.",
       "calibrationSaved": "{{scaleName}} calibration saved.",
-      "configUpdated": "HiveScale config updated.",
+      "configUpdated": "HiveHub config updated.",
       "offsetSet": "{{scaleName}} offset set to latest raw reading.",
       "factorCalculated": "{{scaleName}} factor calculated: {{factor}}"
     },

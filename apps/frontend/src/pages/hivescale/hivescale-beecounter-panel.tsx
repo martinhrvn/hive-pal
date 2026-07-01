@@ -31,7 +31,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import type { HiveScaleMeasurement } from '@/api/hooks/useHiveScale';
-import type { HiveScaleDateRange } from './hivescale-diagram-panel';
+import type { HiveScaleDateRange } from './hivescale-date-range';
 
 // ---------------------------------------------------------------------------
 // Types

@@ -241,7 +241,8 @@
             "title": "Forekomst af yngel",
             "totalFrames": "{{count}} rammer i alt",
             "framesOf": "/ {{total}} rammer",
-            "frameDeltaHint": "Rammer tilføjet/fjernet under denne inspektion"
+            "framesUnassigned_one": "{{count}} ramme er ledig i øjeblikket",
+            "framesUnassigned_other": "{{count}} rammer er ledige i øjeblikket"
         },
         "eggsFrames": "Æg",
         "uncappedBroodFrames": "Åben yngel",

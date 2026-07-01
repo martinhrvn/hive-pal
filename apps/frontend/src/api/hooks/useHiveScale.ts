@@ -2,6 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { apiClient } from '../client';
 
+export interface HiveScaleChannelMapping {
+  index: number;
+  display_name?: string | null;
+  hive_id?: string | null;
+}
+
 export interface HiveScaleDevice {
   device_id: string;
   display_name: string | null;
@@ -12,7 +18,73 @@ export interface HiveScaleDevice {
   channels: {
     scale_1: string | null;
     scale_2: string | null;
+    hives?: HiveScaleChannelMapping[] | null;
   };
+}
+
+// A single hive carried by one HiveScale ESP32. Firmware v0.20.0+ reports up to
+// 18 hives per device (NAU7802 scales behind a TCA9548A mux, DS18B20 by ROM,
+// per-hive BLE / accelerometer / bee-counter), delivered by the HiveScale
+// backend as the `hives` array on every measurement (see `HiveScaleMeasurement`).
+//
+// The shape mirrors the backend `hive_readings` rows. For historical / legacy
+// (pre-v0.20.0) rows the backend synthesizes hives 1–2 from the flat
+// scale_N_*/hive_N_* columns, which carry a subset of these fields — so the
+// nested sensor blocks and their members are all optional/nullable.
+export interface HiveScaleHiveReading {
+  index: number; // 1..18
+  name?: string | null;
+  weight_kg: number | null;
+  raw_weight: number | null;
+  scale_source?: string | null; // hx711 | nau7802 | ...
+  temp_c: number | null;
+  temp_source?: string | null; // ds18b20 | ble | hiveheart
+  humidity_percent: number | null;
+  accel?: {
+    ok: boolean | null;
+    sample_count?: number | null;
+    range_g?: number | null;
+    rms_mg: number | null;
+    peak_mg: number | null;
+    band_swarm_mg: number | null;
+    band_fanning_mg: number | null;
+    band_activity_mg: number | null;
+  } | null;
+  sound?: {
+    ok?: boolean | null;
+    rms_dbfs?: number | null;
+    peak_dbfs?: number | null;
+    band_sub_bass_dbfs?: number | null;
+    band_hum_dbfs?: number | null;
+    band_piping_dbfs?: number | null;
+    band_stress_dbfs?: number | null;
+    band_high_dbfs?: number | null;
+    frequency_hz?: number | null;
+    energy?: number | null;
+    peak?: number | null;
+  } | null;
+  hiveheart?: {
+    frequency_hz?: number | null;
+    energy?: number | null;
+    peak?: number | null;
+    battery_v?: number | null;
+  } | null;
+  ble?: {
+    present?: boolean | null;
+    sensor_type?: string | null;
+    firmware_version?: string | null;
+    humidity_percent: number | null;
+    pressure_hpa: number | null;
+    battery_percent?: number | null;
+    rssi_dbm?: number | null;
+  } | null;
+  bee_counter?: {
+    ok: boolean | null;
+    total_in: number | null;
+    total_out: number | null;
+    interval_in: number | null;
+    interval_out: number | null;
+  } | null;
 }
 
 export interface HiveScaleMeasurement {
@@ -162,6 +234,13 @@ export interface HiveScaleMeasurement {
   hiveheart_2_battery_v: number | null;
   hivescale_1_battery_v: number | null;
   hivescale_2_battery_v: number | null;
+  // Normalized per-hive readings — up to 18 hives per device (firmware v0.20.0+).
+  // This is the source of truth for reading every hive; the flat scale_1/scale_2
+  // (and hive_1/2, accel_1/2, ble_1/2, bee_counter_1/2) fields above remain as a
+  // 1–2 mirror for legacy consumers. Backfilled from the legacy columns for old
+  // rows, so it is present on every measurement (only `undefined` on the rare
+  // row with no data at all).
+  hives?: HiveScaleHiveReading[];
 }
 
 export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';
@@ -230,6 +309,7 @@ export interface HiveScaleTempCompensationFitResult {
 export interface HiveScaleChannelsPatch {
   scale_1_display_name?: string;
   scale_2_display_name?: string;
+  hives?: HiveScaleChannelMapping[];
 }
 
 export interface HiveScaleCalibrationModeStartInput {
@@ -432,7 +512,7 @@ export interface HiveScaleInsightAlert {
   id: string;
   category: HiveScaleInsightCategory;
   severity: HiveScaleInsightSeverity;
-  channel: 1 | 2;
+  channel: number;
   title: string;
   description: string;
   window_start: string | null;
@@ -474,7 +554,7 @@ export interface HiveScaleInsightHistoryEntry {
   id: number;
   alert_key: string;
   category: HiveScaleInsightCategory;
-  channel: 1 | 2;
+  channel: number;
   severity: HiveScaleInsightSeverity;
   peak_severity: HiveScaleInsightSeverity;
   title: string;
@@ -683,7 +763,14 @@ export const useStopHiveScaleCalibrationMode = (
   });
 };
 
-export type HiveScaleFirmwareTarget = 'hivescale' | 'beecounter' | 'hiveinside';
+// 'hivehub' is the new name for the main-board firmware target (formerly
+// 'hivescale'). The HiveHub backend accepts the 'hivehub' alias; the legacy
+// 'hivescale' value stays valid for older clients.
+export type HiveScaleFirmwareTarget =
+  | 'hivehub'
+  | 'hivescale'
+  | 'beecounter'
+  | 'hiveinside';
 
 export interface HiveScaleFirmwareUploadInput {
   file: File;

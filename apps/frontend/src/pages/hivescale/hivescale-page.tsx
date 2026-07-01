@@ -24,7 +24,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHivesWithBoxes } from '@/api/hooks/useHives';
-import { useInspections } from '@/api/hooks/useInspections';
 import {
   useApproveHiveScaleFirmware,
   useClaimHiveScaleDevice,
@@ -44,6 +43,7 @@ import {
   useUpdateHiveScaleChannels,
   useUpdateHiveScaleConfig,
   useUploadHiveScaleFirmware,
+  type HiveScaleChannelMapping,
   type HiveScaleDevice,
   type HiveScaleFirmwareTarget,
   type HiveScaleMeasurement,
@@ -54,12 +54,11 @@ import {
 } from '@/api/hooks/useHiveScale';
 import {
   createPresetDateRange,
-  HiveScaleDiagramPanel,
   measurementLimitForRange,
   type HiveScaleDateRange,
   type HiveScaleDateRangePreset,
-} from './hivescale-diagram-panel';
-import { HiveScaleSoundPanel } from './hivescale-sound-panel';
+} from './hivescale-date-range';
+import { HiveScaleModularDashboard } from './hivescale-modular-dashboard';
 import { WirelessSensorsBattery } from './wireless-sensors-battery';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -112,6 +111,105 @@ const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
     ? value.toFixed(digits)
     : '—';
+
+const MAX_HIVE_SLOTS = 18;
+const HIVE_MAPPING_STORAGE_PREFIX = 'hivepal:hivescale-hive-mapping:';
+
+type HiveMappingBySlot = Record<number, string>;
+
+const emptyHiveMappings = (): HiveMappingBySlot =>
+  Object.fromEntries(
+    Array.from({ length: MAX_HIVE_SLOTS }, (_, i) => [i + 1, '']),
+  ) as HiveMappingBySlot;
+
+const normalizeHiveMappings = (
+  mappings: Partial<Record<number | string, unknown>> | readonly unknown[],
+): HiveMappingBySlot => {
+  const rawValueForSlot = (slot: number, index: number): unknown => {
+    if (Array.isArray(mappings)) return mappings[index];
+
+    const mappingRecord = mappings as Partial<Record<string, unknown>>;
+    return mappingRecord[String(slot)];
+  };
+
+  return Object.fromEntries(
+    Array.from({ length: MAX_HIVE_SLOTS }, (_, i) => {
+      const slot = i + 1;
+      const rawValue = rawValueForSlot(slot, i);
+      return [slot, typeof rawValue === 'string' ? rawValue.trim() : ''];
+    }),
+  ) as HiveMappingBySlot;
+};
+
+const hiveMappingStorageKey = (deviceId: string) =>
+  `${HIVE_MAPPING_STORAGE_PREFIX}${deviceId}:v1`;
+
+const readStoredHiveMappings = (deviceId: string): HiveMappingBySlot => {
+  const fallback = emptyHiveMappings();
+  if (typeof globalThis.window === 'undefined') return fallback;
+
+  try {
+    const raw = globalThis.localStorage.getItem(hiveMappingStorageKey(deviceId));
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed)) return normalizeHiveMappings(parsed);
+    if (parsed && typeof parsed === 'object') {
+      const stored = 'mappings' in parsed
+        ? (parsed as { mappings?: unknown }).mappings
+        : parsed;
+      if (Array.isArray(stored)) return normalizeHiveMappings(stored);
+      if (stored && typeof stored === 'object') {
+        return normalizeHiveMappings(stored as Record<string, unknown>);
+      }
+    }
+    return fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const saveStoredHiveMappings = (
+  deviceId: string,
+  mappings: HiveMappingBySlot,
+) => {
+  if (typeof globalThis.window === 'undefined') return;
+
+  try {
+    globalThis.localStorage.setItem(
+      hiveMappingStorageKey(deviceId),
+      JSON.stringify(normalizeHiveMappings(mappings)),
+    );
+  } catch {
+    // Ignore localStorage failures, for example private mode.
+  }
+};
+
+const deviceHiveMappings = (
+  device: HiveScaleDevice | undefined,
+): HiveMappingBySlot => {
+  if (!device) return emptyHiveMappings();
+  const mappings = readStoredHiveMappings(device.device_id);
+  for (const mapping of device.channels?.hives ?? []) {
+    if (mapping.index >= 1 && mapping.index <= MAX_HIVE_SLOTS) {
+      mappings[mapping.index] = mapping.display_name?.trim() ?? '';
+    }
+  }
+  mappings[1] = mappings[1] || device.channels?.scale_1?.trim() || '';
+  mappings[2] = mappings[2] || device.channels?.scale_2?.trim() || '';
+  return mappings;
+};
+
+const hiveMappingsToPayload = (
+  mappings: HiveMappingBySlot,
+): HiveScaleChannelMapping[] =>
+  Array.from({ length: MAX_HIVE_SLOTS }, (_, i) => {
+    const index = i + 1;
+    const displayName = mappings[index]?.trim();
+    return {
+      index,
+      display_name: displayName || null,
+    };
+  });
 
 const HIVESCALE_DATE_RANGE_STORAGE_KEY = 'hivescale.diagram.dateRange';
 
@@ -395,14 +493,10 @@ function LatestValuePanel({
   );
 }
 
-function ClaimDeviceCard({
-  hiveNameOptions,
-}: Readonly<{ hiveNameOptions: string[] }>) {
+function ClaimDeviceCard() {
   const { t } = useTranslation('hivescale');
   const [claimCode, setClaimCode] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [scale1DisplayName, setScale1DisplayName] = useState('');
-  const [scale2DisplayName, setScale2DisplayName] = useState('');
   const claimDevice = useClaimHiveScaleDevice();
 
   const onSubmit = (event: FormEvent) => {
@@ -417,15 +511,11 @@ function ClaimDeviceCard({
       {
         claim_code: normalizedClaimCode,
         display_name: displayName.trim() || undefined,
-        scale_1_display_name: scale1DisplayName.trim() || undefined,
-        scale_2_display_name: scale2DisplayName.trim() || undefined,
       },
       {
         onSuccess: () => {
           setClaimCode('');
           setDisplayName('');
-          setScale1DisplayName('');
-          setScale2DisplayName('');
           toast.success(t('claim.success'));
         },
         onError: error => toast.error(error.message),
@@ -459,22 +549,6 @@ function ClaimDeviceCard({
               placeholder={t('claim.displayNamePlaceholder')}
             />
           </div>
-          <HiveNameInput
-            id="scale-1-display-name"
-            label={t('mapping.scale1Label')}
-            value={scale1DisplayName}
-            onChange={setScale1DisplayName}
-            placeholder={t('mapping.hiveNamePlaceholder')}
-            hiveNameOptions={hiveNameOptions}
-          />
-          <HiveNameInput
-            id="scale-2-display-name"
-            label={t('mapping.scale2Label')}
-            value={scale2DisplayName}
-            onChange={setScale2DisplayName}
-            placeholder={t('mapping.hiveNamePlaceholder')}
-            hiveNameOptions={hiveNameOptions}
-          />
           <Button
             type="submit"
             className="w-full"
@@ -1763,27 +1837,67 @@ function TempCompensationCard({
 function ScaleMappingCard({
   selectedDevice,
   hiveNameOptions,
+  hiveMappings,
+  onHiveMappingsChange,
 }: Readonly<{
   selectedDevice: HiveScaleDevice | undefined;
   hiveNameOptions: string[];
+  hiveMappings: HiveMappingBySlot;
+  onHiveMappingsChange: (mappings: HiveMappingBySlot) => void;
 }>) {
   const { t } = useTranslation('hivescale');
   const updateChannels = useUpdateHiveScaleChannels(selectedDevice?.device_id);
-  const [scale1DisplayName, setScale1DisplayName] = useState('');
-  const [scale2DisplayName, setScale2DisplayName] = useState('');
+  const [draftMappings, setDraftMappings] = useState<HiveMappingBySlot>(() =>
+    normalizeHiveMappings(hiveMappings),
+  );
+  const [editingSlot, setEditingSlot] = useState<number | null>(null);
+  const [editingHiveName, setEditingHiveName] = useState('');
 
   useEffect(() => {
-    setScale1DisplayName(channelName(selectedDevice, 1, ''));
-    setScale2DisplayName(channelName(selectedDevice, 2, ''));
-  }, [selectedDevice]);
+    setDraftMappings(normalizeHiveMappings(hiveMappings));
+  }, [hiveMappings]);
 
   if (!selectedDevice || selectedDevice.role === 'viewer') return null;
 
+  const openSlotEditor = (slot: number) => {
+    setEditingSlot(slot);
+    setEditingHiveName(draftMappings[slot] ?? '');
+  };
+
+  const closeSlotEditor = () => {
+    setEditingSlot(null);
+    setEditingHiveName('');
+  };
+
+  const updateSlotMapping = (slot: number, value: string) => {
+    setDraftMappings(current => ({
+      ...current,
+      [slot]: value.trim(),
+    }));
+  };
+
+  const saveSlotMapping = () => {
+    if (editingSlot === null) return;
+    updateSlotMapping(editingSlot, editingHiveName);
+    closeSlotEditor();
+  };
+
+  const clearSlotMapping = () => {
+    if (editingSlot === null) return;
+    updateSlotMapping(editingSlot, '');
+    closeSlotEditor();
+  };
+
   const saveMapping = () => {
+    const normalized = normalizeHiveMappings(draftMappings);
+    onHiveMappingsChange(normalized);
+    saveStoredHiveMappings(selectedDevice.device_id, normalized);
+
     updateChannels.mutate(
       {
-        scale_1_display_name: scale1DisplayName.trim() || undefined,
-        scale_2_display_name: scale2DisplayName.trim() || undefined,
+        scale_1_display_name: normalized[1] || undefined,
+        scale_2_display_name: normalized[2] || undefined,
+        hives: hiveMappingsToPayload(normalized),
       },
       {
         onSuccess: () => toast.success(t('mapping.success')),
@@ -1792,36 +1906,105 @@ function ScaleMappingCard({
     );
   };
 
+  const mappedCount = Object.values(draftMappings).filter(Boolean).length;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t('mapping.title')}</CardTitle>
-        <CardDescription>{t('mapping.description')}</CardDescription>
+        <CardDescription>
+          Map HiveHub slots to HivePal hives. Only mapped slots appear in the
+          hive overview and hive-based dashboard widgets.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <HiveNameInput
-          id="mapping-scale-1"
-          label={t('mapping.scale1Label')}
-          value={scale1DisplayName}
-          onChange={setScale1DisplayName}
-          placeholder={t('mapping.hiveNamePlaceholder')}
-          hiveNameOptions={hiveNameOptions}
-        />
-        <HiveNameInput
-          id="mapping-scale-2"
-          label={t('mapping.scale2Label')}
-          value={scale2DisplayName}
-          onChange={setScale2DisplayName}
-          placeholder={t('mapping.hiveNamePlaceholder')}
-          hiveNameOptions={hiveNameOptions}
-        />
-        <Button
-          className="w-full"
-          onClick={saveMapping}
-          disabled={updateChannels.isPending}
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+          {Array.from({ length: MAX_HIVE_SLOTS }, (_, index) => {
+            const slot = index + 1;
+            const name = draftMappings[slot]?.trim();
+            return (
+              <button
+                key={slot}
+                type="button"
+                onClick={() => openSlotEditor(slot)}
+                className={`flex h-14 flex-col justify-between rounded-md border p-2 text-left transition hover:border-primary hover:bg-muted/50 ${
+                  name ? 'bg-card' : 'border-dashed bg-muted/20 text-muted-foreground'
+                }`}
+                title={name || `Map slot ${slot}`}
+              >
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  {slot}
+                </span>
+                {name ? (
+                  <span className="truncate text-xs font-medium text-foreground">
+                    {name}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-xs">
+                    <Plus className="h-3.5 w-3.5" />
+                    Add
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">
+            {mappedCount}/{MAX_HIVE_SLOTS} slots mapped
+          </p>
+          <Button onClick={saveMapping} disabled={updateChannels.isPending}>
+            {updateChannels.isPending ? t('common.saving') : t('mapping.save')}
+          </Button>
+        </div>
+
+        <Dialog
+          open={editingSlot !== null}
+          onOpenChange={open => {
+            if (!open) closeSlotEditor();
+          }}
         >
-          {updateChannels.isPending ? t('common.saving') : t('mapping.save')}
-        </Button>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {editingSlot === null
+                  ? 'Map HiveHub slot'
+                  : `Map HiveHub slot ${editingSlot}`}
+              </DialogTitle>
+              <DialogDescription>
+                Select an existing HivePal hive or type a new display name.
+              </DialogDescription>
+            </DialogHeader>
+            <form
+              className="space-y-4"
+              onSubmit={event => {
+                event.preventDefault();
+                saveSlotMapping();
+              }}
+            >
+              <HiveNameInput
+                id={`mapping-slot-${editingSlot ?? 'new'}`}
+                label="HivePal hive"
+                value={editingHiveName}
+                onChange={setEditingHiveName}
+                placeholder={t('mapping.hiveNamePlaceholder')}
+                hiveNameOptions={hiveNameOptions}
+              />
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={clearSlotMapping}
+                  disabled={editingSlot === null}
+                >
+                  Clear slot
+                </Button>
+                <Button type="submit">Save slot</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
@@ -2008,7 +2191,7 @@ function DeviceStatusCard({
   );
 }
 
-function FirmwareUpdateCard({
+function FirmwareUpdateStatusSection({
   selectedDevice,
   deviceId,
 }: Readonly<{
@@ -2112,16 +2295,18 @@ function FirmwareUpdateCard({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <RefreshCw className="h-5 w-5" />
-          {t('firmware.update.title')}
-        </CardTitle>
-        <CardDescription>{t('firmware.update.description')}</CardDescription>
-      </CardHeader>
-      <CardContent>{body}</CardContent>
-    </Card>
+    <div className="space-y-3 rounded-md border p-3">
+      <div className="flex items-start gap-2">
+        <RefreshCw className="mt-0.5 h-4 w-4 shrink-0" />
+        <div>
+          <p className="text-sm font-medium">{t('firmware.update.title')}</p>
+          <p className="text-xs text-muted-foreground">
+            {t('firmware.update.description')}
+          </p>
+        </div>
+      </div>
+      {body}
+    </div>
   );
 }
 
@@ -2135,7 +2320,7 @@ function FirmwareUploadCard({
   const { t } = useTranslation('hivescale');
   const [file, setFile] = useState<File | null>(null);
   const [version, setVersion] = useState('');
-  const [target, setTarget] = useState<HiveScaleFirmwareTarget>('hivescale');
+  const [target, setTarget] = useState<HiveScaleFirmwareTarget>('hivehub');
   // Reset key lets us clear the native file input after a successful upload.
   const [fileInputKey, setFileInputKey] = useState(0);
 
@@ -2244,6 +2429,15 @@ function FirmwareUploadCard({
       <CardContent>
         {firmwareNotice}
 
+        {selectedDevice && (
+          <div className="mb-6">
+            <FirmwareUpdateStatusSection
+              selectedDevice={selectedDevice}
+              deviceId={deviceId}
+            />
+          </div>
+        )}
+
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
             <Label htmlFor="firmware-target">{t('firmware.type')}</Label>
@@ -2258,7 +2452,7 @@ function FirmwareUploadCard({
                 <SelectValue placeholder={t('firmware.selectType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="hivescale">HiveScale</SelectItem>
+                <SelectItem value="hivehub">HiveHub</SelectItem>
                 <SelectItem value="beecounter">BeeCounter</SelectItem>
                 <SelectItem value="hiveinside">HiveInside</SelectItem>
               </SelectContent>
@@ -2495,6 +2689,8 @@ function ScaleSetupPanel({
   selectedDeviceId,
   latest,
   hiveNameOptions,
+  hiveMappings,
+  onHiveMappingsChange,
   hasClaimedDevices,
   isDeviceListLoading,
   onCalibrationPollingChange,
@@ -2507,6 +2703,8 @@ function ScaleSetupPanel({
   selectedDeviceId: string | undefined;
   latest: HiveScaleMeasurement | undefined;
   hiveNameOptions: string[];
+  hiveMappings: HiveMappingBySlot;
+  onHiveMappingsChange: (mappings: HiveMappingBySlot) => void;
   hasClaimedDevices: boolean;
   isDeviceListLoading: boolean;
   onCalibrationPollingChange: (enabled: boolean) => void;
@@ -2584,7 +2782,7 @@ function ScaleSetupPanel({
         <CollapsibleContent>
           <CardContent className="pt-0">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <ClaimDeviceCard hiveNameOptions={hiveNameOptions} />
+              <ClaimDeviceCard />
               {selectedDevice && (
                 <DeviceStatusCard
                   selectedDevice={selectedDevice}
@@ -2594,6 +2792,8 @@ function ScaleSetupPanel({
               <ScaleMappingCard
                 selectedDevice={selectedDevice}
                 hiveNameOptions={hiveNameOptions}
+                hiveMappings={hiveMappings}
+                onHiveMappingsChange={onHiveMappingsChange}
               />
               <DeviceConfigCard
                 selectedDevice={selectedDevice}
@@ -2606,10 +2806,6 @@ function ScaleSetupPanel({
                 deviceId={selectedDeviceId}
               />
               <SdDataUploadCard
-                selectedDevice={selectedDevice}
-                deviceId={selectedDeviceId}
-              />
-              <FirmwareUpdateCard
                 selectedDevice={selectedDevice}
                 deviceId={selectedDeviceId}
               />
@@ -2634,6 +2830,9 @@ export function HiveScalePage() {
   );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCalibrationPolling, setIsCalibrationPolling] = useState(false);
+  const [hiveMappings, setHiveMappings] = useState<HiveMappingBySlot>(() =>
+    emptyHiveMappings(),
+  );
   const devices = useHiveScaleDevices();
   const measurementQuery = useMemo(() => {
     // For non-custom presets recompute startAt live on every render so a stale
@@ -2703,11 +2902,6 @@ export function HiveScalePage() {
   }, [insights.data?.alerts]);
   const removeDevice = useRemoveHiveScaleDevice();
   const hives = useHivesWithBoxes(undefined, { enabled: true });
-  const inspections = useInspections({
-    startDate: dateRange.preset === 'all' ? undefined : dateRange.startAt,
-    endDate: dateRange.endAt,
-  });
-
   const hiveNameOptions = useMemo(
     () =>
       [
@@ -2748,6 +2942,11 @@ export function HiveScalePage() {
   const selectedDevice = devices.data?.find(
     device => device.device_id === selectedDeviceId,
   );
+
+  useEffect(() => {
+    setHiveMappings(deviceHiveMappings(selectedDevice));
+  }, [selectedDevice]);
+
   const latest = latestMeasurement(measurements.data);
   // The MAX17048 fuel gauge reports state-of-charge above 100% while the cell
   // is actively taking charge, so we treat >100% as the "charging" signal.
@@ -2778,7 +2977,6 @@ export function HiveScalePage() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['hivescale'] }),
         queryClient.invalidateQueries({ queryKey: ['hives'] }),
-        queryClient.invalidateQueries({ queryKey: ['inspections'] }),
       ]);
     } catch (error) {
       toast.error(
@@ -2836,6 +3034,8 @@ export function HiveScalePage() {
         selectedDeviceId={selectedDeviceId}
         latest={latest}
         hiveNameOptions={hiveNameOptions}
+        hiveMappings={hiveMappings}
+        onHiveMappingsChange={setHiveMappings}
         hasClaimedDevices={Boolean(devices.data?.length)}
         isDeviceListLoading={devices.isLoading}
         onCalibrationPollingChange={setIsCalibrationPolling}
@@ -2983,26 +3183,18 @@ export function HiveScalePage() {
       )}
 
       {selectedDevice && (
-        <HiveScaleDiagramPanel
+        <HiveScaleModularDashboard
           selectedDevice={selectedDevice}
           measurements={measurements.data}
-          isLoading={measurements.isLoading}
+          measurementsLoading={measurements.isLoading}
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
           scale1Name={scale1Name}
           scale2Name={scale2Name}
-          inspections={inspections.data}
-          hives={hives.data}
-        />
-      )}
-
-      {selectedDevice && (
-        <HiveScaleSoundPanel
-          measurements={measurements.data}
-          isLoading={measurements.isLoading}
-          dateRange={dateRange}
-          scale1Name={scale1Name}
-          scale2Name={scale2Name}
+          hiveMappings={hiveMappings}
+          alerts={insights.data?.alerts ?? []}
+          insightsLoading={insights.isLoading}
+          insightsError={insights.isError}
         />
       )}
     </div>
