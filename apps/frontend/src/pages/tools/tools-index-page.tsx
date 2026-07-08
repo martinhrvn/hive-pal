@@ -1,4 +1,4 @@
-import { Beaker, Bug, Microscope, Waypoints } from 'lucide-react';
+import { Beaker, Bug, Microscope, ShieldCheck, Waypoints } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ToolMeta, ToolPageHeader } from '@/components/tool-page';
@@ -11,6 +11,7 @@ const TOOLS = [
   { to: '/tools/brood-timeline',   key: 'brood',       icon: Bug },
   { to: '/tools/swarm-management', key: 'swarm',       icon: Waypoints },
   { to: '/tools/liebefelder',      key: 'liebefelder', icon: Microscope },
+  { to: '/tools/varroa-management', key: 'varroa',      icon: ShieldCheck },
 ] as const;
 
 export function ToolsIndexPage() {

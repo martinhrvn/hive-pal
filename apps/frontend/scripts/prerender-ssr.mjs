@@ -35,6 +35,7 @@ const PUBLIC_ROUTES = [
   '/tools/swarm-management',
   '/tools/swarm-management/demaree',
   '/tools/liebefelder',
+  '/tools/varroa-management',
   '/releases',
   '/privacy-policy',
 ];
@@ -69,6 +70,7 @@ const ROUTE_TRANSLATION_MARKERS = {
     key: 'swarmManagement.demaree.description',
   },
   '/tools/liebefelder': { ns: 'common', key: 'liebefelder.intro' },
+  '/tools/varroa-management': { ns: 'common', key: 'varroaManagement.intro' },
   '/releases': null,
   '/privacy-policy': null,
 };

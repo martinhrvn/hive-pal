@@ -35,6 +35,7 @@
     "broodTimeline": "Brood Timeline",
     "swarmManagement": "Swarm Management",
     "liebefelder": "Liebefelder Method",
+    "varroaManagement": "Varroa Management",
     "documentation": "Documentation"
   },
   "actions": {
@@ -956,6 +957,282 @@
       }
     }
   },
+  "varroaManagement": {
+    "eyebrow": "Free Tool",
+    "title": "Varroa Management Plan",
+    "intro": "A season-long varroa control schedule for production colonies (Wirtschaftsvölker) and nucleus colonies (Ableger), based on the proven concept by Dr. Pia Aumeier, Dr. Gerhard Liebig, and Dr. Otto Boecking. The key rule: never treat on a fixed schedule — measure the natural mite fall first and treat only when a threshold is exceeded.",
+    "columns": {
+      "production": {
+        "title": "Production colony",
+        "subtitle": "Wirtschaftsvolk (incl. shook swarm)"
+      },
+      "nucleus": {
+        "title": "Nucleus colony",
+        "subtitle": "Ableger (young colony)"
+      }
+    },
+    "treatments": {
+      "biotech": "Biotechnical",
+      "lactic": "Lactic acid",
+      "formic": "Formic acid",
+      "oxalic": "Oxalic acid"
+    },
+    "legend": {
+      "title": "Legend:",
+      "threshold": "red box = treat only above the stated natural mite fall per day"
+    },
+    "timeline": {
+      "springSummer": {
+        "time": "April – July",
+        "production": {
+          "badge": "3–4×",
+          "title": "Cut drone brood",
+          "items": [
+            "At cherry blossom, expand every colony with a queen excluder and honey super, and hang an empty drone frame in the upper brood box between the outermost comb and drawn combs.",
+            "Cut the frame out after 14 days at the earliest and 24 days at the latest — never let the drones emerge. Repeat as often as possible from April to July."
+          ]
+        },
+        "nucleus": {
+          "badge": "1×",
+          "title": "Spray with lactic acid",
+          "items": [
+            "In the broodless phase right after the nucleus is made up, spray the bees on every comb (both sides, about 3 bursts per side) with 15% lactic acid.",
+            "With heavy varroa infestation, repeat the treatment after a few days."
+          ],
+          "note": "Wear gloves, long clothing, and safety glasses. Sprayed colonies must not be used for honey production in the same year."
+        }
+      },
+      "endOfJuly": {
+        "time": "End of July",
+        "production": {
+          "monitor": "After the last honey harvest: insert the sticky board for exactly 3 days and count the natural mite fall.",
+          "threshold": {
+            "condition": "Natural mite fall above 10 varroa per day:",
+            "action": "1× emergency treatment"
+          },
+          "note": "Very rarely necessary. Below the threshold, do not treat — spare the brood and bees."
+        },
+        "nucleus": {
+          "monitor": "3-day mite-fall count.",
+          "threshold": {
+            "condition": "Natural mite fall above 5 varroa per day:",
+            "action": "1× emergency treatment"
+          },
+          "note": "Very rarely necessary. Below the threshold, do not treat."
+        }
+      },
+      "lateAugust": {
+        "time": "2nd half of August",
+        "production": {
+          "title": "Start late-summer care",
+          "items": [
+            "Condense the colony by removing the lower brood box (comb hygiene).",
+            "1× treatment with formic acid.",
+            "Then feed the winter stores in one large portion."
+          ],
+          "note": "Alternative: make the colony broodless with “divide and treat” and use oxalic acid instead of formic acid — see the detailed guide below."
+        },
+        "nucleus": {
+          "title": "No treatment",
+          "items": [
+            "Simply keep feeding small portions and let the colony develop and draw out its combs."
+          ]
+        }
+      },
+      "september": {
+        "time": "Early – mid September",
+        "production": {
+          "monitor": "After feeding is finished: 3-day mite-fall count.",
+          "threshold": {
+            "condition": "Natural mite fall above 5 varroa per day:",
+            "action": "1× treatment"
+          },
+          "note": "Below the threshold, no further treatment is needed."
+        },
+        "nucleus": {
+          "monitor": "3-day mite-fall count.",
+          "threshold": {
+            "condition": "Natural mite fall above 1 varroa per day:",
+            "action": "1× treatment"
+          },
+          "note": "Winter feeding follows after the treatment."
+        }
+      },
+      "novemberDecember": {
+        "time": "End of Nov – mid Dec",
+        "production": {
+          "monitor": "In the broodless winter period: 3-day mite-fall count.",
+          "threshold": {
+            "condition": "Natural mite fall above 1 varroa per day:",
+            "action": "1× residual de-miting"
+          },
+          "note": "Trickle 30–50 ml of 3.5% oxalic acid solution onto the bees in the occupied seams. Below the threshold, no treatment is needed."
+        },
+        "nucleus": {
+          "monitor": "In the broodless winter period: 3-day mite-fall count.",
+          "threshold": {
+            "condition": "Natural mite fall above 1 varroa per day:",
+            "action": "1× residual de-miting"
+          },
+          "note": "Trickle 30–50 ml of 3.5% oxalic acid solution. Below the threshold, no treatment is needed."
+        }
+      }
+    },
+    "divideAndTreat": {
+      "title": "Divide and treat (Teilen und Behandeln)",
+      "summary": "Had enough of formic acid? Divide and treat makes a production colony broodless after the last honey harvest, so a single, weather-independent oxalic or lactic acid treatment hits every mite. Here is the flightling and broodling method, step by step.",
+      "intro": {
+        "0": "In late July a strong production colony holds up to 30,000 bees and 30,000 brood cells. The more brood, the harder it is to get a good treatment result with formic acid without brood damage — especially in cool, damp weather. Divide and treat, refined from the Celle rotation system in the German “Betriebsweisen im Vergleich” project, sidesteps the problem entirely: the colony is split into two broodless halves that can each be treated reliably with oxalic or lactic acid, independent of the weather.",
+        "1": "You split the production colony into a queenright flightling and a queenless broodling. All you need is a spare floor, a crown board or foil, a lid, and a queen cage with a candy or marshmallow closure. Five apiary visits and about 15 minutes of total work de-mite the colony in two moves, allow complete comb renewal, and — if you want — raise a young queen and a new colony on the side."
+      },
+      "concepts": {
+        "flightling": {
+          "title": "Flightling (Flugling)",
+          "subtitle": "Queenright flight-bee colony",
+          "points": [
+            "The harvested honey super with its bees, placed on the original floor at the original location — all flight bees return to it.",
+            "Keeps the old queen, caged under a candy closure until the workers free her.",
+            "Broodless immediately: every mite sits on the bees, so one treatment on day X+2 catches them all.",
+            "Two days after splitting it holds up to two thirds of the bees; the queen is already released and laying again."
+          ]
+        },
+        "broodling": {
+          "title": "Broodling (Brutling)",
+          "subtitle": "Queenless brood colony",
+          "points": [
+            "Both brood boxes on a new floor — either directly on top of the flightling (same flight direction) or a few metres away.",
+            "Contains all the brood and roughly 90% of the mites, but loses its flight bees to the flightling.",
+            "Raises an emergency queen from the youngest larvae; in about 90% of cases she is successfully mated.",
+            "Broodless on day X+21, once all the worker brood has emerged — the moment to treat."
+          ]
+        }
+      },
+      "stepsTitle": "Step by step",
+      "steps": {
+        "preparation": {
+          "day": "Before day X",
+          "title": "Preparation",
+          "items": [
+            "Between mid July and mid August, harvest the summer honey. Take the queen excluder home and slide the sticky board in for the mite-fall count.",
+            "If possible, put the extracted honey super back on one day later and let the bees clean it for two to three days.",
+            "Count the natural mite fall from the 2–3 days the board was in: it should be no more than 30 mites per day. More heavily infested colonies can collapse before day X+21 — treat those with formic acid instead."
+          ]
+        },
+        "dayZero": {
+          "day": "Day X",
+          "title": "Split the colony",
+          "items": [
+            "In good weather, take the colony apart. Set the honey super with the bees inside it onto the colony's original floor — this becomes the flightling. If it holds no feed at all, hang in a feed comb (1–2 kg, usually found at the edge of the upper brood box).",
+            "Find the queen in the brood chamber (she is usually in the upper box), cage her under a candy or marshmallow closure, and hang the cage into the flightling.",
+            "Can't find the queen, or are the bees too defensive? Hang one comb of open brood into the flightling instead and swap it for the queen two days later — she is far easier to find in the bee-depleted broodling. Day X+21 then becomes X+23.",
+            "Place both brood boxes (older combs at the bottom) on a new floor, either directly on top of the flightling facing the same way, or several metres away — this becomes the broodling. Never right next to the flightling, or the flight bees drift back into the bigger unit.",
+            "Reduce the entrances of both units to about 2 cm — the broodling has neither queen nor flight bees for a few days and is highly prone to robbing.",
+            "Never give liquid feed on splitting day: it triggers robbing."
+          ]
+        },
+        "dayTwo": {
+          "day": "Day X+2",
+          "title": "Treat the flightling",
+          "items": [
+            "Up to two thirds of the bees now sit in the flightling; the queen is free and laying.",
+            "Early in the morning, while the bees sit tightly, trickle 100–200 ml of 3.5% oxalic acid solution — or better, pull every comb during the day and spray the bees with 3% oxalic acid solution (spraying works better than trickling in summer).",
+            "One treatment is enough: about 90% of the mites sit in the brood and on the nurse bees, i.e. in the broodling.",
+            "If no late nectar flow is expected, feed the flightling up to 6 litres of syrup now — then nothing more until October, so brood rearing isn't choked."
+          ]
+        },
+        "dayTwentyOne": {
+          "day": "Day X+21",
+          "title": "Treat the broodling",
+          "items": [
+            "All worker brood has now emerged, so the broodling is broodless. The emergency queen has usually hatched but is not laying yet — don't search for eggs unnecessarily.",
+            "Take the broodling apart and condense it onto a single box: remove the old combs (classically the 10 older, lower ones) and shake their bees into the broodling or in front of its entrance. If the brood combs hold forest or heather honey, you can harvest all of them and put the colony onto foundation plus one feed comb.",
+            "Treat exactly like the flightling before: trickle or spray with oxalic acid in the broodless state.",
+            "A second treatment four days later is often needed here: if more than 5,000 mites fall within a week of the treatment, re-treat immediately.",
+            "Feed after the treatment — or wait until the young queen is confirmed laying; a laying queen lowers the robbing risk."
+          ]
+        },
+        "dayTwentyEight": {
+          "day": "Day X+28",
+          "title": "Check the young queen",
+          "items": [
+            "Was the past week mating-flight weather (20 °C, sunny, calm)? Then 9 out of 10 broodlings now have a young, laying queen — check for eggs.",
+            "If there is no laying queen, dissolve the broodling by shaking its bees off the combs in front of the flightling's entrance."
+          ]
+        },
+        "october": {
+          "day": "October",
+          "title": "Reunite — or overwinter separately",
+          "items": [
+            "If you want one strong colony: simply set the broodling on top of the flightling, no newspaper needed. As a rule the queen of the upper colony survives — to be sure a specific queen survives, remove the other one beforehand. Late reunification gives rock-solid winter colonies headed by a young queen.",
+            "If you keep both units, feed each so it goes into winter with at least 15 kg of stores (roughly 15 litres of syrup if the combs are empty), ideally split into an early and a late portion."
+          ]
+        }
+      },
+      "advantagesTitle": "Why divide and treat?",
+      "advantages": [
+        "Weather-independent varroa control on a freely chosen schedule — no formic acid evaporation worries.",
+        "Complete comb hygiene and comb renewal in the same operation.",
+        "Honey can be harvested even from honey-clogged brood chambers (including late forest or heather honey).",
+        "No unwanted emergency queen cells to hunt down and break, unlike caging the queen for weeks.",
+        "No risk to the queen from weeks of caging: about one in five caged queens is rejected by her workers after release — this method avoids that entirely.",
+        "Usually exceptionally strong winter colonies with young queens when both halves are reunited in October.",
+        "Alternatively, a free colony increase in July/August instead of reuniting."
+      ],
+      "caution": {
+        "title": "When not to use it",
+        "body": "Count the natural mite fall before splitting. Above roughly 30 mites per day the brood is so heavily infested that the emerging broodling bees die quickly and the broodling collapses before day X+21 — treat such colonies with formic acid right away instead.",
+        "robbing": "And never feed liquid feed on the day of splitting — the queenless, guard-poor broodling would be robbed out immediately."
+      }
+    },
+    "monitoring": {
+      "title": "Measuring natural mite fall (Gemülldiagnose)",
+      "summary": "Every treatment decision in this plan hangs on one number: the natural mite fall per day. Here is how to measure it correctly.",
+      "intro": "Too early, too often, too late — late-summer varroa treatment is rarely well matched to the colony's needs. Whoever records the natural mite fall with a suitable sticky board knows exactly where each colony stands, fights the mite precisely, and avoids unpleasant surprises.",
+      "items": [
+        "Use a screened floor (3 mm mesh) under which a sticky board can be slid in bee-tight.",
+        "Remove any entrance reducers or mouse guards before diagnosing.",
+        "Slide the board in for exactly 3 days before every planned treatment (first time: end of July, before the first treatment).",
+        "Pull the board and count the dark and light-brown mites — use a magnifier if needed.",
+        "Divide the count by 3: that is the natural mite fall per day, the number every threshold in the plan refers to."
+      ],
+      "conversionTitle": "What one dead mite per day means",
+      "conversion": [
+        "End of July – mid August: roughly 150–250 living mites in the colony",
+        "Early – mid September: roughly 250–350 living mites",
+        "End of November: roughly 500 living mites"
+      ],
+      "note": "Don't leave the board in permanently — it attracts ants and wax moths and only needs to be in for diagnosis (or during a formic acid treatment). Washing bee samples is more laborious and no more reliable than the debris diagnosis."
+    },
+    "aside": {
+      "thresholdsTitle": "Treatment thresholds",
+      "thresholdsDescription": "Treatment is urgently required at a natural mite fall above ... per day:",
+      "periodHeader": "When",
+      "productionHeader": "Prod.",
+      "nucleusHeader": "Nuc",
+      "thresholdRows": [
+        {
+          "period": "Mid July – mid Aug (after harvest)",
+          "production": "10 /day",
+          "nucleus": "5 /day"
+        },
+        {
+          "period": "Early Sept – mid Sept (after feeding)",
+          "production": "5 /day",
+          "nucleus": "1 /day"
+        },
+        {
+          "period": "Mid Nov – early Dec",
+          "production": "1 /day",
+          "nucleus": "1 /day"
+        }
+      ],
+      "thresholdsNote": "Natural mite fall per day, measured over exactly 3 days with a sticky board under a screened floor.",
+      "principleTitle": "Don't treat blindly!",
+      "principleBody": "The recipe's success factor: record the natural mite fall with screened floors and sticky boards instead of treating on a fixed calendar. Every treatment is matched to the actual infestation and the colony's development. Used nationwide since 2008 in 140 hobby, professional, and institute apiaries, this approach kept colony losses at 7% or less — with no chemicals during the nectar flow and no residue-forming or resistance-building varroacides.",
+      "sourceTitle": "Source",
+      "sourceBody": "Concept by Dr. Pia Aumeier, developed with Dr. Gerhard Liebig and Dr. Otto Boecking at Ruhr-Universität Bochum in the “Imkerberatung NRW” project; divide-and-treat method as published in Deutsches Bienen-Journal (DNB 07/2017)."
+    }
+  },
   "reports": {
     "title": "Reports",
     "selectApiary": "Select an apiary to view reports",
@@ -1224,6 +1501,10 @@
           "liebefelder": {
             "title": "Liebefelder Estimation Method",
             "body": "Estimate colony strength — bees, brood, pollen and feed — by counting comb eighths, with seasonal evaluation guidelines."
+          },
+          "varroa": {
+            "title": "Varroa Management Plan",
+            "body": "Season-long treatment schedule for production colonies and nuclei with mite-fall thresholds, plus the divide-and-treat method explained step by step."
           }
         }
       },
@@ -1428,6 +1709,10 @@
         "liebefelder": {
           "title": "Liebefelder Schätzmethode",
           "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+        },
+        "varroa": {
+          "title": "Varroa Management Plan",
+          "body": "Season-long treatment schedule for production colonies and nuclei with mite-fall thresholds, plus the divide-and-treat method explained step by step."
         }
       }
     }

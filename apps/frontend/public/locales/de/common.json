@@ -27,7 +27,8 @@
     "calendar": "Kalender",
     "equipment": "Ausstattung",
     "actions": "Aktionen",
-    "liebefelder": "Liebefelder Methode"
+    "liebefelder": "Liebefelder Methode",
+    "varroaManagement": "Varroa-Management"
   },
   "liebefelder": {
     "title": "Liebefelder Schätzmethode",
@@ -758,6 +759,282 @@
       }
     }
   },
+  "varroaManagement": {
+    "eyebrow": "Kostenloses Tool",
+    "title": "Varroa-Management-Plan",
+    "intro": "Ein Varroa-Behandlungsfahrplan durchs ganze Jahr für Wirtschaftsvölker und Ableger, nach dem bewährten Konzept von Dr. Pia Aumeier, Dr. Gerhard Liebig und Dr. Otto Boecking. Die wichtigste Regel: Nicht stur nach Kalender behandeln — erst den natürlichen Milbenfall erfassen und nur behandeln, wenn eine Befallsschwelle überschritten ist.",
+    "columns": {
+      "production": {
+        "title": "Wirtschaftsvolk",
+        "subtitle": "(& Maischwarm)"
+      },
+      "nucleus": {
+        "title": "Ableger",
+        "subtitle": "(Jungvolk)"
+      }
+    },
+    "treatments": {
+      "biotech": "Biotechnisch",
+      "lactic": "Milchsäure",
+      "formic": "Ameisensäure",
+      "oxalic": "Oxalsäure"
+    },
+    "legend": {
+      "title": "Legende:",
+      "threshold": "rotes Feld = nur behandeln, wenn der angegebene natürliche Milbenfall pro Tag überschritten ist"
+    },
+    "timeline": {
+      "springSummer": {
+        "time": "April bis Juli",
+        "production": {
+          "badge": "3–4×",
+          "title": "Drohnenrahmen schneiden",
+          "items": [
+            "Zur Kirschblüte alle Völker mit Absperrgitter und Honigraum erweitern und einen leeren Drohnenbaurahmen in den oberen Brutraum neben die Randwabe zwischen zwei ausgebaute Waben hängen.",
+            "Frühestens nach 14, spätestens nach 24 Tagen ausschneiden — Drohnen keinesfalls schlüpfen lassen. So oft wie möglich von April bis Juli wiederholen."
+          ]
+        },
+        "nucleus": {
+          "badge": "1×",
+          "title": "Mit Milchsäure einsprühen",
+          "items": [
+            "In der brutfreien Phase direkt nach der Erstellung des Ablegers die Bienen auf allen Waben (beidseitig, ca. 3 Sprühstöße pro Wabenseite) mit 15%iger Milchsäure einsprühen.",
+            "Bei starkem Varroabefall die Behandlung nach einigen Tagen wiederholen."
+          ],
+          "note": "Handschuhe, lange Kleidung und Brille anlegen. Besprühte Völker dürfen im selben Jahr nicht mehr zur Honigproduktion genutzt werden."
+        }
+      },
+      "endOfJuly": {
+        "time": "Ende Juli",
+        "production": {
+          "monitor": "Nach dem Abschleudern: Windel für genau 3 Tage einschieben und den natürlichen Milbenfall auszählen.",
+          "threshold": {
+            "condition": "Bei natürlichem Milbenfall von über 10 Varroa pro Tag:",
+            "action": "1× Notbehandlung"
+          },
+          "note": "Sehr selten nötig. Unterhalb der Schwelle nicht behandeln — so werden Brut und Bienen geschont."
+        },
+        "nucleus": {
+          "monitor": "Gemülldiagnose (3-tägig) durchführen.",
+          "threshold": {
+            "condition": "Bei natürlichem Milbenfall von über 5 Varroa pro Tag:",
+            "action": "1× Notbehandlung"
+          },
+          "note": "Sehr selten nötig. Unterhalb der Schwelle nicht behandeln."
+        }
+      },
+      "lateAugust": {
+        "time": "zweite Hälfte August",
+        "production": {
+          "title": "Start Spätsommerpflege",
+          "items": [
+            "Einengen durch Entfernen der unteren Zarge (Wabenhygiene).",
+            "1× Behandlung mit Ameisensäure.",
+            "Danach in einer großen Portion auffüttern."
+          ],
+          "note": "Alternative: Das Volk mit „Teilen und Behandeln“ brutfrei machen und statt Ameisensäure mit Oxalsäure behandeln — siehe ausführliche Anleitung unten."
+        },
+        "nucleus": {
+          "title": "Keine Behandlung",
+          "items": [
+            "Weiterhin nur etwas füttern, entwickeln und Waben ausbauen lassen."
+          ]
+        }
+      },
+      "september": {
+        "time": "Anfang bis Mitte September",
+        "production": {
+          "monitor": "Nach der Auffütterung: Gemülldiagnose (3-tägig) durchführen.",
+          "threshold": {
+            "condition": "Bei natürlichem Milbenfall von über 5 Varroa pro Tag:",
+            "action": "1× Behandlung"
+          },
+          "note": "Unterhalb der Schwelle ist keine weitere Behandlung nötig."
+        },
+        "nucleus": {
+          "monitor": "Gemülldiagnose (3-tägig) durchführen.",
+          "threshold": {
+            "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
+            "action": "1× Behandlung"
+          },
+          "note": "Danach folgt die Winterauffütterung."
+        }
+      },
+      "novemberDecember": {
+        "time": "Ende Nov bis Mitte Dez",
+        "production": {
+          "monitor": "In der brutfreien Winterphase: Gemülldiagnose (3-tägig) durchführen.",
+          "threshold": {
+            "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
+            "action": "1× Restentmilbung"
+          },
+          "note": "30–50 ml 3,5%ige Oxalsäurelösung in die besetzten Wabengassen träufeln. Unterhalb der Schwelle ist keine Behandlung nötig."
+        },
+        "nucleus": {
+          "monitor": "In der brutfreien Winterphase: Gemülldiagnose (3-tägig) durchführen.",
+          "threshold": {
+            "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
+            "action": "1× Restentmilbung"
+          },
+          "note": "30–50 ml 3,5%ige Oxalsäurelösung träufeln. Unterhalb der Schwelle ist keine Behandlung nötig."
+        }
+      }
+    },
+    "divideAndTreat": {
+      "title": "Teilen und Behandeln",
+      "summary": "Die Nase voll von Ameisensäure? Teilen und Behandeln macht ein Wirtschaftsvolk nach der letzten Honigernte brutfrei, sodass eine einzige, witterungsunabhängige Oxal- oder Milchsäurebehandlung jede Milbe erwischt. Hier die Methode mit Flugling und Brutling, Schritt für Schritt.",
+      "intro": {
+        "0": "Ende Juli ist ein starkes Wirtschaftsvolk bis zu 30.000 Bienen und 30.000 Brutzellen stark. Je mehr Brut, desto schwieriger ist ohne Brutschäden ein guter Behandlungserfolg mit Ameisensäure zu erzielen — besonders bei feuchter, kühler Witterung. Teilen und Behandeln, weiterentwickelt aus der Celler Rotationsbetriebsweise im Projekt „Betriebsweisen im Vergleich“, umgeht das Problem komplett: Das Volk wird in zwei brutfreie Hälften geteilt, die sich jeweils zuverlässig und witterungsunabhängig mit Oxal- oder Milchsäure behandeln lassen.",
+        "1": "Dazu wird das Wirtschaftsvolk in einen weiselrichtigen Flugling und einen weisellosen Brutling geteilt. Mehr als einen weiteren Boden, eine Folie, einen Deckel und einen Königinnenkäfig mit Futterteig- oder Marshmallow-Verschluss braucht es nicht. Fünf Bienenstandbesuche und insgesamt etwa 15 Minuten Arbeit entmilben das Volk in zwei Schritten wirkungsvoll, ermöglichen komplette Wabenhygiene und erzeugen — wenn gewünscht — nebenbei eine Jungkönigin und ein neues Volk."
+      },
+      "concepts": {
+        "flightling": {
+          "title": "Flugling",
+          "subtitle": "Weiselrichtiges Flugbienenvolk",
+          "points": [
+            "Der abgeerntete Honigraum mit den darin sitzenden Bienen, auf dem Originalboden am alten Standort — alle Flugbienen fliegen sich hierher zurück.",
+            "Behält die alte Königin, gekäfigt unter Futterteig- oder Marshmallow-Verschluss, bis die Arbeiterinnen sie freifressen.",
+            "Sofort brutfrei: Alle Milben sitzen auf den Bienen, eine einzige Behandlung am Tag X+2 erfasst sie alle.",
+            "Zwei Tage nach der Teilung sitzen hier bis zu zwei Drittel der Bienen; die Königin ist bereits freigefressen und stiftet."
+          ]
+        },
+        "broodling": {
+          "title": "Brutling",
+          "subtitle": "Weiselloses Brutvolk",
+          "points": [
+            "Beide Bruträume auf einem neuen Boden — entweder direkt oben auf dem Flugling (gleiche Flugrichtung) oder einige Meter daneben.",
+            "Enthält die gesamte Brut und rund 90 % der Milben, verliert aber seine Flugbienen an den Flugling.",
+            "Zieht aus den jüngsten Larven eine Nachschaffungskönigin; in rund 90 % der Fälle wird sie erfolgreich begattet.",
+            "Am Tag X+21 brutfrei, sobald alle Arbeiterinnenbrut geschlüpft ist — der Zeitpunkt für die Behandlung."
+          ]
+        }
+      },
+      "stepsTitle": "Schritt für Schritt",
+      "steps": {
+        "preparation": {
+          "day": "Vor Tag X",
+          "title": "Vorbereitungen",
+          "items": [
+            "Im Zeitraum Mitte Juli bis Mitte August Sommerhonig ernten. Das Absperrgitter gleich mit nach Hause nehmen und die Windel zur Gemülldiagnose einschieben.",
+            "Wenn möglich einen Tag später den geschleuderten Honigraum wieder aufsetzen und zwei bis drei Tage ausschlecken lassen.",
+            "Den natürlichen Milbenfall der 2–3 Windel-Tage auszählen: Es sollten nicht mehr als 30 Milben pro Tag gefallen sein. Stärker befallene Völker können vor Tag X+21 zusammenbrechen — bei ihnen ist eine Ameisensäurebehandlung angezeigt."
+          ]
+        },
+        "dayZero": {
+          "day": "Tag X",
+          "title": "Volk teilen",
+          "items": [
+            "Bei schönem Wetter das Volk auseinandernehmen. Den Honigraum mit den innensitzenden Bienen auf den Originalboden des Volkes stellen — das wird der Flugling. Sind keinerlei Futterreste darin, unbedingt eine Futterwabe einhängen (1–2 kg, meist am Rand des oberen Brutraums zu finden).",
+            "Im Brutraum die Königin suchen (sie ist meist im oberen Brutraum), unter Futterteig- oder Marshmallow-Verschluss käfigen und in den Flugling hängen.",
+            "Königin unauffindbar oder die Bienen zu böse? Stattdessen eine offene Brutwabe in den Flugling hängen und am übernächsten Tag gegen die Königin tauschen — sie ist im abgeflogenen Brutling viel leichter zu finden. Aus „X+21“ wird dann „X+23“.",
+            "Die beiden Bruträume (ältere Waben unten) auf einen neuen Boden stellen: entweder direkt oben auf den Flugling mit gleicher Flugrichtung oder einige Meter daneben — das wird der Brutling. Keinesfalls direkt daneben, sonst fliegen die Bienen ins größere Volk zurück und es bildet sich kein guter Flugling.",
+            "Die Fluglöcher beider Volksteile auf ca. 2 cm einengen — der Brutling hat einige Tage weder Königin noch ältere Flugbienen und ist stark räubereigefährdet.",
+            "Beim Teilen keinesfalls Flüssigfutter geben, denn dadurch entsteht Räuberei."
+          ]
+        },
+        "dayTwo": {
+          "day": "Tag X+2",
+          "title": "Flugling behandeln",
+          "items": [
+            "Bis zu zwei Drittel der Bienen sitzen jetzt im Flugling; die Königin ist freigefressen und stiftet.",
+            "Am frühen Morgen (die Bienen sollen eng sitzen) mit 100–200 ml 3,5%iger Oxalsäurelösung beträufeln — oder besser: tagsüber alle Waben ziehen und die Bienen mit 3%iger Oxalsäurelösung besprühen (Sprühen wirkt im Sommer besser als Träufeln).",
+            "Eine einmalige Behandlung reicht: Rund 90 % der Milben sitzen in der Brut und auf den Ammenbienen, also im Brutling.",
+            "Steht keine späte Tracht an, den Flugling jetzt mit bis zu 6 Litern Sirup füttern — danach bis Oktober nicht mehr, sonst ist keine Brutentwicklung möglich."
+          ]
+        },
+        "dayTwentyOne": {
+          "day": "Tag X+21",
+          "title": "Brutling behandeln",
+          "items": [
+            "Die gesamte Arbeiterinnenbrut ist geschlüpft, der Brutling ist jetzt brutfrei. Die Nachschaffungskönigin ist meist geschlüpft, legt aber noch nicht — nicht unnötig nach Stiften suchen.",
+            "Den Brutling auseinandernehmen und auf eine Zarge einengen: Altwaben entfernen (klassisch die 10 unteren, älteren) und die Bienen in den Brutling bzw. vor dessen Flugloch schlagen. Ist auf den Brutwaben noch Wald- oder Heidehonig, können alle Waben geerntet und das Volk auf Mittelwände plus eine Futterwabe gesetzt werden.",
+            "Wie zuvor den Flugling im brutfreien Zustand beträufeln oder besprühen.",
+            "Häufig ist hier eine zweite Behandlung nach vier Tagen nötig: Fallen innerhalb einer Woche nach der Behandlung mehr als 5.000 Milben, sofort erneut behandeln.",
+            "Nach der Behandlung füttern — oder warten, bis die Jungkönigin sicher legt; mit legender Königin ist die Räubereigefahr geringer."
+          ]
+        },
+        "dayTwentyEight": {
+          "day": "Tag X+28",
+          "title": "Jungkönigin kontrollieren",
+          "items": [
+            "Herrschte in der vergangenen Woche Hochzeitsflugwetter (20 °C, sonnig, windstill)? Dann ist in 9 von 10 Brutlingen eine junge, eierlegende Königin vorhanden — nachsehen.",
+            "Falls nicht: Den Brutling auflösen, indem die Bienen von den Waben vor dem Flugloch des Fluglings abgeschüttelt werden."
+          ]
+        },
+        "october": {
+          "day": "Oktober",
+          "title": "Rückvereinigung — falls gewünscht",
+          "items": [
+            "Für ein starkes Volk: Brutling einfach ohne Zeitungspapier auf den Flugling setzen. In der Regel überlebt die Königin des aufgesetzten Volkes — soll eine bestimmte sicher überleben, die andere vorher herausfangen. Die späte Vereinigung ergibt bombenstarke Wintervölker mit junger Königin.",
+            "Bei getrennter Weiterführung jeden Volksteil im Oktober so auffüttern, dass er über mindestens 15 kg Winterfutter verfügt (ohne Futter auf den Waben etwa 15 Liter Sirup), am besten in einer frühen und einer späten Portion."
+          ]
+        }
+      },
+      "advantagesTitle": "Warum Teilen und Behandeln?",
+      "advantages": [
+        "Witterungsunabhängige Varroabekämpfung nach frei wählbarem Terminplan — keine Sorgen um die Verdunstungsleistung der Ameisensäure.",
+        "Komplette Wabenhygiene und Wabenerneuerung im selben Arbeitsgang.",
+        "Honigernte auch aus verhonigten Bruträumen möglich (inklusive später Wald- oder Heidetracht).",
+        "Keine ungewünschten Nachschaffungszellen, die gesucht und gebrochen werden müssen — anders als beim wochenlangen Sperren der Königin.",
+        "Keine Gefährdung der Königin wie beim Freilassen nach wochenlanger Käfighaft: Dort wird etwa jede fünfte Königin von ihren Bienen nicht mehr akzeptiert.",
+        "In der Regel besonders starke Wintervölker mit junger Königin, wenn beide Volksteile im Oktober rückvereinigt werden.",
+        "Alternativ zur Rückvereinigung: nochmalige Völkervermehrung im Juli/August."
+      ],
+      "caution": {
+        "title": "Wann die Methode nicht passt",
+        "body": "Vor der Teilung den natürlichen Milbenfall auszählen. Bei mehr als etwa 30 Milben pro Tag ist die Brut so stark befallen, dass die schlüpfenden Brutlingsbienen rasch sterben und der Brutling vor Tag X+21 zusammenbrechen kann — solche Völker besser gleich mit Ameisensäure behandeln.",
+        "robbing": "Und am Teilungstag niemals Flüssigfutter geben — der weisellose, wächterarme Brutling würde sofort ausgeräubert."
+      }
+    },
+    "monitoring": {
+      "title": "Natürlichen Milbenfall erfassen (Gemülldiagnose)",
+      "summary": "Jede Behandlungsentscheidung in diesem Plan hängt an einer Zahl: dem natürlichen Milbenfall pro Tag. So wird er richtig gemessen.",
+      "intro": "Zu früh, zu häufig, zu spät — die spätsommerliche Varroa-Bekämpfung ist selten gut auf die Bedürfnisse des Bienenvolkes abgestimmt. Wer den natürlichen Milbenfall mit einer geeigneten Windel erfasst, weiß genau, wo jedes Volk steht, bekämpft die Milbe passgenau und ist sicher vor unliebsamen Überraschungen.",
+      "items": [
+        "Gitterboden (Maschenweite 3 mm) verwenden, unter den bienensicher eine Windel eingeschoben werden kann.",
+        "Bausperren und Fluglochkeile vor der Diagnose entfernen.",
+        "Die Windel vor jeder geplanten Behandlung für genau 3 Tage einschieben (erstmals Ende Juli vor der ersten Behandlung).",
+        "Windel wieder entnehmen und die dunklen und hellbraunen Milben zählen bzw. abschätzen — notfalls Sehhilfe verwenden.",
+        "Die Anzahl durch 3 teilen: Das ist der natürliche Milbenfall pro Tag, auf den sich alle Schwellenwerte des Plans beziehen."
+      ],
+      "conversionTitle": "Was eine tote Milbe pro Tag bedeutet",
+      "conversion": [
+        "Ende Juli bis Mitte August: etwa 150–250 lebende Milben im Volk",
+        "Anfang bis Mitte September: etwa 250–350 lebende Milben",
+        "Ende November: etwa 500 lebende Milben"
+      ],
+      "note": "Die Windel nicht dauerhaft eingeschoben lassen — das lockt Ameisen und Wachsmotten an; sie muss nur zur Diagnose (oder während einer Ameisensäurebehandlung) im Volk sein. Bienenproben auszuwaschen ist umständlicher und liefert keine verlässlicheren Resultate als die Gemülldiagnose."
+    },
+    "aside": {
+      "thresholdsTitle": "Befallsschwellen",
+      "thresholdsDescription": "Behandlung dringend erforderlich bei natürlichem Milbenfall von … pro Tag:",
+      "periodHeader": "Wann",
+      "productionHeader": "W-Volk",
+      "nucleusHeader": "Ableger",
+      "thresholdRows": [
+        {
+          "period": "Mitte Juli – Mitte Aug (nach dem Abschleudern)",
+          "production": "10 /Tag",
+          "nucleus": "5 /Tag"
+        },
+        {
+          "period": "Anfang – Mitte Sept (nach dem Auffüttern)",
+          "production": "5 /Tag",
+          "nucleus": "1 /Tag"
+        },
+        {
+          "period": "Mitte Nov – Anfang Dez",
+          "production": "1 /Tag",
+          "nucleus": "1 /Tag"
+        }
+      ],
+      "thresholdsNote": "Natürlicher Milbenfall pro Tag, gemessen über genau 3 Tage mit der Windel unter dem Gitterboden.",
+      "principleTitle": "Nicht stur behandeln!",
+      "principleBody": "Das Erfolgsrezept: Mit Gitterboden und Windel den natürlichen Milbentotenfall erfassen, statt nach festem Kalender zu behandeln. Jede sinnvolle Behandlung ist auf den Befallsgrad und die Entwicklung des Bienenvolkes abgestimmt. Seit 2008 bewährt sich das Rezept in einer bundesweiten Studie in 140 Hobby-, Berufs- und Instituts-Imkereien mit durchgehend höchstens 7 % Völkerverlusten — ganz ohne chemische Mittel während der Tracht und ohne rückstands- oder resistenzbildende Varroazide.",
+      "sourceTitle": "Quelle",
+      "sourceBody": "Konzept von Dr. Pia Aumeier, erstellt unter Mitwirkung von Dr. Gerhard Liebig und Dr. Otto Boecking an der Ruhr-Universität Bochum im Projekt „Imkerberatung NRW“; Teilen und Behandeln nach der Veröffentlichung im Deutschen Bienen-Journal (DNB 07/2017)."
+    }
+  },
   "footer": {
     "privacyPolicy": "Datenschutzrichtlinie"
   },
@@ -767,6 +1044,10 @@
         "liebefelder": {
           "title": "Liebefelder Schätzmethode",
           "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+        },
+        "varroa": {
+          "title": "Varroa-Management-Plan",
+          "body": "Behandlungsfahrplan durchs Jahr für Wirtschaftsvölker und Ableger mit Befallsschwellen, plus Teilen und Behandeln Schritt für Schritt erklärt."
         }
       }
     }

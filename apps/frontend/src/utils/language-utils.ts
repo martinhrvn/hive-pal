@@ -121,6 +121,7 @@ const PUBLIC_PAGE_TRANSLATION_MARKERS: Record<
     key: 'swarmManagement.demaree.description',
   },
   '/tools/liebefelder': { ns: 'common', key: 'liebefelder.intro' },
+  '/tools/varroa-management': { ns: 'common', key: 'varroaManagement.intro' },
 };
 
 /**

@@ -200,6 +200,12 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
           }),
           url: '/tools/liebefelder',
         },
+        {
+          title: t('navigation.varroaManagement', {
+            defaultValue: 'Varroa Management',
+          }),
+          url: '/tools/varroa-management',
+        },
       ],
     },
     {

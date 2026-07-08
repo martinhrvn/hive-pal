@@ -21,6 +21,7 @@ import {
   Bug,
   Waypoints,
   Microscope,
+  ShieldCheck,
   ArrowUpRight,
 } from 'lucide-react';
 
@@ -38,6 +39,7 @@ const TOOL_CARDS = [
   { to: '/tools/brood-timeline', key: 'brood', icon: <Bug className="h-5 w-5" /> },
   { to: '/tools/swarm-management', key: 'swarm', icon: <Waypoints className="h-5 w-5" /> },
   { to: '/tools/liebefelder', key: 'liebefelder', icon: <Microscope className="h-5 w-5" /> },
+  { to: '/tools/varroa-management', key: 'varroa', icon: <ShieldCheck className="h-5 w-5" /> },
 ] as const;
 
 export function LandingPage() {

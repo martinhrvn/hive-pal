@@ -175,6 +175,11 @@ const LiebefelderPage = lazyWithRetry(() =>
     default: m.LiebefelderPage,
   })),
 );
+const VarroaManagementPage = lazyWithRetry(() =>
+  import('@/pages/tools/varroa-management-page').then(m => ({
+    default: m.VarroaManagementPage,
+  })),
+);
 
 const HiveScalePage = lazyWithRetry(() =>
   import('@/pages/hivescale/hivescale-page').then(m => ({
@@ -262,6 +267,14 @@ function buildToolsChildren() {
       element: (
         <LazyPage>
           <LiebefelderPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'varroa-management',
+      element: (
+        <LazyPage>
+          <VarroaManagementPage />
         </LazyPage>
       ),
     },

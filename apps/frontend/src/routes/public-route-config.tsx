@@ -7,6 +7,7 @@ import { BroodTimelinePage } from '@/pages/tools/brood-timeline-page';
 import { SwarmManagementOverviewPage } from '@/pages/tools/swarm-management-overview-page';
 import { DemareeMethodPage } from '@/pages/tools/demaree-method-page';
 import { LiebefelderPage } from '@/pages/tools/liebefelder-page';
+import { VarroaManagementPage } from '@/pages/tools/varroa-management-page';
 import { ReleasesPage } from '@/pages/releases';
 import { PrivacyPolicyPage } from '@/pages/privacy-policy-page';
 import { PublicLayout } from '@/components/layout/public-layout';
@@ -23,6 +24,7 @@ const toolsChildren: RouteObject[] = [
   { path: 'swarm-management', element: <SwarmManagementOverviewPage /> },
   { path: 'swarm-management/demaree', element: <DemareeMethodPage /> },
   { path: 'liebefelder', element: <LiebefelderPage /> },
+  { path: 'varroa-management', element: <VarroaManagementPage /> },
 ];
 
 const langChildren: RouteObject[] = [
