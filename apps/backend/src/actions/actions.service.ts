@@ -11,6 +11,8 @@ import {
   boxTypeSchema,
   CreateAction,
   CreateStandaloneAction,
+  feedAmountToGrams,
+  feedSugarGrams,
   UpdateAction,
   UserPreferences,
 } from 'shared-schemas';
@@ -55,7 +57,21 @@ export class ActionsService {
       case ActionType.NOTE:
         // Content is stored in notes field, no additional table needed
         break;
-      case ActionType.FEEDING:
+      case ActionType.FEEDING: {
+        // v2: recompute the derived values server-side (client values are a
+        // convenience only) so amountG/sugarG stay trustworthy for reports.
+        const amountG =
+          details.enteredAmount != null && details.enteredUnit != null
+            ? (feedAmountToGrams(
+                details.enteredAmount,
+                details.enteredUnit,
+                details.density,
+              ) ?? undefined)
+            : details.amountG;
+        const sugarG =
+          amountG != null && details.sugarContent != null
+            ? feedSugarGrams(amountG, details.sugarContent)
+            : details.sugarG;
         await tx.feedingAction.create({
           data: {
             actionId,
@@ -63,9 +79,18 @@ export class ActionsService {
             amount: details.amount,
             unit: details.unit,
             concentration: details.concentration,
+            feedTypeId: details.feedTypeId,
+            enteredAmount: details.enteredAmount,
+            enteredUnit: details.enteredUnit,
+            amountG,
+            density: details.density,
+            sugarContent: details.sugarContent,
+            sugarG,
+            waterAddedMl: details.waterAddedMl,
           },
         });
         break;
+      }
       case ActionType.FRAME:
         await tx.frameAction.create({
           data: {
@@ -668,6 +693,22 @@ export class ActionsService {
             unit: convertedUnit,
             concentration:
               prismaAction.feedingAction.concentration || undefined,
+            // v2 fields pass through untouched (entered values are shown as
+            // typed; unit-preference formatting happens in the frontend).
+            feedTypeId: prismaAction.feedingAction.feedTypeId ?? undefined,
+            enteredAmount: prismaAction.feedingAction.enteredAmount ?? undefined,
+            enteredUnit:
+              (prismaAction.feedingAction.enteredUnit as
+                | 'g'
+                | 'kg'
+                | 'ml'
+                | 'l'
+                | null) ?? undefined,
+            amountG: prismaAction.feedingAction.amountG ?? undefined,
+            density: prismaAction.feedingAction.density ?? undefined,
+            sugarContent: prismaAction.feedingAction.sugarContent ?? undefined,
+            sugarG: prismaAction.feedingAction.sugarG ?? undefined,
+            waterAddedMl: prismaAction.feedingAction.waterAddedMl ?? undefined,
           },
         };
       }

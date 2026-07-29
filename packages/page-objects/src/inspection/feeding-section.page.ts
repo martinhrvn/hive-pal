@@ -1,6 +1,11 @@
 import { Locator, Page, expect } from '@playwright/test';
 import { TEST_SELECTORS } from '../utils';
 
+/**
+ * Page object for the density-aware feeding form: a feed-type Select
+ * (built-ins + the user's custom types), an amount field with a g/kg/ml/L
+ * unit Select, an optional water-dilution field and a live sugar readout.
+ */
 export class FeedingsSectionPageObject {
   readonly page: Page;
 
@@ -12,26 +17,35 @@ export class FeedingsSectionPageObject {
     return this.page.getByText('Feeding').click();
   }
 
-  getFeedType(feedType: string) {
-    return this.page.getByRole('checkbox', { name: feedType, exact: true });
+  private get form(): Locator {
+    return this.page.getByTestId(TEST_SELECTORS.FEEDING_FORM);
   }
 
-  async selectFeedType(feedType: string) {
-    const checkbox = this.page.getByRole('checkbox', { name: feedType });
-    if (await checkbox.isChecked()) return;
-    return this.page.getByRole('checkbox', { name: feedType }).click();
+  async selectFeedType(label: string) {
+    await this.form.locator('#feedType').click();
+    await this.page.getByRole('option', { name: label, exact: true }).click();
   }
 
+  getQuantityField() {
+    return this.form.locator('#quantity');
+  }
+
+  /** @deprecated kept for older specs — use getQuantityField */
   getQuentityField() {
-    return this.page.getByRole('spinbutton', { name: 'Quantity ' });
+    return this.getQuantityField();
   }
 
-  selectConcentration(concentration: string) {
-    return this.page.getByRole('option', { name: concentration }).click();
+  async selectUnit(unit: string) {
+    await this.form.getByRole('combobox', { name: 'Unit' }).click();
+    await this.page.getByRole('option', { name: unit, exact: true }).click();
   }
 
-  getConcentrationField() {
-    return this.page.getByRole('combobox');
+  getUnitField() {
+    return this.form.getByRole('combobox', { name: 'Unit' });
+  }
+
+  getWaterField() {
+    return this.form.locator('#waterAddedMl');
   }
 
   getSaveButton() {
@@ -54,53 +68,42 @@ export class FeedingsSectionPageObject {
       .getByRole('button', { name: 'Delete' });
   }
 
-  async fillFeedingForm(
-    feedType: string,
-    quantity: string,
-    concentration?: string,
-  ) {
-    if (feedType !== 'Syrup') {
-      await this.getFeedType(feedType).click();
-      await expect(
-        this.page
-          .getByTestId(TEST_SELECTORS.FEEDING_FORM)
-          .getByText('g', { exact: true }),
-      ).toBeVisible();
-      await expect(this.getConcentrationField()).not.toBeVisible();
+  async fillFeedingForm(options: {
+    feedType: string;
+    quantity: string;
+    unit?: string;
+    waterMl?: string;
+  }) {
+    await this.selectFeedType(options.feedType);
+    await this.getQuantityField().fill(options.quantity);
+    if (options.unit) {
+      await this.selectUnit(options.unit);
     }
-    await this.getQuentityField().fill(quantity);
-
-    if (concentration && feedType === 'Syrup') {
-      await this.getConcentrationField().click();
-      await this.selectConcentration(concentration);
-      await expect(
-        this.page
-          .getByTestId(TEST_SELECTORS.FEEDING_FORM)
-          .getByText('ml', { exact: true }),
-      ).toBeVisible();
+    if (options.waterMl) {
+      await this.getWaterField().fill(options.waterMl);
     }
-
     await this.getSaveButton().click();
   }
 
-  async verifyFeedingView(
-    quantity: string,
-    feedType: string,
-    unit: string,
-    concentration?: string,
-  ) {
+  async verifyFeedingView(options: {
+    feedType: string;
+    amountLabel: string;
+    sugarLabel?: string;
+    waterLabel?: string;
+  }) {
     await expect(
       this.page.getByTestId(TEST_SELECTORS.FEEDING_FORM),
     ).not.toBeVisible();
     await expect(
       this.page.getByTestId(TEST_SELECTORS.FEEDING_VIEW),
     ).toBeVisible();
-    console.log(quantity);
-    await expect(this.assertInViewMode(`${quantity} ${unit}`)).toBeVisible();
-    await expect(this.assertInViewMode(feedType)).toBeVisible();
-
-    if (concentration) {
-      await expect(this.assertInViewMode(concentration)).toBeVisible();
+    await expect(this.assertInViewMode(options.feedType)).toBeVisible();
+    await expect(this.assertInViewMode(options.amountLabel)).toBeVisible();
+    if (options.sugarLabel) {
+      await expect(this.assertInViewMode(options.sugarLabel)).toBeVisible();
+    }
+    if (options.waterLabel) {
+      await expect(this.assertInViewMode(options.waterLabel)).toBeVisible();
     }
   }
 }

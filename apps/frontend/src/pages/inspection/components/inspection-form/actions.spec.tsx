@@ -13,7 +13,7 @@ test.describe('Action chips', () => {
 });
 
 test.describe('Feeding', () => {
-  test('When selecting Feeding form should be added to the inspection', async ({
+  test('When selecting Feeding the feed-type picker with built-ins appears', async ({
     page,
     mount,
   }) => {
@@ -21,14 +21,19 @@ test.describe('Feeding', () => {
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
-    await expect(feedingSection.getFeedType('Syrup')).toBeVisible();
-    await expect(feedingSection.getFeedType('Syrup')).toBeChecked();
-    await expect(feedingSection.getFeedType('Honey')).toBeVisible();
-    await expect(feedingSection.getFeedType('Candy')).toBeVisible();
-    await expect(feedingSection.getQuentityField()).toBeVisible();
+
+    await page
+      .getByTestId(TEST_SELECTORS.FEEDING_FORM)
+      .locator('#feedType')
+      .click();
+    await expect(page.getByRole('option', { name: 'Syrup 1:1' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Apiinvert' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Fondant' })).toBeVisible();
+    await page.getByRole('option', { name: 'Syrup 1:1' }).click();
+    await expect(feedingSection.getQuantityField()).toBeVisible();
   });
 
-  test('When selecting Syrup we should have quantity in ml and concentration select', async ({
+  test('Syrup by volume converts via density and shows the sugar readout', async ({
     page,
     mount,
   }) => {
@@ -37,13 +42,22 @@ test.describe('Feeding', () => {
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
 
-    await feedingSection.fillFeedingForm('Syrup', '850', '2:1');
-    await feedingSection.verifyFeedingView('850', 'Syrup', 'ml', '2:1');
+    // 2 L of 1:1 syrup ≈ 2.46 kg feed at 1.23 g/ml → ≈ 1.23 kg sugar (50 %)
+    await feedingSection.fillFeedingForm({
+      feedType: 'Syrup 1:1',
+      quantity: '2',
+      unit: 'L',
+    });
+    await feedingSection.verifyFeedingView({
+      feedType: 'Syrup 1:1',
+      amountLabel: '2 L',
+      sugarLabel: '≈ 1.23 kg sugar',
+    });
 
     await expect(actionsSection.getAction('Feeding')).not.toBeVisible();
   });
 
-  test('When selecting Honey we should have quantity in g and no concentration select', async ({
+  test('Commercial invert syrup can be entered by weight', async ({
     page,
     mount,
   }) => {
@@ -52,14 +66,20 @@ test.describe('Feeding', () => {
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
 
-    await feedingSection.fillFeedingForm('Honey', '500');
-
-    await feedingSection.verifyFeedingView('0.5', 'Honey', 'kg');
-
-    await expect(actionsSection.getAction('Feeding')).not.toBeVisible();
+    // A 14 kg Apiinvert bucket at 72.7 % sugar → ≈ 10.18 kg sugar
+    await feedingSection.fillFeedingForm({
+      feedType: 'Apiinvert',
+      quantity: '14',
+      unit: 'kg',
+    });
+    await feedingSection.verifyFeedingView({
+      feedType: 'Apiinvert',
+      amountLabel: '14 kg',
+      sugarLabel: '≈ 10.18 kg sugar',
+    });
   });
 
-  test('When selecting Candy we should have quantity in g and no concentration select', async ({
+  test('Solid feeds are weight-only (no volume units offered)', async ({
     page,
     mount,
   }) => {
@@ -68,10 +88,39 @@ test.describe('Feeding', () => {
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
 
-    await feedingSection.fillFeedingForm('Candy', '450');
-    await feedingSection.verifyFeedingView('0.45', 'Candy', 'kg');
+    await feedingSection.selectFeedType('Fondant');
+    await feedingSection.getUnitField().click();
+    await expect(
+      page.getByRole('option', { name: 'kg', exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('option', { name: 'g', exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('option', { name: 'L', exact: true }),
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole('option', { name: 'ml', exact: true }),
+    ).not.toBeVisible();
+  });
 
-    await expect(actionsSection.getAction('Feeding')).not.toBeVisible();
+  test('Water dilution is recorded in ml', async ({ page, mount }) => {
+    await mount(<ActionsWithForm />);
+    const actionsSection = new ActionsSectionPageObject(page);
+    const feedingSection = actionsSection.feedingSection;
+    await actionsSection.selectAction('Feeding');
+
+    await feedingSection.fillFeedingForm({
+      feedType: 'Apiinvert',
+      quantity: '5',
+      unit: 'kg',
+      waterMl: '500',
+    });
+    await feedingSection.verifyFeedingView({
+      feedType: 'Apiinvert',
+      amountLabel: '5 kg',
+      waterLabel: '+ 500 ml water',
+    });
   });
 
   test('Edit should work', async ({ page, mount }) => {
@@ -80,15 +129,26 @@ test.describe('Feeding', () => {
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
 
-    await feedingSection.fillFeedingForm('Honey', '500');
-    await feedingSection.verifyFeedingView('0.5', 'Honey', 'kg');
+    await feedingSection.fillFeedingForm({
+      feedType: 'Apiinvert',
+      quantity: '14',
+      unit: 'kg',
+    });
+    await feedingSection.verifyFeedingView({
+      feedType: 'Apiinvert',
+      amountLabel: '14 kg',
+    });
 
     await feedingSection.getEditButton().click();
     await expect(page.getByTestId(TEST_SELECTORS.FEEDING_FORM)).toBeVisible();
-    await feedingSection.getQuentityField().fill('600');
+    await feedingSection.getQuantityField().fill('10');
     await feedingSection.getSaveButton().click();
 
-    await feedingSection.verifyFeedingView('0.6', 'Honey', 'kg');
+    await feedingSection.verifyFeedingView({
+      feedType: 'Apiinvert',
+      amountLabel: '10 kg',
+      sugarLabel: '≈ 7.27 kg sugar',
+    });
   });
 
   test('Remove should work', async ({ page, mount }) => {
@@ -97,14 +157,44 @@ test.describe('Feeding', () => {
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
 
-    await feedingSection.fillFeedingForm('Honey', '500');
-    await feedingSection.verifyFeedingView('0.5', 'Honey', 'kg');
+    await feedingSection.fillFeedingForm({
+      feedType: 'Apiinvert',
+      quantity: '5',
+      unit: 'kg',
+    });
+    await feedingSection.verifyFeedingView({
+      feedType: 'Apiinvert',
+      amountLabel: '5 kg',
+    });
 
     await feedingSection.getRemoveButton().click();
     await expect(
       page.getByTestId(TEST_SELECTORS.FEEDING_VIEW),
     ).not.toBeVisible();
     await expect(actionsSection.getAction('Feeding')).toBeVisible();
+  });
+
+  test('Remembers the last-used unit per feed type', async ({
+    page,
+    mount,
+  }) => {
+    await mount(<ActionsWithForm />);
+    const actionsSection = new ActionsSectionPageObject(page);
+    const feedingSection = actionsSection.feedingSection;
+    await actionsSection.selectAction('Feeding');
+
+    // Apiinvert defaults to L; save once with kg …
+    await feedingSection.fillFeedingForm({
+      feedType: 'Apiinvert',
+      quantity: '5',
+      unit: 'kg',
+    });
+    await feedingSection.getRemoveButton().click();
+
+    // … and the next feeding with the same type preselects kg.
+    await actionsSection.selectAction('Feeding');
+    await feedingSection.selectFeedType('Apiinvert');
+    await expect(feedingSection.getUnitField()).toHaveText('kg');
   });
 });
 

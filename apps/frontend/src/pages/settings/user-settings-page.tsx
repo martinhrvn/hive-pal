@@ -38,6 +38,7 @@ import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { PasskeysCard } from '@/components/passkeys-card';
+import { FeedTypesCard } from '@/components/feed-types-card';
 import { DeleteAccountDialog } from '@/components/common/delete-account-dialog';
 
 export const UserSettingsPage = () => {
@@ -361,6 +362,8 @@ export const UserSettingsPage = () => {
         </Card>
 
         {/* Passkeys */}
+        <FeedTypesCard />
+
         <PasskeysCard />
 
         {/* Data */}

@@ -1,4 +1,30 @@
 {
+  "feedTypes": {
+    "title": "Futterarten",
+    "description": "Deine eigenen Futtermittel (z. B. ein kommerzieller Invertzuckersirup) mit Dichte und Zuckergehalt. Sie erscheinen im Fütterungsformular neben den Standardtypen.",
+    "empty": "Noch keine eigenen Futterarten.",
+    "add": "Futterart hinzufügen",
+    "name": "Name",
+    "namePlaceholder": "z. B. Apiinvert",
+    "form": "Form",
+    "sugarContent": "Zuckergehalt (Gew.-%)",
+    "density": "Dichte (g/ml, nur Flüssigfutter)",
+    "densityHint": "Für festes Futter leer lassen — es wird nur nach Gewicht erfasst.",
+    "sugarShort": "{{value}} % Zucker",
+    "densityShort": "{{value}} g/ml",
+    "saveFailed": "Futterart konnte nicht gespeichert werden. Ist der Name schon vergeben?",
+    "deleteFailed": "Futterart konnte nicht gelöscht werden.",
+    "forms": {
+      "SYRUP": "Sirup",
+      "INVERT_SYRUP": "Invertzuckersirup",
+      "FONDANT": "Futterteig (Fondant)",
+      "CANDY": "Futterteig (Candy)",
+      "DRY_SUGAR": "Trockenzucker",
+      "HONEY": "Honig",
+      "PROTEIN": "Eiweißfutter",
+      "OTHER": "Sonstiges"
+    }
+  },
   "navigation": {
     "home": "Startseite",
     "dashboard": "Dashboard",

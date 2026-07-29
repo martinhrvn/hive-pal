@@ -1,4 +1,30 @@
 {
+  "feedTypes": {
+    "title": "Feed types",
+    "description": "Your own feeds (e.g. a commercial invert syrup) with density and sugar content. They appear in the feeding form next to the standard types.",
+    "empty": "No custom feed types yet.",
+    "add": "Add feed type",
+    "name": "Name",
+    "namePlaceholder": "e.g. Apiinvert",
+    "form": "Form",
+    "sugarContent": "Sugar content (% by weight)",
+    "density": "Density (g/ml, liquids only)",
+    "densityHint": "Leave empty for solid feeds — they are entered by weight only.",
+    "sugarShort": "{{value}} % sugar",
+    "densityShort": "{{value}} g/ml",
+    "saveFailed": "Could not save the feed type. Is the name already in use?",
+    "deleteFailed": "Could not delete the feed type.",
+    "forms": {
+      "SYRUP": "Syrup",
+      "INVERT_SYRUP": "Invert syrup",
+      "FONDANT": "Fondant",
+      "CANDY": "Candy",
+      "DRY_SUGAR": "Dry sugar",
+      "HONEY": "Honey",
+      "PROTEIN": "Protein feed",
+      "OTHER": "Other"
+    }
+  },
   "navigation": {
     "home": "Home",
     "dashboard": "Dashboard",

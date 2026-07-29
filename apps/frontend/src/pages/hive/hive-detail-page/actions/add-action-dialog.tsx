@@ -88,6 +88,14 @@ export const AddActionDialog = ({
             amount: feedingAction.quantity,
             unit: feedingAction.unit,
             concentration: feedingAction.concentration,
+            feedTypeId: feedingAction.feedTypeId,
+            enteredAmount: feedingAction.enteredAmount,
+            enteredUnit: feedingAction.enteredUnit,
+            amountG: feedingAction.amountG,
+            density: feedingAction.density,
+            sugarContent: feedingAction.sugarContent,
+            sugarG: feedingAction.sugarG,
+            waterAddedMl: feedingAction.waterAddedMl,
           };
         } else if (action.type === 'TREATMENT') {
           // Treatment: treatmentType -> product, amount -> quantity

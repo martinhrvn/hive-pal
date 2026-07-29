@@ -150,6 +150,14 @@ export const transformActionsForApi = (
               amount: action.quantity,
               unit: action.unit,
               concentration: action.concentration,
+              feedTypeId: action.feedTypeId,
+              enteredAmount: action.enteredAmount,
+              enteredUnit: action.enteredUnit,
+              amountG: action.amountG,
+              density: action.density,
+              sugarContent: action.sugarContent,
+              sugarG: action.sugarG,
+              waterAddedMl: action.waterAddedMl,
             },
           };
         case 'TREATMENT':

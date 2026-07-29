@@ -145,6 +145,14 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               quantity: details.amount,
               unit: details.unit,
               concentration: details.concentration ?? '',
+              feedTypeId: details.feedTypeId,
+              enteredAmount: details.enteredAmount,
+              enteredUnit: details.enteredUnit,
+              amountG: details.amountG,
+              density: details.density,
+              sugarContent: details.sugarContent,
+              sugarG: details.sugarG,
+              waterAddedMl: details.waterAddedMl,
             };
           }
 

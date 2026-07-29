@@ -561,7 +561,18 @@ export class AccountTransferExportRunner {
     const frameSizes = await this.prisma.frameSize.findMany({
       where: { createdByUserId: userId, isBuiltIn: false },
     });
+    const feedTypes = await this.prisma.userFeedType.findMany({
+      where: { userId },
+    });
     return {
+      feedTypes: feedTypes.map((f) => ({
+        id: f.id,
+        label: f.label,
+        form: f.form,
+        density: f.density,
+        sugarContent: f.sugarContent,
+        archived: f.archived,
+      })),
       equipmentItems: equipmentItems.map((e) => ({
         id: e.id,
         itemId: e.itemId,

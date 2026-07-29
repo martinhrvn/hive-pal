@@ -2,23 +2,36 @@ import { useTranslation } from 'react-i18next';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 import { useState } from 'react';
-import { Pill } from '@/components/common';
 import NumericInputField from '@/components/common/numeric-input-field.tsx';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { useUnitFormat } from '@/hooks/use-unit-format';
-import { parseVolume } from '@/utils/unit-conversion';
+import {
+  BUILTIN_FEED_TYPES,
+  FEED_ENTRY_UNITS,
+  FeedEntryUnit,
+  feedAmountToGrams,
+  feedSugarGrams,
+  getBuiltinFeedType,
+  isVolumeFeedUnit,
+  legacyFeedToBuiltinId,
+  UserFeedTypeResponse,
+} from 'shared-schemas';
+import { useFeedTypes } from '@/api/hooks';
+import {
+  getPreferredFeedUnit,
+  saveFeedUnitPreference,
+} from '@/utils/feeding-unit-preference';
 import { ActionViewRenderer } from './action-view-container';
-
-export type FeedType = 'SYRUP' | 'HONEY' | 'CANDY' | 'PROTEIN_CANDY' | 'POLLEN_PATTY' | 'OTHER';
 
 export type FeedingActionType = {
   type: 'FEEDING';
@@ -27,163 +40,337 @@ export type FeedingActionType = {
   unit: string;
   concentration?: string;
   notes?: string;
+  // v2 fields — see shared-schemas actions/feeding.ts
+  feedTypeId?: string;
+  enteredAmount?: number;
+  enteredUnit?: FeedEntryUnit;
+  amountG?: number;
+  density?: number;
+  sugarContent?: number;
+  sugarG?: number;
+  waterAddedMl?: number;
 };
 
-export const FEED_TYPES: { id: FeedType; fallbackLabel: string }[] = [
-  { id: 'SYRUP', fallbackLabel: 'Syrup' },
-  { id: 'HONEY', fallbackLabel: 'Honey' },
-  { id: 'CANDY', fallbackLabel: 'Candy' },
-  { id: 'PROTEIN_CANDY', fallbackLabel: 'Protein Candy' },
-  { id: 'POLLEN_PATTY', fallbackLabel: 'Pollen Patty' },
-  { id: 'OTHER', fallbackLabel: 'Other' },
-];
+/** Sentinel id for a one-off free-text feed type. */
+const FREETEXT = '__CUSTOM__';
 
-const CONCENTRATIONS = ['1:1', '2:1', '3:2'];
+/** Concentration label kept on legacy field for old consumers of the API. */
+const BUILTIN_CONCENTRATION: Record<string, string> = {
+  SYRUP_1_1: '1:1',
+  SYRUP_3_2: '3:2',
+  SYRUP_2_1: '2:1',
+};
+
+type FeedSpec = {
+  label: string;
+  density: number | null;
+  sugarContent: number | null;
+};
+
+const resolveSpec = (
+  selectedId: string | null,
+  userFeedTypes: UserFeedTypeResponse[],
+): FeedSpec | null => {
+  if (!selectedId || selectedId === FREETEXT) return null;
+  const builtin = getBuiltinFeedType(selectedId);
+  if (builtin) {
+    return {
+      label: builtin.label,
+      density: builtin.density,
+      sugarContent: builtin.sugarContent,
+    };
+  }
+  const custom = userFeedTypes.find(f => f.id === selectedId);
+  if (custom) {
+    return {
+      label: custom.label,
+      density: custom.density,
+      sugarContent: custom.sugarContent,
+    };
+  }
+  return null;
+};
+
+/** Sensible default entry unit for a feed: volume for liquids, mass for solids. */
+const defaultUnitFor = (spec: FeedSpec | null): FeedEntryUnit =>
+  spec?.density != null ? 'l' : 'kg';
+
+/**
+ * The unit to preselect for a feed: the remembered last-used unit (per type,
+ * then global) when it is valid for this feed, otherwise the feed's default.
+ */
+const preferredUnitFor = (
+  selectedId: string | null,
+  spec: FeedSpec | null,
+): FeedEntryUnit => {
+  const preferred = getPreferredFeedUnit(
+    selectedId === FREETEXT ? null : selectedId,
+  );
+  if (preferred && (!isVolumeFeedUnit(preferred) || spec?.density != null)) {
+    return preferred;
+  }
+  return defaultUnitFor(spec);
+};
+
+const normalizeLegacyUnit = (unit: string): FeedEntryUnit => {
+  switch (unit.toLowerCase()) {
+    case 'ml':
+      return 'ml';
+    case 'l':
+      return 'l';
+    case 'kg':
+      return 'kg';
+    default:
+      return 'g';
+  }
+};
+
+const formatGrams = (grams: number): string =>
+  grams >= 1000
+    ? `${(Math.round(grams / 10) / 100).toLocaleString()} kg`
+    : `${Math.round(grams)} g`;
 
 type FeedingActionProps = {
   action?: FeedingActionType;
   onSave: (action: FeedingActionType) => void;
   onRemove: (action: 'FEEDING') => void;
 };
+
 export const FeedingForm: React.FC<FeedingActionProps> = ({
   action,
   onSave,
 }) => {
   const { t } = useTranslation('inspection');
-  const { unitPreference } = useUnitFormat();
+  const { data: userFeedTypes = [] } = useFeedTypes();
 
-  const feedTypeI18nKeys: Record<FeedType, string> = {
-    SYRUP: t('inspection:form.actions.feeding_section.syrup'),
-    HONEY: t('inspection:form.actions.feeding_section.honey'),
-    CANDY: t('inspection:form.actions.feeding_section.candy'),
-    PROTEIN_CANDY: t('inspection:form.actions.feeding_section.proteinCandy'),
-    POLLEN_PATTY: t('inspection:form.actions.feeding_section.pollenPatty'),
-    OTHER: t('inspection:form.actions.feeding_section.other'),
-  };
+  // Resolve the initial selection: v2 id → legacy builtin mapping → free text.
+  const initialId = (() => {
+    if (!action) return null;
+    if (action.feedTypeId) return action.feedTypeId;
+    const legacy = legacyFeedToBuiltinId(action.feedType, action.concentration);
+    return legacy ?? FREETEXT;
+  })();
 
-  // If the stored feedType is not in the known list, treat it as OTHER with custom name
-  const knownFeedTypes = new Set<string>(FEED_TYPES.map(f => f.id));
-  const isKnownType = knownFeedTypes.has(action?.feedType ?? 'SYRUP');
-
-  const [quantity, setQuantity] = useState<number | null>(
-    action?.quantity ?? 100,
-  );
-  const [concentration, setConcentration] = useState<string>(
-    action?.concentration ?? '1:1',
-  );
-  const [feedType, setFeedType] = useState<FeedType | null>(
-    isKnownType ? (action?.feedType as FeedType ?? 'SYRUP') : 'OTHER',
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(initialId);
   const [customFeedName, setCustomFeedName] = useState<string>(
-    isKnownType ? '' : (action?.feedType ?? ''),
+    initialId === FREETEXT ? (action?.feedType ?? '') : '',
+  );
+  const [enteredAmount, setEnteredAmount] = useState<number | null>(
+    action?.enteredAmount ?? action?.quantity ?? null,
+  );
+  const [enteredUnit, setEnteredUnit] = useState<FeedEntryUnit>(
+    action?.enteredUnit ??
+      (action
+        ? normalizeLegacyUnit(action.unit)
+        : preferredUnitFor(initialId, resolveSpec(initialId, userFeedTypes))),
+  );
+  const [waterAddedMl, setWaterAddedMl] = useState<number | null>(
+    action?.waterAddedMl ?? null,
   );
   const [notes, setNotes] = useState<string>(action?.notes ?? '');
 
-  const showConcentration = feedType === 'SYRUP';
+  const spec = resolveSpec(selectedId, userFeedTypes);
 
-  // Get display units based on user preference and feed type
-  // Using fixed units to avoid confusion when values change
-  const units =
-    feedType === 'SYRUP'
-      ? unitPreference === 'imperial'
-        ? 'fl oz'
-        : 'ml'
-      : unitPreference === 'imperial'
-        ? 'oz'
-        : 'g';
+  // Volume entry needs a density; free-text/solid feeds are weight-only.
+  const availableUnits = FEED_ENTRY_UNITS.filter(
+    unit => !isVolumeFeedUnit(unit) || spec?.density != null,
+  );
+
+  const amountG =
+    enteredAmount != null && enteredAmount > 0
+      ? feedAmountToGrams(enteredAmount, enteredUnit, spec?.density)
+      : null;
+  const sugarG =
+    amountG != null && spec?.sugarContent != null
+      ? feedSugarGrams(amountG, spec.sugarContent)
+      : null;
+  // The conversion hint only adds information for volume entries.
+  const showConversion = amountG != null && isVolumeFeedUnit(enteredUnit);
+
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+    if (id !== FREETEXT) setCustomFeedName('');
+    const nextSpec = resolveSpec(id, userFeedTypes);
+    // The unit field only appears after a type is picked, so selecting a type
+    // owns the unit: last-used for this feed (validated), else the feed's
+    // default (L for liquids, kg for solids).
+    setEnteredUnit(preferredUnitFor(id, nextSpec));
+  };
+
+  const builtinLabel = (id: string, fallback: string) =>
+    t(`inspection:form.actions.feeding_section.types.${id}`, {
+      defaultValue: fallback,
+    });
+
+  const canSave =
+    enteredAmount != null &&
+    enteredAmount > 0 &&
+    (selectedId === FREETEXT ? customFeedName.trim().length > 0 : !!spec);
+
   return (
     <div
       className={'grid grid-cols-1 md:grid-cols-2 gap-4 mt-5'}
       data-test={TEST_SELECTORS.FEEDING_FORM}
     >
-      <h3 className="md:col-span-2 col-span-1 text-lg font-bold">{t('inspection:form.actions.feeding_section.title')}</h3>
+      <h3 className="md:col-span-2 col-span-1 text-lg font-bold">
+        {t('inspection:form.actions.feeding_section.title')}
+      </h3>
+
       <div className="lg:col-span-2 flex flex-col gap-4">
-        <label>{t('inspection:form.actions.feeding_section.feedType')}</label>
-        <div className="flex flex-wrap gap-4">
-          {FEED_TYPES.map(({ id, fallbackLabel }) => (
-            <Pill
-              key={id}
-              color={'blue'}
-              active={feedType === id}
-              onClick={e => {
-                e.preventDefault();
-                if (feedType === id) {
-                  setFeedType(null);
-                } else {
-                  setFeedType(id);
-                  if (id !== 'OTHER') {
-                    setCustomFeedName('');
-                  }
-                }
-              }}
-            >
-              {feedTypeI18nKeys[id] || fallbackLabel}
-            </Pill>
-          ))}
-        </div>
+        <label htmlFor="feedType">
+          {t('inspection:form.actions.feeding_section.feedType')}
+        </label>
+        <Select value={selectedId ?? undefined} onValueChange={handleSelect}>
+          <SelectTrigger className="w-full" id="feedType">
+            <SelectValue
+              placeholder={t(
+                'inspection:form.actions.feeding_section.selectFeedType',
+                { defaultValue: 'Select feed type' },
+              )}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>
+                {t('inspection:form.actions.feeding_section.builtinTypes', {
+                  defaultValue: 'Standard',
+                })}
+              </SelectLabel>
+              {BUILTIN_FEED_TYPES.map(feed => (
+                <SelectItem key={feed.id} value={feed.id}>
+                  {builtinLabel(feed.id, feed.label)}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+            {userFeedTypes.filter(f => !f.archived).length > 0 && (
+              <SelectGroup>
+                <SelectLabel>
+                  {t('inspection:form.actions.feeding_section.myTypes', {
+                    defaultValue: 'My feed types',
+                  })}
+                </SelectLabel>
+                {userFeedTypes
+                  .filter(f => !f.archived)
+                  .map(feed => (
+                    <SelectItem key={feed.id} value={feed.id}>
+                      {feed.label}
+                    </SelectItem>
+                  ))}
+              </SelectGroup>
+            )}
+            <SelectGroup>
+              <SelectLabel>
+                {t('inspection:form.actions.feeding_section.otherGroup', {
+                  defaultValue: 'Other',
+                })}
+              </SelectLabel>
+              <SelectItem value={FREETEXT}>
+                {t('inspection:form.actions.feeding_section.customOneOff', {
+                  defaultValue: 'Custom (one-off)…',
+                })}
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          {t('inspection:form.actions.feeding_section.manageTypesHint', {
+            defaultValue:
+              'Add your own feeds (with density and sugar content) under Settings → Feed types.',
+          })}
+        </p>
       </div>
-      {feedType === 'OTHER' && (
+
+      {selectedId === FREETEXT && (
         <div className="lg:col-span-2 flex flex-col gap-4">
-          <label htmlFor="customFeedName">{t('inspection:form.actions.feeding_section.customFeedName')}</label>
+          <label htmlFor="customFeedName">
+            {t('inspection:form.actions.feeding_section.customFeedName')}
+          </label>
           <Input
             id="customFeedName"
-            placeholder={t('inspection:form.actions.feeding_section.customFeedNamePlaceholder')}
+            placeholder={t(
+              'inspection:form.actions.feeding_section.customFeedNamePlaceholder',
+            )}
             value={customFeedName}
             onChange={e => setCustomFeedName(e.target.value)}
           />
         </div>
       )}
-      {feedType && (
-        <div className={'flex flex-col gap-4'}>
-          <label htmlFor={'quantity'}>{t('inspection:form.actions.feeding_section.quantity')}</label>
-          <NumericInputField
-            id={'quantity'}
-            step={100}
-            min={0}
-            value={quantity}
-            onChange={e => setQuantity(e)}
-            unit={units}
-          />
-        </div>
-      )}
 
-      <div className={'flex flex-col gap-4'}>
-        {showConcentration && (
-          <>
-            <label htmlFor={'concentration'}>{t('inspection:form.actions.feeding_section.concentration')}</label>
+      {selectedId && (
+        <div className={'flex flex-col gap-4'}>
+          <label htmlFor={'quantity'}>
+            {t('inspection:form.actions.feeding_section.quantity')}
+          </label>
+          <div className="flex gap-2">
+            <NumericInputField
+              id={'quantity'}
+              step={enteredUnit === 'kg' || enteredUnit === 'l' ? 0.5 : 100}
+              min={0}
+              value={enteredAmount}
+              onChange={e => setEnteredAmount(e)}
+            />
             <Select
-              value={concentration}
-              onValueChange={val => setConcentration(val)}
+              value={enteredUnit}
+              onValueChange={value => setEnteredUnit(value as FeedEntryUnit)}
             >
-              <SelectTrigger className={'w-full'}>
-                <SelectValue
-                  id={'concentration'}
-                  placeholder={t('inspection:form.actions.feeding_section.selectConcentration')}
-                >
-                  {concentration}
-                </SelectValue>
+              <SelectTrigger className="w-24" aria-label={t('inspection:form.actions.feeding_section.unit', { defaultValue: 'Unit' })}>
+                <SelectValue>{enteredUnit === 'l' ? 'L' : enteredUnit}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {CONCENTRATIONS.map(option => (
-                  <SelectItem
-                    key={option}
-                    value={option}
-                    onSelect={() => setConcentration(option)}
-                  >
-                    {option}
+                {availableUnits.map(unit => (
+                  <SelectItem key={unit} value={unit}>
+                    {unit === 'l' ? 'L' : unit}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </>
-        )}
-      </div>
+          </div>
+          {showConversion && amountG != null && (
+            <p className="text-xs text-muted-foreground">
+              ≈ {formatGrams(amountG)}
+            </p>
+          )}
+        </div>
+      )}
+
+      {selectedId && (
+        <div className={'flex flex-col gap-4'}>
+          <label htmlFor={'waterAddedMl'}>
+            {t('inspection:form.actions.feeding_section.waterAdded', {
+              defaultValue: 'Diluted with water (ml, optional)',
+            })}
+          </label>
+          <NumericInputField
+            id={'waterAddedMl'}
+            step={100}
+            min={0}
+            value={waterAddedMl}
+            onChange={e => setWaterAddedMl(e)}
+            unit="ml"
+          />
+        </div>
+      )}
+
+      {sugarG != null && (
+        <div className="lg:col-span-2">
+          <p className="text-sm text-muted-foreground">
+            {t('inspection:form.actions.feeding_section.sugarReadout', {
+              defaultValue: '≈ {{amount}} of sugar',
+              amount: formatGrams(sugarG),
+            })}
+          </p>
+        </div>
+      )}
 
       <div className="lg:col-span-2 flex flex-col gap-4">
-        <label htmlFor="notes">{t('inspection:form.actions.feeding_section.notesOptional')}</label>
+        <label htmlFor="notes">
+          {t('inspection:form.actions.feeding_section.notesOptional')}
+        </label>
         <Textarea
           id="notes"
-          placeholder={t('inspection:form.actions.feeding_section.notesPlaceholder')}
+          placeholder={t(
+            'inspection:form.actions.feeding_section.notesPlaceholder',
+          )}
           value={notes}
           onChange={e => setNotes(e.target.value)}
           data-test={TEST_SELECTORS.FEEDING_NOTES}
@@ -191,7 +378,7 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
       </div>
 
       <div className="lg:col-span-2 flex justify-end">
-        {feedType && quantity && (feedType !== 'OTHER' || customFeedName.trim()) && (
+        {canSave && (
           <Button onClick={handleSave}>
             {t('inspection:form.actions.save')}
           </Button>
@@ -201,44 +388,50 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
   );
 
   function handleSave() {
-    if (!feedType || !quantity) return;
+    if (enteredAmount == null || enteredAmount <= 0 || !selectedId) return;
 
-    let apiQuantity = quantity;
-    let apiUnit: string;
+    const isFreetext = selectedId === FREETEXT;
+    const label = isFreetext ? customFeedName.trim() : (spec?.label ?? '');
+    if (!label) return;
 
-    if (feedType === 'SYRUP') {
-      apiUnit = 'ml';
-      if (unitPreference === 'imperial') {
-        // fl oz → ml
-        apiQuantity = parseVolume(quantity, 'fl oz', unitPreference) * 1000;
-      }
-    } else {
-      apiUnit = 'g';
-      if (unitPreference === 'imperial') {
-        // oz → grams
-        apiQuantity = quantity * 28.3495;
-      }
-    }
+    // Remember the unit actually used, so the next feeding preselects it.
+    saveFeedUnitPreference(isFreetext ? null : selectedId, enteredUnit);
 
     onSave({
       type: 'FEEDING',
-      feedType: feedType === 'OTHER' ? customFeedName.trim() : feedType,
-      quantity: apiQuantity,
-      concentration: feedType === 'SYRUP' ? concentration : undefined,
-      unit: apiUnit,
+      // Legacy fields, kept for old consumers: human-readable type, the
+      // entered amount/unit verbatim, and the classic ratio for builtin syrups.
+      feedType: label,
+      quantity: enteredAmount,
+      unit: enteredUnit,
+      concentration: BUILTIN_CONCENTRATION[selectedId] ?? undefined,
+      // v2 fields (server recomputes amountG/sugarG authoritatively).
+      feedTypeId: isFreetext ? undefined : selectedId,
+      enteredAmount,
+      enteredUnit,
+      amountG: amountG ?? undefined,
+      density: spec?.density ?? undefined,
+      sugarContent: spec?.sugarContent ?? undefined,
+      sugarG: sugarG ?? undefined,
+      waterAddedMl: waterAddedMl && waterAddedMl > 0 ? waterAddedMl : undefined,
       notes: notes.trim() || undefined,
     });
   }
 };
 
-// Maps a feedType string to its English display label.
-// For unknown feed types (custom OTHER values), returns the raw feedType string.
-const FEED_TYPE_LABELS = Object.fromEntries(
-  FEED_TYPES.map(({ id, fallbackLabel }) => [id, fallbackLabel]),
-) as Record<string, string>;
+// Maps a stored feedType to a display label. New records store the label
+// itself; legacy records store ids like SYRUP/POLLEN_PATTY.
+const LEGACY_FEED_TYPE_LABELS: Record<string, string> = {
+  SYRUP: 'Syrup',
+  HONEY: 'Honey',
+  CANDY: 'Candy',
+  PROTEIN_CANDY: 'Protein Candy',
+  POLLEN_PATTY: 'Pollen Patty',
+  OTHER: 'Other',
+};
 
 export const getFeedTypeLabel = (feedType: string): string =>
-  FEED_TYPE_LABELS[feedType] ?? feedType;
+  LEGACY_FEED_TYPE_LABELS[feedType] ?? feedType;
 
 export const FeedingView: React.FC<FeedingActionProps> = ({
   action,
@@ -247,23 +440,21 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
 }) => {
   const { t } = useTranslation('inspection');
   const [isEditing, setIsEditing] = useState(false);
-  const { formatVolume, formatWeight } = useUnitFormat();
 
   if (!action) {
     return null;
   }
 
-  // Convert stored metric values to user's preferred units for display
-  const getDisplayValue = () => {
-    if (action.feedType === 'SYRUP') {
-      // Convert ml to user's preferred volume unit
-      const volumeInLiters = action.quantity / 1000;
-      return formatVolume(volumeInLiters).label;
-    } else {
-      // Convert grams to user's preferred weight unit
-      const weightInKg = action.quantity / 1000;
-      return formatWeight(weightInKg).label;
+  // v2 records display exactly what was entered; legacy records fall back to
+  // the old ml-for-syrup / grams-otherwise convention.
+  const displayAmount = () => {
+    if (action.enteredAmount != null && action.enteredUnit) {
+      return `${action.enteredAmount.toLocaleString()} ${
+        action.enteredUnit === 'l' ? 'L' : action.enteredUnit
+      }`;
     }
+    const legacyUnit = action.feedType === 'SYRUP' ? 'ml' : 'g';
+    return `${action.quantity.toLocaleString()} ${action.unit || legacyUnit}`;
   };
 
   const handleSave = (updatedAction: FeedingActionType) => {
@@ -272,21 +463,33 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
   };
 
   return isEditing ? (
-    <FeedingForm
-      action={action}
-      onSave={handleSave}
-      onRemove={onRemove}
-    />
+    <FeedingForm action={action} onSave={handleSave} onRemove={onRemove} />
   ) : (
     <ActionViewRenderer
       title={t('inspection:form.actions.feeding_section.title')}
       badges={
         <>
           <Badge>{getFeedTypeLabel(action.feedType)}</Badge>
-          <span>{getDisplayValue()}</span>
-          {action.feedType === 'SYRUP' && action.concentration && (
-            <span>{action.concentration}</span>
+          <span>{displayAmount()}</span>
+          {action.sugarG != null && (
+            <span className="text-muted-foreground">
+              {t('inspection:form.actions.feeding_section.sugarShort', {
+                defaultValue: '≈ {{amount}} sugar',
+                amount: formatGrams(action.sugarG),
+              })}
+            </span>
           )}
+          {action.waterAddedMl != null && action.waterAddedMl > 0 && (
+            <span className="text-muted-foreground">
+              {t('inspection:form.actions.feeding_section.waterShort', {
+                defaultValue: '+ {{amount}} ml water',
+                amount: action.waterAddedMl.toLocaleString(),
+              })}
+            </span>
+          )}
+          {!action.sugarG &&
+            action.feedType === 'SYRUP' &&
+            action.concentration && <span>{action.concentration}</span>}
         </>
       }
       notes={action.notes}

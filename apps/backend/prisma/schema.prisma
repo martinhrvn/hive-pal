@@ -23,6 +23,7 @@ model User {
   role                   Role                   @default(USER)
   passwordChangeRequired Boolean                @default(false)
   equipmentItems         EquipmentItem[]
+  feedTypes              UserFeedType[]
   equipmentMultiplier    EquipmentMultiplier?
   preferences            Json?                  // JSON field for user preferences
   feedbacks              Feedback[]
@@ -449,6 +450,38 @@ model FeedingAction {
   amount        Float // Numeric amount
   unit          String // liters, quarts, gallons, kg, lb
   concentration String? // 1:1, 2:1, etc.
+
+  // v2 fields (nullable so legacy rows stay valid). See shared-schemas
+  // actions/feeding.ts for the registry and the conversion/sugar math.
+  feedTypeId    String? // built-in registry id or UserFeedType id
+  enteredAmount Float? // what the user typed
+  enteredUnit   String? // g | kg | ml | l
+  amountG       Float? // canonical mass of the feed in grams (pre-dilution)
+  density       Float? // g/ml used for volume→mass conversion
+  sugarContent  Float? // % sugar by weight used for the computation
+  sugarG        Float? // derived sugar mass in grams, stored for stable reports
+  waterAddedMl  Float? // extra dilution water in ml
+}
+
+// A user-defined feed type (e.g. a specific commercial invert syrup) with the
+// physical properties needed for unit conversion and the sugar readout.
+// Managed per user in settings; complements the built-in registry in
+// shared-schemas.
+model UserFeedType {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label        String
+  form         String // FeedForm from shared-schemas (SYRUP, INVERT_SYRUP, …)
+  density      Float? // g/ml; null for solid feeds (weight-only entry)
+  sugarContent Float // % sugar by weight (w/w)
+  archived     Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, label])
+  @@index([userId])
 }
 
 // Treatment-specific details

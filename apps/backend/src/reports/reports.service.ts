@@ -751,7 +751,13 @@ export class ReportsService {
     amount: number;
     unit: string;
     concentration: string | null;
+    sugarG?: number | null;
   }): number {
+    // v2 records store the derived sugar mass; the constants below only serve
+    // legacy records that carry no density/sugar-content information.
+    if (feedingAction.sugarG != null) {
+      return feedingAction.sugarG;
+    }
     const feedType = feedingAction.feedType.toUpperCase();
     let sugarGrams = 0;
 

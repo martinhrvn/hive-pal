@@ -14,6 +14,7 @@ export * from './useInspectionAudio';
 export * from './useQueens';
 export * from './useWeather';
 export * from './useFeatures';
+export * from './useFeedTypes';
 export * from './useQuickChecks';
 export * from './useShares';
 export * from './usePhotos';

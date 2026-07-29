@@ -288,11 +288,17 @@ const getActionLabel = (action: ActionResponse, t: (key: string) => string) => {
     case 'FEEDING':
       if (action.details?.type === 'FEEDING') {
         const feedName = getFeedTypeLabel(action.details.feedType);
-        return `Fed ${action.details.amount} ${action.details.unit} of ${feedName}${
-          action.details.concentration
-            ? ` (${action.details.concentration})`
-            : ''
-        }`;
+        const amount =
+          action.details.enteredAmount != null && action.details.enteredUnit
+            ? `${action.details.enteredAmount} ${action.details.enteredUnit === 'l' ? 'L' : action.details.enteredUnit}`
+            : `${action.details.amount} ${action.details.unit}`;
+        const extra =
+          action.details.sugarG != null
+            ? ` (≈ ${Math.round(action.details.sugarG / 10) / 100} kg sugar)`
+            : action.details.concentration
+              ? ` (${action.details.concentration})`
+              : '';
+        return `Fed ${amount} of ${feedName}${extra}`;
       }
       return 'Feeding';
     case 'TREATMENT':

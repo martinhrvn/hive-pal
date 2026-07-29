@@ -43,6 +43,14 @@ const buildActionPayload = (
         amount: a.quantity,
         unit: a.unit,
         concentration: a.concentration,
+        feedTypeId: a.feedTypeId,
+        enteredAmount: a.enteredAmount,
+        enteredUnit: a.enteredUnit,
+        amountG: a.amountG,
+        density: a.density,
+        sugarContent: a.sugarContent,
+        sugarG: a.sugarG,
+        waterAddedMl: a.waterAddedMl,
       } as CreateStandaloneAction['details'];
       break;
     }

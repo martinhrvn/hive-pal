@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ActionType } from './types';
 import { boxTypeSchema } from '../hives/box.schema';
+import { feedEntryUnitSchema } from './feeding';
 
 // Treatment product configuration with default units and quantity requirements
 export const TREATMENT_PRODUCTS = {
@@ -24,12 +25,34 @@ export const TREATMENT_UNITS = ['ml', 'g', 'pcs'] as const;
 export type TreatmentUnit = (typeof TREATMENT_UNITS)[number];
 
 // Base details schemas for specific action types
+//
+// Feeding carries two generations of fields:
+// - legacy: feedType/amount/unit/concentration (kept required so old clients
+//   and old records keep validating unchanged)
+// - v2 (all optional): a feed-type reference plus density-aware amounts and
+//   the derived sugar mass — see ./feeding.ts for the registry and the math.
 export const feedingActionDetailsSchema = z.object({
   type: z.literal(ActionType.FEEDING),
   feedType: z.string(),
   amount: z.number().positive(),
   unit: z.string(),
   concentration: z.string().optional(),
+  // v2 fields
+  /** Built-in registry id or a UserFeedType id. */
+  feedTypeId: z.string().optional(),
+  /** What the user typed, preserved for display. */
+  enteredAmount: z.number().positive().optional(),
+  enteredUnit: feedEntryUnitSchema.optional(),
+  /** Canonical mass of the feed in grams (pre-dilution). */
+  amountG: z.number().positive().optional(),
+  /** g/ml used for the volume→mass conversion. */
+  density: z.number().positive().optional(),
+  /** % sugar by weight used for the sugar computation. */
+  sugarContent: z.number().min(0).max(100).optional(),
+  /** Derived sugar mass in grams, stored for stable reporting. */
+  sugarG: z.number().min(0).optional(),
+  /** Extra water the feed was diluted with, in ml. */
+  waterAddedMl: z.number().min(0).optional(),
 });
 
 export const treatmentActionDetailsSchema = z.object({
