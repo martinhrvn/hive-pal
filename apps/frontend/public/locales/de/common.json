@@ -1,4 +1,15 @@
 {
+  "actionTypes": {
+    "feeding": "Fütterung",
+    "treatment": "Behandlung",
+    "frame": "Rähmchen",
+    "harvest": "Ernte",
+    "boxConfiguration": "Beutenkonfiguration",
+    "maintenance": "Wartung",
+    "note": "Notiz",
+    "weighing": "Wägung",
+    "other": "Sonstiges"
+  },
   "navigation": {
     "home": "Startseite",
     "dashboard": "Dashboard",
@@ -1051,5 +1062,10 @@
         }
       }
     }
+  },
+  "table": {
+    "columns": "Spalten",
+    "toggleColumns": "Spalten ein-/ausblenden",
+    "resetColumns": "Auf Standard zurücksetzen"
   }
 }

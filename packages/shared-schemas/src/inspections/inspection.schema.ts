@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { observationSchema } from './observations.schema';
 import {  inspectionStatusSchema } from './status';
 import {actionResponseSchema, createActionSchema} from '../actions';
+import {
+  weightReadingSchema,
+  weightReadingResponseSchema,
+} from '../measurements/measurement.schema';
 
 export const scoreOverrideSchema = z.object({
   overallScore: z.number().min(0).max(10).nullable(),
@@ -23,6 +27,7 @@ export const createInspectionSchema = z.object({
   notes: z.string().nullish(),
   observations: observationSchema.optional(),
   actions: z.array(createActionSchema).optional(),
+  weights: z.array(weightReadingSchema).optional(),
   status: inspectionStatusSchema.optional(),
   score: scoreOverrideSchema.optional(),
 });
@@ -67,6 +72,7 @@ export const inspectionResponseSchema = createInspectionSchema.extend({
     .or(z.string().datetime()),
   score: scoreSchema.optional(),
   actions: z.array(actionResponseSchema),
+  weights: z.array(weightReadingResponseSchema).optional(),
   createdByUserName: z.string().nullish(),
 });
 

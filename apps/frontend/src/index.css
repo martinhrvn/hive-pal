@@ -203,4 +203,26 @@
     font-weight: 600;
     font-size: 0.6875rem;
   }
+  /*
+   * Pure-CSS horizontal scroll hint: a soft shadow fades in at whichever edge
+   * has more content to scroll to, and disappears once that edge is reached.
+   * The "cover" gradients use background-attachment:local so they scroll with
+   * the content and mask the shadow at the resting edge; the shadow gradients
+   * stay fixed to the scroll box. Only shows when the element actually
+   * overflows, so it's a no-op for tables that already fit.
+   */
+  .scroll-shadow-x {
+    background:
+      linear-gradient(to right, var(--background) 30%, transparent) 0 0,
+      linear-gradient(to left, var(--background) 30%, transparent) 100% 0,
+      linear-gradient(to right, rgba(0, 0, 0, 0.16), transparent) 0 0,
+      linear-gradient(to left, rgba(0, 0, 0, 0.16), transparent) 100% 0;
+    background-repeat: no-repeat;
+    background-size:
+      40px 100%,
+      40px 100%,
+      16px 100%,
+      16px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
 }

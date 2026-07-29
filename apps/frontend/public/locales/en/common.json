@@ -1,4 +1,15 @@
 {
+  "actionTypes": {
+    "feeding": "Feeding",
+    "treatment": "Treatment",
+    "frame": "Frames",
+    "harvest": "Harvest",
+    "boxConfiguration": "Box config",
+    "maintenance": "Maintenance",
+    "note": "Note",
+    "weighing": "Weighing",
+    "other": "Other"
+  },
   "navigation": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -1716,5 +1727,10 @@
         }
       }
     }
+  },
+  "table": {
+    "columns": "Columns",
+    "toggleColumns": "Toggle columns",
+    "resetColumns": "Reset to default"
   }
 }

@@ -22,6 +22,7 @@ import type {
   ActionData,
 } from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useNavigate } from 'react-router-dom';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { useUpdateHiveBoxes } from './useHives';
 import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
@@ -303,7 +304,9 @@ export const useUpsertInspection = (
   const { mutateAsync: createInspectionMutation } = useCreateInspection();
   const { mutateAsync: updateInspectionMutation } = useUpdateInspection();
   const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
-  const { addPendingUpdate, updateStatus, removePendingUpdate } = usePendingBoxUpdatesStore();
+  const { parseWeight } = useUnitFormat();
+  const { addPendingUpdate, updateStatus, removePendingUpdate } =
+    usePendingBoxUpdatesStore();
   const getUrl = (inspectionId?: string) => `/inspections/${inspectionId}`;
   const navigate = useNavigate();
 
@@ -323,12 +326,20 @@ export const useUpsertInspection = (
         }
       : undefined;
 
+    // Convert weight readings from the user's display unit to canonical kg.
+    const formattedWeights = data.weights?.map(w => ({
+      ...w,
+      value: parseWeight(w.value),
+      unit: 'kg',
+    }));
+
     const formattedData = {
       ...data,
       date: toInspectionDateISOString(data.date, data.isAllDay ?? true),
       status: status || data.status,
       actions: transformedActions,
       score: scoreOverride,
+      weights: formattedWeights,
     };
 
     /**

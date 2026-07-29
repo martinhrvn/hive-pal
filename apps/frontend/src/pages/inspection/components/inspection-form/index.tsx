@@ -49,6 +49,8 @@ import { ScorePreviewSection } from './score-preview';
 import { AiMergeBanner } from '@/pages/inspection/components/inspection-form/ai-merge-banner';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
 import { FrameCountSection } from './frame-counts';
+import { WeightSection } from './weight-section';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 import { uploadPendingPhotos } from './upload-pending-photos';
 import { uploadPendingRecordings } from './upload-pending-recordings';
 import { useInspectionAiMerge } from './use-inspection-ai-merge';
@@ -124,6 +126,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   const { data: inspection } = useInspection(inspectionId as string, {
     enabled: !!inspectionId,
   });
+
+  // Weights are stored canonically in kg; convert to the user's display unit
+  // when prefilling the form for editing.
+  const { formatWeight: formatWeightDisplay } = useUnitFormat();
 
   const form = useForm<InspectionFormData>({
     resolver: zodResolver(inspectionSchema),
@@ -205,6 +211,17 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             notes: action.notes || '',
           };
         }) || []) as InspectionFormData['actions'],
+      weights: (inspection?.weights?.map(w => {
+        const display = formatWeightDisplay(w.value);
+        return {
+          id: w.id,
+          value: display.value,
+          unit: display.unit,
+          boxId: w.boxId,
+          side: w.side,
+          recordedAt: w.recordedAt,
+        };
+      }) ?? []) as InspectionFormData['weights'],
     },
   });
 
@@ -572,6 +589,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   <hr className="border-t border-border" />
                 </>
               )}
+
+              <WeightSection hiveBoxes={selectedHive?.boxes ?? []} />
 
               <hr className="border-t border-border" />
               <ActionsSection

@@ -31,6 +31,8 @@
     "scoreStatus": "Score/Status",
     "status": "Status",
     "queenSeen": "Queen Seen",
+    "notes": "Notes",
+    "actions": "Actions",
     "temperature": "Temperature",
     "weatherConditions": "Weather Conditions",
     "notRecorded": "Not recorded",
@@ -118,6 +120,8 @@
   },
   "actions": {
     "details": "Details",
+    "view": "View",
+    "edit": "Edit",
     "createInspection": "Create Inspection",
     "addInspection": "Add Inspection",
     "mobileInspection": "Mobile Inspection",
@@ -261,6 +265,32 @@
       "description": "Add any additional notes about this inspection",
       "label": "Notes",
       "placeholder": "Enter any observations, findings, or actions taken during the inspection..."
+    },
+    "weights": {
+      "title": "Weight",
+      "description": "Record hive weight readings. Note where you placed the scale — leave the side empty for a whole-hive weighing, and use the base for lifting the whole hive from the bottom.",
+      "empty": "No weight readings yet.",
+      "add": "Add reading",
+      "remove": "Remove reading",
+      "value": "Weight ({{unit}})",
+      "position": "Position",
+      "wholeHive": "Whole hive (base)",
+      "boxLabel": "Box {{position}} · {{type}}",
+      "boxType": {
+        "BROOD": "Brood",
+        "HONEY": "Honey",
+        "FEEDER": "Feeder"
+      },
+      "side": "Side",
+      "wholeWeight": "Whole (no side)",
+      "sides": {
+        "FRONT": "Front (entrance)",
+        "BACK": "Back",
+        "LEFT": "Left",
+        "RIGHT": "Right"
+      },
+      "chartTitle": "Weight",
+      "chartDescription": "Recorded hive weights over time ({{unit}}), grouped by position and side"
     },
     "actions": {
       "title": "Actions",
