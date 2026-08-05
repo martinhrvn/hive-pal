@@ -69,7 +69,8 @@ HivePal uses the HiveScale app API under `/api/v1/app/...`.
 |---|---|---|
 | `POST /hivescale/devices/claim` | `POST /api/v1/app/devices/claim` | Claim an unclaimed scale by claim code |
 | `GET /hivescale/devices` | `GET /api/v1/app/devices` | List the user's devices |
-| `DELETE /hivescale/devices/:deviceId` | `DELETE /api/v1/app/devices/:id` | Remove current user's membership |
+| `DELETE /hivescale/devices/:deviceId` | `DELETE /api/v1/app/devices/:id` | Remove current user's membership (releases the device when it was the last one) |
+| `DELETE /hivescale/devices/:deviceId/claim` | `DELETE /api/v1/app/devices/:id/claim` | Owner-only: release the device outright — drop every member and unclaim it |
 | `GET /hivescale/devices/:deviceId/config` | `GET /api/v1/app/devices/:id/config` | Read send interval and calibration config |
 | `PATCH /hivescale/devices/:deviceId/config` | `PATCH /api/v1/app/devices/:id/config` | Update send interval and calibration config |
 | `PATCH /hivescale/devices/:deviceId/channels` | `PATCH /api/v1/app/devices/:id/channels` | Rename scale 1 and scale 2 |
@@ -140,7 +141,8 @@ Write hooks:
 | Hook | Description |
 |---|---|
 | `useClaimHiveScaleDevice()` | Claim by claim code |
-| `useRemoveHiveScaleDevice()` | Remove current user's membership |
+| `useRemoveHiveScaleDevice()` | Remove current user's membership; the result's `released` flag says whether that also unclaimed the device |
+| `useReleaseHiveScaleDevice()` | Owner-only: release the device outright so its claim code pairs it again |
 | `useUpdateHiveScaleConfig(deviceId)` | Update interval and calibration config |
 | `useUpdateHiveScaleChannels(deviceId)` | Rename scale channels |
 | `useImportHiveScaleSdData(deviceId)` | Upload an SD-card backup file (`.ndjson`/`.tar`) and bulk-import its readings |
@@ -270,7 +272,25 @@ HiveScale enforces roles on the backend.
 | `admin` | No | Yes | Yes | No |
 | `viewer` | No | Yes | No | No |
 
-Removing a device from HivePal removes the current user's membership. If no members remain, HiveScale marks the device unclaimed again so it can be re-paired.
+Removing a device from HivePal removes the current user's membership. If no members remain, HiveScale marks the device unclaimed again so it can be re-paired — the response's `released` flag says which happened, and the UI reports it.
+
+An owner does not have to wait for everyone else to leave: **Release device** calls `DELETE /hivescale/devices/:deviceId/claim`, which drops every member and unclaims the device in one step. Either way the readings, config and channel names are kept, so re-claiming restores the history.
+
+---
+
+## Un-pairing and re-pairing
+
+Pairing is reversible from both ends, which is what makes a half-broken pairing recoverable without touching the hardware.
+
+| Step | What happens |
+|---|---|
+| Remove (or release) the device in HivePal | HiveScale clears `claimed_at` once no members remain, so the claim code works again |
+| The device's next upload | HiveScale answers `"claimed": false`; the firmware drops its local "claim registered" latch and starts sending its claim code again — no reflash, no factory reset |
+| Claim the code in HivePal again | The device re-appears with its full history |
+
+Two things HivePal deliberately forgets on removal, both browser-local and keyed by `device_id` (which is stable across re-pairings): the hive-name mapping (`hivepal:hivescale-hive-mapping:<deviceId>:v1`) and the saved dashboard layout (`hivepal:hivescale-dashboard:<deviceId>:v<n>`). Without that, re-claiming the same hardware brought back names and a layout the beekeeper had already discarded.
+
+**Older HiveScale backends** do not clear `claimed_at` on removal. Against those, a removed device stays claimed with no members: invisible to everyone and impossible to re-claim (`404` on the claim code). The fix is on the HiveScale side — upgrade it, and run its `022_release_orphaned_devices.sql` migration once to release devices already stuck that way.
 
 ---
 
@@ -306,9 +326,13 @@ The HivePal `HIVESCALE_SERVICE_API_KEY` does not match HiveScale's `HIVEPAL_SERV
 
 The user's JWT access token was rejected by HiveScale. This usually means the HiveScale backend cannot validate HivePal-issued JWTs (mismatched `JWT_SECRET`), or the token has expired. Confirm both backends share the same `JWT_SECRET` and that the user is signed in with a valid session.
 
+### `409` — the code belongs to an already-claimed device
+
+The claim code is right, but the device is still paired. If you are already a member it is in your device list. Otherwise its owner has to release it first (**Release device**, or removing themselves as the last member). Older HiveScale backends report this case as a `404` instead — see below.
+
 ### `404 No unclaimed device found for this claim code`
 
-The device has not sent its first measurement, the code is wrong, or the device is already claimed.
+No device on the server has ever sent that claim code: it has not uploaded a measurement yet, or the code is wrong.
 
 **Also check:** if you rebuilt HiveScale from scratch (deleted the DB/containers) and the
 device was claimed against a *previous* install, older firmware latched a local
@@ -316,8 +340,11 @@ device was claimed against a *previous* install, older firmware latched a local
 claim code — so the fresh backend never learns it, and this 404 is returned even though
 the device is happily uploading data. Fixes: (1) update to firmware that keeps sending
 the claim code until the server confirms the claim (it re-populates automatically), or
-(2) on the old firmware, bump `CLAIM_CODE_REVISION` in `secrets.h` (or set
-`FORCE_RESEED true`) and re-flash to force the code to be resent once, or (3) factory-reset
+(2) re-submit the claim code in the device's setup portal (short-press the button, join
+the `HiveHub-Setup-XXXX` AP, save) — current firmware clears the latch whenever a claim
+code is submitted there, so the code is sent again on the next upload, or
+(3) on the old firmware, bump `CLAIM_CODE_REVISION` in `secrets.h` (or set
+`FORCE_RESEED true`) and re-flash to force the code to be resent once, or (4) factory-reset
 the device. A plain re-flash with an unchanged `secrets.h` does **not** help, because the
 flag lives in NVS/Preferences which survives flashing.
 

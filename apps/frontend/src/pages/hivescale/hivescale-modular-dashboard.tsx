@@ -64,10 +64,12 @@ import {
 import { severityConfig } from './hivescale-insights-card';
 import { BeeLoadingMessages } from './hivescale-loading-messages';
 import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';
+import {
+  DASHBOARD_STORAGE_VERSION,
+  dashboardStorageKey,
+} from './hivescale-local-state';
 
 const MAX_HIVE_SLOTS = 18;
-const DASHBOARD_STORAGE_VERSION = 2;
-const dashboardStoragePrefix = 'hivepal:hivescale-dashboard:';
 
 const numberOrDash = (value: number | null | undefined, digits = 1) =>
   typeof value === 'number' && Number.isFinite(value)
@@ -1022,9 +1024,6 @@ const defaultWidgets: DashboardWidget[] = [
 
 const createWidgetId = (kind: DashboardWidgetKind) =>
   `${kind}-${crypto.randomUUID()}`;
-
-const dashboardStorageKey = (deviceId: string, version = DASHBOARD_STORAGE_VERSION) =>
-  `${dashboardStoragePrefix}${deviceId}:v${version}`;
 
 const normalizeDashboardWidget = (value: unknown): DashboardWidget | null => {
   if (!value || typeof value !== 'object') return null;

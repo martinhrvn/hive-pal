@@ -603,14 +603,48 @@ export const useClaimHiveScaleDevice = () => {
   });
 };
 
+/** What the backend reports after removing a membership. */
+export interface HiveScaleDeviceRemovalResult {
+  status: string;
+  device_id: string;
+  /**
+   * True when that was the last member, so the device was unclaimed and its
+   * claim code pairs it again. False when other members still hold it.
+   */
+  released?: boolean;
+}
+
 export const useRemoveHiveScaleDevice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (deviceId: string) => {
-      const response = await apiClient.delete(
+      const response = await apiClient.delete<HiveScaleDeviceRemovalResult>(
         `/api/hivescale/devices/${deviceId}`,
       );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+/**
+ * Owner-only "forget this device": removes every member and unclaims it in one
+ * step, so it can be re-paired with its claim code. Removing yourself only
+ * releases the device once you are the last member left.
+ */
+export const useReleaseHiveScaleDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (deviceId: string) => {
+      const response = await apiClient.delete<{
+        status: string;
+        device_id: string;
+        members_removed: number;
+      }>(`/api/hivescale/devices/${deviceId}/claim`);
       return response.data;
     },
     onSuccess: () => {
