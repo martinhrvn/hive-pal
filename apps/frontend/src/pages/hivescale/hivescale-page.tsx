@@ -16,6 +16,7 @@ import {
   Square,
   Thermometer,
   Trash2,
+  Unlink,
   Upload,
   UserPlus,
   Weight,
@@ -33,6 +34,7 @@ import {
   useHiveScaleFirmwareStatus,
   useHiveScaleMeasurements,
   useHiveScaleMembers,
+  useReleaseHiveScaleDevice,
   useRemoveHiveScaleDevice,
   useRevokeHiveScaleMember,
   useShareHiveScaleDevice,
@@ -58,6 +60,7 @@ import {
   type HiveScaleDateRange,
   type HiveScaleDateRangePreset,
 } from './hivescale-date-range';
+import { clearStoredDashboardSettings } from './hivescale-local-state';
 import { HiveScaleModularDashboard } from './hivescale-modular-dashboard';
 import { WirelessSensorsBattery } from './wireless-sensors-battery';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -165,6 +168,23 @@ const readStoredHiveMappings = (deviceId: string): HiveMappingBySlot => {
     return fallback;
   } catch {
     return fallback;
+  }
+};
+
+/**
+ * Forget a device's locally stored hive names.
+ *
+ * The key is device_id-scoped and the device_id is stable across re-pairings,
+ * so without this a removed-and-re-claimed device came back wearing the hive
+ * names from its previous life.
+ */
+const clearStoredHiveMappings = (deviceId: string) => {
+  if (typeof globalThis.window === 'undefined') return;
+
+  try {
+    globalThis.localStorage.removeItem(hiveMappingStorageKey(deviceId));
+  } catch {
+    // Ignore localStorage failures, for example private mode.
   }
 };
 
@@ -2698,6 +2718,8 @@ function ScaleSetupPanel({
   onSelectDevice,
   onRemoveDevice,
   isRemovingDevice,
+  onReleaseDevice,
+  isReleasingDevice,
 }: Readonly<{
   selectedDevice: HiveScaleDevice | undefined;
   selectedDeviceId: string | undefined;
@@ -2712,6 +2734,8 @@ function ScaleSetupPanel({
   onSelectDevice: (deviceId: string) => void;
   onRemoveDevice: () => void;
   isRemovingDevice: boolean;
+  onReleaseDevice: () => void;
+  isReleasingDevice: boolean;
 }>) {
   const { t } = useTranslation('hivescale');
   const [isOpen, setIsOpen] = useState(false);
@@ -2756,6 +2780,20 @@ function ScaleSetupPanel({
                     <Trash2 className="mr-2 h-4 w-4" />
                     {t('setup.removeScale')}
                   </Button>
+                  {/* Owners only: removing yourself leaves a shared device
+                      claimed by everyone else, so it cannot be re-paired until
+                      each member removes themselves. This releases it outright. */}
+                  {selectedDevice?.role === 'owner' ? (
+                    <Button
+                      variant="outline"
+                      onClick={onReleaseDevice}
+                      disabled={!selectedDevice || isReleasingDevice}
+                      className="w-full sm:w-auto"
+                    >
+                      <Unlink className="mr-2 h-4 w-4" />
+                      {t('setup.releaseScale')}
+                    </Button>
+                  ) : null}
                 </>
               ) : (
                 <span className="text-sm text-muted-foreground">
@@ -2901,6 +2939,7 @@ export function HiveScalePage() {
     return out;
   }, [insights.data?.alerts]);
   const removeDevice = useRemoveHiveScaleDevice();
+  const releaseDevice = useReleaseHiveScaleDevice();
   const hives = useHivesWithBoxes(undefined, { enabled: true });
   const hiveNameOptions = useMemo(
     () =>
@@ -2987,6 +3026,15 @@ export function HiveScalePage() {
     }
   };
 
+  // Locally cached, device_id-scoped state that must not outlive the pairing.
+  // The device_id is stable across re-pairings, so leaving these behind made a
+  // re-claimed device reappear wearing hive names and a layout the beekeeper
+  // had already discarded.
+  const forgetLocalDeviceState = (deviceId: string) => {
+    clearStoredHiveMappings(deviceId);
+    clearStoredDashboardSettings(deviceId);
+  };
+
   const removeSelectedDevice = () => {
     if (!selectedDevice) return;
     const confirmed = globalThis.confirm(
@@ -2996,10 +3044,39 @@ export function HiveScalePage() {
     );
     if (!confirmed) return;
 
-    removeDevice.mutate(selectedDevice.device_id, {
-      onSuccess: () => {
+    const deviceId = selectedDevice.device_id;
+    removeDevice.mutate(deviceId, {
+      onSuccess: result => {
+        forgetLocalDeviceState(deviceId);
         setSelectedDeviceId(undefined);
-        toast.success(t('page.removeSuccess'));
+        // The backend releases the device only when the last member leaves;
+        // say which happened, because it decides whether the claim code works
+        // again or the remaining members still hold the pairing.
+        toast.success(
+          result?.released === false
+            ? t('page.removeSuccessShared')
+            : t('page.removeSuccess'),
+        );
+      },
+      onError: error => toast.error(error.message),
+    });
+  };
+
+  const releaseSelectedDevice = () => {
+    if (!selectedDevice) return;
+    const confirmed = globalThis.confirm(
+      t('page.releaseConfirm', {
+        name: selectedDevice.display_name || selectedDevice.device_id,
+      }),
+    );
+    if (!confirmed) return;
+
+    const deviceId = selectedDevice.device_id;
+    releaseDevice.mutate(deviceId, {
+      onSuccess: () => {
+        forgetLocalDeviceState(deviceId);
+        setSelectedDeviceId(undefined);
+        toast.success(t('page.releaseSuccess'));
       },
       onError: error => toast.error(error.message),
     });
@@ -3043,6 +3120,8 @@ export function HiveScalePage() {
         onSelectDevice={setSelectedDeviceId}
         onRemoveDevice={removeSelectedDevice}
         isRemovingDevice={removeDevice.isPending}
+        onReleaseDevice={releaseSelectedDevice}
+        isReleasingDevice={releaseDevice.isPending}
       />
 
       {selectedDevice && (

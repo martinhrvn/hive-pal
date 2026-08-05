@@ -56,6 +56,21 @@ After claiming, the device appears in the device selector and starts showing lat
 
 ---
 
+## Un-pair a device
+
+Two buttons sit next to the device selector, and they do different things:
+
+| Button | Effect |
+|---|---|
+| **Remove scale** | Removes *your* access. If you were the last person with access, the device is released and its claim code works again. If it is shared, the others keep it and it stays paired. |
+| **Release device** (owners only) | Removes *everyone's* access and releases the device in one step, so it can be claimed again straight away. |
+
+Readings, calibration and hive names are kept either way, so claiming the device again brings its history back with it. Hive-Pal does forget the hive-name mapping and dashboard layout saved in this browser.
+
+The device itself notices on its next upload and starts offering its claim code again — no reflashing, no factory reset, no visit to the apiary.
+
+---
+
 ## Readings and status cards
 
 The HiveScale page shows the latest measurement from the selected device.
@@ -193,6 +208,10 @@ Owners can share a HiveScale device with another Hive-Pal user by email address.
 ### I cannot claim the device
 
 The device must send a measurement with the claim code before Hive-Pal can claim it. Check the HiveScale backend logs and the ESP32 serial monitor.
+
+If Hive-Pal says the device is **already claimed**, the code is right but the pairing still exists — ask its owner to use **Release device**, or remove it yourself if it is in your list.
+
+If the device was removed from Hive-Pal a while ago and now cannot be claimed at all, the HiveScale backend may be an older version that left it claimed with nobody on it. Upgrading the backend fixes new removals; its `022_release_orphaned_devices.sql` migration releases the ones already stuck.
 
 ### The page shows no measurements
 

@@ -320,6 +320,20 @@ export class HiveScaleService {
     );
   }
 
+  /**
+   * Owner-only "forget this device": drops every member and unclaims it, so the
+   * claim code pairs it again. `removeDevice` only removes the caller, which
+   * leaves a shared device claimed until each member happens to remove
+   * themselves.
+   */
+  releaseDevice(accessToken: string, deviceId: string) {
+    return this.request(
+      accessToken,
+      'DELETE',
+      `/api/v1/app/devices/${deviceId}/claim`,
+    );
+  }
+
   getDeviceConfig(accessToken: string, deviceId: string) {
     return this.request(
       accessToken,

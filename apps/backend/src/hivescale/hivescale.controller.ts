@@ -86,6 +86,17 @@ export class HiveScaleController {
     return this.hiveScaleService.removeDevice(this.extractToken(req), deviceId);
   }
 
+  @Delete('devices/:deviceId/claim')
+  releaseDevice(
+    @Req() req: RequestWithUser,
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.hiveScaleService.releaseDevice(
+      this.extractToken(req),
+      deviceId,
+    );
+  }
+
   @Get('devices/:deviceId/config')
   getDeviceConfig(
     @Req() req: RequestWithUser,

@@ -40,12 +40,16 @@
     "refreshing": "Wird aktualisiert…",
     "refreshError": "HiveHub-Daten konnten nicht aktualisiert werden.",
     "removeConfirm": "{{name}} aus Ihrem HivePal-Konto entfernen? Sie können das Gerät mit dem Claim-Code wieder hinzufügen, sofern kein anderer Benutzer mehr Zugriff hat.",
-    "removeSuccess": "HiveHub-Gerät aus Ihrem Konto entfernt."
+    "removeSuccess": "HiveHub-Gerät aus Ihrem Konto entfernt.",
+    "removeSuccessShared": "Du hast keinen Zugriff mehr auf dieses HiveHub-Gerät. Andere Nutzer haben es weiterhin, daher bleibt sein Claim-Code in Verwendung.",
+    "releaseConfirm": "{{name}} vollständig freigeben? Alle Nutzer verlieren den Zugriff und das Gerät kann mit seinem Claim-Code erneut beansprucht werden. Messwerte bleiben erhalten.",
+    "releaseSuccess": "HiveHub-Gerät freigegeben. Es kann mit seinem Claim-Code erneut beansprucht werden."
   },
   "setup": {
     "title": "Geräte",
     "description": "Wählen oder entfernen Sie ein beanspruchtes HiveHub-Gerät. Öffnen Sie die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren.",
     "removeScale": "Waage entfernen",
+    "releaseScale": "Gerät freigeben",
     "noDevices": "Noch keine Geräte beansprucht – öffnen Sie die Einrichtung, um eines hinzuzufügen.",
     "hide": "Einrichtung ausblenden",
     "show": "Einrichtung anzeigen"

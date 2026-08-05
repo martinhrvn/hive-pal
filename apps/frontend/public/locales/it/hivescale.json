@@ -40,12 +40,16 @@
     "refreshing": "Refreshing…",
     "refreshError": "Could not refresh HiveHub data.",
     "removeConfirm": "Remove {{name}} from your HivePal account? You can add it again with the claim code when no other users still have access.",
-    "removeSuccess": "HiveHub device removed from your account."
+    "removeSuccess": "HiveHub device removed from your account.",
+    "removeSuccessShared": "Non hai più accesso a questo dispositivo HiveHub. Altri utenti lo mantengono, quindi il suo codice di rivendicazione resta in uso.",
+    "releaseConfirm": "Rilasciare completamente {{name}}? Tutti gli utenti perdono l'accesso e il dispositivo può essere rivendicato di nuovo con il suo codice. Le letture vengono conservate.",
+    "releaseSuccess": "Dispositivo HiveHub rilasciato. Può essere rivendicato di nuovo con il suo codice."
   },
   "setup": {
     "title": "Devices",
     "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
+    "releaseScale": "Rilascia dispositivo",
     "noDevices": "No devices claimed yet — open the setup to add one.",
     "hide": "Hide setup",
     "show": "Show setup"
