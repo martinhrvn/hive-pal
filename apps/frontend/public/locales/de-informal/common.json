@@ -1,0 +1,346 @@
+{
+  "liebefelder": {
+    "frameType": {
+      "description": "Wähle das in deiner Beute verwendete Rähmchenmaß — es bestimmt die Schätzwerte je Achtel.",
+      "customDescription": "Gib eigene Schätzwerte für ein Achtel einer Wabenseite ein."
+    },
+    "result": {
+      "empty": "Trage oben deine Achtel-Zählung ein, um die Schätzung zu sehen."
+    },
+    "evaluation": {
+      "description": "Vergleiche das gemessene Volk mit den saisonalen Richtwerten von Dr. Pia Aumeier.",
+      "selectPrompt": "Wähle einen Zeitpunkt, um das Volk zu bewerten.",
+      "enterCountsFirst": "Trage zuerst oben deine Zählung ein."
+    },
+    "tips": {
+      "coverage": {
+        "title": "So schätzt du die Belegung",
+        "pullFrames": {
+          "description": "Ziehe eine Wabe nach der anderen. Schaue senkrecht auf jede Seite und schätze in Achteln, wie viel der Wabenfläche mit Bienen, Brut, Pollen oder Futter belegt ist."
+        }
+      }
+    }
+  },
+  "messages": {
+    "confirmDelete": "Möchtest du dieses Element wirklich löschen?"
+  },
+  "releaseNotes": {
+    "checkLatestFeatures": "Entdecke die neuesten Funktionen und Verbesserungen."
+  },
+  "weather": {
+    "selectHiveToView": "Wähle einen Bienenstock mit Bienenstand, um das Wetter anzuzeigen"
+  },
+  "settings": {
+    "managePreferences": "Verwalte deine Konto- und Anwendungseinstellungen",
+    "customizeAppearance": "Passe das Erscheinungsbild der Anwendung an",
+    "chooseNotificationMethod": "Wähle, wie du über wichtige Ereignisse informiert werden möchtest",
+    "manageAccountInfo": "Verwalte deine Kontoinformationen",
+    "preferencesUpdated": "Deine Einstellungen wurden erfolgreich aktualisiert.",
+    "passkeysDescription": "Melde dich ohne Passwort per Biometrie oder Sicherheitsschlüssel deines Geräts an",
+    "dangerZoneDescription": "Unwiderrufliche Aktionen für dein Konto.",
+    "deleteAccountDescription": "Lösche dein Konto und alle deine Bienenstände, Bienenstöcke, Durchsichten, Fotos und sonstigen Daten dauerhaft. Dies kann nicht rückgängig gemacht werden. Exportiere zuvor deine Daten, wenn du eine Kopie behalten möchtest.",
+    "deleteAccountConfirmDescription": "Dadurch werden dein Konto und alle Daten, die dir gehören, dauerhaft gelöscht. Bienenstände, die andere mit dir geteilt haben, sind nicht betroffen; Inhalte, die du zu fremden Bienenständen beigetragen hast, bleiben erhalten, werden aber anonymisiert. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteAccountExportReminder": "Möchtest du eine Kopie behalten? Exportiere deine Daten vor dem Löschen.",
+    "deleteAccountTypeEmail": "Gib zur Bestätigung deine E-Mail-Adresse {{email}} ein:",
+    "accountDeleted": "Dein Konto wurde gelöscht."
+  },
+  "feedback": {
+    "description": "Dein Feedback ist uns wichtig! Hilf uns, HivePal zu verbessern, indem du deine Meinung teilst, Fehler meldest oder neue Funktionen vorschlägst.",
+    "subjectPlaceholder": "Kurze Zusammenfassung deines Feedbacks",
+    "messagePlaceholder": "Bitte gib detaillierte Informationen zu deinem Feedback an...",
+    "emailDescription": "Gib deine E-Mail an, wenn du eine Antwort erhalten möchtest",
+    "submittedMessage": "Dein Feedback wurde erfolgreich übermittelt. Wir schätzen deine Rückmeldung und werden sie zeitnah prüfen."
+  },
+  "reports": {
+    "selectApiary": "Wähle einen Bienenstand aus, um Berichte anzuzeigen",
+    "widget": {
+      "noApiary": "Wähle einen Bienenstand aus, um Statistiken anzuzeigen"
+    }
+  },
+  "photo": {
+    "captionPlaceholder": "Beschreibe das Foto...",
+    "description": "Lade ein Foto hoch, optional mit einer Bildunterschrift.",
+    "selectPhoto": "Wähle ein Foto"
+  },
+  "document": {
+    "description": "Lade ein PDF-Dokument oder ein gescanntes Dokument hoch.",
+    "selectFile": "Wähle eine Datei (PDF, JPEG, PNG)"
+  },
+  "swarmManagement": {
+    "cards": {
+      "demaree": {
+        "detail": "Sieh dir die Methode an, erstelle einen Nachkontrollplan und speichere die Kontrollpunkte als geplante Durchsichten."
+      }
+    },
+    "aside": {
+      "description": "Nutze diesen Abschnitt, um Ansätze zur Schwarmkontrolle zu vergleichen und den auszuwählen, der zu deiner Beutenkonfiguration, deinem Arbeitsrhythmus und deinem Betriebsstil passt.",
+      "points": [
+        "Beginne mit einer Methode, deren Nachkontrolltermine du während der Schwarmzeit zuverlässig einhalten kannst.",
+        "Bevorzuge Techniken, die zu deiner bevorzugten Brutanordnung, deiner verfügbaren Ausstattung und deiner Sicherheit beim schnellen Auffinden von Königinnen passen.",
+        "Sobald du dich für eine Methode entschieden hast, öffne ihre Leitfadenseite für die Schritt-für-Schritt-Anleitung und die Planungswerkzeuge."
+      ]
+    },
+    "demaree": {
+      "overviewLead": "Nutze die Demaree-Methode, wenn das Volk stark ist, die Königin gut legt und du den Schwarmdruck mindern willst, ohne das Produktionsvolk in einzelne Einheiten aufzuteilen.",
+      "overviewPoints": [
+        "Lies die vollständige Methode durch, bevor du die Beute öffnest, und führe sie dann konsequent aus, damit Brutumhängen, Zargenreihenfolge und das Rückkehrverhalten der Flugbienen alle denselben Plan stützen.",
+        "Halte die legende Königin unter dem Absperrgitter mit Platz zum Weiterlegen, hänge den Großteil der Brut nach oben und gib dem Volk Raum nach oben, damit sich der Platzmangel nicht sofort wieder aufbaut.",
+        "Sobald der erste Aufbau abgeschlossen ist, erstelle den Nachkontrollplan ab dem tatsächlichen Aufbaudatum und verstehe die Warnhinweise als Anstoß, dein Timing zu prüfen – besonders rund um die Weiselzellen-Kontrolle an Tag 7 bis 8."
+      ],
+      "prerequisites": [
+        "Prüfe, ob es sich um ein starkes Volk mit genügend Bienen und Brut handelt, das die Methode rechtfertigt.",
+        "Vergewissere dich, dass klarer Schwarmdruck besteht – etwa Platzmangel, bestiftete Weiselzellen oder ein Volk, das stark in die Tracht hineinbaut.",
+        "Stelle sicher, dass du die legende Königin sicher findest und in der unteren Brutzarge behalten kannst.",
+        "Halte ein Absperrgitter bereit sowie mindestens zwei Honigräume, die du darüber stapeln kannst.",
+        "Bereite eine leere Brutzarge mit ausgebauten Waben vor, damit das Volk umgeordnet werden kann, ohne die Königin einzuengen.",
+        "Wähle ein stabiles Wetterfenster, damit sich das Volk ohne längere Unterbrechung neu organisieren kann."
+      ],
+      "cons": [
+        "Wie bei anderen Methoden zur Schwarmkontrolle kann eine in der oberen Zarge übersehene Weiselzelle zum Schwarm führen.",
+        "Es entstehen große Völker, daher wohl keine gute Methode für Anfänger, da die Bienen von allen Waben abgestoßen werden müssen.",
+        "Es kann schweres Heben anfallen.",
+        "Regelmäßige Durchsichten sind unerlässlich.",
+        "Du MUSST die Grundlagen verstehen."
+      ]
+    },
+    "planner": {
+      "description": "Erstelle die Standard-Kontrollpunkte, passe bei Bedarf die Daten an und speichere sie als geplante Durchsichten für einen Bienenstock.",
+      "emptyState": "Wähle einen Bienenstock und ein Aufbaudatum und erstelle dann die Nachkontroll-Punkte.",
+      "partialSave": "{{successCount}} Kontrollpunkte gespeichert, aber {{failedCount}} fehlgeschlagen. Prüfe die bevorstehenden Durchsichten, bevor du es erneut versuchst.",
+      "noHives": "Du brauchst mindestens einen Bienenstock im aktiven Bienenstand, bevor du einen Demaree-Plan erstellen kannst.",
+      "checkpoints": {
+        "setup": {
+          "checklist": [
+            "Bestätige, dass die legende Königin in der unteren Brutzarge ist.",
+            "Ordne Brut und Honigräume in der geplanten Demaree-Reihenfolge an.",
+            "Notiere alle Details, die bei der nächsten Durchsicht sichtbar sein sollen."
+          ]
+        },
+        "queenCellCheck": {
+          "summary": "Sieh den oberen Brutbereich um Tag 7 bis 8 durch und entferne Nachschaffungszellen, bevor sie sich dem Schlupf nähern.",
+          "checklist": [
+            "Sieh jede Brutwabe über dem Absperrgitter auf Weiselzellen durch.",
+            "Entferne Weiselzellen, die während des Schwarmtriebs angelegt wurden.",
+            "Bestätige, dass die Königin unten noch Platz und Aktivität hat."
+          ]
+        },
+        "secondQueenCellCheck": {
+          "checklist": [
+            "Suche erneut nach neu angelegten oder übersehenen Weiselzellen.",
+            "Prüfe, ob Brut und Vorräte neu ausbalanciert werden müssen.",
+            "Notiere, ob sich das Volk beruhigt oder weiterhin nach oben drängt."
+          ]
+        },
+        "colonyReview": {
+          "summary": "Bestätige, dass der Schwarmdruck nachgelassen hat, entscheide, ob der Aufbau normalisiert wird, und halte die nächsten Schritte fest.",
+          "checklist": [
+            "Beurteile, ob das Volk zu einer normaleren Anordnung zurückkehren kann.",
+            "Prüfe Platz, Brutbild und Nektareintrag über den gesamten Aufbau.",
+            "Plane zusätzliche Durchsichten, die du über den Standardplan hinaus möchtest."
+          ]
+        }
+      },
+      "signInTitle": "Melde dich an, um deine Durchsichten zu planen",
+      "signInDescription": "Erstelle ein kostenloses Konto, um Demaree-Kontrollpunkte zu erzeugen, sie mit einem deiner Bienenstöcke zu verknüpfen und als geplante Durchsichten zu speichern."
+    },
+    "warnings": {
+      "lateQueenCellCheck": {
+        "description": "Diese Verzögerung erhöht das Risiko, dass Weiselzellen schlüpfen, bevor du sie entfernst. Versuche, die erste Nachkontrolle im Fenster von 7 bis 8 Tagen zu halten."
+      },
+      "illogicalScheduleOrder": {
+        "description": "Einer der späteren Kontrollpunkte ist am oder vor einem früheren Besuch geplant. Ordne die Daten neu, bevor du den Plan speicherst."
+      }
+    }
+  },
+  "marketing": {
+    "toolsIndex": {
+      "items": {
+        "liebefelder": {
+          "body": "Schätze Volksstärke und Bienenmasse durch Zählen besetzter Wabenseiten in Achtelschritten – die Standardmethode des Schweizerischen Zentrums für Bienenforschung."
+        },
+        "brood": {
+          "body": "Visualisiere die Brutstadien von Königin, Arbeiterin und Drohn mit Tageszählung und errechne Termine ab jedem Starttag."
+        }
+      },
+      "intro": "Quelloffene Rechner und Nachschlagewerke, die du direkt im Browser nutzen kannst. Setze ein Lesezeichen für den Bienenstand."
+    },
+    "ai": {
+      "lede": "Hive Pal nimmt während der Durchsicht Audio auf, transkribiert es automatisch und erstellt mit KI strukturierte Notizen – so erledigt sich die Fleißarbeit, während du noch am Bienenstand bist.",
+      "items": {
+        "record": {
+          "body": "Tippe auf deinem Handy auf Aufnahme, beschreibe, was du auf jeder Wabe siehst, und mach weiter. Aufnahmen landen direkt in der Durchsicht – auch wenn mitten am Stand das Signal abbricht."
+        },
+        "draft": {
+          "body": "Lokale LLMs erkennen Königinnen-Sichtungen, Brutbilder, Behandlungen und Beobachtungen und füllen damit eine Durchsicht vor – du prüfst nur noch und speicherst."
+        }
+      },
+      "assuranceLead": "Deine Aufnahmen, deine Modelle.",
+      "assuranceBody": "Der KI-Stack läuft auf quelloffenen Modellen (faster-whisper + Ollama) und lässt sich zusammen mit deinen Daten selbst hosten – oder als Pull-Worker auf deinem Rechner zu Hause betreiben."
+    },
+    "landing": {
+      "meta": {
+        "description": "Verwalte deine Bienenstöcke effizient mit Hive Pal. Nimm Sprachnotizen am Bienenstock auf und lass die KI deine Durchsichten transkribieren und vorbereiten. Quelloffen, selbst hostbar und kostenlos für Early Adopters.",
+        "ogDescription": "Kostenlose, quelloffene Imkerei-Plattform mit KI-Sprachdurchsichten. Nimm am Bienenstand Audio auf und lass die KI deine Durchsichtsnotizen automatisch vorbereiten."
+      },
+      "hero": {
+        "title": "Dein quelloffener<br/>Imkerei-<accent>Begleiter</accent>.",
+        "lede": "Nimm Sprachnotizen am Bienenstock auf. Lass die KI deine Durchsichten automatisch transkribieren und vorbereiten – so bleiben deine Hände an den Waben statt an der Tastatur."
+      },
+      "features": {
+        "title": "Alles, was du brauchst, um deine Völker zu <accent>pflegen</accent>.",
+        "items": {
+          "inspections": {
+            "body": "Plane und dokumentiere detaillierte Durchsichten mit anpassbaren Checklisten, Fotos und Gesundheitsbewertungen."
+          },
+          "queen": {
+            "body": "Behalte Leistung, Zuchtdaten und Umweiselungstermine der Königinnen im Blick, um starke Völker zu erhalten."
+          },
+          "harvest": {
+            "body": "Erfasse Honigproduktion, Verarbeitungstermine und Erträge über Saisons und Standorte hinweg."
+          }
+        }
+      },
+      "run": {
+        "selfHosted": {
+          "body": "Volle Kontrolle über deine Daten und Infrastruktur. Betreibe es auf deinem eigenen Server, deinem Laptop, einem Raspberry Pi – wo immer es dir passt.",
+          "items": [
+            "MIT-lizenziert – lesen, forken, ausliefern",
+            "Überall hostbar, wo Docker läuft",
+            "Deine Daten bleiben auf deiner Hardware",
+            "Community-Support über GitHub"
+          ]
+        }
+      },
+      "tools": {
+        "lede": "Praktische Rechner und Planer, die du direkt im Browser nutzen kannst – setze ein Lesezeichen für den Bienenstand.",
+        "items": {
+          "brood": {
+            "body": "Visualisiere die Brutstadien von Königin, Arbeiterin und Drohn mit Tageszählung und errechne Termine ab jedem Starttag."
+          },
+          "liebefelder": {
+            "body": "Schätze die Volksstärke – Bienen, Brut, Pollen und Futter – durch Zählen von Wabenachteln, mit saisonalen Bewertungsrichtlinien."
+          }
+        }
+      },
+      "cta": {
+        "title": "Probier es <accent>aus</accent>.",
+        "lede": "Registriere dich für die gehostete Version oder hol dir den Quellcode und betreibe es selbst. So oder so: kostenlos."
+      }
+    },
+    "features": {
+      "meta": {
+        "description": "Entdecke jede Funktion von Hive Pal: KI-Sprachdurchsichten mit automatischer Transkription, Bienenstock- und Königinnen-Verwaltung, Sammeldurchsichten, Planung und Berichte, Ernteerfassung, Zusammenarbeit sowie quelloffene, selbst hostbare, datenschutzfreundliche Software.",
+        "ogDescription": "KI-Sprachdurchsichten, Bienenstock- & Königinnen-Verwaltung, Planung, Berichte, Zusammenarbeit und quelloffenes Self-Hosting. Sieh dir alles an, was Hive Pal kann."
+      },
+      "hero": {
+        "title": "Alles, was du brauchst, um <accent>die Bienen zu führen</accent>."
+      },
+      "groups": {
+        "inspections": {
+          "lede": "Halte mit strukturierten, wiederholbaren Durchsichten fest, was du am Bienenstock siehst – und finde es genau dann wieder, wenn du es brauchst.",
+          "items": {
+            "structured": {
+              "body": "Erfasse Brutbild, Vorräte, Sanftmut, Platz und Königinnenstatus mit einheitlichen Feldern, damit Völker über Besuche und Saisons hinweg vergleichbar sind."
+            },
+            "quickChecks": {
+              "body": "Ein schlanker Durchsichtsablauf für schnelle Rundgänge, wenn du nur das Wesentliche notieren und weitermachen willst."
+            },
+            "batch": {
+              "body": "Sieh einen ganzen Bienenstand in einem Rutsch durch – gehe jedes Volk der Reihe nach durch, ohne jeden Datensatz einzeln zu öffnen."
+            },
+            "scheduled": {
+              "body": "Plane künftige Besuche und erhalte Aufgaben-Erinnerungen sowie Hinweise zu Neuerungen, damit zwischen den Terminen nichts untergeht."
+            },
+            "photos": {
+              "body": "Hänge Fotos und Freitext-Notizen an jede Durchsicht, um Krankheitsanzeichen, Waben oder alles Weitere zu dokumentieren, das einen zweiten Blick wert ist."
+            },
+            "actions": {
+              "body": "Erfasse Fütterungen, Behandlungen und Betriebsmaßnahmen als Teil der Durchsicht und baue so eine lückenlose Historie je Volk auf."
+            }
+          }
+        },
+        "colony": {
+          "lede": "Ein klares Abbild deiner Imkerei – vom Stand bis zu einzelnen Waben und Königinnenlinien.",
+          "items": {
+            "hiveConfig": {
+              "body": "Erfasse Zargen, Rähmchen und Konfiguration je Bienenstock, damit der Datensatz die tatsächliche Ausstattung im Feld abbildet."
+            },
+            "equipment": {
+              "body": "Plane und kalkuliere Zargen, Rähmchen und Material über alle Bienenstöcke hinweg, damit du weißt, was du vor der Saison bauen musst."
+            }
+          }
+        },
+        "planning": {
+          "lede": "Mach aus deinen Aufzeichnungen einen Plan und ein Bild davon, wie es um deine Imkerei steht.",
+          "items": {
+            "reports": {
+              "body": "Fasse deine Daten in Berichten zu Volksgesundheit und Produktivität zusammen, um Trends und schwache Völker früh zu erkennen."
+            },
+            "harvest": {
+              "body": "Erfasse Honigernten, Verarbeitungstermine und Erträge über Bienenstöcke und Saisons hinweg, um den tatsächlichen Ertrag zu messen."
+            },
+            "assistant": {
+              "body": "Stelle Fragen zu deinem Bienenstand und lass dir direkt in der App helfen, deine Aufzeichnungen zu verstehen."
+            },
+            "bulkActions": {
+              "body": "Wende dieselbe Aktion auf viele Bienenstöcke gleichzeitig an, statt sie einzeln zu bearbeiten."
+            }
+          }
+        },
+        "collaboration": {
+          "items": {
+            "sharing": {
+              "body": "Lade andere Imker ein, an einem Bienenstand mitzuarbeiten, damit das ganze Team mit denselben Aufzeichnungen arbeitet."
+            },
+            "sharedViews": {
+              "body": "Gib Lesezugriff auf Völker oder Daten, damit ein Mentor oder Verein mitverfolgen kann, ohne zu bearbeiten."
+            }
+          }
+        },
+        "data": {
+          "label": "Deine Daten, deine Regeln",
+          "lede": "Hive Pal ist freie Software, die du selbst betreiben kannst – deine Aufzeichnungen bleiben deine.",
+          "items": {
+            "importExport": {
+              "body": "Bewege deine Daten frei hinein und heraus. Deine Imkerei-Historie ist nie in der App eingesperrt."
+            },
+            "privacyAI": {
+              "body": "Der Sprach- und KI-Stack nutzt offene Modelle (faster-whisper + Ollama) und kann auf deiner eigenen Hardware laufen – keine Drittanbieter-Cloud nötig."
+            },
+            "multilingual": {
+              "body": "Nutze Hive Pal in deiner Sprache – mit Community-Übersetzungen, die über Weblate gepflegt werden und stetig wachsen."
+            },
+            "pwa": {
+              "body": "Installiere es als PWA auf deinem Handy und arbeite am Bienenstand weiter, auch wenn das Signal abbricht."
+            }
+          }
+        }
+      },
+      "tools": {
+        "title": "Kostenlose Werkzeuge, die du sofort nutzen kannst"
+      },
+      "cta": {
+        "lede": "Registriere dich für die gehostete Version oder hol dir den Quellcode und betreibe es selbst. So oder so: kostenlos."
+      }
+    }
+  },
+  "syrupCalculator": {
+    "intro": "Kostenloser Zuckersirup-Rechner für Imker. Verwende 1:1-Sirup (dünn) zur Frühjahrsanregung, 3:2 (mittel) als Allzweckfutter und 2:1 (dick) zur Herbstfütterung für den Aufbau der Wintervorräte. Wähle Gebindegröße und Verhältnis – die genauen Zucker- und Wassermengen werden aus der Saccharose-Verdrängung berechnet, damit der fertige Sirup dein Gebinde füllt.",
+    "tip4Description": "Verwende immer weißen Kristallzucker – niemals braunen Zucker, Melasse oder künstliche Süßstoffe. Koche den Sirup nicht, da dabei HMF (Hydroxymethylfurfural) entstehen kann, das für Bienen giftig ist. Füttere abends, um Räuberei zu verringern."
+  },
+  "broodTimeline": {
+    "intro": "Visualisiere die Brutentwicklung der Honigbiene vom Ei bis zum ausgewachsenen Tier. Königinnen schlüpfen nach 16 Tagen, Arbeiterinnen nach 21 und Drohnen nach 24 – aufgeteilt in vier Stadien: Ei, Larve, Puppe und ausgewachsenes Tier. Wähle ein Startdatum, um Verdeckelungs- und Schlupftage für die Durchsichtsplanung zu berechnen.",
+    "beeTypeDescription": "Wähle eine Kaste, um ihre Entwicklungszeitleiste anzuzeigen",
+    "dateSelectorDescription": "Wähle optional, wann die Eier gelegt wurden, um Kalenderdaten auf der Zeitleiste zu sehen"
+  },
+  "bulkAdd": {
+    "subtitle": "Wähle ein Datum und die betroffenen Bienenstöcke, erstelle eine Maßnahme, Durchsicht oder einen Königinnen-Eintrag und füge ihn dann zur Warteschlange hinzu.",
+    "selectHivesHint": "Wähle links mindestens einen Bienenstock aus",
+    "queue": {
+      "emptyBody": "Erstelle links etwas und füge es zur Warteschlange hinzu."
+    },
+    "errors": {
+      "emptyAction": "Füge mindestens eine Maßnahme hinzu, um sie zur Warteschlange zu senden"
+    }
+  }
+}

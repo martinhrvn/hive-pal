@@ -115,9 +115,17 @@ function outputFile(urlPath) {
   return path.join(DIST, `${urlPath.replace(/^\//, '')}.html`);
 }
 
+// In-app register variants (e.g. `de-informal`) live as their own locale
+// directory but must not be prerendered as public, indexable pages — they share
+// the canonical language's URLs. Keep them out of language discovery.
+const NON_PUBLIC_LOCALES = new Set(['de-informal']);
+
 async function discoverLanguages() {
   const entries = await readdir(LOCALES_DIR, { withFileTypes: true });
-  const langs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
+  const langs = entries
+    .filter(e => e.isDirectory() && !NON_PUBLIC_LOCALES.has(e.name))
+    .map(e => e.name)
+    .sort();
   if (!langs.includes(DEFAULT_LANGUAGE)) langs.unshift(DEFAULT_LANGUAGE);
   return langs;
 }

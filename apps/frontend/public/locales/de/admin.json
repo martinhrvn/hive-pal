@@ -18,7 +18,7 @@
     },
     "resetPasswordDialog": {
         "title": "Benutzerpasswort zurücksetzen",
-        "description": "Setze ein temporäres Passwort für {email}. Der Benutzer muss sein Passwort beim nächsten Login ändern.",
+        "description": "Setzen Sie ein temporäres Passwort für {email}. Der Benutzer muss sein Passwort beim nächsten Login ändern.",
         "tempPasswordLabel": "Temporäres Passwort",
         "tempPasswordPlaceholder": "Temporäres Passwort eingeben",
         "minCharacters": "Mindestens 6 Zeichen",
@@ -43,14 +43,14 @@
         "summary": {
             "totalApiaries": "Gesamtzahl Bienenstände",
             "totalHives": "Gesamtzahl Bienenstöcke",
-            "totalInspections": "Gesamtzahl Inspektionen",
+            "totalInspections": "Gesamtzahl Durchsichten",
             "lastActivity": "Letzte Aktivität",
-            "lastInspection": "Letzte Inspektion"
+            "lastInspection": "Letzte Durchsicht"
         },
         "recentActivity": {
             "title": "Letzte Aktivitäten",
             "period": "Letzte 30 Tage",
-            "inspections": "Inspektionen",
+            "inspections": "Durchsichten",
             "actions": "Aktionen",
             "byType": "Aktionen nach Typ"
         },

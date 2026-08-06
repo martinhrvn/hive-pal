@@ -1,0 +1,50 @@
+{
+    "dialogs": {
+        "cancelInspection": {
+            "description": "Möchtest du die Durchsicht für {{hiveName}} am {{date}} wirklich abbrechen? Diese Aktion kann nicht rückgängig gemacht werden."
+        },
+        "reschedule": {
+            "description": "Wähle ein neues Datum für die Durchsicht von {{hiveName}}. Die Wettervorhersage wird für die nächsten 7 Tage angezeigt."
+        },
+        "completingScheduled": {
+            "description": "Diese Durchsicht wird als abgeschlossen markiert, sobald du deine Änderungen speicherst."
+        }
+    },
+    "form": {
+        "futureScheduledDescription": "Du planst eine Durchsicht für ein zukünftiges Datum.",
+        "notes": {
+            "description": "Füge zusätzliche Notizen zu dieser Durchsicht hinzu",
+            "placeholder": "Gib Beobachtungen, Erkenntnisse oder durchgeführte Maßnahmen ein..."
+        }
+    },
+    "detailSidebar": {
+        "frameModificationQuestion": "Möchtest du die aktualisierte Rähmchenzahl beibehalten oder zurücksetzen?"
+    },
+    "schedule": {
+        "description": "Plane deine Durchsichten für die nächsten 7 Tage mit Wettervorhersage",
+        "selectHivesDescription": "Wähle aus, für welche Bienenstöcke Durchsichten geplant werden sollen",
+        "calendarDescription": "Wähle einen Tag zur Planung deiner Durchsicht mit Wettervorhersage (nächste {{days}} Tage)",
+        "schedulingCount": "Plane {{count}} Durchsicht für {{date}}",
+        "schedulingCountPlural": "Plane {{count}} Durchsichten für {{date}}",
+        "batchStartInfo": "Du kannst die Sammeldurchsicht sofort beginnen oder später starten.",
+        "scheduledStartInfo": "Du kannst Details hinzufügen und die Durchsicht am geplanten Datum abschließen."
+    },
+    "edit": {
+        "markedCompleted": "Diese Durchsicht wird als abgeschlossen markiert, sobald du deine Änderungen speicherst."
+    },
+    "mobile": {
+        "queen": {
+            "hint": "Hast du sie gesehen? Weiselzellen vorhanden?"
+        },
+        "review": {
+            "hint": "Prüfe die Zusammenfassung und speichere dann.",
+            "invalid": "Bitte überprüfe deine Eingaben"
+        }
+    },
+    "audioQuick": {
+        "prompt": "Tippe, um die Aufnahme zu starten. Die Durchsicht wird beim Aufnahmebeginn erstellt."
+    },
+    "pendingBoxUpdate": {
+        "updatingDescription": "Deine Durchsicht wurde gespeichert. Die Beutenkonfiguration wird im Hintergrund aktualisiert."
+    }
+}

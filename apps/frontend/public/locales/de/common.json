@@ -26,9 +26,17 @@
     "files": "Dateien",
     "calendar": "Kalender",
     "equipment": "Ausstattung",
-    "actions": "Aktionen",
+    "actions": "Sammelerfassung",
+    "allQueens": "Alle Königinnen",
+    "todos": "Aufgaben",
+    "allTodos": "Alle Aufgaben",
+    "tools": "Werkzeuge",
+    "syrupCalculator": "Sirup-Rechner",
+    "broodTimeline": "Brutkalender",
+    "swarmManagement": "Schwarmkontrolle",
     "liebefelder": "Liebefelder Methode",
-    "varroaManagement": "Varroa-Management"
+    "varroaManagement": "Varroa-Management",
+    "documentation": "Dokumentation"
   },
   "liebefelder": {
     "title": "Liebefelder Schätzmethode",
@@ -37,9 +45,9 @@
     "source": "Quelle: Dr. Pia Aumeier",
     "frameType": {
       "title": "Rähmchenmaß",
-      "description": "Wähle das in deiner Beute verwendete Rähmchenmaß — es bestimmt die Schätzwerte je Achtel.",
+      "description": "Wählen Sie das in Ihrer Beute verwendete Rähmchenmaß — es bestimmt die Schätzwerte je Achtel.",
       "custom": "Eigene Werte",
-      "customDescription": "Gib eigene Schätzwerte für ein Achtel einer Wabenseite ein."
+      "customDescription": "Geben Sie eigene Schätzwerte für ein Achtel einer Wabenseite ein."
     },
     "counts": {
       "title": "Zählung — Achtel gesamt",
@@ -61,7 +69,7 @@
     },
     "result": {
       "title": "Ergebnis",
-      "empty": "Trage oben deine Achtel-Zählung ein, um die Schätzung zu sehen.",
+      "empty": "Tragen Sie oben Ihre Achtel-Zählung ein, um die Schätzung zu sehen.",
       "bees": "Bienen",
       "wabengassen": "Wabengassen",
       "wabengassenNote": "≈ 1.000 Bienen je Gasse",
@@ -77,9 +85,9 @@
     },
     "evaluation": {
       "title": "Saisonale Bewertung",
-      "description": "Vergleiche das gemessene Volk mit den saisonalen Richtwerten von Dr. Pia Aumeier.",
-      "selectPrompt": "Wähle einen Zeitpunkt, um das Volk zu bewerten.",
-      "enterCountsFirst": "Trage zuerst oben deine Zählung ein.",
+      "description": "Vergleichen Sie das gemessene Volk mit den saisonalen Richtwerten von Dr. Pia Aumeier.",
+      "selectPrompt": "Wählen Sie einen Zeitpunkt, um das Volk zu bewerten.",
+      "enterCountsFirst": "Tragen Sie zuerst oben Ihre Zählung ein.",
       "contexts": {
         "split_mid_may": "Ableger bis Mitte Mai",
         "split_end_may": "Ableger bis Ende Mai",
@@ -116,10 +124,10 @@
     },
     "tips": {
       "coverage": {
-        "title": "So schätzt du die Belegung",
+        "title": "So schätzen Sie die Belegung",
         "pullFrames": {
           "title": "Jede Wabe ziehen",
-          "description": "Ziehe eine Wabe nach der anderen. Schaue senkrecht auf jede Seite und schätze in Achteln, wie viel der Wabenfläche mit Bienen, Brut, Pollen oder Futter belegt ist."
+          "description": "Ziehen Sie eine Wabe nach der anderen. Schauen Sie senkrecht auf jede Seite und schätzen Sie in Achteln, wie viel der Wabenfläche mit Bienen, Brut, Pollen oder Futter belegt ist."
         },
         "bothSides": {
           "title": "Beide Seiten zählen",
@@ -215,10 +223,10 @@
     "newHive": "Neuer Bienenstock",
     "language": "Sprache",
     "logout": "Abmelden",
-    "newInspection": "Neue Inspektion",
-    "scheduleInspection": "Inspektion planen",
+    "newInspection": "Neue Durchsicht",
+    "scheduleInspection": "Durchsicht planen",
     "newQueen": "Neue Königin",
-    "recentInspections": "Letzte Inspektionen"
+    "recentInspections": "Letzte Durchsichten"
   },
   "status": {
     "loading": "Wird geladen...",
@@ -298,8 +306,8 @@
     "receiveEmailUpdates": "Updates per E-Mail erhalten",
     "pushNotifications": "Push-Benachrichtigungen",
     "receiveBrowserNotifications": "Browser-Benachrichtigungen erhalten",
-    "inspectionReminders": "Inspektions-Erinnerungen",
-    "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Inspektionen",
+    "inspectionReminders": "Durchsichts-Erinnerungen",
+    "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Durchsichten",
     "harvestReminders": "Ernte-Erinnerungen",
     "harvestSchedulesNotify": "Benachrichtigung über Erntepläne",
     "accountSettings": "Kontoeinstellungen",
@@ -312,7 +320,34 @@
     "changePassword": "Kontopasswort ändern",
     "saveSettings": "Einstellungen speichern",
     "preferencesUpdated": "Ihre Einstellungen wurden erfolgreich aktualisiert.",
-    "saving": "Speichern..."
+    "saving": "Speichern...",
+    "passkeys": "Passkeys",
+    "passkeysDescription": "Melden Sie sich ohne Passwort per Biometrie oder Sicherheitsschlüssel Ihres Geräts an",
+    "passkeyNamePlaceholder": "Name (z. B. MacBook Touch ID)",
+    "passkeyAdd": "Passkey hinzufügen",
+    "passkeyAdding": "Wird hinzugefügt…",
+    "passkeyRemove": "Entfernen",
+    "passkeyUnnamed": "Unbenannter Passkey",
+    "passkeyAddedOn": "Hinzugefügt am {{date}}",
+    "passkeysLoading": "Wird geladen…",
+    "passkeysEmpty": "Noch keine Passkeys.",
+    "passkeysLoadFailed": "Passkeys konnten nicht geladen werden",
+    "passkeyAddFailed": "Passkey konnte nicht hinzugefügt werden",
+    "passkeyAddCancelled": "Passkey-Registrierung abgebrochen oder fehlgeschlagen",
+    "passkeyDeleteFailed": "Passkey konnte nicht gelöscht werden",
+    "dangerZone": "Gefahrenzone",
+    "dangerZoneDescription": "Unwiderrufliche Aktionen für Ihr Konto.",
+    "deleteAccount": "Konto löschen",
+    "deleteAccountDescription": "Löschen Sie Ihr Konto und alle Ihre Bienenstände, Bienenstöcke, Durchsichten, Fotos und sonstigen Daten dauerhaft. Dies kann nicht rückgängig gemacht werden. Exportieren Sie zuvor Ihre Daten, wenn Sie eine Kopie behalten möchten.",
+    "deleteAccountConfirmTitle": "Konto löschen?",
+    "deleteAccountConfirmDescription": "Dadurch werden Ihr Konto und alle Daten, die Ihnen gehören, dauerhaft gelöscht. Bienenstände, die andere mit Ihnen geteilt haben, sind nicht betroffen; Inhalte, die Sie zu fremden Bienenständen beigetragen haben, bleiben erhalten, werden aber anonymisiert. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteAccountExportReminder": "Möchten Sie eine Kopie behalten? Exportieren Sie Ihre Daten vor dem Löschen.",
+    "deleteAccountExportLink": "Meine Daten exportieren",
+    "deleteAccountTypeEmail": "Geben Sie zur Bestätigung Ihre E-Mail-Adresse {{email}} ein:",
+    "deleteAccountButton": "Mein Konto löschen",
+    "deleteAccountDeleting": "Konto wird gelöscht…",
+    "accountDeleted": "Ihr Konto wurde gelöscht.",
+    "deleteAccountFailed": "Konto konnte nicht gelöscht werden. Bitte versuch es erneut."
   },
   "feedback": {
     "title": "Feedback senden",
@@ -344,7 +379,7 @@
   "calendar": {
     "title": "Kalender",
     "both": "Beides",
-    "inspections": "Inspektionen",
+    "inspections": "Durchsichten",
     "actions": "Aktionen",
     "today": "Heute",
     "noEventsScheduled": "Kein Event geplant",
@@ -355,8 +390,8 @@
     "nextWeek": "Nächste Woche",
     "dayHeader": "{{date}}",
     "noEvents": "Keine Events",
-    "overdueInspections": "Überfällige Inspektionen ({{overdueInspectionsSize}})",
-    "viewInspection": "Inspektion anzeigen"
+    "overdueInspections": "Überfällige Durchsichten ({{overdueInspectionsSize}})",
+    "viewInspection": "Durchsicht anzeigen"
   },
   "quickCheck": {
     "title": "Schnellprüfung",
@@ -390,20 +425,26 @@
     "showLess": "Weniger anzeigen",
     "notesAvailable": "Notizen verfügbar",
     "boxConfiguration": "Beutenkonfiguration",
-    "inspection": "Inspektion",
+    "inspection": "Durchsicht",
     "overdue": "Überfällig",
     "scheduled": "Geplant",
     "cancelled": "Abgebrochen",
-    "doInspection": "Inspektion durchführen",
+    "doInspection": "Durchsicht durchführen",
     "reschedule": "Umplanen",
-    "inspectHive": "{{hiveName}} inspizieren",
+    "inspectHive": "{{hiveName}} durchsehen",
     "strength": "Stärke",
     "honey": "Honig",
     "queenSeen": "Königin gesehen",
     "queenNotSeen": "Königin nicht gesehen",
     "photos": "Fotos",
     "documents": "Dokumente",
-    "fromInspection": "Aus Durchsicht"
+    "fromInspection": "Aus Durchsicht",
+    "maintenance": "Wartung",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "filterEventType": "Typ",
+    "filterDateRange": "Zeitraum",
+    "filterHive": "Bienenstock"
   },
   "reports": {
     "title": "Berichte",
@@ -451,24 +492,27 @@
     "widget": {
       "title": "Bienenstand-Statistiken",
       "viewReports": "Berichte anzeigen",
-      "noApiary": "Wählen Sie einen Bienenstand aus, um Statistiken anzuzeigen"
+      "noApiary": "Wählen Sie einen Bienenstand aus, um Statistiken anzuzeigen",
+      "apiaryDetails": "Bienenstand-Details"
     }
   },
   "photo": {
-    "captionPlaceholder": "Beschreibe das Foto...",
+    "captionPlaceholder": "Beschreiben Sie das Foto...",
     "caption": "Bildunterschrift",
     "deleteFailed": "Das Löschen des Fotos ist fehlgeschlagen",
     "title": "Foto hinzufügen",
-    "description": "Lade ein Foto hoch, optional mit einer Bildunterschrift.",
+    "description": "Laden Sie ein Foto hoch, optional mit einer Bildunterschrift.",
     "optional": "optional",
-    "selectPhoto": "Wähle ein Foto",
+    "selectPhoto": "Wählen Sie ein Foto",
     "upload": "Foto hochladen",
     "uploading": "Hochlanden...",
     "uploadSuccess": "Foto hochgeladen",
     "uploadFailed": "Foto hochladen fehlgeschlagen",
     "deleteTitle": "Foto löschen?",
     "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Foto wird dadurch endgültig gelöscht.",
-    "deleted": "Foto gelöscht"
+    "deleted": "Foto gelöscht",
+    "replace": "Ersetzen",
+    "featurePhoto": "Titelbild"
   },
   "document": {
     "uploading": "Hochladen...",
@@ -483,7 +527,7 @@
     "notes": "Notizen",
     "optional": "optional",
     "notesPlaceholder": "Notizen zu diesem Dokument hinzufügen...",
-    "selectFile": "Wähle eine Datei (PDF, JPEG, PNG)",
+    "selectFile": "Wählen Sie eine Datei (PDF, JPEG, PNG)",
     "upload": "Dokument hochladen",
     "deleteTitle": "Dokument löschen?",
     "deleted": "Dokument gelöscht"
@@ -502,262 +546,317 @@
     "size": "Größe",
     "download": "Download",
     "delete": "Löschen",
-    "title": "Dateien"
+    "title": "Dateien",
+    "audio": "Audio",
+    "status": "Status",
+    "sendToAi": "An KI senden",
+    "sendAllPending": "Alle an KI senden ({{count}})",
+    "sentToAi": "KI für {{count}} Aufnahmen gestartet",
+    "audioStatus": {
+      "notTranscribed": "Nicht transkribiert",
+      "queued": "In Warteschlange",
+      "transcribing": "Wird transkribiert…",
+      "failed": "Transkription fehlgeschlagen",
+      "transcribed": "Transkribiert",
+      "analyzing": "Wird analysiert…",
+      "analysisFailed": "Analyse fehlgeschlagen",
+      "ready": "KI-Vorschläge bereit"
+    },
+    "audioDeleteTitle": "Audioaufnahme löschen?",
+    "audioDeleted": "Audio gelöscht"
   },
   "quickAdd": {
     "title": "Eintrag hinzufügen",
     "quickCheck": "Schnellprüfung",
     "action": "Aktion",
     "photo": "Foto",
-    "document": "Dokument"
+    "document": "Dokument",
+    "inspection": "Durchsicht"
   },
   "swarmManagement": {
-    "backToOverview": "Back to Swarm Management",
-    "eyebrow": "Swarm control guidance",
-    "title": "Swarm Management",
+    "backToOverview": "Zurück zur Schwarmkontrolle",
+    "eyebrow": "Leitfaden zur Schwarmkontrolle",
+    "title": "Schwarmkontrolle",
     "cards": {
-      "available": "Available",
-      "comingSoon": "Coming soon",
-      "placeholderCta": "Not available yet",
+      "available": "Verfügbar",
+      "comingSoon": "Demnächst",
+      "placeholderCta": "Noch nicht verfügbar",
       "demaree": {
-        "title": "Demaree Method",
-        "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
-        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
-        "cta": "Open guide"
+        "title": "Demaree-Methode",
+        "description": "Eine Methode zur Schwarmkontrolle, die die Königin vom Großteil der Brut trennt und so den Platzmangel verringert, während das Volk stark und produktiv bleibt.",
+        "detail": "Sehen Sie sich die Methode an, erstellen Sie einen Nachkontrollplan und speichern Sie die Kontrollpunkte als geplante Durchsichten.",
+        "cta": "Leitfaden öffnen"
       },
       "pagden": {
-        "title": "Pagden split",
-        "description": "Placeholder for a future guide covering the classic artificial swarm split."
+        "title": "Pagden-Ableger",
+        "description": "Platzhalter für einen künftigen Leitfaden zum klassischen Kunstschwarm-Ableger."
       },
       "artificialSwarm": {
-        "title": "Artificial swarm",
-        "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+        "title": "Kunstschwarm",
+        "description": "Platzhalter für einen künftigen Leitfaden zum Trennen von Flugbienen und Brut."
       }
     },
     "aside": {
-      "title": "Choosing a method",
-      "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+      "title": "Eine Methode wählen",
+      "description": "Nutzen Sie diesen Abschnitt, um Ansätze zur Schwarmkontrolle zu vergleichen und den auszuwählen, der zu Ihrer Beutenkonfiguration, Ihrem Arbeitsrhythmus und Ihrem Betriebsstil passt.",
       "points": [
-        "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
-        "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
-        "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+        "Beginnen Sie mit einer Methode, deren Nachkontrolltermine Sie während der Schwarmzeit zuverlässig einhalten können.",
+        "Bevorzugen Sie Techniken, die zu Ihrer bevorzugten Brutanordnung, Ihrer verfügbaren Ausstattung und Ihrer Sicherheit beim schnellen Auffinden von Königinnen passen.",
+        "Sobald Sie sich für eine Methode entschieden haben, öffnen Sie ihre Leitfadenseite für die Schritt-für-Schritt-Anleitung und die Planungswerkzeuge."
       ],
-      "criticalTimingTitle": "Critical timing",
-      "criticalTimingLead": "The first follow-up is the point where timing matters most.",
-      "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+      "criticalTimingTitle": "Kritischer Zeitpunkt",
+      "criticalTimingLead": "Die erste Nachkontrolle ist der Zeitpunkt, an dem das Timing am wichtigsten ist.",
+      "criticalTimingDetail": "Wenn diese Weiselzellen-Kontrolle über das empfohlene Zeitfenster hinaus verrutscht, können die Zellen kurz vor dem Schlupf stehen und das Volk kann schnell wieder in Schwarmstimmung geraten."
     },
     "demaree": {
-      "badge": "Reference method",
-      "title": "Demaree Method",
-      "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
-      "overviewTitle": "Method overview",
-      "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+      "badge": "Referenzmethode",
+      "title": "Demaree-Methode",
+      "description": "Ein Demaree-Referenzablauf für starke Völker mit Schwarmdruck, mit praxisnahem Nachkontroll-Timing, eingebaut in einen Durchsichtsplaner.",
+      "overviewTitle": "Methodenüberblick",
+      "overviewLead": "Nutzen Sie die Demaree-Methode, wenn das Volk stark ist, die Königin gut legt und Sie den Schwarmdruck mindern wollen, ohne das Produktionsvolk in einzelne Einheiten aufzuteilen.",
       "overviewPoints": [
-        "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
-        "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
-        "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+        "Lesen Sie die vollständige Methode durch, bevor Sie die Beute öffnen, und führen Sie sie dann konsequent aus, damit Brutumhängen, Zargenreihenfolge und das Rückkehrverhalten der Flugbienen alle denselben Plan stützen.",
+        "Halten Sie die legende Königin unter dem Absperrgitter mit Platz zum Weiterlegen, hängen Sie den Großteil der Brut nach oben und geben Sie dem Volk Raum nach oben, damit sich der Platzmangel nicht sofort wieder aufbaut.",
+        "Sobald der erste Aufbau abgeschlossen ist, erstellen Sie den Nachkontrollplan ab dem tatsächlichen Aufbaudatum und verstehen Sie die Warnhinweise als Anstoß, Ihr Timing zu prüfen – besonders rund um die Weiselzellen-Kontrolle an Tag 7 bis 8."
       ],
-      "prerequisitesTitle": "Prerequisites",
+      "prerequisitesTitle": "Voraussetzungen",
       "prerequisites": [
-        "Check that the hive is a strong colony with enough bees and brood to justify the method.",
-        "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
-        "Make sure you can find and confidently retain the laying queen in the lower brood box.",
-        "Have a queen excluder ready, with at least two honey supers available to stack above it.",
-        "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
-        "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+        "Prüfen Sie, ob es sich um ein starkes Volk mit genügend Bienen und Brut handelt, das die Methode rechtfertigt.",
+        "Vergewissern Sie sich, dass klarer Schwarmdruck besteht – etwa Platzmangel, bestiftete Weiselzellen oder ein Volk, das stark in die Tracht hineinbaut.",
+        "Stellen Sie sicher, dass Sie die legende Königin sicher finden und in der unteren Brutzarge behalten können.",
+        "Halten Sie ein Absperrgitter bereit sowie mindestens zwei Honigräume, die Sie darüber stapeln können.",
+        "Bereite eine leere Brutzarge mit ausgebauten Waben vor, damit das Volk umgeordnet werden kann, ohne die Königin einzuengen.",
+        "Wählen Sie ein stabiles Wetterfenster, damit sich das Volk ohne längere Unterbrechung neu organisieren kann."
       ],
-      "stepsTitle": "Method Detail",
-      "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+      "stepsTitle": "Methodendetails",
+      "stepsDescription": "Wenn bei einer Durchsicht unerwartete Weiselzellen gefunden werden, folge den unten stehenden Schritten",
       "methodDetail": {
         "preparation": {
-          "title": "Preparation",
+          "title": "Vorbereitung",
           "items": [
             {
-              "text": "Find a spare brood box with foundation or drawn comb.",
+              "text": "Suchen Sie eine leere Brutzarge mit Mittelwänden oder ausgebauten Waben.",
               "children": [
-                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+                "Mittelwände können den Honigertrag verringern, da die Bienen viele Vorräte für den Wachsbau verbrauchen."
               ]
             },
             {
-              "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+              "text": "Nehmen Sie die Brutzarge(n) vom Beutenboden und setzen Sie die neue leere Zarge nach unten."
             }
           ]
         },
         "huntTheQueen": {
-          "title": "Hunt the Queen",
+          "title": "Königin suchen",
           "items": [
             {
-              "text": "Inspect the old brood box(es) and locate the Queen."
+              "text": "Sehen Sie die alte(n) Brutzarge(n) durch und finden Sie die Königin."
             },
             {
-              "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+              "text": "Nehmen Sie sie samt der Wabe, auf der Sie sie gefunden haben, und setzen Sie diese in die Mitte der neuen Zarge; entfernen Sie dabei alle Weiselzellen auf dieser Wabe."
             }
           ]
         },
         "broodManipulation": {
-          "title": "Brood Manipulation",
+          "title": "Brutmanipulation",
           "items": [
             {
-              "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+              "text": "Bei Doppelbrutraum ordne die Waben so, dass sich die gesamte Brut in einer einzigen Zarge befindet.",
               "children": [
-                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+                "Passen nicht alle hinein, gib die übrigen in die untere Zarge zur Königin und verteile die leeren Waben neu."
               ]
             },
             {
-              "text": "Make sure to knock down all queen cells.",
+              "text": "Achten Sie darauf, alle Weiselzellen zu brechen.",
               "children": [
-                "With the queen safe you can shake bees off the frames to make sure you find them all."
+                "Da die Königin in Sicherheit ist, können Sie die Bienen von den Waben abstoßen, um sicher alle zu finden."
               ]
             },
             {
-              "text": "(Double Brood) - You should now have three brood boxes.",
+              "text": "(Doppelbrutraum) – Sie sollten nun drei Brutzargen haben.",
               "children": [
-                "Box with the queen, mostly empty directly on the hive floor.",
-                "Box with no brood - place this on top of the queen to retain double brood status.",
-                "Box with all the brood - keep this aside for now."
+                "Zarge mit der Königin, größtenteils leer, direkt auf dem Beutenboden.",
+                "Zarge ohne Brut – setze sie über die Königin, um den Doppelbrutraum zu erhalten.",
+                "Zarge mit der gesamten Brut – stelle sie vorerst beiseite."
               ]
             }
           ]
         },
         "reassembly": {
-          "title": "Reassembly",
+          "title": "Zusammenbau",
           "items": [
             {
-              "text": "Put the queen excluder on top of the new brood boxes."
+              "text": "Legen Sie das Absperrgitter auf die neuen Brutzargen."
             },
             {
-              "text": "Add the supers (minimum 2, add extra if more space is required)."
+              "text": "Setzen Sie die Honigräume auf (mindestens 2, bei Platzbedarf mehr)."
             },
             {
-              "text": "Place an additional queen excluder over the supers."
+              "text": "Legen Sie ein weiteres Absperrgitter über die Honigräume."
             },
             {
-              "text": "The box with all the brood now goes on top of the supers."
+              "text": "Die Zarge mit der gesamten Brut kommt nun oben auf die Honigräume."
             },
             {
-              "text": "Fit crown board and roof and the job is done."
+              "text": "Innendeckel und Deckel auflegen – fertig."
             }
           ]
         }
       },
-      "advantagesTitle": "Why the method works",
-      "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+      "advantagesTitle": "Warum die Methode funktioniert",
+      "advantagesDescription": "Die Demaree-Methode mindert den Schwarmdruck, indem sie Brut und Flugbienen umverteilt, ohne das Volk in getrennte Arbeitseinheiten aufzuteilen.",
       "advantages": [
-        "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
-        "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
-        "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+        "Die Königin legt in der unteren Zarge weiter, während dem oberen Brutbereich das Gefüge fehlt, das die Schwarmvorbereitung sonst nährt.",
+        "Flugbienen kehren weiterhin an den ursprünglichen Standort zurück, was die Aktivität unten aufrechterhält und den Platzmangel in der nach oben gehängten Brut verringert.",
+        "Da das Volk zusammenbleibt, kann die Methode den Sammelschwung besser erhalten als ein vollständiger Kunstschwarm."
       ],
-      "followUpTitle": "Follow-up timing",
-      "followUpDayHeader": "Day",
-      "followUpTaskHeader": "Task",
+      "followUpTitle": "Nachkontroll-Timing",
+      "followUpDayHeader": "Tag",
+      "followUpTaskHeader": "Aufgabe",
       "followUp": [
         {
-          "day": "Day 7-8",
-          "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+          "day": "Tag 7–8",
+          "task": "Sehen Sie die Zarge mit der Brut über den Honigräumen auf Weiselzellen durch und entfernen Sie alle angelegten."
         },
         {
-          "day": "Day 14-15",
-          "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+          "day": "Tag 14–15",
+          "task": "Kontrolliere erneut auf spät angelegte Weiselzellen und bestätige, dass die Brutanordnung den Demaree-Aufbau weiterhin stützt."
         },
         {
-          "day": "Day 21-22",
-          "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+          "day": "Tag 21–22",
+          "task": "Führe eine abschließende Kontrolle durch, um zu entscheiden, ob das Volk wieder normalisiert werden kann oder weiterhin engmaschig auf Schwarmdruck überwacht werden muss."
         }
       ],
-      "prosConsTitle": "Pros and Cons",
-      "prosTitle": "Advantages",
-      "consTitle": "Disadvantages",
+      "prosConsTitle": "Vor- und Nachteile",
+      "prosTitle": "Vorteile",
+      "consTitle": "Nachteile",
       "pros": [
-        "Works well as a swarm control method.",
-        "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
-        "Comb renewal is simple.",
-        "Good brood combs can be drawn out in the top box.",
-        "The effect is similar to an artificial swarm, but the colony is kept together."
+        "Funktioniert gut als Methode zur Schwarmkontrolle.",
+        "Lässt sich zur weiselrichtigen Zellenaufzucht bei der Königinnenzucht nutzen, ohne ein weiteres Volk aufstellen zu müssen.",
+        "Die Wabenerneuerung ist einfach.",
+        "In der oberen Zarge lassen sich gute Brutwaben ausbauen.",
+        "Der Effekt ähnelt einem Kunstschwarm, doch das Volk bleibt zusammen."
       ],
       "cons": [
-        "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
-        "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
-        "There may be heavy lifting.",
-        "Regular inspections are essential.",
-        "You MUST understand the basics."
-      ]
+        "Wie bei anderen Methoden zur Schwarmkontrolle kann eine in der oberen Zarge übersehene Weiselzelle zum Schwarm führen.",
+        "Es entstehen große Völker, daher wohl keine gute Methode für Anfänger, da die Bienen von allen Waben abgestoßen werden müssen.",
+        "Es kann schweres Heben anfallen.",
+        "Regelmäßige Durchsichten sind unerlässlich.",
+        "Sie MÜSSEN die Grundlagen verstehen."
+      ],
+      "intro": "Die Demaree-Methode ist eine klassische Technik zur Schwarmkontrolle bei starken Honigbienenvölkern, die das Volk zusammenhält und zugleich den Platzmangel behebt. Die Königin bleibt unter einem Absperrgitter mit frischer Wabe zum Bestiften; der Großteil der Brut wird über zwei Honigräume gehängt, wodurch die Pheromonspur der Königin vom Brutnest getrennt wird. Kontrolliere um Tag 7–8, Tag 14–15 und Tag 21–22 nach, um Nachschaffungszellen zu entfernen, bevor sie schlüpfen.",
+      "faq": {
+        "title": "Häufig gestellte Fragen",
+        "items": [
+          {
+            "question": "Was ist die Demaree-Methode?",
+            "answer": "Die Demaree-Methode ist eine klassische Technik zur Schwarmkontrolle, die die legende Königin innerhalb einer einzigen Beute vertikal vom Großteil der Brut trennt. Die Königin bleibt unter einem Absperrgitter auf weitgehend leerer Wabe; die Brut wird über zwei oder mehr Honigräume gehängt, sodass das Volk zusammenbleibt, während der Schwarmdruck nachlässt."
+          },
+          {
+            "question": "Wann sollte ich die Demaree-Methode anwenden?",
+            "answer": "Wenden Sie die Demaree-Methode bei starken Völkern mit klarem Schwarmdruck an – starker Platzmangel, bestiftete Weiselzellen oder ein Volk, das stark in eine Tracht hineinbaut –, wenn Sie das Volk zusammenhalten wollen, statt es zu teilen."
+          },
+          {
+            "question": "Wann sollte ich nach einem Demaree-Aufbau durchsehen?",
+            "answer": "Sehen Sie an Tag 7–8, Tag 14–15 und Tag 21–22 nach dem Aufbau durch. Die Kontrolle an Tag 7–8 ist am wichtigsten – während des Schwarmtriebs angelegte Nachschaffungszellen müssen entfernt werden, bevor sie sich um Tag 14–16 dem Schlupf nähern."
+          },
+          {
+            "question": "Entsteht bei der Demaree-Methode ein eigener Ableger?",
+            "answer": "Nein. Anders als beim Kunstschwarm oder Pagden-Ableger hält die Demaree-Methode alle Bienen in einer Beute. Das Volk bleibt eine einzige Arbeitseinheit, was den Sammelschwung oft besser erhält als ein Teilen."
+          },
+          {
+            "question": "Welche Ausrüstung brauche ich für die Demaree-Methode?",
+            "answer": "Sie brauchen ein Absperrgitter (manchmal zwei), eine leere Brutzarge mit ausgebauten Waben oder Mittelwänden sowie mindestens zwei Honigräume, die Sie zwischen Königin und umgehängte Brut stapeln."
+          },
+          {
+            "question": "Was ist das größte Risiko bei der Demaree-Methode?",
+            "answer": "Eine Weiselzelle in der oberen Brutzarge bei der Kontrolle an Tag 7–8 zu übersehen ist das größte Risiko – das Volk kann noch schwärmen, wenn über dem Absperrgitter eine jungfräuliche Königin schlüpft. Die Bienen von jeder Brutwabe abzustoßen hilft, alle Zellen zu erkennen."
+          }
+        ]
+      }
     },
     "planner": {
-      "title": "Demaree inspection planner",
-      "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
-      "hiveLabel": "Hive",
-      "hivePlaceholder": "Select a hive",
-      "startDateLabel": "Demaree setup date",
-      "startDatePlaceholder": "Pick the setup date",
-      "generate": "Generate checkpoints",
-      "selectedHive": "Selected hive",
-      "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
-      "notesLabel": "Inspection notes",
-      "notesChecklistLabel": "Checklist",
-      "checkpointPrefix": "Demaree checkpoint:",
-      "dayOffset_one": "Day {{count}}",
-      "dayOffset_other": "Day {{count}}",
-      "save": "Save scheduled inspections",
-      "saving": "Saving inspections...",
-      "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
-      "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
-      "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
-      "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
-      "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+      "title": "Demaree-Durchsichtsplaner",
+      "description": "Erstellen Sie die Standard-Kontrollpunkte, passen Sie bei Bedarf die Daten an und speichern Sie sie als geplante Durchsichten für einen Bienenstock.",
+      "hiveLabel": "Bienenstock",
+      "hivePlaceholder": "Bienenstock auswählen",
+      "startDateLabel": "Datum des Demaree-Aufbaus",
+      "startDatePlaceholder": "Aufbaudatum auswählen",
+      "generate": "Kontrollpunkte erstellen",
+      "selectedHive": "Ausgewählter Bienenstock",
+      "emptyState": "Wählen Sie einen Bienenstock und ein Aufbaudatum und erstellen Sie dann die Nachkontroll-Punkte.",
+      "notesLabel": "Durchsichtsnotizen",
+      "notesChecklistLabel": "Checkliste",
+      "checkpointPrefix": "Demaree-Kontrollpunkt:",
+      "dayOffset_one": "Tag {{count}}",
+      "dayOffset_other": "Tag {{count}}",
+      "save": "Geplante Durchsichten speichern",
+      "saving": "Durchsichten werden gespeichert...",
+      "saveSuccess_one": "{{count}} Demaree-Kontrollpunkt als geplante Durchsicht gespeichert.",
+      "saveSuccess_other": "{{count}} Demaree-Kontrollpunkte als geplante Durchsichten gespeichert.",
+      "partialSave": "{{successCount}} Kontrollpunkte gespeichert, aber {{failedCount}} fehlgeschlagen. Prüfen Sie die bevorstehenden Durchsichten, bevor Sie es erneut versuchen.",
+      "saveError": "Der Demaree-Plan konnte nicht gespeichert werden. Einige Durchsichten wurden möglicherweise nicht erstellt.",
+      "noHives": "Sie brauchen mindestens einen Bienenstock im aktiven Bienenstand, bevor Sie einen Demaree-Plan erstellen können.",
       "checkpoints": {
         "setup": {
-          "title": "Initial Demaree setup",
-          "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+          "title": "Erster Demaree-Aufbau",
+          "summary": "Führe die Brutumordnung durch, stelle sicher, dass die legende Königin unter dem Absperrgitter ist, und lass dem Volk Platz nach oben.",
           "checklist": [
-            "Confirm the laying queen is in the lower brood box.",
-            "Place the brood and supers in the planned Demaree order.",
-            "Record any details you want visible at the next inspection."
+            "Bestätigen Sie, dass die legende Königin in der unteren Brutzarge ist.",
+            "Ordnen Sie Brut und Honigräume in der geplanten Demaree-Reihenfolge an.",
+            "Notieren Sie alle Details, die bei der nächsten Durchsicht sichtbar sein sollen."
           ]
         },
         "queenCellCheck": {
-          "title": "Queen-cell check",
-          "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+          "title": "Weiselzellen-Kontrolle",
+          "summary": "Sehen Sie den oberen Brutbereich um Tag 7 bis 8 durch und entfernen Sie Nachschaffungszellen, bevor sie sich dem Schlupf nähern.",
           "checklist": [
-            "Inspect every brood frame above the excluder for queen cells.",
-            "Remove queen cells started during the swarm impulse.",
-            "Confirm the queen still has room and activity below."
+            "Sehen Sie jede Brutwabe über dem Absperrgitter auf Weiselzellen durch.",
+            "Entfernen Sie Weiselzellen, die während des Schwarmtriebs angelegt wurden.",
+            "Bestätigen Sie, dass die Königin unten noch Platz und Aktivität hat."
           ]
         },
         "secondQueenCellCheck": {
-          "title": "Second queen-cell check",
-          "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+          "title": "Zweite Weiselzellen-Kontrolle",
+          "summary": "Kontrolliere etwa eine Woche später erneut, um spät angelegte Zellen zu erwischen und sicherzustellen, dass das Brutnest ausgewogen bleibt.",
           "checklist": [
-            "Look again for newly started or missed queen cells.",
-            "Check whether brood and stores need to be rebalanced.",
-            "Note whether the colony is settling or still crowding upward."
+            "Suchen Sie erneut nach neu angelegten oder übersehenen Weiselzellen.",
+            "Prüfen Sie, ob Brut und Vorräte neu ausbalanciert werden müssen.",
+            "Notieren Sie, ob sich das Volk beruhigt oder weiterhin nach oben drängt."
           ]
         },
         "colonyReview": {
-          "title": "Colony review",
-          "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+          "title": "Volkskontrolle",
+          "summary": "Bestätigen Sie, dass der Schwarmdruck nachgelassen hat, entscheiden Sie, ob der Aufbau normalisiert wird, und halten Sie die nächsten Schritte fest.",
           "checklist": [
-            "Assess whether the colony can return to a more normal arrangement.",
-            "Check space, brood pattern, and nectar intake across the stack.",
-            "Schedule any additional inspection you want beyond the standard plan."
+            "Beurteilen Sie, ob das Volk zu einer normaleren Anordnung zurückkehren kann.",
+            "Prüfen Sie Platz, Brutbild und Nektareintrag über den gesamten Aufbau.",
+            "Planen Sie zusätzliche Durchsichten, die Sie über den Standardplan hinaus möchten."
           ]
         }
-      }
+      },
+      "signInTitle": "Melden Sie sich an, um Ihre Durchsichten zu planen",
+      "signInDescription": "Erstellen Sie ein kostenloses Konto, um Demaree-Kontrollpunkte zu erzeugen, sie mit einem Ihrer Bienenstöcke zu verknüpfen und als geplante Durchsichten zu speichern.",
+      "signInCta": "Anmelden",
+      "registerCta": "Kostenloses Konto erstellen",
+      "atAGlanceTitle": "Auf einen Blick",
+      "atAGlanceDescription": "Kurzreferenz für die Standard-Nachkontrollen der Demaree-Methode."
     },
     "warnings": {
-      "bannerTitle": "Timing warnings",
+      "bannerTitle": "Timing-Warnungen",
       "lateQueenCellCheck": {
-        "title": "First queen-cell check is later than day 8",
-        "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+        "title": "Erste Weiselzellen-Kontrolle liegt nach Tag 8",
+        "description": "Diese Verzögerung erhöht das Risiko, dass Weiselzellen schlüpfen, bevor Sie sie entfernen. Versuchen Sie, die erste Nachkontrolle im Fenster von 7 bis 8 Tagen zu halten."
       },
       "unsafeCheckpointSpacing": {
-        "title": "Checkpoint spacing looks risky",
-        "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+        "title": "Abstand der Kontrollpunkte wirkt riskant",
+        "description": "Diese Nachkontrollen liegen ungewöhnlich weit auseinander oder zu dicht beieinander, was die Weiselzellen-Kontrolle und Brutdurchsicht weniger verlässlich machen kann."
       },
       "illogicalScheduleOrder": {
-        "title": "Checkpoint order is no longer chronological",
-        "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+        "title": "Reihenfolge der Kontrollpunkte ist nicht mehr chronologisch",
+        "description": "Einer der späteren Kontrollpunkte ist am oder vor einem früheren Besuch geplant. Ordnen Sie die Daten neu, bevor Sie den Plan speichern."
       }
-    }
+    },
+    "intro": "Kostenlose Nachschlagewerke zur Schwarmkontrolle bei Honigbienen. Vergleiche bewährte Methoden wie die Demaree-Methode, plane Nachkontrollen und verringere das Risiko, in der geschäftigen Frühjahrssaison Völker durch Schwärmen zu verlieren."
   },
   "varroaManagement": {
     "eyebrow": "Kostenloses Tool",
@@ -1043,12 +1142,578 @@
       "items": {
         "liebefelder": {
           "title": "Liebefelder Schätzmethode",
-          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+          "body": "Schätzen Sie Volksstärke und Bienenmasse durch Zählen besetzter Wabenseiten in Achtelschritten – die Standardmethode des Schweizerischen Zentrums für Bienenforschung."
+        },
+        "syrup": {
+          "title": "Zuckersirup-Rechner",
+          "body": "Genaue Zucker- und Wassermengen für 1:1-, 3:2- oder 2:1-Sirup in beliebiger Gebindegröße. Metrisch oder imperial."
+        },
+        "brood": {
+          "title": "Brutentwicklungs-Zeitleiste",
+          "body": "Visualisieren Sie die Brutstadien von Königin, Arbeiterin und Drohn mit Tageszählung und errechnen Sie Termine ab jedem Starttag."
+        },
+        "swarm": {
+          "title": "Schwarmkontrolle",
+          "body": "Schritt-für-Schritt-Ablauf zur Schwarmkontrolle nach Demaree mit Nachkontroll-Terminen und Durchsichtsplaner."
         },
         "varroa": {
           "title": "Varroa-Management-Plan",
           "body": "Behandlungsfahrplan durchs Jahr für Wirtschaftsvölker und Ableger mit Befallsschwellen, plus Teilen und Behandeln Schritt für Schritt erklärt."
         }
+      },
+      "meta": {
+        "title": "Kostenlose Imker-Werkzeuge – Hive Pal",
+        "description": "Kostenlose, quelloffene Rechner und Nachschlagewerke für Imker. Zuckersirup-Rechner, Brutentwicklungs-Zeitleiste und Abläufe zur Schwarmkontrolle.",
+        "ogDescription": "Kostenlose Rechner und Nachschlagewerke für Imker – ohne Registrierung."
+      },
+      "eyebrow": "Kostenlose Werkzeuge",
+      "title": "Imker-Werkzeuge, ohne Registrierung",
+      "intro": "Quelloffene Rechner und Nachschlagewerke, die Sie direkt im Browser nutzen können. Setzen Sie ein Lesezeichen für den Bienenstand."
+    },
+    "nav": {
+      "features": "Features",
+      "freeTools": "Kostenlose Werkzeuge",
+      "documentation": "Dokumentation",
+      "releaseNotes": "Versionshinweise",
+      "github": "GitHub",
+      "signIn": "Anmelden",
+      "startFree": "Kostenlos starten"
+    },
+    "footer": {
+      "tagline": "Kostenlose, quelloffene Imkerei-Verwaltung. Für ein einfacheres, produktiveres und etwas schöneres Handwerk.",
+      "product": "Produkt",
+      "features": "Features",
+      "freeTools": "Kostenlose Werkzeuge",
+      "releaseNotes": "Versionshinweise",
+      "project": "Projekt",
+      "documentation": "Dokumentation",
+      "reportIssue": "Problem melden",
+      "privacyPolicy": "Datenschutz",
+      "source": "Quellcode",
+      "github": "GitHub",
+      "signIn": "Anmelden",
+      "createAccount": "Konto erstellen",
+      "copyright": "© 2025 Hive Pal · MIT-lizenziert",
+      "builtWith": "Mit Sorgfalt für Imkerinnen und Imker überall gebaut."
+    },
+    "ai": {
+      "eyebrow": "Sprache & KI",
+      "title": "Durchsicht per Stimme,<br/><accent>nicht per Tastatur</accent>.",
+      "lede": "Hive Pal nimmt während der Durchsicht Audio auf, transkribiert es automatisch und erstellt mit KI strukturierte Notizen – so erledigt sich die Fleißarbeit, während Sie noch am Bienenstand sind.",
+      "items": {
+        "record": {
+          "title": "Am Bienenstock aufnehmen",
+          "body": "Tippen Sie auf Ihrem Handy auf Aufnahme, beschreiben Sie, was Sie auf jeder Wabe sehen, und machen Sie weiter. Aufnahmen landen direkt in der Durchsicht – auch wenn mitten am Stand das Signal abbricht."
+        },
+        "transcribe": {
+          "title": "Automatische Transkription",
+          "body": "Die Whisper-gestützte Spracherkennung macht aus jeder Aufnahme ein durchsuchbares Transkript, das an die Durchsicht angehängt wird. Mehrsprachig von Haus aus."
+        },
+        "draft": {
+          "title": "KI-erstellte Notizen",
+          "body": "Lokale LLMs erkennen Königinnen-Sichtungen, Brutbilder, Behandlungen und Beobachtungen und füllen damit eine Durchsicht vor – Sie prüfen nur noch und speichern."
+        }
+      },
+      "assuranceLead": "Ihre Aufnahmen, Ihre Modelle.",
+      "assuranceBody": "Der KI-Stack läuft auf quelloffenen Modellen (faster-whisper + Ollama) und lässt sich zusammen mit Ihren Daten selbst hosten – oder als Pull-Worker auf Ihrem Rechner zu Hause betreiben.",
+      "assuranceNote": "Keine Drittanbieter-Cloud nötig"
+    },
+    "landing": {
+      "meta": {
+        "title": "Hive Pal – KI-gestützte Imkerei-Verwaltungssoftware",
+        "description": "Verwalten Sie Ihre Bienenstöcke effizient mit Hive Pal. Nehmen Sie Sprachnotizen am Bienenstock auf und lassen Sie die KI Ihre Durchsichten transkribieren und vorbereiten. Quelloffen, selbst hostbar und kostenlos für Early Adopters.",
+        "ogTitle": "Hive Pal – KI-gestützte Imkerei-Verwaltungssoftware",
+        "ogDescription": "Kostenlose, quelloffene Imkerei-Plattform mit KI-Sprachdurchsichten. Nehmen Sie am Bienenstand Audio auf und lassen Sie die KI Ihre Durchsichtsnotizen automatisch vorbereiten."
+      },
+      "hero": {
+        "badge": "Neu · KI-Sprachdurchsichten",
+        "title": "Ihr quelloffener<br/>Imkerei-<accent>Begleiter</accent>.",
+        "lede": "Nehmen Sie Sprachnotizen am Bienenstock auf. Lassen Sie die KI Ihre Durchsichten automatisch transkribieren und vorbereiten – so bleiben Ihre Hände an den Waben statt an der Tastatur.",
+        "ctaSignup": "Registrieren – kostenlos",
+        "ctaSelfHost": "Selbst hosten",
+        "tagline": "MIT-lizenziert · selbst hostbar · Voice-first"
+      },
+      "features": {
+        "label": "Moderne Imkerei",
+        "title": "Alles, was Sie brauchen, um Ihre Völker zu <accent>pflegen</accent>.",
+        "lede": "Professionelle Werkzeuge, von Imkern für Imker entwickelt – damit Völker in jeder Saison gesund, produktiv und gut dokumentiert bleiben.",
+        "pillars": "Vier Säulen · vereint in einer Plattform",
+        "seeAll": "Alle Funktionen entdecken",
+        "items": {
+          "apiary": {
+            "title": "Bienenstand-Verwaltung",
+            "body": "Organisiere und verfolge mehrere Bienenstände mit detaillierten Standortinformationen, Wetterdaten und standortspezifischen Notizen."
+          },
+          "inspections": {
+            "title": "Durchsichten",
+            "body": "Planen und dokumentieren Sie detaillierte Durchsichten mit anpassbaren Checklisten, Fotos und Gesundheitsbewertungen."
+          },
+          "queen": {
+            "title": "Königinnen-Verfolgung",
+            "body": "Behalten Sie Leistung, Zuchtdaten und Umweiselungstermine der Königinnen im Blick, um starke Völker zu erhalten."
+          },
+          "harvest": {
+            "title": "Ernteverwaltung",
+            "body": "Erfassen Sie Honigproduktion, Verarbeitungstermine und Erträge über Saisons und Standorte hinweg."
+          }
+        }
+      },
+      "run": {
+        "label": "Betriebsmöglichkeiten",
+        "title": "Selbst hosten oder uns den <accent>Betrieb</accent> überlassen.",
+        "lede": "Zwei Wege, Hive Pal zu nutzen – beide kostenlos, beide mit demselben quelloffenen Code.",
+        "selfHosted": {
+          "title": "Selbst gehostet",
+          "badge": "Für immer kostenlos",
+          "body": "Volle Kontrolle über Ihre Daten und Infrastruktur. Betreiben Sie es auf Ihrem eigenen Server, Ihrem Laptop, einem Raspberry Pi – wo immer es Ihnen passt.",
+          "items": [
+            "MIT-lizenziert – lesen, forken, ausliefern",
+            "Überall hostbar, wo Docker läuft",
+            "Ihre Daten bleiben auf Ihrer Hardware",
+            "Community-Support über GitHub"
+          ],
+          "cta": "Zur Dokumentation"
+        },
+        "hosted": {
+          "title": "Von uns gehostet",
+          "badge": "Kostenlos",
+          "body": "Keine Einrichtung nötig. Wir betreiben die Server, kümmern uns um Updates und halten den Betrieb am Laufen. Dieselbe quelloffene App – nur auf unserer Hardware.",
+          "items": [
+            "Registrieren und loslegen – ohne Installation",
+            "Automatische Updates & Backups",
+            "Bestmögliche Verfügbarkeit, überwacht",
+            "Community-Support über GitHub"
+          ],
+          "cta": "Registrieren – kostenlos"
+        }
+      },
+      "tools": {
+        "label": "Kostenlose Werkzeuge",
+        "title": "Kostenlose Werkzeuge, ohne Registrierung.",
+        "lede": "Praktische Rechner und Planer, die Sie direkt im Browser nutzen können – setzen Sie ein Lesezeichen für den Bienenstand.",
+        "seeAll": "Alle Werkzeuge ansehen",
+        "items": {
+          "syrup": {
+            "title": "Zuckersirup-Rechner",
+            "body": "Genaue Zucker- und Wassermengen für 1:1-, 3:2- oder 2:1-Sirup in beliebiger Gebindegröße. Metrisch oder imperial."
+          },
+          "brood": {
+            "title": "Brutentwicklungs-Zeitleiste",
+            "body": "Visualisieren Sie die Brutstadien von Königin, Arbeiterin und Drohn mit Tageszählung und errechnen Sie Termine ab jedem Starttag."
+          },
+          "swarm": {
+            "title": "Schwarmkontrolle",
+            "body": "Schritt-für-Schritt-Ablauf zur Schwarmkontrolle nach Demaree mit Nachkontroll-Terminen und Durchsichtsplaner."
+          },
+          "liebefelder": {
+            "title": "Liebefelder Schätzmethode",
+            "body": "Schätzen Sie die Volksstärke – Bienen, Brut, Pollen und Futter – durch Zählen von Wabenachteln, mit saisonalen Bewertungsrichtlinien."
+          },
+          "varroa": {
+            "title": "Varroa-Management-Plan",
+            "body": "Behandlungsfahrplan durchs Jahr für Wirtschaftsvölker und Ableger mit Befallsschwellen, plus Teilen und Behandeln Schritt für Schritt erklärt."
+          }
+        }
+      },
+      "cta": {
+        "title": "Probieren Sie es <accent>aus</accent>.",
+        "lede": "Registrieren Sie sich für die gehostete Version oder holen Sie sich den Quellcode und betreiben Sie es selbst. So oder so: kostenlos.",
+        "signup": "Kostenlos registrieren",
+        "github": "Auf GitHub ansehen"
+      }
+    },
+    "features": {
+      "meta": {
+        "title": "Funktionen – Alles, was Hive Pal für Imker leistet",
+        "description": "Entdecken Sie jede Funktion von Hive Pal: KI-Sprachdurchsichten mit automatischer Transkription, Bienenstock- und Königinnen-Verwaltung, Sammeldurchsichten, Planung und Berichte, Ernteerfassung, Zusammenarbeit sowie quelloffene, selbst hostbare, datenschutzfreundliche Software.",
+        "ogTitle": "Hive Pal Funktionen – KI-Sprachdurchsichten & Imkerei-Verwaltung",
+        "ogDescription": "KI-Sprachdurchsichten, Bienenstock- & Königinnen-Verwaltung, Planung, Berichte, Zusammenarbeit und quelloffenes Self-Hosting. Sehen Sie sich alles an, was Hive Pal kann."
+      },
+      "hero": {
+        "eyebrow": "Alles an einem Ort",
+        "title": "Alles, was Sie brauchen, um <accent>die Bienen zu führen</accent>.",
+        "lede": "Hive Pal vereint Voice-first-KI-Durchsichten, Volks- und Königinnen-Aufzeichnungen, Planung, Berichte und Zusammenarbeit in einer einzigen quelloffenen Plattform – kostenlos nutzbar und selbst hostbar.",
+        "ctaSignup": "Registrieren – kostenlos",
+        "ctaSelfHost": "Selbst hosten",
+        "tagline": "MIT-lizenziert · selbst hostbar · Voice-first"
+      },
+      "groups": {
+        "inspections": {
+          "label": "Durchsichten & Dokumentation",
+          "title": "Jede Durchsicht, im Detail festgehalten",
+          "lede": "Halten Sie mit strukturierten, wiederholbaren Durchsichten fest, was Sie am Bienenstock sehen – und finden Sie es genau dann wieder, wenn Sie es brauchen.",
+          "items": {
+            "structured": {
+              "title": "Strukturierte Durchsichten",
+              "body": "Erfassen Sie Brutbild, Vorräte, Sanftmut, Platz und Königinnenstatus mit einheitlichen Feldern, damit Völker über Besuche und Saisons hinweg vergleichbar sind."
+            },
+            "quickChecks": {
+              "title": "Schnellprüfungen",
+              "body": "Ein schlanker Durchsichtsablauf für schnelle Rundgänge, wenn Sie nur das Wesentliche notieren und weitermachen möchten."
+            },
+            "batch": {
+              "title": "Sammeldurchsichten",
+              "body": "Sehen Sie einen ganzen Bienenstand in einem Rutsch durch – gehen Sie jedes Volk der Reihe nach durch, ohne jeden Datensatz einzeln zu öffnen."
+            },
+            "scheduled": {
+              "title": "Geplante Durchsichten & Erinnerungen",
+              "body": "Planen Sie künftige Besuche und erhalten Sie Aufgaben-Erinnerungen sowie Hinweise zu Neuerungen, damit zwischen den Terminen nichts untergeht."
+            },
+            "photos": {
+              "title": "Fotos & Beobachtungen",
+              "body": "Hängen Sie Fotos und Freitext-Notizen an jede Durchsicht, um Krankheitsanzeichen, Waben oder alles Weitere zu dokumentieren, das einen zweiten Blick wert ist."
+            },
+            "actions": {
+              "title": "Maßnahmen & Behandlungen",
+              "body": "Erfassen Sie Fütterungen, Behandlungen und Betriebsmaßnahmen als Teil der Durchsicht und bauen Sie so eine lückenlose Historie je Volk auf."
+            }
+          }
+        },
+        "colony": {
+          "label": "Volks- & Bienenstock-Verwaltung",
+          "title": "Bienenstände, Bienenstöcke und Königinnen organisieren",
+          "lede": "Ein klares Abbild Ihrer Imkerei – vom Stand bis zu einzelnen Waben und Königinnenlinien.",
+          "items": {
+            "apiaries": {
+              "title": "Mehrere Bienenstände",
+              "body": "Gruppiere Bienenstöcke nach Standort mit standortspezifischen Notizen und lokalem Wetterkontext für jeden Stand."
+            },
+            "hiveConfig": {
+              "title": "Beutenkonfiguration",
+              "body": "Erfassen Sie Zargen, Rähmchen und Konfiguration je Bienenstock, damit der Datensatz die tatsächliche Ausstattung im Feld abbildet."
+            },
+            "queens": {
+              "title": "Königinnen-Verfolgung",
+              "body": "Verfolge Zeichnung, Herkunft, Abstammung, Leistung und Umweiselungshistorie jeder Königin, um Völker stark zu halten."
+            },
+            "equipment": {
+              "title": "Ausstattungsplanung",
+              "body": "Planen und kalkulieren Sie Zargen, Rähmchen und Material über alle Bienenstöcke hinweg, damit Sie wissen, was Sie vor der Saison bauen müssen."
+            },
+            "qrCodes": {
+              "title": "QR-Codes",
+              "body": "Erzeuge und drucke QR-Etiketten für Bienenstöcke und scanne sie am Stand, um direkt zum passenden Datensatz zu springen."
+            },
+            "hiveScale": {
+              "title": "Stockwaagen-Überwachung",
+              "body": "Verbinde Stockwaagen, um Gewichtsverläufe zu verfolgen – Tracht, Verbrauch und Überwinterung auf einen Blick."
+            }
+          }
+        },
+        "planning": {
+          "label": "Planung & Einblick",
+          "title": "Die Saison im Blick, nicht nur den Tag",
+          "lede": "Machen Sie aus Ihren Aufzeichnungen einen Plan und ein Bild davon, wie es um Ihre Imkerei steht.",
+          "items": {
+            "calendar": {
+              "title": "Kalender",
+              "body": "Ein einheitlicher Kalender mit Durchsichten und geplanten Aufgaben über alle Bienenstände hinweg, damit die kommende Woche immer im Blick ist."
+            },
+            "reports": {
+              "title": "Berichte & Auswertungen",
+              "body": "Fassen Sie Ihre Daten in Berichten zu Volksgesundheit und Produktivität zusammen, um Trends und schwache Völker früh zu erkennen."
+            },
+            "harvest": {
+              "title": "Ernteerfassung",
+              "body": "Erfassen Sie Honigernten, Verarbeitungstermine und Erträge über Bienenstöcke und Saisons hinweg, um den tatsächlichen Ertrag zu messen."
+            },
+            "assistant": {
+              "title": "KI-Assistent",
+              "body": "Stellen Sie Fragen zu Ihrem Bienenstand und lassen Sie sich direkt in der App helfen, Ihre Aufzeichnungen zu verstehen."
+            },
+            "bulkActions": {
+              "title": "Sammelaktionen",
+              "body": "Wenden Sie dieselbe Aktion auf viele Bienenstöcke gleichzeitig an, statt sie einzeln zu bearbeiten."
+            }
+          }
+        },
+        "collaboration": {
+          "label": "Zusammenarbeit & Teilen",
+          "title": "Imkern ist selten Einzelarbeit",
+          "lede": "Arbeite mit Partnern, Vereinen oder Mentees an den Bienen – und teile das Wichtige, ohne die Schlüssel aus der Hand zu geben.",
+          "items": {
+            "sharing": {
+              "title": "Bienenstand teilen",
+              "body": "Laden Sie andere Imker ein, an einem Bienenstand mitzuarbeiten, damit das ganze Team mit denselben Aufzeichnungen arbeitet."
+            },
+            "inviteLinks": {
+              "title": "Einladungslinks",
+              "body": "Teile einen Beitrittslink, um jemanden schnell zu einem Bienenstand hinzuzufügen – ohne umständliches Konto-Handling."
+            },
+            "sharedViews": {
+              "title": "Geteilte Ansichten",
+              "body": "Geben Sie Lesezugriff auf Völker oder Daten, damit ein Mentor oder Verein mitverfolgen kann, ohne zu bearbeiten."
+            }
+          }
+        },
+        "data": {
+          "label": "Ihre Daten, Ihre Regeln",
+          "title": "Quelloffen, privat und portabel",
+          "lede": "Hive Pal ist freie Software, die Sie selbst betreiben können – Ihre Aufzeichnungen bleiben Ihre.",
+          "items": {
+            "openSource": {
+              "title": "Open Source (MIT)",
+              "body": "Die gesamte App ist MIT-lizenziert. Lies sie, forke sie, prüfe sie oder trage bei – keine Blackbox."
+            },
+            "selfHostable": {
+              "title": "Selbst hostbar",
+              "body": "Betreibe es überall, wo Docker läuft: auf einem Server, einem Laptop oder einem Raspberry Pi. Die gehostete Version nutzt denselben Code."
+            },
+            "importExport": {
+              "title": "Import & Export",
+              "body": "Bewegen Sie Ihre Daten frei hinein und heraus. Ihre Imkerei-Historie ist nie in der App eingesperrt."
+            },
+            "privacyAI": {
+              "title": "Datenschutzfreundliche KI",
+              "body": "Der Sprach- und KI-Stack nutzt offene Modelle (faster-whisper + Ollama) und kann auf Ihrer eigenen Hardware laufen – keine Drittanbieter-Cloud nötig."
+            },
+            "multilingual": {
+              "title": "Mehrsprachig",
+              "body": "Nutzen Sie Hive Pal in Ihrer Sprache – mit Community-Übersetzungen, die über Weblate gepflegt werden und stetig wachsen."
+            },
+            "pwa": {
+              "title": "Installierbar & offlinefähig",
+              "body": "Installieren Sie es als PWA auf Ihrem Handy und arbeiten Sie am Bienenstand weiter, auch wenn das Signal abbricht."
+            }
+          }
+        }
+      },
+      "tools": {
+        "label": "Ohne Registrierung",
+        "title": "Kostenlose Werkzeuge, die Sie sofort nutzen können",
+        "lede": "Rechner und Planer, die im Browser funktionieren, ganz ohne Konto – ein Vorgeschmack darauf, wie Hive Pal übers Imkern denkt.",
+        "seeAll": "Alle Werkzeuge ansehen"
+      },
+      "cta": {
+        "title": "Bereit, es <accent>auszuprobieren</accent>?",
+        "lede": "Registrieren Sie sich für die gehostete Version oder holen Sie sich den Quellcode und betreiben Sie es selbst. So oder so: kostenlos.",
+        "signup": "Kostenlos registrieren",
+        "github": "Auf GitHub ansehen"
+      }
+    }
+  },
+  "months": {
+    "selectMonth": "Monat auswählen",
+    "january": "Januar",
+    "february": "Februar",
+    "march": "März",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
+  },
+  "syrupCalculator": {
+    "title": "Zuckersirup-Rechner",
+    "description": "Berechne Zucker- und Wassermengen für Futtersirup",
+    "intro": "Kostenloser Zuckersirup-Rechner für Imker. Verwenden Sie 1:1-Sirup (dünn) zur Frühjahrsanregung, 3:2 (mittel) als Allzweckfutter und 2:1 (dick) zur Herbstfütterung für den Aufbau der Wintervorräte. Wählen Sie Gebindegröße und Verhältnis – die genauen Zucker- und Wassermengen werden aus der Saccharose-Verdrängung berechnet, damit der fertige Sirup Ihr Gebinde füllt.",
+    "units": "Einheiten",
+    "unitsDescription": "Zwischen metrischen und imperialen Maßeinheiten wechseln",
+    "metric": "Metrisch (l, g, kg)",
+    "imperial": "Imperial (qt, gal, lb)",
+    "ratio": "Sirup-Verhältnis",
+    "ratioDescription": "Verhältnis von Zucker zu Wasser (Gewicht zu Volumen)",
+    "thin": "Dünn (1:1)",
+    "medium": "Mittel (3:2)",
+    "thick": "Dick (2:1)",
+    "containerSize": "Gebindegröße",
+    "containerDescription": "Gesamtvolumen des zuzubereitenden Sirups",
+    "customSize": "Benutzerdefiniert",
+    "results": "Ergebnisse",
+    "water": "Wasser",
+    "sugar": "Zucker",
+    "totalWeight": "Gesamtgewicht",
+    "instructions": "Anleitung",
+    "step1": "{{water}} Wasser abmessen",
+    "step2": "Wasser erwärmen, bis es warm ist (nicht kochen)",
+    "step3": "{{sugar}} weißen Kristallzucker hinzugeben",
+    "step4": "Rühren, bis sich der Zucker vollständig aufgelöst hat",
+    "step5": "Sirup vor dem Füttern auf Raumtemperatur abkühlen lassen",
+    "tips": "Tipps & Anwendungshinweise",
+    "tip1Title": "Dünner Sirup (1:1)",
+    "tip1Description": "Ideal zur Frühjahrsfütterung, um die Brutpflege anzuregen und eine Tracht zu simulieren. Einsetzen, wenn Völker einen Anreiz zum Aufbau brauchen.",
+    "tip2Title": "Mittlerer Sirup (3:2)",
+    "tip2Description": "Ein guter Allzwecksirup. Eignet sich sowohl für die Frühjahrsanregung als auch für eine leichte Herbstfütterung.",
+    "tip3Title": "Dicker Sirup (2:1)",
+    "tip3Description": "Ideal zur Herbstfütterung für den Aufbau der Wintervorräte. Bienen können ihn schnell einlagern, da weniger überschüssiges Wasser verdunstet werden muss.",
+    "tip4Title": "Allgemeine Tipps",
+    "tip4Description": "Verwenden Sie immer weißen Kristallzucker – niemals braunen Zucker, Melasse oder künstliche Süßstoffe. Kochen Sie den Sirup nicht, da dabei HMF (Hydroxymethylfurfural) entstehen kann, das für Bienen giftig ist. Füttern Sie abends, um Räuberei zu verringern.",
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "items": [
+        {
+          "question": "Welches Zucker-Wasser-Verhältnis sollte ich zum Füttern der Bienen verwenden?",
+          "answer": "Verwenden Sie 1:1-Sirup (gleiche Teile Zucker und Wasser nach Gewicht) im Frühjahr, um die Brutpflege anzuregen, 3:2 als Allzweckfutter und 2:1 (zwei Teile Zucker auf einen Teil Wasser) im Herbst für den Aufbau der Wintervorräte. Dicker Sirup lässt sich von den Bienen leichter zu verdeckelten Vorräten umarbeiten; dünner Sirup ahmt eine Tracht nach."
+        },
+        {
+          "question": "Wann sollte ich dünnen (1:1) Sirup füttern?",
+          "answer": "Füttern Sie 1:1-Sirup im Frühjahr oder immer dann, wenn Sie die Brutpflege anregen möchten. Sein Wassergehalt ahmt eine natürliche Tracht nach und regt die Königin zur Eiablage und das Volk zum Aufbau an."
+        },
+        {
+          "question": "Wann sollte ich dicken (2:1) Sirup füttern?",
+          "answer": "Füttern Sie 2:1-Sirup im Spätsommer und Herbst, damit die Völker Wintervorräte aufbauen. Der geringere Wassergehalt bedeutet, dass die Bienen weniger Energie zum Verdunsten aufwenden, bevor sie ihn verdeckeln."
+        },
+        {
+          "question": "Kann ich braunen Zucker, Honig oder Melasse für Bienensirup verwenden?",
+          "answer": "Nein. Verwende ausschließlich weißen Kristallzucker aus Rohr oder Rübe. Brauner Zucker, Melasse und unraffinierte Süßungsmittel enthalten Stoffe, die bei Bienen Ruhr auslösen. Honig aus unbekannten Quellen kann außerdem Krankheiten übertragen."
+        },
+        {
+          "question": "Sollte ich Zuckersirup für Bienen kochen?",
+          "answer": "Nein. Erwärme das Wasser nur so weit, dass sich der Zucker löst, aber koche es nicht. Beim Kochen von Zuckersirup entsteht Hydroxymethylfurfural (HMF), das für Bienen giftig ist."
+        },
+        {
+          "question": "Wie viel Zucker brauche ich für einen Liter 1:1-Sirup?",
+          "answer": "Für einen Liter fertigen 1:1-Sirup benötigen Sie etwa 715 g Wasser und 715 g weißen Kristallzucker. Die genauen Mengen hängen vom Verhältnis und Endvolumen ab – dieser Rechner ermittelt sie anhand der Saccharose-Verdrängung."
+        }
+      ]
+    }
+  },
+  "broodTimeline": {
+    "title": "Brutentwicklungs-Zeitleiste",
+    "description": "Erkunde die Entwicklungsstadien von Königin, Arbeiterin und Drohn vom Ei bis zum ausgewachsenen Tier",
+    "intro": "Visualisieren Sie die Brutentwicklung der Honigbiene vom Ei bis zum ausgewachsenen Tier. Königinnen schlüpfen nach 16 Tagen, Arbeiterinnen nach 21 und Drohnen nach 24 – aufgeteilt in vier Stadien: Ei, Larve, Puppe und ausgewachsenes Tier. Wählen Sie ein Startdatum, um Verdeckelungs- und Schlupftage für die Durchsichtsplanung zu berechnen.",
+    "beeType": "Bienentyp",
+    "beeTypeDescription": "Wählen Sie eine Kaste, um ihre Entwicklungszeitleiste anzuzeigen",
+    "queen": "Königin",
+    "worker": "Arbeiterin",
+    "drone": "Drohn",
+    "compareAll": "Alle vergleichen",
+    "dateSelector": "Startdatum",
+    "dateSelectorDescription": "Wählen Sie optional, wann die Eier gelegt wurden, um Kalenderdaten auf der Zeitleiste zu sehen",
+    "pickDate": "Datum auswählen",
+    "timeline": "Entwicklungszeitleiste",
+    "totalDays": "Gesamt: {{days}} Tage",
+    "daysUnit": "Tage",
+    "stage": {
+      "egg": "Ei",
+      "larva": "Larve",
+      "pupa": "Puppe",
+      "adult": "Ausgewachsen"
+    },
+    "days": "Tag {{start}}–{{end}}",
+    "day": "Tag {{day}}",
+    "durationOne": "1 Tag",
+    "durationOther": "{{count}} Tage",
+    "queenEggDesc": "In Weiselnäpfchen gelegt",
+    "queenLarvaDesc": "Ausschließlich mit Gelée Royale gefüttert",
+    "queenPupaDesc": "Verdeckelt, entwickelt sich rasch",
+    "queenAdultDesc": "Schlüpft, verpaart sich innerhalb weniger Tage",
+    "workerEggDesc": "Winziges weißes Ei, aufrecht in der Zelle",
+    "workerLarvaDesc": "Zuerst Gelée Royale, dann Bienenbrot & Honig",
+    "workerPupaDesc": "Zelle verdeckelt, Metamorphose",
+    "workerAdultDesc": "Schlüpft als fertige Arbeiterin",
+    "droneEggDesc": "Größere Zellen, unbefruchtete Eier",
+    "droneLarvaDesc": "Fütterung ähnlich wie bei Arbeiterinnen",
+    "dronePupaDesc": "Verdeckelt, entwickelt sich zum Drohn",
+    "droneAdultDesc": "Schlüpft als Drohn",
+    "funFacts": "Wissenswertes",
+    "fact1Title": "Königin vs. Arbeiterin",
+    "fact1Description": "Der einzige Unterschied zwischen Königin und Arbeiterin ist die Ernährung. Larven, die ausschließlich mit Gelée Royale gefüttert werden, entwickeln sich zu Königinnen – in nur 16 Tagen gegenüber 21 bei Arbeiterinnen.",
+    "fact2Title": "Drohnenentwicklung",
+    "fact2Description": "Drohnen brauchen am längsten (24 Tage) und entstehen aus unbefruchteten Eiern – sie haben also keinen Vater, aber einen Großvater!",
+    "fact3Title": "Das Eistadium",
+    "fact3Description": "Alle drei Kasten teilen dasselbe 3-tägige Eistadium. Die Königin legt jedes Ei senkrecht in die Zelle; vor dem Schlüpfen kippt es allmählich zur Seite.",
+    "fact4Title": "Zeitpunkt der Verdeckelung",
+    "fact4Description": "Arbeiterinnen verdeckeln Weiselzellen an Tag 8, Arbeiterinnenzellen an Tag 9 und Drohnenzellen an Tag 10. Verdeckelte Zellen zu erkennen hilft zu bestimmen, was sich darin entwickelt.",
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "items": [
+        {
+          "question": "Wie lange dauert die Entwicklung einer Honigbiene?",
+          "answer": "Königinnen schlüpfen nach 16 Tagen, Arbeiterinnen nach 21 Tagen und Drohnen nach 24 Tagen. Alle drei durchlaufen vier Stadien – Ei (3 Tage), Larve, Puppe und ausgewachsenes Tier –, doch Larven- und Puppenstadium unterscheiden sich je nach Kaste in der Dauer."
+        },
+        {
+          "question": "Wann werden Arbeiterinnenzellen verdeckelt?",
+          "answer": "Arbeiterinnen-Brutzellen werden an Tag 9 verdeckelt, wenn die Larve ihren Kokon spinnt und ins Puppenstadium übergeht. Arbeiterinnen schlüpfen an Tag 21."
+        },
+        {
+          "question": "Wann werden Weiselzellen verdeckelt und wann schlüpfen Königinnen?",
+          "answer": "Weiselzellen werden an Tag 8 verdeckelt, und jungfräuliche Königinnen schlüpfen 16 Tage nach der Eiablage. Königinnen entwickeln sich am schnellsten, weil sie das gesamte Larvenstadium hindurch mit Gelée Royale gefüttert werden."
+        },
+        {
+          "question": "Wie lange brauchen Drohnen bis zum Schlupf?",
+          "answer": "Drohnen brauchen vom Ei bis zum Schlupf 24 Tage – am längsten von allen Kasten. Drohnenzellen werden um Tag 10 verdeckelt."
+        }
+      ]
+    }
+  },
+  "bulkAdd": {
+    "title": "Sammelerfassung",
+    "subtitle": "Wählen Sie ein Datum und die betroffenen Bienenstöcke, erstellen Sie eine Maßnahme, Durchsicht oder einen Königinnen-Eintrag und fügen Sie ihn dann zur Warteschlange hinzu.",
+    "loading": "Bienenstöcke werden geladen…",
+    "sections": {
+      "when": "Wann",
+      "hives": "Bienenstöcke",
+      "what": "Was",
+      "queue": "Warteschlange"
+    },
+    "tabs": {
+      "actions": "Maßnahmen",
+      "inspections": "Durchsichten",
+      "queens": "Königinnen"
+    },
+    "hives": {
+      "filterPlaceholder": "Bienenstöcke filtern",
+      "selectAll": "Alle auswählen",
+      "clearVisible": "Sichtbare abwählen",
+      "noMatches": "Keine Bienenstöcke passen zu „{{filter}}“"
+    },
+    "datePlaceholder": "Datum auswählen",
+    "applyHint": "Auf {{count}} Bienenstock am {{date}} anwenden",
+    "applyHintPlural": "Auf {{count}} Bienenstöcke am {{date}} anwenden",
+    "selectHivesHint": "Wählen Sie links mindestens einen Bienenstock aus",
+    "addToQueue": {
+      "action": "Maßnahme zur Warteschlange hinzufügen",
+      "inspection": "Durchsicht zur Warteschlange hinzufügen",
+      "queen": "Königin zur Warteschlange hinzufügen"
+    },
+    "queue": {
+      "clear": "Leeren",
+      "emptyTitle": "Warteschlange ist leer",
+      "emptyBody": "Erstellen Sie links etwas und fügen Sie es zur Warteschlange hinzu.",
+      "submit": "Absenden",
+      "submitOne": "{{count}} Eintrag absenden",
+      "submitMany": "{{count}} Einträge absenden",
+      "submitting": "Wird gesendet…"
+    },
+    "kind": {
+      "action": "Maßnahme",
+      "inspection": "Durchsicht",
+      "queen": "Königin"
+    },
+    "edit": {
+      "title": "Maßnahme bearbeiten",
+      "hive": "Bienenstock",
+      "type": "Typ",
+      "date": "Datum",
+      "cancel": "Abbrechen",
+      "save": "Änderungen speichern"
+    },
+    "errors": {
+      "noHives": "Bitte wähle mindestens einen Bienenstock aus",
+      "emptyAction": "Fügen Sie mindestens eine Maßnahme hinzu, um sie zur Warteschlange zu senden",
+      "emptyInspection": "Fülle zuerst einige Durchsichtsfelder aus",
+      "emptyQueen": "Fülle zuerst die Königinnen-Details aus",
+      "noItems": "Keine Einträge zum Absenden"
+    },
+    "toast": {
+      "addedOne": "{{count}} Eintrag zur Warteschlange hinzugefügt",
+      "addedMany": "{{count}} Einträge zur Warteschlange hinzugefügt",
+      "actionUpdated": "Maßnahme aktualisiert",
+      "createdOne": "{{count}} Eintrag erstellt: {{breakdown}}",
+      "createdMany": "{{count}} Einträge erstellt: {{breakdown}}",
+      "partial": "{{success}} erstellt, {{failed}} fehlgeschlagen. Fehlgeschlagene Einträge bleiben in der Warteschlange.",
+      "breakdown": {
+        "actionOne": "{{count}} Maßnahme",
+        "actionMany": "{{count}} Maßnahmen",
+        "inspectionOne": "{{count}} Durchsicht",
+        "inspectionMany": "{{count}} Durchsichten",
+        "queenOne": "{{count}} Königin",
+        "queenMany": "{{count}} Königinnen"
       }
     }
   }

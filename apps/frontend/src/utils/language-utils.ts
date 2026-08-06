@@ -4,7 +4,12 @@ export const LANGUAGES = [
   { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' },
   { code: 'sr', name: 'Српски', flag: '🇷🇸' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'de', name: 'Deutsch (Sie)', flag: '🇩🇪' },
+  // Informal-address variant of German. A thin overlay that only overrides the
+  // strings which differ between "Sie" and "du"; every other key falls back to
+  // `de` (see i18n `fallbackLng`). It is an in-app UI preference only and is
+  // deliberately excluded from the public/SEO URL system (see PUBLIC_LANGUAGES).
+  { code: 'de-informal', name: 'Deutsch (du)', flag: '🇩🇪' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
@@ -13,6 +18,24 @@ export const LANGUAGES = [
 export type SupportedLanguage = (typeof LANGUAGES)[number]['code'];
 
 const supportedCodes = new Set<string>(LANGUAGES.map((l) => l.code));
+
+/**
+ * Languages that get their own public, indexable URLs (canonical, `hreflang`,
+ * sitemap, prerendered pages). Register variants like `de-informal` are in-app
+ * UI preferences only and must NOT produce separate public URLs, or they would
+ * compete with the canonical German page in search.
+ */
+export const PUBLIC_LANGUAGES = LANGUAGES.filter(
+  (l) => l.code !== 'de-informal',
+);
+
+/**
+ * Maps a UI language to the language whose public URL prefix it should use.
+ * Register variants (e.g. `de-informal`) share the canonical language's URLs.
+ */
+function toPublicLanguage(code: string): string {
+  return code === 'de-informal' ? 'de' : code;
+}
 
 /**
  * Normalizes a language/locale code to one of the supported language codes.
@@ -91,7 +114,7 @@ export function buildLocalizedPath(
   neutralPath: string,
   lang: string,
 ): string {
-  const normalized = normalizeLanguageCode(lang);
+  const normalized = toPublicLanguage(normalizeLanguageCode(lang));
   const neutral = stripLanguagePrefix(neutralPath);
   if (normalized === DEFAULT_LANGUAGE) {
     return neutral;
@@ -155,7 +178,7 @@ export interface HreflangAlternate {
  */
 export function getAlternates(neutralPath: string): HreflangAlternate[] {
   const neutral = stripLanguagePrefix(neutralPath);
-  const alternates: HreflangAlternate[] = LANGUAGES.map(({ code }) => ({
+  const alternates: HreflangAlternate[] = PUBLIC_LANGUAGES.map(({ code }) => ({
     hreflang: code,
     href: `${SITE_URL}${buildLocalizedPath(neutral, code)}`,
   }));
