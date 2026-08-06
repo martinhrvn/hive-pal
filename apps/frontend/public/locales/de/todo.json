@@ -1,0 +1,45 @@
+{
+  "list": {
+    "title": "Aufgaben",
+    "caption": "Behalten Sie die Aufgaben für diesen Bienenstand im Blick.",
+    "empty": "Noch keine Aufgaben.",
+    "emptyOpen": "Keine offenen Aufgaben. Gut gemacht!",
+    "showCompleted": "Erledigte anzeigen"
+  },
+  "quickAdd": {
+    "placeholder": "Aufgabe hinzufügen…",
+    "button": "Hinzufügen"
+  },
+  "hive": {
+    "title": "Aufgaben",
+    "empty": "Keine Aufgaben für diesen Bienenstock."
+  },
+  "edit": {
+    "title": "Aufgabe bearbeiten",
+    "description": "Aktualisiere die Details dieser Aufgabe.",
+    "success": "Aufgabe aktualisiert",
+    "error": "Aufgabe konnte nicht aktualisiert werden"
+  },
+  "delete": {
+    "success": "Aufgabe gelöscht",
+    "error": "Aufgabe konnte nicht gelöscht werden"
+  },
+  "fields": {
+    "title": "Titel",
+    "description": "Beschreibung",
+    "dueDate": "Fälligkeitsdatum",
+    "hive": "Bienenstock"
+  },
+  "form": {
+    "titlePlaceholder": "Was ist zu tun?",
+    "descriptionPlaceholder": "Weitere Details hinzufügen…",
+    "hivePlaceholder": "Bienenstock auswählen",
+    "noHive": "Kein Bienenstock"
+  },
+  "validation": {
+    "titleRequired": "Titel ist erforderlich"
+  },
+  "actions": {
+    "toggleComplete": "Als erledigt umschalten"
+  }
+}

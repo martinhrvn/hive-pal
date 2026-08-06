@@ -1,21 +1,21 @@
 {
-    "title": "Inspektionen",
-    "singular": "Inspektion",
-    "plural": "Inspektionen",
+    "title": "Durchsichten",
+    "singular": "Durchsicht",
+    "plural": "Durchsichten",
     "tabs": {
         "all": "Alle",
         "recent": "Kürzlich",
         "upcoming": "Bevorstehend"
     },
     "list": {
-        "title": "Inspektionsliste",
-        "allInspections": "Alle Inspektionen",
-        "recentInspections": "Kürzliche Inspektionen",
-        "upcomingInspections": "Bevorstehende Inspektionen",
-        "searchPlaceholder": "Inspektionen suchen...",
+        "title": "Durchsichtsliste",
+        "allInspections": "Alle Durchsichten",
+        "recentInspections": "Kürzliche Durchsichten",
+        "upcomingInspections": "Bevorstehende Durchsichten",
+        "searchPlaceholder": "Durchsichten suchen...",
         "filterByHive": "Nach Bienenstock filtern",
         "allHives": "Alle Bienenstöcke",
-        "noInspections": "Keine Inspektionen gefunden",
+        "noInspections": "Keine Durchsichten gefunden",
         "unknownHive": "Unbekannter Bienenstock"
     },
     "status": {
@@ -38,12 +38,16 @@
         "no": "Nein"
     },
     "scores": {
-        "title": "Inspektionsbewertungen",
+        "title": "Durchsichtsbewertungen",
         "population": "Volksstärke",
         "stores": "Vorräte",
         "queen": "Königin",
         "overall": "Gesamt",
-        "warnings": "Warnungen"
+        "warnings": "Warnungen",
+        "override": "Überschreiben",
+        "resetToCalculated": "Auf berechneten Wert zurücksetzen",
+        "autoCalculated": "Automatisch berechnet",
+        "overridden": "Manuell"
     },
     "observations": {
         "title": "Beobachtungen",
@@ -55,9 +59,9 @@
         "pollenStores": "Pollenvorräte",
         "queenCells": "Weiselzellen",
         "swarmCells": "Schwarmzellen",
-        "swarmCellsDescription": "",
+        "swarmCellsDescription": "Am unteren Rand oder an den Seiten der Waben angelegt. Oft mehrere Zellen. Das Volk bereitet sich auf das Schwärmen vor.",
         "supersedureCells": "Umweiselungszellen",
-        "supersedureCellsDescription": "",
+        "supersedureCellsDescription": "Mitten in der Wabenfläche angelegt. Meist nur ein bis zwei Zellen. Das Volk ersetzt eine alte oder nachlassende Königin (stille Umweiselung).",
         "clearRating": "Bewertung zurücksetzen",
         "rateAs": "Bewerten als {{value}}",
         "broodPattern": "Brutbild",
@@ -94,44 +98,63 @@
             "requires_treatment": "Behandlung erforderlich",
             "low_stores": "Geringe Vorräte",
             "prepare_for_winter": "Auf Winter vorbereiten"
-        }
+        },
+        "frameCounts": {
+            "title": "Brutnest-Zählung",
+            "totalFrames": "{{count}} Rähmchen gesamt",
+            "framesOf": "/ {{total}} Rähmchen",
+            "framesUnassigned_one": "Derzeit {{count}} Rähmchen nicht zugeordnet",
+            "framesUnassigned_other": "Derzeit {{count}} Rähmchen nicht zugeordnet",
+            "frameDeltaHint": "Während dieser Durchsicht hinzugefügte/entfernte Rähmchen"
+        },
+        "eggsFrames": "Eier",
+        "uncappedBroodFrames": "Offene Brut",
+        "cappedBroodFrames": "Verdeckelte Brut",
+        "droneBroodFrames": "Drohnenbrut",
+        "pollenFrames": "Pollen",
+        "nectarFrames": "Nektar",
+        "honeyFrames": "Honig",
+        "emptyFrames": "Leer / Mittelwand"
     },
     "actions": {
         "details": "Details",
-        "createInspection": "Inspektion erstellen",
-        "addInspection": "Inspektion hinzufügen",
-        "scheduleInspection": "Inspektion planen",
+        "createInspection": "Durchsicht erstellen",
+        "addInspection": "Durchsicht hinzufügen",
+        "scheduleInspection": "Durchsicht planen",
         "refreshData": "Daten aktualisieren",
         "exportCSV": "Als CSV exportieren",
         "printList": "Liste drucken",
         "shareList": "Liste teilen",
         "dataOptions": "Datenoptionen",
-        "doInspection": "Inspektion durchführen",
+        "doInspection": "Durchsicht durchführen",
         "reschedule": "Neu planen",
         "cancel": "Abbrechen",
-        "completeInspection": "Inspektion abschließen",
-        "print": "Drucken"
+        "completeInspection": "Durchsicht abschließen",
+        "print": "Drucken",
+        "mobileInspection": "Mobile Durchsicht",
+        "audioInspection": "Audio-Durchsicht",
+        "share": "Teilen"
     },
     "sidebar": {
         "actions": "Aktionen",
         "views": "Ansichten",
-        "allInspections": "Alle Inspektionen",
-        "recentInspections": "Kürzliche Inspektionen",
-        "upcomingInspections": "Bevorstehende Inspektionen",
-        "printInspectionList": "Inspektionsliste drucken",
-        "shareInspectionList": "Inspektionsliste teilen"
+        "allInspections": "Alle Durchsichten",
+        "recentInspections": "Kürzliche Durchsichten",
+        "upcomingInspections": "Bevorstehende Durchsichten",
+        "printInspectionList": "Durchsichtsliste drucken",
+        "shareInspectionList": "Durchsichtsliste teilen"
     },
     "messages": {
         "exportComingSoon": "Exportfunktion bald verfügbar",
         "shareComingSoon": "Freigabefunktion bald verfügbar"
     },
     "scheduled": {
-        "title": "Geplante Inspektionen",
-        "overdueInspections": "Überfällige Inspektionen",
-        "todaysInspections": "Heutige Inspektionen",
-        "upcomingInspections": "Bevorstehende Inspektionen",
-        "otherUpcomingInspections": "Weitere bevorstehende Inspektionen",
-        "doInspection": "Inspektion durchführen",
+        "title": "Geplante Durchsichten",
+        "overdueInspections": "Überfällige Durchsichten",
+        "todaysInspections": "Heutige Durchsichten",
+        "upcomingInspections": "Bevorstehende Durchsichten",
+        "otherUpcomingInspections": "Weitere bevorstehende Durchsichten",
+        "doInspection": "Durchsicht durchführen",
         "reschedule": "Neu planen",
         "cancel": "Abbrechen",
         "today": "Heute",
@@ -139,25 +162,25 @@
     },
     "dialogs": {
         "cancelInspection": {
-            "title": "Inspektion abbrechen",
-            "description": "Möchten Sie die Inspektion für {{hiveName}} am {{date}} wirklich abbrechen? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "title": "Durchsicht abbrechen",
+            "description": "Möchten Sie die Durchsicht für {{hiveName}} am {{date}} wirklich abbrechen? Diese Aktion kann nicht rückgängig gemacht werden.",
             "keepInspection": "Beibehalten",
-            "cancelInspection": "Inspektion abbrechen"
+            "cancelInspection": "Durchsicht abbrechen"
         },
         "reschedule": {
-            "title": "Inspektion neu planen",
-            "description": "Wählen Sie ein neues Datum für die Inspektion von {{hiveName}}. Die Wettervorhersage wird für die nächsten 7 Tage angezeigt.",
-            "newDate": "Neues Inspektionsdatum: {{date}}",
+            "title": "Durchsicht neu planen",
+            "description": "Wählen Sie ein neues Datum für die Durchsicht von {{hiveName}}. Die Wettervorhersage wird für die nächsten 7 Tage angezeigt.",
+            "newDate": "Neues Durchsichtsdatum: {{date}}",
             "cancel": "Abbrechen",
-            "reschedule": "Inspektion neu planen",
+            "reschedule": "Durchsicht neu planen",
             "showFewerDays": "Weniger Tage anzeigen",
             "showMoreDays": "Mehr Tage anzeigen (+7)",
             "noForecast": "Keine Vorhersage verfügbar",
             "noWeatherData": "Keine Wetterdaten"
         },
         "completingScheduled": {
-            "title": "Geplante Inspektion vom {{date}} abschließen",
-            "description": "Diese Inspektion wird als abgeschlossen markiert, sobald Sie Ihre Änderungen speichern."
+            "title": "Geplante Durchsicht vom {{date}} abschließen",
+            "description": "Diese Durchsicht wird als abgeschlossen markiert, sobald Sie Ihre Änderungen speichern."
         }
     },
     "weather": {
@@ -169,11 +192,11 @@
         "rain": "Regen"
     },
     "detail": {
-        "loading": "Inspektion wird geladen...",
+        "loading": "Durchsicht wird geladen...",
         "error": "Fehler",
-        "errorDescription": "Fehler beim Laden der Inspektionsdetails.",
+        "errorDescription": "Fehler beim Laden der Durchsichtsdetails.",
         "goBack": "Zurück",
-        "notFound": "Inspektion nicht gefunden",
+        "notFound": "Durchsicht nicht gefunden",
         "back": "Zurück",
         "share": "Teilen",
         "shareFailed": "Fehler beim Erstellen des Freigabelinks",
@@ -184,7 +207,7 @@
         "currentStatus": "Aktueller Status",
         "actions": "Aktionen",
         "markCompleted": "Als abgeschlossen markieren",
-        "cancelInspection": "Inspektion abbrechen"
+        "cancelInspection": "Durchsicht abbrechen"
     },
     "weatherCard": {
         "title": "Wetter",
@@ -207,21 +230,21 @@
         "reminders": "Erinnerungen"
     },
     "form": {
-        "newInspection": "Neue Inspektion",
-        "editInspection": "Inspektion bearbeiten",
+        "newInspection": "Neue Durchsicht",
+        "editInspection": "Durchsicht bearbeiten",
         "hive": "Bienenstock",
         "selectHive": "Bienenstock auswählen",
-        "inspectionDate": "Inspektionsdatum",
+        "inspectionDate": "Durchsichtsdatum",
         "pickDate": "Datum auswählen",
-        "allDay": "All day",
-        "specificTime": "Set specific time",
-        "futureScheduled": "Diese Inspektion ist für die Zukunft geplant",
-        "futureScheduledDescription": "Sie planen eine Inspektion für ein zukünftiges Datum.",
+        "allDay": "Ganztägig",
+        "specificTime": "Uhrzeit festlegen",
+        "futureScheduled": "Diese Durchsicht ist für die Zukunft geplant",
+        "futureScheduledDescription": "Sie planen eine Durchsicht für ein zukünftiges Datum.",
         "cancel": "Abbrechen",
         "saveAndNext": "Speichern und weiter",
         "saving": "Speichert...",
         "save": "Speichern",
-        "completeInspection": "Inspektion abschließen",
+        "completeInspection": "Durchsicht abschließen",
         "saveAndComplete": "Speichern und abschließen",
         "weather": {
             "title": "Wetterinformationen",
@@ -235,7 +258,7 @@
         },
         "notes": {
             "title": "Notizen",
-            "description": "Fügen Sie zusätzliche Notizen zu dieser Inspektion hinzu",
+            "description": "Fügen Sie zusätzliche Notizen zu dieser Durchsicht hinzu",
             "label": "Notizen",
             "placeholder": "Geben Sie Beobachtungen, Erkenntnisse oder durchgeführte Maßnahmen ein..."
         },
@@ -253,8 +276,8 @@
                 "syrup": "Sirup",
                 "honey": "Honig",
                 "candy": "Futterteig",
-                "proteinCandy": "Protein Candy",
-                "pollenPatty": "Pollen Patty",
+                "proteinCandy": "Eiweißfutterteig",
+                "pollenPatty": "Pollenfladen",
                 "other": "Sonstige",
                 "customFeedName": "Futtername",
                 "customFeedNamePlaceholder": "Eigenen Futtertyp eingeben",
@@ -281,7 +304,7 @@
                 "framesLabel": "Anzahl hinzugefügter/entfernter Rähmchen",
                 "framesHint": "Positive Zahlen für hinzugefügt, negative für entfernt",
                 "warningNoFramesToRemove": "Keine Rähmchen zum Entfernen vorhanden.",
-                "warningExceedsCapacity": "Das überschreitet die Kapazität der Bruträume ({{capacity}} Rähmchen). Fügen Sie zuerst eine neue Zarge hinzu.",
+                "warningExceedsCapacity": "Das überschreitet die Kapazität der Bruträume ({{capacity}} Rähmchen). Füge zuerst eine neue Zarge hinzu.",
                 "notesOptional": "Notizen (optional)",
                 "notesPlaceholder": "Notizen zu Änderungen der Rähmchen hinzufügen"
             },
@@ -294,36 +317,59 @@
                 "remove": "Entfernen",
                 "saveNote": "Notiz speichern",
                 "edit": "Bearbeiten"
+            },
+            "maintenance": "Wartung",
+            "maintenance_section": {
+                "title": "Wartung",
+                "component": "Bauteil",
+                "box": "Zarge",
+                "bottomBoard": "Beutenboden",
+                "cover": "Deckel",
+                "status": "Status",
+                "cleaned": "Gereinigt",
+                "replaced": "Ersetzt",
+                "notesOptional": "Notizen (optional)",
+                "notesPlaceholder": "Zusätzliche Notizen zur Wartung…"
             }
         },
         "audio": {
             "title": "Audio-Notizen",
             "pendingUpload": "{{count}} ausstehend zum Hochladen",
-            "uploadWarning": "Audioaufnahmen werden beim Speichern der Inspektion hochgeladen."
+            "uploadWarning": "Audioaufnahmen werden beim Speichern der Durchsicht hochgeladen."
+        },
+        "photos": {
+            "title": "Fotos",
+            "takePhoto": "Foto aufnehmen",
+            "addPhoto": "Foto hinzufügen",
+            "pendingUpload": "{{count}} ausstehend zum Hochladen",
+            "uploadWarning": "Fotos werden beim Speichern der Durchsicht hochgeladen.",
+            "deleteConfirm": "Dieses Foto löschen?",
+            "maxReached": "Maximal {{max}} Fotos pro Durchsicht"
         }
     },
     "detailSidebar": {
-        "inspectionActions": "Inspektionsaktionen",
-        "editInspection": "Inspektion bearbeiten",
+        "inspectionActions": "Durchsichtsaktionen",
+        "editInspection": "Durchsicht bearbeiten",
         "printDetails": "Details drucken",
-        "deleteInspection": "Inspektion löschen",
+        "deleteInspection": "Durchsicht löschen",
         "relatedActions": "Verwandte Aktionen",
         "viewHive": "Bienenstock anzeigen",
-        "newInspection": "Neue Inspektion",
+        "newInspection": "Neue Durchsicht",
         "navigation": "Navigation",
-        "allInspections": "Alle Inspektionen",
-        "recentInspections": "Kürzliche Inspektionen",
+        "allInspections": "Alle Durchsichten",
+        "recentInspections": "Kürzliche Durchsichten",
         "goBack": "Zurück",
-        "frameModificationAdded": "Bei dieser Inspektion wurden dem Bienenstock {{count}} Rähmchen hinzugefügt.",
-        "frameModificationRemoved": "Bei dieser Inspektion wurden {{count}} Rähmchen aus dem Bienenstock entfernt.",
+        "frameModificationAdded": "Bei dieser Durchsicht wurden dem Bienenstock {{count}} Rähmchen hinzugefügt.",
+        "frameModificationRemoved": "Bei dieser Durchsicht wurden {{count}} Rähmchen aus dem Bienenstock entfernt.",
         "frameModificationQuestion": "Möchten Sie die aktualisierte Rähmchenzahl beibehalten oder zurücksetzen?",
         "deleteKeepFrames": "Löschen & Rähmchenzahl beibehalten",
-        "deleteRevertFrames": "Löschen & Rähmchenzahl zurücksetzen"
+        "deleteRevertFrames": "Löschen & Rähmchenzahl zurücksetzen",
+        "deleteFailed": "Durchsicht konnte nicht gelöscht werden"
     },
     "timeline": {
-        "scheduledInspections": "Geplante Inspektionen",
-        "completedInspections": "Abgeschlossene Inspektionen",
-        "noInspections": "Noch keine Inspektionen erfasst.",
+        "scheduledInspections": "Geplante Durchsichten",
+        "completedInspections": "Abgeschlossene Durchsichten",
+        "noInspections": "Noch keine Durchsichten erfasst.",
         "cancelled": "Abgebrochen",
         "viewDetails": "Details anzeigen",
         "edit": "Bearbeiten",
@@ -336,59 +382,121 @@
         "queenNotSeen": "Nicht gesehen",
         "notesAvailable": "Notizen vorhanden",
         "showFewer": "Weniger anzeigen",
-        "showAllCount": "Alle {{count}} Inspektionen anzeigen"
+        "showAllCount": "Alle {{count}} Durchsichten anzeigen"
     },
     "schedule": {
-        "title": "Inspektion planen",
-        "description": "Plane deine Inspektionen für die nächsten 7 Tage mit Wettervorhersage",
+        "title": "Durchsicht planen",
+        "description": "Planen Sie Ihre Durchsichten für die nächsten 7 Tage mit Wettervorhersage",
         "selectHives": "Bienenstöcke auswählen",
-        "selectHivesDescription": "Wähle aus, für welche Bienenstöcke Inspektionen geplant werden sollen",
+        "selectHivesDescription": "Wählen Sie aus, für welche Bienenstöcke Durchsichten geplant werden sollen",
         "hivesSelected": "{{count}} Bienenstock ausgewählt",
         "hivesSelectedPlural": "{{count}} Bienenstöcke ausgewählt",
         "clear": "Zurücksetzen",
         "scheduleCalendar": "Kalender planen",
-        "calendarDescription": "Wähle einen Tag zur Planung deiner Inspektion mit Wettervorhersage (nächste {{days}} Tage)",
-        "selectHiveFirst": "Bitte wählen Sie mindestens einen Bienenstock aus, um die Wettervorhersage anzuzeigen",
+        "calendarDescription": "Wählen Sie einen Tag zur Planung Ihrer Durchsicht mit Wettervorhersage (nächste {{days}} Tage)",
+        "selectHiveFirst": "Bitte wähle mindestens einen Bienenstock aus, um die Wettervorhersage anzuzeigen",
         "noApiaryWeather": "Die ausgewählten Bienenstöcke haben keinen zugeordneten Standort für Wetterdaten",
         "today": "Heute",
         "noForecast": "Keine Vorhersage verfügbar",
         "noWeatherData": "Keine Wetterdaten",
         "showFewerDays": "Weniger Tage anzeigen",
         "showMoreDays": "Mehr Tage anzeigen (+7)",
-        "inspectionDetails": "Inspektionsdetails",
-        "schedulingCount": "Plane {{count}} Inspektion für {{date}}",
-        "schedulingCountPlural": "Plane {{count}} Inspektionen für {{date}}",
+        "inspectionDetails": "Durchsichtsdetails",
+        "schedulingCount": "Planen Sie {{count}} Durchsicht für {{date}}",
+        "schedulingCountPlural": "Planen Sie {{count}} Durchsichten für {{date}}",
         "selectedHives": "Ausgewählte Bienenstöcke:",
-        "createAsBatch": "Als Sammelinspektion erstellen",
-        "batchDescription": "Führe Inspektionen nacheinander mit einem geführten Ablauf durch",
-        "batchName": "Name der Sammelinspektion",
-        "batchNamePlaceholder": "z. B. Frühjahrsinspektion 2025",
+        "createAsBatch": "Als Sammeldurchsicht erstellen",
+        "batchDescription": "Führe Durchsichten nacheinander mit einem geführten Ablauf durch",
+        "batchName": "Name der Sammeldurchsicht",
+        "batchNamePlaceholder": "z. B. Frühjahrsdurchsicht 2025",
         "notesOptional": "Notizen (optional)",
-        "notesPlaceholder": "Notizen für diese geplante Inspektion hinzufügen...",
-        "batchInfo": "Diese Sammelinspektion wird erstellt und ist bereit zum Start",
-        "scheduledInfo": "Diese Inspektion wird für ein zukünftiges Datum geplant",
-        "batchStartInfo": "Du kannst die Sammelinspektion sofort beginnen oder später starten.",
-        "scheduledStartInfo": "Du kannst Details hinzufügen und die Inspektion am geplanten Datum abschließen.",
-        "createBatchInspection": "Sammelinspektion erstellen",
-        "scheduleCount": "{{count}} Inspektion planen",
-        "scheduleCountPlural": "{{count}} Inspektionen planen",
-        "batchCreated": "Sammelinspektion erfolgreich erstellt: {{name}}",
-        "batchCreateFailed": "Fehler beim Erstellen der Sammelinspektion",
-        "scheduledSuccess": "{{count}} Inspektion erfolgreich geplant",
-        "scheduledSuccessPlural": "{{count}} Inspektionen erfolgreich geplant",
-        "scheduledFailed": "Fehler beim Planen von {{count}} Inspektion",
-        "scheduledFailedPlural": "Fehler beim Planen von {{count}} Inspektionen",
+        "notesPlaceholder": "Notizen für diese geplante Durchsicht hinzufügen...",
+        "batchInfo": "Diese Sammeldurchsicht wird erstellt und ist bereit zum Start",
+        "scheduledInfo": "Diese Durchsicht wird für ein zukünftiges Datum geplant",
+        "batchStartInfo": "Sie können die Sammeldurchsicht sofort beginnen oder später starten.",
+        "scheduledStartInfo": "Sie können Details hinzufügen und die Durchsicht am geplanten Datum abschließen.",
+        "createBatchInspection": "Sammeldurchsicht erstellen",
+        "scheduleCount": "{{count}} Durchsicht planen",
+        "scheduleCountPlural": "{{count}} Durchsichten planen",
+        "batchCreated": "Sammeldurchsicht erfolgreich erstellt: {{name}}",
+        "batchCreateFailed": "Fehler beim Erstellen der Sammeldurchsicht",
+        "scheduledSuccess": "{{count}} Durchsicht erfolgreich geplant",
+        "scheduledSuccessPlural": "{{count}} Durchsichten erfolgreich geplant",
+        "scheduledFailed": "Fehler beim Planen von {{count}} Durchsicht",
+        "scheduledFailedPlural": "Fehler beim Planen von {{count}} Durchsichten",
         "noApiary": "Standort für ausgewählte Bienenstöcke konnte nicht bestimmt werden"
     },
     "edit": {
-        "completingFrom": "Geplante Inspektion vom {{date}} abschließen",
-        "markedCompleted": "Diese Inspektion wird als abgeschlossen markiert, sobald Sie Ihre Änderungen speichern."
+        "completingFrom": "Geplante Durchsicht vom {{date}} abschließen",
+        "markedCompleted": "Diese Durchsicht wird als abgeschlossen markiert, sobald Sie Ihre Änderungen speichern."
     },
     "dashboard": {
-        "title": "Inspektionsstatus",
+        "title": "Durchsichtsstatus",
         "overdue": "Überfällig",
         "dueToday": "Heute fällig",
-        "overdueCount": "{{count}} Inspektion{{count, plural, one {} other{en}}} überfällig",
-        "dueTodayCount": "{{count}} Inspektion{{count, plural, one {} other{en}}} heute fällig"
+        "overdueCount": "{{count}} Durchsicht{{count, plural, one {} other{en}}} überfällig",
+        "dueTodayCount": "{{count}} Durchsicht{{count, plural, one {} other{en}}} heute fällig"
+    },
+    "mobile": {
+        "vitals": {
+            "title": "Stärke & Brut",
+            "hint": "Volksstärke, verdeckelte und offene Brut"
+        },
+        "stores": {
+            "title": "Vorräte",
+            "hint": "Honig und Pollen"
+        },
+        "queen": {
+            "title": "Königin",
+            "hint": "Haben Sie sie gesehen? Weiselzellen vorhanden?",
+            "yes": "Gesehen",
+            "no": "Nicht gesehen",
+            "notLooked": "Nicht gesucht"
+        },
+        "mediaNotes": {
+            "title": "Medien & Notizen",
+            "hint": "Optionale Fotos, Audio oder Notizen",
+            "addPhoto": "Foto hinzufügen",
+            "recordingNumber": "Aufnahme {{n}}",
+            "removeRecording": "Aufnahme entfernen",
+            "removePhoto": "Foto entfernen",
+            "notesPlaceholder": "Sonst noch etwas Erwähnenswertes?"
+        },
+        "review": {
+            "title": "Überprüfung",
+            "hint": "Prüfen Sie die Zusammenfassung und speichern Sie dann.",
+            "readyToSave": "Bereit zum Speichern",
+            "save": "Durchsicht speichern",
+            "invalid": "Bitte überprüfen Sie Ihre Eingaben",
+            "hasNotes": "Notizen hinzugefügt",
+            "cellTypes": "Zelltypen"
+        }
+    },
+    "audioQuick": {
+        "recordingFor": "Audio-Durchsicht für",
+        "prompt": "Tippen Sie, um die Aufnahme zu starten. Die Durchsicht wird beim Aufnahmebeginn erstellt.",
+        "tapToStart": "Zum Starten tippen",
+        "tapToStop": "Zum Stoppen und Speichern tippen",
+        "start": "Aufnahme starten",
+        "starting": "Startet…",
+        "stop": "Aufnahme stoppen",
+        "uploading": "Aufnahme wird gespeichert…",
+        "uploadFailed": "Aufnahme konnte nicht hochgeladen werden. Die Durchsicht wurde gespeichert.",
+        "tryAgain": "Erneut versuchen",
+        "unsupported": "Audioaufnahme wird in diesem Browser nicht unterstützt."
+    },
+    "pendingBoxUpdate": {
+        "updatingTitle": "Beutenkonfiguration wird aktualisiert",
+        "updatingDescription": "Ihre Durchsicht wurde gespeichert. Die Beutenkonfiguration wird im Hintergrund aktualisiert.",
+        "failedTitle": "Aktualisierung der Beutenkonfiguration fehlgeschlagen",
+        "failedDescription": "Die Beutenkonfiguration konnte nicht aktualisiert werden. Bitte erneut versuchen oder diese Meldung ausblenden.",
+        "retry": "Erneut versuchen",
+        "retrySuccess": "Beutenkonfiguration erfolgreich aktualisiert",
+        "retryFailed": "Erneuter Versuch fehlgeschlagen. Bitte versuche es noch einmal.",
+        "retryDisabled": "Erneute Versuche deaktiviert (5 Versuche erreicht)",
+        "dismiss": "Ausblenden",
+        "stalePayload": "Die Bienenstock-Konfiguration hat sich geändert. Die Aktualisierung der Beute kann nicht wiederholt werden.",
+        "stalePayloadMessage": "Die Bienenstock-Konfiguration hat sich seit dem fehlgeschlagenen Versuch geändert. Bitte lade die Seite neu, um den aktuellen Stand zu sehen.",
+        "maxRetriesReached": "Maximale Anzahl an Versuchen erreicht. Bitte kontaktiere den Support, falls das Problem weiterhin besteht."
     }
 }

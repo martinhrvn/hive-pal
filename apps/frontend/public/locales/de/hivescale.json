@@ -46,7 +46,7 @@
     "title": "Geräte",
     "description": "Wählen oder entfernen Sie ein beanspruchtes HiveHub-Gerät. Öffnen Sie die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren.",
     "removeScale": "Waage entfernen",
-    "noDevices": "Noch keine Geräte beansprucht – öffnen Sie die Einrichtung, um eines hinzuzufügen.",
+    "noDevices": "Noch keine Geräte beansprucht – öffne die Einrichtung, um eines hinzuzufügen.",
     "hide": "Einrichtung ausblenden",
     "show": "Einrichtung anzeigen"
   },
@@ -65,7 +65,7 @@
   },
   "mapping": {
     "title": "Waagenzuordnung",
-    "description": "Diese Bezeichnungen bleiben in HiveHub. Später ist dies der richtige Ort, um Waage 1/2 für Inspektionsmarkierungen den HivePal-Bienenstock-IDs zuzuordnen.",
+    "description": "Diese Bezeichnungen bleiben in HiveHub. Später ist dies der richtige Ort, um Waage 1/2 für Durchsichtsmarkierungen den HivePal-Bienenstock-IDs zuzuordnen.",
     "scale1Label": "Anzeigename für Waage 1",
     "scale2Label": "Anzeigename für Waage 2",
     "hiveNamePlaceholder": "Bienenstocknamen auswählen oder eingeben",
@@ -162,7 +162,7 @@
       "calculate": "Berechnen",
       "factorLabel": "Faktor / Rohwerte pro kg",
       "saveManual": "Manuelle Konfiguration speichern",
-      "configVersion": "Konfigurationsversion {{version}}. Verwenden Sie die erweiterten Einstellungen nur zur Feinabstimmung oder Wiederherstellung."
+      "configVersion": "Konfigurationsversion {{version}}. Verwende die erweiterten Einstellungen nur zur Feinabstimmung oder Wiederherstellung."
     },
     "toasts": {
       "modeQueued": "Kalibrierungsmodus in Warteschlange. Die Waage wechselt zu schnellen Messwerten, sobald sie aufwacht.",
@@ -185,7 +185,7 @@
       "noLatestRaw": "Für {{scaleName}} ist noch kein aktueller Rohwert verfügbar.",
       "validOffset": "Geben Sie zuerst einen gültigen Offset für {{scaleName}} ein.",
       "knownWeight": "Geben Sie für {{scaleName}} ein bekanntes Gewicht größer als 0 kg ein.",
-      "factorNotCalculated": "Faktor für {{scaleName}} konnte nicht berechnet werden. Prüfen Sie den neuesten Rohwert, den Offset und das bekannte Gewicht."
+      "factorNotCalculated": "Faktor für {{scaleName}} konnte nicht berechnet werden. Prüfe den neuesten Rohwert, den Offset und das bekannte Gewicht."
     },
     "tempco": {
       "title": "Temperaturkompensation",
@@ -315,7 +315,8 @@
       "device": "Gerät:",
       "lastSeen": "Zuletzt gesehen:",
       "lastData": "Letzte Daten:",
-      "firmware": "Firmware:"
+      "firmware": "Firmware:",
+      "hiveInsideFirmware": "HiveInside:"
     },
     "range": {
       "all": "Alle",
@@ -361,7 +362,7 @@
       "pressure": "Luftdruck"
     },
     "marker": {
-      "inspection": "Inspektion",
+      "inspection": "Durchsicht",
       "boxAdded": "Zarge hinzugefügt",
       "action": {
         "maintenance": "Wartung",
