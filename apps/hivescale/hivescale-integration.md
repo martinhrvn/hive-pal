@@ -285,7 +285,7 @@ Pairing is reversible from both ends, which is what makes a half-broken pairing 
 | Step | What happens |
 |---|---|
 | Remove (or release) the device in HivePal | HiveScale clears `claimed_at` once no members remain, so the claim code works again |
-| The device's next upload | HiveScale answers `"claimed": false`; the firmware drops its local "claim registered" latch and starts sending its claim code again — no reflash, no factory reset |
+| The device's next upload | HiveScale answers `"claimed": false`; firmware 0.24.9+ drops its local "claim registered" latch and starts sending its claim code again — no reflash, no factory reset. Older firmware needs the setup-portal or factory-reset route below. |
 | Claim the code in HivePal again | The device re-appears with its full history |
 
 Two things HivePal deliberately forgets on removal, both browser-local and keyed by `device_id` (which is stable across re-pairings): the hive-name mapping (`hivepal:hivescale-hive-mapping:<deviceId>:v1`) and the saved dashboard layout (`hivepal:hivescale-dashboard:<deviceId>:v<n>`). Without that, re-claiming the same hardware brought back names and a layout the beekeeper had already discarded.
@@ -341,7 +341,7 @@ claim code — so the fresh backend never learns it, and this 404 is returned ev
 the device is happily uploading data. Fixes: (1) update to firmware that keeps sending
 the claim code until the server confirms the claim (it re-populates automatically), or
 (2) re-submit the claim code in the device's setup portal (short-press the button, join
-the `HiveHub-Setup-XXXX` AP, save) — current firmware clears the latch whenever a claim
+the `HiveHub-Setup-XXXX` AP, save) — firmware 0.24.9+ clears the latch whenever a claim
 code is submitted there, so the code is sent again on the next upload, or
 (3) on the old firmware, bump `CLAIM_CODE_REVISION` in `secrets.h` (or set
 `FORCE_RESEED true`) and re-flash to force the code to be resent once, or (4) factory-reset

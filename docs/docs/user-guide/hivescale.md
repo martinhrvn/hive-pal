@@ -67,7 +67,7 @@ Two buttons sit next to the device selector, and they do different things:
 
 Readings, calibration and hive names are kept either way, so claiming the device again brings its history back with it. Hive-Pal does forget the hive-name mapping and dashboard layout saved in this browser.
 
-The device itself notices on its next upload and starts offering its claim code again — no reflashing, no factory reset, no visit to the apiary.
+The device itself notices on its next upload and starts offering its claim code again — no reflashing, no factory reset, no visit to the apiary. This needs HiveHub firmware 0.24.9 or newer; on older firmware, re-enter the claim code in the device's setup portal or factory-reset it.
 
 ---
 
