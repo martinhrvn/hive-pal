@@ -1,1055 +1,1110 @@
 {
-  "navigation": {
-    "home": "Startseite",
-    "dashboard": "Dashboard",
-    "apiaries": "Bienenstände",
-    "hives": "Bienenstöcke",
-    "inspections": "Durchsichten",
-    "queens": "Königinnen",
-    "settings": "Einstellungen",
-    "admin": "Admin",
-    "users": "Benutzer",
-    "feedback": "Feedback",
-    "logout": "Abmelden",
-    "allApiaries": "Alle Bienenstände",
-    "createApiary": "Bienenstand erstellen",
-    "allHives": "Alle Bienenstöcke",
-    "allInspections": "Alle Durchsichten",
-    "schedule": "Zeitplan",
-    "recent": "Aktuell",
-    "upcoming": "Bevorstehend",
-    "general": "Allgemein",
-    "harvests": "Ernten",
-    "allHarvests": "Alle Ernten",
-    "reports": "Berichte",
-    "metrics": "Kennzahlen",
-    "files": "Dateien",
-    "calendar": "Kalender",
-    "equipment": "Ausstattung",
-    "actions": "Aktionen",
-    "liebefelder": "Liebefelder Methode",
-    "varroaManagement": "Varroa-Management"
-  },
-  "liebefelder": {
-    "title": "Liebefelder Schätzmethode",
-    "description": "Volksstärke schätzen",
-    "intro": "Die Liebefelder Schätzmethode bestimmt die Volksstärke, indem die Wabenfläche in Achteln (1/8-Schritten) beurteilt wird: Wie viel ist mit Bienen, Brut, Pollen und Futter belegt? Schätzwerte und saisonale Richtwerte basieren auf dem Spickzettel zur Populationsschätzung von Dr. Pia Aumeier.",
-    "source": "Quelle: Dr. Pia Aumeier",
-    "frameType": {
-      "title": "Rähmchenmaß",
-      "description": "Wähle das in deiner Beute verwendete Rähmchenmaß — es bestimmt die Schätzwerte je Achtel.",
-      "custom": "Eigene Werte",
-      "customDescription": "Gib eigene Schätzwerte für ein Achtel einer Wabenseite ein."
+    "navigation": {
+        "home": "Startseite",
+        "dashboard": "Dashboard",
+        "apiaries": "Bienenstände",
+        "hives": "Bienenstöcke",
+        "inspections": "Durchsichten",
+        "queens": "Königinnen",
+        "settings": "Einstellungen",
+        "admin": "Admin",
+        "users": "Benutzer",
+        "feedback": "Feedback",
+        "logout": "Abmelden",
+        "allApiaries": "Alle Bienenstände",
+        "createApiary": "Bienenstand erstellen",
+        "allHives": "Alle Bienenstöcke",
+        "allInspections": "Alle Durchsichten",
+        "schedule": "Zeitplan",
+        "recent": "Aktuell",
+        "upcoming": "Bevorstehend",
+        "general": "Allgemein",
+        "harvests": "Ernten",
+        "allHarvests": "Alle Ernten",
+        "reports": "Berichte",
+        "metrics": "Kennzahlen",
+        "files": "Dateien",
+        "calendar": "Kalender",
+        "equipment": "Ausstattung",
+        "actions": "Aktionen",
+        "liebefelder": "Liebefelder Methode",
+        "varroaManagement": "Varroa-Management",
+        "allQueens": "Alle Königinnen",
+        "allTodos": "Alle Aufgaben",
+        "todos": "Aufgaben",
+        "tools": "Werkzeuge",
+        "syrupCalculator": "Sirup-Rechner",
+        "broodTimeline": "Brutzeitplan",
+        "swarmManagement": "Schwarmmanagement",
+        "documentation": "Dokumentation"
     },
-    "counts": {
-      "title": "Zählung — Achtel gesamt",
-      "description": "Summiere die Achtel Wabenfläche über alle Wabenseiten je Kategorie. Ein Achtel fasst etwa {{bees}} Bienen ({{frame}}). Brut und Vorräte sind optional — sie werden für die Ableger-Bewertung und die Futterabschätzung benötigt."
-    },
-    "fields": {
-      "bees": "Bienen",
-      "beesHint": "mit einer Bienenschicht belegte Wabenfläche, beide Seiten zählen",
-      "cappedWorkerBrood": "Verdeckelte Arbeiterinnenbrut",
-      "cappedWorkerBroodHint": "schlüpft innerhalb von 0–12 Tagen",
-      "openWorkerBrood": "Offene Arbeiterinnenbrut",
-      "openWorkerBroodHint": "schlüpft innerhalb von 13–21 Tagen",
-      "droneBrood": "Drohnenbrut",
-      "droneBroodHint": "verdeckelt 0–14 T., offen 15–24 T.",
-      "pollen": "Pollen",
-      "pollenHint": "eingelagertes Bienenbrot",
-      "feed": "Futter / Honig",
-      "feedHint": "verdeckelte oder offene Vorräte"
-    },
-    "result": {
-      "title": "Ergebnis",
-      "empty": "Trage oben deine Achtel-Zählung ein, um die Schätzung zu sehen.",
-      "bees": "Bienen",
-      "wabengassen": "Wabengassen",
-      "wabengassenNote": "≈ 1.000 Bienen je Gasse",
-      "strengthField": "Stärke-Feld",
-      "strengthFieldNote": "für die Durchsicht",
-      "cappedBrood": "Verdeckelte Arbeiterinnenbrut",
-      "openBrood": "Offene Arbeiterinnenbrut",
-      "droneBrood": "Drohnenbrut",
-      "cells": "Zellen",
-      "pollen": "Pollen",
-      "feed": "Futter / Honig",
-      "emergeNote": "In den nächsten 12 Tagen schlüpfen ~{{cells}} Bienen aus der verdeckelten Arbeiterinnenbrut — etwa {{gassen}} zusätzliche Wabengassen. Erweitere die Beute rechtzeitig."
-    },
-    "evaluation": {
-      "title": "Saisonale Bewertung",
-      "description": "Vergleiche das gemessene Volk mit den saisonalen Richtwerten von Dr. Pia Aumeier.",
-      "selectPrompt": "Wähle einen Zeitpunkt, um das Volk zu bewerten.",
-      "enterCountsFirst": "Trage zuerst oben deine Zählung ein.",
-      "contexts": {
-        "split_mid_may": "Ableger bis Mitte Mai",
-        "split_end_may": "Ableger bis Ende Mai",
-        "split_mid_june": "Ableger bis Mitte Juni",
-        "winter_aug": "Einwinterung, Mitte August",
-        "winter_oct": "Einwinterung, Ende Oktober"
-      },
-      "checks": {
-        "minBees": "≥ {{min}} Bienen (gemessen: ~{{measured}})",
-        "minCappedBrood": "≥ {{min}} verdeckelte Arbeiterinnenbrutzellen (gemessen: ~{{measured}})",
-        "minOpenBrood": "≥ {{min}} offene Arbeiterinnenbrutzellen (gemessen: ~{{measured}})"
-      },
-      "splitNote": "Ein brutloser Begattungsableger, der bis Mitte Mai erstellt wird, braucht nur ≥ 1.000 Bienen und keine Brut.",
-      "winterAug": {
-        "check": "> 15.000 Bienen unabhängig von der Brut (gemessen: ~{{measured}})",
-        "note": "Gilt für etablierte Völker Mitte August: Ein so starkes Volk hängt über mehr als 5 Wabengassen bis in den Boden durch. Schwächere, schrumpfende Völker und diesjährige Ableger werden stattdessen Ende Oktober beurteilt."
-      },
-      "winterOct": {
-        "ready": "Bereit für den Winter — ~{{bees}} Bienen auf {{gassen}} Wabengassen (5 oder mehr besetzte Gassen; über 5.000 Bienen).",
-        "minimal": "Minimale Einwinterungsstärke — ~{{bees}} Bienen auf 4 Wabengassen (rund 5.000 Bienen).",
-        "atRisk": "Stark gefährdet, den Winter nicht zu überleben — ~{{bees}} Bienen auf {{gassen}} Wabengassen (3 oder weniger besetzte Gassen; unter 5.000 Bienen). Vereinigen oder auflösen.",
-        "note": "So spät wie möglich beurteilen, nach einer kalten Nacht (≈ 5 °C), durch Zählen der von Bienen besetzten Wabengassen."
-      }
-    },
-    "reference": {
-      "title": "Ein Achtel einer {{frame}}-Wabenseite enthält…",
-      "bees": "Bienen",
-      "drones": "Drohnen",
-      "workerBroodCells": "Arbeiterinnenbrut (verdeckelt/offen)",
-      "droneBroodCells": "Drohnenbrut (verdeckelt/offen)",
-      "pollenG": "Pollen",
-      "feedG": "Futter / Honig",
-      "cellsValue": "{{value}} Zellen"
-    },
-    "tips": {
-      "coverage": {
-        "title": "So schätzt du die Belegung",
-        "pullFrames": {
-          "title": "Jede Wabe ziehen",
-          "description": "Ziehe eine Wabe nach der anderen. Schaue senkrecht auf jede Seite und schätze in Achteln, wie viel der Wabenfläche mit Bienen, Brut, Pollen oder Futter belegt ist."
+    "liebefelder": {
+        "title": "Liebefelder Schätzmethode",
+        "description": "Volksstärke schätzen",
+        "intro": "Die Liebefelder Schätzmethode bestimmt die Volksstärke, indem die Wabenfläche in Achteln (1/8-Schritten) beurteilt wird: Wie viel ist mit Bienen, Brut, Pollen und Futter belegt? Schätzwerte und saisonale Richtwerte basieren auf dem Spickzettel zur Populationsschätzung von Dr. Pia Aumeier.",
+        "source": "Quelle: Dr. Pia Aumeier",
+        "frameType": {
+            "title": "Rähmchenmaß",
+            "description": "Wähle das in deiner Beute verwendete Rähmchenmaß — es bestimmt die Schätzwerte je Achtel.",
+            "custom": "Eigene Werte",
+            "customDescription": "Gib eigene Schätzwerte für ein Achtel einer Wabenseite ein."
         },
-        "bothSides": {
-          "title": "Beide Seiten zählen",
-          "description": "Jede Wabe hat zwei Seiten. Eine beidseitig voll mit Bienen besetzte Wabe trägt 16 Achtel zur Summe bei."
+        "counts": {
+            "title": "Zählung — Achtel gesamt",
+            "description": "Summiere die Achtel Wabenfläche über alle Wabenseiten je Kategorie. Ein Achtel fasst etwa {{bees}} Bienen ({{frame}}). Brut und Vorräte sind optional — sie werden für die Ableger-Bewertung und die Futterabschätzung benötigt."
         },
-        "roundDown": {
-          "title": "Im Zweifel abrunden",
-          "description": "Unterschätzen ist sicherer als Überschätzen — runde auf das nächstniedrigere Achtel ab."
-        }
-      },
-      "emergence": {
-        "title": "Wann schlüpft die Brut?",
-        "capped": {
-          "title": "Verdeckelte Arbeiterinnenbrut",
-          "description": "Alle aktuell verdeckelten Arbeiterinnenzellen schlüpfen innerhalb von 0–12 Tagen."
+        "fields": {
+            "bees": "Bienen",
+            "beesHint": "mit einer Bienenschicht belegte Wabenfläche, beide Seiten zählen",
+            "cappedWorkerBrood": "Verdeckelte Arbeiterinnenbrut",
+            "cappedWorkerBroodHint": "schlüpft innerhalb von 0–12 Tagen",
+            "openWorkerBrood": "Offene Arbeiterinnenbrut",
+            "openWorkerBroodHint": "schlüpft innerhalb von 13–21 Tagen",
+            "droneBrood": "Drohnenbrut",
+            "droneBroodHint": "verdeckelt 0–14 T., offen 15–24 T.",
+            "pollen": "Pollen",
+            "pollenHint": "eingelagertes Bienenbrot",
+            "feed": "Futter / Honig",
+            "feedHint": "verdeckelte oder offene Vorräte"
         },
-        "open": {
-          "title": "Offene Arbeiterinnenbrut",
-          "description": "Offene Arbeiterinnenzellen schlüpfen innerhalb von 13–21 Tagen."
+        "result": {
+            "title": "Ergebnis",
+            "empty": "Trage oben deine Achtel-Zählung ein, um die Schätzung zu sehen.",
+            "bees": "Bienen",
+            "wabengassen": "Wabengassen",
+            "wabengassenNote": "≈ 1.000 Bienen je Gasse",
+            "strengthField": "Stärke-Feld",
+            "strengthFieldNote": "für die Durchsicht",
+            "cappedBrood": "Verdeckelte Arbeiterinnenbrut",
+            "openBrood": "Offene Arbeiterinnenbrut",
+            "droneBrood": "Drohnenbrut",
+            "cells": "Zellen",
+            "pollen": "Pollen",
+            "feed": "Futter / Honig",
+            "emergeNote": "In den nächsten 12 Tagen schlüpfen ~{{cells}} Bienen aus der verdeckelten Arbeiterinnenbrut — etwa {{gassen}} zusätzliche Wabengassen. Erweitere die Beute rechtzeitig."
         },
-        "drone": {
-          "title": "Drohnenbrut",
-          "description": "Verdeckelte Drohnenzellen schlüpfen innerhalb von 0–14 Tagen, offene Drohnenzellen innerhalb von 15–24 Tagen."
-        },
-        "ruleOfThumb": {
-          "title": "Faustregel",
-          "description": "Etwa 1.000 geschlüpfte Bienen füllen eine Wabengasse — erweitere die Beute, bevor das Volk ihr entwächst."
-        }
-      },
-      "feed": {
-        "title": "Benötigte Futtervorräte",
-        "yearRound": {
-          "title": "Das ganze Jahr über",
-          "description": "Jederzeit mindestens 1 kg Futter — für Wirtschaftsvölker und Ableger gleichermaßen."
-        },
-        "warmRegion": {
-          "title": "Einwinterung, warme Region (z. B. NRW)",
-          "description": "Wirtschaftsvölker: 13 kg reiner Zucker = 18 kg / 13 L Sirup ≈ 8 volle Zanderwaben. Ableger: 10 kg Zucker = 14 kg / 10 L Sirup ≈ 6 volle Zanderwaben."
-        },
-        "coolRegion": {
-          "title": "Einwinterung, kühle Region (z. B. BW, Bayern)",
-          "description": "Wirtschaftsvölker: 20 kg reiner Zucker = 28 kg / 20 L Sirup ≈ 12 volle Zanderwaben. Ableger: 15 kg Zucker = 21 kg / 15 L Sirup ≈ 9 volle Zanderwaben."
-        },
-        "spring": {
-          "title": "Vor der Frühtracht (Feb–Mär)",
-          "description": "In einem nassen, kalten Vorfrühling: mindestens 10 kg Futter übrig."
-        }
-      },
-      "development": {
-        "title": "Entwicklungszeiten bis zum Schlupf",
-        "queen": {
-          "title": "Königin — 16 Tage",
-          "description": "Ab dem Ei (Schwarm oder stille Umweiselung): 3 T. Ei + 5 T. Larve + 8 T. Puppe. Nachschaffungszellen aus einer ~2 Tage alten Larve schlüpfen schon nach 11 Tagen. Eine Königin je Volk."
-        },
-        "worker": {
-          "title": "Arbeiterin — 21 Tage",
-          "description": "Aus dem befruchteten Ei: 3 T. Ei + 6 T. Larve + 12 T. Puppe. Ein Volk hält 5.000–40.000 Arbeiterinnen."
-        },
-        "drone": {
-          "title": "Drohn — 24 Tage",
-          "description": "Aus dem unbefruchteten Ei: 3 T. Ei + 7 T. Larve + 14 T. Puppe. Ein Volk hält 0–1.000 Drohnen."
-        }
-      }
-    }
-  },
-  "actions": {
-    "save": "Speichern",
-    "cancel": "Abbrechen",
-    "delete": "Löschen",
-    "edit": "Bearbeiten",
-    "create": "Erstellen",
-    "add": "Hinzufügen",
-    "remove": "Entfernen",
-    "search": "Suchen",
-    "filter": "Filtern",
-    "export": "Exportieren",
-    "import": "Importieren",
-    "submit": "Absenden",
-    "back": "Zurück",
-    "next": "Weiter",
-    "previous": "Zurück",
-    "close": "Schließen",
-    "confirm": "Bestätigen",
-    "view": "Anzeigen",
-    "download": "Herunterladen",
-    "upload": "Hochladen",
-    "refresh": "Aktualisieren",
-    "actions": "Aktionen",
-    "createNew": "Neu erstellen",
-    "navigate": "Navigieren",
-    "refreshData": "Daten aktualisieren",
-    "notifications": "Benachrichtigungen",
-    "newHive": "Neuer Bienenstock",
-    "language": "Sprache",
-    "logout": "Abmelden",
-    "newInspection": "Neue Inspektion",
-    "scheduleInspection": "Inspektion planen",
-    "newQueen": "Neue Königin",
-    "recentInspections": "Letzte Inspektionen"
-  },
-  "status": {
-    "loading": "Wird geladen...",
-    "success": "Erfolgreich",
-    "error": "Fehler",
-    "warning": "Warnung",
-    "info": "Information",
-    "pending": "Ausstehend",
-    "completed": "Abgeschlossen",
-    "failed": "Fehlgeschlagen",
-    "active": "Aktiv",
-    "inactive": "Inaktiv",
-    "archived": "Archiviert"
-  },
-  "messages": {
-    "confirmDelete": "Möchten Sie dieses Element wirklich löschen?",
-    "changesSaved": "Änderungen erfolgreich gespeichert",
-    "errorOccurred": "Ein Fehler ist aufgetreten",
-    "noData": "Keine Daten verfügbar",
-    "required": "Dieses Feld ist erforderlich",
-    "invalidEmail": "Ungültige E-Mail-Adresse",
-    "invalidFormat": "Ungültiges Format",
-    "notificationsComingSoon": "Benachrichtigungsfunktion bald verfügbar"
-  },
-  "releaseNotes": {
-    "title": "Neuigkeiten in HivePal",
-    "version": "Version {{version}}",
-    "released": "Veröffentlicht am {{date}}",
-    "newVersionAvailable": "Neue Version v{{version}} ist verfügbar!",
-    "checkLatestFeatures": "Entdecken Sie die neuesten Funktionen und Verbesserungen.",
-    "whatsNew": "Was ist neu",
-    "dismiss": "Schließen"
-  },
-  "time": {
-    "today": "Heute",
-    "yesterday": "Gestern",
-    "tomorrow": "Morgen",
-    "week": "Woche",
-    "month": "Monat",
-    "year": "Jahr",
-    "date": "Datum",
-    "time": "Zeit",
-    "days": "Tage",
-    "hours": "Stunden",
-    "minutes": "Minuten",
-    "seconds": "Sekunden"
-  },
-  "weather": {
-    "selectHiveToView": "Wählen Sie einen Bienenstock mit Bienenstand, um das Wetter anzuzeigen",
-    "unableToLoad": "Wetterdaten konnten nicht geladen werden",
-    "noWeatherData": "Keine Wetterdaten verfügbar",
-    "currentWeather": "Aktuelles Wetter",
-    "feelsLike": "Gefühlt {{temperature}}°C",
-    "humidity": "Luftfeuchtigkeit",
-    "wind": "Wind",
-    "nextHours": "Nächste 5 Stunden",
-    "dayForecast": "7-Tage-Vorhersage",
-    "weatherForecast": "Wettervorhersage"
-  },
-  "settings": {
-    "managePreferences": "Verwalten Sie Ihre Konto- und Anwendungseinstellungen",
-    "generalSettings": "Allgemeine Einstellungen",
-    "configureLanguageRegional": "Sprache und regionale Einstellungen konfigurieren",
-    "dateFormat": "Datumsformat",
-    "unitsOfMeasurement": "Maßeinheiten",
-    "metric": "Metrisch (kg, km, °C)",
-    "imperial": "Imperial (lbs, Meilen, °F)",
-    "displayPreferences": "Anzeigeeinstellungen",
-    "customizeAppearance": "Passen Sie das Erscheinungsbild der Anwendung an",
-    "theme": "Design",
-    "light": "Hell",
-    "dark": "Dunkel",
-    "system": "System",
-    "notificationPreferences": "Benachrichtigungseinstellungen",
-    "chooseNotificationMethod": "Wählen Sie, wie Sie über wichtige Ereignisse informiert werden möchten",
-    "emailNotifications": "E-Mail-Benachrichtigungen",
-    "receiveEmailUpdates": "Updates per E-Mail erhalten",
-    "pushNotifications": "Push-Benachrichtigungen",
-    "receiveBrowserNotifications": "Browser-Benachrichtigungen erhalten",
-    "inspectionReminders": "Inspektions-Erinnerungen",
-    "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Inspektionen",
-    "harvestReminders": "Ernte-Erinnerungen",
-    "harvestSchedulesNotify": "Benachrichtigung über Erntepläne",
-    "accountSettings": "Kontoeinstellungen",
-    "manageAccountInfo": "Verwalten Sie Ihre Kontoinformationen",
-    "name": "Name",
-    "enterName": "Name eingeben",
-    "email": "E-Mail",
-    "enterEmail": "E-Mail eingeben",
-    "password": "Passwort",
-    "changePassword": "Kontopasswort ändern",
-    "saveSettings": "Einstellungen speichern",
-    "preferencesUpdated": "Ihre Einstellungen wurden erfolgreich aktualisiert.",
-    "saving": "Speichern..."
-  },
-  "feedback": {
-    "title": "Feedback senden",
-    "description": "Ihr Feedback ist uns wichtig! Helfen Sie uns, HivePal zu verbessern, indem Sie Ihre Meinung teilen, Fehler melden oder neue Funktionen vorschlagen.",
-    "sendFeedback": "Feedback senden",
-    "type": "Feedback-Typ",
-    "selectType": "Feedback-Typ auswählen",
-    "typeBug": "Fehler melden",
-    "typeSuggestion": "Funktionsvorschlag",
-    "typeOther": "Sonstiges",
-    "subject": "Betreff",
-    "subjectPlaceholder": "Kurze Zusammenfassung Ihres Feedbacks",
-    "message": "Nachricht",
-    "messagePlaceholder": "Bitte geben Sie detaillierte Informationen zu Ihrem Feedback an...",
-    "email": "E-Mail (optional)",
-    "emailPlaceholder": "ihre@email.de",
-    "emailDescription": "Geben Sie Ihre E-Mail an, wenn Sie eine Antwort erhalten möchten",
-    "submit": "Feedback absenden",
-    "thankYou": "Vielen Dank!",
-    "submittedMessage": "Ihr Feedback wurde erfolgreich übermittelt. Wir schätzen Ihre Rückmeldung und werden sie zeitnah prüfen.",
-    "submitAnother": "Weiteres Feedback senden"
-  },
-  "alerts": {
-    "alert": "Warnung",
-    "alerts": "Warnungen",
-    "activeAlerts": "Aktive Warnungen",
-    "activeAlert": "Aktive Warnung"
-  },
-  "calendar": {
-    "title": "Kalender",
-    "both": "Beides",
-    "inspections": "Inspektionen",
-    "actions": "Aktionen",
-    "today": "Heute",
-    "noEventsScheduled": "Kein Event geplant",
-    "sevenDayViewTitle": "{{date}} - 7-Tage-Ansicht",
-    "previousWeek": "Letzte Woche",
-    "previousDay": "Gestern",
-    "nextDay": "Morgen",
-    "nextWeek": "Nächste Woche",
-    "dayHeader": "{{date}}",
-    "noEvents": "Keine Events",
-    "overdueInspections": "Überfällige Inspektionen ({{overdueInspectionsSize}})",
-    "viewInspection": "Inspektion anzeigen"
-  },
-  "quickCheck": {
-    "title": "Schnellprüfung",
-    "description": "Diese Aktion kann nicht rückgängig gemacht werden. Diese Schnellprüfung und ihre Fotos werden dauerhaft gelöscht.",
-    "deleteTitle": "Schnellprüfung löschen?",
-    "deleteDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Diese Schnellprüfung und ihre Fotos werden dauerhaft gelöscht.",
-    "deleted": "Schnellprüfung gelöscht",
-    "deleteFailed": "Schnellprüfung konnte nicht gelöscht werden"
-  },
-  "timeline": {
-    "recentActivity": "Letzte Aktivitäten",
-    "noActivity": "Noch keine Aktivitäten vorhanden",
-    "noActivityApiary": "Noch keine Aktivitäten in diesem Bienenstand vorhanden",
-    "noMatchingFilters": "Keine Ereignisse entsprechen den gewählten Filtern",
-    "allEvents": "Alle Ereignisse",
-    "inspections": "Durchsicht",
-    "feeding": "Fütterung",
-    "treatments": "Behandlungen",
-    "harvests": "Ernten",
-    "notes": "Notizen",
-    "quickChecks": "Schnellprüfungen",
-    "other": "Sonstiges",
-    "allTime": "Gesamtzeit",
-    "lastMonth": "Letzter Monat",
-    "last3Months": "Letzte 3 Monate",
-    "last6Months": "Letzte 6 Monate",
-    "lastYear": "Letztes Jahr",
-    "allHives": "Alle Bienenstöcke",
-    "clearFilters": "Filter zurücksetzen",
-    "showMore": "{{count}} mehr anzeigen",
-    "showLess": "Weniger anzeigen",
-    "notesAvailable": "Notizen verfügbar",
-    "boxConfiguration": "Beutenkonfiguration",
-    "inspection": "Inspektion",
-    "overdue": "Überfällig",
-    "scheduled": "Geplant",
-    "cancelled": "Abgebrochen",
-    "doInspection": "Inspektion durchführen",
-    "reschedule": "Umplanen",
-    "inspectHive": "{{hiveName}} inspizieren",
-    "strength": "Stärke",
-    "honey": "Honig",
-    "queenSeen": "Königin gesehen",
-    "queenNotSeen": "Königin nicht gesehen",
-    "photos": "Fotos",
-    "documents": "Dokumente",
-    "fromInspection": "Aus Durchsicht"
-  },
-  "reports": {
-    "title": "Berichte",
-    "selectApiary": "Wählen Sie einen Bienenstand aus, um Berichte anzuzeigen",
-    "tabs": {
-      "overview": "Übersicht",
-      "charts": "Diagramme",
-      "trends": "Trends"
-    },
-    "honeyProduction": "Honigproduktion",
-    "feedingTotals": "Fütterungsmengen",
-    "healthScores": "Gesundheitswerte",
-    "hiveComparison": "Bienenstockvergleich",
-    "table": {
-      "hiveName": "Bienenstock",
-      "honey": "Honig",
-      "sugarFed": "Gefütterter Zucker",
-      "overall": "Gesamt",
-      "population": "Volksstärke",
-      "stores": "Vorräte",
-      "queen": "Königin",
-      "lastInspection": "Letzte Durchsicht"
-    },
-    "charts": {
-      "hiveScoreTrends": "Trend der Bienenstock-Bewertung"
-    },
-    "periods": {
-      "1month": "1 Monat",
-      "3months": "3 Monate",
-      "6months": "6 Monate",
-      "ytd": "Seit Jahresbeginn",
-      "1year": "1 Jahr",
-      "all": "Gesamtzeit"
-    },
-    "filters": {
-      "period": "Zeitraum"
-    },
-    "export": {
-      "title": "Export",
-      "csv": "Als CSV exportieren",
-      "pdf": "Als PDF exportieren",
-      "success": "Bericht erfolgreich exportiert",
-      "error": "Bericht konnte nicht exportiert werden"
-    },
-    "widget": {
-      "title": "Bienenstand-Statistiken",
-      "viewReports": "Berichte anzeigen",
-      "noApiary": "Wählen Sie einen Bienenstand aus, um Statistiken anzuzeigen"
-    }
-  },
-  "photo": {
-    "captionPlaceholder": "Beschreibe das Foto...",
-    "caption": "Bildunterschrift",
-    "deleteFailed": "Das Löschen des Fotos ist fehlgeschlagen",
-    "title": "Foto hinzufügen",
-    "description": "Lade ein Foto hoch, optional mit einer Bildunterschrift.",
-    "optional": "optional",
-    "selectPhoto": "Wähle ein Foto",
-    "upload": "Foto hochladen",
-    "uploading": "Hochlanden...",
-    "uploadSuccess": "Foto hochgeladen",
-    "uploadFailed": "Foto hochladen fehlgeschlagen",
-    "deleteTitle": "Foto löschen?",
-    "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Foto wird dadurch endgültig gelöscht.",
-    "deleted": "Foto gelöscht"
-  },
-  "document": {
-    "uploading": "Hochladen...",
-    "uploadSuccess": "Dokument hochgeladen",
-    "uploadFailed": "Das Hochladen des Dokuments ist fehlgeschlagen",
-    "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Dokument wird dadurch endgültig gelöscht.",
-    "deleteFailed": "Das Löschen des Dokuments ist fehlgeschlagen",
-    "title": "Dokument hinzufügen",
-    "description": "Laden Sie ein PDF-Dokument oder ein gescanntes Dokument hoch.",
-    "titleField": "Titel",
-    "titlePlaceholder": "Titel des Dokuments",
-    "notes": "Notizen",
-    "optional": "optional",
-    "notesPlaceholder": "Notizen zu diesem Dokument hinzufügen...",
-    "selectFile": "Wähle eine Datei (PDF, JPEG, PNG)",
-    "upload": "Dokument hochladen",
-    "deleteTitle": "Dokument löschen?",
-    "deleted": "Dokument gelöscht"
-  },
-  "files": {
-    "allFiles": "Alle Dateien",
-    "photos": "Fotos",
-    "documents": "Dokumente",
-    "search": "Dateien suchen...",
-    "filterByHive": "Filtern nach Bienenstöcken",
-    "filterByType": "Filtern nach Typ",
-    "noFiles": "Es wurden noch keine Dateien hochgeladen",
-    "name": "Name",
-    "type": "Typ",
-    "hive": "Bienenstock",
-    "size": "Größe",
-    "download": "Download",
-    "delete": "Löschen",
-    "title": "Dateien"
-  },
-  "quickAdd": {
-    "title": "Eintrag hinzufügen",
-    "quickCheck": "Schnellprüfung",
-    "action": "Aktion",
-    "photo": "Foto",
-    "document": "Dokument"
-  },
-  "swarmManagement": {
-    "backToOverview": "Back to Swarm Management",
-    "eyebrow": "Swarm control guidance",
-    "title": "Swarm Management",
-    "cards": {
-      "available": "Available",
-      "comingSoon": "Coming soon",
-      "placeholderCta": "Not available yet",
-      "demaree": {
-        "title": "Demaree Method",
-        "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
-        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
-        "cta": "Open guide"
-      },
-      "pagden": {
-        "title": "Pagden split",
-        "description": "Placeholder for a future guide covering the classic artificial swarm split."
-      },
-      "artificialSwarm": {
-        "title": "Artificial swarm",
-        "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
-      }
-    },
-    "aside": {
-      "title": "Choosing a method",
-      "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
-      "points": [
-        "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
-        "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
-        "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
-      ],
-      "criticalTimingTitle": "Critical timing",
-      "criticalTimingLead": "The first follow-up is the point where timing matters most.",
-      "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
-    },
-    "demaree": {
-      "badge": "Reference method",
-      "title": "Demaree Method",
-      "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
-      "overviewTitle": "Method overview",
-      "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
-      "overviewPoints": [
-        "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
-        "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
-        "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
-      ],
-      "prerequisitesTitle": "Prerequisites",
-      "prerequisites": [
-        "Check that the hive is a strong colony with enough bees and brood to justify the method.",
-        "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
-        "Make sure you can find and confidently retain the laying queen in the lower brood box.",
-        "Have a queen excluder ready, with at least two honey supers available to stack above it.",
-        "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
-        "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
-      ],
-      "stepsTitle": "Method Detail",
-      "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
-      "methodDetail": {
-        "preparation": {
-          "title": "Preparation",
-          "items": [
-            {
-              "text": "Find a spare brood box with foundation or drawn comb.",
-              "children": [
-                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
-              ]
+        "evaluation": {
+            "title": "Saisonale Bewertung",
+            "description": "Vergleiche das gemessene Volk mit den saisonalen Richtwerten von Dr. Pia Aumeier.",
+            "selectPrompt": "Wähle einen Zeitpunkt, um das Volk zu bewerten.",
+            "enterCountsFirst": "Trage zuerst oben deine Zählung ein.",
+            "contexts": {
+                "split_mid_may": "Ableger bis Mitte Mai",
+                "split_end_may": "Ableger bis Ende Mai",
+                "split_mid_june": "Ableger bis Mitte Juni",
+                "winter_aug": "Einwinterung, Mitte August",
+                "winter_oct": "Einwinterung, Ende Oktober"
             },
-            {
-              "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+            "checks": {
+                "minBees": "≥ {{min}} Bienen (gemessen: ~{{measured}})",
+                "minCappedBrood": "≥ {{min}} verdeckelte Arbeiterinnenbrutzellen (gemessen: ~{{measured}})",
+                "minOpenBrood": "≥ {{min}} offene Arbeiterinnenbrutzellen (gemessen: ~{{measured}})"
+            },
+            "splitNote": "Ein brutloser Begattungsableger, der bis Mitte Mai erstellt wird, braucht nur ≥ 1.000 Bienen und keine Brut.",
+            "winterAug": {
+                "check": "> 15.000 Bienen unabhängig von der Brut (gemessen: ~{{measured}})",
+                "note": "Gilt für etablierte Völker Mitte August: Ein so starkes Volk hängt über mehr als 5 Wabengassen bis in den Boden durch. Schwächere, schrumpfende Völker und diesjährige Ableger werden stattdessen Ende Oktober beurteilt."
+            },
+            "winterOct": {
+                "ready": "Bereit für den Winter — ~{{bees}} Bienen auf {{gassen}} Wabengassen (5 oder mehr besetzte Gassen; über 5.000 Bienen).",
+                "minimal": "Minimale Einwinterungsstärke — ~{{bees}} Bienen auf 4 Wabengassen (rund 5.000 Bienen).",
+                "atRisk": "Stark gefährdet, den Winter nicht zu überleben — ~{{bees}} Bienen auf {{gassen}} Wabengassen (3 oder weniger besetzte Gassen; unter 5.000 Bienen). Vereinigen oder auflösen.",
+                "note": "So spät wie möglich beurteilen, nach einer kalten Nacht (≈ 5 °C), durch Zählen der von Bienen besetzten Wabengassen."
             }
-          ]
         },
-        "huntTheQueen": {
-          "title": "Hunt the Queen",
-          "items": [
-            {
-              "text": "Inspect the old brood box(es) and locate the Queen."
+        "reference": {
+            "title": "Ein Achtel einer {{frame}}-Wabenseite enthält…",
+            "bees": "Bienen",
+            "drones": "Drohnen",
+            "workerBroodCells": "Arbeiterinnenbrut (verdeckelt/offen)",
+            "droneBroodCells": "Drohnenbrut (verdeckelt/offen)",
+            "pollenG": "Pollen",
+            "feedG": "Futter / Honig",
+            "cellsValue": "{{value}} Zellen"
+        },
+        "tips": {
+            "coverage": {
+                "title": "So schätzt du die Belegung",
+                "pullFrames": {
+                    "title": "Jede Wabe ziehen",
+                    "description": "Ziehe eine Wabe nach der anderen. Schaue senkrecht auf jede Seite und schätze in Achteln, wie viel der Wabenfläche mit Bienen, Brut, Pollen oder Futter belegt ist."
+                },
+                "bothSides": {
+                    "title": "Beide Seiten zählen",
+                    "description": "Jede Wabe hat zwei Seiten. Eine beidseitig voll mit Bienen besetzte Wabe trägt 16 Achtel zur Summe bei."
+                },
+                "roundDown": {
+                    "title": "Im Zweifel abrunden",
+                    "description": "Unterschätzen ist sicherer als Überschätzen — runde auf das nächstniedrigere Achtel ab."
+                }
             },
-            {
-              "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+            "emergence": {
+                "title": "Wann schlüpft die Brut?",
+                "capped": {
+                    "title": "Verdeckelte Arbeiterinnenbrut",
+                    "description": "Alle aktuell verdeckelten Arbeiterinnenzellen schlüpfen innerhalb von 0–12 Tagen."
+                },
+                "open": {
+                    "title": "Offene Arbeiterinnenbrut",
+                    "description": "Offene Arbeiterinnenzellen schlüpfen innerhalb von 13–21 Tagen."
+                },
+                "drone": {
+                    "title": "Drohnenbrut",
+                    "description": "Verdeckelte Drohnenzellen schlüpfen innerhalb von 0–14 Tagen, offene Drohnenzellen innerhalb von 15–24 Tagen."
+                },
+                "ruleOfThumb": {
+                    "title": "Faustregel",
+                    "description": "Etwa 1.000 geschlüpfte Bienen füllen eine Wabengasse — erweitere die Beute, bevor das Volk ihr entwächst."
+                }
+            },
+            "feed": {
+                "title": "Benötigte Futtervorräte",
+                "yearRound": {
+                    "title": "Das ganze Jahr über",
+                    "description": "Jederzeit mindestens 1 kg Futter — für Wirtschaftsvölker und Ableger gleichermaßen."
+                },
+                "warmRegion": {
+                    "title": "Einwinterung, warme Region (z. B. NRW)",
+                    "description": "Wirtschaftsvölker: 13 kg reiner Zucker = 18 kg / 13 L Sirup ≈ 8 volle Zanderwaben. Ableger: 10 kg Zucker = 14 kg / 10 L Sirup ≈ 6 volle Zanderwaben."
+                },
+                "coolRegion": {
+                    "title": "Einwinterung, kühle Region (z. B. BW, Bayern)",
+                    "description": "Wirtschaftsvölker: 20 kg reiner Zucker = 28 kg / 20 L Sirup ≈ 12 volle Zanderwaben. Ableger: 15 kg Zucker = 21 kg / 15 L Sirup ≈ 9 volle Zanderwaben."
+                },
+                "spring": {
+                    "title": "Vor der Frühtracht (Feb–Mär)",
+                    "description": "In einem nassen, kalten Vorfrühling: mindestens 10 kg Futter übrig."
+                }
+            },
+            "development": {
+                "title": "Entwicklungszeiten bis zum Schlupf",
+                "queen": {
+                    "title": "Königin — 16 Tage",
+                    "description": "Ab dem Ei (Schwarm oder stille Umweiselung): 3 T. Ei + 5 T. Larve + 8 T. Puppe. Nachschaffungszellen aus einer ~2 Tage alten Larve schlüpfen schon nach 11 Tagen. Eine Königin je Volk."
+                },
+                "worker": {
+                    "title": "Arbeiterin — 21 Tage",
+                    "description": "Aus dem befruchteten Ei: 3 T. Ei + 6 T. Larve + 12 T. Puppe. Ein Volk hält 5.000–40.000 Arbeiterinnen."
+                },
+                "drone": {
+                    "title": "Drohn — 24 Tage",
+                    "description": "Aus dem unbefruchteten Ei: 3 T. Ei + 7 T. Larve + 14 T. Puppe. Ein Volk hält 0–1.000 Drohnen."
+                }
             }
-          ]
-        },
-        "broodManipulation": {
-          "title": "Brood Manipulation",
-          "items": [
-            {
-              "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
-              "children": [
-                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
-              ]
-            },
-            {
-              "text": "Make sure to knock down all queen cells.",
-              "children": [
-                "With the queen safe you can shake bees off the frames to make sure you find them all."
-              ]
-            },
-            {
-              "text": "(Double Brood) - You should now have three brood boxes.",
-              "children": [
-                "Box with the queen, mostly empty directly on the hive floor.",
-                "Box with no brood - place this on top of the queen to retain double brood status.",
-                "Box with all the brood - keep this aside for now."
-              ]
-            }
-          ]
-        },
-        "reassembly": {
-          "title": "Reassembly",
-          "items": [
-            {
-              "text": "Put the queen excluder on top of the new brood boxes."
-            },
-            {
-              "text": "Add the supers (minimum 2, add extra if more space is required)."
-            },
-            {
-              "text": "Place an additional queen excluder over the supers."
-            },
-            {
-              "text": "The box with all the brood now goes on top of the supers."
-            },
-            {
-              "text": "Fit crown board and roof and the job is done."
-            }
-          ]
         }
-      },
-      "advantagesTitle": "Why the method works",
-      "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
-      "advantages": [
-        "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
-        "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
-        "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
-      ],
-      "followUpTitle": "Follow-up timing",
-      "followUpDayHeader": "Day",
-      "followUpTaskHeader": "Task",
-      "followUp": [
-        {
-          "day": "Day 7-8",
-          "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
-        },
-        {
-          "day": "Day 14-15",
-          "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
-        },
-        {
-          "day": "Day 21-22",
-          "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
-        }
-      ],
-      "prosConsTitle": "Pros and Cons",
-      "prosTitle": "Advantages",
-      "consTitle": "Disadvantages",
-      "pros": [
-        "Works well as a swarm control method.",
-        "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
-        "Comb renewal is simple.",
-        "Good brood combs can be drawn out in the top box.",
-        "The effect is similar to an artificial swarm, but the colony is kept together."
-      ],
-      "cons": [
-        "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
-        "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
-        "There may be heavy lifting.",
-        "Regular inspections are essential.",
-        "You MUST understand the basics."
-      ]
     },
-    "planner": {
-      "title": "Demaree inspection planner",
-      "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
-      "hiveLabel": "Hive",
-      "hivePlaceholder": "Select a hive",
-      "startDateLabel": "Demaree setup date",
-      "startDatePlaceholder": "Pick the setup date",
-      "generate": "Generate checkpoints",
-      "selectedHive": "Selected hive",
-      "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
-      "notesLabel": "Inspection notes",
-      "notesChecklistLabel": "Checklist",
-      "checkpointPrefix": "Demaree checkpoint:",
-      "dayOffset_one": "Day {{count}}",
-      "dayOffset_other": "Day {{count}}",
-      "save": "Save scheduled inspections",
-      "saving": "Saving inspections...",
-      "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
-      "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
-      "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
-      "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
-      "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
-      "checkpoints": {
-        "setup": {
-          "title": "Initial Demaree setup",
-          "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
-          "checklist": [
-            "Confirm the laying queen is in the lower brood box.",
-            "Place the brood and supers in the planned Demaree order.",
-            "Record any details you want visible at the next inspection."
-          ]
-        },
-        "queenCellCheck": {
-          "title": "Queen-cell check",
-          "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
-          "checklist": [
-            "Inspect every brood frame above the excluder for queen cells.",
-            "Remove queen cells started during the swarm impulse.",
-            "Confirm the queen still has room and activity below."
-          ]
-        },
-        "secondQueenCellCheck": {
-          "title": "Second queen-cell check",
-          "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
-          "checklist": [
-            "Look again for newly started or missed queen cells.",
-            "Check whether brood and stores need to be rebalanced.",
-            "Note whether the colony is settling or still crowding upward."
-          ]
-        },
-        "colonyReview": {
-          "title": "Colony review",
-          "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
-          "checklist": [
-            "Assess whether the colony can return to a more normal arrangement.",
-            "Check space, brood pattern, and nectar intake across the stack.",
-            "Schedule any additional inspection you want beyond the standard plan."
-          ]
-        }
-      }
+    "actions": {
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "delete": "Löschen",
+        "edit": "Bearbeiten",
+        "create": "Erstellen",
+        "add": "Hinzufügen",
+        "remove": "Entfernen",
+        "search": "Suchen",
+        "filter": "Filtern",
+        "export": "Exportieren",
+        "import": "Importieren",
+        "submit": "Absenden",
+        "back": "Zurück",
+        "next": "Weiter",
+        "previous": "Zurück",
+        "close": "Schließen",
+        "confirm": "Bestätigen",
+        "view": "Anzeigen",
+        "download": "Herunterladen",
+        "upload": "Hochladen",
+        "refresh": "Aktualisieren",
+        "actions": "Aktionen",
+        "createNew": "Neu erstellen",
+        "navigate": "Navigieren",
+        "refreshData": "Daten aktualisieren",
+        "notifications": "Benachrichtigungen",
+        "newHive": "Neuer Bienenstock",
+        "language": "Sprache",
+        "logout": "Abmelden",
+        "newInspection": "Neue Inspektion",
+        "scheduleInspection": "Inspektion planen",
+        "newQueen": "Neue Königin",
+        "recentInspections": "Letzte Inspektionen"
     },
-    "warnings": {
-      "bannerTitle": "Timing warnings",
-      "lateQueenCellCheck": {
-        "title": "First queen-cell check is later than day 8",
-        "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
-      },
-      "unsafeCheckpointSpacing": {
-        "title": "Checkpoint spacing looks risky",
-        "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
-      },
-      "illogicalScheduleOrder": {
-        "title": "Checkpoint order is no longer chronological",
-        "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
-      }
-    }
-  },
-  "varroaManagement": {
-    "eyebrow": "Kostenloses Tool",
-    "title": "Varroa-Management-Plan",
-    "intro": "Ein Varroa-Behandlungsfahrplan durchs ganze Jahr für Wirtschaftsvölker und Ableger, nach dem bewährten Konzept von Dr. Pia Aumeier, Dr. Gerhard Liebig und Dr. Otto Boecking. Die wichtigste Regel: Nicht stur nach Kalender behandeln — erst den natürlichen Milbenfall erfassen und nur behandeln, wenn eine Befallsschwelle überschritten ist.",
-    "columns": {
-      "production": {
-        "title": "Wirtschaftsvolk",
-        "subtitle": "(& Maischwarm)"
-      },
-      "nucleus": {
-        "title": "Ableger",
-        "subtitle": "(Jungvolk)"
-      }
+    "status": {
+        "loading": "Wird geladen...",
+        "success": "Erfolgreich",
+        "error": "Fehler",
+        "warning": "Warnung",
+        "info": "Information",
+        "pending": "Ausstehend",
+        "completed": "Abgeschlossen",
+        "failed": "Fehlgeschlagen",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "archived": "Archiviert"
     },
-    "treatments": {
-      "biotech": "Biotechnisch",
-      "lactic": "Milchsäure",
-      "formic": "Ameisensäure",
-      "oxalic": "Oxalsäure"
+    "messages": {
+        "confirmDelete": "Möchten Sie dieses Element wirklich löschen?",
+        "changesSaved": "Änderungen erfolgreich gespeichert",
+        "errorOccurred": "Ein Fehler ist aufgetreten",
+        "noData": "Keine Daten verfügbar",
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Ungültige E-Mail-Adresse",
+        "invalidFormat": "Ungültiges Format",
+        "notificationsComingSoon": "Benachrichtigungsfunktion bald verfügbar"
     },
-    "legend": {
-      "title": "Legende:",
-      "threshold": "rotes Feld = nur behandeln, wenn der angegebene natürliche Milbenfall pro Tag überschritten ist"
+    "releaseNotes": {
+        "title": "Neuigkeiten in HivePal",
+        "version": "Version {{version}}",
+        "released": "Veröffentlicht am {{date}}",
+        "newVersionAvailable": "Neue Version v{{version}} ist verfügbar!",
+        "checkLatestFeatures": "Entdecken Sie die neuesten Funktionen und Verbesserungen.",
+        "whatsNew": "Was ist neu",
+        "dismiss": "Schließen"
+    },
+    "time": {
+        "today": "Heute",
+        "yesterday": "Gestern",
+        "tomorrow": "Morgen",
+        "week": "Woche",
+        "month": "Monat",
+        "year": "Jahr",
+        "date": "Datum",
+        "time": "Zeit",
+        "days": "Tage",
+        "hours": "Stunden",
+        "minutes": "Minuten",
+        "seconds": "Sekunden"
+    },
+    "weather": {
+        "selectHiveToView": "Wählen Sie einen Bienenstock mit Bienenstand, um das Wetter anzuzeigen",
+        "unableToLoad": "Wetterdaten konnten nicht geladen werden",
+        "noWeatherData": "Keine Wetterdaten verfügbar",
+        "currentWeather": "Aktuelles Wetter",
+        "feelsLike": "Gefühlt {{temperature}}°C",
+        "humidity": "Luftfeuchtigkeit",
+        "wind": "Wind",
+        "nextHours": "Nächste 5 Stunden",
+        "dayForecast": "7-Tage-Vorhersage",
+        "weatherForecast": "Wettervorhersage"
+    },
+    "settings": {
+        "managePreferences": "Verwalten Sie Ihre Konto- und Anwendungseinstellungen",
+        "generalSettings": "Allgemeine Einstellungen",
+        "configureLanguageRegional": "Sprache und regionale Einstellungen konfigurieren",
+        "dateFormat": "Datumsformat",
+        "unitsOfMeasurement": "Maßeinheiten",
+        "metric": "Metrisch (kg, km, °C)",
+        "imperial": "Imperial (lbs, Meilen, °F)",
+        "displayPreferences": "Anzeigeeinstellungen",
+        "customizeAppearance": "Passen Sie das Erscheinungsbild der Anwendung an",
+        "theme": "Design",
+        "light": "Hell",
+        "dark": "Dunkel",
+        "system": "System",
+        "notificationPreferences": "Benachrichtigungseinstellungen",
+        "chooseNotificationMethod": "Wählen Sie, wie Sie über wichtige Ereignisse informiert werden möchten",
+        "emailNotifications": "E-Mail-Benachrichtigungen",
+        "receiveEmailUpdates": "Updates per E-Mail erhalten",
+        "pushNotifications": "Push-Benachrichtigungen",
+        "receiveBrowserNotifications": "Browser-Benachrichtigungen erhalten",
+        "inspectionReminders": "Inspektions-Erinnerungen",
+        "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Inspektionen",
+        "harvestReminders": "Ernte-Erinnerungen",
+        "harvestSchedulesNotify": "Benachrichtigung über Erntepläne",
+        "accountSettings": "Kontoeinstellungen",
+        "manageAccountInfo": "Verwalten Sie Ihre Kontoinformationen",
+        "name": "Name",
+        "enterName": "Name eingeben",
+        "email": "E-Mail",
+        "enterEmail": "E-Mail eingeben",
+        "password": "Passwort",
+        "changePassword": "Kontopasswort ändern",
+        "saveSettings": "Einstellungen speichern",
+        "preferencesUpdated": "Ihre Einstellungen wurden erfolgreich aktualisiert.",
+        "saving": "Speichern...",
+        "passkeysDescription": "Melde dich ohne Passwort an, indem du die biometrischen Daten deines Geräts oder deinen Sicherheitsschlüssel verwendest",
+        "passkeyNamePlaceholder": "Name (z. B. MacBook Touch ID)",
+        "passkeyAdd": "Passkey hinzufügen",
+        "passkeyAdding": "Hinzufügen…",
+        "passkeyRemove": "Entfernen",
+        "passkeyAddedOn": "Hinzugefügt am {{date}}",
+        "passkeysLoading": "Wird geladen…",
+        "dangerZone": "Gefahrenzone",
+        "dangerZoneDescription": "Unwiderrufliche Aktionen für Ihr Konto.",
+        "deleteAccount": "Konto löschen",
+        "deleteAccountDescription": "Lösche dein Konto sowie alle deine Imkereien, Bienenstöcke, Inspektionen, Fotos und sonstigen Daten endgültig. Dieser Vorgang kann nicht rückgängig gemacht werden. Exportiere deine Daten zunächst, falls du eine Kopie behalten möchtest.",
+        "deleteAccountConfirmTitle": "Möchtest du dein Konto löschen?",
+        "deleteAccountConfirmDescription": "Dadurch wird dein Konto und alle deine Daten endgültig gelöscht. Von anderen mit dir geteilte Bienenstöcke sind davon nicht betroffen, und Inhalte, die du zu den Bienenstöcken anderer beigetragen hast, bleiben erhalten, werden jedoch anonymisiert. Dieser Vorgang kann nicht rückgängig gemacht werden.",
+        "deleteAccountExportReminder": "Möchtest du eine Kopie behalten? Exportiere deine Daten, bevor du sie löschst.",
+        "deleteAccountExportLink": "Meine Daten exportieren",
+        "deleteAccountTypeEmail": "Gib deine E-Mail-Adresse {{email}} ein, um zu bestätigen:",
+        "deleteAccountButton": "Mein Konto löschen",
+        "deleteAccountDeleting": "Konto wird gelöscht...",
+        "accountDeleted": "Dein Konto wurde gelöscht.",
+        "deleteAccountFailed": "Das Löschen des Kontos ist fehlgeschlagen. Bitte versuchen es erneut."
+    },
+    "feedback": {
+        "title": "Feedback senden",
+        "description": "Ihr Feedback ist uns wichtig! Helfen Sie uns, HivePal zu verbessern, indem Sie Ihre Meinung teilen, Fehler melden oder neue Funktionen vorschlagen.",
+        "sendFeedback": "Feedback senden",
+        "type": "Feedback-Typ",
+        "selectType": "Feedback-Typ auswählen",
+        "typeBug": "Fehler melden",
+        "typeSuggestion": "Funktionsvorschlag",
+        "typeOther": "Sonstiges",
+        "subject": "Betreff",
+        "subjectPlaceholder": "Kurze Zusammenfassung Ihres Feedbacks",
+        "message": "Nachricht",
+        "messagePlaceholder": "Bitte geben Sie detaillierte Informationen zu Ihrem Feedback an...",
+        "email": "E-Mail (optional)",
+        "emailPlaceholder": "ihre@email.de",
+        "emailDescription": "Geben Sie Ihre E-Mail an, wenn Sie eine Antwort erhalten möchten",
+        "submit": "Feedback absenden",
+        "thankYou": "Vielen Dank!",
+        "submittedMessage": "Ihr Feedback wurde erfolgreich übermittelt. Wir schätzen Ihre Rückmeldung und werden sie zeitnah prüfen.",
+        "submitAnother": "Weiteres Feedback senden"
+    },
+    "alerts": {
+        "alert": "Warnung",
+        "alerts": "Warnungen",
+        "activeAlerts": "Aktive Warnungen",
+        "activeAlert": "Aktive Warnung"
+    },
+    "calendar": {
+        "title": "Kalender",
+        "both": "Beides",
+        "inspections": "Inspektionen",
+        "actions": "Aktionen",
+        "today": "Heute",
+        "noEventsScheduled": "Kein Event geplant",
+        "sevenDayViewTitle": "{{date}} - 7-Tage-Ansicht",
+        "previousWeek": "Letzte Woche",
+        "previousDay": "Gestern",
+        "nextDay": "Morgen",
+        "nextWeek": "Nächste Woche",
+        "dayHeader": "{{date}}",
+        "noEvents": "Keine Events",
+        "overdueInspections": "Überfällige Inspektionen ({{overdueInspectionsSize}})",
+        "viewInspection": "Inspektion anzeigen"
+    },
+    "quickCheck": {
+        "title": "Schnellprüfung",
+        "description": "Diese Aktion kann nicht rückgängig gemacht werden. Diese Schnellprüfung und ihre Fotos werden dauerhaft gelöscht.",
+        "deleteTitle": "Schnellprüfung löschen?",
+        "deleteDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Diese Schnellprüfung und ihre Fotos werden dauerhaft gelöscht.",
+        "deleted": "Schnellprüfung gelöscht",
+        "deleteFailed": "Schnellprüfung konnte nicht gelöscht werden"
     },
     "timeline": {
-      "springSummer": {
-        "time": "April bis Juli",
-        "production": {
-          "badge": "3–4×",
-          "title": "Drohnenrahmen schneiden",
-          "items": [
-            "Zur Kirschblüte alle Völker mit Absperrgitter und Honigraum erweitern und einen leeren Drohnenbaurahmen in den oberen Brutraum neben die Randwabe zwischen zwei ausgebaute Waben hängen.",
-            "Frühestens nach 14, spätestens nach 24 Tagen ausschneiden — Drohnen keinesfalls schlüpfen lassen. So oft wie möglich von April bis Juli wiederholen."
-          ]
-        },
-        "nucleus": {
-          "badge": "1×",
-          "title": "Mit Milchsäure einsprühen",
-          "items": [
-            "In der brutfreien Phase direkt nach der Erstellung des Ablegers die Bienen auf allen Waben (beidseitig, ca. 3 Sprühstöße pro Wabenseite) mit 15%iger Milchsäure einsprühen.",
-            "Bei starkem Varroabefall die Behandlung nach einigen Tagen wiederholen."
-          ],
-          "note": "Handschuhe, lange Kleidung und Brille anlegen. Besprühte Völker dürfen im selben Jahr nicht mehr zur Honigproduktion genutzt werden."
-        }
-      },
-      "endOfJuly": {
-        "time": "Ende Juli",
-        "production": {
-          "monitor": "Nach dem Abschleudern: Windel für genau 3 Tage einschieben und den natürlichen Milbenfall auszählen.",
-          "threshold": {
-            "condition": "Bei natürlichem Milbenfall von über 10 Varroa pro Tag:",
-            "action": "1× Notbehandlung"
-          },
-          "note": "Sehr selten nötig. Unterhalb der Schwelle nicht behandeln — so werden Brut und Bienen geschont."
-        },
-        "nucleus": {
-          "monitor": "Gemülldiagnose (3-tägig) durchführen.",
-          "threshold": {
-            "condition": "Bei natürlichem Milbenfall von über 5 Varroa pro Tag:",
-            "action": "1× Notbehandlung"
-          },
-          "note": "Sehr selten nötig. Unterhalb der Schwelle nicht behandeln."
-        }
-      },
-      "lateAugust": {
-        "time": "zweite Hälfte August",
-        "production": {
-          "title": "Start Spätsommerpflege",
-          "items": [
-            "Einengen durch Entfernen der unteren Zarge (Wabenhygiene).",
-            "1× Behandlung mit Ameisensäure.",
-            "Danach in einer großen Portion auffüttern."
-          ],
-          "note": "Alternative: Das Volk mit „Teilen und Behandeln“ brutfrei machen und statt Ameisensäure mit Oxalsäure behandeln — siehe ausführliche Anleitung unten."
-        },
-        "nucleus": {
-          "title": "Keine Behandlung",
-          "items": [
-            "Weiterhin nur etwas füttern, entwickeln und Waben ausbauen lassen."
-          ]
-        }
-      },
-      "september": {
-        "time": "Anfang bis Mitte September",
-        "production": {
-          "monitor": "Nach der Auffütterung: Gemülldiagnose (3-tägig) durchführen.",
-          "threshold": {
-            "condition": "Bei natürlichem Milbenfall von über 5 Varroa pro Tag:",
-            "action": "1× Behandlung"
-          },
-          "note": "Unterhalb der Schwelle ist keine weitere Behandlung nötig."
-        },
-        "nucleus": {
-          "monitor": "Gemülldiagnose (3-tägig) durchführen.",
-          "threshold": {
-            "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
-            "action": "1× Behandlung"
-          },
-          "note": "Danach folgt die Winterauffütterung."
-        }
-      },
-      "novemberDecember": {
-        "time": "Ende Nov bis Mitte Dez",
-        "production": {
-          "monitor": "In der brutfreien Winterphase: Gemülldiagnose (3-tägig) durchführen.",
-          "threshold": {
-            "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
-            "action": "1× Restentmilbung"
-          },
-          "note": "30–50 ml 3,5%ige Oxalsäurelösung in die besetzten Wabengassen träufeln. Unterhalb der Schwelle ist keine Behandlung nötig."
-        },
-        "nucleus": {
-          "monitor": "In der brutfreien Winterphase: Gemülldiagnose (3-tägig) durchführen.",
-          "threshold": {
-            "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
-            "action": "1× Restentmilbung"
-          },
-          "note": "30–50 ml 3,5%ige Oxalsäurelösung träufeln. Unterhalb der Schwelle ist keine Behandlung nötig."
-        }
-      }
+        "recentActivity": "Letzte Aktivitäten",
+        "noActivity": "Noch keine Aktivitäten vorhanden",
+        "noActivityApiary": "Noch keine Aktivitäten in diesem Bienenstand vorhanden",
+        "noMatchingFilters": "Keine Ereignisse entsprechen den gewählten Filtern",
+        "allEvents": "Alle Ereignisse",
+        "inspections": "Durchsicht",
+        "feeding": "Fütterung",
+        "treatments": "Behandlungen",
+        "harvests": "Ernten",
+        "notes": "Notizen",
+        "quickChecks": "Schnellprüfungen",
+        "other": "Sonstiges",
+        "allTime": "Gesamtzeit",
+        "lastMonth": "Letzter Monat",
+        "last3Months": "Letzte 3 Monate",
+        "last6Months": "Letzte 6 Monate",
+        "lastYear": "Letztes Jahr",
+        "allHives": "Alle Bienenstöcke",
+        "clearFilters": "Filter zurücksetzen",
+        "showMore": "{{count}} mehr anzeigen",
+        "showLess": "Weniger anzeigen",
+        "notesAvailable": "Notizen verfügbar",
+        "boxConfiguration": "Beutenkonfiguration",
+        "inspection": "Inspektion",
+        "overdue": "Überfällig",
+        "scheduled": "Geplant",
+        "cancelled": "Abgebrochen",
+        "doInspection": "Inspektion durchführen",
+        "reschedule": "Umplanen",
+        "inspectHive": "{{hiveName}} inspizieren",
+        "strength": "Stärke",
+        "honey": "Honig",
+        "queenSeen": "Königin gesehen",
+        "queenNotSeen": "Königin nicht gesehen",
+        "photos": "Fotos",
+        "documents": "Dokumente",
+        "fromInspection": "Aus Durchsicht"
     },
-    "divideAndTreat": {
-      "title": "Teilen und Behandeln",
-      "summary": "Die Nase voll von Ameisensäure? Teilen und Behandeln macht ein Wirtschaftsvolk nach der letzten Honigernte brutfrei, sodass eine einzige, witterungsunabhängige Oxal- oder Milchsäurebehandlung jede Milbe erwischt. Hier die Methode mit Flugling und Brutling, Schritt für Schritt.",
-      "intro": {
-        "0": "Ende Juli ist ein starkes Wirtschaftsvolk bis zu 30.000 Bienen und 30.000 Brutzellen stark. Je mehr Brut, desto schwieriger ist ohne Brutschäden ein guter Behandlungserfolg mit Ameisensäure zu erzielen — besonders bei feuchter, kühler Witterung. Teilen und Behandeln, weiterentwickelt aus der Celler Rotationsbetriebsweise im Projekt „Betriebsweisen im Vergleich“, umgeht das Problem komplett: Das Volk wird in zwei brutfreie Hälften geteilt, die sich jeweils zuverlässig und witterungsunabhängig mit Oxal- oder Milchsäure behandeln lassen.",
-        "1": "Dazu wird das Wirtschaftsvolk in einen weiselrichtigen Flugling und einen weisellosen Brutling geteilt. Mehr als einen weiteren Boden, eine Folie, einen Deckel und einen Königinnenkäfig mit Futterteig- oder Marshmallow-Verschluss braucht es nicht. Fünf Bienenstandbesuche und insgesamt etwa 15 Minuten Arbeit entmilben das Volk in zwei Schritten wirkungsvoll, ermöglichen komplette Wabenhygiene und erzeugen — wenn gewünscht — nebenbei eine Jungkönigin und ein neues Volk."
-      },
-      "concepts": {
-        "flightling": {
-          "title": "Flugling",
-          "subtitle": "Weiselrichtiges Flugbienenvolk",
-          "points": [
-            "Der abgeerntete Honigraum mit den darin sitzenden Bienen, auf dem Originalboden am alten Standort — alle Flugbienen fliegen sich hierher zurück.",
-            "Behält die alte Königin, gekäfigt unter Futterteig- oder Marshmallow-Verschluss, bis die Arbeiterinnen sie freifressen.",
-            "Sofort brutfrei: Alle Milben sitzen auf den Bienen, eine einzige Behandlung am Tag X+2 erfasst sie alle.",
-            "Zwei Tage nach der Teilung sitzen hier bis zu zwei Drittel der Bienen; die Königin ist bereits freigefressen und stiftet."
-          ]
+    "reports": {
+        "title": "Berichte",
+        "selectApiary": "Wählen Sie einen Bienenstand aus, um Berichte anzuzeigen",
+        "tabs": {
+            "overview": "Übersicht",
+            "charts": "Diagramme",
+            "trends": "Trends"
         },
-        "broodling": {
-          "title": "Brutling",
-          "subtitle": "Weiselloses Brutvolk",
-          "points": [
-            "Beide Bruträume auf einem neuen Boden — entweder direkt oben auf dem Flugling (gleiche Flugrichtung) oder einige Meter daneben.",
-            "Enthält die gesamte Brut und rund 90 % der Milben, verliert aber seine Flugbienen an den Flugling.",
-            "Zieht aus den jüngsten Larven eine Nachschaffungskönigin; in rund 90 % der Fälle wird sie erfolgreich begattet.",
-            "Am Tag X+21 brutfrei, sobald alle Arbeiterinnenbrut geschlüpft ist — der Zeitpunkt für die Behandlung."
-          ]
+        "honeyProduction": "Honigproduktion",
+        "feedingTotals": "Fütterungsmengen",
+        "healthScores": "Gesundheitswerte",
+        "hiveComparison": "Bienenstockvergleich",
+        "table": {
+            "hiveName": "Bienenstock",
+            "honey": "Honig",
+            "sugarFed": "Gefütterter Zucker",
+            "overall": "Gesamt",
+            "population": "Volksstärke",
+            "stores": "Vorräte",
+            "queen": "Königin",
+            "lastInspection": "Letzte Durchsicht"
+        },
+        "charts": {
+            "hiveScoreTrends": "Trend der Bienenstock-Bewertung"
+        },
+        "periods": {
+            "1month": "1 Monat",
+            "3months": "3 Monate",
+            "6months": "6 Monate",
+            "ytd": "Seit Jahresbeginn",
+            "1year": "1 Jahr",
+            "all": "Gesamtzeit"
+        },
+        "filters": {
+            "period": "Zeitraum"
+        },
+        "export": {
+            "title": "Export",
+            "csv": "Als CSV exportieren",
+            "pdf": "Als PDF exportieren",
+            "success": "Bericht erfolgreich exportiert",
+            "error": "Bericht konnte nicht exportiert werden"
+        },
+        "widget": {
+            "title": "Bienenstand-Statistiken",
+            "viewReports": "Berichte anzeigen",
+            "noApiary": "Wählen Sie einen Bienenstand aus, um Statistiken anzuzeigen"
         }
-      },
-      "stepsTitle": "Schritt für Schritt",
-      "steps": {
-        "preparation": {
-          "day": "Vor Tag X",
-          "title": "Vorbereitungen",
-          "items": [
-            "Im Zeitraum Mitte Juli bis Mitte August Sommerhonig ernten. Das Absperrgitter gleich mit nach Hause nehmen und die Windel zur Gemülldiagnose einschieben.",
-            "Wenn möglich einen Tag später den geschleuderten Honigraum wieder aufsetzen und zwei bis drei Tage ausschlecken lassen.",
-            "Den natürlichen Milbenfall der 2–3 Windel-Tage auszählen: Es sollten nicht mehr als 30 Milben pro Tag gefallen sein. Stärker befallene Völker können vor Tag X+21 zusammenbrechen — bei ihnen ist eine Ameisensäurebehandlung angezeigt."
-          ]
-        },
-        "dayZero": {
-          "day": "Tag X",
-          "title": "Volk teilen",
-          "items": [
-            "Bei schönem Wetter das Volk auseinandernehmen. Den Honigraum mit den innensitzenden Bienen auf den Originalboden des Volkes stellen — das wird der Flugling. Sind keinerlei Futterreste darin, unbedingt eine Futterwabe einhängen (1–2 kg, meist am Rand des oberen Brutraums zu finden).",
-            "Im Brutraum die Königin suchen (sie ist meist im oberen Brutraum), unter Futterteig- oder Marshmallow-Verschluss käfigen und in den Flugling hängen.",
-            "Königin unauffindbar oder die Bienen zu böse? Stattdessen eine offene Brutwabe in den Flugling hängen und am übernächsten Tag gegen die Königin tauschen — sie ist im abgeflogenen Brutling viel leichter zu finden. Aus „X+21“ wird dann „X+23“.",
-            "Die beiden Bruträume (ältere Waben unten) auf einen neuen Boden stellen: entweder direkt oben auf den Flugling mit gleicher Flugrichtung oder einige Meter daneben — das wird der Brutling. Keinesfalls direkt daneben, sonst fliegen die Bienen ins größere Volk zurück und es bildet sich kein guter Flugling.",
-            "Die Fluglöcher beider Volksteile auf ca. 2 cm einengen — der Brutling hat einige Tage weder Königin noch ältere Flugbienen und ist stark räubereigefährdet.",
-            "Beim Teilen keinesfalls Flüssigfutter geben, denn dadurch entsteht Räuberei."
-          ]
-        },
-        "dayTwo": {
-          "day": "Tag X+2",
-          "title": "Flugling behandeln",
-          "items": [
-            "Bis zu zwei Drittel der Bienen sitzen jetzt im Flugling; die Königin ist freigefressen und stiftet.",
-            "Am frühen Morgen (die Bienen sollen eng sitzen) mit 100–200 ml 3,5%iger Oxalsäurelösung beträufeln — oder besser: tagsüber alle Waben ziehen und die Bienen mit 3%iger Oxalsäurelösung besprühen (Sprühen wirkt im Sommer besser als Träufeln).",
-            "Eine einmalige Behandlung reicht: Rund 90 % der Milben sitzen in der Brut und auf den Ammenbienen, also im Brutling.",
-            "Steht keine späte Tracht an, den Flugling jetzt mit bis zu 6 Litern Sirup füttern — danach bis Oktober nicht mehr, sonst ist keine Brutentwicklung möglich."
-          ]
-        },
-        "dayTwentyOne": {
-          "day": "Tag X+21",
-          "title": "Brutling behandeln",
-          "items": [
-            "Die gesamte Arbeiterinnenbrut ist geschlüpft, der Brutling ist jetzt brutfrei. Die Nachschaffungskönigin ist meist geschlüpft, legt aber noch nicht — nicht unnötig nach Stiften suchen.",
-            "Den Brutling auseinandernehmen und auf eine Zarge einengen: Altwaben entfernen (klassisch die 10 unteren, älteren) und die Bienen in den Brutling bzw. vor dessen Flugloch schlagen. Ist auf den Brutwaben noch Wald- oder Heidehonig, können alle Waben geerntet und das Volk auf Mittelwände plus eine Futterwabe gesetzt werden.",
-            "Wie zuvor den Flugling im brutfreien Zustand beträufeln oder besprühen.",
-            "Häufig ist hier eine zweite Behandlung nach vier Tagen nötig: Fallen innerhalb einer Woche nach der Behandlung mehr als 5.000 Milben, sofort erneut behandeln.",
-            "Nach der Behandlung füttern — oder warten, bis die Jungkönigin sicher legt; mit legender Königin ist die Räubereigefahr geringer."
-          ]
-        },
-        "dayTwentyEight": {
-          "day": "Tag X+28",
-          "title": "Jungkönigin kontrollieren",
-          "items": [
-            "Herrschte in der vergangenen Woche Hochzeitsflugwetter (20 °C, sonnig, windstill)? Dann ist in 9 von 10 Brutlingen eine junge, eierlegende Königin vorhanden — nachsehen.",
-            "Falls nicht: Den Brutling auflösen, indem die Bienen von den Waben vor dem Flugloch des Fluglings abgeschüttelt werden."
-          ]
-        },
-        "october": {
-          "day": "Oktober",
-          "title": "Rückvereinigung — falls gewünscht",
-          "items": [
-            "Für ein starkes Volk: Brutling einfach ohne Zeitungspapier auf den Flugling setzen. In der Regel überlebt die Königin des aufgesetzten Volkes — soll eine bestimmte sicher überleben, die andere vorher herausfangen. Die späte Vereinigung ergibt bombenstarke Wintervölker mit junger Königin.",
-            "Bei getrennter Weiterführung jeden Volksteil im Oktober so auffüttern, dass er über mindestens 15 kg Winterfutter verfügt (ohne Futter auf den Waben etwa 15 Liter Sirup), am besten in einer frühen und einer späten Portion."
-          ]
-        }
-      },
-      "advantagesTitle": "Warum Teilen und Behandeln?",
-      "advantages": [
-        "Witterungsunabhängige Varroabekämpfung nach frei wählbarem Terminplan — keine Sorgen um die Verdunstungsleistung der Ameisensäure.",
-        "Komplette Wabenhygiene und Wabenerneuerung im selben Arbeitsgang.",
-        "Honigernte auch aus verhonigten Bruträumen möglich (inklusive später Wald- oder Heidetracht).",
-        "Keine ungewünschten Nachschaffungszellen, die gesucht und gebrochen werden müssen — anders als beim wochenlangen Sperren der Königin.",
-        "Keine Gefährdung der Königin wie beim Freilassen nach wochenlanger Käfighaft: Dort wird etwa jede fünfte Königin von ihren Bienen nicht mehr akzeptiert.",
-        "In der Regel besonders starke Wintervölker mit junger Königin, wenn beide Volksteile im Oktober rückvereinigt werden.",
-        "Alternativ zur Rückvereinigung: nochmalige Völkervermehrung im Juli/August."
-      ],
-      "caution": {
-        "title": "Wann die Methode nicht passt",
-        "body": "Vor der Teilung den natürlichen Milbenfall auszählen. Bei mehr als etwa 30 Milben pro Tag ist die Brut so stark befallen, dass die schlüpfenden Brutlingsbienen rasch sterben und der Brutling vor Tag X+21 zusammenbrechen kann — solche Völker besser gleich mit Ameisensäure behandeln.",
-        "robbing": "Und am Teilungstag niemals Flüssigfutter geben — der weisellose, wächterarme Brutling würde sofort ausgeräubert."
-      }
     },
-    "monitoring": {
-      "title": "Natürlichen Milbenfall erfassen (Gemülldiagnose)",
-      "summary": "Jede Behandlungsentscheidung in diesem Plan hängt an einer Zahl: dem natürlichen Milbenfall pro Tag. So wird er richtig gemessen.",
-      "intro": "Zu früh, zu häufig, zu spät — die spätsommerliche Varroa-Bekämpfung ist selten gut auf die Bedürfnisse des Bienenvolkes abgestimmt. Wer den natürlichen Milbenfall mit einer geeigneten Windel erfasst, weiß genau, wo jedes Volk steht, bekämpft die Milbe passgenau und ist sicher vor unliebsamen Überraschungen.",
-      "items": [
-        "Gitterboden (Maschenweite 3 mm) verwenden, unter den bienensicher eine Windel eingeschoben werden kann.",
-        "Bausperren und Fluglochkeile vor der Diagnose entfernen.",
-        "Die Windel vor jeder geplanten Behandlung für genau 3 Tage einschieben (erstmals Ende Juli vor der ersten Behandlung).",
-        "Windel wieder entnehmen und die dunklen und hellbraunen Milben zählen bzw. abschätzen — notfalls Sehhilfe verwenden.",
-        "Die Anzahl durch 3 teilen: Das ist der natürliche Milbenfall pro Tag, auf den sich alle Schwellenwerte des Plans beziehen."
-      ],
-      "conversionTitle": "Was eine tote Milbe pro Tag bedeutet",
-      "conversion": [
-        "Ende Juli bis Mitte August: etwa 150–250 lebende Milben im Volk",
-        "Anfang bis Mitte September: etwa 250–350 lebende Milben",
-        "Ende November: etwa 500 lebende Milben"
-      ],
-      "note": "Die Windel nicht dauerhaft eingeschoben lassen — das lockt Ameisen und Wachsmotten an; sie muss nur zur Diagnose (oder während einer Ameisensäurebehandlung) im Volk sein. Bienenproben auszuwaschen ist umständlicher und liefert keine verlässlicheren Resultate als die Gemülldiagnose."
+    "photo": {
+        "captionPlaceholder": "Beschreibe das Foto...",
+        "caption": "Bildunterschrift",
+        "deleteFailed": "Das Löschen des Fotos ist fehlgeschlagen",
+        "title": "Foto hinzufügen",
+        "description": "Lade ein Foto hoch, optional mit einer Bildunterschrift.",
+        "optional": "optional",
+        "selectPhoto": "Wähle ein Foto",
+        "upload": "Foto hochladen",
+        "uploading": "Hochlanden...",
+        "uploadSuccess": "Foto hochgeladen",
+        "uploadFailed": "Foto hochladen fehlgeschlagen",
+        "deleteTitle": "Foto löschen?",
+        "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Foto wird dadurch endgültig gelöscht.",
+        "deleted": "Foto gelöscht",
+        "replace": "Ersetzen"
     },
-    "aside": {
-      "thresholdsTitle": "Befallsschwellen",
-      "thresholdsDescription": "Behandlung dringend erforderlich bei natürlichem Milbenfall von … pro Tag:",
-      "periodHeader": "Wann",
-      "productionHeader": "W-Volk",
-      "nucleusHeader": "Ableger",
-      "thresholdRows": [
-        {
-          "period": "Mitte Juli – Mitte Aug (nach dem Abschleudern)",
-          "production": "10 /Tag",
-          "nucleus": "5 /Tag"
-        },
-        {
-          "period": "Anfang – Mitte Sept (nach dem Auffüttern)",
-          "production": "5 /Tag",
-          "nucleus": "1 /Tag"
-        },
-        {
-          "period": "Mitte Nov – Anfang Dez",
-          "production": "1 /Tag",
-          "nucleus": "1 /Tag"
+    "document": {
+        "uploading": "Hochladen...",
+        "uploadSuccess": "Dokument hochgeladen",
+        "uploadFailed": "Das Hochladen des Dokuments ist fehlgeschlagen",
+        "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Dokument wird dadurch endgültig gelöscht.",
+        "deleteFailed": "Das Löschen des Dokuments ist fehlgeschlagen",
+        "title": "Dokument hinzufügen",
+        "description": "Laden Sie ein PDF-Dokument oder ein gescanntes Dokument hoch.",
+        "titleField": "Titel",
+        "titlePlaceholder": "Titel des Dokuments",
+        "notes": "Notizen",
+        "optional": "optional",
+        "notesPlaceholder": "Notizen zu diesem Dokument hinzufügen...",
+        "selectFile": "Wähle eine Datei (PDF, JPEG, PNG)",
+        "upload": "Dokument hochladen",
+        "deleteTitle": "Dokument löschen?",
+        "deleted": "Dokument gelöscht"
+    },
+    "files": {
+        "allFiles": "Alle Dateien",
+        "photos": "Fotos",
+        "documents": "Dokumente",
+        "search": "Dateien suchen...",
+        "filterByHive": "Filtern nach Bienenstöcken",
+        "filterByType": "Filtern nach Typ",
+        "noFiles": "Es wurden noch keine Dateien hochgeladen",
+        "name": "Name",
+        "type": "Typ",
+        "hive": "Bienenstock",
+        "size": "Größe",
+        "download": "Download",
+        "delete": "Löschen",
+        "title": "Dateien",
+        "audio": "Audio",
+        "status": "Status",
+        "sendToAi": "An KI senden",
+        "sendAllPending": "Alles an die KI senden ({{count}})",
+        "sentToAi": "KI für {{count}} Aufnahmen gestartet",
+        "audioStatus": {
+            "notTranscribed": "Nicht transkribiert",
+            "queued": "In der Warteschlange",
+            "transcribing": "Wird transkribiert…"
         }
-      ],
-      "thresholdsNote": "Natürlicher Milbenfall pro Tag, gemessen über genau 3 Tage mit der Windel unter dem Gitterboden.",
-      "principleTitle": "Nicht stur behandeln!",
-      "principleBody": "Das Erfolgsrezept: Mit Gitterboden und Windel den natürlichen Milbentotenfall erfassen, statt nach festem Kalender zu behandeln. Jede sinnvolle Behandlung ist auf den Befallsgrad und die Entwicklung des Bienenvolkes abgestimmt. Seit 2008 bewährt sich das Rezept in einer bundesweiten Studie in 140 Hobby-, Berufs- und Instituts-Imkereien mit durchgehend höchstens 7 % Völkerverlusten — ganz ohne chemische Mittel während der Tracht und ohne rückstands- oder resistenzbildende Varroazide.",
-      "sourceTitle": "Quelle",
-      "sourceBody": "Konzept von Dr. Pia Aumeier, erstellt unter Mitwirkung von Dr. Gerhard Liebig und Dr. Otto Boecking an der Ruhr-Universität Bochum im Projekt „Imkerberatung NRW“; Teilen und Behandeln nach der Veröffentlichung im Deutschen Bienen-Journal (DNB 07/2017)."
+    },
+    "quickAdd": {
+        "title": "Eintrag hinzufügen",
+        "quickCheck": "Schnellprüfung",
+        "action": "Aktion",
+        "photo": "Foto",
+        "document": "Dokument",
+        "inspection": "Inspektion"
+    },
+    "swarmManagement": {
+        "backToOverview": "Back to Swarm Management",
+        "eyebrow": "Swarm control guidance",
+        "title": "Swarm Management",
+        "cards": {
+            "available": "Available",
+            "comingSoon": "Coming soon",
+            "placeholderCta": "Not available yet",
+            "demaree": {
+                "title": "Demaree Method",
+                "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
+                "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+                "cta": "Open guide"
+            },
+            "pagden": {
+                "title": "Pagden split",
+                "description": "Placeholder for a future guide covering the classic artificial swarm split."
+            },
+            "artificialSwarm": {
+                "title": "Artificial swarm",
+                "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+            }
+        },
+        "aside": {
+            "title": "Choosing a method",
+            "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+            "points": [
+                "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
+                "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
+                "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+            ],
+            "criticalTimingTitle": "Critical timing",
+            "criticalTimingLead": "The first follow-up is the point where timing matters most.",
+            "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+        },
+        "demaree": {
+            "badge": "Reference method",
+            "title": "Demaree Method",
+            "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
+            "overviewTitle": "Method overview",
+            "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+            "overviewPoints": [
+                "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
+                "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
+                "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+            ],
+            "prerequisitesTitle": "Prerequisites",
+            "prerequisites": [
+                "Check that the hive is a strong colony with enough bees and brood to justify the method.",
+                "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
+                "Make sure you can find and confidently retain the laying queen in the lower brood box.",
+                "Have a queen excluder ready, with at least two honey supers available to stack above it.",
+                "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
+                "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+            ],
+            "stepsTitle": "Method Detail",
+            "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+            "methodDetail": {
+                "preparation": {
+                    "title": "Preparation",
+                    "items": [
+                        {
+                            "text": "Find a spare brood box with foundation or drawn comb.",
+                            "children": [
+                                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+                            ]
+                        },
+                        {
+                            "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+                        }
+                    ]
+                },
+                "huntTheQueen": {
+                    "title": "Hunt the Queen",
+                    "items": [
+                        {
+                            "text": "Inspect the old brood box(es) and locate the Queen."
+                        },
+                        {
+                            "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+                        }
+                    ]
+                },
+                "broodManipulation": {
+                    "title": "Brood Manipulation",
+                    "items": [
+                        {
+                            "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+                            "children": [
+                                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+                            ]
+                        },
+                        {
+                            "text": "Make sure to knock down all queen cells.",
+                            "children": [
+                                "With the queen safe you can shake bees off the frames to make sure you find them all."
+                            ]
+                        },
+                        {
+                            "text": "(Double Brood) - You should now have three brood boxes.",
+                            "children": [
+                                "Box with the queen, mostly empty directly on the hive floor.",
+                                "Box with no brood - place this on top of the queen to retain double brood status.",
+                                "Box with all the brood - keep this aside for now."
+                            ]
+                        }
+                    ]
+                },
+                "reassembly": {
+                    "title": "Reassembly",
+                    "items": [
+                        {
+                            "text": "Put the queen excluder on top of the new brood boxes."
+                        },
+                        {
+                            "text": "Add the supers (minimum 2, add extra if more space is required)."
+                        },
+                        {
+                            "text": "Place an additional queen excluder over the supers."
+                        },
+                        {
+                            "text": "The box with all the brood now goes on top of the supers."
+                        },
+                        {
+                            "text": "Fit crown board and roof and the job is done."
+                        }
+                    ]
+                }
+            },
+            "advantagesTitle": "Why the method works",
+            "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+            "advantages": [
+                "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
+                "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
+                "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+            ],
+            "followUpTitle": "Follow-up timing",
+            "followUpDayHeader": "Day",
+            "followUpTaskHeader": "Task",
+            "followUp": [
+                {
+                    "day": "Day 7-8",
+                    "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+                },
+                {
+                    "day": "Day 14-15",
+                    "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+                },
+                {
+                    "day": "Day 21-22",
+                    "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+                }
+            ],
+            "prosConsTitle": "Pros and Cons",
+            "prosTitle": "Advantages",
+            "consTitle": "Disadvantages",
+            "pros": [
+                "Works well as a swarm control method.",
+                "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
+                "Comb renewal is simple.",
+                "Good brood combs can be drawn out in the top box.",
+                "The effect is similar to an artificial swarm, but the colony is kept together."
+            ],
+            "cons": [
+                "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
+                "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
+                "There may be heavy lifting.",
+                "Regular inspections are essential.",
+                "You MUST understand the basics."
+            ]
+        },
+        "planner": {
+            "title": "Demaree inspection planner",
+            "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+            "hiveLabel": "Hive",
+            "hivePlaceholder": "Select a hive",
+            "startDateLabel": "Demaree setup date",
+            "startDatePlaceholder": "Pick the setup date",
+            "generate": "Generate checkpoints",
+            "selectedHive": "Selected hive",
+            "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
+            "notesLabel": "Inspection notes",
+            "notesChecklistLabel": "Checklist",
+            "checkpointPrefix": "Demaree checkpoint:",
+            "dayOffset_one": "Day {{count}}",
+            "dayOffset_other": "Day {{count}}",
+            "save": "Save scheduled inspections",
+            "saving": "Saving inspections...",
+            "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
+            "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
+            "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+            "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
+            "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+            "checkpoints": {
+                "setup": {
+                    "title": "Initial Demaree setup",
+                    "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+                    "checklist": [
+                        "Confirm the laying queen is in the lower brood box.",
+                        "Place the brood and supers in the planned Demaree order.",
+                        "Record any details you want visible at the next inspection."
+                    ]
+                },
+                "queenCellCheck": {
+                    "title": "Queen-cell check",
+                    "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+                    "checklist": [
+                        "Inspect every brood frame above the excluder for queen cells.",
+                        "Remove queen cells started during the swarm impulse.",
+                        "Confirm the queen still has room and activity below."
+                    ]
+                },
+                "secondQueenCellCheck": {
+                    "title": "Second queen-cell check",
+                    "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+                    "checklist": [
+                        "Look again for newly started or missed queen cells.",
+                        "Check whether brood and stores need to be rebalanced.",
+                        "Note whether the colony is settling or still crowding upward."
+                    ]
+                },
+                "colonyReview": {
+                    "title": "Colony review",
+                    "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+                    "checklist": [
+                        "Assess whether the colony can return to a more normal arrangement.",
+                        "Check space, brood pattern, and nectar intake across the stack.",
+                        "Schedule any additional inspection you want beyond the standard plan."
+                    ]
+                }
+            }
+        },
+        "warnings": {
+            "bannerTitle": "Timing warnings",
+            "lateQueenCellCheck": {
+                "title": "First queen-cell check is later than day 8",
+                "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+            },
+            "unsafeCheckpointSpacing": {
+                "title": "Checkpoint spacing looks risky",
+                "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+            },
+            "illogicalScheduleOrder": {
+                "title": "Checkpoint order is no longer chronological",
+                "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+            }
+        }
+    },
+    "varroaManagement": {
+        "eyebrow": "Kostenloses Tool",
+        "title": "Varroa-Management-Plan",
+        "intro": "Ein Varroa-Behandlungsfahrplan durchs ganze Jahr für Wirtschaftsvölker und Ableger, nach dem bewährten Konzept von Dr. Pia Aumeier, Dr. Gerhard Liebig und Dr. Otto Boecking. Die wichtigste Regel: Nicht stur nach Kalender behandeln — erst den natürlichen Milbenfall erfassen und nur behandeln, wenn eine Befallsschwelle überschritten ist.",
+        "columns": {
+            "production": {
+                "title": "Wirtschaftsvolk",
+                "subtitle": "(& Maischwarm)"
+            },
+            "nucleus": {
+                "title": "Ableger",
+                "subtitle": "(Jungvolk)"
+            }
+        },
+        "treatments": {
+            "biotech": "Biotechnisch",
+            "lactic": "Milchsäure",
+            "formic": "Ameisensäure",
+            "oxalic": "Oxalsäure"
+        },
+        "legend": {
+            "title": "Legende:",
+            "threshold": "rotes Feld = nur behandeln, wenn der angegebene natürliche Milbenfall pro Tag überschritten ist"
+        },
+        "timeline": {
+            "springSummer": {
+                "time": "April bis Juli",
+                "production": {
+                    "badge": "3–4×",
+                    "title": "Drohnenrahmen schneiden",
+                    "items": [
+                        "Zur Kirschblüte alle Völker mit Absperrgitter und Honigraum erweitern und einen leeren Drohnenbaurahmen in den oberen Brutraum neben die Randwabe zwischen zwei ausgebaute Waben hängen.",
+                        "Frühestens nach 14, spätestens nach 24 Tagen ausschneiden — Drohnen keinesfalls schlüpfen lassen. So oft wie möglich von April bis Juli wiederholen."
+                    ]
+                },
+                "nucleus": {
+                    "badge": "1×",
+                    "title": "Mit Milchsäure einsprühen",
+                    "items": [
+                        "In der brutfreien Phase direkt nach der Erstellung des Ablegers die Bienen auf allen Waben (beidseitig, ca. 3 Sprühstöße pro Wabenseite) mit 15%iger Milchsäure einsprühen.",
+                        "Bei starkem Varroabefall die Behandlung nach einigen Tagen wiederholen."
+                    ],
+                    "note": "Handschuhe, lange Kleidung und Brille anlegen. Besprühte Völker dürfen im selben Jahr nicht mehr zur Honigproduktion genutzt werden."
+                }
+            },
+            "endOfJuly": {
+                "time": "Ende Juli",
+                "production": {
+                    "monitor": "Nach dem Abschleudern: Windel für genau 3 Tage einschieben und den natürlichen Milbenfall auszählen.",
+                    "threshold": {
+                        "condition": "Bei natürlichem Milbenfall von über 10 Varroa pro Tag:",
+                        "action": "1× Notbehandlung"
+                    },
+                    "note": "Sehr selten nötig. Unterhalb der Schwelle nicht behandeln — so werden Brut und Bienen geschont."
+                },
+                "nucleus": {
+                    "monitor": "Gemülldiagnose (3-tägig) durchführen.",
+                    "threshold": {
+                        "condition": "Bei natürlichem Milbenfall von über 5 Varroa pro Tag:",
+                        "action": "1× Notbehandlung"
+                    },
+                    "note": "Sehr selten nötig. Unterhalb der Schwelle nicht behandeln."
+                }
+            },
+            "lateAugust": {
+                "time": "zweite Hälfte August",
+                "production": {
+                    "title": "Start Spätsommerpflege",
+                    "items": [
+                        "Einengen durch Entfernen der unteren Zarge (Wabenhygiene).",
+                        "1× Behandlung mit Ameisensäure.",
+                        "Danach in einer großen Portion auffüttern."
+                    ],
+                    "note": "Alternative: Das Volk mit „Teilen und Behandeln“ brutfrei machen und statt Ameisensäure mit Oxalsäure behandeln — siehe ausführliche Anleitung unten."
+                },
+                "nucleus": {
+                    "title": "Keine Behandlung",
+                    "items": [
+                        "Weiterhin nur etwas füttern, entwickeln und Waben ausbauen lassen."
+                    ]
+                }
+            },
+            "september": {
+                "time": "Anfang bis Mitte September",
+                "production": {
+                    "monitor": "Nach der Auffütterung: Gemülldiagnose (3-tägig) durchführen.",
+                    "threshold": {
+                        "condition": "Bei natürlichem Milbenfall von über 5 Varroa pro Tag:",
+                        "action": "1× Behandlung"
+                    },
+                    "note": "Unterhalb der Schwelle ist keine weitere Behandlung nötig."
+                },
+                "nucleus": {
+                    "monitor": "Gemülldiagnose (3-tägig) durchführen.",
+                    "threshold": {
+                        "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
+                        "action": "1× Behandlung"
+                    },
+                    "note": "Danach folgt die Winterauffütterung."
+                }
+            },
+            "novemberDecember": {
+                "time": "Ende Nov bis Mitte Dez",
+                "production": {
+                    "monitor": "In der brutfreien Winterphase: Gemülldiagnose (3-tägig) durchführen.",
+                    "threshold": {
+                        "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
+                        "action": "1× Restentmilbung"
+                    },
+                    "note": "30–50 ml 3,5%ige Oxalsäurelösung in die besetzten Wabengassen träufeln. Unterhalb der Schwelle ist keine Behandlung nötig."
+                },
+                "nucleus": {
+                    "monitor": "In der brutfreien Winterphase: Gemülldiagnose (3-tägig) durchführen.",
+                    "threshold": {
+                        "condition": "Bei natürlichem Milbenfall von über 1 Varroa pro Tag:",
+                        "action": "1× Restentmilbung"
+                    },
+                    "note": "30–50 ml 3,5%ige Oxalsäurelösung träufeln. Unterhalb der Schwelle ist keine Behandlung nötig."
+                }
+            }
+        },
+        "divideAndTreat": {
+            "title": "Teilen und Behandeln",
+            "summary": "Die Nase voll von Ameisensäure? Teilen und Behandeln macht ein Wirtschaftsvolk nach der letzten Honigernte brutfrei, sodass eine einzige, witterungsunabhängige Oxal- oder Milchsäurebehandlung jede Milbe erwischt. Hier die Methode mit Flugling und Brutling, Schritt für Schritt.",
+            "intro": {
+                "0": "Ende Juli ist ein starkes Wirtschaftsvolk bis zu 30.000 Bienen und 30.000 Brutzellen stark. Je mehr Brut, desto schwieriger ist ohne Brutschäden ein guter Behandlungserfolg mit Ameisensäure zu erzielen — besonders bei feuchter, kühler Witterung. Teilen und Behandeln, weiterentwickelt aus der Celler Rotationsbetriebsweise im Projekt „Betriebsweisen im Vergleich“, umgeht das Problem komplett: Das Volk wird in zwei brutfreie Hälften geteilt, die sich jeweils zuverlässig und witterungsunabhängig mit Oxal- oder Milchsäure behandeln lassen.",
+                "1": "Dazu wird das Wirtschaftsvolk in einen weiselrichtigen Flugling und einen weisellosen Brutling geteilt. Mehr als einen weiteren Boden, eine Folie, einen Deckel und einen Königinnenkäfig mit Futterteig- oder Marshmallow-Verschluss braucht es nicht. Fünf Bienenstandbesuche und insgesamt etwa 15 Minuten Arbeit entmilben das Volk in zwei Schritten wirkungsvoll, ermöglichen komplette Wabenhygiene und erzeugen — wenn gewünscht — nebenbei eine Jungkönigin und ein neues Volk."
+            },
+            "concepts": {
+                "flightling": {
+                    "title": "Flugling",
+                    "subtitle": "Weiselrichtiges Flugbienenvolk",
+                    "points": [
+                        "Der abgeerntete Honigraum mit den darin sitzenden Bienen, auf dem Originalboden am alten Standort — alle Flugbienen fliegen sich hierher zurück.",
+                        "Behält die alte Königin, gekäfigt unter Futterteig- oder Marshmallow-Verschluss, bis die Arbeiterinnen sie freifressen.",
+                        "Sofort brutfrei: Alle Milben sitzen auf den Bienen, eine einzige Behandlung am Tag X+2 erfasst sie alle.",
+                        "Zwei Tage nach der Teilung sitzen hier bis zu zwei Drittel der Bienen; die Königin ist bereits freigefressen und stiftet."
+                    ]
+                },
+                "broodling": {
+                    "title": "Brutling",
+                    "subtitle": "Weiselloses Brutvolk",
+                    "points": [
+                        "Beide Bruträume auf einem neuen Boden — entweder direkt oben auf dem Flugling (gleiche Flugrichtung) oder einige Meter daneben.",
+                        "Enthält die gesamte Brut und rund 90 % der Milben, verliert aber seine Flugbienen an den Flugling.",
+                        "Zieht aus den jüngsten Larven eine Nachschaffungskönigin; in rund 90 % der Fälle wird sie erfolgreich begattet.",
+                        "Am Tag X+21 brutfrei, sobald alle Arbeiterinnenbrut geschlüpft ist — der Zeitpunkt für die Behandlung."
+                    ]
+                }
+            },
+            "stepsTitle": "Schritt für Schritt",
+            "steps": {
+                "preparation": {
+                    "day": "Vor Tag X",
+                    "title": "Vorbereitungen",
+                    "items": [
+                        "Im Zeitraum Mitte Juli bis Mitte August Sommerhonig ernten. Das Absperrgitter gleich mit nach Hause nehmen und die Windel zur Gemülldiagnose einschieben.",
+                        "Wenn möglich einen Tag später den geschleuderten Honigraum wieder aufsetzen und zwei bis drei Tage ausschlecken lassen.",
+                        "Den natürlichen Milbenfall der 2–3 Windel-Tage auszählen: Es sollten nicht mehr als 30 Milben pro Tag gefallen sein. Stärker befallene Völker können vor Tag X+21 zusammenbrechen — bei ihnen ist eine Ameisensäurebehandlung angezeigt."
+                    ]
+                },
+                "dayZero": {
+                    "day": "Tag X",
+                    "title": "Volk teilen",
+                    "items": [
+                        "Bei schönem Wetter das Volk auseinandernehmen. Den Honigraum mit den innensitzenden Bienen auf den Originalboden des Volkes stellen — das wird der Flugling. Sind keinerlei Futterreste darin, unbedingt eine Futterwabe einhängen (1–2 kg, meist am Rand des oberen Brutraums zu finden).",
+                        "Im Brutraum die Königin suchen (sie ist meist im oberen Brutraum), unter Futterteig- oder Marshmallow-Verschluss käfigen und in den Flugling hängen.",
+                        "Königin unauffindbar oder die Bienen zu böse? Stattdessen eine offene Brutwabe in den Flugling hängen und am übernächsten Tag gegen die Königin tauschen — sie ist im abgeflogenen Brutling viel leichter zu finden. Aus „X+21“ wird dann „X+23“.",
+                        "Die beiden Bruträume (ältere Waben unten) auf einen neuen Boden stellen: entweder direkt oben auf den Flugling mit gleicher Flugrichtung oder einige Meter daneben — das wird der Brutling. Keinesfalls direkt daneben, sonst fliegen die Bienen ins größere Volk zurück und es bildet sich kein guter Flugling.",
+                        "Die Fluglöcher beider Volksteile auf ca. 2 cm einengen — der Brutling hat einige Tage weder Königin noch ältere Flugbienen und ist stark räubereigefährdet.",
+                        "Beim Teilen keinesfalls Flüssigfutter geben, denn dadurch entsteht Räuberei."
+                    ]
+                },
+                "dayTwo": {
+                    "day": "Tag X+2",
+                    "title": "Flugling behandeln",
+                    "items": [
+                        "Bis zu zwei Drittel der Bienen sitzen jetzt im Flugling; die Königin ist freigefressen und stiftet.",
+                        "Am frühen Morgen (die Bienen sollen eng sitzen) mit 100–200 ml 3,5%iger Oxalsäurelösung beträufeln — oder besser: tagsüber alle Waben ziehen und die Bienen mit 3%iger Oxalsäurelösung besprühen (Sprühen wirkt im Sommer besser als Träufeln).",
+                        "Eine einmalige Behandlung reicht: Rund 90 % der Milben sitzen in der Brut und auf den Ammenbienen, also im Brutling.",
+                        "Steht keine späte Tracht an, den Flugling jetzt mit bis zu 6 Litern Sirup füttern — danach bis Oktober nicht mehr, sonst ist keine Brutentwicklung möglich."
+                    ]
+                },
+                "dayTwentyOne": {
+                    "day": "Tag X+21",
+                    "title": "Brutling behandeln",
+                    "items": [
+                        "Die gesamte Arbeiterinnenbrut ist geschlüpft, der Brutling ist jetzt brutfrei. Die Nachschaffungskönigin ist meist geschlüpft, legt aber noch nicht — nicht unnötig nach Stiften suchen.",
+                        "Den Brutling auseinandernehmen und auf eine Zarge einengen: Altwaben entfernen (klassisch die 10 unteren, älteren) und die Bienen in den Brutling bzw. vor dessen Flugloch schlagen. Ist auf den Brutwaben noch Wald- oder Heidehonig, können alle Waben geerntet und das Volk auf Mittelwände plus eine Futterwabe gesetzt werden.",
+                        "Wie zuvor den Flugling im brutfreien Zustand beträufeln oder besprühen.",
+                        "Häufig ist hier eine zweite Behandlung nach vier Tagen nötig: Fallen innerhalb einer Woche nach der Behandlung mehr als 5.000 Milben, sofort erneut behandeln.",
+                        "Nach der Behandlung füttern — oder warten, bis die Jungkönigin sicher legt; mit legender Königin ist die Räubereigefahr geringer."
+                    ]
+                },
+                "dayTwentyEight": {
+                    "day": "Tag X+28",
+                    "title": "Jungkönigin kontrollieren",
+                    "items": [
+                        "Herrschte in der vergangenen Woche Hochzeitsflugwetter (20 °C, sonnig, windstill)? Dann ist in 9 von 10 Brutlingen eine junge, eierlegende Königin vorhanden — nachsehen.",
+                        "Falls nicht: Den Brutling auflösen, indem die Bienen von den Waben vor dem Flugloch des Fluglings abgeschüttelt werden."
+                    ]
+                },
+                "october": {
+                    "day": "Oktober",
+                    "title": "Rückvereinigung — falls gewünscht",
+                    "items": [
+                        "Für ein starkes Volk: Brutling einfach ohne Zeitungspapier auf den Flugling setzen. In der Regel überlebt die Königin des aufgesetzten Volkes — soll eine bestimmte sicher überleben, die andere vorher herausfangen. Die späte Vereinigung ergibt bombenstarke Wintervölker mit junger Königin.",
+                        "Bei getrennter Weiterführung jeden Volksteil im Oktober so auffüttern, dass er über mindestens 15 kg Winterfutter verfügt (ohne Futter auf den Waben etwa 15 Liter Sirup), am besten in einer frühen und einer späten Portion."
+                    ]
+                }
+            },
+            "advantagesTitle": "Warum Teilen und Behandeln?",
+            "advantages": [
+                "Witterungsunabhängige Varroabekämpfung nach frei wählbarem Terminplan — keine Sorgen um die Verdunstungsleistung der Ameisensäure.",
+                "Komplette Wabenhygiene und Wabenerneuerung im selben Arbeitsgang.",
+                "Honigernte auch aus verhonigten Bruträumen möglich (inklusive später Wald- oder Heidetracht).",
+                "Keine ungewünschten Nachschaffungszellen, die gesucht und gebrochen werden müssen — anders als beim wochenlangen Sperren der Königin.",
+                "Keine Gefährdung der Königin wie beim Freilassen nach wochenlanger Käfighaft: Dort wird etwa jede fünfte Königin von ihren Bienen nicht mehr akzeptiert.",
+                "In der Regel besonders starke Wintervölker mit junger Königin, wenn beide Volksteile im Oktober rückvereinigt werden.",
+                "Alternativ zur Rückvereinigung: nochmalige Völkervermehrung im Juli/August."
+            ],
+            "caution": {
+                "title": "Wann die Methode nicht passt",
+                "body": "Vor der Teilung den natürlichen Milbenfall auszählen. Bei mehr als etwa 30 Milben pro Tag ist die Brut so stark befallen, dass die schlüpfenden Brutlingsbienen rasch sterben und der Brutling vor Tag X+21 zusammenbrechen kann — solche Völker besser gleich mit Ameisensäure behandeln.",
+                "robbing": "Und am Teilungstag niemals Flüssigfutter geben — der weisellose, wächterarme Brutling würde sofort ausgeräubert."
+            }
+        },
+        "monitoring": {
+            "title": "Natürlichen Milbenfall erfassen (Gemülldiagnose)",
+            "summary": "Jede Behandlungsentscheidung in diesem Plan hängt an einer Zahl: dem natürlichen Milbenfall pro Tag. So wird er richtig gemessen.",
+            "intro": "Zu früh, zu häufig, zu spät — die spätsommerliche Varroa-Bekämpfung ist selten gut auf die Bedürfnisse des Bienenvolkes abgestimmt. Wer den natürlichen Milbenfall mit einer geeigneten Windel erfasst, weiß genau, wo jedes Volk steht, bekämpft die Milbe passgenau und ist sicher vor unliebsamen Überraschungen.",
+            "items": [
+                "Gitterboden (Maschenweite 3 mm) verwenden, unter den bienensicher eine Windel eingeschoben werden kann.",
+                "Bausperren und Fluglochkeile vor der Diagnose entfernen.",
+                "Die Windel vor jeder geplanten Behandlung für genau 3 Tage einschieben (erstmals Ende Juli vor der ersten Behandlung).",
+                "Windel wieder entnehmen und die dunklen und hellbraunen Milben zählen bzw. abschätzen — notfalls Sehhilfe verwenden.",
+                "Die Anzahl durch 3 teilen: Das ist der natürliche Milbenfall pro Tag, auf den sich alle Schwellenwerte des Plans beziehen."
+            ],
+            "conversionTitle": "Was eine tote Milbe pro Tag bedeutet",
+            "conversion": [
+                "Ende Juli bis Mitte August: etwa 150–250 lebende Milben im Volk",
+                "Anfang bis Mitte September: etwa 250–350 lebende Milben",
+                "Ende November: etwa 500 lebende Milben"
+            ],
+            "note": "Die Windel nicht dauerhaft eingeschoben lassen — das lockt Ameisen und Wachsmotten an; sie muss nur zur Diagnose (oder während einer Ameisensäurebehandlung) im Volk sein. Bienenproben auszuwaschen ist umständlicher und liefert keine verlässlicheren Resultate als die Gemülldiagnose."
+        },
+        "aside": {
+            "thresholdsTitle": "Befallsschwellen",
+            "thresholdsDescription": "Behandlung dringend erforderlich bei natürlichem Milbenfall von … pro Tag:",
+            "periodHeader": "Wann",
+            "productionHeader": "W-Volk",
+            "nucleusHeader": "Ableger",
+            "thresholdRows": [
+                {
+                    "period": "Mitte Juli – Mitte Aug (nach dem Abschleudern)",
+                    "production": "10 /Tag",
+                    "nucleus": "5 /Tag"
+                },
+                {
+                    "period": "Anfang – Mitte Sept (nach dem Auffüttern)",
+                    "production": "5 /Tag",
+                    "nucleus": "1 /Tag"
+                },
+                {
+                    "period": "Mitte Nov – Anfang Dez",
+                    "production": "1 /Tag",
+                    "nucleus": "1 /Tag"
+                }
+            ],
+            "thresholdsNote": "Natürlicher Milbenfall pro Tag, gemessen über genau 3 Tage mit der Windel unter dem Gitterboden.",
+            "principleTitle": "Nicht stur behandeln!",
+            "principleBody": "Das Erfolgsrezept: Mit Gitterboden und Windel den natürlichen Milbentotenfall erfassen, statt nach festem Kalender zu behandeln. Jede sinnvolle Behandlung ist auf den Befallsgrad und die Entwicklung des Bienenvolkes abgestimmt. Seit 2008 bewährt sich das Rezept in einer bundesweiten Studie in 140 Hobby-, Berufs- und Instituts-Imkereien mit durchgehend höchstens 7 % Völkerverlusten — ganz ohne chemische Mittel während der Tracht und ohne rückstands- oder resistenzbildende Varroazide.",
+            "sourceTitle": "Quelle",
+            "sourceBody": "Konzept von Dr. Pia Aumeier, erstellt unter Mitwirkung von Dr. Gerhard Liebig und Dr. Otto Boecking an der Ruhr-Universität Bochum im Projekt „Imkerberatung NRW“; Teilen und Behandeln nach der Veröffentlichung im Deutschen Bienen-Journal (DNB 07/2017)."
+        }
+    },
+    "footer": {
+        "privacyPolicy": "Datenschutzrichtlinie"
+    },
+    "marketing": {
+        "toolsIndex": {
+            "items": {
+                "liebefelder": {
+                    "title": "Liebefelder Schätzmethode",
+                    "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+                },
+                "varroa": {
+                    "title": "Varroa-Management-Plan",
+                    "body": "Behandlungsfahrplan durchs Jahr für Wirtschaftsvölker und Ableger mit Befallsschwellen, plus Teilen und Behandeln Schritt für Schritt erklärt."
+                }
+            }
+        }
+    },
+    "months": {
+        "selectMonth": "Monat auswählen",
+        "january": "Januar",
+        "february": "Februar",
+        "march": "März",
+        "april": "April",
+        "may": "Mai",
+        "june": "Juni",
+        "july": "Juli",
+        "august": "August",
+        "september": "September",
+        "october": "Oktober",
+        "november": "November",
+        "december": "Dezember"
     }
-  },
-  "footer": {
-    "privacyPolicy": "Datenschutzrichtlinie"
-  },
-  "marketing": {
-    "toolsIndex": {
-      "items": {
-        "liebefelder": {
-          "title": "Liebefelder Schätzmethode",
-          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
-        },
-        "varroa": {
-          "title": "Varroa-Management-Plan",
-          "body": "Behandlungsfahrplan durchs Jahr für Wirtschaftsvölker und Ableger mit Befallsschwellen, plus Teilen und Behandeln Schritt für Schritt erklärt."
-        }
-      }
-    }
-  }
 }

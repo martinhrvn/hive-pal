@@ -1,28 +1,35 @@
 {
-  "title": "Willkommen bei Hive-Pal!",
-  "subtitle": "Lass uns deine Imkerei einrichten",
-  "steps": {
-    "welcome": "Willkommen",
-    "createApiary": "Standort erstellen",
-    "addHive": "Ersten Bienenstock hinzufügen",
-    "complete": "Abschließen"
-  },
-  "welcome": {
-    "title": "Starte deine Imkerei-Reise",
-    "description": "Willkommen bei Hive-Pal, deinem digitalen Imkerei-Assistenten! Wir führen dich durch die Einrichtung deines ersten Bienenstandorts und Bienenstocks.",
-    "action": "Los geht's"
-  },
-  "apiary": {
-    "title": "Erstelle deinen ersten Bienenstand",
-    "description": "Ein Bienenstand ist der Ort, an dem deine Bienenstöcke stehen. Lass uns deinen ersten erstellen."
-  },
-  "hive": {
-    "title": "Füge deinen ersten Bienenstock hinzu",
-    "description": "Jetzt fügen wir deinen ersten Bienenstock zu deinem neuen Bienenstand hinzu: {{apiaryName}}."
-  },
-  "complete": {
-    "title": "Glückwunsch!",
-    "description": "Du hast erfolgreich deinen ersten Bienenstand und Bienenstock eingerichtet. Du kannst jetzt deine Imkerei-Aktivitäten mit Hive-Pal verfolgen!",
-    "action": "Zum Dashboard"
-  }
+    "title": "Willkommen bei Hive-Pal!",
+    "subtitle": "Lass uns deine Imkerei einrichten",
+    "steps": {
+        "welcome": "Willkommen",
+        "createApiary": "Standort erstellen",
+        "addHive": "Ersten Bienenstock hinzufügen",
+        "complete": "Abschließen"
+    },
+    "welcome": {
+        "title": "Starte deine Imkerei-Reise",
+        "description": "Willkommen bei Hive-Pal, deinem digitalen Imkerei-Assistenten! Wir führen dich durch die Einrichtung deines ersten Bienenstandorts und Bienenstocks.",
+        "action": "Los geht's"
+    },
+    "apiary": {
+        "title": "Erstelle deinen ersten Bienenstand",
+        "description": "Ein Bienenstand ist der Ort, an dem deine Bienenstöcke stehen. Lass uns deinen ersten erstellen."
+    },
+    "hive": {
+        "title": "Füge deinen ersten Bienenstock hinzu",
+        "description": "Jetzt fügen wir deinen ersten Bienenstock zu deinem neuen Bienenstand hinzu: {{apiaryName}}.",
+        "skip": "Vorerst überspringen"
+    },
+    "complete": {
+        "title": "Glückwunsch!",
+        "description": "Du hast erfolgreich deinen ersten Bienenstand und Bienenstock eingerichtet. Du kannst jetzt deine Imkerei-Aktivitäten mit Hive-Pal verfolgen!",
+        "action": "Zum Dashboard"
+    },
+    "nudges": {
+        "addHive": {
+            "title": "Sieht so aus, als wärst du neu hier",
+            "description": "Füge deinen ersten Bienenstock hinzu, um mit der Erfassung von Inspektionen und Aktivitäten zu beginnen."
+        }
+    }
 }
