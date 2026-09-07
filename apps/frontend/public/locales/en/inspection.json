@@ -344,7 +344,13 @@
       "pendingUpload": "{{count}} pending upload",
       "uploadWarning": "Photos will be uploaded when you save the inspection.",
       "deleteConfirm": "Delete this photo?",
-      "maxReached": "Maximum {{max}} photos per inspection"
+      "maxReached": "Maximum {{max}} photos per inspection",
+      "unsupportedType": "{{name}}: unsupported image format",
+      "tooLarge": "{{name}} is larger than {{max}} MB",
+      "uploadFailed": "Could not upload {{name}}",
+      "deleteFailed": "Could not delete the photo",
+      "someFailed_one": "{{count}} photo could not be uploaded",
+      "someFailed_other": "{{count}} photos could not be uploaded"
     }
   },
   "detailSidebar": {

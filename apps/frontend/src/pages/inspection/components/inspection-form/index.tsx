@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   Form,
   FormControl,
@@ -321,14 +322,24 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
 
   const onSubmit = useUpsertInspection(inspectionId, {
     onBeforeNavigate: async (id: string) => {
-      await Promise.all([
+      const [, photoResult] = await Promise.all([
         pendingRecordings.length > 0
           ? uploadPendingRecordings(id, pendingRecordings)
           : Promise.resolve(),
         pendingPhotos.length > 0
           ? uploadPendingPhotos(id, pendingPhotos)
-          : Promise.resolve(),
+          : Promise.resolve(null),
       ]);
+
+      // The inspection itself saved fine at this point, so a dropped photo
+      // would otherwise look to the user like it had been stored.
+      if (photoResult && photoResult.failed.length > 0) {
+        toast.error(
+          t('inspection:form.photos.someFailed', {
+            count: photoResult.failed.length,
+          }),
+        );
+      }
     },
   });
 

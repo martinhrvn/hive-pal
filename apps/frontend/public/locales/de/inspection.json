@@ -300,6 +300,21 @@
             "title": "Audio-Notizen",
             "pendingUpload": "{{count}} ausstehend zum Hochladen",
             "uploadWarning": "Audioaufnahmen werden beim Speichern der Inspektion hochgeladen."
+        },
+        "photos": {
+            "title": "Fotos",
+            "takePhoto": "Foto aufnehmen",
+            "addPhoto": "Foto hinzufügen",
+            "pendingUpload": "{{count}} ausstehend zum Hochladen",
+            "uploadWarning": "Fotos werden beim Speichern der Durchsicht hochgeladen.",
+            "deleteConfirm": "Dieses Foto löschen?",
+            "maxReached": "Maximal {{max}} Fotos pro Durchsicht",
+            "unsupportedType": "{{name}}: nicht unterstütztes Bildformat",
+            "tooLarge": "{{name}} ist größer als {{max}} MB",
+            "uploadFailed": "{{name}} konnte nicht hochgeladen werden",
+            "deleteFailed": "Das Foto konnte nicht gelöscht werden",
+            "someFailed_one": "{{count}} Foto konnte nicht hochgeladen werden",
+            "someFailed_other": "{{count}} Fotos konnten nicht hochgeladen werden"
         }
     },
     "detailSidebar": {
