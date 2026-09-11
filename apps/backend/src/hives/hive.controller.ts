@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
+import { SplitService } from './split.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
@@ -34,6 +35,9 @@ import {
   HiveFilter,
   UpdateHiveResponse,
   CreateHiveResponse,
+  splitHiveSchema,
+  SplitHive,
+  SplitHiveResponse,
 } from 'shared-schemas';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -43,9 +47,42 @@ import {
 export class HiveController {
   constructor(
     private readonly hiveService: HiveService,
+    private readonly splitService: SplitService,
     private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('HiveController');
+  }
+
+  @Post(':id/split')
+  @ApiConsumes('application/json')
+  @ZodValidation(splitHiveSchema)
+  split(
+    @Param('id') id: string,
+    @Body() dto: SplitHive,
+    @Req() req: RequestWithApiary,
+  ): Promise<SplitHiveResponse> {
+    this.logger.log(`Splitting hive ${id} by user: ${req.user.id}`);
+    return this.splitService.split(id, dto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
+  }
+
+  @Delete(':id/splits/:splitId')
+  async undoSplit(
+    @Param('id') id: string,
+    @Param('splitId') splitId: string,
+    @Query('force') force: string | undefined,
+    @Req() req: RequestWithApiary,
+  ): Promise<{ success: true }> {
+    this.logger.log(`Undoing split ${splitId} on hive ${id}`);
+    await this.splitService.undo(
+      id,
+      splitId,
+      { apiaryId: req.apiaryId, userId: req.user.id },
+      force === 'true',
+    );
+    return { success: true };
   }
 
   @Post()

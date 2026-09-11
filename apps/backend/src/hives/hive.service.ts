@@ -399,6 +399,13 @@ export class HiveService {
           },
         },
         featurePhoto: { select: { id: true, storageKey: true } },
+        // Split provenance: the mother this hive was split from, and any hives
+        // split off from it.
+        parentHive: { select: { id: true, name: true, status: true } },
+        offspring: {
+          select: { id: true, name: true, status: true },
+          orderBy: { name: 'asc' },
+        },
       },
     });
 
@@ -496,6 +503,19 @@ export class HiveService {
           createdAt: alert.createdAt.toISOString(),
           updatedAt: alert.updatedAt.toISOString(),
         })) || [],
+      parentHiveId: hive.parentHiveId ?? undefined,
+      parentHive: hive.parentHive
+        ? {
+            id: hive.parentHive.id,
+            name: hive.parentHive.name,
+            status: hive.parentHive.status as HiveStatus,
+          }
+        : undefined,
+      offspring: hive.offspring.map((child) => ({
+        id: child.id,
+        name: child.name,
+        status: child.status as HiveStatus,
+      })),
     };
   }
 

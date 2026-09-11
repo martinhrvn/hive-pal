@@ -4,6 +4,7 @@ import { boxSchema } from './box.schema';
 import { activeQueenSchema } from '../queens';
 import { alertResponseSchema } from '../alerts';
 import { inspectionTypeEnum } from '../apiaries';
+import { queenDispositionSchema } from '../actions/details.schema';
 
 // Schema for hive settings
 export const hiveSettingsSchema = z.object({
@@ -66,6 +67,14 @@ export const hiveScoreSchema = z.object({
   warnings: z.array(z.string()),
   confidence: z.number(),
 });
+// Lightweight reference to a related hive, used for split provenance links
+// (the mother a hive was split from, and the offspring split off from it).
+export const hiveProvenanceRefSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  status: hiveStatusSchema,
+});
+
 // Schema for detailed hive response
 export const hiveDetailResponseSchema = createHiveSchema.extend({
   id: z.string().uuid(),
@@ -79,6 +88,10 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   featurePhotoUrl: z.string().nullish(),
   inspectionType: inspectionTypeEnum.optional(),
   updatedAt: z.string().datetime(),
+  // Split provenance (optional origin marker, not biological lineage).
+  parentHiveId: z.string().uuid().nullish(),
+  parentHive: hiveProvenanceRefSchema.nullish(),
+  offspring: z.array(hiveProvenanceRefSchema).default([]),
 });
 
 // Schema for basic hive response
@@ -125,7 +138,42 @@ export type CreateHiveResponse = z.infer<typeof createHiveResponseSchema>;
 export type UpdateHive = z.infer<typeof updateHiveSchema>;
 export type UpdateHiveResponse = z.infer<typeof updateHiveResponseSchema>;
 export type HiveDetailResponse = z.infer<typeof hiveDetailResponseSchema>;
+export type HiveProvenanceRef = z.infer<typeof hiveProvenanceRefSchema>;
 export type HiveResponse = z.infer<typeof hiveResponseSchema>;
 export type HiveWithBoxesResponse = z.infer<typeof hiveWithBoxesResponseSchema>;
 export type HiveScore = z.infer<typeof hiveScoreSchema>;
 export type HiveFilter = z.infer<typeof hiveFilterSchema>;
+
+// ─── Colony split (Volksteilung / Ableger) ──────────────────────────────────
+// v1: a "normal Ableger" — move X brood frames from a source hive into a new
+// hive. The old queen either stays with the source (daughter queenless) or moves
+// to the new hive (source queenless). A follow-up reminder is created for the
+// queenless side. See docs/research/colony-split.
+export const splitHiveSchema = z.object({
+  date: z.string().datetime(),
+  newHiveName: z.string().min(1),
+  apiaryId: z.string().uuid().optional(), // default = source hive's apiary
+  framesMoved: z
+    .array(
+      z.object({
+        boxId: z.string().uuid(), // a BROOD box of the source hive
+        count: z.number().int().min(1),
+      }),
+    )
+    .min(1),
+  // Only STAYED_WITH_SOURCE / MOVED_TO_NEW are offered in v1.
+  queenDisposition: queenDispositionSchema,
+  queenId: z.string().uuid().optional(), // optional; auto-resolved for MOVED_TO_NEW
+  // Days until the follow-up reminder for the queenless side (server default if omitted).
+  followUpDays: z.number().int().min(0).nullish(),
+  notes: z.string().optional(),
+});
+
+export const splitHiveResponseSchema = z.object({
+  splitId: z.string().uuid(),
+  sourceHiveId: z.string().uuid(),
+  newHiveId: z.string().uuid(),
+});
+
+export type SplitHive = z.infer<typeof splitHiveSchema>;
+export type SplitHiveResponse = z.infer<typeof splitHiveResponseSchema>;

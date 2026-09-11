@@ -11,6 +11,8 @@ import {
   UpdateHive,
   UpdateHiveResponse,
   UpdateHiveBoxes,
+  SplitHive,
+  SplitHiveResponse,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -232,6 +234,71 @@ export const useUpdateHiveBoxes = () => {
     },
     onError: (error, variables) => {
       logApiError(error, `/api/hives/${variables.id}/boxes`, 'PUT');
+    },
+  });
+};
+
+// Split a colony: create a new hive from a source hive (Volksteilung / Ableger).
+export const useSplitHive = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: SplitHive }) => {
+      const response = await apiClient.post<SplitHiveResponse>(
+        `/api/hives/${id}/split`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: async (_data, variables) => {
+      // A split touches the source hive, creates a new hive, and adds timeline
+      // actions + a todo — refresh the affected caches broadly.
+      await queryClient.invalidateQueries({
+        queryKey: HIVES_KEYS.detail(variables.id),
+      });
+      await queryClient.invalidateQueries({ queryKey: HIVES_KEYS.lists() });
+      await queryClient.invalidateQueries({
+        queryKey: HIVES_KEYS.listsWithBoxes(),
+      });
+      await queryClient.invalidateQueries({ queryKey: ['actions'] });
+      await queryClient.invalidateQueries({ queryKey: ['todos'] });
+    },
+    onError: (error, variables) => {
+      logApiError(error, `/api/hives/${variables.id}/split`, 'POST');
+    },
+  });
+};
+
+// Undo a split (restore frames, delete the daughter). `force` overrides the
+// guardrail that blocks undo once the daughter has its own records.
+export const useUndoSplit = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      hiveId,
+      splitId,
+      force,
+    }: {
+      hiveId: string;
+      splitId: string;
+      force?: boolean;
+    }) => {
+      await apiClient.delete(
+        `/api/hives/${hiveId}/splits/${splitId}${force ? '?force=true' : ''}`,
+      );
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: HIVES_KEYS.lists() });
+      await queryClient.invalidateQueries({ queryKey: ['actions'] });
+      await queryClient.invalidateQueries({ queryKey: ['todos'] });
+    },
+    onError: (error, variables) => {
+      logApiError(
+        error,
+        `/api/hives/${variables.hiveId}/splits/${variables.splitId}`,
+        'DELETE',
+      );
     },
   });
 };

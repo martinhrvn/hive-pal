@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Popover,
   PopoverContent,
@@ -165,6 +166,9 @@ export const EditActionDialog = ({
   onOpenChange,
 }: EditActionDialogProps) => {
   const updateAction = useUpdateAction();
+  // A split is a structural paired record: only date + notes are editable.
+  const isSplit = action.type === ActionType.SPLIT;
+  const [splitNotes, setSplitNotes] = useState(action.notes ?? '');
 
   const methods = useForm<ActionFormData>({
     defaultValues: {
@@ -179,6 +183,7 @@ export const EditActionDialog = ({
       date: parseISO(action.date),
       actions: [convertResponseToFormData(action)],
     });
+    setSplitNotes(action.notes ?? '');
   }, [action, methods]);
 
   const getWarning = (): {
@@ -204,6 +209,12 @@ export const EditActionDialog = ({
         linkText: 'Go to harvest',
       };
     }
+    if (isSplit) {
+      return {
+        message:
+          'This is a colony split. Only the date and notes can be edited here — the date change applies to both linked timeline entries and shifts the follow-up reminder. To revert the split itself, use "Undo split" on the timeline.',
+      };
+    }
     return null;
   };
 
@@ -211,6 +222,24 @@ export const EditActionDialog = ({
     const values = methods.getValues();
     const actions = values.actions || [];
     const selectedDate = values.date;
+
+    if (isSplit) {
+      // Split details are immutable; only date + notes travel to the server.
+      try {
+        await updateAction.mutateAsync({
+          actionId: action.id,
+          data: {
+            date: selectedDate.toISOString(),
+            notes: splitNotes.trim() || undefined,
+          },
+        });
+        toast.success('Split updated — both timeline entries were re-dated');
+        onOpenChange(false);
+      } catch {
+        toast.error('Failed to update action. Please try again.');
+      }
+      return;
+    }
 
     if (actions.length === 0) {
       toast.error('Please add at least one action before saving.');
@@ -296,7 +325,19 @@ export const EditActionDialog = ({
                 </PopoverContent>
               </Popover>
             </div>
-            <ActionsSection editMode />
+            {isSplit ? (
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Notes</label>
+                <Textarea
+                  value={splitNotes}
+                  onChange={e => setSplitNotes(e.target.value)}
+                  placeholder="Notes about this split…"
+                  rows={3}
+                />
+              </div>
+            ) : (
+              <ActionsSection editMode />
+            )}
             <div className="flex justify-end gap-2 mt-6">
               <Button
                 type="button"

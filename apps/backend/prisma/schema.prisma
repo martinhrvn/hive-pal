@@ -194,10 +194,17 @@ model Hive {
   assistantThreads     AssistantThread[]
   todos                Todo[]
 
+  // Provenance: if this hive was created by splitting another colony, the source
+  // (mother) hive. Optional origin marker, NOT an ongoing biological lineage.
+  parentHiveId         String?
+  parentHive           Hive?        @relation("HiveSplit", fields: [parentHiveId], references: [id], onDelete: SetNull)
+  offspring            Hive[]       @relation("HiveSplit")
+
   // Create index for quick lookup by apiaryId - used in authorization checks
   @@index([apiaryId])
   // Create index for position-based queries within an apiary
   @@index([apiaryId, positionRow, positionCol])
+  @@index([parentHiveId])
 }
 
 model Measurement {
@@ -431,6 +438,7 @@ model Action {
   harvestAction   HarvestAction?
   boxConfigurationAction BoxConfigurationAction?
   maintenanceAction MaintenanceAction?
+  splitAction     SplitAction?
   createdByUserId String?
   createdByUser   User?      @relation("ActionCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
 
@@ -499,6 +507,22 @@ model MaintenanceAction {
   action    Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
   component String // BOX, BOTTOM_BOARD, COVER
   status    String // CLEANED, REPLACED
+}
+
+// Colony split (Volksteilung / Ableger) details. A split writes a matched PAIR of
+// SPLIT actions sharing one splitId: one on the source (mother) hive and one on
+// the new (daughter) hive. Recorded on the timeline; no separate lifecycle entity.
+model SplitAction {
+  id                String  @id @default(uuid())
+  actionId          String  @unique
+  action            Action  @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  splitId           String  // Groups the source-side and new-side entries of one split
+  role              String  // 'SOURCE' | 'NEW'
+  counterpartHiveId String? // The other hive in this split (null-safe if it is later deleted)
+  framesMoved       Int     // Number of (brood) frames moved from mother to daughter
+  queenDisposition  String  // 'STAYED_WITH_SOURCE' | 'MOVED_TO_NEW' | 'NEW_IS_QUEENLESS'
+
+  @@index([splitId])
 }
 
 // Harvest tracking
@@ -581,6 +605,7 @@ enum ActionType {
   BOX_CONFIGURATION
   MAINTENANCE
   NOTE
+  SPLIT
   OTHER
 }
 

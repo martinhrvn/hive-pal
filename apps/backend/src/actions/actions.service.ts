@@ -19,6 +19,7 @@ const boxesSchema = z
   .array(z.object({ type: boxTypeSchema, frameCount: z.number().int().min(0) }))
   .nullable();
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { SPLIT_FOLLOWUP_TITLE } from '../hives/split.service';
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
@@ -28,6 +29,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
     harvestAction: true;
     boxConfigurationAction: true;
     maintenanceAction: true;
+    splitAction: true;
     createdByUser: { select: { name: true; email: true } };
   };
 }>;
@@ -301,6 +303,9 @@ export class ActionsService {
       await tx.maintenanceAction.deleteMany({
         where: { actionId: action.id },
       });
+      await tx.splitAction.deleteMany({
+        where: { actionId: action.id },
+      });
     }
 
     // Delete all actions
@@ -371,6 +376,7 @@ export class ActionsService {
         harvestAction: true,
         boxConfigurationAction: true,
         maintenanceAction: true,
+        splitAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
@@ -440,6 +446,7 @@ export class ActionsService {
           harvestAction: true,
           boxConfigurationAction: true,
           maintenanceAction: true,
+          splitAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -487,12 +494,21 @@ export class ActionsService {
         harvestAction: true,
         boxConfigurationAction: true,
         maintenanceAction: true,
+        splitAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
 
     if (!existingAction) {
       throw new ForbiddenException('Action not found or access denied');
+    }
+
+    // A split is a structural, paired record (mother + daughter share a
+    // splitId). Only date and notes are editable, and the date is kept in sync
+    // on both sides — replacing its details would silently destroy the split
+    // record, so type/details changes are ignored here.
+    if ((existingAction.type as ActionType) === ActionType.SPLIT) {
+      return this.updateSplitActionPair(existingAction, updateActionDto, userId);
     }
 
     const { type, notes, details, date } = updateActionDto;
@@ -537,6 +553,7 @@ export class ActionsService {
           harvestAction: true,
           boxConfigurationAction: true,
           maintenanceAction: true,
+          splitAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -549,6 +566,106 @@ export class ActionsService {
     // Get user preferences for the response
     const userPreferences = await this.getUserPreferencesWithFallback(userId);
 
+    return this.mapPrismaToDto(result, userPreferences);
+  }
+
+  /**
+   * Updates a SPLIT action: applies date/notes to the edited side, mirrors the
+   * date onto the counterpart action (same splitId), and shifts the un-completed
+   * follow-up reminder by the same delta so it stays `followUpDays` after the
+   * split. Frames/queen details are immutable — reverting a split is the undo
+   * endpoint's job.
+   */
+  private async updateSplitActionPair(
+    existingAction: ActionWithRelations,
+    updateActionDto: UpdateAction,
+    userId: string,
+  ): Promise<ActionResponse> {
+    const { notes, date } = updateActionDto;
+    const newDate = date ? new Date(date) : null;
+    const splitId = existingAction.splitAction?.splitId;
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      await tx.action.update({
+        where: { id: existingAction.id },
+        data: {
+          ...(notes !== undefined && { notes }),
+          ...(newDate && { date: newDate }),
+        },
+      });
+
+      if (newDate && splitId) {
+        // Mirror the event date onto the other half of the pair.
+        const counterpart = await tx.action.findFirst({
+          where: {
+            splitAction: { splitId },
+            id: { not: existingAction.id },
+          },
+          select: { id: true, hiveId: true },
+        });
+        if (counterpart) {
+          await tx.action.update({
+            where: { id: counterpart.id },
+            data: { date: newDate },
+          });
+        }
+
+        // The daughter colony came into existence at the split, so its
+        // installation date follows the (corrected) split date.
+        const daughterHiveId =
+          existingAction.splitAction?.role === 'NEW'
+            ? existingAction.hiveId
+            : counterpart?.hiveId;
+        if (daughterHiveId) {
+          await tx.hive.updateMany({
+            where: { id: daughterHiveId },
+            data: { installationDate: newDate },
+          });
+        }
+
+        // Shift the follow-up reminder (it lives on the queenless side — one of
+        // the two hives) by the same amount the split moved.
+        const deltaMs = newDate.getTime() - existingAction.date.getTime();
+        if (deltaMs !== 0) {
+          const hiveIds = [existingAction.hiveId, counterpart?.hiveId].filter(
+            (id): id is string => !!id,
+          );
+          const todo = await tx.todo.findFirst({
+            where: {
+              hiveId: { in: hiveIds },
+              title: SPLIT_FOLLOWUP_TITLE,
+              completed: false,
+            },
+          });
+          if (todo?.dueDate) {
+            await tx.todo.update({
+              where: { id: todo.id },
+              data: { dueDate: new Date(todo.dueDate.getTime() + deltaMs) },
+            });
+          }
+        }
+      }
+
+      return tx.action.findUnique({
+        where: { id: existingAction.id },
+        include: {
+          feedingAction: true,
+          treatmentAction: true,
+          frameAction: true,
+          harvestAction: true,
+          boxConfigurationAction: true,
+          maintenanceAction: true,
+          splitAction: true,
+          createdByUser: { select: { name: true, email: true } },
+        },
+      });
+    });
+
+    if (!result) {
+      throw new Error('Failed to update action');
+    }
+
+    const userPreferences = await this.getUserPreferencesWithFallback(userId);
     return this.mapPrismaToDto(result, userPreferences);
   }
 
@@ -582,6 +699,31 @@ export class ActionsService {
 
     // Delete action and related details in transaction
     await this.prisma.$transaction(async (tx) => {
+      // A split is recorded as a matched pair (mother + daughter). Deleting one
+      // side alone would leave a half-logged event, so remove both timeline
+      // entries. Like every other action delete this only removes the log —
+      // hives/frames/queen stay as they are; reverting the split itself is the
+      // undo endpoint's job.
+      if ((existingAction.type as ActionType) === ActionType.SPLIT) {
+        const split = await tx.splitAction.findUnique({
+          where: { actionId },
+          select: { splitId: true },
+        });
+        if (split) {
+          const pair = await tx.action.findMany({
+            where: { splitAction: { splitId: split.splitId } },
+            select: { id: true },
+          });
+          await tx.splitAction.deleteMany({
+            where: { splitId: split.splitId },
+          });
+          await tx.action.deleteMany({
+            where: { id: { in: pair.map((a) => a.id) } },
+          });
+          return;
+        }
+      }
+
       // Delete type-specific details
       await this.deleteActionDetails(actionId, tx);
 
@@ -605,6 +747,7 @@ export class ActionsService {
     await tx.harvestAction.deleteMany({ where: { actionId } });
     await tx.boxConfigurationAction.deleteMany({ where: { actionId } });
     await tx.maintenanceAction.deleteMany({ where: { actionId } });
+    await tx.splitAction.deleteMany({ where: { actionId } });
   }
 
   // Prisma-to-Domain Transformation Function
@@ -827,6 +970,34 @@ export class ActionsService {
           details: {
             type: ActionType.NOTE,
             content: prismaAction.notes || '',
+          },
+        };
+
+      case ActionType.SPLIT:
+        if (!prismaAction.splitAction) {
+          this.logger.warn(
+            `Split action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
+        }
+        return {
+          ...base,
+          type: ActionType.SPLIT,
+          details: {
+            type: ActionType.SPLIT,
+            splitId: prismaAction.splitAction.splitId,
+            role: prismaAction.splitAction.role as 'SOURCE' | 'NEW',
+            counterpartHiveId:
+              prismaAction.splitAction.counterpartHiveId ?? undefined,
+            framesMoved: prismaAction.splitAction.framesMoved,
+            queenDisposition: prismaAction.splitAction.queenDisposition as
+              | 'STAYED_WITH_SOURCE'
+              | 'MOVED_TO_NEW'
+              | 'NEW_IS_QUEENLESS',
           },
         };
 

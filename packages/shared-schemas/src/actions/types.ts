@@ -8,6 +8,7 @@ export enum ActionType {
   BOX_CONFIGURATION = 'BOX_CONFIGURATION',
   MAINTENANCE = 'MAINTENANCE',
   NOTE = 'NOTE',
+  SPLIT = 'SPLIT',
   OTHER = 'OTHER',
 }
 

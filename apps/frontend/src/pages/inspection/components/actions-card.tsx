@@ -6,6 +6,7 @@ import {
   Grid,
   MessageSquare,
   Pill,
+  Split,
   Wrench,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +20,7 @@ import {
   FrameActionDetails,
   MaintenanceActionDetails,
   NoteActionDetails,
+  SplitActionDetails,
   TreatmentActionDetails,
 } from 'shared-schemas';
 import { cn } from '@/lib/utils';
@@ -52,6 +54,10 @@ const ACTION_VISUAL: Record<
   [ActionType.NOTE]: {
     Icon: MessageSquare,
     tone: 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
+  },
+  [ActionType.SPLIT]: {
+    Icon: Split,
+    tone: 'bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300',
   },
   [ActionType.HARVEST]: {
     Icon: ClipboardCheck,
@@ -238,6 +244,25 @@ const NoteDetails = ({ details }: { details: NoteActionDetails }) => (
   </p>
 );
 
+const QUEEN_DISPOSITION_LABEL: Record<string, string> = {
+  STAYED_WITH_SOURCE: 'Queen stayed with source',
+  MOVED_TO_NEW: 'Queen moved to new hive',
+  NEW_IS_QUEENLESS: 'New hive queenless',
+};
+
+const SplitDetails = ({ details }: { details: SplitActionDetails }) => (
+  <div className="flex gap-2 flex-wrap items-center">
+    <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 font-normal tabular-nums">
+      {details.role === 'NEW' ? '+' : '−'}
+      {details.framesMoved} frame{details.framesMoved === 1 ? '' : 's'}
+    </Badge>
+    <span className="text-stone-500 dark:text-stone-400">
+      {QUEEN_DISPOSITION_LABEL[details.queenDisposition] ??
+        details.queenDisposition}
+    </span>
+  </div>
+);
+
 // ─── Action label ─────────────────────────────────────────────────────────────
 
 const ACTION_LABELS: Record<string, string> = {
@@ -247,6 +272,7 @@ const ACTION_LABELS: Record<string, string> = {
   BOX_CONFIGURATION: 'Box Configuration',
   MAINTENANCE: 'Maintenance',
   NOTE: 'Note',
+  SPLIT: 'Colony Split',
   HARVEST: 'Harvest',
   OTHER: 'Other',
 };
@@ -278,6 +304,8 @@ const ActionItem = ({
         return <MaintenanceDetails details={details} />;
       case 'NOTE':
         return <NoteDetails details={details} />;
+      case 'SPLIT':
+        return <SplitDetails details={details} />;
       default:
         return null;
     }

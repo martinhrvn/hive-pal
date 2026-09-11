@@ -18,7 +18,9 @@ import {
   useDocuments,
   useDeletePhoto,
   useDeleteDocument,
+  useUndoSplit,
 } from '@/api/hooks';
+import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
 import { Section } from '@/components/common/section';
 import { TimelineEventList } from '@/components/common/timeline-event-list';
@@ -58,6 +60,11 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
     useState<QuickCheckResponse | null>(null);
   const [deletingPhoto, setDeletingPhoto] = useState<PhotoResponse | null>(null);
   const [deletingDocument, setDeletingDocument] = useState<DocumentResponse | null>(null);
+  const [undoingSplit, setUndoingSplit] = useState<ActionResponse | null>(null);
+  // Set when the plain undo was rejected (409): the daughter already has its
+  // own records, so a second, explicit confirmation is required (force).
+  const [undoConflict, setUndoConflict] = useState(false);
+  const undoSplitMutation = useUndoSplit();
   const deleteActionMutation = useDeleteAction();
   const deleteQuickCheckMutation = useDeleteQuickCheck();
   const deletePhotoMutation = useDeletePhoto();
@@ -114,11 +121,60 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   const handleDeleteConfirm = async () => {
     if (!deletingAction) return;
     try {
-      await deleteActionMutation.mutateAsync(deletingAction.id);
-      toast.success('Action deleted');
+      await deleteActionMutation.mutateAsync({
+        actionId: deletingAction.id,
+      });
+      toast.success(
+        deletingAction.type === ActionType.SPLIT
+          ? 'Split record deleted from both timelines'
+          : 'Action deleted',
+      );
       setDeletingAction(null);
     } catch {
       toast.error('Failed to delete action');
+    }
+  };
+
+  // Resolve the split undo endpoint's inputs from either side of the pair:
+  // the endpoint expects the SOURCE (mother) hive id.
+  const splitUndoTarget = (action: ActionResponse) => {
+    if (action.details.type !== ActionType.SPLIT) return null;
+    const { role, counterpartHiveId, splitId } = action.details;
+    const sourceHiveId =
+      role === 'SOURCE' ? action.hiveId : (counterpartHiveId ?? null);
+    const daughterHiveId =
+      role === 'NEW' ? action.hiveId : (counterpartHiveId ?? null);
+    if (!sourceHiveId || !splitId) return null;
+    return { splitId, sourceHiveId, daughterHiveId };
+  };
+
+  const handleUndoSplitConfirm = async (force: boolean) => {
+    if (!undoingSplit) return;
+    const target = splitUndoTarget(undoingSplit);
+    if (!target) {
+      toast.error('Could not resolve the split to undo');
+      setUndoingSplit(null);
+      return;
+    }
+    try {
+      await undoSplitMutation.mutateAsync({
+        hiveId: target.sourceHiveId,
+        splitId: target.splitId,
+        force,
+      });
+      toast.success('Split undone — frames restored, daughter hive removed');
+      setUndoingSplit(null);
+      setUndoConflict(false);
+      // If we were viewing the daughter, it no longer exists.
+      if (hiveId && hiveId === target.daughterHiveId) {
+        navigate(`/hives/${target.sourceHiveId}`);
+      }
+    } catch (e) {
+      if (!force && isAxiosError(e) && e.response?.status === 409) {
+        setUndoConflict(true);
+        return;
+      }
+      toast.error('Failed to undo the split');
     }
   };
 
@@ -169,6 +225,14 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         emptyMessage="No activity recorded for this hive yet"
         onEditAction={canEdit ? setEditingAction : undefined}
         onDeleteAction={canEdit ? setDeletingAction : undefined}
+        onUndoSplit={
+          canEdit
+            ? action => {
+                setUndoConflict(false);
+                setUndoingSplit(action);
+              }
+            : undefined
+        }
         onDeleteQuickCheck={canEdit ? setDeletingQuickCheck : undefined}
         onDeletePhoto={canEdit ? setDeletingPhoto : undefined}
         onDeleteDocument={canEdit ? setDeletingDocument : undefined}
@@ -196,6 +260,54 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         />
       )}
 
+      {/* Undo Split Confirmation Dialog */}
+      <Dialog
+        open={!!undoingSplit}
+        onOpenChange={open => {
+          if (!open) {
+            setUndoingSplit(null);
+            setUndoConflict(false);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Undo this split?</DialogTitle>
+            <DialogDescription>
+              This fully reverts the split: the daughter hive is deleted, the
+              moved frames are restored to the mother, a moved queen returns,
+              and the follow-up reminder plus both timeline entries are
+              removed.
+            </DialogDescription>
+          </DialogHeader>
+          {undoConflict && (
+            <Alert className="border-amber-200 bg-amber-50">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                The daughter hive already has its own inspections or actions.
+                Undoing anyway will delete those records along with the hive.
+              </AlertDescription>
+            </Alert>
+          )}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={() => handleUndoSplitConfirm(undoConflict)}
+              disabled={undoSplitMutation.isPending}
+            >
+              {undoSplitMutation.isPending
+                ? 'Undoing...'
+                : undoConflict
+                  ? 'Undo anyway'
+                  : 'Undo split'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Action Confirmation Dialog */}
       <Dialog
         open={!!deletingAction}
@@ -205,8 +317,9 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
           <DialogHeader>
             <DialogTitle>Delete Action?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete this
-              action.
+              {deletingAction?.type === ActionType.SPLIT
+                ? 'This removes the split record from both hives’ timelines. The hives themselves keep their current frames and queen — use "Undo split" instead to fully revert the split.'
+                : 'This action cannot be undone. This will permanently delete this action.'}
             </DialogDescription>
           </DialogHeader>
           {deletingAction &&
