@@ -1,5 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { Droplet, Grid, Pill, StickyNote, Wrench } from 'lucide-react';
+import {
+  ArrowLeftRight,
+  Droplet,
+  Grid,
+  Pill,
+  StickyNote,
+  Wrench,
+} from 'lucide-react';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
   FeedingActionType,
@@ -27,6 +34,11 @@ import {
   MaintenanceView,
 } from '@/pages/inspection/components/inspection-form/actions/maintenance.tsx';
 import {
+  StatusChangeActionType,
+  StatusChangeForm,
+  StatusChangeView,
+} from '@/pages/inspection/components/inspection-form/actions/status-change.tsx';
+import {
   BoxConfigurationAction,
   BoxConfigurationView,
 } from '@/pages/inspection/components/inspection-form/actions/box-configuration.tsx';
@@ -34,7 +46,10 @@ import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { useFormContext } from 'react-hook-form';
 import { ActionData, BoxConfigurationActionData, InspectionFormData } from './schema.ts';
-import { ActionType as ActionTypeEnum } from 'shared-schemas';
+import {
+  ActionType as ActionTypeEnum,
+  HiveStatus as HiveStatusEnum,
+} from 'shared-schemas';
 import { AiBadge } from './ai-badge';
 import { AiSectionPreview } from './ai-section-preview';
 import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
@@ -61,6 +76,7 @@ export type ActionType =
   | FramesActionType
   | MaintenanceActionType
   | NoteActionType
+  | StatusChangeActionType
   | OtherActionType
   | BoxConfigurationActionData;
 
@@ -82,6 +98,10 @@ interface ActionsSectionProps {
    *  make sense in bulk-create flows where the same form is applied to many
    *  hives. */
   disableBoxConfig?: boolean;
+  /** Enable the "Change Status" action option (inspection form only). */
+  enableStatusChange?: boolean;
+  /** The hive's current status — used to seed and label the status change. */
+  hiveStatus?: HiveStatusEnum;
 }
 
 const formatActionTypeLabel = (
@@ -99,6 +119,8 @@ const formatActionTypeLabel = (
       return t('inspection:form.actions.maintenance');
     case 'NOTE':
       return t('inspection:form.actions.note');
+    case 'STATUS_CHANGE':
+      return t('inspection:form.actions.statusChange', 'Change Status');
     case 'BOX_CONFIGURATION':
       return 'Box Configuration';
     case 'OTHER':
@@ -202,6 +224,8 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
   baseBroodFrames,
   broodFrameCapacity,
   disableBoxConfig = false,
+  enableStatusChange = false,
+  hiveStatus,
 }) => {
   const { t } = useTranslation('inspection');
   const { setValue, getValues, watch, formState } =
@@ -213,8 +237,20 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
     FRAME: t('inspection:form.actions.frames'),
     MAINTENANCE: t('inspection:form.actions.maintenance'),
     NOTE: t('inspection:form.actions.note'),
+    STATUS_CHANGE: t('inspection:form.actions.statusChange', 'Change Status'),
     BOX_CONFIGURATION: 'Box Configuration',
   };
+
+  const availableActionTypes = enableStatusChange
+    ? [
+        ...actionTypes,
+        {
+          id: 'STATUS_CHANGE',
+          label: 'Change Status',
+          Icon: ArrowLeftRight,
+        },
+      ]
+    : actionTypes;
 
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
@@ -303,6 +339,14 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
         return <MaintenanceForm onSave={handleSave} onRemove={handleRemove} />;
       case 'NOTE':
         return <NoteForm onSave={handleSave} onRemove={handleRemove} />;
+      case 'STATUS_CHANGE':
+        return (
+          <StatusChangeForm
+            onSave={handleSave}
+            onRemove={handleRemove}
+            currentStatus={hiveStatus}
+          />
+        );
       default:
         return null;
     }
@@ -312,6 +356,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
     handleRemove,
     baseBroodFrames,
     broodFrameCapacity,
+    hiveStatus,
   ]);
 
   const renderActionView = (action: ActionType): ReactNode => {
@@ -361,6 +406,16 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             onSave={handleSave}
             action={action}
             onRemove={handleRemove}
+          />
+        );
+      case 'STATUS_CHANGE':
+        return (
+          <StatusChangeView
+            key="status-change"
+            onSave={handleSave}
+            action={action}
+            onRemove={handleRemove}
+            currentStatus={hiveStatus}
           />
         );
       case 'OTHER':
@@ -428,7 +483,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
           data-test={TEST_SELECTORS.ACTION_BUTTONS}
           className="flex flex-wrap gap-2"
         >
-          {actionTypes.map(({ id, label, Icon }) => {
+          {availableActionTypes.map(({ id, label, Icon }) => {
             if (visibleActionTypes.has(id)) return null;
 
             return (

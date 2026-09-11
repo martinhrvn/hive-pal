@@ -182,6 +182,15 @@ export const transformActionsForApi = (
               status: action.status as 'REPLACED' | 'CLEANED',
             },
           };
+        case 'STATUS_CHANGE':
+          return {
+            type: ActionType.STATUS_CHANGE,
+            notes: action.notes,
+            details: {
+              type: ActionType.STATUS_CHANGE,
+              toStatus: action.toStatus,
+            },
+          };
         case 'BOX_CONFIGURATION':
           // Strip the local-only updatedBoxes field before sending to API,
           // but include the per-box summary derived from updatedBoxes.

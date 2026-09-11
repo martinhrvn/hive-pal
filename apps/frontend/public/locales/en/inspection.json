@@ -330,6 +330,13 @@
         "replaced": "Replaced",
         "notesOptional": "Notes (optional)",
         "notesPlaceholder": "Additional notes about the maintenance..."
+      },
+      "statusChange": "Change Status",
+      "statusChange_section": {
+        "title": "Status Change",
+        "current": "Current",
+        "newStatus": "New status",
+        "notesOptional": "Reason (optional)"
       }
     },
     "audio": {

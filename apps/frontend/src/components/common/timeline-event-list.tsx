@@ -30,6 +30,7 @@ import {
   Wrench,
   MoreVertical,
   CheckCircle,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -278,6 +279,8 @@ const getActionIcon = (action: ActionResponse) => {
       return <StickyNote className="h-4 w-4" />;
     case 'MAINTENANCE':
       return <Wrench className="h-4 w-4" />;
+    case 'STATUS_CHANGE':
+      return <ArrowLeftRight className="h-4 w-4" />;
     default:
       return <ActivityIcon className="h-4 w-4" />;
   }
@@ -312,6 +315,15 @@ const getActionLabel = (action: ActionResponse, t: (key: string) => string) => {
       return 'Harvest';
     case 'NOTE':
       return 'Note';
+    case 'STATUS_CHANGE':
+      if (action.details?.type === 'STATUS_CHANGE') {
+        const to = action.details.toStatus.toLowerCase();
+        const from = action.details.fromStatus?.toLowerCase();
+        return from
+          ? `Status changed from ${from} to ${to}`
+          : `Status changed to ${to}`;
+      }
+      return 'Status change';
     case 'BOX_CONFIGURATION':
       return t('common:timeline.boxConfiguration');
     case 'MAINTENANCE':
@@ -347,6 +359,8 @@ const getEventTone = (event: TimelineEvent): MarkerTone => {
         return 'rose';
       case 'HARVEST':
         return 'yellow';
+      case 'STATUS_CHANGE':
+        return 'sky';
       case 'NOTE':
       case 'FRAME':
       case 'MAINTENANCE':
