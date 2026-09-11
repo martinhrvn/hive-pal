@@ -23,7 +23,8 @@
   },
   "edit": {
     "title": "Bienenstock bearbeiten",
-    "success": "Bienenstock erfolgreich aktualisiert"
+    "success": "Bienenstock erfolgreich aktualisiert",
+    "error": "Bienenstock konnte nicht gespeichert werden. Bitte erneut versuchen."
   },
   "delete": {
     "confirm": "Möchten Sie diesen Bienenstock wirklich löschen?",
@@ -142,7 +143,8 @@
     "hivePlaceholder": "Bienenstock 01",
     "notesPlaceholder": "Guter Bienenstock",
     "pickDate": "Datum auswählen",
-    "submit": "Absenden"
+    "submit": "Absenden",
+    "validationError": "Speichern nicht möglich — bitte prüfen: {{fields}}"
   },
   "weather": {
     "forecast": "Wettervorhersage"
@@ -158,7 +160,7 @@
     "noHivesInApiary": "Noch keine Bienenstöcke in diesem Bienenstand vorhanden.",
     "dragToOrganize": "Fügen Sie Bienenstöcke hinzu und ziehen Sie sie in das Raster oben, um Ihren Bienenstand zu organisieren."
   },
-  "equipment":{
+  "equipment": {
     "currentHives": "Aktuelle Bienenstöcke",
     "targetHives": "Soll-Bienenstöcke",
     "itemsNeeded": "Benötigte Artikel",
@@ -170,7 +172,7 @@
     "saveAllChanges": "Alle Änderungen speichern",
     "equipmentPlanningOverview": "Übersicht über die Ausstattungsplanung",
     "trackCurrentEquipment": "Behalte den Überblick über deinen aktuellen Bestand und plane deine saisonalen Erweiterungen",
-    "table":{
+    "table": {
       "title": "Ausstattung",
       "addEquipment": "Ausstattung hinzufügen",
       "equipmentName": "Ausstattungsname",

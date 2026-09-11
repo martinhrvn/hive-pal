@@ -47,9 +47,12 @@ import {
 import {
   boxSchema,
   hiveSettingsSchema,
+  hiveStatusSchema,
   HiveStatus as HiveStatusEnum,
   findFrameSizeForVariant,
 } from 'shared-schemas';
+import { toast } from 'sonner';
+import type { FieldErrors } from 'react-hook-form';
 import {
   BoxBuilder,
   BoxBuilderRef,
@@ -69,7 +72,10 @@ const hiveSchema = z.object({
   name: z.string(),
   notes: z.string().optional(),
   apiaryId: z.string(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+  // Must accept every real HiveStatus: in edit mode the form is reset with the
+  // hive's actual status (not rendered as a field), and a narrower enum makes
+  // submit fail invisibly for e.g. UNKNOWN/DEAD/SOLD/ARCHIVED hives.
+  status: hiveStatusSchema.optional(),
   installationDate: z.date(),
   settings: hiveSettingsSchema,
   boxes: boxSchema.optional(),
@@ -127,7 +133,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
         name: existingHive.name,
         notes: existingHive.notes || '',
         apiaryId: existingHive.apiaryId || '',
-        status: existingHive.status as 'ACTIVE' | 'INACTIVE',
+        status: existingHive.status,
         installationDate: existingHive.installationDate
           ? typeof existingHive.installationDate === 'string'
             ? parseISO(existingHive.installationDate)
@@ -162,21 +168,35 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     if (onSubmitOverride) {
       return onSubmitOverride(finalData as HiveFormData);
     } else if (isEditMode) {
-      await updateHive({
-        id: hiveId,
-        data: {
-          ...finalData,
+      try {
+        await updateHive({
           id: hiveId,
-          status: data.status as HiveStatusEnum,
-          installationDate: data.installationDate.toISOString(),
-        },
-      });
-      // The hive update endpoint ignores boxes; persist box/frame changes
-      // through the dedicated boxes endpoint.
-      if (finalData.boxes && finalData.boxes.length > 0) {
-        await updateHiveBoxes({ id: hiveId, boxes: finalData.boxes });
+          data: {
+            ...finalData,
+            id: hiveId,
+            status: data.status as HiveStatusEnum,
+            installationDate: data.installationDate.toISOString(),
+          },
+        });
+        // The hive update endpoint ignores boxes; persist box/frame changes
+        // through the dedicated boxes endpoint.
+        if (finalData.boxes && finalData.boxes.length > 0) {
+          await updateHiveBoxes({ id: hiveId, boxes: finalData.boxes });
+        }
+        toast.success(
+          t('hive:edit.success', {
+            defaultValue: 'Hive updated successfully',
+          }),
+        );
+        navigate(`/hives/${hiveId}`);
+      } catch {
+        // A failed request must never look like a dead button.
+        toast.error(
+          t('hive:edit.error', {
+            defaultValue: 'Failed to save the hive. Please try again.',
+          }),
+        );
       }
-      navigate(`/hives/${hiveId}`);
     } else {
       createHive({
         ...finalData,
@@ -192,9 +212,24 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     }
   }, [activeApiaryId, form, isEditMode]);
 
+  // Validation failures on fields that aren't rendered (e.g. status, settings)
+  // would otherwise be invisible — the submit would just silently do nothing.
+  const onInvalid = (errors: FieldErrors<HiveFormData>) => {
+    const fields = Object.keys(errors).join(', ');
+    toast.error(
+      t('hive:form.validationError', {
+        defaultValue: 'Cannot save — please check: {{fields}}',
+        fields,
+      }),
+    );
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit, onInvalid)}
+        className="space-y-4"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -467,7 +502,9 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           type="submit"
           data-umami-event={isEditMode ? 'Hive Edit' : 'Hive Create'}
         >
-          {isEditMode ? t('hive:edit.title') : t('hive:form.submit')}
+          {isEditMode
+            ? t('common:actions.save', { defaultValue: 'Save' })
+            : t('hive:form.submit')}
         </Button>
       </form>
     </Form>
