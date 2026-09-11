@@ -1106,5 +1106,9 @@
         "october": "Oktober",
         "november": "November",
         "december": "Dezember"
+    },
+    "pwa": {
+        "updateAvailable": "Eine neue Version ist verfügbar",
+        "reload": "Neu laden"
     }
 }
