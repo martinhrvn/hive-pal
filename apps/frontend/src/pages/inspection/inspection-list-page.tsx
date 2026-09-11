@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApiary } from '@/hooks/use-apiary';
+import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useTranslation } from 'react-i18next';
 import { useHives, useInspections } from '@/api/hooks';
 import {
@@ -9,19 +10,21 @@ import {
   InspectionStatus,
 } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
+import { ActionTypeBadges } from './components/action-type-badges';
 import { ScheduledInspectionCard } from './components/scheduled-inspection-card';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
   ActivityIcon,
   CalendarClockIcon,
   CalendarIcon,
-  ChevronRight,
   ClipboardCheckIcon,
   CloudIcon,
   CloudRainIcon,
   CrownIcon,
+  EyeIcon,
   HistoryIcon,
   InfoIcon,
+  PencilIcon,
   SearchIcon,
   SunIcon,
   ThermometerIcon,
@@ -48,19 +51,18 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  DataTable,
+  ColumnVisibilityMenu,
+  useColumnVisibility,
+  type DataTableColumn,
+} from '@/components/data-table';
+
+type TFn = (key: string, options?: Record<string, unknown>) => string;
 
 // Define tab enum for cleaner code
 enum InspectionTab {
@@ -77,6 +79,7 @@ export const InspectionListPage = () => {
 
   const navigate = useNavigate();
   const { activeApiary } = useApiary();
+  const { canEdit } = useApiaryPermission();
   const isSubjective = activeApiary?.settings?.inspectionType === 'subjective';
   const [searchTerm, setSearchTerm] = useState<string | undefined>('');
   const [selectedHiveId, setSelectedHiveId] = useState<string | undefined>(
@@ -95,6 +98,31 @@ export const InspectionListPage = () => {
   );
 
   const { data: hivesData, isLoading: isLoadingHives } = useHives();
+
+  // Declarative columns for the inspection tables. Kept stable per relevant
+  // input so `useColumnVisibility` doesn't churn.
+  const columns = useMemo(
+    () =>
+      buildInspectionColumns({
+        t,
+        hives: hivesData ?? [],
+        isSubjective,
+        activeTab,
+        navigate,
+        canEdit,
+      }),
+    [t, hivesData, isSubjective, activeTab, navigate, canEdit],
+  );
+
+  // User-toggleable, persisted column visibility (shared across the tabs).
+  const {
+    visibleColumns,
+    hideableColumns,
+    isColumnVisible,
+    setColumnVisible,
+    resetColumns,
+    isCustomised,
+  } = useColumnVisibility('inspections', columns);
 
   // Handle tab changes
   const handleTabChange = (value: string) => {
@@ -147,6 +175,14 @@ export const InspectionListPage = () => {
   if (isLoadingInspections || isLoadingHives) {
     return <div>{t('common:status.loading')}</div>;
   }
+
+  const emptyState = (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <p className="text-muted-foreground mb-4">
+        {t('inspection:list.noInspections')}
+      </p>
+    </div>
+  );
 
   return (
     <PageGrid>
@@ -211,31 +247,37 @@ export const InspectionListPage = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Choose which table columns are visible (persisted per user). */}
+              <ColumnVisibilityMenu
+                columns={hideableColumns}
+                isColumnVisible={isColumnVisible}
+                setColumnVisible={setColumnVisible}
+                resetColumns={resetColumns}
+                visibleCount={visibleColumns.length}
+                isCustomised={isCustomised}
+              />
             </div>
           </div>
 
           <TabsContent value={InspectionTab.ALL}>
-            {renderInspectionsTable(
-              sortedInspections,
-              t('inspection:list.allInspections'),
-              navigate,
-              hivesData,
-              InspectionTab.ALL,
-              t,
-              isSubjective,
-            )}
+            <DataTable
+              columns={visibleColumns}
+              rows={sortedInspections}
+              rowKey={inspection => inspection.id}
+              caption={t('inspection:list.allInspections')}
+              emptyState={emptyState}
+            />
           </TabsContent>
 
           <TabsContent value={InspectionTab.RECENT}>
-            {renderInspectionsTable(
-              sortedInspections,
-              t('inspection:list.recentInspections'),
-              navigate,
-              hivesData,
-              InspectionTab.RECENT,
-              t,
-              isSubjective,
-            )}
+            <DataTable
+              columns={visibleColumns}
+              rows={sortedInspections}
+              rowKey={inspection => inspection.id}
+              caption={t('inspection:list.recentInspections')}
+              emptyState={emptyState}
+            />
           </TabsContent>
 
           <TabsContent value={InspectionTab.UPCOMING}>
@@ -243,9 +285,8 @@ export const InspectionListPage = () => {
               sortedInspections,
               hivesData,
               t,
-              navigate,
               refetchInspections,
-              isSubjective,
+              visibleColumns,
             )}
           </TabsContent>
         </Tabs>
@@ -262,8 +303,6 @@ export const InspectionListPage = () => {
     </PageGrid>
   );
 };
-
-
 
 const getHiveName = (
   hiveId: string,
@@ -311,7 +350,10 @@ const getStatusBadge = (
 /**
  * Renders the weather cell content: temperature and weather icon
  */
-const renderWeatherCell = (inspection: InspectionResponse, t: (key: string) => string) => {
+const renderWeatherCell = (
+  inspection: InspectionResponse,
+  t: (key: string) => string,
+) => {
   return (
     <div className="flex items-center gap-2">
       {inspection.temperature && (
@@ -362,13 +404,18 @@ const renderStrengthCell = (
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="flex items-center gap-1 p-0 h-auto">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center gap-1 p-0 h-auto"
+        >
           {strength == null ? (
             <span className="text-muted-foreground text-sm">—</span>
           ) : (
             <>
               <span className="font-medium tabular-nums">
-                {strength}{totalFrames != null ? `/${totalFrames}` : ''}
+                {strength}
+                {totalFrames != null ? `/${totalFrames}` : ''}
               </span>
               <TrendIndicator delta={strengthDelta} iconSize="h-3 w-3" />
             </>
@@ -386,79 +433,126 @@ const renderStrengthCell = (
                 if (frameCounts[i] === 0) return null;
                 return (
                   <div key={f.key} className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: f.color }} />
+                    <span
+                      className="h-2 w-2 rounded-full shrink-0"
+                      style={{ backgroundColor: f.color }}
+                    />
                     <span className="text-sm flex-1">{f.label}</span>
-                    <span className="text-sm font-medium tabular-nums">{framePcts[i]}%</span>
+                    <span className="text-sm font-medium tabular-nums">
+                      {framePcts[i]}%
+                    </span>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <p className="text-xs text-muted-foreground">No frame data recorded</p>
+            <p className="text-xs text-muted-foreground">
+              No frame data recorded
+            </p>
           )}
 
           {obs?.queenCells != null && obs.queenCells > 0 && (
             <div className="flex items-center gap-2 pt-2 border-t">
               <CrownIcon className="h-3.5 w-3.5 text-rose-500 shrink-0" />
               <span className="text-sm flex-1">Queen Cells</span>
-              <span className="text-sm font-medium tabular-nums">{obs.queenCells}</span>
+              <span className="text-sm font-medium tabular-nums">
+                {obs.queenCells}
+              </span>
             </div>
           )}
 
-          {inspection.score?.warnings && inspection.score.warnings.length > 0 && (
-            <div className="pt-2 border-t">
-              <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1 mb-1">
-                <ActivityIcon className="h-3 w-3" />
-                {t('inspection:scores.warnings')}
-              </h5>
-              <ul className="text-xs space-y-1">
-                {inspection.score.warnings.map(warning => (
-                  <li key={warning} className="text-muted-foreground">{warning}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {inspection.score?.warnings &&
+            inspection.score.warnings.length > 0 && (
+              <div className="pt-2 border-t">
+                <h5 className="text-sm font-medium text-amber-500 flex items-center gap-1 mb-1">
+                  <ActivityIcon className="h-3 w-3" />
+                  {t('inspection:scores.warnings')}
+                </h5>
+                <ul className="text-xs space-y-1">
+                  {inspection.score.warnings.map(warning => (
+                    <li key={warning} className="text-muted-foreground">
+                      {warning}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
         </div>
       </PopoverContent>
     </Popover>
   );
 };
 
-const InspectionTableRow = ({
-  inspection,
-  index,
-  inspections,
-  hives,
-  activeTab,
+/**
+ * Declarative column set for the inspection tables. Every column carries a
+ * stable `id` used for persisted visibility; the leading `rowActions` column
+ * cannot be hidden so a row always has an affordance to open (and, with edit
+ * permission, edit) the inspection.
+ */
+const buildInspectionColumns = ({
   t,
+  hives,
   isSubjective,
+  activeTab,
   navigate,
+  canEdit,
 }: {
-  inspection: InspectionResponse;
-  index: number;
-  inspections: InspectionResponse[];
+  t: TFn;
   hives: HiveResponse[];
-  activeTab: InspectionTab;
-  t: (key: string, options?: Record<string, unknown>) => string;
   isSubjective: boolean;
+  activeTab: InspectionTab;
   navigate: (path: string) => void;
-}) => {
-  const prevInspection = inspections
-    .slice(index + 1)
-    .find(candidate => candidate.hiveId === inspection.hiveId);
-  const obs = inspection.observations;
-  const strength    = obs?.strength ?? null;
-  const totalFrames = obs?.totalFrames ?? null;
-  const prevStrength = prevInspection?.observations?.strength ?? null;
-  const strengthDelta = strength != null && prevStrength != null ? strength - prevStrength : null;
+  canEdit: boolean;
+}): DataTableColumn<InspectionResponse>[] => {
+  const strengthHeader =
+    activeTab === InspectionTab.UPCOMING || isSubjective
+      ? t('inspection:fields.status')
+      : 'Strength';
 
-  const frameCounts = FRAME_FIELDS.map(f => (obs?.[f.obsKey] as number | null | undefined) ?? 0);
-  const frameTotal  = frameCounts.reduce((a, b) => a + b, 0);
-  const framePcts   = frameTotal > 0 ? largestRemainder(frameCounts, frameTotal) : null;
-
-  return (
-    <TableRow key={inspection.id}>
-      <TableCell className="font-medium">
+  return [
+    {
+      // Leading row actions: open the inspection and (with edit permission) jump
+      // straight to its edit form. Kept on the left so it stays visible even
+      // when a wide table scrolls horizontally, and non-hideable so every row
+      // always has these affordances. Icon-only with accessible labels.
+      id: 'rowActions',
+      header: <span className="sr-only">{t('inspection:actions.view')}</span>,
+      menuLabel: t('inspection:actions.view'),
+      canHide: false,
+      cellClassName: 'w-0 whitespace-nowrap',
+      cell: inspection => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            aria-label={t('inspection:actions.view')}
+            title={t('inspection:actions.view')}
+            onClick={() => navigate(`/inspections/${inspection.id}`)}
+          >
+            <EyeIcon className="h-4 w-4" />
+          </Button>
+          {canEdit && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              aria-label={t('inspection:actions.edit')}
+              title={t('inspection:actions.edit')}
+              onClick={() => navigate(`/inspections/${inspection.id}/edit`)}
+            >
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: 'dateTime',
+      header: t('inspection:fields.dateTime'),
+      menuLabel: t('inspection:fields.dateTime'),
+      cellClassName: 'font-medium',
+      cell: inspection => (
         <div className="flex items-center gap-2">
           <CalendarIcon className="h-4 w-4 text-muted-foreground" />
           {new Date(inspection.date).toLocaleDateString('en-US', {
@@ -474,13 +568,52 @@ const InspectionTableRow = ({
             })}
           </span>
         </div>
-      </TableCell>
-      <TableCell>{getHiveName(inspection.hiveId, hives, t)}</TableCell>
-      <TableCell>
-        {renderWeatherCell(inspection, t)}
-      </TableCell>
-      <TableCell>
-        {renderStrengthCell(
+      ),
+    },
+    {
+      id: 'hive',
+      header: t('inspection:fields.hive'),
+      // Cap the width so long hive names don't stretch the column; the full
+      // name stays available on hover.
+      cell: inspection => {
+        const name = getHiveName(inspection.hiveId, hives, t);
+        return (
+          <span className="block max-w-[7rem] truncate" title={name}>
+            {name}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'weather',
+      header: t('inspection:fields.weather'),
+      cell: inspection => renderWeatherCell(inspection, t),
+    },
+    {
+      id: 'strength',
+      header: strengthHeader,
+      menuLabel: t('inspection:fields.strength', { defaultValue: 'Strength' }),
+      cell: (inspection, index, rows) => {
+        const prevInspection = rows
+          .slice(index + 1)
+          .find(candidate => candidate.hiveId === inspection.hiveId);
+        const obs = inspection.observations;
+        const strength = obs?.strength ?? null;
+        const totalFrames = obs?.totalFrames ?? null;
+        const prevStrength = prevInspection?.observations?.strength ?? null;
+        const strengthDelta =
+          strength != null && prevStrength != null
+            ? strength - prevStrength
+            : null;
+
+        const frameCounts = FRAME_FIELDS.map(
+          f => (obs?.[f.obsKey] as number | null | undefined) ?? 0,
+        );
+        const frameTotal = frameCounts.reduce((a, b) => a + b, 0);
+        const framePcts =
+          frameTotal > 0 ? largestRemainder(frameCounts, frameTotal) : null;
+
+        return renderStrengthCell(
           inspection,
           activeTab,
           isSubjective,
@@ -492,10 +625,14 @@ const InspectionTableRow = ({
           framePcts,
           obs,
           t,
-        )}
-      </TableCell>
-      <TableCell>
-        {inspection.observations?.queenSeen === null ? (
+        );
+      },
+    },
+    {
+      id: 'queenSeen',
+      header: t('inspection:fields.queenSeen'),
+      cell: inspection =>
+        inspection.observations?.queenSeen === null ? (
           <span className="text-muted-foreground italic">
             {t('inspection:fields.notRecorded')}
           </span>
@@ -511,84 +648,50 @@ const InspectionTableRow = ({
               ? t('inspection:fields.yes')
               : t('inspection:fields.no')}
           </span>
-        )}
-      </TableCell>
-      <TableCell className="text-right">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(`/inspections/${inspection.id}`)}
-          className="flex items-center"
-        >
-          {t('inspection:actions.details')}{' '}
-          <ChevronRight className="ml-1 h-4 w-4" />
-        </Button>
-      </TableCell>
-    </TableRow>
-  );
-};
-
-const renderInspectionsTable = (
-  inspections: InspectionResponse[],
-  caption: string,
-  navigate: (path: string) => void,
-  hives: HiveResponse[] = [],
-  activeTab: InspectionTab = InspectionTab.ALL,
-  t: (key: string, options?: Record<string, unknown>) => string,
-  isSubjective: boolean = false,
-) => {
-
-  return inspections.length > 0 ? (
-    <Table>
-      <TableCaption>{caption}</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>{t('inspection:fields.dateTime')}</TableHead>
-          <TableHead>{t('inspection:fields.hive')}</TableHead>
-          <TableHead>{t('inspection:fields.weather')}</TableHead>
-          <TableHead>
-            {activeTab === InspectionTab.UPCOMING || isSubjective
-              ? t('inspection:fields.status')
-              : 'Strength'}
-          </TableHead>
-          <TableHead>{t('inspection:fields.queenSeen')}</TableHead>
-          <TableHead className="text-right">
-            {t('common:actions.actions')}
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {inspections.map((inspection, index) => (
-          <InspectionTableRow
-            key={inspection.id}
-            inspection={inspection}
-            index={index}
-            inspections={inspections}
-            hives={hives}
-            activeTab={activeTab}
-            t={t}
-            isSubjective={isSubjective}
-            navigate={navigate}
-          />
-        ))}
-      </TableBody>
-    </Table>
-  ) : (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <p className="text-muted-foreground mb-4">
-        {t('inspection:list.noInspections')}
-      </p>
-    </div>
-  );
+        ),
+    },
+    {
+      id: 'notes',
+      header: t('inspection:fields.notes', { defaultValue: 'Notes' }),
+      menuLabel: t('inspection:fields.notes', { defaultValue: 'Notes' }),
+      // Off by default — the user enables it via the Columns menu. Abbreviated
+      // to a single truncated line; the full text shows on hover.
+      defaultHidden: true,
+      cellClassName: 'max-w-[12rem]',
+      cell: inspection => {
+        const notes = inspection.notes?.trim();
+        if (!notes) {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        return (
+          <span
+            className="block truncate text-sm text-muted-foreground"
+            title={notes}
+          >
+            {notes}
+          </span>
+        );
+      },
+    },
+    {
+      // The beekeeping actions recorded in the inspection (feeding, treatment,
+      // frames, …), shown as compact chips. This is what "Actions" means here.
+      id: 'actions',
+      header: t('inspection:fields.actions', { defaultValue: 'Actions' }),
+      menuLabel: t('inspection:fields.actions', { defaultValue: 'Actions' }),
+      cell: inspection => (
+        <ActionTypeBadges actions={inspection.actions ?? []} />
+      ),
+    },
+  ];
 };
 
 const renderUpcomingInspections = (
   inspections: InspectionResponse[],
   hives: HiveResponse[] = [],
-  t: (key: string, options?: Record<string, unknown>) => string,
-  navigate: (path: string) => void,
+  t: TFn,
   refetchInspections: () => void,
-  isSubjective: boolean = false,
+  columns: DataTableColumn<InspectionResponse>[],
 ) => {
   // Filter only scheduled inspections for cards
   const scheduledInspections = inspections.filter(
@@ -610,6 +713,12 @@ const renderUpcomingInspections = (
       upcoming.push(inspection);
     }
   }
+
+  const otherInspections = inspections.filter(
+    i =>
+      i.status !== InspectionStatus.SCHEDULED &&
+      i.status !== InspectionStatus.COMPLETED,
+  );
 
   return (
     <div className="space-y-6">
@@ -674,29 +783,18 @@ const renderUpcomingInspections = (
       )}
 
       {/* Show non-scheduled, non-completed inspections in a table below */}
-      {inspections.some(
-        i =>
-          i.status !== InspectionStatus.SCHEDULED &&
-          i.status !== InspectionStatus.COMPLETED,
-      ) && (
+      {otherInspections.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <HistoryIcon className="h-5 w-5" />
             {t('inspection:scheduled.otherUpcomingInspections')}
           </h3>
-          {renderInspectionsTable(
-            inspections.filter(
-              i =>
-                i.status !== InspectionStatus.SCHEDULED &&
-                i.status !== InspectionStatus.COMPLETED,
-            ),
-            'Cancelled inspections',
-            navigate,
-            hives,
-            InspectionTab.UPCOMING,
-            t,
-            isSubjective,
-          )}
+          <DataTable
+            columns={columns}
+            rows={otherInspections}
+            rowKey={inspection => inspection.id}
+            caption="Cancelled inspections"
+          />
         </div>
       )}
 

@@ -2147,5 +2147,20 @@
   "pwa": {
     "updateAvailable": "A new version is available",
     "reload": "Reload"
+  },
+  "actionTypes": {
+    "feeding": "Feeding",
+    "treatment": "Treatment",
+    "frame": "Frames",
+    "harvest": "Harvest",
+    "boxConfiguration": "Box config",
+    "maintenance": "Maintenance",
+    "note": "Note",
+    "other": "Other"
+  },
+  "table": {
+    "columns": "Columns",
+    "toggleColumns": "Toggle columns",
+    "resetColumns": "Reset to default"
   }
 }

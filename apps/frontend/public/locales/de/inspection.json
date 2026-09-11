@@ -31,6 +31,8 @@
         "scoreStatus": "Bewertung/Status",
         "status": "Status",
         "queenSeen": "Königin gesehen",
+        "notes": "Notizen",
+        "actions": "Aktionen",
         "temperature": "Temperatur",
         "weatherConditions": "Wetterbedingungen",
         "notRecorded": "Nicht erfasst",
@@ -98,6 +100,8 @@
     },
     "actions": {
         "details": "Details",
+        "view": "Ansehen",
+        "edit": "Bearbeiten",
         "createInspection": "Inspektion erstellen",
         "addInspection": "Inspektion hinzufügen",
         "scheduleInspection": "Inspektion planen",
