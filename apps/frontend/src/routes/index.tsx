@@ -18,7 +18,12 @@ import {
   InspectionListPage,
   ScheduleInspectionPage,
 } from '@/pages/inspection';
-import { CreateQueenPage, EditQueenPage, QueenDetailPage, QueenListPage } from '@/pages/queen';
+import {
+  CreateQueenPage,
+  EditQueenPage,
+  QueenDetailPage,
+  QueenListPage,
+} from '@/pages/queen';
 import { TodoListPage } from '@/pages/todo';
 import { ChangePasswordPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
@@ -170,6 +175,16 @@ const DemareeMethodPage = lazyWithRetry(() =>
     default: m.DemareeMethodPage,
   })),
 );
+const PagdenMethodPage = lazyWithRetry(() =>
+  import('@/pages/tools/pagden-method-page').then(m => ({
+    default: m.PagdenMethodPage,
+  })),
+);
+const ArtificialSwarmMethodPage = lazyWithRetry(() =>
+  import('@/pages/tools/artificial-swarm-method-page').then(m => ({
+    default: m.ArtificialSwarmMethodPage,
+  })),
+);
 const LiebefelderPage = lazyWithRetry(() =>
   import('@/pages/tools/liebefelder-page').then(m => ({
     default: m.LiebefelderPage,
@@ -263,6 +278,22 @@ function buildToolsChildren() {
       ),
     },
     {
+      path: 'swarm-management/pagden',
+      element: (
+        <LazyPage>
+          <PagdenMethodPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'swarm-management/artificial',
+      element: (
+        <LazyPage>
+          <ArtificialSwarmMethodPage />
+        </LazyPage>
+      ),
+    },
+    {
       path: 'liebefelder',
       element: (
         <LazyPage>
@@ -338,11 +369,19 @@ const router = createBrowserRouter([
       },
       {
         path: '/apiaries/create',
-        element: <EditableRoute redirectTo="/apiaries"><CreateApiaryPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/apiaries">
+            <CreateApiaryPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/apiaries/:id/edit',
-        element: <EditableRoute redirectTo="/apiaries"><EditApiaryPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/apiaries">
+            <EditApiaryPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/hives',
@@ -350,7 +389,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/hives/create',
-        element: <EditableRoute redirectTo="/hives"><CreateHivePage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/hives">
+            <CreateHivePage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/hives/:id',
@@ -358,7 +401,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/hives/:id/edit',
-        element: <EditableRoute redirectTo="/hives"><EditHivePage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/hives">
+            <EditHivePage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/hives/qr-codes/print',
@@ -370,15 +417,27 @@ const router = createBrowserRouter([
       },
       {
         path: '/hives/:hiveId/inspections/create',
-        element: <EditableRoute redirectTo="/inspections"><CreateInspectionPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/inspections">
+            <CreateInspectionPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/inspections/create',
-        element: <EditableRoute redirectTo="/inspections"><CreateInspectionPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/inspections">
+            <CreateInspectionPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/inspections/schedule',
-        element: <EditableRoute redirectTo="/inspections"><ScheduleInspectionPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/inspections">
+            <ScheduleInspectionPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/inspections',
@@ -390,7 +449,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/inspections/:id/edit',
-        element: <EditableRoute redirectTo="/inspections"><EditInspectionPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/inspections">
+            <EditInspectionPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/inspections/:id',
@@ -422,15 +485,27 @@ const router = createBrowserRouter([
       },
       {
         path: '/queens/create',
-        element: <EditableRoute redirectTo="/queens"><CreateQueenPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/queens">
+            <CreateQueenPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/hives/:hiveId/queens/create',
-        element: <EditableRoute redirectTo="/queens"><CreateQueenPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/queens">
+            <CreateQueenPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/queens/:queenId/edit',
-        element: <EditableRoute redirectTo="/queens"><EditQueenPage /></EditableRoute>,
+        element: (
+          <EditableRoute redirectTo="/queens">
+            <EditQueenPage />
+          </EditableRoute>
+        ),
       },
       {
         path: '/queens',

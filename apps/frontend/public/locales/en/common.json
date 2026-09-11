@@ -689,11 +689,15 @@
       },
       "pagden": {
         "title": "Pagden split",
-        "description": "Placeholder for a future guide covering the classic artificial swarm split."
+        "description": "The classic artificial swarm technique. Move the original queen to a new hive on the original stand, controlling swarming impulse while maintaining colony strength.",
+        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+        "cta": "Open guide"
       },
       "artificialSwarm": {
         "title": "Artificial swarm",
-        "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+        "description": "A variation where the queen stays in the parent colony. Move a frame with one queen cell to the new hive on the original stand — useful when the queen cannot be found.",
+        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+        "cta": "Open guide"
       }
     },
     "aside": {
@@ -955,6 +959,429 @@
         "title": "Checkpoint order is no longer chronological",
         "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
       }
+    },
+    "pagden": {
+      "badge": "Reference method",
+      "title": "Pagden Split",
+      "description": "A classic split method where the queen is moved to a new hive on the original stand, while the parent colony with brood is moved aside.",
+      "intro": "The Pagden split is a proven swarm-control and colony-increase method that separates the laying queen from most brood by moving the queen to a new hive positioned on the original stand. Flying bees return to the queen, while the parent colony with brood is placed nearby and allowed to raise a new queen from its existing queen cells. Follow up around day 7–8, day 14–15, and day 21–22 to monitor queen cell development and confirm the new queen has mated and is laying.",
+      "overviewTitle": "Method overview",
+      "overviewLead": "Use the Pagden split when you want to control swarm pressure while keeping both the queen and brood in active colonies, and when you have a spare hive body and drawn comb available.",
+      "overviewPoints": [
+        "The queen is moved to a new hive on the original stand, so flying bees return to her and the new colony builds up quickly.",
+        "The parent colony with brood is moved aside and left with its queen cells — it will raise a new queen, resulting in colony increase.",
+        "Both colonies remain active and productive, making the Pagden split a good choice when you want to increase colony numbers while controlling swarming."
+      ],
+      "prerequisitesTitle": "Prerequisites",
+      "prerequisites": [
+        "Confirm the colony is strong with enough bees and brood to justify the split.",
+        "Locate and confidently retain the laying queen — you will need to move her to the new hive.",
+        "Have a spare hive floor, brood box with drawn comb, queen excluder, crown board, and roof ready.",
+        "Prepare a second hive floor and stand for the parent colony with brood.",
+        "Choose a settled weather window so both colonies can reorganise without prolonged interruption."
+      ],
+      "stepsTitle": "Method Detail",
+      "stepsDescription": "Follow these steps to perform the Pagden split",
+      "methodDetail": {
+        "preparation": {
+          "title": "Preparation",
+          "items": [
+            {
+              "text": "Find a spare brood box with drawn comb (not foundation — foundation slows the new colony's build-up)."
+            },
+            {
+              "text": "Prepare a second hive floor and stand positioned a few metres away from the original location."
+            }
+          ]
+        },
+        "relocateQueen": {
+          "title": "Relocate the Queen",
+          "items": [
+            {
+              "text": "Inspect the original hive and locate the laying queen."
+            },
+            {
+              "text": "Take the frame with the queen and place it in the centre of the new brood box, removing any queen cells on that frame."
+            },
+            {
+              "text": "Fill the new box with frames of drawn comb, ensuring the queen has room to lay."
+            },
+            {
+              "text": "Place the new box on the original hive floor — flying bees will return here."
+            }
+          ]
+        },
+        "queenCells": {
+          "title": "Manage the Parent Colony",
+          "items": [
+            {
+              "text": "Move the original hive (now without the queen) to the second floor a few metres away."
+            },
+            {
+              "text": "Inspect all brood frames and reduce the queen cells down to one or two good, well-placed cells — do not destroy all of them, as the parent colony needs a queen cell to raise a new queen."
+            },
+            {
+              "text": "Ensure the parent colony has adequate stores and space to develop."
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Reassembly",
+          "items": [
+            {
+              "text": "Place a queen excluder on top of the new hive (with the queen) if you want to add supers for honey storage."
+            },
+            {
+              "text": "Add supers as needed for the season's nectar flow."
+            },
+            {
+              "text": "Fit crown board and roof on both hives."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Why the method works",
+      "advantagesDescription": "The Pagden split relieves swarm pressure by separating the queen from brood while maintaining two productive colonies.",
+      "advantages": [
+        "The queen on the original stand attracts flying bees, building up the new colony quickly and maintaining foraging activity.",
+        "The parent colony with brood is moved aside and left with its queen cells, allowing it to raise a new queen and become a second productive colony.",
+        "Both colonies remain active and can contribute to honey production or build up for winter."
+      ],
+      "followUpTitle": "Follow-up timing",
+      "followUpDayHeader": "Day",
+      "followUpTaskHeader": "Task",
+      "followUp": [
+        {
+          "day": "Day 7-8",
+          "task": "Inspect the parent colony and reduce queen cells to one or two well-placed, well-formed cells. The colony needs at least one to raise a new queen."
+        },
+        {
+          "day": "Day 14-15",
+          "task": "Check that the retained queen cell is capped and developing. Look for any additional cells that may have been started and remove extras, leaving just one."
+        },
+        {
+          "day": "Day 21-22",
+          "task": "Carry out a final review to assess both colonies and decide on next steps for the season."
+        }
+      ],
+      "prosConsTitle": "Pros and Cons",
+      "prosTitle": "Advantages",
+      "consTitle": "Disadvantages",
+      "pros": [
+        "Effective swarm control that maintains two productive colonies.",
+        "The queen on the original stand attracts flying bees, building up quickly.",
+        "Both colonies can contribute to honey production.",
+        "Simpler than some methods — no complex stacking or excluders required.",
+        "Good for increasing colony numbers while managing swarm pressure."
+      ],
+      "cons": [
+        "Requires finding and moving the queen, which takes skill and confidence.",
+        "Requires a spare hive body with drawn comb and a second floor.",
+        "The parent colony may produce a virgin queen that needs to mate successfully.",
+        "Regular inspections are essential to manage queen cells.",
+        "Not suitable for beginners unfamiliar with queen handling."
+      ],
+      "faq": {
+        "title": "Frequently asked questions",
+        "items": [
+          {
+            "question": "What is the Pagden split?",
+            "answer": "The Pagden split is a swarm-control method where the laying queen is moved to a new hive positioned on the original stand, while the parent colony with brood is moved aside. Flying bees return to the queen, building up the new colony, while the parent colony develops and produces a new queen."
+          },
+          {
+            "question": "When should I use the Pagden split?",
+            "answer": "Use the Pagden split on strong colonies showing clear swarm pressure when you want to control swarming while maintaining two productive colonies. It works well when you have spare equipment and are confident finding and moving the queen."
+          },
+          {
+            "question": "What is the biggest risk with the Pagden split?",
+            "answer": "The main risk is leaving too many queen cells in the parent colony — the first virgin queen to emerge may swarm off with some bees if other sealed cells are present. Reduce to one or two well-placed cells at the day 7–8 check, shaking bees off frames to spot them all. Do not destroy all cells, as the colony needs one to raise a new queen."
+          },
+          {
+            "question": "How long does it take for the parent colony to produce a new queen?",
+            "answer": "The parent colony will raise an emergency queen from the youngest larvae. The new queen emerges around day 16 and needs 1-2 weeks to mate and start laying, so the parent colony is typically laying again by day 21-28."
+          }
+        ]
+      },
+      "planner": {
+        "title": "Pagden inspection planner",
+        "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+        "selectHiveLabel": "Hive",
+        "selectHivePlaceholder": "Select a hive",
+        "startDateLabel": "Pagden split date",
+        "startDatePlaceholder": "Pick the split date",
+        "generateButton": "Generate checkpoints",
+        "saveButton": "Save scheduled inspections",
+        "checkpointPrefix": "Pagden checkpoint:",
+        "notesChecklistLabel": "Checklist",
+        "savedSuccess": "Saved {{count}} Pagden checkpoint as scheduled inspection.",
+        "savedPartial": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+        "savedError": "Unable to save the Pagden plan. Some inspections may not have been created.",
+        "noHivesMessage": "You need at least one hive in the active apiary before you can create a Pagden plan.",
+        "checkpoints": {
+          "setup": {
+            "title": "Initial Pagden split",
+            "summary": "Move the queen to the new hive on the original stand, move the parent colony with brood aside, and reduce queen cells to one or two well-placed cells.",
+            "checklist": [
+              "Locate and move the laying queen to the new hive on the original stand.",
+              "Move the parent colony with brood to a new location a few metres away.",
+              "Reduce queen cells on the parent colony to one or two well-formed, well-placed cells — the colony needs at least one to raise a new queen."
+            ]
+          },
+          "queenCellCheck": {
+            "title": "Queen-cell check",
+            "summary": "Inspect the parent colony around day 7 to 8 and reduce queen cells to one, leaving the best-placed, well-formed cell to raise the new queen.",
+            "checklist": [
+              "Inspect every brood frame in the parent colony for queen cells.",
+              "Retain one well-placed, well-formed queen cell and remove any others to reduce the risk of secondary swarming.",
+              "Confirm the parent colony has adequate stores and space."
+            ]
+          },
+          "secondQueenCellCheck": {
+            "title": "Second queen-cell check",
+            "summary": "Recheck about a week later to catch any late-started cells and confirm the new queen is developing.",
+            "checklist": [
+              "Look again for newly started or missed queen cells.",
+              "Check whether the parent colony is developing normally.",
+              "Note whether the new queen is emerging or has emerged."
+            ]
+          },
+          "colonyReview": {
+            "title": "Colony review",
+            "summary": "Assess both colonies, confirm the new queen is laying, and decide on next steps for the season.",
+            "checklist": [
+              "Check the new colony for laying pattern and stores.",
+              "Confirm the parent colony has a laying queen.",
+              "Assess space, brood pattern, and nectar intake in both colonies."
+            ]
+          }
+        }
+      },
+      "warnings": {
+        "lateQueenCellCheck": {
+          "title": "First queen-cell check is later than day 8",
+          "description": "This delay increases the risk of queen cells emerging before you can review and reduce them. Try to keep the first follow-up within the 7 to 8 day window."
+        },
+        "unsafeCheckpointSpacing": {
+          "title": "Checkpoint spacing looks risky",
+          "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control less reliable."
+        },
+        "illogicalScheduleOrder": {
+          "title": "Checkpoint order is no longer chronological",
+          "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+        }
+      }
+    },
+    "artificialSwarm": {
+      "badge": "Reference method",
+      "title": "Artificial Swarm",
+      "description": "A swarm-control method where the queen stays in the parent hive while a new colony is created on the original stand with a frame containing a queen cell.",
+      "intro": "The artificial swarm method is a practical swarm-control technique when the queen cannot be found or you prefer not to move her. The parent colony is moved to a new stand, and a new hive is placed on the original stand with one frame of brood containing eggs or an existing queen cell, filled with drawn comb. Flying bees return to the original stand, building up the new hive quickly. Follow up around day 7–8, day 14–15, and day 21–22 to manage queen cells and monitor both colonies.",
+      "overviewTitle": "Method overview",
+      "overviewLead": "Use the artificial swarm method when you want to control swarm pressure without finding the queen, or when you prefer to keep the queen in the parent colony while creating a new unit.",
+      "overviewPoints": [
+        "The queen remains in the parent colony, which is moved aside to a new location.",
+        "A new hive is placed on the original stand with one frame of brood containing a queen cell, attracting flying bees.",
+        "The new colony builds up from the queen cell while the parent colony continues laying, creating two productive units."
+      ],
+      "prerequisitesTitle": "Prerequisites",
+      "prerequisites": [
+        "Confirm the colony is strong with enough bees and brood to justify the split.",
+        "Identify a frame with a queen cell (or one that will develop into a queen cell) to move to the new hive.",
+        "Have a spare hive floor, brood box with drawn comb, and roof ready for the new colony.",
+        "Prepare a second location for the parent colony.",
+        "Choose a settled weather window so both colonies can reorganise without prolonged interruption."
+      ],
+      "stepsTitle": "Method Detail",
+      "stepsDescription": "Follow these steps to perform the artificial swarm",
+      "methodDetail": {
+        "preparation": {
+          "title": "Preparation",
+          "items": [
+            {
+              "text": "Find a spare brood box with drawn comb (not foundation — foundation slows the new colony's build-up)."
+            },
+            {
+              "text": "Prepare a second hive floor and stand positioned a few metres away from the original location."
+            }
+          ]
+        },
+        "relocateQueen": {
+          "title": "Move the Parent Colony",
+          "items": [
+            {
+              "text": "Move the original hive (with the queen) to a new location a few metres away."
+            },
+            {
+              "text": "Inspect the brood frames and identify one frame with a queen cell (or one that will develop into a queen cell)."
+            },
+            {
+              "text": "Knock down any other queen cells on the parent colony brood frames."
+            }
+          ]
+        },
+        "queenCells": {
+          "title": "Set Up the New Colony",
+          "items": [
+            {
+              "text": "Place the new brood box on the original hive floor — flying bees will return here."
+            },
+            {
+              "text": "Move the frame with the queen cell into the centre of the new box."
+            },
+            {
+              "text": "Fill the new box with frames of drawn comb, ensuring adequate stores."
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Reassembly",
+          "items": [
+            {
+              "text": "Add a queen excluder on top of the new hive if you want to add supers for honey storage."
+            },
+            {
+              "text": "Add supers as needed for the season's nectar flow."
+            },
+            {
+              "text": "Fit crown board and roof on both hives."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Why the method works",
+      "advantagesDescription": "The artificial swarm relieves swarm pressure by creating a new colony on the original stand while keeping the queen in the parent colony.",
+      "advantages": [
+        "The queen is not moved, making the method simpler when the queen is hard to find or you prefer not to handle her.",
+        "Flying bees return to the original stand, building up the new colony quickly.",
+        "The parent colony continues laying and remains productive, contributing to honey production or building up for winter."
+      ],
+      "followUpTitle": "Follow-up timing",
+      "followUpDayHeader": "Day",
+      "followUpTaskHeader": "Task",
+      "followUp": [
+        {
+          "day": "Day 7-8",
+          "task": "Inspect the new colony to confirm the queen cell is developing and check for any additional queen cells."
+        },
+        {
+          "day": "Day 14-15",
+          "task": "Review the new colony for capped queen cells and confirm the parent colony is settling."
+        },
+        {
+          "day": "Day 21-22",
+          "task": "Carry out a final review to assess both colonies and decide on next steps for the season."
+        }
+      ],
+      "prosConsTitle": "Pros and Cons",
+      "prosTitle": "Advantages",
+      "consTitle": "Disadvantages",
+      "pros": [
+        "Effective swarm control without needing to find and move the queen.",
+        "Flying bees return to the original stand, building up the new colony quickly.",
+        "Both colonies remain productive and can contribute to honey production.",
+        "Simpler than methods requiring queen handling.",
+        "Good for increasing colony numbers while managing swarm pressure."
+      ],
+      "cons": [
+        "Requires identifying a frame with a suitable queen cell.",
+        "Requires a spare hive body with drawn comb and a second floor.",
+        "The new colony depends on the queen cell developing successfully.",
+        "Regular inspections are essential to monitor queen cell development.",
+        "The parent colony may still show swarm pressure if not managed carefully."
+      ],
+      "faq": {
+        "title": "Frequently asked questions",
+        "items": [
+          {
+            "question": "What is the artificial swarm method?",
+            "answer": "The artificial swarm method is a swarm-control technique where the queen remains in the parent colony (moved to a new location) while a new hive is placed on the original stand with one frame containing a queen cell. Flying bees return to the new hive, building it up from the queen cell."
+          },
+          {
+            "question": "When should I use the artificial swarm method?",
+            "answer": "Use the artificial swarm method when you want to control swarm pressure but cannot find the queen, or when you prefer not to move her. It works well when you have spare equipment and can identify a suitable queen cell."
+          },
+          {
+            "question": "What frame should I move to the new hive?",
+            "answer": "Move one frame of brood containing a queen cell (or one that will develop into a queen cell) to the new hive. The frame should have adequate stores and be positioned in the centre of the new box so the queen cell develops properly."
+          },
+          {
+            "question": "How long does it take for the new queen to start laying?",
+            "answer": "The queen cell will emerge around day 16, and the new queen needs 1-2 weeks to mate and start laying. The new colony is typically laying again by day 21-28."
+          }
+        ]
+      },
+      "planner": {
+        "title": "Artificial swarm inspection planner",
+        "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+        "selectHiveLabel": "Hive",
+        "selectHivePlaceholder": "Select a hive",
+        "startDateLabel": "Artificial swarm date",
+        "startDatePlaceholder": "Pick the swarm date",
+        "generateButton": "Generate checkpoints",
+        "saveButton": "Save scheduled inspections",
+        "checkpointPrefix": "Artificial swarm checkpoint:",
+        "notesChecklistLabel": "Checklist",
+        "savedSuccess": "Saved {{count}} artificial swarm checkpoint as scheduled inspection.",
+        "savedPartial": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+        "savedError": "Unable to save the artificial swarm plan. Some inspections may not have been created.",
+        "noHivesMessage": "You need at least one hive in the active apiary before you can create an artificial swarm plan.",
+        "checkpoints": {
+          "setup": {
+            "title": "Initial artificial swarm setup",
+            "summary": "Move the parent colony aside, place the new hive on the original stand with a frame containing a queen cell, and knock down other queen cells.",
+            "checklist": [
+              "Move the parent colony with the queen to a new location.",
+              "Identify and move one frame with a queen cell to the new hive on the original stand.",
+              "Knock down all other queen cells on the parent colony brood frames."
+            ]
+          },
+          "queenCellCheck": {
+            "title": "Queen-cell check",
+            "summary": "Inspect the new colony around day 7 to 8 to confirm the queen cell is developing and check for any additional cells.",
+            "checklist": [
+              "Inspect the new colony to confirm the queen cell is developing.",
+              "Check for any additional queen cells that may have been started.",
+              "Confirm the new colony has adequate stores and space."
+            ]
+          },
+          "secondQueenCellCheck": {
+            "title": "Second queen-cell check",
+            "summary": "Recheck about a week later to confirm the queen cell is capped and monitor the parent colony.",
+            "checklist": [
+              "Confirm the queen cell is capped and developing normally.",
+              "Check the parent colony for any new queen cells.",
+              "Assess space and stores in both colonies."
+            ]
+          },
+          "colonyReview": {
+            "title": "Colony review",
+            "summary": "Assess both colonies, confirm the new queen is emerging or laying, and decide on next steps for the season.",
+            "checklist": [
+              "Check the new colony for queen emergence or laying pattern.",
+              "Confirm the parent colony is settling and laying normally.",
+              "Assess space, brood pattern, and nectar intake in both colonies."
+            ]
+          }
+        }
+      },
+      "warnings": {
+        "lateQueenCellCheck": {
+          "title": "First queen-cell check is later than day 8",
+          "description": "This delay increases the risk of missing queen cell development. Try to keep the first follow-up within the 7 to 8 day window."
+        },
+        "unsafeCheckpointSpacing": {
+          "title": "Checkpoint spacing looks risky",
+          "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make monitoring less reliable."
+        },
+        "illogicalScheduleOrder": {
+          "title": "Checkpoint order is no longer chronological",
+          "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+        }
+      }
+    },
+    "cushmanCredit": {
+      "text": "Method references sourced from the Dave Cushman Beekeeping Website.",
+      "linkLabel": "Dave Cushman Beekeeping Website"
     }
   },
   "varroaManagement": {

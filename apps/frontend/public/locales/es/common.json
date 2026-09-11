@@ -8,5 +8,440 @@
         }
       }
     }
+  },
+  "swarmManagement": {
+    "pagden": {
+      "badge": "",
+      "title": "",
+      "description": "",
+      "intro": "",
+      "overviewTitle": "",
+      "overviewLead": "",
+      "overviewPoints": [
+        "",
+        "",
+        ""
+      ],
+      "prerequisitesTitle": "",
+      "prerequisites": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "stepsTitle": "",
+      "stepsDescription": "",
+      "methodDetail": {
+        "preparation": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        },
+        "relocateQueen": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        },
+        "queenCells": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "",
+      "advantagesDescription": "",
+      "advantages": [
+        "",
+        "",
+        ""
+      ],
+      "followUpTitle": "",
+      "followUpDayHeader": "",
+      "followUpTaskHeader": "",
+      "followUp": [
+        {
+          "day": "",
+          "task": ""
+        },
+        {
+          "day": "",
+          "task": ""
+        },
+        {
+          "day": "",
+          "task": ""
+        }
+      ],
+      "prosConsTitle": "",
+      "prosTitle": "",
+      "consTitle": "",
+      "pros": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "cons": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "faq": {
+        "title": "",
+        "items": [
+          {
+            "question": "",
+            "answer": ""
+          },
+          {
+            "question": "",
+            "answer": ""
+          },
+          {
+            "question": "",
+            "answer": ""
+          },
+          {
+            "question": "",
+            "answer": ""
+          }
+        ]
+      },
+      "planner": {
+        "title": "",
+        "description": "",
+        "selectHiveLabel": "",
+        "selectHivePlaceholder": "",
+        "startDateLabel": "",
+        "startDatePlaceholder": "",
+        "generateButton": "",
+        "saveButton": "",
+        "checkpointPrefix": "",
+        "notesChecklistLabel": "",
+        "savedSuccess": "",
+        "savedPartial": "",
+        "savedError": "",
+        "noHivesMessage": "",
+        "checkpoints": {
+          "setup": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          },
+          "queenCellCheck": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          },
+          "secondQueenCellCheck": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          },
+          "colonyReview": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      },
+      "warnings": {
+        "lateQueenCellCheck": {
+          "title": "",
+          "description": ""
+        },
+        "unsafeCheckpointSpacing": {
+          "title": "",
+          "description": ""
+        },
+        "illogicalScheduleOrder": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    "artificialSwarm": {
+      "badge": "",
+      "title": "",
+      "description": "",
+      "intro": "",
+      "overviewTitle": "",
+      "overviewLead": "",
+      "overviewPoints": [
+        "",
+        "",
+        ""
+      ],
+      "prerequisitesTitle": "",
+      "prerequisites": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "stepsTitle": "",
+      "stepsDescription": "",
+      "methodDetail": {
+        "preparation": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        },
+        "relocateQueen": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        },
+        "queenCells": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "",
+          "items": [
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            },
+            {
+              "text": ""
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "",
+      "advantagesDescription": "",
+      "advantages": [
+        "",
+        "",
+        ""
+      ],
+      "followUpTitle": "",
+      "followUpDayHeader": "",
+      "followUpTaskHeader": "",
+      "followUp": [
+        {
+          "day": "",
+          "task": ""
+        },
+        {
+          "day": "",
+          "task": ""
+        },
+        {
+          "day": "",
+          "task": ""
+        }
+      ],
+      "prosConsTitle": "",
+      "prosTitle": "",
+      "consTitle": "",
+      "pros": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "cons": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "faq": {
+        "title": "",
+        "items": [
+          {
+            "question": "",
+            "answer": ""
+          },
+          {
+            "question": "",
+            "answer": ""
+          },
+          {
+            "question": "",
+            "answer": ""
+          },
+          {
+            "question": "",
+            "answer": ""
+          }
+        ]
+      },
+      "planner": {
+        "title": "",
+        "description": "",
+        "selectHiveLabel": "",
+        "selectHivePlaceholder": "",
+        "startDateLabel": "",
+        "startDatePlaceholder": "",
+        "generateButton": "",
+        "saveButton": "",
+        "checkpointPrefix": "",
+        "notesChecklistLabel": "",
+        "savedSuccess": "",
+        "savedPartial": "",
+        "savedError": "",
+        "noHivesMessage": "",
+        "checkpoints": {
+          "setup": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          },
+          "queenCellCheck": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          },
+          "secondQueenCellCheck": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          },
+          "colonyReview": {
+            "title": "",
+            "summary": "",
+            "checklist": [
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      },
+      "warnings": {
+        "lateQueenCellCheck": {
+          "title": "",
+          "description": ""
+        },
+        "unsafeCheckpointSpacing": {
+          "title": "",
+          "description": ""
+        },
+        "illogicalScheduleOrder": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    "cushmanCredit": {
+      "text": "",
+      "linkLabel": ""
+    },
+    "cards": {
+      "pagden": {
+        "detail": "",
+        "cta": ""
+      },
+      "artificialSwarm": {
+        "detail": "",
+        "cta": ""
+      }
+    }
   }
 }
