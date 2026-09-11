@@ -79,9 +79,14 @@ export class ActionsService {
           data: {
             actionId,
             product: details.product,
+            productId: details.productId ?? null,
             quantity: details.quantity,
             unit: details.unit,
             duration: details.duration,
+            miteCountMethod: details.miteCountMethod ?? null,
+            miteCountBefore: details.miteCountBefore ?? null,
+            miteCountAfter: details.miteCountAfter ?? null,
+            miteSampleSize: details.miteSampleSize ?? null,
           },
         });
         break;
@@ -724,9 +729,18 @@ export class ActionsService {
           details: {
             type: ActionType.TREATMENT,
             product: prismaAction.treatmentAction.product,
+            productId: prismaAction.treatmentAction.productId ?? undefined,
             quantity: convertedQuantity,
             unit: convertedTreatmentUnit,
             duration: prismaAction.treatmentAction.duration ?? undefined,
+            miteCountMethod:
+              prismaAction.treatmentAction.miteCountMethod ?? undefined,
+            miteCountBefore:
+              prismaAction.treatmentAction.miteCountBefore ?? undefined,
+            miteCountAfter:
+              prismaAction.treatmentAction.miteCountAfter ?? undefined,
+            miteSampleSize:
+              prismaAction.treatmentAction.miteSampleSize ?? undefined,
           },
         };
       }

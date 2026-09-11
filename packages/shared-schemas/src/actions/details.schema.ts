@@ -35,9 +35,20 @@ export const feedingActionDetailsSchema = z.object({
 export const treatmentActionDetailsSchema = z.object({
   type: z.literal(ActionType.TREATMENT),
   product: z.string(),
+  // Optional link to a catalog product (built-in or the user's custom). When
+  // set, its composition + quantity/unit drive per-colony ingredient totals.
+  productId: z.string().uuid().optional().nullable(),
   quantity: z.number().positive().optional().nullable(),
   unit: z.string(),
   duration: z.string().optional(),
+  // Optional efficacy tracking (mite counts around the treatment).
+  miteCountMethod: z
+    .enum(['NATURAL_DROP', 'SUGAR_ROLL', 'ALCOHOL_WASH', 'CO2', 'OTHER'])
+    .optional()
+    .nullable(),
+  miteCountBefore: z.number().nonnegative().optional().nullable(),
+  miteCountAfter: z.number().nonnegative().optional().nullable(),
+  miteSampleSize: z.number().int().positive().optional().nullable(),
 });
 
 export const frameActionDetailsSchema = z.object({

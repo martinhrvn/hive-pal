@@ -7,7 +7,7 @@ setup('authenticate as admin', async ({ page }) => {
   await page.goto('/login');
   await page.getByLabel('email').fill(process.env.ADMIN_EMAIL);
   await page.getByLabel('password').fill(process.env.ADMIN_PASSWORD);
-  await page.getByRole('button', { name: /sign in/i }).click();
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Hive Pal' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Dashboard' })).toBeVisible();
   await page.context().storageState({ path: adminFile });

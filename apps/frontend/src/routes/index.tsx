@@ -72,6 +72,11 @@ const ReportsPage = lazyWithRetry(() =>
     default: m.ReportsPage,
   })),
 );
+const TreatmentProductsPage = lazyWithRetry(() =>
+  import('@/pages/treatment-products/treatment-products-page').then(m => ({
+    default: m.TreatmentProductsPage,
+  })),
+);
 const CalendarPage = lazyWithRetry(() =>
   import('@/pages/calendar/calendar-page').then(m => ({
     default: m.CalendarPage,
@@ -473,6 +478,14 @@ const router = createBrowserRouter([
         element: (
           <LazyPage>
             <EquipmentSettingsPage />
+          </LazyPage>
+        ),
+      },
+      {
+        path: '/treatment-products',
+        element: (
+          <LazyPage>
+            <TreatmentProductsPage />
           </LazyPage>
         ),
       },

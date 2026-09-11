@@ -36,7 +36,8 @@
     "swarmManagement": "Swarm Management",
     "liebefelder": "Liebefelder Method",
     "varroaManagement": "Varroa Management",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "treatmentProducts": "Treatment products"
   },
   "actions": {
     "save": "Save",
@@ -1236,6 +1237,8 @@
   "reports": {
     "title": "Reports",
     "selectApiary": "Select an apiary to view reports",
+    "treatmentTotals": "Active ingredients applied (across products)",
+    "treatmentTotalsEmpty": "No treatments recorded for this period.",
     "tabs": {
       "overview": "Overview",
       "charts": "Charts",
@@ -1716,5 +1719,29 @@
         }
       }
     }
+  },
+  "treatmentProducts": {
+    "title": "Treatment products",
+    "subtitle": "Define your own treatment products and their active-ingredient composition.",
+    "add": "Add product",
+    "noComposition": "No composition set",
+    "withdrawalDays": "Withdrawal: {{d}} days",
+    "withdrawalUnknown": "Withdrawal: n/a",
+    "editTitle": "Edit product",
+    "dialogHint": "Set the physical form and the active ingredients with their concentration.",
+    "name": "Name",
+    "form": "Physical form",
+    "method": "Application (optional)",
+    "defaultUnit": "Amount unit",
+    "withdrawal": "Withdrawal (days)",
+    "composition": "Active ingredients",
+    "addIngredient": "Add ingredient",
+    "density": "Density (g/ml)",
+    "densityHint": "Density is required to convert between the amount unit and a concentration measured differently.",
+    "advanced": "Advanced",
+    "cancel": "Cancel",
+    "save": "Save",
+    "deleteTitle": "Delete treatment product?",
+    "deleteDesc": "This removes your custom product. This cannot be undone."
   }
 }

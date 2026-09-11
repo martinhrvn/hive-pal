@@ -30,6 +30,7 @@ import { AlertsModule } from './alerts/alerts.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { FrameSizesModule } from './frame-sizes/frame-sizes.module';
+import { TreatmentProductsModule } from './treatment-products/treatment-products.module';
 import { MailModule } from './mail/mail.module';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { ReportsModule } from './reports/reports.module';
@@ -86,6 +87,7 @@ import { AccountTransferModule } from './account-transfer/account-transfer.modul
     CalendarModule,
     FeedbackModule,
     FrameSizesModule,
+    TreatmentProductsModule,
     MailModule,
     ReportsModule,
     PlatformMetricsModule,

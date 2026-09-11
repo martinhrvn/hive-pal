@@ -24,3 +24,4 @@ export * from './useAdminMedia';
 export * from './useHiveScale';
 export * from './useAssistant';
 export * from './useTodos';
+export * from './useTreatmentProducts';

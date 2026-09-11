@@ -7,6 +7,7 @@ import {
   MapPin,
   Droplets,
   Package,
+  FlaskConical,
   Layers,
   Calendar,
   BarChart3,
@@ -154,6 +155,13 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
       title: t('navigation.equipment', { defaultValue: 'Equipment' }),
       url: '/equipment',
       icon: Package,
+    },
+    {
+      title: t('navigation.treatmentProducts', {
+        defaultValue: 'Treatment products',
+      }),
+      url: '/treatment-products',
+      icon: FlaskConical,
     },
     ...(aiEnabled
       ? [

@@ -27,6 +27,7 @@ model User {
   preferences            Json?                  // JSON field for user preferences
   feedbacks              Feedback[]
   frameSizes             FrameSize[]
+  treatmentProducts      TreatmentProduct[]
   shareLinks             ShareLink[]
   apiaryMemberships      ApiaryMember[]
   createdInspections     Inspection[]           @relation("InspectionCreator")
@@ -456,10 +457,111 @@ model TreatmentAction {
   id       String  @id @default(uuid())
   actionId String  @unique
   action   Action  @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  product  String // Apivar, Formic Pro, etc.
+  product  String // Free-text label / uncatalogued fallback (Apivar, Formic Pro, etc.)
   quantity Float? // Numeric quantity (optional for some treatments like fumigation)
   unit     String // pcs, ml, g
   duration String? // 7 days, 14 days, etc.
+
+  // Link to the catalog product this treatment used (null = uncatalogued/legacy).
+  // Its composition + this quantity/unit drive per-colony active-ingredient totals.
+  productId        String?
+  treatmentProduct TreatmentProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  // Optional efficacy tracking. Same method before & after ->
+  // efficacy% = (before - after) / before. NATURAL_DROP = mites/day;
+  // SUGAR_ROLL / ALCOHOL_WASH = mites per sample of `miteSampleSize` bees.
+  miteCountMethod MiteCountMethod?
+  miteCountBefore Float?
+  miteCountAfter  Float?
+  miteSampleSize  Int?
+
+  @@index([productId])
+}
+
+// Physical form of a treatment product (drives how it is applied / how amount is measured).
+enum TreatmentPhysicalForm {
+  LIQUID
+  POWDER
+  GEL
+  STRIP
+  GASEOUS
+}
+
+// Optional application method (independent of physical form: a liquid can be trickled or sprayed).
+enum TreatmentApplicationMethod {
+  TRICKLE
+  SPRAY
+  SUBLIMATE
+  EVAPORATE
+  INSERT
+  OTHER
+}
+
+// Method used to count Varroa mites for efficacy calculation.
+enum MiteCountMethod {
+  NATURAL_DROP
+  SUGAR_ROLL
+  ALCOHOL_WASH
+  CO2
+  OTHER
+}
+
+// Canonical active substance (oxalic acid, formic acid, thymol, ...). Shared
+// identity so applied amounts can be summed across different products. Seeded
+// with built-ins; extensible (users/admins may add more).
+model ActiveIngredient {
+  id              String  @id @default(uuid())
+  key             String  @unique // canonical key, e.g. "OXALIC_ACID"
+  name            String // display name, e.g. "Oxalic acid (dihydrate)"
+  isBuiltIn       Boolean @default(true)
+  createdByUserId String? // set for user-added ingredients
+
+  compositions TreatmentProductIngredient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// A treatment product in the catalog. `userId = null` => global built-in
+// (or, in the future, an approved community product); `userId` set => a private
+// custom product owned by that user. Nullable userId keeps the door open for a
+// shared, admin-approved catalog without a schema rewrite.
+model TreatmentProduct {
+  id                   String                      @id @default(uuid())
+  userId               String? // null = global built-in; set = private custom
+  user                 User?                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                 String
+  physicalForm         TreatmentPhysicalForm
+  applicationMethod    TreatmentApplicationMethod?
+  defaultUnit          String? // suggested amount unit (ml, g, pcs)
+  density              Float? // g/ml — only needed when amount unit and concentration basis differ dimensions
+  withdrawalPeriodDays Int? // honey withdrawal period (Wartezeit); null = unknown
+  isBuiltIn            Boolean                     @default(false)
+
+  ingredients      TreatmentProductIngredient[]
+  treatmentActions TreatmentAction[]
+
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  // Built-in uniqueness (name WHERE user_id IS NULL) and per-user uniqueness
+  // (userId, name) are enforced via partial unique indexes in the migration SQL.
+}
+
+// One active-ingredient entry in a product's composition, at a given concentration.
+model TreatmentProductIngredient {
+  id                 String           @id @default(uuid())
+  productId          String
+  product            TreatmentProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  activeIngredientId String
+  activeIngredient   ActiveIngredient @relation(fields: [activeIngredientId], references: [id], onDelete: Restrict)
+  concentration      Float // e.g. 44
+  concentrationUnit  String // "mg/ml" | "g/l" | "%w/w" | "mg/g" | "mg/piece"
+
+  @@unique([productId, activeIngredientId])
+  @@index([activeIngredientId])
 }
 
 // Frame-specific details

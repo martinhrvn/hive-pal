@@ -18,6 +18,7 @@ import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 import { QueenHistoryTab } from './queen-history-tab';
 import { HiveStatusButton } from './hive-status-button';
 import { HiveTodos } from './hive-todos';
+import { TreatmentSummary } from './treatment-summary';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { useImageDisplayStore } from '@/stores/image-display-store';
 import { AlertTriangle, Map } from 'lucide-react';
@@ -259,6 +260,7 @@ export const HiveDetailPage = () => {
                 </Alert>
               )}
               {hiveId && <HiveTodos hiveId={hiveId} />}
+              {hiveId && <TreatmentSummary hiveId={hiveId} />}
               <HiveTimeline hiveId={hiveId} apiaryId={hive?.apiaryId} />
             </TabsContent>
 

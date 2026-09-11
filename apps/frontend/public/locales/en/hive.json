@@ -306,5 +306,12 @@
       "harvest": "Harvest",
       "note": "Note"
     }
+  },
+  "treatmentSummary": {
+    "title": "Applied active ingredients",
+    "inWithdrawal": "In withdrawal until {{date}} ({{product}})",
+    "safeToHarvest": "Withdrawal passed — safe to harvest",
+    "empty": "No treatments with a known composition yet.",
+    "incompleteHint": "{{n}} treatment(s) could not be converted (missing density / incompatible units)"
   }
 }
