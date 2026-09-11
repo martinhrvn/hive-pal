@@ -33,6 +33,7 @@ import { TrendIndicator } from '@/components/common/trend-indicator';
 import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
 import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 import {
   MainContent,
@@ -98,6 +99,7 @@ export const InspectionListPage = () => {
   );
 
   const { data: hivesData, isLoading: isLoadingHives } = useHives();
+  const { formatTime } = useDateFormat();
 
   // Declarative columns for the inspection tables. Kept stable per relevant
   // input so `useColumnVisibility` doesn't churn.
@@ -110,8 +112,9 @@ export const InspectionListPage = () => {
         activeTab,
         navigate,
         canEdit,
+        formatTime,
       }),
-    [t, hivesData, isSubjective, activeTab, navigate, canEdit],
+    [t, hivesData, isSubjective, activeTab, navigate, canEdit, formatTime],
   );
 
   // User-toggleable, persisted column visibility (shared across the tabs).
@@ -496,6 +499,7 @@ const buildInspectionColumns = ({
   activeTab,
   navigate,
   canEdit,
+  formatTime,
 }: {
   t: TFn;
   hives: HiveResponse[];
@@ -503,6 +507,7 @@ const buildInspectionColumns = ({
   activeTab: InspectionTab;
   navigate: (path: string) => void;
   canEdit: boolean;
+  formatTime: (date: Date | string) => string;
 }): DataTableColumn<InspectionResponse>[] => {
   const strengthHeader =
     activeTab === InspectionTab.UPCOMING || isSubjective
@@ -562,10 +567,7 @@ const buildInspectionColumns = ({
           })}
           <br />
           <span className="text-xs text-muted-foreground">
-            {new Date(inspection.date).toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {formatTime(new Date(inspection.date))}
           </span>
         </div>
       ),

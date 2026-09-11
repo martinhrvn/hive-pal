@@ -75,6 +75,8 @@ export const UserSettingsPage = () => {
   const [settings, setSettings] = useState<Omit<UserPreferences, 'theme'>>({
     language: normalizeLanguageCode(i18n.language || 'en'),
     dateFormat: 'MM/DD/YYYY',
+    weekStartsOn: 'monday',
+    timeFormat: '24h',
     units: 'metric',
     emailNotifications: true,
     pushNotifications: false,
@@ -90,6 +92,8 @@ export const UserSettingsPage = () => {
           preferences.data.language || i18n.language || 'en',
         ),
         dateFormat: preferences.data.dateFormat || 'MM/DD/YYYY',
+        weekStartsOn: preferences.data.weekStartsOn || 'monday',
+        timeFormat: preferences.data.timeFormat || '24h',
         units: preferences.data.units || 'metric',
         emailNotifications: preferences.data.emailNotifications ?? true,
         pushNotifications: preferences.data.pushNotifications ?? false,
@@ -186,6 +190,62 @@ export const UserSettingsPage = () => {
                     <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
                     <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
                     <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="weekStartsOn">
+                  {t('settings.firstDayOfWeek', {
+                    defaultValue: 'First day of week',
+                  })}
+                </Label>
+                <Select
+                  value={settings.weekStartsOn}
+                  onValueChange={(value: 'monday' | 'sunday') =>
+                    setSettings({ ...settings, weekStartsOn: value })
+                  }
+                >
+                  <SelectTrigger id="weekStartsOn">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monday">
+                      {t('settings.monday', { defaultValue: 'Monday' })}
+                    </SelectItem>
+                    <SelectItem value="sunday">
+                      {t('settings.sunday', { defaultValue: 'Sunday' })}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="timeFormat">
+                  {t('settings.timeFormat', { defaultValue: 'Time format' })}
+                </Label>
+                <Select
+                  value={settings.timeFormat}
+                  onValueChange={(value: '12h' | '24h') =>
+                    setSettings({ ...settings, timeFormat: value })
+                  }
+                >
+                  <SelectTrigger id="timeFormat">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="24h">
+                      {t('settings.time24h', {
+                        defaultValue: '24-hour (17:00)',
+                      })}
+                    </SelectItem>
+                    <SelectItem value="12h">
+                      {t('settings.time12h', {
+                        defaultValue: '12-hour (5:00 PM)',
+                      })}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

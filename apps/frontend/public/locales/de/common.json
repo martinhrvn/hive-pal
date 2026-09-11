@@ -340,7 +340,13 @@
         "deleteAccountButton": "Mein Konto löschen",
         "deleteAccountDeleting": "Konto wird gelöscht...",
         "accountDeleted": "Dein Konto wurde gelöscht.",
-        "deleteAccountFailed": "Das Löschen des Kontos ist fehlgeschlagen. Bitte versuchen es erneut."
+        "deleteAccountFailed": "Das Löschen des Kontos ist fehlgeschlagen. Bitte versuchen es erneut.",
+        "firstDayOfWeek": "Erster Tag der Woche",
+        "monday": "Montag",
+        "sunday": "Sonntag",
+        "timeFormat": "Zeitformat",
+        "time24h": "24-Stunden (17:00)",
+        "time12h": "12-Stunden (5:00 PM)"
     },
     "feedback": {
         "title": "Feedback senden",
