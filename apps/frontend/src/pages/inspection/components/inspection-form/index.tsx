@@ -49,6 +49,10 @@ import { PhotosSection, PendingPhoto } from './photos-section';
 import { ScorePreviewSection } from './score-preview';
 import { AiMergeBanner } from '@/pages/inspection/components/inspection-form/ai-merge-banner';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
+import {
+  getDefaultInspectionDateTime,
+  saveLastInspectionTimePreference,
+} from '@/utils/inspection-time-preference';
 import { FrameCountSection } from './frame-counts';
 import { uploadPendingPhotos } from './upload-pending-photos';
 import { uploadPendingRecordings } from './upload-pending-recordings';
@@ -126,13 +130,22 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     enabled: !!inspectionId,
   });
 
+  // For a brand-new inspection, seed the date/time and all-day flag from the
+  // user's last-used choice (persisted in localStorage). Computed once on mount.
+  // Editing an existing inspection keeps that inspection's own stored values.
+  const [newInspectionDefaults] = useState(() =>
+    inspectionId ? null : getDefaultInspectionDateTime(),
+  );
+
   const form = useForm<InspectionFormData>({
     resolver: zodResolver(inspectionSchema),
     defaultValues: {
       hiveId,
       ...inspection,
-      date: inspection?.date ? new Date(inspection.date) : new Date(),
-      isAllDay: inspection?.isAllDay ?? true,
+      date: inspection?.date
+        ? new Date(inspection.date)
+        : (newInspectionDefaults?.date ?? new Date()),
+      isAllDay: inspection?.isAllDay ?? newInspectionDefaults?.isAllDay ?? true,
       // Cast: RHF types defaultValues as DeepPartial, which makes the action
       // discriminant (`type`) optional and breaks discriminated-union narrowing.
       // The mapping below produces correctly-shaped action objects at runtime.
@@ -367,6 +380,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       onSubmitSuccess(formattedData);
       return;
     }
+    // Remember this time-of-day choice so the next new inspection defaults to it.
+    saveLastInspectionTimePreference(data.date, data.isAllDay ?? true);
     const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
     // Return the promise so RHF's isSubmitting stays true until the save
     // resolves — otherwise the save button re-enables before the request
@@ -386,6 +401,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       onSubmitSuccess(formattedData);
       return;
     }
+    // Remember this time-of-day choice so the next new inspection defaults to it.
+    saveLastInspectionTimePreference(data.date, data.isAllDay ?? true);
     await onSubmit(formattedData, InspectionStatus.COMPLETED);
   });
 
@@ -507,6 +524,19 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                         form.setValue('isAllDay', checked)
                       }
                     />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      onClick={() => {
+                        // Set the inspection to the current date and time.
+                        form.setValue('isAllDay', false);
+                        field.onChange(new Date());
+                      }}
+                    >
+                      {t('inspection:form.now', { defaultValue: 'Now' })}
+                    </Button>
                   </div>
 
                   {isInFuture && (

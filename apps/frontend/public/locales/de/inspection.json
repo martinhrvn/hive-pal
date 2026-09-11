@@ -218,6 +218,7 @@
         "inspectionDate": "Inspektionsdatum",
         "pickDate": "Datum auswählen",
         "allDay": "All day",
+        "now": "Jetzt",
         "specificTime": "Set specific time",
         "futureScheduled": "Diese Inspektion ist für die Zukunft geplant",
         "futureScheduledDescription": "Sie planen eine Inspektion für ein zukünftiges Datum.",
