@@ -5,83 +5,131 @@
  * box type labels. Ensures consistent box rendering across all components.
  */
 
-import { BoxVariantEnum } from 'shared-schemas';
+import { BoxVariantEnum, BoxTypeEnum } from 'shared-schemas';
 
 /**
  * Display context for box height calculation
  * - 'hive-card': Compact hive card grid view
- * - 'minimap': Very compact minimap display (includes medium variant support)
+ * - 'minimap': Very compact minimap display
  * - 'detail': Large detail/configurator view
  */
 type BoxHeightContext = 'hive-card' | 'minimap' | 'detail';
 
 /**
- * Maps BoxVariantEnum values to Tailwind height classes for consistent box rendering.
+ * Approximate real-world external box (Zarge) heights in millimetres, keyed by
+ * variant. Boxes are rendered proportionally to these values so the stack
+ * matches reality (e.g. a shallow super is drawn clearly shorter than a deep).
  *
- * Different contexts use different height scales:
- * - hive-card: Compact (h-8 to h-12)
- * - minimap: Very compact with medium support (h-8 to h-15)
- * - detail: Large (h-20 to h-28)
+ * Sources: common commercial dimensions (Langstroth deep 9⅝"/medium 6⅝"/
+ * shallow 5¹¹⁄₁₆", Dadant brood ~300 mm, National deep/shallow).
+ */
+const VARIANT_HEIGHT_MM: Record<BoxVariantEnum, number> = {
+  [BoxVariantEnum.LANGSTROTH_DEEP]: 240,
+  [BoxVariantEnum.LANGSTROTH_MEDIUM]: 170,
+  [BoxVariantEnum.LANGSTROTH_SHALLOW]: 145,
+  [BoxVariantEnum.B_DEEP]: 225,
+  [BoxVariantEnum.B_SHALLOW]: 150,
+  [BoxVariantEnum.NATIONAL_DEEP]: 225,
+  [BoxVariantEnum.NATIONAL_SHALLOW]: 150,
+  [BoxVariantEnum.DADANT]: 300,
+  [BoxVariantEnum.WARRE]: 210,
+  [BoxVariantEnum.TOP_BAR]: 300,
+  [BoxVariantEnum.CUSTOM]: 240,
+};
+
+/**
+ * Real-world box heights in millimetres by box type. Used for hive systems
+ * whose single variant does not encode physical size — most importantly
+ * Dadant, where the same `DADANT` variant covers a full-height brood box, a
+ * ~half-height honey super and a ~third-height feeder — and as a fallback when
+ * a box has no variant set.
+ */
+const TYPE_HEIGHT_MM: Record<string, number> = {
+  [BoxTypeEnum.BROOD]: 300,
+  [BoxTypeEnum.HONEY]: 150,
+  [BoxTypeEnum.FEEDER]: 100,
+};
+
+/**
+ * Variants that map to a single physical box size in their enum value, so the
+ * box *type* must decide the rendered height instead of the variant. Dadant is
+ * the key case: brood/honey/feeder all share the `DADANT` variant but differ a
+ * lot in real height.
+ */
+const TYPE_DRIVEN_VARIANTS: BoxVariantEnum[] = [BoxVariantEnum.DADANT];
+
+/**
+ * Per-context rendering: `scale` converts millimetres to pixels (anchored so a
+ * ~300 mm brood box roughly matches the previous largest size in each context),
+ * `min` guarantees a legible minimum so tiny boxes still render a usable bar.
+ */
+const CONTEXT_RENDER: Record<BoxHeightContext, { scale: number; min: number }> =
+  {
+    detail: { scale: 112 / 300, min: 34 },
+    'hive-card': { scale: 48 / 300, min: 16 },
+    minimap: { scale: 40 / 300, min: 13 },
+  };
+
+/**
+ * Resolve the approximate real-world height (mm) of a box from its variant and
+ * type. Type-driven variants (Dadant) and variant-less boxes are resolved by
+ * type; everything else uses the variant's physical height.
+ */
+function resolveHeightMm(variant?: BoxVariantEnum, type?: string): number {
+  if (
+    variant &&
+    TYPE_DRIVEN_VARIANTS.includes(variant) &&
+    type &&
+    TYPE_HEIGHT_MM[type] != null
+  ) {
+    return TYPE_HEIGHT_MM[type];
+  }
+  if (variant && VARIANT_HEIGHT_MM[variant] != null) {
+    return VARIANT_HEIGHT_MM[variant];
+  }
+  if (type && TYPE_HEIGHT_MM[type] != null) {
+    return TYPE_HEIGHT_MM[type];
+  }
+  return VARIANT_HEIGHT_MM[BoxVariantEnum.LANGSTROTH_DEEP];
+}
+
+/**
+ * Calculate the rendered box height in **pixels**, proportional to the box's
+ * real-world height, for a given display context. Because Dadant honey/feeder
+ * boxes share one variant, the box `type` is needed to draw them at the correct
+ * (shorter) height.
  *
  * @param variant - The box variant enum value
- * @param context - The display context determining height scale
- * @returns A Tailwind CSS height class string (e.g., 'h-12')
+ * @param context - The display context determining the pixel scale
+ * @param type - The box type (BROOD/HONEY/FEEDER); required for correct Dadant
+ *   heights and used as a fallback when no variant is set
+ * @returns Height in pixels (number)
  *
  * @example
- * // Hive card view
- * const height = getBoxHeight(BoxVariantEnum.LANGSTROTH_DEEP, 'hive-card');
- * // Returns: 'h-12'
- *
- * // Minimap view
- * const height = getBoxHeight(BoxVariantEnum.LANGSTROTH_DEEP, 'minimap');
- * // Returns: 'h-15'
- *
- * // Detail view
- * const height = getBoxHeight(BoxVariantEnum.LANGSTROTH_DEEP, 'detail');
- * // Returns: 'h-28'
+ * getBoxHeight(BoxVariantEnum.DADANT, 'detail', BoxTypeEnum.BROOD); // 112
+ * getBoxHeight(BoxVariantEnum.DADANT, 'detail', BoxTypeEnum.HONEY); //  56
+ * getBoxHeight(BoxVariantEnum.DADANT, 'detail', BoxTypeEnum.FEEDER); // 37
  */
+/**
+ * Real-world box height in millimetres for a given variant/type — the same
+ * table that drives the rendered stack, exposed for other proportional
+ * visualizations (e.g. the hive header gradient).
+ */
+export function getBoxHeightMm(
+  variant?: BoxVariantEnum,
+  type?: string,
+): number {
+  return resolveHeightMm(variant, type);
+}
+
 export function getBoxHeight(
   variant?: BoxVariantEnum,
   context: BoxHeightContext = 'minimap',
-): string {
-  const deepVariants = [
-    BoxVariantEnum.LANGSTROTH_DEEP,
-    BoxVariantEnum.B_DEEP,
-    BoxVariantEnum.NATIONAL_DEEP,
-    BoxVariantEnum.DADANT,
-  ];
-
-  const mediumVariants = [BoxVariantEnum.LANGSTROTH_MEDIUM];
-
-  const shallowVariants = [
-    BoxVariantEnum.LANGSTROTH_SHALLOW,
-    BoxVariantEnum.B_SHALLOW,
-    BoxVariantEnum.NATIONAL_SHALLOW,
-  ];
-
-  // Hive card context: compact display in grid
-  if (context === 'hive-card') {
-    if (!variant) return 'h-8';
-    if (deepVariants.includes(variant)) return 'h-12';
-    if (shallowVariants.includes(variant)) return 'h-8';
-    return 'h-10'; // Default for WARRE, TOP_BAR, CUSTOM
-  }
-
-  // Detail context: large display for box configurator
-  if (context === 'detail') {
-    if (!variant) return 'h-20';
-    if (deepVariants.includes(variant)) return 'h-28';
-    if (mediumVariants.includes(variant)) return 'h-24';
-    if (shallowVariants.includes(variant)) return 'h-20';
-    return 'h-24'; // Default for WARRE, TOP_BAR, CUSTOM
-  }
-
-  // Minimap context (default): very compact display with medium support
-  if (!variant) return 'h-10';
-  if (deepVariants.includes(variant)) return 'h-15';
-  if (mediumVariants.includes(variant)) return 'h-12';
-  if (shallowVariants.includes(variant)) return 'h-10';
-  return 'h-8'; // Default for WARRE, TOP_BAR, CUSTOM
+  type?: string,
+): number {
+  const mm = resolveHeightMm(variant, type);
+  const { scale, min } = CONTEXT_RENDER[context];
+  return Math.round(Math.max(min, mm * scale));
 }
 
 /**

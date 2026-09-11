@@ -30,7 +30,7 @@ export const BoxItem = ({
   isEditing,
   frameSizeName,
 }: BoxItemProps) => {
-  const height = getBoxHeight(box.variant, 'detail');
+  const height = getBoxHeight(box.variant, 'detail', box.type);
   const defaultColor = '#CD853F'; // Default wood color
 
   const getBoxTypeBadgeClass = (type: string) => {
@@ -46,11 +46,11 @@ export const BoxItem = ({
     <div
       className={cn(
         'relative w-64 rounded border-2 cursor-pointer transition-all',
-        height,
         isSelected && isEditing ? 'ring-2 ring-primary ring-offset-2' : '',
         isEditing ? 'hover:shadow-lg' : '',
       )}
       style={{
+        height: `${height}px`,
         backgroundColor: box.color || defaultColor,
         borderColor: 'rgba(0, 0, 0, 0.2)',
       }}
@@ -81,8 +81,8 @@ export const BoxItem = ({
         </span>
       </div>
 
-      {/* Frame size name */}
-      {frameSizeName && (
+      {/* Frame size name (hidden on short boxes to avoid overlapping badge/frame count) */}
+      {frameSizeName && height >= 56 && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <span
             className="text-white/70 text-xs font-medium"
