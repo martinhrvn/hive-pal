@@ -50,7 +50,9 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
   const deleteDialog = useDeleteDialog(
     () => {
       if (!hiveId) throw new Error('Hive ID is required');
-      return deleteHive.mutateAsync(hiveId);
+      // Pass the hive's own apiary so the delete targets the right apiary even
+      // in cross-apiary "view all" mode (where the selected apiary may differ).
+      return deleteHive.mutateAsync({ id: hiveId, apiaryId: hive?.apiaryId });
     },
     () => navigate(`/apiaries/${hive?.apiaryId}`),
   );

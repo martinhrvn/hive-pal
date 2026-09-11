@@ -64,7 +64,9 @@
         "teams": "Teams",
         "addApiary": "Bienenstand hinzufügen",
         "noApiarySelected": "Kein Bienenstand ausgewählt",
-        "selectOrCreate": "Bienenstand auswählen oder erstellen"
+        "selectOrCreate": "Bienenstand auswählen oder erstellen",
+        "allApiaries": "Alle Bienenstände",
+        "allApiariesSubtitle": "Alle Bienenstände werden angezeigt"
     },
     "map": {
         "selectLocation": "Standort des Bienenstands auswählen",

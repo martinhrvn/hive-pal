@@ -18,7 +18,11 @@ import { HiveService } from './hive.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
 import {
@@ -63,32 +67,36 @@ export class HiveController {
   }
 
   @Get()
+  @AllowAllApiaries()
   @ZodValidation(hiveFilterSchema)
   findAll(
     @Query() query: HiveFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<HiveResponse[]> {
     this.logger.log(
-      `Getting all hives for apiary: ${req.apiaryId} and user: ${req.user.id}`,
+      `Getting all hives for apiary: ${req.apiaryId ?? 'ALL'} and user: ${req.user.id}`,
     );
     return this.hiveService.findAll({
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
       ...query,
     });
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<HiveDetailResponse> {
     this.logger.log(
-      `Getting hive details for ID: ${id} in apiary: ${req.apiaryId}`,
+      `Getting hive details for ID: ${id} in apiary: ${req.apiaryId ?? 'ALL'}`,
     );
     return this.hiveService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

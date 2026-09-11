@@ -4,7 +4,8 @@
     "caption": "Keep track of tasks for this apiary.",
     "empty": "No todos yet.",
     "emptyOpen": "No open todos. Nice work!",
-    "showCompleted": "Show completed"
+    "showCompleted": "Show completed",
+    "captionAll": "Keep track of tasks for all apiaries."
   },
   "quickAdd": {
     "placeholder": "Add a todo…",

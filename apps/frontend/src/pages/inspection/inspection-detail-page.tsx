@@ -167,6 +167,7 @@ export const InspectionDetailPage = () => {
               inspectionId={inspection.id}
               status={inspection.status}
               inspectionDate={inspection.date}
+              apiaryId={hive.apiaryId}
             />
           </div>
 

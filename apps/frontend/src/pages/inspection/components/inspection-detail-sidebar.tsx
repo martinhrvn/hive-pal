@@ -19,6 +19,7 @@ import {
 } from '@/components/sidebar';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
+import { useHiveApiaryLookup } from '@/api/hooks/useHives';
 import { ActionType } from 'shared-schemas';
 import {
   Dialog,
@@ -42,6 +43,7 @@ export const InspectionDetailSidebar: React.FC<
   const navigate = useNavigate();
   const { canEdit } = useApiaryPermission();
   const deleteInspection = useDeleteInspection();
+  const lookupApiaryId = useHiveApiaryLookup();
   const { data: inspection } = useInspection(inspectionId, {
     enabled: !!inspectionId,
   });
@@ -59,7 +61,11 @@ export const InspectionDetailSidebar: React.FC<
 
   const handleDelete = async (revertFrames = false) => {
     try {
-      await deleteInspection.mutateAsync({ id: inspectionId, revertFrames });
+      await deleteInspection.mutateAsync({
+        id: inspectionId,
+        revertFrames,
+        apiaryId: lookupApiaryId(hiveId),
+      });
       setShowDeleteDialog(false);
       navigate(`/hives/${hiveId}`);
     } catch (error) {
@@ -143,11 +149,11 @@ export const InspectionDetailSidebar: React.FC<
             <DialogDescription>
               {hasFrameModification
                 ? `${t(
-                  frameDelta > 0
-                    ? 'inspection:detailSidebar.frameModificationAdded'
-                    : 'inspection:detailSidebar.frameModificationRemoved',
-                  { count: Math.abs(frameDelta) },
-                )} ${t('inspection:detailSidebar.frameModificationQuestion')}`
+                    frameDelta > 0
+                      ? 'inspection:detailSidebar.frameModificationAdded'
+                      : 'inspection:detailSidebar.frameModificationRemoved',
+                    { count: Math.abs(frameDelta) },
+                  )} ${t('inspection:detailSidebar.frameModificationQuestion')}`
                 : t('common:confirmDelete')}
             </DialogDescription>
           </DialogHeader>
@@ -192,8 +198,8 @@ export const InspectionDetailSidebar: React.FC<
               >
                 {deleteInspection.isPending
                   ? t('common:actions.deleting', {
-                    defaultValue: 'Deleting...',
-                  })
+                      defaultValue: 'Deleting...',
+                    })
                   : t('common:actions.delete', { defaultValue: 'Delete' })}
               </Button>
             </DialogFooter>

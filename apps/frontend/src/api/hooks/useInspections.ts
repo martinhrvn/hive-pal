@@ -23,24 +23,34 @@ import type {
 } from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useNavigate } from 'react-router-dom';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
-import { useUpdateHiveBoxes } from './useHives';
+import { useUpdateHiveBoxes, apiaryHeaderConfig } from './useHives';
 import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
 
 // Query keys
 const INSPECTIONS_KEYS = {
   all: ['inspections'] as const,
   lists: () => [...INSPECTIONS_KEYS.all, 'list'] as const,
-  list: (filters: InspectionFilter | undefined) =>
-    [...INSPECTIONS_KEYS.lists(), filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key so a
+  // cross-apiary result is never served for a single apiary (or vice versa).
+  list: (scope: string | null, filters: InspectionFilter | undefined) =>
+    [...INSPECTIONS_KEYS.lists(), scope, filters] as const,
   details: () => [...INSPECTIONS_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...INSPECTIONS_KEYS.details(), id] as const,
 };
 
+// Resolve the current apiary scope: 'all' in view-all mode, otherwise the
+// selected apiary id (or null when nothing is selected yet).
+const useApiaryScope = () => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const viewAllApiaries = useApiaryStore(state => state.viewAllApiaries);
+  return viewAllApiaries ? 'all' : activeApiaryId;
+};
+
 // Get all inspections with optional filtering
 export const useInspections = (filters?: InspectionFilter) => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: INSPECTIONS_KEYS.list(filters),
+    queryKey: INSPECTIONS_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.append('hiveId', filters.hiveId);
@@ -52,45 +62,45 @@ export const useInspections = (filters?: InspectionFilter) => {
       const response = await apiClient.get<InspectionResponse[]>(url);
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
 // Get overdue inspections
 export const useOverdueInspections = () => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: ['inspections', 'overdue'],
+    queryKey: ['inspections', 'overdue', scope],
     queryFn: async () => {
       const response = await apiClient.get<InspectionResponse[]>(
         '/api/inspections/status/overdue',
       );
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
 // Get inspections due today
 export const useDueTodayInspections = () => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: ['inspections', 'due-today'],
+    queryKey: ['inspections', 'due-today', scope],
     queryFn: async () => {
       const response = await apiClient.get<InspectionResponse[]>(
         '/api/inspections/status/due-today',
       );
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
 // Get upcoming inspections (future pending inspections)
 export const useUpcomingInspections = (limit?: number) => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: ['inspections', 'upcoming', limit],
+    queryKey: ['inspections', 'upcoming', scope, limit],
     queryFn: async () => {
       // Get tomorrow's date as start
       const tomorrow = new Date();
@@ -112,7 +122,7 @@ export const useUpcomingInspections = (limit?: number) => {
 
       return limit ? sorted.slice(0, limit) : sorted;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
@@ -210,15 +220,22 @@ export const transformActionsForApi = (
     .filter((a): a is CreateAction => Boolean(a));
 };
 
-// Create a new inspection
+// Create a new inspection. Accepts either a bare CreateInspection payload or an
+// object with an explicit target apiaryId (for cross-apiary writes in view-all
+// mode — the inspection's hive may live in a non-active apiary).
 export const useCreateInspection = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateInspection) => {
+    mutationFn: async (
+      input: CreateInspection | { data: CreateInspection; apiaryId?: string },
+    ) => {
+      const { data, apiaryId } =
+        'data' in input ? input : { data: input, apiaryId: undefined };
       const response = await apiClient.post<CreateInspectionResponse>(
         `/api/inspections`,
         data,
+        apiaryHeaderConfig(apiaryId),
       );
 
       return response.data;
@@ -242,13 +259,16 @@ export const useUpdateInspection = () => {
     mutationFn: async ({
       id,
       data,
+      apiaryId,
     }: {
       id: string;
       data: UpdateInspection;
+      apiaryId?: string;
     }) => {
       const response = await apiClient.patch<UpdateInspectionResponse>(
         `/api/inspections/${id}`,
         data,
+        apiaryHeaderConfig(apiaryId),
       );
 
       return response.data;
@@ -276,12 +296,15 @@ export const useDeleteInspection = () => {
     mutationFn: async ({
       id,
       revertFrames,
+      apiaryId,
     }: {
       id: string;
       revertFrames?: boolean;
+      apiaryId?: string;
     }) => {
       await apiClient.delete(`/api/inspections/${id}`, {
         params: revertFrames ? { revertFrames: 'true' } : undefined,
+        ...apiaryHeaderConfig(apiaryId),
       });
       return id;
     },
@@ -298,18 +321,26 @@ export const useDeleteInspection = () => {
 
 export const useUpsertInspection = (
   inspectionId?: string,
-  options?: { onBeforeNavigate?: (inspectionId: string) => Promise<void> },
+  options?: {
+    onBeforeNavigate?: (inspectionId: string) => Promise<void>;
+    // Target apiary of the inspection's hive. Sent as x-apiary-id so the write
+    // works in view-all mode when the hive is not in the active apiary.
+    apiaryId?: string;
+  },
 ) => {
   const { mutateAsync: createInspectionMutation } = useCreateInspection();
   const { mutateAsync: updateInspectionMutation } = useUpdateInspection();
   const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
-  const { addPendingUpdate, updateStatus, removePendingUpdate } = usePendingBoxUpdatesStore();
+  const { addPendingUpdate, updateStatus, removePendingUpdate } =
+    usePendingBoxUpdatesStore();
   const getUrl = (inspectionId?: string) => `/inspections/${inspectionId}`;
   const navigate = useNavigate();
 
   return async (data: InspectionFormData, status?: InspectionStatus) => {
     // Extract box configuration action so we can apply hive update on success
-    const boxConfigAction = data.actions?.find(a => a.type === 'BOX_CONFIGURATION');
+    const boxConfigAction = data.actions?.find(
+      a => a.type === 'BOX_CONFIGURATION',
+    );
 
     const transformedActions = transformActionsForApi(data.actions);
 
@@ -336,7 +367,9 @@ export const useUpsertInspection = (
      * Adds a pending update to the store before attempting the API call,
      * allowing tracking even if the user navigates away.
      */
-    const performBoxUpdate = async (inspectionRes: CreateInspectionResponse | UpdateInspectionResponse) => {
+    const performBoxUpdate = async (
+      inspectionRes: CreateInspectionResponse | UpdateInspectionResponse,
+    ) => {
       // Check if there are box changes to apply
       if (
         !boxConfigAction?.updatedBoxes ||
@@ -363,8 +396,12 @@ export const useUpsertInspection = (
           hiveLastModifiedAt = hiveResponse.data.updatedAt;
         } catch (e) {
           // If we can't fetch hive data, abort box update and show warning
-          console.error('Failed to fetch hive data for box update staleness check:', e);
-          const errorMessage = 'Failed to fetch hive data for staleness detection. Box update skipped.';
+          console.error(
+            'Failed to fetch hive data for box update staleness check:',
+            e,
+          );
+          const errorMessage =
+            'Failed to fetch hive data for staleness detection. Box update skipped.';
           toast.warning(
             `Inspection saved, but box configuration could not be updated: ${errorMessage}`,
           );
@@ -386,6 +423,7 @@ export const useUpsertInspection = (
           await updateHiveBoxes({
             id: data.hiveId,
             boxes: transformedBoxes,
+            apiaryId: options?.apiaryId,
           });
 
           // On success, remove the pending update from store
@@ -393,9 +431,13 @@ export const useUpsertInspection = (
         } catch (boxUpdateError) {
           // On failure, update the pending update status to 'failed' with error message
           // HIGH #6: Extract actual API error message from AxiosError
-          let errorMessage = 'Failed to update box configuration. Please try again.';
+          let errorMessage =
+            'Failed to update box configuration. Please try again.';
 
-          if (axios.isAxiosError(boxUpdateError) && boxUpdateError.response?.data?.message) {
+          if (
+            axios.isAxiosError(boxUpdateError) &&
+            boxUpdateError.response?.data?.message
+          ) {
             errorMessage = boxUpdateError.response.data.message;
           } else if (boxUpdateError instanceof Error) {
             errorMessage = boxUpdateError.message;
@@ -420,10 +462,15 @@ export const useUpsertInspection = (
      * Handles post-save logic (showing success toast, performing box update, navigation)
      * MEDIUM #11: Extract common logic to avoid duplication between create/update branches
      */
-    const handlePostSave = async (res: CreateInspectionResponse | UpdateInspectionResponse) => {
+    const handlePostSave = async (
+      res: CreateInspectionResponse | UpdateInspectionResponse,
+    ) => {
       // HIGH #5: Show appropriate success message based on whether box changes exist
       // If there are box changes, show a simpler message since box update toast will follow
-      if (boxConfigAction?.updatedBoxes && boxConfigAction.updatedBoxes.length > 0) {
+      if (
+        boxConfigAction?.updatedBoxes &&
+        boxConfigAction.updatedBoxes.length > 0
+      ) {
         toast.success('Inspection saved');
       } else {
         toast.success('Inspection saved successfully');
@@ -431,8 +478,11 @@ export const useUpsertInspection = (
 
       // Perform box update in background (don't await, don't block navigation)
       // CRITICAL #4: Add error logging for unhandled promise rejections
-      performBoxUpdate(res).catch((error) => {
-        console.error('[performBoxUpdate] Unhandled error in box update flow:', error);
+      performBoxUpdate(res).catch(error => {
+        console.error(
+          '[performBoxUpdate] Unhandled error in box update flow:',
+          error,
+        );
       });
 
       await options?.onBeforeNavigate?.(res.id);
@@ -441,7 +491,10 @@ export const useUpsertInspection = (
 
     // Create or update the inspection, then perform box update in background
     if (!inspectionId) {
-      const res = await createInspectionMutation(formattedData);
+      const res = await createInspectionMutation({
+        data: formattedData,
+        apiaryId: options?.apiaryId,
+      });
       await handlePostSave(res);
     } else {
       const res = await updateInspectionMutation({
@@ -450,6 +503,7 @@ export const useUpsertInspection = (
           ...formattedData,
           id: inspectionId,
         },
+        apiaryId: options?.apiaryId,
       });
       await handlePostSave(res);
     }

@@ -14,7 +14,11 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { InspectionsService } from './inspections.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
@@ -56,32 +60,36 @@ export class InspectionsController {
   }
 
   @Get()
+  @AllowAllApiaries()
   @ZodValidation(inspectionFilterSchema)
   async findAll(
     @Query() query: InspectionFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<InspectionResponse[]> {
     this.logger.log(
-      `Finding inspections for apiary ${req.apiaryId}${query.hiveId ? `, hive ${query.hiveId}` : ''}`,
+      `Finding inspections for apiary ${req.apiaryId ?? 'ALL'}${query.hiveId ? `, hive ${query.hiveId}` : ''}`,
     );
     return this.inspectionsService.findAll({
       ...query,
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<InspectionResponse | null> {
     this.logger.log(
-      `Finding inspection with ID ${id} in apiary ${req.apiaryId}`,
+      `Finding inspection with ID ${id} in apiary ${req.apiaryId ?? 'ALL'}`,
     );
     return this.inspectionsService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
@@ -121,24 +129,32 @@ export class InspectionsController {
   }
 
   @Get('status/overdue')
+  @AllowAllApiaries()
   async findOverdue(
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<InspectionResponse[]> {
-    this.logger.log(`Finding overdue inspections for apiary ${req.apiaryId}`);
+    this.logger.log(
+      `Finding overdue inspections for apiary ${req.apiaryId ?? 'ALL'}`,
+    );
     return this.inspectionsService.findOverdueInspections({
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get('status/due-today')
+  @AllowAllApiaries()
   async findDueToday(
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<InspectionResponse[]> {
-    this.logger.log(`Finding due today inspections for apiary ${req.apiaryId}`);
+    this.logger.log(
+      `Finding due today inspections for apiary ${req.apiaryId ?? 'ALL'}`,
+    );
     return this.inspectionsService.findDueTodayInspections({
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 }

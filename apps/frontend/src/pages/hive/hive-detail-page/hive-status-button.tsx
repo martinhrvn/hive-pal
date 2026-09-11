@@ -26,9 +26,14 @@ const ALL_STATUSES: { value: HiveStatusEnum; label: string }[] = [
 type HiveStatusButtonProps = {
   hiveId: string;
   status: HiveStatusEnum | undefined;
+  apiaryId?: string;
 };
 
-export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({ hiveId, status }) => {
+export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
+  hiveId,
+  status,
+  apiaryId,
+}) => {
   const [open, setOpen] = useState(false);
   const { mutateAsync: updateHive, isPending } = useUpdateHive();
 
@@ -38,7 +43,11 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({ hiveId, stat
       return;
     }
     try {
-      await updateHive({ id: hiveId, data: { id: hiveId, status: newStatus } });
+      await updateHive({
+        id: hiveId,
+        data: { id: hiveId, status: newStatus },
+        apiaryId,
+      });
       toast.success(`Hive status updated to ${newStatus.toLowerCase()}`);
     } catch {
       toast.error('Failed to update hive status');

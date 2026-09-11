@@ -1,5 +1,6 @@
 import type { Mock } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Reflector } from '@nestjs/core';
 import {
   BadRequestException,
   ForbiddenException,
@@ -11,6 +12,7 @@ import { PrismaService } from '../prisma/prisma.service';
 describe('ApiaryContextGuard', () => {
   let guard: ApiaryContextGuard;
   let prisma: { apiary: { findFirst: Mock } };
+  let reflector: { getAllAndOverride: Mock };
 
   beforeEach(async () => {
     prisma = {
@@ -18,11 +20,16 @@ describe('ApiaryContextGuard', () => {
         findFirst: vi.fn(),
       },
     };
+    // Default: handlers do NOT opt into the all-apiaries mode.
+    reflector = {
+      getAllAndOverride: vi.fn().mockReturnValue(false),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ApiaryContextGuard,
         { provide: PrismaService, useValue: prisma },
+        { provide: Reflector, useValue: reflector },
       ],
     }).compile();
 
@@ -33,13 +40,16 @@ describe('ApiaryContextGuard', () => {
     headers?: Record<string, string>;
     query?: Record<string, string>;
     user?: { id: string } | undefined;
+    method?: string;
   }) {
     const request = {
+      method: overrides.method ?? 'GET',
       headers: overrides.headers ?? {},
       query: overrides.query ?? {},
       user: overrides.user,
       apiaryId: undefined as string | undefined,
       apiaryRole: undefined as string | undefined,
+      allApiaries: undefined as boolean | undefined,
     };
 
     return {
@@ -47,6 +57,8 @@ describe('ApiaryContextGuard', () => {
         switchToHttp: () => ({
           getRequest: () => request,
         }),
+        getHandler: () => () => undefined,
+        getClass: () => class {},
       } as unknown as Parameters<typeof guard.canActivate>[0],
       request,
     };
@@ -171,5 +183,53 @@ describe('ApiaryContextGuard', () => {
     await expect(guard.canActivate(context)).rejects.toThrow(
       ForbiddenException,
     );
+  });
+
+  describe('all-apiaries ("view all") mode', () => {
+    it('enables all-apiaries scope for a GET handler that opts in', async () => {
+      reflector.getAllAndOverride.mockReturnValue(true);
+
+      const { context, request } = createMockContext({
+        headers: { 'x-apiary-id': 'all' },
+        user: { id: 'user-1' },
+        method: 'GET',
+      });
+
+      const result = await guard.canActivate(context);
+
+      expect(result).toBe(true);
+      expect(request.allApiaries).toBe(true);
+      expect(request.apiaryId).toBeUndefined();
+      // Must not hit the single-apiary lookup.
+      expect(prisma.apiary.findFirst).not.toHaveBeenCalled();
+    });
+
+    it('rejects "all" on a handler that does not opt in', async () => {
+      reflector.getAllAndOverride.mockReturnValue(false);
+
+      const { context } = createMockContext({
+        headers: { 'x-apiary-id': 'all' },
+        user: { id: 'user-1' },
+        method: 'GET',
+      });
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('rejects "all" for a write (non-GET) request even when opted in', async () => {
+      reflector.getAllAndOverride.mockReturnValue(true);
+
+      const { context } = createMockContext({
+        headers: { 'x-apiary-id': 'all' },
+        user: { id: 'user-1' },
+        method: 'POST',
+      });
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 });

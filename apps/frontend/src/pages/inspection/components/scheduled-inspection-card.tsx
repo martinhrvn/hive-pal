@@ -37,6 +37,7 @@ import {
 import { cn } from '@/lib/utils';
 import { InspectionResponse, InspectionStatus } from 'shared-schemas';
 import { useUpdateInspection } from '@/api/hooks/useInspections';
+import { useHiveApiaryLookup } from '@/api/hooks/useHives';
 import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { RescheduleDialog } from './reschedule-dialog';
@@ -66,6 +67,8 @@ export const ScheduledInspectionCard: React.FC<
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
   const { mutate: updateInspection, isPending } = useUpdateInspection();
+  const lookupApiaryId = useHiveApiaryLookup();
+  const apiaryId = lookupApiaryId(inspection.hiveId);
 
   const inspectionDate = getInspectionDisplayDate(inspection);
   const isOverdue = isPast(inspectionDate) && !isToday(inspectionDate);
@@ -82,6 +85,7 @@ export const ScheduledInspectionCard: React.FC<
         data: {
           status: InspectionStatus.CANCELLED,
         },
+        apiaryId,
       },
       {
         onSuccess: () => {
@@ -101,6 +105,7 @@ export const ScheduledInspectionCard: React.FC<
           isAllDay,
           status: InspectionStatus.SCHEDULED,
         },
+        apiaryId,
       },
       {
         onSuccess: () => {
@@ -160,7 +165,9 @@ export const ScheduledInspectionCard: React.FC<
                 <span className="font-medium text-foreground">
                   {format(inspectionDate, 'MMM d')}
                 </span>
-                {!inspection.isAllDay && <span>{format(inspectionDate, 'h:mm a')}</span>}
+                {!inspection.isAllDay && (
+                  <span>{format(inspectionDate, 'h:mm a')}</span>
+                )}
               </div>
 
               {/* Status Badge */}

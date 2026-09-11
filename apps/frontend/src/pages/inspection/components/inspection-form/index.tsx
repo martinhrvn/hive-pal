@@ -321,6 +321,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   });
 
   const onSubmit = useUpsertInspection(inspectionId, {
+    // The hive's own apiary — required for cross-apiary writes in view-all mode.
+    apiaryId: selectedHive?.apiaryId,
     onBeforeNavigate: async (id: string) => {
       const [, photoResult] = await Promise.all([
         pendingRecordings.length > 0

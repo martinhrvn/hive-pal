@@ -178,7 +178,11 @@ export const HiveDetailPage = () => {
                         </Popover>
                       )}
                       {hiveId && (
-                        <HiveStatusButton hiveId={hiveId} status={hive?.status} />
+                        <HiveStatusButton
+                          hiveId={hiveId}
+                          status={hive?.status}
+                          apiaryId={hive?.apiaryId}
+                        />
                       )}
                     </div>
                   </div>

@@ -185,12 +185,16 @@ export function DemareeMethodPage() {
     const results = await Promise.allSettled(
       checkpoints.map(checkpoint =>
         createInspection({
-          hiveId: selectedHiveId,
-          date: toInspectionDateISOString(checkpoint.date, true),
-          isAllDay: true,
-          notes: checkpoint.notes,
-          status: InspectionStatus.SCHEDULED,
-          actions: [],
+          data: {
+            hiveId: selectedHiveId,
+            date: toInspectionDateISOString(checkpoint.date, true),
+            isAllDay: true,
+            notes: checkpoint.notes,
+            status: InspectionStatus.SCHEDULED,
+            actions: [],
+          },
+          // The hive's own apiary — cross-apiary safe in view-all mode.
+          apiaryId: selectedHive?.apiaryId,
         }),
       ),
     );

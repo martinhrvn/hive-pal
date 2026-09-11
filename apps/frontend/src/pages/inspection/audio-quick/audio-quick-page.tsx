@@ -67,12 +67,16 @@ export function AudioQuickPage() {
     void (async () => {
       try {
         const res = await createInspection({
-          hiveId,
-          date: toInspectionDateISOString(new Date(), false),
-          isAllDay: false,
-          status: InspectionStatus.COMPLETED,
-          observations: {},
-          actions: [],
+          data: {
+            hiveId,
+            date: toInspectionDateISOString(new Date(), false),
+            isAllDay: false,
+            status: InspectionStatus.COMPLETED,
+            observations: {},
+            actions: [],
+          },
+          // The hive's own apiary — cross-apiary safe in view-all mode.
+          apiaryId: hive?.apiaryId,
         });
         if (cancelled) return;
         inspectionIdRef.current = res.id;
@@ -87,7 +91,16 @@ export function AudioQuickPage() {
     return () => {
       cancelled = true;
     };
-  }, [phase, error, isRecording, hiveId, createInspection, stopRecording, t]);
+  }, [
+    phase,
+    error,
+    isRecording,
+    hiveId,
+    hive?.apiaryId,
+    createInspection,
+    stopRecording,
+    t,
+  ]);
 
   const handleStop = useCallback(async () => {
     await stopRecording();

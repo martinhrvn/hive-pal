@@ -170,15 +170,20 @@ export const ScheduleInspectionPage = () => {
 
       for (const hiveId of hiveIds) {
         try {
+          // Each hive may live in a different apiary in view-all mode.
+          const hiveApiaryId = hives?.find(h => h.id === hiveId)?.apiaryId;
           await new Promise<void>((resolve, reject) => {
             createInspection(
               {
-                hiveId,
-                date: toInspectionDateISOString(date, isAllDay),
-                isAllDay,
-                notes,
-                status: InspectionStatus.SCHEDULED,
-                actions: [],
+                data: {
+                  hiveId,
+                  date: toInspectionDateISOString(date, isAllDay),
+                  isAllDay,
+                  notes,
+                  status: InspectionStatus.SCHEDULED,
+                  actions: [],
+                },
+                apiaryId: hiveApiaryId,
               },
               {
                 onSuccess: () => {
