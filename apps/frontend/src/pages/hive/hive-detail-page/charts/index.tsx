@@ -8,6 +8,7 @@ import { QueenCellsChart } from './queen-cells-chart';
 import { BooleanEventsChart } from './boolean-events-chart';
 import { InspectionCharts } from './inspection-charts';
 import { HealthScoreChart } from './health-score-chart';
+import { WeightChart } from './weight-chart';
 import {
   Select,
   SelectContent,
@@ -63,6 +64,7 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
           <InspectionCharts hiveId={hiveId} period={period} />
           <HealthScoreChart hiveScore={hiveScore} />
           <FeedingChart hiveId={hiveId} period={period} />
+          <WeightChart hiveId={hiveId} period={period} />
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -84,6 +86,9 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
 
           {/* Feeding */}
           <FeedingChart hiveId={hiveId} period={period} />
+
+          {/* Weight */}
+          <WeightChart hiveId={hiveId} period={period} />
         </div>
       )}
     </div>
