@@ -431,6 +431,7 @@ model Action {
   harvestAction   HarvestAction?
   boxConfigurationAction BoxConfigurationAction?
   maintenanceAction MaintenanceAction?
+  statusChangeAction StatusChangeAction?
   createdByUserId String?
   createdByUser   User?      @relation("ActionCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
 
@@ -499,6 +500,16 @@ model MaintenanceAction {
   action    Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
   component String // BOX, BOTTOM_BOARD, COVER
   status    String // CLEANED, REPLACED
+}
+
+// Hive status change details (e.g. ACTIVE -> DEAD). Recorded as an action so the
+// change lives in the existing timeline/history without a separate audit table.
+model StatusChangeAction {
+  id         String      @id @default(uuid())
+  actionId   String      @unique
+  action     Action      @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  fromStatus HiveStatus? // Previous status (null if unknown)
+  toStatus   HiveStatus  // New status
 }
 
 // Harvest tracking
@@ -581,6 +592,7 @@ enum ActionType {
   BOX_CONFIGURATION
   MAINTENANCE
   NOTE
+  STATUS_CHANGE
   OTHER
 }
 

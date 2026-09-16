@@ -299,6 +299,13 @@
                 "remove": "Entfernen",
                 "saveNote": "Notiz speichern",
                 "edit": "Bearbeiten"
+            },
+            "statusChange": "Statuswechsel",
+            "statusChange_section": {
+                "title": "Statuswechsel",
+                "current": "Aktuell",
+                "newStatus": "Neuer Status",
+                "notesOptional": "Grund (optional)"
             }
         },
         "audio": {

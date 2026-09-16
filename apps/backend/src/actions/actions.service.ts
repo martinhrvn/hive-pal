@@ -11,6 +11,7 @@ import {
   boxTypeSchema,
   CreateAction,
   CreateStandaloneAction,
+  HiveStatus,
   UpdateAction,
   UserPreferences,
 } from 'shared-schemas';
@@ -28,6 +29,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
     harvestAction: true;
     boxConfigurationAction: true;
     maintenanceAction: true;
+    statusChangeAction: true;
     createdByUser: { select: { name: true; email: true } };
   };
 }>;
@@ -117,6 +119,54 @@ export class ActionsService {
           },
         });
         break;
+      case ActionType.STATUS_CHANGE: {
+        // Derive the previous status from the hive's current status unless the
+        // caller supplied one explicitly.
+        let fromStatus: HiveStatus | null = details.fromStatus ?? null;
+        if (fromStatus == null) {
+          const action = await tx.action.findUnique({
+            where: { id: actionId },
+            select: { hiveId: true },
+          });
+          if (action?.hiveId) {
+            const hive = await tx.hive.findUnique({
+              where: { id: action.hiveId },
+              select: { status: true },
+            });
+            fromStatus = (hive?.status as HiveStatus) ?? null;
+          }
+        }
+        await tx.statusChangeAction.create({
+          data: {
+            actionId,
+            fromStatus,
+            toStatus: details.toStatus,
+          },
+        });
+        break;
+      }
+    }
+  }
+
+  /**
+   * Recalculates a hive's live status from its status-change actions: the hive
+   * reflects the `toStatus` of the latest-dated STATUS_CHANGE action. This keeps
+   * "newest change wins" — a back-dated change never overrides a more recent one.
+   */
+  private async recomputeHiveStatusFromChanges(
+    hiveId: string,
+    tx: Prisma.TransactionClient,
+  ): Promise<void> {
+    const latest = await tx.action.findFirst({
+      where: { hiveId, type: ActionType.STATUS_CHANGE },
+      orderBy: [{ date: 'desc' }, { id: 'desc' }],
+      include: { statusChangeAction: true },
+    });
+    if (latest?.statusChangeAction) {
+      await tx.hive.update({
+        where: { id: hiveId },
+        data: { status: latest.statusChangeAction.toStatus },
+      });
     }
   }
 
@@ -264,6 +314,11 @@ export class ActionsService {
       // Add type-specific details
       await this.createActionDetails(createdAction.id, details, tx);
     }
+
+    // If any status change was logged, re-derive the hive's live status.
+    if (actions.some((a) => a.type === ActionType.STATUS_CHANGE)) {
+      await this.recomputeHiveStatusFromChanges(inspection.hiveId, tx);
+    }
   }
 
   /**
@@ -301,6 +356,9 @@ export class ActionsService {
       await tx.maintenanceAction.deleteMany({
         where: { actionId: action.id },
       });
+      await tx.statusChangeAction.deleteMany({
+        where: { actionId: action.id },
+      });
     }
 
     // Delete all actions
@@ -327,6 +385,16 @@ export class ActionsService {
     // Create new actions if provided
     if (actions && actions.length > 0) {
       await this.createActions(inspectionId, actions, tx, userId);
+    }
+
+    // Re-derive the hive's live status in case a status change was added,
+    // edited, or removed by this update.
+    const inspection = await tx.inspection.findUnique({
+      where: { id: inspectionId },
+      select: { hiveId: true },
+    });
+    if (inspection) {
+      await this.recomputeHiveStatusFromChanges(inspection.hiveId, tx);
     }
   }
 
@@ -371,6 +439,7 @@ export class ActionsService {
         harvestAction: true,
         boxConfigurationAction: true,
         maintenanceAction: true,
+        statusChangeAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
@@ -430,6 +499,11 @@ export class ActionsService {
       // Add type-specific details
       await this.createActionDetails(createdAction.id, details, tx);
 
+      // A standalone status change updates the hive's live status (newest wins).
+      if (type === ActionType.STATUS_CHANGE) {
+        await this.recomputeHiveStatusFromChanges(createActionDto.hiveId, tx);
+      }
+
       // Fetch the complete action with relations
       return await tx.action.findUnique({
         where: { id: createdAction.id },
@@ -440,6 +514,7 @@ export class ActionsService {
           harvestAction: true,
           boxConfigurationAction: true,
           maintenanceAction: true,
+          statusChangeAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -487,6 +562,7 @@ export class ActionsService {
         harvestAction: true,
         boxConfigurationAction: true,
         maintenanceAction: true,
+        statusChangeAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
@@ -527,6 +603,15 @@ export class ActionsService {
         await this.createActionDetails(actionId, details, tx);
       }
 
+      // Re-derive the hive's live status if this action is or was a status
+      // change (e.g. its date/toStatus changed, or it stopped being one).
+      const involvesStatusChange =
+        _newType === ActionType.STATUS_CHANGE ||
+        (existingAction.type as ActionType) === ActionType.STATUS_CHANGE;
+      if (involvesStatusChange && existingAction.hiveId) {
+        await this.recomputeHiveStatusFromChanges(existingAction.hiveId, tx);
+      }
+
       // Fetch the complete updated action with relations
       return await tx.action.findUnique({
         where: { id: actionId },
@@ -537,6 +622,7 @@ export class ActionsService {
           harvestAction: true,
           boxConfigurationAction: true,
           maintenanceAction: true,
+          statusChangeAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -589,6 +675,14 @@ export class ActionsService {
       await tx.action.delete({
         where: { id: actionId },
       });
+
+      // Removing a status change may change which one is newest.
+      if (
+        (existingAction.type as ActionType) === ActionType.STATUS_CHANGE &&
+        existingAction.hiveId
+      ) {
+        await this.recomputeHiveStatusFromChanges(existingAction.hiveId, tx);
+      }
     });
   }
 
@@ -605,6 +699,7 @@ export class ActionsService {
     await tx.harvestAction.deleteMany({ where: { actionId } });
     await tx.boxConfigurationAction.deleteMany({ where: { actionId } });
     await tx.maintenanceAction.deleteMany({ where: { actionId } });
+    await tx.statusChangeAction.deleteMany({ where: { actionId } });
   }
 
   // Prisma-to-Domain Transformation Function
@@ -827,6 +922,29 @@ export class ActionsService {
           details: {
             type: ActionType.NOTE,
             content: prismaAction.notes || '',
+          },
+        };
+
+      case ActionType.STATUS_CHANGE:
+        if (!prismaAction.statusChangeAction) {
+          this.logger.warn(
+            `Status change action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
+        }
+        return {
+          ...base,
+          type: ActionType.STATUS_CHANGE,
+          details: {
+            type: ActionType.STATUS_CHANGE,
+            fromStatus:
+              (prismaAction.statusChangeAction
+                .fromStatus as HiveStatus | null) ?? undefined,
+            toStatus: prismaAction.statusChangeAction.toStatus as HiveStatus,
           },
         };
 

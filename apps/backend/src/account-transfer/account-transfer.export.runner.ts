@@ -203,6 +203,7 @@ export class AccountTransferExportRunner {
             harvestAction: true,
             boxConfigurationAction: true,
             maintenanceAction: true,
+            statusChangeAction: true,
           },
         },
         measurements: true,

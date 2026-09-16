@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   createInspectionSchema,
   ActionType,
+  HiveStatus,
   observationBaseSchema,
 } from 'shared-schemas';
 import type { Box } from 'shared-schemas';
@@ -59,6 +60,13 @@ export const maintenanceActionSchema = z.object({
   notes: z.string().optional(),
 });
 
+// Status change action
+export const statusChangeActionSchema = z.object({
+  type: z.literal(ActionType.STATUS_CHANGE),
+  toStatus: z.nativeEnum(HiveStatus),
+  notes: z.string().optional(),
+});
+
 // Other action
 export const otherActionSchema = z.object({
   type: z.literal(ActionType.OTHER),
@@ -93,6 +101,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   framesActionSchema,
   maintenanceActionSchema,
   noteActionSchema,
+  statusChangeActionSchema,
   otherActionSchema,
   boxConfigurationActionSchema,
 ]);
@@ -129,6 +138,7 @@ export type TreatmentActionData = z.infer<typeof treatmentActionSchema>;
 export type FramesActionData = z.infer<typeof framesActionSchema>;
 export type MaintenanceActionData = z.infer<typeof maintenanceActionSchema>;
 export type NoteActionData = z.infer<typeof noteActionSchema>;
+export type StatusChangeActionData = z.infer<typeof statusChangeActionSchema>;
 export type BoxConfigurationActionData = z.infer<typeof boxConfigurationActionSchema>;
 export type ActionData = z.infer<typeof actionSchema>;
 export type InspectionFormData = z.infer<typeof inspectionSchema>;
