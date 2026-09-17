@@ -1,0 +1,42 @@
+# Hive-Pal Documentation
+
+> Documentation for Hive-Pal, an open-source, self-hostable beekeeping management application.
+
+This file contains links to documentation sections following the llmstxt.org standard.
+
+## Table of Contents
+
+- [Quick Start Wizard](https://docs.hivepal.app/docs/getting-started/quickstart.md): Get Hive-Pal up and running in minutes with this interactive quick start guide covering Docker and manual installation.
+- [Account & Settings](https://docs.hivepal.app/docs/user-guide/account-settings.md): Manage your Hive-Pal account — change your password, manage files and uploads, and configure preferences.
+- [Apiary Management](https://docs.hivepal.app/docs/user-guide/apiaries.md): Learn how to create, manage, and switch between apiaries in Hive-Pal. Apiaries are the main organizational context for all your beekeeping data.
+- [Apiary Assistant](https://docs.hivepal.app/docs/user-guide/assistant.md): Ask natural-language questions about your hives and apiaries in Hive-Pal and get AI-assisted answers grounded in your own records.
+- [Audio & AI Transcription](https://docs.hivepal.app/docs/user-guide/audio-ai.md): Record voice notes during hive inspections in Hive-Pal and let AI transcribe and extract structured inspection data for you.
+- [Batch Inspections](https://docs.hivepal.app/docs/user-guide/batch-inspections.md): Inspect many hives in one guided run with Hive-Pal batch inspections — create a batch, work through each hive, and track completion.
+- [Bulk Add](https://docs.hivepal.app/docs/user-guide/bulk-add.md): Apply the same inspection, action, or queen to many hives at once in Hive-Pal with the bulk add workflow and a staged review queue.
+- [Calendar](https://docs.hivepal.app/docs/user-guide/calendar.md): See your past and upcoming hive inspections across all apiaries on one calendar in Hive-Pal to plan your beekeeping season.
+- [Equipment Management](https://docs.hivepal.app/docs/user-guide/equipment.md): Manage beekeeping equipment inventory, track condition and location, and generate shopping lists with Hive-Pal's equipment system.
+- [FAB Quick Actions](https://docs.hivepal.app/docs/user-guide/fab-actions.md): Use the floating action button for quick access to adding inspections, hives, and harvests from any screen in Hive-Pal.
+- [Sending Feedback](https://docs.hivepal.app/docs/user-guide/feedback.md): Learn how to submit feedback, report bugs, and request features to help improve Hive-Pal.
+- [Harvest Management](https://docs.hivepal.app/docs/user-guide/harvest.md): Track honey harvests across multiple hives with proportional yield calculation and detailed harvest records in Hive-Pal.
+- [Hive Management](https://docs.hivepal.app/docs/user-guide/hives.md): Track hive status, configuration, and colony health with Hive-Pal's comprehensive hive management tools.
+- [HiveScale Integration](https://docs.hivepal.app/docs/user-guide/hivescale.md): Connect Hive-Pal with HiveScale beehive scales, claim devices, view live weight data, and monitor off-grid telemetry.
+- [Import & Export](https://docs.hivepal.app/docs/user-guide/import-export.md): Back up or migrate your Hive-Pal account by exporting all your data to a zip file and importing it again, with job history tracking.
+- [Inspections](https://docs.hivepal.app/docs/user-guide/inspections.md): Record detailed hive inspections in Hive-Pal to track colony health, brood patterns, disease, and management actions over time.
+- [Logging In](https://docs.hivepal.app/docs/user-guide/login.md): Sign in to Hive-Pal with a password, a passwordless magic link, or a passkey. Learn how each method works and what your server needs to support them.
+- [User Guide Overview](https://docs.hivepal.app/docs/user-guide/overview.md): Overview of Hive-Pal features including apiary management, hive tracking, inspections, queen management, harvest recording, and HiveScale telemetry.
+- [QR Codes](https://docs.hivepal.app/docs/user-guide/qr-codes.md): Generate and print QR codes for your hives in Hive-Pal so you can scan straight to a hive's page or jump into an inspection in the field.
+- [Queen Management](https://docs.hivepal.app/docs/user-guide/queens.md): Track queen bees in Hive-Pal — record details and marking, follow a queen's movement history across hives, and transfer queens between colonies.
+- [Quick Check](https://docs.hivepal.app/docs/user-guide/quick-check.md): Log a fast, tag-based hive observation in Hive-Pal without filling out a full inspection — ideal for quick walk-bys and field notes.
+- [Reports & Analytics](https://docs.hivepal.app/docs/user-guide/reports.md): Visualize colony health, feeding, hive scores, and honey production over time in Hive-Pal, and export reports to CSV or PDF.
+- [Scheduled Inspections](https://docs.hivepal.app/docs/user-guide/scheduled-inspections.md): Plan hive inspections ahead of time in Hive-Pal using the weather forecast to pick the best days, for one hive or many at once.
+- [Beekeeping Tools](https://docs.hivepal.app/docs/user-guide/tools.md): Free Hive-Pal beekeeping calculators and reference guides — sugar syrup calculator, brood development timeline, and swarm management (Demaree).
+- [Weather Integration](https://docs.hivepal.app/docs/user-guide/weather.md): Monitor weather conditions at your apiary locations with Hive-Pal's weather integration for better beekeeping decisions.
+- [Backup & Restore](https://docs.hivepal.app/docs/self-hosting/backup-restore.md): Set up automated database backups and learn how to restore your Hive-Pal beekeeping data reliably.
+- [Configuration](https://docs.hivepal.app/docs/self-hosting/configuration.md): Complete environment-variable reference for Hive-Pal — database, Better Auth, email, file storage, HiveScale, and error tracking.
+- [Docker Setup](https://docs.hivepal.app/docs/self-hosting/docker-setup.md): Deploy Hive-Pal with a single Docker container and PostgreSQL. Covers the compose file, automatic migrations, SSL, and production tips.
+- [Manual Setup](https://docs.hivepal.app/docs/self-hosting/manual-setup.md): Run Hive-Pal from source without Docker using the PNPM/Turborepo monorepo — for development and customization.
+- [Monitoring](https://docs.hivepal.app/docs/self-hosting/monitoring.md): Monitor your Hive-Pal installation with health checks, Prometheus metrics, Grafana dashboards, and centralized logging.
+- [System Requirements](https://docs.hivepal.app/docs/self-hosting/requirements.md): Minimum and recommended hardware and software requirements for self-hosting Hive-Pal on your own server.
+- [Installation Guide](https://docs.hivepal.app/docs/installation.md): Install Hive-Pal on your own server with a single Docker container and PostgreSQL. Covers the compose file, required environment variables, and fir...
+- [Introduction to Hive-Pal](https://docs.hivepal.app/docs/intro.md): Introduction to Hive-Pal, an open-source beekeeping management app for tracking apiaries, hives, inspections, queens, and harvests.
+- [Troubleshooting](https://docs.hivepal.app/docs/troubleshooting.md): Solutions to common Hive-Pal issues including Docker problems, database errors, and login troubles.
