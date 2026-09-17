@@ -682,7 +682,10 @@ const buildInspectionColumns = ({
       header: t('inspection:fields.actions', { defaultValue: 'Actions' }),
       menuLabel: t('inspection:fields.actions', { defaultValue: 'Actions' }),
       cell: inspection => (
-        <ActionTypeBadges actions={inspection.actions ?? []} />
+        <ActionTypeBadges
+          actions={inspection.actions ?? []}
+          weightCount={inspection.weights?.length ?? 0}
+        />
       ),
     },
   ];

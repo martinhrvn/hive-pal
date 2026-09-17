@@ -2162,7 +2162,8 @@
     "boxConfiguration": "Box config",
     "maintenance": "Maintenance",
     "note": "Note",
-    "other": "Other"
+    "other": "Other",
+    "weighing": "Weighing"
   },
   "table": {
     "columns": "Columns",

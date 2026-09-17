@@ -8,6 +8,7 @@ import {
   Grid,
   MessageSquare,
   Pill,
+  Scale,
   Wrench,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -89,25 +90,34 @@ const ACTION_TYPE_I18N: Partial<
     [ActionType.OTHER]: { key: 'common:actionTypes.other', fallback: 'Other' },
   };
 
+// Weighings are captured as measurements (not actions), but are shown in the
+// same column so a recorded weighing is visible at a glance next to the actions.
+const WEIGHING_TONE =
+  'bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300';
+
 /**
  * Renders the actions recorded in an inspection as compact chips, one per
  * distinct action type (with a ×count when a type occurs more than once).
- * Shows a muted dash when there are no actions.
+ * When the inspection also has weight readings, an extra "Weighing" chip is
+ * appended. Shows a muted dash when there is nothing to show.
  */
 export const ActionTypeBadges = ({
   actions,
+  weightCount = 0,
 }: {
   actions: ActionResponse[];
+  weightCount?: number;
 }) => {
   const { t } = useTranslation('common');
 
-  if (!actions || actions.length === 0) {
+  const hasActions = Boolean(actions && actions.length > 0);
+  if (!hasActions && weightCount <= 0) {
     return <span className="text-muted-foreground">—</span>;
   }
 
   // Count occurrences per type, preserving first-seen order.
   const counts = new Map<ActionType, number>();
-  for (const action of actions) {
+  for (const action of actions ?? []) {
     counts.set(action.type, (counts.get(action.type) ?? 0) + 1);
   }
 
@@ -131,6 +141,20 @@ export const ActionTypeBadges = ({
           </span>
         );
       })}
+      {weightCount > 0 && (
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs whitespace-nowrap',
+            WEIGHING_TONE,
+          )}
+        >
+          <Scale className="h-3 w-3 shrink-0" />
+          {t('actionTypes.weighing', { defaultValue: 'Weighing' })}
+          {weightCount > 1 && (
+            <span className="tabular-nums">×{weightCount}</span>
+          )}
+        </span>
+      )}
     </div>
   );
 };

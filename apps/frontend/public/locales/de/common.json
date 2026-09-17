@@ -1552,7 +1552,8 @@
         "boxConfiguration": "Beutenkonfiguration",
         "maintenance": "Wartung",
         "note": "Notiz",
-        "other": "Sonstiges"
+        "other": "Sonstiges",
+        "weighing": "Wägung"
     },
     "table": {
         "columns": "Spalten",
