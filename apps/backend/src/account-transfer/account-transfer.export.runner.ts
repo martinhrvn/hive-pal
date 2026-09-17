@@ -387,6 +387,9 @@ export class AccountTransferExportRunner {
           unit: m.unit,
           recordedAt: m.recordedAt.toISOString(),
           source: m.source,
+          boxId: m.boxId,
+          side: m.side,
+          inspectionId: m.inspectionId,
         })),
         alerts: h.alerts.map((al) => ({
           id: al.id,

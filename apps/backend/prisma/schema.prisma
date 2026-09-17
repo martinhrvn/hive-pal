@@ -211,8 +211,33 @@ model Measurement {
   source     String?
   createdAt  DateTime @default(now())
 
+  // Optional position of the reading within the hive. Used for manually captured
+  // weights (e.g. weighing by lifting one side of the hive with a scale):
+  //   boxId = null -> measured at the base / whole hive lifted from the bottom
+  //   side  = null -> whole/total weight (no specific side)
+  boxId String?
+  box   Box?             @relation(fields: [boxId], references: [id], onDelete: SetNull)
+  side  MeasurementSide?
+
+  // Optional link to the inspection during which the reading was captured.
+  // Readings captured in an inspection are removed with it (Cascade).
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
   @@index([hiveId, recordedAt])
   @@index([hiveId, metric, recordedAt])
+  @@index([hiveId, metric, boxId, side, recordedAt])
+  @@index([boxId])
+  @@index([inspectionId])
+}
+
+// Side of the hive where the scale was applied for a manual weight reading.
+// FRONT is the entrance / Flugloch side. Null means a whole-hive weighing.
+enum MeasurementSide {
+  FRONT
+  BACK
+  LEFT
+  RIGHT
 }
 
 model Todo {
@@ -263,6 +288,7 @@ model Box {
   lastSanitized DateTime? // When this box position was last replaced with a sanitized box
   addedAt       DateTime    @default(now()) // When this physical/logical box was added to the hive
   winterized    Boolean     @default(false) // Whether this box is prepared for winter
+  measurements  Measurement[]
 
   @@index([hiveId])
   @@index([hiveId, position]) // For looking up boxes by position in a hive
@@ -318,6 +344,7 @@ model Inspection {
   status            InspectionStatus @default(COMPLETED)
   batchInspectionHive BatchInspectionHive?
   audioRecordings   InspectionAudio[]
+  measurements      Measurement[]
   photos            Photo[]
   createdByUserId   String?
   createdByUser     User?            @relation("InspectionCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)

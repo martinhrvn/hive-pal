@@ -7,6 +7,7 @@ import {
   LatestMeasurementsResponse,
   MeasurementFilter,
   MeasurementResponse,
+  MeasurementSide,
 } from 'shared-schemas';
 
 interface LatestRow {
@@ -15,6 +16,8 @@ interface LatestRow {
   unit: string | null;
   recordedAt: Date;
   source: string | null;
+  boxId: string | null;
+  side: MeasurementSide | null;
 }
 
 @Injectable()
@@ -41,6 +44,8 @@ export class MeasurementsService {
       unit: m.unit ?? null,
       recordedAt: m.recordedAt ? new Date(m.recordedAt) : now,
       source: m.source ?? null,
+      boxId: m.boxId ?? null,
+      side: m.side ?? null,
     }));
 
     const result = await this.prisma.measurement.createMany({ data: rows });
@@ -90,6 +95,9 @@ export class MeasurementsService {
       recordedAt: r.recordedAt.toISOString(),
       source: r.source,
       createdAt: r.createdAt.toISOString(),
+      boxId: r.boxId,
+      side: r.side,
+      inspectionId: r.inspectionId,
     }));
   }
 
@@ -101,7 +109,7 @@ export class MeasurementsService {
 
     const rows = await this.prisma.$queryRaw<LatestRow[]>`
       SELECT DISTINCT ON (metric)
-        metric, value, unit, "recordedAt", source
+        metric, value, unit, "recordedAt", source, "boxId", side
       FROM "Measurement"
       WHERE "hiveId" = ${hiveId}
       ORDER BY metric, "recordedAt" DESC
@@ -114,6 +122,8 @@ export class MeasurementsService {
         unit: row.unit,
         recordedAt: row.recordedAt.toISOString(),
         source: row.source,
+        boxId: row.boxId,
+        side: row.side,
       };
     }
     return result;
