@@ -25,10 +25,12 @@ import {
 } from 'shared-schemas';
 import { ZodValidation } from '../common';
 
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 
 @Controller('actions')
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 export class ActionsController {
   constructor(private readonly actionsService: ActionsService) {}
 
@@ -36,7 +38,7 @@ export class ActionsController {
   @ZodValidation(actionFilterSchema)
   findAll(
     @Query() query: ActionFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<ActionResponse[]> {
     return this.actionsService.findAll({
       apiaryId: req.apiaryId,
@@ -49,13 +51,12 @@ export class ActionsController {
   @ZodValidation(createStandaloneActionSchema)
   create(
     @Body() createActionDto: CreateStandaloneAction,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<ActionResponse> {
-    return this.actionsService.createStandaloneAction(
-      createActionDto,
-      req.apiaryId,
-      req.user.id,
-    );
+    return this.actionsService.createStandaloneAction(createActionDto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Put(':id')
@@ -63,22 +64,23 @@ export class ActionsController {
   update(
     @Param('id') id: string,
     @Body() updateActionDto: UpdateAction,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<ActionResponse> {
-    return this.actionsService.updateAction(
-      id,
-      updateActionDto,
-      req.apiaryId,
-      req.user.id,
-    );
+    return this.actionsService.updateAction(id, updateActionDto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Delete(':id')
   async delete(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<{ message: string }> {
-    await this.actionsService.deleteAction(id, req.apiaryId, req.user.id);
+    await this.actionsService.deleteAction(id, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
     return { message: 'Action deleted successfully' };
   }
 }

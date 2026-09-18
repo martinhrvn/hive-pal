@@ -1,11 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
-import {
-  ApiaryUserFilter,
-  ApiaryScopeFilter,
-} from '../interface/request-with.apiary';
-import { apiaryAccessWhere } from '../common';
+import { Prisma } from '@/prisma/client';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryReadScope, apiaryWriteScope } from '../common';
 import {
   CreateQueen,
   QueenResponse,
@@ -32,13 +30,19 @@ export class QueensService {
     status: string;
     installedAt: Date | null;
     replacedAt: Date | null;
-    hive?: { name: string } | null;
+    hive?: {
+      name: string;
+      apiaryId?: string | null;
+      apiary?: { name: string } | null;
+    } | null;
   }): QueenResponse {
     return {
       id: queen.id,
       hiveId: queen.hiveId,
       name: queen.name,
       hiveName: queen.hive?.name ?? null,
+      apiaryId: queen.hive?.apiaryId ?? null,
+      apiaryName: queen.hive?.apiary?.name ?? null,
       marking: queen.marking,
       color: queen.color,
       year: queen.year,
@@ -49,13 +53,52 @@ export class QueensService {
     };
   }
 
+  /**
+   * Scope for a queen: its current hive's apiary, or (for a queen no longer in
+   * a hive) an apiary it was moved from/to. Read scope honours the selected
+   * apiary as a filter; write scope requires OWNER/EDITOR on the queen's
+   * current apiary (or on a former one when the queen has no hive).
+   */
+  private queenScopeWhere(
+    filter: ApiaryScopeFilter,
+    mode: 'read' | 'write',
+  ): Prisma.QueenWhereInput {
+    const apiary =
+      mode === 'write' ? apiaryWriteScope(filter) : apiaryReadScope(filter);
+    const viaMovements: Prisma.QueenWhereInput = {
+      movements: {
+        some: {
+          OR: [{ fromHive: { apiary } }, { toHive: { apiary } }],
+        },
+      },
+    };
+    return {
+      OR: [
+        { hive: { apiary } },
+        mode === 'write' ? { hiveId: null, ...viaMovements } : viaMovements,
+      ],
+    };
+  }
+
+  private async assertWritableHive(hiveId: string, filter: ApiaryScopeFilter) {
+    const hive = await this.prisma.hive.findFirst({
+      where: { id: hiveId, apiary: apiaryWriteScope(filter) },
+      select: { id: true },
+    });
+    if (!hive) {
+      throw new NotFoundException(
+        `Hive with ID ${hiveId} not found or you cannot edit its apiary`,
+      );
+    }
+  }
+
   async create(
     createQueenDto: CreateQueen,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QueenResponse> {
     if (createQueenDto.hiveId) {
       const hive = await this.prisma.hive.findFirst({
-        where: { id: createQueenDto.hiveId, apiary: { id: filter.apiaryId } },
+        where: { id: createQueenDto.hiveId, apiary: apiaryWriteScope(filter) },
       });
       if (!hive) {
         throw new NotFoundException(
@@ -83,7 +126,15 @@ export class QueensService {
           ? new Date(createQueenDto.replacedAt)
           : null,
       },
-      include: { hive: { select: { name: true } } },
+      include: {
+        hive: {
+          select: {
+            name: true,
+            apiaryId: true,
+            apiary: { select: { name: true } },
+          },
+        },
+      },
     });
 
     if (createQueenDto.hiveId) {
@@ -106,10 +157,8 @@ export class QueensService {
     filter: ApiaryScopeFilter,
     params?: { status?: string; hiveId?: string },
   ): Promise<QueenResponse[]> {
-    // Single apiary, or every apiary the user can access in view-all mode.
-    const apiaryWhere = filter.apiaryId
-      ? { id: filter.apiaryId }
-      : apiaryAccessWhere(filter.userId);
+    // Selected apiary as a filter, or every apiary the user can access.
+    const apiaryWhere = apiaryReadScope(filter);
     const apiaryFilter = { hive: { apiary: apiaryWhere } };
 
     let where: Record<string, unknown>;
@@ -142,22 +191,31 @@ export class QueensService {
 
     const queens = await this.prisma.queen.findMany({
       where,
-      include: { hive: { select: { name: true } } },
+      include: {
+        hive: {
+          select: {
+            name: true,
+            apiaryId: true,
+            apiary: { select: { name: true } },
+          },
+        },
+      },
     });
     return queens.map((queen) => this.mapQueenToResponse(queen));
   }
 
   async findOne(id: string, filter: ApiaryScopeFilter): Promise<QueenResponse> {
     const queen = await this.prisma.queen.findFirst({
-      where: {
-        id,
+      where: { id, ...this.queenScopeWhere(filter, 'read') },
+      include: {
         hive: {
-          apiary: filter.apiaryId
-            ? { id: filter.apiaryId }
-            : apiaryAccessWhere(filter.userId),
+          select: {
+            name: true,
+            apiaryId: true,
+            apiary: { select: { name: true } },
+          },
         },
       },
-      include: { hive: { select: { name: true } } },
     });
     if (!queen) throw new NotFoundException(`Queen with ID ${id} not found`);
     return this.mapQueenToResponse(queen);
@@ -166,13 +224,21 @@ export class QueensService {
   async update(
     id: string,
     updateQueenDto: UpdateQueen,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QueenResponse> {
     const existingQueen = await this.prisma.queen.findFirst({
-      where: { id, hive: { apiary: { id: filter.apiaryId } } },
+      where: { id, ...this.queenScopeWhere(filter, 'write') },
     });
     if (!existingQueen)
       throw new NotFoundException(`Queen with ID ${id} not found`);
+
+    // Re-parenting the queen requires write access to the target hive's apiary.
+    if (
+      updateQueenDto.hiveId &&
+      updateQueenDto.hiveId !== existingQueen.hiveId
+    ) {
+      await this.assertWritableHive(updateQueenDto.hiveId, filter);
+    }
 
     const updatedQueen = await this.prisma.queen.update({
       where: { id },
@@ -191,14 +257,22 @@ export class QueensService {
           ? new Date(updateQueenDto.replacedAt)
           : null,
       },
-      include: { hive: { select: { name: true } } },
+      include: {
+        hive: {
+          select: {
+            name: true,
+            apiaryId: true,
+            apiary: { select: { name: true } },
+          },
+        },
+      },
     });
     return this.mapQueenToResponse(updatedQueen);
   }
 
-  async remove(id: string, filter: ApiaryUserFilter) {
+  async remove(id: string, filter: ApiaryScopeFilter) {
     const existingQueen = await this.prisma.queen.findFirst({
-      where: { id, hive: { apiary: { id: filter.apiaryId } } },
+      where: { id, ...this.queenScopeWhere(filter, 'write') },
     });
     if (!existingQueen)
       throw new NotFoundException(`Queen with ID ${id} not found`);
@@ -208,45 +282,28 @@ export class QueensService {
   async recordTransfer(
     queenId: string,
     dto: RecordQueenTransfer,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QueenDetail> {
     const movedAt = dto.movedAt ? new Date(dto.movedAt) : new Date();
 
     await this.prisma.$transaction(async (tx) => {
-      // Find queen directly — it may have hiveId=null if previously removed from a hive
-      const queen = await tx.queen.findUnique({ where: { id: queenId } });
+      // The user must be able to write to the queen's current apiary (or, for a
+      // queen no longer in a hive, to an apiary in its movement history). The
+      // selected apiary is not a constraint: transfers may cross apiaries.
+      const queen = await tx.queen.findFirst({
+        where: { id: queenId, ...this.queenScopeWhere(filter, 'write') },
+      });
       if (!queen)
         throw new NotFoundException(`Queen with ID ${queenId} not found`);
 
-      // Verify ownership: either queen is in a hive belonging to this user, or has
-      // movement history tied to this user's apiary (covers the hiveId=null case).
-      if (queen.hiveId) {
-        const queenHive = await tx.hive.findFirst({
-          where: { id: queen.hiveId, apiary: { id: filter.apiaryId } },
-        });
-        if (!queenHive)
-          throw new NotFoundException(`Queen with ID ${queenId} not found`);
-      } else {
-        const ownedMovement = await tx.queenMovement.findFirst({
-          where: {
-            queenId,
-            OR: [
-              { fromHive: { apiary: { id: filter.apiaryId } } },
-              { toHive: { apiary: { id: filter.apiaryId } } },
-            ],
-          },
-        });
-        if (!ownedMovement)
-          throw new NotFoundException(`Queen with ID ${queenId} not found`);
-      }
-
       if (dto.toHiveId) {
+        // The target may be in any apiary the user can write to.
         const targetHive = await tx.hive.findFirst({
-          where: { id: dto.toHiveId, apiary: { id: filter.apiaryId } },
+          where: { id: dto.toHiveId, apiary: apiaryWriteScope(filter) },
         });
         if (!targetHive) {
           throw new NotFoundException(
-            `Target hive with ID ${dto.toHiveId} not found or does not belong to this apiary`,
+            `Target hive with ID ${dto.toHiveId} not found or you cannot edit its apiary`,
           );
         }
         const activeQueenInTarget = await tx.queen.findFirst({
@@ -297,28 +354,16 @@ export class QueensService {
     queenId: string,
     filter: ApiaryScopeFilter,
   ): Promise<QueenDetail> {
-    const apiaryWhere = filter.apiaryId
-      ? { id: filter.apiaryId }
-      : apiaryAccessWhere(filter.userId);
     const queen = await this.prisma.queen.findFirst({
-      where: {
-        id: queenId,
-        OR: [
-          { hive: { apiary: apiaryWhere } },
-          {
-            movements: {
-              some: {
-                OR: [
-                  { fromHive: { apiary: apiaryWhere } },
-                  { toHive: { apiary: apiaryWhere } },
-                ],
-              },
-            },
-          },
-        ],
-      },
+      where: { id: queenId, ...this.queenScopeWhere(filter, 'read') },
       include: {
-        hive: { select: { name: true } },
+        hive: {
+          select: {
+            name: true,
+            apiaryId: true,
+            apiary: { select: { name: true } },
+          },
+        },
         movements: {
           include: {
             fromHive: { select: { name: true } },
@@ -363,12 +408,7 @@ export class QueensService {
     filter: ApiaryScopeFilter,
   ): Promise<QueenResponse[]> {
     const hive = await this.prisma.hive.findFirst({
-      where: {
-        id: hiveId,
-        apiary: filter.apiaryId
-          ? { id: filter.apiaryId }
-          : apiaryAccessWhere(filter.userId),
-      },
+      where: { id: hiveId, apiary: apiaryReadScope(filter) },
     });
     if (!hive) throw new NotFoundException(`Hive with ID ${hiveId} not found`);
 
@@ -384,7 +424,13 @@ export class QueensService {
         ],
       },
       include: {
-        hive: { select: { name: true } },
+        hive: {
+          select: {
+            name: true,
+            apiaryId: true,
+            apiary: { select: { name: true } },
+          },
+        },
         // Include only movements relevant to this hive for date derivation
         movements: {
           where: { OR: [{ toHiveId: hiveId }, { fromHiveId: hiveId }] },

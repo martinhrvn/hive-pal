@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import {
-  ApiaryUserFilter,
-  ApiaryScopeFilter,
-} from '../interface/request-with.apiary';
-import { apiaryAccessWhere } from '../common';
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import {
+  apiaryReadScope,
+  apiaryWriteAccessWhere,
+  apiaryWriteScope,
+} from '../common';
 import { CreateTodo, UpdateTodo, TodoResponse } from 'shared-schemas';
 
 @Injectable()
@@ -18,6 +23,7 @@ export class TodosService {
     dueDate: Date | null;
     completed: boolean;
     hiveId: string | null;
+    apiaryId: string;
     createdAt: Date;
     hive?: { name: string } | null;
   }): TodoResponse {
@@ -29,6 +35,7 @@ export class TodosService {
       completed: todo.completed,
       hiveId: todo.hiveId,
       hiveName: todo.hive?.name ?? null,
+      apiaryId: todo.apiaryId,
       createdAt: todo.createdAt.toISOString(),
     };
   }
@@ -47,16 +54,49 @@ export class TodosService {
     }
   }
 
-  async create(
-    createTodoDto: CreateTodo,
-    filter: ApiaryUserFilter,
-  ): Promise<TodoResponse> {
-    if (createTodoDto.hiveId) {
-      await this.assertHiveBelongsToApiary(
-        createTodoDto.hiveId,
-        filter.apiaryId,
+  /**
+   * Resolve the apiary a new todo belongs to and verify write access:
+   * the hive's apiary when a hive is given, otherwise the selected apiary.
+   */
+  private async resolveTargetApiary(
+    hiveId: string | null | undefined,
+    filter: ApiaryScopeFilter,
+  ): Promise<string> {
+    if (hiveId) {
+      const hive = await this.prisma.hive.findFirst({
+        where: { id: hiveId, apiary: apiaryWriteScope(filter) },
+        select: { apiaryId: true },
+      });
+      if (!hive?.apiaryId) {
+        throw new NotFoundException(
+          `Hive with ID ${hiveId} not found or you cannot edit its apiary`,
+        );
+      }
+      return hive.apiaryId;
+    }
+    if (!filter.apiaryId) {
+      throw new BadRequestException('Select an apiary to create a todo');
+    }
+    const apiary = await this.prisma.apiary.findFirst({
+      where: { id: filter.apiaryId, ...apiaryWriteAccessWhere(filter.userId) },
+      select: { id: true },
+    });
+    if (!apiary) {
+      throw new NotFoundException(
+        `Apiary with ID ${filter.apiaryId} not found or you cannot edit it`,
       );
     }
+    return apiary.id;
+  }
+
+  async create(
+    createTodoDto: CreateTodo,
+    filter: ApiaryScopeFilter,
+  ): Promise<TodoResponse> {
+    const apiaryId = await this.resolveTargetApiary(
+      createTodoDto.hiveId,
+      filter,
+    );
 
     const todo = await this.prisma.todo.create({
       data: {
@@ -65,7 +105,7 @@ export class TodosService {
         dueDate: createTodoDto.dueDate ? new Date(createTodoDto.dueDate) : null,
         completed: createTodoDto.completed ?? false,
         hiveId: createTodoDto.hiveId ?? null,
-        apiaryId: filter.apiaryId,
+        apiaryId,
       },
       include: { hive: { select: { name: true } } },
     });
@@ -78,9 +118,7 @@ export class TodosService {
   ): Promise<TodoResponse[]> {
     const todos = await this.prisma.todo.findMany({
       where: {
-        ...(filter.apiaryId
-          ? { apiaryId: filter.apiaryId }
-          : { apiary: apiaryAccessWhere(filter.userId) }),
+        apiary: apiaryReadScope(filter),
         ...(params?.completed !== undefined && { completed: params.completed }),
         ...(params?.hiveId && { hiveId: params.hiveId }),
       },
@@ -96,12 +134,7 @@ export class TodosService {
 
   async findOne(id: string, filter: ApiaryScopeFilter): Promise<TodoResponse> {
     const todo = await this.prisma.todo.findFirst({
-      where: {
-        id,
-        ...(filter.apiaryId
-          ? { apiaryId: filter.apiaryId }
-          : { apiary: apiaryAccessWhere(filter.userId) }),
-      },
+      where: { id, apiary: apiaryReadScope(filter) },
       include: { hive: { select: { name: true } } },
     });
     if (!todo) throw new NotFoundException(`Todo with ID ${id} not found`);
@@ -111,10 +144,11 @@ export class TodosService {
   async update(
     id: string,
     updateTodoDto: UpdateTodo,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<TodoResponse> {
+    // Writes authorize against the todo's own apiary; the header is ignored.
     const existingTodo = await this.prisma.todo.findFirst({
-      where: { id, apiaryId: filter.apiaryId },
+      where: { id, apiary: apiaryWriteScope(filter) },
     });
     if (!existingTodo)
       throw new NotFoundException(`Todo with ID ${id} not found`);
@@ -122,7 +156,7 @@ export class TodosService {
     if (updateTodoDto.hiveId) {
       await this.assertHiveBelongsToApiary(
         updateTodoDto.hiveId,
-        filter.apiaryId,
+        existingTodo.apiaryId,
       );
     }
 
@@ -151,9 +185,9 @@ export class TodosService {
     return this.mapTodoToResponse(updatedTodo);
   }
 
-  async remove(id: string, filter: ApiaryUserFilter) {
+  async remove(id: string, filter: ApiaryScopeFilter) {
     const existingTodo = await this.prisma.todo.findFirst({
-      where: { id, apiaryId: filter.apiaryId },
+      where: { id, apiary: apiaryWriteScope(filter) },
     });
     if (!existingTodo)
       throw new NotFoundException(`Todo with ID ${id} not found`);

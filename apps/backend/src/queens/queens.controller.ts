@@ -18,10 +18,7 @@ import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
 import { ApiaryOptional } from '../guards/apiary-optional.decorator';
-import {
-  RequestWithApiary,
-  RequestWithApiaryScope,
-} from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
 import {
@@ -48,15 +45,14 @@ export class QueensController {
   }
 
   @Post()
+  @ApiaryOptional()
   @ApiCreatedResponse({ type: Object })
   @ZodValidation(createQueenSchema)
   create(
     @Body() createQueenDto: CreateQueen,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QueenResponse> {
-    this.logger.log(
-      `Creating queen for hive ${createQueenDto.hiveId} in apiary ${req.apiaryId}`,
-    );
+    this.logger.log(`Creating queen for hive ${createQueenDto.hiveId}`);
     return this.queensService.create(createQueenDto, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -113,12 +109,13 @@ export class QueensController {
   }
 
   @Post(':id/transfer')
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object })
   @ZodValidation(recordQueenTransferSchema)
   recordTransfer(
     @Param('id') id: string,
     @Body() dto: RecordQueenTransfer,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QueenDetail> {
     this.logger.log(`Recording transfer for queen ${id}`);
     return this.queensService.recordTransfer(id, dto, {
@@ -145,14 +142,15 @@ export class QueensController {
   }
 
   @Patch(':id')
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object })
   @ZodValidation(updateQueenSchema)
   update(
     @Param('id') id: string,
     @Body() updateQueenDto: UpdateQueen,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QueenResponse> {
-    this.logger.log(`Updating queen with ID ${id} in apiary ${req.apiaryId}`);
+    this.logger.log(`Updating queen with ID ${id}`);
     this.logger.debug(`Update data: ${JSON.stringify(updateQueenDto)}`);
     return this.queensService.update(id, updateQueenDto, {
       apiaryId: req.apiaryId,
@@ -161,9 +159,10 @@ export class QueensController {
   }
 
   @Delete(':id')
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object })
-  remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
-    this.logger.log(`Removing queen with ID ${id} from apiary ${req.apiaryId}`);
+  remove(@Param('id') id: string, @Req() req: RequestWithApiaryScope) {
+    this.logger.log(`Removing queen with ID ${id}`);
     return this.queensService.remove(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,

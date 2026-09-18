@@ -19,7 +19,8 @@ import {
 const boxesSchema = z
   .array(z.object({ type: boxTypeSchema, frameCount: z.number().int().min(0) }))
   .nullable();
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryReadScope, apiaryWriteScope } from '../common';
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
@@ -404,7 +405,7 @@ export class ActionsService {
    * @returns Array of action responses
    */
   async findAll(
-    filter: ActionFilter & Partial<ApiaryUserFilter>,
+    filter: ActionFilter & ApiaryScopeFilter,
   ): Promise<ActionResponse[]> {
     const whereClause: Prisma.ActionWhereInput = {
       type: filter.type ?? undefined,
@@ -419,14 +420,8 @@ export class ActionsService {
         : {}),
       // Filter by hive if specified
       ...(filter.hiveId && { hiveId: filter.hiveId }),
-      // Ensure the action belongs to the user's apiary
-      hive: {
-        ...(filter.apiaryId && {
-          apiary: {
-            id: filter.apiaryId,
-          },
-        }),
-      },
+      // Scope to the selected apiary, or to every apiary the user can access.
+      hive: { apiary: apiaryReadScope(filter) },
     };
 
     const actions = await this.prisma.action.findMany({
@@ -463,17 +458,13 @@ export class ActionsService {
    */
   async createStandaloneAction(
     createActionDto: CreateStandaloneAction,
-    apiaryId: string,
-    userId: string,
+    filter: ApiaryScopeFilter,
   ): Promise<ActionResponse> {
-    // Verify the hive belongs to the user's apiary
+    // The user must be able to write to the hive's apiary.
     const hive = await this.prisma.hive.findFirst({
       where: {
         id: createActionDto.hiveId,
-        apiary: {
-          id: apiaryId,
-          userId: userId,
-        },
+        apiary: apiaryWriteScope(filter),
       },
     });
 
@@ -492,7 +483,7 @@ export class ActionsService {
           type,
           notes,
           date: date ? new Date(date) : new Date(),
-          createdByUserId: userId,
+          createdByUserId: filter.userId,
         },
       });
 
@@ -525,7 +516,9 @@ export class ActionsService {
     }
 
     // Get user preferences for the response
-    const userPreferences = await this.getUserPreferencesWithFallback(userId);
+    const userPreferences = await this.getUserPreferencesWithFallback(
+      filter.userId,
+    );
 
     return this.mapPrismaToDto(result, userPreferences);
   }
@@ -541,19 +534,13 @@ export class ActionsService {
   async updateAction(
     actionId: string,
     updateActionDto: UpdateAction,
-    apiaryId: string,
-    userId: string,
+    filter: ApiaryScopeFilter,
   ): Promise<ActionResponse> {
-    // Verify the action exists and belongs to the user's apiary
+    // The user must be able to write to the action's hive's apiary.
     const existingAction = await this.prisma.action.findFirst({
       where: {
         id: actionId,
-        hive: {
-          apiary: {
-            id: apiaryId,
-            userId: userId,
-          },
-        },
+        hive: { apiary: apiaryWriteScope(filter) },
       },
       include: {
         feedingAction: true,
@@ -633,7 +620,9 @@ export class ActionsService {
     }
 
     // Get user preferences for the response
-    const userPreferences = await this.getUserPreferencesWithFallback(userId);
+    const userPreferences = await this.getUserPreferencesWithFallback(
+      filter.userId,
+    );
 
     return this.mapPrismaToDto(result, userPreferences);
   }
@@ -646,19 +635,13 @@ export class ActionsService {
    */
   async deleteAction(
     actionId: string,
-    apiaryId: string,
-    userId: string,
+    filter: ApiaryScopeFilter,
   ): Promise<void> {
-    // Verify the action exists and belongs to the user's apiary
+    // The user must be able to write to the action's hive's apiary.
     const existingAction = await this.prisma.action.findFirst({
       where: {
         id: actionId,
-        hive: {
-          apiary: {
-            id: apiaryId,
-            userId: userId,
-          },
-        },
+        hive: { apiary: apiaryWriteScope(filter) },
       },
     });
 

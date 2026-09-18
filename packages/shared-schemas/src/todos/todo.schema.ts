@@ -21,6 +21,7 @@ export const todoResponseSchema = z.object({
   completed: z.boolean(),
   hiveId: z.string().uuid().nullish(),
   hiveName: z.string().nullish(),
+  apiaryId: z.string().uuid(),
   createdAt: z.string().datetime(),
 });
 
