@@ -5,10 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
-import {
-  ApiaryScopeFilter,
-  ApiaryUserFilter,
-} from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
 import {
   FileUploadService,
@@ -35,7 +32,7 @@ export class PhotosService {
   async create(
     dto: CreatePhoto,
     file: Express.Multer.File,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<PhotoResponse> {
     this.fileUpload.validateFile(file, CONFIG);
     // The target apiary comes from the body: it must be one the user can edit.
@@ -85,7 +82,7 @@ export class PhotosService {
     return photos.map((p) => this.mapToResponse(p));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<PhotoResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<PhotoResponse> {
     const photo = await this.prisma.photo.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
     });
@@ -99,7 +96,7 @@ export class PhotosService {
 
   async getDownloadUrl(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     const photo = await this.prisma.photo.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
@@ -112,9 +109,9 @@ export class PhotosService {
     return this.fileUpload.getDownloadUrl(photo.storageKey);
   }
 
-  async delete(id: string, filter: ApiaryUserFilter): Promise<void> {
+  async delete(id: string, filter: ApiaryScopeFilter): Promise<void> {
     const photo = await this.prisma.photo.findFirst({
-      where: this.fileUpload.ownershipWhere(id, filter),
+      where: this.fileUpload.ownershipWhere(id, filter, 'write'),
     });
 
     if (!photo) {

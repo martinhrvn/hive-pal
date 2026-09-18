@@ -25,12 +25,14 @@ import {
   createInspectionSchema,
 } from 'shared-schemas';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 
 @ApiTags('batch-inspections')
 @ApiBearerAuth()
 @Controller('batch-inspections')
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 export class BatchInspectionsController {
   constructor(
     private readonly batchInspectionsService: BatchInspectionsService,
@@ -41,7 +43,7 @@ export class BatchInspectionsController {
   async create(
     @Body(new ZodValidationPipe(createBatchInspectionSchema))
     createDto: CreateBatchInspection,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.batchInspectionsService.create(
       req.apiaryId,
@@ -52,13 +54,13 @@ export class BatchInspectionsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all batch inspections for an apiary' })
-  async findAll(@Req() req: RequestWithApiary) {
+  async findAll(@Req() req: RequestWithApiaryScope) {
     return this.batchInspectionsService.findAll(req.apiaryId, req.user.id);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific batch inspection' })
-  async findOne(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async findOne(@Param('id') id: string, @Req() req: RequestWithApiaryScope) {
     return this.batchInspectionsService.findOne(id, req.apiaryId, req.user.id);
   }
 
@@ -68,7 +70,7 @@ export class BatchInspectionsController {
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateBatchInspectionSchema))
     updateDto: UpdateBatchInspection,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.batchInspectionsService.update(
       id,
@@ -80,7 +82,7 @@ export class BatchInspectionsController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete batch inspection (DRAFT only)' })
-  async delete(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async delete(@Param('id') id: string, @Req() req: RequestWithApiaryScope) {
     await this.batchInspectionsService.delete(id, req.apiaryId, req.user.id);
     return { message: 'Batch inspection deleted successfully' };
   }
@@ -91,7 +93,7 @@ export class BatchInspectionsController {
     @Param('id') id: string,
     @Body(new ZodValidationPipe(reorderBatchHivesSchema))
     reorderDto: ReorderBatchHives,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.batchInspectionsService.reorderHives(
       id,
@@ -103,13 +105,16 @@ export class BatchInspectionsController {
 
   @Post(':id/start')
   @ApiOperation({ summary: 'Start batch inspection' })
-  async start(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async start(@Param('id') id: string, @Req() req: RequestWithApiaryScope) {
     return this.batchInspectionsService.start(id, req.apiaryId, req.user.id);
   }
 
   @Get(':id/current')
   @ApiOperation({ summary: 'Get current hive to inspect' })
-  async getCurrentHive(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async getCurrentHive(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiaryScope,
+  ) {
     return this.batchInspectionsService.getCurrentHive(
       id,
       req.apiaryId,
@@ -119,7 +124,7 @@ export class BatchInspectionsController {
 
   @Post(':id/skip')
   @ApiOperation({ summary: 'Skip current hive (move to end of queue)' })
-  async skipHive(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async skipHive(@Param('id') id: string, @Req() req: RequestWithApiaryScope) {
     return this.batchInspectionsService.skipHive(id, req.apiaryId, req.user.id);
   }
 
@@ -128,7 +133,7 @@ export class BatchInspectionsController {
   async cancelHive(
     @Param('id') id: string,
     @Param('hiveId') hiveId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.batchInspectionsService.cancelHive(
       id,
@@ -146,7 +151,7 @@ export class BatchInspectionsController {
     @Param('id') id: string,
     @Body(new ZodValidationPipe(createInspectionSchema))
     inspectionData: CreateInspection,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.batchInspectionsService.createInspectionAndNext(
       id,

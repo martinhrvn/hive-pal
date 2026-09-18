@@ -19,7 +19,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { AlertsService } from './alerts.service';
 import { AlertsScheduler } from './alerts.scheduler';
 import {
@@ -33,6 +34,7 @@ import {
 @ApiTags('alerts')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 @Controller('alerts')
 export class AlertsController {
   constructor(
@@ -48,7 +50,7 @@ export class AlertsController {
   })
   async findAll(
     @Query(new ZodValidationPipe(alertFilterSchema)) query: AlertFilter,
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
   ): Promise<AlertResponse[]> {
     return this.alertsService.findAll({
       apiaryId: req.apiaryId,
@@ -70,7 +72,7 @@ export class AlertsController {
   })
   async findOne(
     @Param('id') id: string,
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
   ): Promise<AlertResponse> {
     return this.alertsService.findOne(id, {
       apiaryId: req.apiaryId,
@@ -91,7 +93,7 @@ export class AlertsController {
   async update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateAlertSchema)) updateAlertDto: UpdateAlert,
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
   ): Promise<AlertResponse> {
     return this.alertsService.update(id, updateAlertDto, {
       apiaryId: req.apiaryId,
@@ -111,7 +113,7 @@ export class AlertsController {
   })
   async dismiss(
     @Param('id') id: string,
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
   ): Promise<AlertResponse> {
     return this.alertsService.dismiss(id, {
       apiaryId: req.apiaryId,
@@ -131,7 +133,7 @@ export class AlertsController {
   })
   async resolve(
     @Param('id') id: string,
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
   ): Promise<AlertResponse> {
     return this.alertsService.resolve(id, {
       apiaryId: req.apiaryId,

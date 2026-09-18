@@ -69,6 +69,15 @@ describe('Optional apiary scope (e2e)', () => {
     await prisma.todo.deleteMany({
       where: { apiary: { userId: { in: userIds } } },
     });
+    await prisma.quickCheck.deleteMany({
+      where: { apiary: { userId: { in: userIds } } },
+    });
+    await prisma.batchInspection.deleteMany({
+      where: { apiary: { userId: { in: userIds } } },
+    });
+    await prisma.harvest.deleteMany({
+      where: { apiary: { userId: { in: userIds } } },
+    });
     await prisma.action.deleteMany({
       where: { hive: { apiary: { userId: { in: userIds } } } },
     });
@@ -322,6 +331,81 @@ describe('Optional apiary scope (e2e)', () => {
       await asMe(request(app.getHttpServer()).post('/inspections'))
         .send({ hiveId: hiveC, date: new Date().toISOString() })
         .expect(404);
+    });
+  });
+
+  describe('other migrated modules', () => {
+    it('lists photos and calendar events across apiaries without a header', async () => {
+      const photos = await asMe(
+        request(app.getHttpServer()).get('/photos'),
+      ).expect(200);
+      expect(Array.isArray(photos.body)).toBe(true);
+      const calendar = await asMe(
+        request(app.getHttpServer()).get('/calendar'),
+      ).expect(200);
+      expect(calendar.body).toBeDefined();
+    });
+
+    it("creates a quick check in the hive's apiary and refuses a view-only apiary", async () => {
+      const res = await asMe(request(app.getHttpServer()).post('/quick-checks'))
+        .set('x-apiary-id', apiaryA)
+        .send({ hiveId: hiveB, apiaryId: apiaryB, note: 'Bees flying' })
+        .expect(201);
+      expect(res.body.apiaryId).toBe(apiaryB);
+
+      await asMe(request(app.getHttpServer()).post('/quick-checks'))
+        .set('x-apiary-id', apiaryC)
+        .send({ apiaryId: apiaryC, note: 'Nope' })
+        .expect(404);
+    });
+
+    it('lets an editor create a batch inspection and refuses a viewer', async () => {
+      await asMe(request(app.getHttpServer()).post('/batch-inspections'))
+        .set('x-apiary-id', apiaryB)
+        .send({ name: 'Round B', apiaryId: apiaryB, hiveIds: [hiveB] })
+        .expect(201);
+
+      await asMe(request(app.getHttpServer()).post('/batch-inspections'))
+        .set('x-apiary-id', apiaryC)
+        .send({ name: 'Round C', apiaryId: apiaryC, hiveIds: [hiveC] })
+        .expect(403);
+    });
+
+    it('lets an editor create and see a harvest, and hides a viewer apiary from edits', async () => {
+      const created = await asMe(request(app.getHttpServer()).post('/harvests'))
+        .set('x-apiary-id', apiaryB)
+        .send({
+          date: new Date().toISOString(),
+          harvestHives: [{ hiveId: hiveB, framesTaken: 2 }],
+        })
+        .expect(201);
+
+      const list = await asMe(
+        request(app.getHttpServer()).get('/harvests'),
+      ).expect(200);
+      expect(list.body.map((h: { id: string }) => h.id)).toContain(
+        created.body.id,
+      );
+
+      // A harvest in the view-only apiary, created by its owner, cannot be edited.
+      const theirs = await request(app.getHttpServer())
+        .post('/harvests')
+        .set('Cookie', other.authCookie)
+        .set('x-apiary-id', apiaryC)
+        .send({
+          date: new Date().toISOString(),
+          harvestHives: [{ hiveId: hiveC, framesTaken: 1 }],
+        })
+        .expect(201);
+      await asMe(
+        request(app.getHttpServer()).put(`/harvests/${theirs.body.id}`),
+      )
+        .send({ notes: 'mine now' })
+        .expect(404);
+      // ...but it is visible to the viewer.
+      await asMe(
+        request(app.getHttpServer()).get(`/harvests/${theirs.body.id}`),
+      ).expect(200);
     });
   });
 

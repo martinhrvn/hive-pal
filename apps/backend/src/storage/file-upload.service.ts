@@ -6,8 +6,13 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from './storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
-import { apiaryWriteAccessWhere } from '../common/apiary-scope';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import {
+  apiaryReadScope,
+  apiaryWriteAccessWhere,
+  apiaryWriteScope,
+} from '../common/apiary-scope';
+import { Prisma } from '@/prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 
 const MIME_TO_EXT: Record<string, string> = {
@@ -27,7 +32,8 @@ export interface FileUploadConfig {
 
 export interface FileFilterInternal {
   hiveId?: string;
-  apiaryId: string;
+  // Selected apiary (a filter); absent = every apiary the user can access.
+  apiaryId?: string;
   userId: string;
   startDate?: string;
   endDate?: string;
@@ -149,7 +155,7 @@ export class FileUploadService {
   /** Builds a Prisma where clause for list queries with apiary ownership, optional hive and date filters. */
   buildWhereClause(filter: FileFilterInternal): Record<string, unknown> {
     const where: Record<string, unknown> = {
-      apiary: { id: filter.apiaryId },
+      apiary: apiaryReadScope(filter),
     };
 
     if (filter.hiveId) {
@@ -167,13 +173,17 @@ export class FileUploadService {
   }
 
   /** Builds the ownership where clause for single-entity lookups. */
+  /** Where-clause for one file: read scope honours the selected apiary as a
+   *  filter, write scope requires OWNER/EDITOR on the file's apiary. */
   ownershipWhere(
     id: string,
-    filter: ApiaryUserFilter,
-  ): { id: string; apiary: { id: string } } {
+    filter: ApiaryScopeFilter,
+    mode: 'read' | 'write' = 'read',
+  ): { id: string; apiary: Prisma.ApiaryWhereInput } {
     return {
       id,
-      apiary: { id: filter.apiaryId },
+      apiary:
+        mode === 'write' ? apiaryWriteScope(filter) : apiaryReadScope(filter),
     };
   }
 }

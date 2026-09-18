@@ -6,10 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
-import {
-  ApiaryScopeFilter,
-  ApiaryUserFilter,
-} from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
@@ -258,16 +255,13 @@ export class InspectionAudioService {
    * List all audio recordings for an apiary, joined with inspection + hive info.
    */
   async findAllForApiary(
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<ApiaryAudioListItem[]> {
     const records = await this.prisma.inspectionAudio.findMany({
       where: {
         inspection: {
           hive: {
-            apiary: {
-              id: filter.apiaryId,
-              userId: filter.userId,
-            },
+            apiary: apiaryReadScope(filter),
           },
         },
       },
@@ -307,17 +301,14 @@ export class InspectionAudioService {
    * NONE or FAILED. Reuses startAiAnalysis so push/pull/auto routing is shared.
    */
   async startAnalysisForPending(
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ started: number }> {
     const pending = await this.prisma.inspectionAudio.findMany({
       where: {
         transcriptionStatus: { in: ['NONE', 'FAILED'] },
         inspection: {
           hive: {
-            apiary: {
-              id: filter.apiaryId,
-              userId: filter.userId,
-            },
+            apiary: apiaryWriteScope(filter),
           },
         },
       },

@@ -18,7 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { CustomLoggerService } from '../logger/logger.service';
 import { DocumentsService } from './documents.service';
 import { ZodValidation } from '../common';
@@ -31,6 +32,7 @@ import {
 } from 'shared-schemas';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 @Controller('documents')
 export class DocumentsController {
   constructor(
@@ -45,7 +47,7 @@ export class DocumentsController {
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: Record<string, string>,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<DocumentResponse> {
     if (!file) {
       throw new BadRequestException('No file provided');
@@ -76,7 +78,7 @@ export class DocumentsController {
   @ZodValidation(documentFilterSchema)
   async findAll(
     @Query() query: DocumentFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<DocumentResponse[]> {
     this.logger.log({
       message: 'Listing documents',
@@ -93,7 +95,7 @@ export class DocumentsController {
   @Get(':id')
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<DocumentResponse> {
     return this.documentsService.findOne(id, {
       apiaryId: req.apiaryId,
@@ -102,7 +104,10 @@ export class DocumentsController {
   }
 
   @Get(':id/download-url')
-  async getDownloadUrl(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async getDownloadUrl(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiaryScope,
+  ) {
     return this.documentsService.getDownloadUrl(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -113,7 +118,7 @@ export class DocumentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<void> {
     this.logger.log({
       message: 'Deleting document',
