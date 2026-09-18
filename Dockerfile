@@ -1,13 +1,13 @@
 # Stage 1: Base
 FROM node:22-alpine AS base
 RUN corepack enable
-RUN npm i -g turbo
+RUN npm i -g turbo@2.8.10
 WORKDIR /app
 
 # Stage 2: Prune monorepo
 FROM base AS pruner
 COPY . .
-RUN turbo prune --scope=backend --scope=frontend --docker
+RUN turbo prune backend frontend --docker
 
 # Stage 3: Build
 FROM base AS builder
