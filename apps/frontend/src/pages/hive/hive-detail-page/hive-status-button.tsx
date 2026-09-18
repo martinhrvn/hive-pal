@@ -47,11 +47,13 @@ const toLocalInputValue = (date: Date): string => {
 type HiveStatusButtonProps = {
   hiveId: string;
   status: HiveStatusEnum | undefined;
+  apiaryId?: string;
 };
 
 export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
   hiveId,
   status,
+  apiaryId,
 }) => {
   const [open, setOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<HiveStatusEnum | null>(
@@ -77,6 +79,8 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
         type: ActionType.STATUS_CHANGE,
         details: { type: ActionType.STATUS_CHANGE, toStatus: pendingStatus },
         date: date.toISOString(),
+        // The hive's own apiary — cross-apiary safe in view-all mode.
+        apiaryId,
       });
       // Refresh hive queries so the status badge reflects the recomputed status.
       await queryClient.invalidateQueries({ queryKey: ['hives'] });

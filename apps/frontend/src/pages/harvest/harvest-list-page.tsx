@@ -21,9 +21,11 @@ import { getStatusColor } from '@/utils/status-colors';
 
 export const HarvestListPage = () => {
   const navigate = useNavigate();
-  const { activeApiaryId } = useApiary();
+  const { activeApiaryId, viewAllApiaries } = useApiary();
   const { data: harvests = [], isLoading } = useHarvests({
-    apiaryId: activeApiaryId || undefined,
+    // In view-all mode, omit the apiary filter so the backend returns harvests
+    // across all of the user's apiaries.
+    apiaryId: viewAllApiaries ? undefined : activeApiaryId || undefined,
   });
   const { getWeightUnit } = useUnitFormat();
 

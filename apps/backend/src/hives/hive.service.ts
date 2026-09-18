@@ -10,7 +10,11 @@ import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { FileUploadService } from '../storage/file-upload.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Box as PrismaBox } from '@/prisma/client';
 import { HiveCreatedEvent, HiveUpdatedEvent } from '../events/hive.events';
@@ -177,10 +181,10 @@ export class HiveService {
   }
 
   async findAll(
-    filter: ApiaryUserFilter & HiveFilter,
+    filter: ApiaryScopeFilter & HiveFilter,
   ): Promise<HiveResponse[]> {
     this.logger.log(
-      `Finding all hives for apiary ${filter.apiaryId} and user ${filter.userId}`,
+      `Finding all hives for apiary ${filter.apiaryId ?? 'ALL'} and user ${filter.userId}`,
     );
 
     const includeConfig = {
@@ -346,17 +350,18 @@ export class HiveService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<HiveDetailResponse> {
     this.logger.log(
-      `Finding hive with ID: ${id} for apiary ${filter.apiaryId} and user ${filter.userId}`,
+      `Finding hive with ID: ${id} for apiary ${filter.apiaryId ?? 'ALL'} and user ${filter.userId}`,
     );
     const hive = await this.prisma.hive.findFirst({
       where: {
         id,
-        apiary: {
-          id: filter.apiaryId,
-        },
+        // Single apiary, or any apiary the user can access in view-all mode.
+        apiary: filter.apiaryId
+          ? { id: filter.apiaryId }
+          : apiaryAccessWhere(filter.userId),
       },
       include: {
         apiary: { select: { settings: true } },

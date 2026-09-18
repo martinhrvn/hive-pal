@@ -60,6 +60,8 @@ export function MobileWizardPage() {
   const [stepIndex, setStepIndex] = useState(0);
 
   const upsert = useUpsertInspection(undefined, {
+    // The hive's own apiary — required for cross-apiary writes in view-all mode.
+    apiaryId: hive?.apiaryId,
     onBeforeNavigate: async (id: string) => {
       await Promise.all([
         pendingRecordings.length > 0

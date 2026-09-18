@@ -73,6 +73,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
           id: hive.id,
           settings: data.settings,
         },
+        apiaryId: hive.apiaryId,
       },
       {
         onSuccess: () => {

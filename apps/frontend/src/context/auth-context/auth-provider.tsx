@@ -4,6 +4,9 @@ import { AuthContext } from '@/context/auth-context/auth-context.ts';
 import { authClient, useSession } from '@/lib/auth-client';
 
 export const APIARY_SELECTION = 'hive_pal_apiary_selection';
+// When set to 'true', the app shows data across ALL of the user's apiaries
+// instead of filtering to the single selected apiary (APIARY_SELECTION).
+export const VIEW_ALL_APIARIES = 'hive_pal_view_all_apiaries';
 const LEGACY_TOKEN_KEY = 'hive_pal_auth_token';
 
 interface AuthProviderProps {
@@ -90,6 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await authClient.signOut();
     queryClient.clear();
     localStorage.removeItem(APIARY_SELECTION);
+    localStorage.removeItem(VIEW_ALL_APIARIES);
     localStorage.removeItem('hive-pal-query-cache');
     window.location.href = '/login';
   }, [queryClient]);

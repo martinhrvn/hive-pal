@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { CreateTodo, UpdateTodo, TodoResponse } from 'shared-schemas';
 
 @Injectable()
@@ -69,12 +73,14 @@ export class TodosService {
   }
 
   async findAll(
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
     params?: { completed?: boolean; hiveId?: string },
   ): Promise<TodoResponse[]> {
     const todos = await this.prisma.todo.findMany({
       where: {
-        apiaryId: filter.apiaryId,
+        ...(filter.apiaryId
+          ? { apiaryId: filter.apiaryId }
+          : { apiary: apiaryAccessWhere(filter.userId) }),
         ...(params?.completed !== undefined && { completed: params.completed }),
         ...(params?.hiveId && { hiveId: params.hiveId }),
       },
@@ -88,9 +94,14 @@ export class TodosService {
     return todos.map((todo) => this.mapTodoToResponse(todo));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<TodoResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<TodoResponse> {
     const todo = await this.prisma.todo.findFirst({
-      where: { id, apiaryId: filter.apiaryId },
+      where: {
+        id,
+        ...(filter.apiaryId
+          ? { apiaryId: filter.apiaryId }
+          : { apiary: apiaryAccessWhere(filter.userId) }),
+      },
       include: { hive: { select: { name: true } } },
     });
     if (!todo) throw new NotFoundException(`Todo with ID ${id} not found`);

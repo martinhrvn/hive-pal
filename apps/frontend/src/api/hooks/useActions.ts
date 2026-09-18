@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { apiaryHeaderConfig } from './useHives';
 import {
   ActionFilter,
   ActionResponse,
@@ -40,15 +41,21 @@ export const useActions = (
   });
 };
 
-// Create a new standalone action
+// Create a new standalone action. An optional apiaryId is sent as x-apiary-id
+// so the write targets the hive's own apiary in view-all mode.
 export const useCreateAction = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<ActionResponse, Error, CreateStandaloneAction>({
-    mutationFn: async (data: CreateStandaloneAction) => {
+  return useMutation<
+    ActionResponse,
+    Error,
+    CreateStandaloneAction & { apiaryId?: string }
+  >({
+    mutationFn: async ({ apiaryId, ...data }) => {
       const response = await apiClient.post<ActionResponse>(
         '/api/actions',
         data,
+        apiaryHeaderConfig(apiaryId),
       );
       return response.data;
     },

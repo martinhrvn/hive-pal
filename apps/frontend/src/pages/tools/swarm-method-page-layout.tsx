@@ -227,12 +227,16 @@ export function SwarmMethodPageLayout({
     const results = await Promise.allSettled(
       checkpoints.map(cp =>
         createInspection({
-          hiveId: selectedHiveId,
-          date: toInspectionDateISOString(cp.date, true),
-          isAllDay: true,
-          notes: cp.notes,
-          status: InspectionStatus.SCHEDULED,
-          actions: [],
+          data: {
+            hiveId: selectedHiveId,
+            date: toInspectionDateISOString(cp.date, true),
+            isAllDay: true,
+            notes: cp.notes,
+            status: InspectionStatus.SCHEDULED,
+            actions: [],
+          },
+          // The hive's own apiary — cross-apiary safe in view-all mode.
+          apiaryId: selectedHive?.apiaryId,
         }),
       ),
     );

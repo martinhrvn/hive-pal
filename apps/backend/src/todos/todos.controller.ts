@@ -17,7 +17,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TodosService } from './todos.service';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
 import {
@@ -55,15 +59,20 @@ export class TodosController {
   }
 
   @Get()
+  @AllowAllApiaries()
   @ApiOkResponse({ type: Object, isArray: true })
   findAll(
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
     @Query('completed') completed?: string,
     @Query('hiveId') hiveId?: string,
   ): Promise<TodoResponse[]> {
-    this.logger.log(`Finding all todos in apiary ${req.apiaryId}`);
+    this.logger.log(`Finding all todos in apiary ${req.apiaryId ?? 'ALL'}`);
     return this.todosService.findAll(
-      { apiaryId: req.apiaryId, userId: req.user.id },
+      {
+        apiaryId: req.apiaryId,
+        userId: req.user.id,
+        allApiaries: req.allApiaries,
+      },
       {
         completed: completed === undefined ? undefined : completed === 'true',
         hiveId,
@@ -72,15 +81,19 @@ export class TodosController {
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   @ApiOkResponse({ type: Object })
   findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<TodoResponse> {
-    this.logger.log(`Finding todo with ID ${id} in apiary ${req.apiaryId}`);
+    this.logger.log(
+      `Finding todo with ID ${id} in apiary ${req.apiaryId ?? 'ALL'}`,
+    );
     return this.todosService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

@@ -10,6 +10,7 @@ type InspectionStatusCardProps = {
   inspectionId: string;
   status: InspectionStatus;
   inspectionDate: string;
+  apiaryId?: string;
 };
 
 /**
@@ -20,6 +21,7 @@ type InspectionStatusCardProps = {
 export const InspectionStatusCard = ({
   inspectionId,
   status,
+  apiaryId,
 }: InspectionStatusCardProps) => {
   const { t } = useTranslation('inspection');
   const queryClient = useQueryClient();
@@ -33,7 +35,11 @@ export const InspectionStatusCard = ({
 
   const handleComplete = () =>
     updateInspection(
-      { id: inspectionId, data: { status: InspectionStatus.COMPLETED } },
+      {
+        id: inspectionId,
+        data: { status: InspectionStatus.COMPLETED },
+        apiaryId,
+      },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['inspections'] });
@@ -43,7 +49,11 @@ export const InspectionStatusCard = ({
 
   const handleCancel = () =>
     updateInspection(
-      { id: inspectionId, data: { status: InspectionStatus.CANCELLED } },
+      {
+        id: inspectionId,
+        data: { status: InspectionStatus.CANCELLED },
+        apiaryId,
+      },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['inspections'] });

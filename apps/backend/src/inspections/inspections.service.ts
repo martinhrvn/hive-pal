@@ -10,7 +10,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Measurement, Observation, Prisma } from '@/prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionCreatedEvent } from '../events/hive.events';
@@ -354,7 +358,7 @@ export class InspectionsService {
   }
 
   async findAll(
-    filter: InspectionFilter & Partial<ApiaryUserFilter>,
+    filter: InspectionFilter & ApiaryScopeFilter,
   ): Promise<InspectionResponse[]> {
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
@@ -384,15 +388,15 @@ export class InspectionsService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<InspectionResponse | null> {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
         hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
+          apiary: filter.apiaryId
+            ? { id: filter.apiaryId }
+            : apiaryAccessWhere(filter.userId),
         },
       },
       include: INSPECTION_INCLUDE,
@@ -616,7 +620,7 @@ export class InspectionsService {
   }
 
   async findOverdueInspections(
-    filter: Partial<ApiaryUserFilter>,
+    filter: ApiaryScopeFilter,
   ): Promise<InspectionResponse[]> {
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
@@ -637,7 +641,7 @@ export class InspectionsService {
   }
 
   async findDueTodayInspections(
-    filter: Partial<ApiaryUserFilter>,
+    filter: ApiaryScopeFilter,
   ): Promise<InspectionResponse[]> {
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
@@ -831,15 +835,39 @@ export class InspectionsService {
       : {};
   }
 
-  private getApiaryFilter(filter: Partial<ApiaryUserFilter>) {
-    if (!filter.apiaryId || !filter.userId) return {};
-    return {
-      hive: {
-        apiary: {
-          id: filter.apiaryId,
+  private getApiaryFilter(
+    filter: ApiaryScopeFilter,
+  ): Prisma.InspectionWhereInput {
+    // Single-apiary view: scope to the selected apiary.
+    if (filter.apiaryId) {
+      return {
+        hive: {
+          apiary: {
+            id: filter.apiaryId,
+          },
         },
-      },
-    };
+      };
+    }
+    // Cross-apiary "view all" mode: scope to every apiary the user owns or is
+    // an active member of. Never fall through to an unscoped query, which
+    // would leak other users' inspections.
+    if (filter.allApiaries && filter.userId) {
+      return {
+        hive: {
+          apiary: {
+            OR: [
+              { userId: filter.userId },
+              {
+                members: {
+                  some: { userId: filter.userId, status: 'ACTIVE' },
+                },
+              },
+            ],
+          },
+        },
+      };
+    }
+    return {};
   }
 
   private mapInspectionsToDto(

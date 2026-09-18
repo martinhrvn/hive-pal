@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import {
   CreateQueen,
   QueenResponse,
@@ -99,10 +103,14 @@ export class QueensService {
   }
 
   async findAll(
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
     params?: { status?: string; hiveId?: string },
   ): Promise<QueenResponse[]> {
-    const apiaryFilter = { hive: { apiary: { id: filter.apiaryId } } };
+    // Single apiary, or every apiary the user can access in view-all mode.
+    const apiaryWhere = filter.apiaryId
+      ? { id: filter.apiaryId }
+      : apiaryAccessWhere(filter.userId);
+    const apiaryFilter = { hive: { apiary: apiaryWhere } };
 
     let where: Record<string, unknown>;
     if (params?.hiveId) {
@@ -118,8 +126,8 @@ export class QueensService {
             movements: {
               some: {
                 OR: [
-                  { fromHive: { apiary: { id: filter.apiaryId } } },
-                  { toHive: { apiary: { id: filter.apiaryId } } },
+                  { fromHive: { apiary: apiaryWhere } },
+                  { toHive: { apiary: apiaryWhere } },
                 ],
               },
             },
@@ -139,9 +147,16 @@ export class QueensService {
     return queens.map((queen) => this.mapQueenToResponse(queen));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<QueenResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<QueenResponse> {
     const queen = await this.prisma.queen.findFirst({
-      where: { id, hive: { apiary: { id: filter.apiaryId } } },
+      where: {
+        id,
+        hive: {
+          apiary: filter.apiaryId
+            ? { id: filter.apiaryId }
+            : apiaryAccessWhere(filter.userId),
+        },
+      },
       include: { hive: { select: { name: true } } },
     });
     if (!queen) throw new NotFoundException(`Queen with ID ${id} not found`);
@@ -280,19 +295,22 @@ export class QueensService {
 
   async getQueenHistory(
     queenId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QueenDetail> {
+    const apiaryWhere = filter.apiaryId
+      ? { id: filter.apiaryId }
+      : apiaryAccessWhere(filter.userId);
     const queen = await this.prisma.queen.findFirst({
       where: {
         id: queenId,
         OR: [
-          { hive: { apiary: { id: filter.apiaryId } } },
+          { hive: { apiary: apiaryWhere } },
           {
             movements: {
               some: {
                 OR: [
-                  { fromHive: { apiary: { id: filter.apiaryId } } },
-                  { toHive: { apiary: { id: filter.apiaryId } } },
+                  { fromHive: { apiary: apiaryWhere } },
+                  { toHive: { apiary: apiaryWhere } },
                 ],
               },
             },
@@ -342,10 +360,15 @@ export class QueensService {
 
   async getHiveQueenHistory(
     hiveId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QueenResponse[]> {
     const hive = await this.prisma.hive.findFirst({
-      where: { id: hiveId, apiary: { id: filter.apiaryId } },
+      where: {
+        id: hiveId,
+        apiary: filter.apiaryId
+          ? { id: filter.apiaryId }
+          : apiaryAccessWhere(filter.userId),
+      },
     });
     if (!hive) throw new NotFoundException(`Hive with ID ${hiveId} not found`);
 
