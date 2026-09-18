@@ -243,6 +243,88 @@ describe('Optional apiary scope (e2e)', () => {
     });
   });
 
+  describe('hives and inspections', () => {
+    it('refuses to create a hive in a view-only apiary, whatever the header says', async () => {
+      await asMe(request(app.getHttpServer()).post('/hives'))
+        .set('x-apiary-id', apiaryA)
+        .send({
+          name: 'Sneaky',
+          apiaryId: apiaryC,
+          installationDate: new Date().toISOString(),
+          status: 'ACTIVE',
+        })
+        .expect(404);
+    });
+
+    it('creates a hive in another writable apiary', async () => {
+      const res = await asMe(request(app.getHttpServer()).post('/hives'))
+        .set('x-apiary-id', apiaryA)
+        .send({
+          name: 'Editor hive',
+          apiaryId: apiaryB,
+          installationDate: new Date().toISOString(),
+          status: 'ACTIVE',
+        })
+        .expect(201);
+      const created = await prisma.hive.findUnique({
+        where: { id: res.body.id },
+      });
+      expect(created?.apiaryId).toBe(apiaryB);
+    });
+
+    it('only moves a hive into an apiary the user can edit', async () => {
+      const hive = await setupHive(app, apiaryA);
+
+      await asMe(request(app.getHttpServer()).patch(`/hives/${hive}`))
+        .send({ id: hive, apiaryId: apiaryC })
+        .expect(404);
+      expect(
+        (await prisma.hive.findUnique({ where: { id: hive } }))?.apiaryId,
+      ).toBe(apiaryA);
+
+      await asMe(request(app.getHttpServer()).patch(`/hives/${hive}`))
+        .send({ id: hive, apiaryId: apiaryB })
+        .expect(200);
+      expect(
+        (await prisma.hive.findUnique({ where: { id: hive } }))?.apiaryId,
+      ).toBe(apiaryB);
+    });
+
+    it('refuses to edit a hive in a view-only apiary', async () => {
+      await asMe(request(app.getHttpServer()).patch(`/hives/${hiveC}`))
+        .send({ id: hiveC, name: 'Renamed' })
+        .expect(404);
+    });
+
+    it('only re-parents an inspection to a hive the user can edit', async () => {
+      const inspection = await prisma.inspection.create({
+        data: { hiveId: hiveA, date: new Date() },
+      });
+
+      await asMe(
+        request(app.getHttpServer()).patch(`/inspections/${inspection.id}`),
+      )
+        .send({ hiveId: hiveC })
+        .expect(404);
+
+      await asMe(
+        request(app.getHttpServer()).patch(`/inspections/${inspection.id}`),
+      )
+        .send({ hiveId: hiveB })
+        .expect(200);
+      expect(
+        (await prisma.inspection.findUnique({ where: { id: inspection.id } }))
+          ?.hiveId,
+      ).toBe(hiveB);
+    });
+
+    it('refuses to create an inspection on a hive in a view-only apiary', async () => {
+      await asMe(request(app.getHttpServer()).post('/inspections'))
+        .send({ hiveId: hiveC, date: new Date().toISOString() })
+        .expect(404);
+    });
+  });
+
   describe('actions', () => {
     it('records an action on a hive of another apiary as an editor', async () => {
       const res = await asMe(request(app.getHttpServer()).post('/actions'))

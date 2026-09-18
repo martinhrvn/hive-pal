@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from './storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { apiaryWriteAccessWhere } from '../common/apiary-scope';
 import { v4 as uuidv4 } from 'uuid';
 
 const MIME_TO_EXT: Record<string, string> = {
@@ -57,6 +58,22 @@ export class FileUploadService {
     if (file.size > config.maxFileSize) {
       throw new BadRequestException(
         `File size exceeds maximum allowed (${config.maxFileSize / 1024 / 1024}MB)`,
+      );
+    }
+  }
+
+  /** Verifies the user can write to the given apiary (owner, or active
+   *  EDITOR/OWNER member). Used for the target apiary an upload names in its
+   *  body, which the guard does not see. */
+  async assertApiaryWritable(apiaryId: string, userId: string): Promise<void> {
+    const apiary = await this.prisma.apiary.findFirst({
+      where: { id: apiaryId, ...apiaryWriteAccessWhere(userId) },
+      select: { id: true },
+    });
+
+    if (!apiary) {
+      throw new NotFoundException(
+        `Apiary with ID ${apiaryId} not found or you cannot edit it`,
       );
     }
   }

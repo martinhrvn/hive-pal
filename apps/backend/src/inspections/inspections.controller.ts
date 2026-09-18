@@ -15,10 +15,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
 import { ApiaryOptional } from '../guards/apiary-optional.decorator';
-import {
-  RequestWithApiary,
-  RequestWithApiaryScope,
-} from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
 import { InspectionsService } from './inspections.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
@@ -45,13 +42,14 @@ export class InspectionsController {
   }
 
   @Post()
+  @ApiaryOptional()
   @ZodValidation(createInspectionSchema)
   async create(
     @Body() createInspectionDto: CreateInspection,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<CreateInspectionResponse> {
     this.logger.log(
-      `Creating inspection for hive ${createInspectionDto.hiveId} in apiary ${req.apiaryId}`,
+      `Creating inspection for hive ${createInspectionDto.hiveId}`,
     );
     return this.inspectionsService.create(createInspectionDto, {
       apiaryId: req.apiaryId,
@@ -94,15 +92,14 @@ export class InspectionsController {
   }
 
   @Patch(':id')
+  @ApiaryOptional()
   @UsePipes(new ZodValidationPipe(updateInspectionSchema))
   async update(
     @Param('id') id: string,
     @Body() updateInspectionDto: UpdateInspection,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<UpdateInspectionResponse> {
-    this.logger.log(
-      `Updating inspection with ID ${id} in apiary ${req.apiaryId}`,
-    );
+    this.logger.log(`Updating inspection with ID ${id}`);
     return this.inspectionsService.update(id, updateInspectionDto, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -110,14 +107,13 @@ export class InspectionsController {
   }
 
   @Delete(':id')
+  @ApiaryOptional()
   async remove(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
     @Query('revertFrames') revertFrames?: string,
   ) {
-    this.logger.log(
-      `Removing inspection with ID ${id} from apiary ${req.apiaryId}`,
-    );
+    this.logger.log(`Removing inspection with ID ${id}`);
     return this.inspectionsService.remove(
       id,
       {

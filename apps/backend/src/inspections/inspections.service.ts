@@ -11,11 +11,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Measurement, Observation, Prisma } from '@/prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import {
-  ApiaryUserFilter,
-  ApiaryScopeFilter,
-} from '../interface/request-with.apiary';
-import { apiaryAccessWhere, apiaryReadScope } from '../common';
+  apiaryAccessWhere,
+  apiaryReadScope,
+  apiaryWriteScope,
+} from '../common';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionCreatedEvent } from '../events/hive.events';
@@ -228,18 +229,17 @@ export class InspectionsService {
 
   async create(
     createInspectionDto: CreateInspection,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<CreateInspectionResponse> {
-    // Verify that the hive belongs to the user's apiary
+    // The user must be able to write to the hive's apiary.
     const hive = await this.prisma.hive.findFirst({
       where: {
         id: createInspectionDto.hiveId,
-        apiary: {
-          id: filter.apiaryId,
-        },
+        apiary: apiaryWriteScope(filter),
       },
       select: {
         id: true,
+        apiaryId: true,
         apiary: {
           select: {
             settings: true,
@@ -248,11 +248,12 @@ export class InspectionsService {
       },
     });
 
-    if (!hive) {
+    if (!hive?.apiaryId) {
       throw new NotFoundException(
         `Hive with ID ${createInspectionDto.hiveId} not found or doesn't belong to this apiary`,
       );
     }
+    const hiveApiaryId = hive.apiaryId;
     const {
       observations,
       notes,
@@ -338,7 +339,7 @@ export class InspectionsService {
           'inspection.created',
           new InspectionCreatedEvent(
             inspection.hiveId,
-            filter.apiaryId,
+            hiveApiaryId,
             filter.userId,
             inspection.id,
             inspection.date,
@@ -412,18 +413,14 @@ export class InspectionsService {
   async update(
     id: string,
     updateInspectionDto: UpdateInspection,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<UpdateInspectionResponse> {
     this.logger.debug({ message: 'Updating inspection', updateInspectionDto });
-    // Verify inspection exists and belongs to user's apiary
+    // The user must be able to write to the inspection's hive's apiary.
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
-        hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
-        },
+        hive: { apiary: apiaryWriteScope(filter) },
       },
       select: {
         id: true,
@@ -454,6 +451,20 @@ export class InspectionsService {
       score: scoreOverride,
       ...inspectionData
     } = updateInspectionDto;
+
+    // Re-parenting the inspection requires write access to the target hive's
+    // apiary as well.
+    if (inspectionData.hiveId && inspectionData.hiveId !== inspection.hiveId) {
+      const targetHive = await this.prisma.hive.findFirst({
+        where: { id: inspectionData.hiveId, apiary: apiaryWriteScope(filter) },
+        select: { id: true },
+      });
+      if (!targetHive) {
+        throw new NotFoundException(
+          `Hive with ID ${inspectionData.hiveId} not found or you cannot edit its apiary`,
+        );
+      }
+    }
 
     return this.prisma.$transaction(
       async (tx): Promise<UpdateInspectionResponse> => {
@@ -560,16 +571,12 @@ export class InspectionsService {
     );
   }
 
-  async remove(id: string, filter: ApiaryUserFilter, revertFrames = false) {
-    // Verify inspection exists and belongs to user's apiary
+  async remove(id: string, filter: ApiaryScopeFilter, revertFrames = false) {
+    // The user must be able to write to the inspection's hive's apiary.
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
-        hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
-        },
+        hive: { apiary: apiaryWriteScope(filter) },
       },
     });
 

@@ -10,11 +10,13 @@ import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { FileUploadService } from '../storage/file-upload.service';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import {
-  ApiaryUserFilter,
-  ApiaryScopeFilter,
-} from '../interface/request-with.apiary';
-import { apiaryAccessWhere, apiaryReadScope } from '../common';
+  apiaryAccessWhere,
+  apiaryReadScope,
+  apiaryWriteAccessWhere,
+  apiaryWriteScope,
+} from '../common';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Box as PrismaBox } from '@/prisma/client';
 import { HiveCreatedEvent, HiveUpdatedEvent } from '../events/hive.events';
@@ -95,8 +97,37 @@ export class HiveService {
     }
   }
 
-  async create(createHiveDto: CreateHive): Promise<CreateHiveResponse> {
-    this.logger.log(`Creating new hive in apiary ${createHiveDto.apiaryId}`);
+  /**
+   * The user must own, or be an active EDITOR/OWNER member of, the apiary a
+   * hive is created in or moved to.
+   */
+  private async assertApiaryWritable(
+    apiaryId: string,
+    filter: ApiaryScopeFilter,
+  ): Promise<void> {
+    const apiary = await this.prisma.apiary.findFirst({
+      where: { id: apiaryId, ...apiaryWriteAccessWhere(filter.userId) },
+      select: { id: true },
+    });
+    if (!apiary) {
+      throw new NotFoundException(
+        `Apiary with id ${apiaryId} not found or you cannot edit it`,
+      );
+    }
+  }
+
+  async create(
+    createHiveDto: CreateHive,
+    filter: ApiaryScopeFilter,
+  ): Promise<CreateHiveResponse> {
+    // The target apiary is the one named in the body, falling back to the
+    // selected apiary; either way the user must be able to write to it.
+    const apiaryId = createHiveDto.apiaryId ?? filter.apiaryId;
+    if (!apiaryId) {
+      throw new BadRequestException('Select an apiary to create a hive');
+    }
+    this.logger.log(`Creating new hive in apiary ${apiaryId}`);
+    await this.assertApiaryWritable(apiaryId, filter);
 
     // Apply default settings if not provided
     const defaultSettings = {
@@ -119,6 +150,7 @@ export class HiveService {
       const hive = await prisma.hive.create({
         data: {
           ...hiveData,
+          apiaryId,
           settings: createHiveDto.settings || defaultSettings,
         },
         include: {
@@ -493,18 +525,13 @@ export class HiveService {
   async update(
     id: string,
     updateHiveDto: UpdateHive,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<UpdateHiveResponse> {
     this.logger.log(`Updating hive with ID: ${id}`);
     this.logger.debug(`Update data: ${JSON.stringify(updateHiveDto)}`);
-    // Verify the hive belongs to the apiary and user before updating
+    // The user must be able to write to the hive's current apiary.
     const hive = await this.prisma.hive.findFirst({
-      where: {
-        id,
-        apiary: {
-          id: filter.apiaryId,
-        },
-      },
+      where: { id, apiary: apiaryWriteScope(filter) },
     });
 
     if (!hive) {
@@ -514,6 +541,16 @@ export class HiveService {
       throw new NotFoundException(
         `Hive with id ${id} not found or doesn't belong to this apiary`,
       );
+    }
+
+    const currentApiaryId = hive.apiaryId;
+    if (!currentApiaryId) {
+      throw new NotFoundException(`Hive with id ${id} has no apiary`);
+    }
+
+    // Moving the hive to another apiary requires write access to the target.
+    if (updateHiveDto.apiaryId && updateHiveDto.apiaryId !== currentApiaryId) {
+      await this.assertApiaryWritable(updateHiveDto.apiaryId, filter);
     }
 
     // Extract boxes and featurePhotoId from updateHiveDto to handle separately
@@ -565,7 +602,12 @@ export class HiveService {
     // Emit event for hive update
     this.eventEmitter.emit(
       'hive.updated',
-      new HiveUpdatedEvent(id, filter.apiaryId, filter.userId, updateType),
+      new HiveUpdatedEvent(
+        id,
+        updateHiveDto.apiaryId ?? currentApiaryId,
+        filter.userId,
+        updateType,
+      ),
     );
 
     const featurePhotoFields = await this.mapFeaturePhotoUrl(
@@ -587,16 +629,11 @@ export class HiveService {
     };
   }
 
-  async remove(id: string, filter: ApiaryUserFilter) {
+  async remove(id: string, filter: ApiaryScopeFilter) {
     this.logger.log(`Removing hive with ID: ${id}`);
-    // Verify the hive belongs to the apiary and user before deleting
+    // The user must be able to write to the hive's apiary.
     const hive = await this.prisma.hive.findFirst({
-      where: {
-        id,
-        apiary: {
-          id: filter.apiaryId,
-        },
-      },
+      where: { id, apiary: apiaryWriteScope(filter) },
     });
 
     if (!hive) {
@@ -619,18 +656,13 @@ export class HiveService {
   async updateBoxes(
     id: string,
     updateHiveBoxesDto: UpdateHiveBoxes,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<UpdateHiveResponse> {
     this.logger.log(`Updating boxes for hive with ID: ${id}`);
     this.logger.debug(`Box data: ${JSON.stringify(updateHiveBoxesDto)}`);
-    // First check if the hive exists and belongs to the user/apiary
+    // The user must be able to write to the hive's apiary.
     const hive = await this.prisma.hive.findFirst({
-      where: {
-        id,
-        apiary: {
-          id: filter.apiaryId,
-        },
-      },
+      where: { id, apiary: apiaryWriteScope(filter) },
       include: {
         boxes: {
           orderBy: {
@@ -643,6 +675,11 @@ export class HiveService {
     if (!hive) {
       this.logger.warn(`Hive with ID: ${id} not found when updating boxes`);
       throw new NotFoundException(`Hive with id ${id} not found`);
+    }
+
+    const hiveApiaryId = hive.apiaryId;
+    if (!hiveApiaryId) {
+      throw new NotFoundException(`Hive with id ${id} has no apiary`);
     }
 
     // Calculate changes before the transaction
@@ -829,7 +866,7 @@ export class HiveService {
     // Emit event for box update
     this.eventEmitter.emit(
       'hive.updated',
-      new HiveUpdatedEvent(id, filter.apiaryId, filter.userId, 'boxes'),
+      new HiveUpdatedEvent(id, hiveApiaryId, filter.userId, 'boxes'),
     );
 
     return {

@@ -35,9 +35,11 @@ export class PhotosService {
   async create(
     dto: CreatePhoto,
     file: Express.Multer.File,
-    _filter: ApiaryUserFilter,
+    filter: ApiaryUserFilter,
   ): Promise<PhotoResponse> {
     this.fileUpload.validateFile(file, CONFIG);
+    // The target apiary comes from the body: it must be one the user can edit.
+    await this.fileUpload.assertApiaryWritable(dto.apiaryId, filter.userId);
     if (dto.hiveId) {
       await this.fileUpload.validateHiveBelongsToApiary(
         dto.hiveId,
