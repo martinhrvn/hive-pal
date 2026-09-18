@@ -382,6 +382,8 @@ export class QueensService {
       hiveId: queen.hiveId,
       name: queen.name,
       hiveName: queen.hive?.name ?? null,
+      apiaryId: queen.hive?.apiaryId ?? null,
+      apiaryName: queen.hive?.apiary?.name ?? null,
       marking: queen.marking,
       color: queen.color,
       year: queen.year,

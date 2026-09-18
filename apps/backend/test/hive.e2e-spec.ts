@@ -367,11 +367,20 @@ describe('Hives (e2e)', () => {
       .set('x-apiary-id', '00000000-0000-0000-0000-000000000000')
       .expect(404);
 
-    // Try without any apiary context - should return 400 (apiary context required)
-    await request(app.getHttpServer())
+    // Without any apiary context the list spans every apiary the user can
+    // access (the header is only a filter on @ApiaryOptional() handlers).
+    const response = await request(app.getHttpServer())
       .get('/hives')
       .set('Cookie', authCookie)
       // No x-apiary-id header or query param
-      .expect(400);
+      .expect(200);
+    expect(Array.isArray(response.body)).toBe(true);
+    // Hives from every apiary of this user are listed (this file created a
+    // second apiary with a hive earlier), not only the first apiary's.
+    const apiaryIds = new Set(
+      response.body.map((h: { apiaryId: string }) => h.apiaryId),
+    );
+    expect(apiaryIds.has(apiaryId)).toBe(true);
+    expect(apiaryIds.size).toBeGreaterThan(1);
   });
 });

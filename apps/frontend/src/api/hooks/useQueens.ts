@@ -179,12 +179,7 @@ export const useDeleteQueen = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/queens/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!response.ok) throw new Error(`Failed to delete queen with id ${id}`);
+      await apiClient.delete(`/api/queens/${id}`);
       return id;
     },
     onSuccess: async () => {

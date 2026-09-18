@@ -8,10 +8,12 @@ import {
 // mode (see ApiaryContextGuard). Only valid for GET requests.
 const ALL_APIARIES_HEADER = 'all';
 
-// Endpoints whose backend handlers opt into the cross-apiary "view all" mode
-// (via @AllowAllApiaries). Only these receive x-apiary-id: all; every other
-// request falls back to the concrete selected apiary so it keeps working while
-// more endpoints gain all-apiaries support. Keep in sync with the backend.
+// Route families whose backend handlers are @ApiaryOptional(): every route
+// under these prefixes accepts a missing or "all" x-apiary-id (reads scope to
+// the user's apiaries, writes authorize against the resource's own apiary).
+// Only these receive x-apiary-id: all; every other request falls back to the
+// concrete selected apiary so legacy handlers keep working while more
+// endpoints are migrated. Keep in sync with the backend decorators.
 const VIEW_ALL_ENDPOINTS = [
   '/api/hives',
   '/api/inspections',

@@ -8,13 +8,17 @@ import {
   UpdateAction,
 } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
+import { useApiaryStore } from '@/hooks/use-apiary';
 
 // Query keys
 const ACTIONS_KEYS = {
   all: ['actions'] as const,
   lists: () => [...ACTIONS_KEYS.all, 'list'] as const,
-  list: (filters: ActionFilter | undefined) =>
-    [...ACTIONS_KEYS.lists(), filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key: the query
+  // cache is persisted, so a cross-apiary result must never be served for a
+  // single apiary (or vice versa).
+  list: (scope: string | null, filters: ActionFilter | undefined) =>
+    [...ACTIONS_KEYS.lists(), scope, filters] as const,
   details: () => [...ACTIONS_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...ACTIONS_KEYS.details(), id] as const,
 };
@@ -24,8 +28,11 @@ export const useActions = (
   filters?: ActionFilter,
   queryOptions?: Partial<UseQueryOptions<ActionResponse[]>>,
 ) => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const viewAllApiaries = useApiaryStore(state => state.viewAllApiaries);
+  const scope = viewAllApiaries ? 'all' : activeApiaryId;
   return useQuery<ActionResponse[]>({
-    queryKey: ACTIONS_KEYS.list(filters),
+    queryKey: ACTIONS_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.type) params.append('type', filters.type);
@@ -59,12 +66,8 @@ export const useCreateAction = () => {
       );
       return response.data;
     },
-    onSuccess: (_, variables) => {
-      // Invalidate actions queries for the affected hive
-      queryClient.invalidateQueries({
-        queryKey: ACTIONS_KEYS.list({ hiveId: variables.hiveId }),
-      });
-      // Also invalidate all actions queries
+    onSuccess: () => {
+      // Invalidate every actions query (all scopes and hive filters)
       queryClient.invalidateQueries({
         queryKey: ACTIONS_KEYS.all,
       });

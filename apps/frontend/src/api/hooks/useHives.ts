@@ -59,17 +59,24 @@ export const useHiveApiaryLookup = () => {
 
 // Get all hives with optional filtering
 export const useHives = (
-  filters?: HiveFilter,
+  filters?: HiveFilter & {
+    // Fetch hives from every apiary the user can access, regardless of the
+    // selected apiary (e.g. to pick a transfer target in another apiary).
+    allApiaries?: boolean;
+  },
   queryOptions?: Omit<UseQueryOptions<HiveResponse[]>, 'queryKey' | 'queryFn'>,
 ) => {
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   const viewAllApiaries = useApiaryStore(state => state.viewAllApiaries);
   // Scope of this query, used for cache-keying and enablement:
   //  - an explicit filters.apiaryId wins (a component asked for one apiary),
-  //  - otherwise 'all' in view-all mode, or the selected apiary in single mode.
+  //  - otherwise 'all' when asked for or in view-all mode, or the selected
+  //    apiary in single mode.
   // Keeping 'all' distinct from a concrete id prevents an all-apiaries result
   // being served for a single apiary (or vice versa) from the persisted cache.
-  const scope = filters?.apiaryId ?? (viewAllApiaries ? 'all' : activeApiaryId);
+  const scope =
+    filters?.apiaryId ??
+    (filters?.allApiaries || viewAllApiaries ? 'all' : activeApiaryId);
   return useQuery<HiveResponse[]>({
     ...queryOptions,
     queryKey: HIVES_KEYS.list(scope, filters),
@@ -82,10 +89,13 @@ export const useHives = (
           params.append('includeInactive', filters.includeInactive.toString());
 
         const url = `/api/hives${params.toString() ? `?${params.toString()}` : ''}`;
-        // An explicit apiary filter forces that apiary regardless of view-all.
+        // An explicit apiary filter forces that apiary regardless of view-all;
+        // allApiaries forces the cross-apiary scope regardless of the selection.
         const config = filters?.apiaryId
           ? { headers: { 'x-apiary-id': filters.apiaryId } }
-          : undefined;
+          : filters?.allApiaries
+            ? { headers: { 'x-apiary-id': 'all' } }
+            : undefined;
         const response = await apiClient.get<HiveResponse[]>(url, config);
         return response.data;
       } catch (error) {
