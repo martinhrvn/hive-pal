@@ -17,7 +17,7 @@ import { QueensService } from './queens.service';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import {
   RequestWithApiary,
   RequestWithApiaryScope,
@@ -64,7 +64,7 @@ export class QueensController {
   }
 
   @Get('hive/:hiveId/history')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object, isArray: true })
   getHiveHistory(
     @Param('hiveId') hiveId: string,
@@ -79,7 +79,7 @@ export class QueensController {
   }
 
   @Get()
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object, isArray: true })
   findAll(
     @Req() req: RequestWithApiaryScope,
@@ -98,7 +98,7 @@ export class QueensController {
   }
 
   @Get(':id/history')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object })
   getHistory(
     @Param('id') id: string,
@@ -128,7 +128,7 @@ export class QueensController {
   }
 
   @Get(':id')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object })
   findOne(
     @Param('id') id: string,

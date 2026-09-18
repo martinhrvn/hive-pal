@@ -14,7 +14,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import {
   RequestWithApiary,
   RequestWithApiaryScope,
@@ -60,7 +60,7 @@ export class InspectionsController {
   }
 
   @Get()
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ZodValidation(inspectionFilterSchema)
   async findAll(
     @Query() query: InspectionFilter,
@@ -78,7 +78,7 @@ export class InspectionsController {
   }
 
   @Get(':id')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   async findOne(
     @Param('id') id: string,
     @Req() req: RequestWithApiaryScope,
@@ -129,7 +129,7 @@ export class InspectionsController {
   }
 
   @Get('status/overdue')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   async findOverdue(
     @Req() req: RequestWithApiaryScope,
   ): Promise<InspectionResponse[]> {
@@ -144,7 +144,7 @@ export class InspectionsController {
   }
 
   @Get('status/due-today')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   async findDueToday(
     @Req() req: RequestWithApiaryScope,
   ): Promise<InspectionResponse[]> {

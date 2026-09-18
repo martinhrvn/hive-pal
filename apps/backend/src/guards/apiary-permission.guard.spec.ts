@@ -1,11 +1,16 @@
+import type { Mock } from 'vitest';
 import { ForbiddenException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { ApiaryPermissionGuard } from './apiary-permission.guard';
 
 describe('ApiaryPermissionGuard', () => {
   let guard: ApiaryPermissionGuard;
+  let reflector: { getAllAndOverride: Mock };
 
   beforeEach(() => {
-    guard = new ApiaryPermissionGuard();
+    // Default: handlers are NOT @ApiaryOptional().
+    reflector = { getAllAndOverride: vi.fn().mockReturnValue(false) };
+    guard = new ApiaryPermissionGuard(reflector as unknown as Reflector);
   });
 
   function createMockContext(method: string, apiaryRole?: string) {
@@ -13,6 +18,8 @@ describe('ApiaryPermissionGuard', () => {
       switchToHttp: () => ({
         getRequest: () => ({ method, apiaryRole }),
       }),
+      getHandler: () => () => undefined,
+      getClass: () => class {},
     } as unknown as Parameters<typeof guard.canActivate>[0];
   }
 
@@ -56,5 +63,27 @@ describe('ApiaryPermissionGuard', () => {
     expect(() =>
       guard.canActivate(createMockContext('DELETE', 'VIEWER')),
     ).toThrow(ForbiddenException);
+  });
+
+  it('should throw ForbiddenException for a write without an apiary role', () => {
+    expect(() => guard.canActivate(createMockContext('POST'))).toThrow(
+      ForbiddenException,
+    );
+  });
+
+  describe('@ApiaryOptional() handlers', () => {
+    beforeEach(() => {
+      reflector.getAllAndOverride.mockReturnValue(true);
+    });
+
+    it('skips the header-role check for writes (service authorizes at the resource level)', () => {
+      expect(guard.canActivate(createMockContext('POST'))).toBe(true);
+      expect(guard.canActivate(createMockContext('PATCH', 'VIEWER'))).toBe(
+        true,
+      );
+      expect(guard.canActivate(createMockContext('DELETE', 'VIEWER'))).toBe(
+        true,
+      );
+    });
   });
 });

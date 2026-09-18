@@ -14,7 +14,7 @@ import {
   ApiaryUserFilter,
   ApiaryScopeFilter,
 } from '../interface/request-with.apiary';
-import { apiaryAccessWhere } from '../common';
+import { apiaryAccessWhere, apiaryReadScope } from '../common';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Box as PrismaBox } from '@/prisma/client';
 import { HiveCreatedEvent, HiveUpdatedEvent } from '../events/hive.events';
@@ -242,21 +242,7 @@ export class HiveService {
 
     const hives = await this.prisma.hive.findMany({
       where: {
-        apiary: {
-          id: filter.apiaryId,
-          ...(filter.apiaryId
-            ? {}
-            : {
-                OR: [
-                  { userId: filter.userId },
-                  {
-                    members: {
-                      some: { userId: filter.userId, status: 'ACTIVE' },
-                    },
-                  },
-                ],
-              }),
-        },
+        apiary: apiaryReadScope(filter),
         status: this.resolveStatusFilter(filter),
       },
       include: includeConfig,

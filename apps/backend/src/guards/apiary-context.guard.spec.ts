@@ -64,12 +64,29 @@ describe('ApiaryContextGuard', () => {
     };
   }
 
-  it('should throw BadRequestException when apiaryId is missing from both header and query', async () => {
+  it('should throw BadRequestException when apiaryId is missing on a handler that is not @ApiaryOptional()', async () => {
     const { context } = createMockContext({ user: { id: 'user-1' } });
 
     await expect(guard.canActivate(context)).rejects.toThrow(
       BadRequestException,
     );
+  });
+
+  it('should run in the cross-apiary scope when apiaryId is missing on an @ApiaryOptional() handler', async () => {
+    reflector.getAllAndOverride.mockReturnValue(true);
+
+    const { context, request } = createMockContext({
+      user: { id: 'user-1' },
+      method: 'PATCH',
+    });
+
+    const result = await guard.canActivate(context);
+
+    expect(result).toBe(true);
+    expect(request.allApiaries).toBe(true);
+    expect(request.apiaryId).toBeUndefined();
+    expect(request.apiaryRole).toBeUndefined();
+    expect(prisma.apiary.findFirst).not.toHaveBeenCalled();
   });
 
   it('should throw ForbiddenException when user is not authenticated', async () => {
@@ -218,18 +235,40 @@ describe('ApiaryContextGuard', () => {
       );
     });
 
-    it('rejects "all" for a write (non-GET) request even when opted in', async () => {
+    it('accepts "all" for a write (non-GET) request when opted in — the service authorizes at the resource level', async () => {
       reflector.getAllAndOverride.mockReturnValue(true);
 
-      const { context } = createMockContext({
+      const { context, request } = createMockContext({
         headers: { 'x-apiary-id': 'all' },
         user: { id: 'user-1' },
         method: 'POST',
       });
 
-      await expect(guard.canActivate(context)).rejects.toThrow(
-        BadRequestException,
-      );
+      const result = await guard.canActivate(context);
+
+      expect(result).toBe(true);
+      expect(request.allApiaries).toBe(true);
+      expect(request.apiaryId).toBeUndefined();
+    });
+
+    it('keeps a concrete header as a filter on an opted-in handler', async () => {
+      reflector.getAllAndOverride.mockReturnValue(true);
+      prisma.apiary.findFirst.mockResolvedValue({
+        id: 'apiary-1',
+        userId: 'user-1',
+        members: [],
+      });
+
+      const { context, request } = createMockContext({
+        headers: { 'x-apiary-id': 'apiary-1' },
+        user: { id: 'user-1' },
+      });
+
+      await guard.canActivate(context);
+
+      expect(request.apiaryId).toBe('apiary-1');
+      expect(request.apiaryRole).toBe('OWNER');
+      expect(request.allApiaries).toBeUndefined();
     });
   });
 });

@@ -18,7 +18,7 @@ import { HiveService } from './hive.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import {
   RequestWithApiary,
   RequestWithApiaryScope,
@@ -67,7 +67,7 @@ export class HiveController {
   }
 
   @Get()
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ZodValidation(hiveFilterSchema)
   findAll(
     @Query() query: HiveFilter,
@@ -85,7 +85,7 @@ export class HiveController {
   }
 
   @Get(':id')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   findOne(
     @Param('id') id: string,
     @Req() req: RequestWithApiaryScope,

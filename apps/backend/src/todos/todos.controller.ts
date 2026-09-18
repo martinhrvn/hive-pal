@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TodosService } from './todos.service';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import {
   RequestWithApiary,
   RequestWithApiaryScope,
@@ -59,7 +59,7 @@ export class TodosController {
   }
 
   @Get()
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object, isArray: true })
   findAll(
     @Req() req: RequestWithApiaryScope,
@@ -81,7 +81,7 @@ export class TodosController {
   }
 
   @Get(':id')
-  @AllowAllApiaries()
+  @ApiaryOptional()
   @ApiOkResponse({ type: Object })
   findOne(
     @Param('id') id: string,
