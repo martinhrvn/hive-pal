@@ -19,7 +19,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
   InspectionAudioService,
@@ -29,6 +30,7 @@ import {
 } from './inspection-audio.service';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 @Controller('inspections/:inspectionId/audio')
 export class InspectionAudioController {
   constructor(
@@ -47,7 +49,7 @@ export class InspectionAudioController {
     @Param('inspectionId') inspectionId: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadAudioDto,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<AudioResponse> {
     if (!file) {
       throw new BadRequestException('No audio file provided');
@@ -73,7 +75,7 @@ export class InspectionAudioController {
   @Get()
   async findAll(
     @Param('inspectionId') inspectionId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<AudioResponse[]> {
     this.logger.log({
       message: 'Listing audio recordings',
@@ -93,7 +95,7 @@ export class InspectionAudioController {
   async getDownloadUrl(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<DownloadUrlResponse> {
     this.logger.log({
       message: 'Getting download URL for audio',
@@ -115,7 +117,7 @@ export class InspectionAudioController {
   async delete(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<void> {
     this.logger.log({
       message: 'Deleting audio recording',
@@ -134,7 +136,7 @@ export class InspectionAudioController {
   async startAiAnalysis(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.audioService.startAiAnalysis(inspectionId, audioId, {
       apiaryId: req.apiaryId,
@@ -146,7 +148,7 @@ export class InspectionAudioController {
   async getAiAnalysisStatus(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.audioService.getAiAnalysisStatus(inspectionId, audioId, {
       apiaryId: req.apiaryId,
@@ -160,7 +162,7 @@ export class InspectionAudioController {
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
     @Body() body: unknown,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     const parsed = updateTranscriptionSchema.safeParse(body);
     if (!parsed.success) {
@@ -182,7 +184,7 @@ export class InspectionAudioController {
   async getAiAnalysisResult(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.audioService.getAiAnalysisResult(inspectionId, audioId, {
       apiaryId: req.apiaryId,

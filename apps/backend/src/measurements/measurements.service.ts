@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryReadScope } from '../common';
 import {
   CreateMeasurementBatch,
   CreateMeasurementBatchResponse,
@@ -62,10 +64,10 @@ export class MeasurementsService {
 
   async findForHive(
     hiveId: string,
-    apiaryId: string,
+    scope: ApiaryScopeFilter,
     filter: MeasurementFilter,
   ): Promise<MeasurementResponse[]> {
-    await this.assertHiveInApiary(hiveId, apiaryId);
+    await this.assertHiveAccess(hiveId, scope);
 
     const where: {
       hiveId: string;
@@ -103,9 +105,9 @@ export class MeasurementsService {
 
   async findLatestForHive(
     hiveId: string,
-    apiaryId: string,
+    scope: ApiaryScopeFilter,
   ): Promise<LatestMeasurementsResponse> {
-    await this.assertHiveInApiary(hiveId, apiaryId);
+    await this.assertHiveAccess(hiveId, scope);
 
     const rows = await this.prisma.$queryRaw<LatestRow[]>`
       SELECT DISTINCT ON (metric)
@@ -127,6 +129,22 @@ export class MeasurementsService {
       };
     }
     return result;
+  }
+
+  // Read access for @ApiaryOptional() handlers: the hive must be in an apiary
+  // the user can access (narrowed to the selected apiary when one is set).
+  private async assertHiveAccess(
+    hiveId: string,
+    scope: ApiaryScopeFilter,
+  ): Promise<void> {
+    const hive = await this.prisma.hive.findFirst({
+      where: { id: hiveId, apiary: apiaryReadScope(scope) },
+      select: { id: true },
+    });
+
+    if (!hive) {
+      throw new NotFoundException(`Hive with ID ${hiveId} not found`);
+    }
   }
 
   private async assertHiveInApiary(

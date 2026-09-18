@@ -17,12 +17,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PhotosService } from './photos.service';
 import { PhotoResponse } from 'shared-schemas';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 @Controller('inspections/:inspectionId/photos')
 export class InspectionPhotosController {
   constructor(
@@ -38,7 +40,7 @@ export class InspectionPhotosController {
     @Param('inspectionId') inspectionId: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() body: Record<string, string>,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse> {
     if (!file) {
       throw new BadRequestException('No file provided');
@@ -61,7 +63,7 @@ export class InspectionPhotosController {
   @Get()
   async findAll(
     @Param('inspectionId') inspectionId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse[]> {
     return this.photosService.findByInspection(inspectionId, {
       apiaryId: req.apiaryId,
@@ -73,7 +75,7 @@ export class InspectionPhotosController {
   async getDownloadUrl(
     @Param('inspectionId') inspectionId: string,
     @Param('photoId') photoId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.photosService.getInspectionPhotoDownloadUrl(
       inspectionId,
@@ -87,7 +89,7 @@ export class InspectionPhotosController {
   async delete(
     @Param('inspectionId') inspectionId: string,
     @Param('photoId') photoId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<void> {
     this.logger.log({
       message: 'Deleting inspection photo',
