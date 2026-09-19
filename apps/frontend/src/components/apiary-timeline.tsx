@@ -39,12 +39,21 @@ import {
 export const ApiaryTimeline = () => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
-  const { activeApiaryId } = useApiary();
+  const { activeApiaryId, viewAllApiaries } = useApiary();
   const { canEdit } = useApiaryPermission();
+  // Lists span every apiary in the all-apiaries view, otherwise the selected one.
+  const listFilter =
+    viewAllApiaries || !activeApiaryId
+      ? undefined
+      : { apiaryId: activeApiaryId };
+  const listEnabled = viewAllApiaries || !!activeApiaryId;
   const [deletingQuickCheck, setDeletingQuickCheck] =
     useState<QuickCheckResponse | null>(null);
-  const [deletingPhoto, setDeletingPhoto] = useState<PhotoResponse | null>(null);
-  const [deletingDocument, setDeletingDocument] = useState<DocumentResponse | null>(null);
+  const [deletingPhoto, setDeletingPhoto] = useState<PhotoResponse | null>(
+    null,
+  );
+  const [deletingDocument, setDeletingDocument] =
+    useState<DocumentResponse | null>(null);
   const deleteQuickCheckMutation = useDeleteQuickCheck();
   const deletePhotoMutation = useDeletePhoto();
   const deleteDocumentMutation = useDeleteDocument();
@@ -64,10 +73,16 @@ export const ApiaryTimeline = () => {
     if (!deletingPhoto) return;
     try {
       await deletePhotoMutation.mutateAsync(deletingPhoto.id);
-      toast.success(t('common:photo.deleted', { defaultValue: 'Photo deleted' }));
+      toast.success(
+        t('common:photo.deleted', { defaultValue: 'Photo deleted' }),
+      );
       setDeletingPhoto(null);
     } catch {
-      toast.error(t('common:photo.deleteFailed', { defaultValue: 'Failed to delete photo' }));
+      toast.error(
+        t('common:photo.deleteFailed', {
+          defaultValue: 'Failed to delete photo',
+        }),
+      );
     }
   };
 
@@ -75,26 +90,31 @@ export const ApiaryTimeline = () => {
     if (!deletingDocument) return;
     try {
       await deleteDocumentMutation.mutateAsync(deletingDocument.id);
-      toast.success(t('common:document.deleted', { defaultValue: 'Document deleted' }));
+      toast.success(
+        t('common:document.deleted', { defaultValue: 'Document deleted' }),
+      );
       setDeletingDocument(null);
     } catch {
-      toast.error(t('common:document.deleteFailed', { defaultValue: 'Failed to delete document' }));
+      toast.error(
+        t('common:document.deleteFailed', {
+          defaultValue: 'Failed to delete document',
+        }),
+      );
     }
   };
 
   const { data: inspections, isLoading: inspectionsLoading } = useInspections();
   const { data: actions, isLoading: actionsLoading } = useActions();
   const { data: quickChecks, isLoading: quickChecksLoading } = useQuickChecks(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
+    listFilter,
+    { enabled: listEnabled },
   );
-  const { data: photos, isLoading: photosLoading } = usePhotos(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
-  );
+  const { data: photos, isLoading: photosLoading } = usePhotos(listFilter, {
+    enabled: listEnabled,
+  });
   const { data: documents, isLoading: documentsLoading } = useDocuments(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
+    listFilter,
+    { enabled: listEnabled },
   );
   const { data: hives } = useHives();
 
@@ -134,8 +154,18 @@ export const ApiaryTimeline = () => {
         quickChecks={quickChecks ?? []}
         photos={photos ?? []}
         documents={documents ?? []}
-        isLoading={inspectionsLoading || actionsLoading || quickChecksLoading || photosLoading || documentsLoading}
-        emptyMessage={t('common:timeline.noActivityApiary')}
+        isLoading={
+          inspectionsLoading ||
+          actionsLoading ||
+          quickChecksLoading ||
+          photosLoading ||
+          documentsLoading
+        }
+        emptyMessage={
+          viewAllApiaries
+            ? t('common:timeline.noActivity')
+            : t('common:timeline.noActivityApiary')
+        }
         getHiveName={getHiveName}
         hives={hiveList}
         onInspectionClick={handleInspectionClick}
@@ -171,7 +201,9 @@ export const ApiaryTimeline = () => {
               onClick={handleDeleteQuickCheckConfirm}
               disabled={deleteQuickCheckMutation.isPending}
             >
-              {deleteQuickCheckMutation.isPending ? t('common:status.loading') : t('common:actions.delete')}
+              {deleteQuickCheckMutation.isPending
+                ? t('common:status.loading')
+                : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -184,9 +216,14 @@ export const ApiaryTimeline = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('common:photo.deleteTitle', { defaultValue: 'Delete Photo?' })}</DialogTitle>
+            <DialogTitle>
+              {t('common:photo.deleteTitle', { defaultValue: 'Delete Photo?' })}
+            </DialogTitle>
             <DialogDescription>
-              {t('common:photo.deleteDescription', { defaultValue: 'This action cannot be undone. This will permanently delete this photo.' })}
+              {t('common:photo.deleteDescription', {
+                defaultValue:
+                  'This action cannot be undone. This will permanently delete this photo.',
+              })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -198,7 +235,9 @@ export const ApiaryTimeline = () => {
               onClick={handleDeletePhotoConfirm}
               disabled={deletePhotoMutation.isPending}
             >
-              {deletePhotoMutation.isPending ? t('common:status.loading') : t('common:actions.delete')}
+              {deletePhotoMutation.isPending
+                ? t('common:status.loading')
+                : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -211,9 +250,16 @@ export const ApiaryTimeline = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('common:document.deleteTitle', { defaultValue: 'Delete Document?' })}</DialogTitle>
+            <DialogTitle>
+              {t('common:document.deleteTitle', {
+                defaultValue: 'Delete Document?',
+              })}
+            </DialogTitle>
             <DialogDescription>
-              {t('common:document.deleteDescription', { defaultValue: 'This action cannot be undone. This will permanently delete this document.' })}
+              {t('common:document.deleteDescription', {
+                defaultValue:
+                  'This action cannot be undone. This will permanently delete this document.',
+              })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -225,7 +271,9 @@ export const ApiaryTimeline = () => {
               onClick={handleDeleteDocumentConfirm}
               disabled={deleteDocumentMutation.isPending}
             >
-              {deleteDocumentMutation.isPending ? t('common:status.loading') : t('common:actions.delete')}
+              {deleteDocumentMutation.isPending
+                ? t('common:status.loading')
+                : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

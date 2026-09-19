@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { useApiaryScope } from '@/hooks/use-apiary-scope';
 import {
   CreateBatchInspection,
   UpdateBatchInspection,
@@ -14,7 +15,9 @@ import {
 const BATCH_INSPECTIONS_KEYS = {
   all: ['batch-inspections'] as const,
   lists: () => [...BATCH_INSPECTIONS_KEYS.all, 'list'] as const,
-  list: () => [...BATCH_INSPECTIONS_KEYS.lists()] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key: see useApiaryScope.
+  list: (scope: string | null) =>
+    [...BATCH_INSPECTIONS_KEYS.lists(), scope] as const,
   details: () => [...BATCH_INSPECTIONS_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...BATCH_INSPECTIONS_KEYS.details(), id] as const,
   current: (id: string) =>
@@ -23,8 +26,9 @@ const BATCH_INSPECTIONS_KEYS = {
 
 // Get all batch inspections
 export const useBatchInspections = () => {
+  const scope = useApiaryScope();
   return useQuery<BatchInspectionResponse[]>({
-    queryKey: BATCH_INSPECTIONS_KEYS.list(),
+    queryKey: BATCH_INSPECTIONS_KEYS.list(scope),
     queryFn: async () => {
       const response = await apiClient.get<BatchInspectionResponse[]>(
         '/api/batch-inspections',

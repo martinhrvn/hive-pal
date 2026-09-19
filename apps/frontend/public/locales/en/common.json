@@ -334,7 +334,8 @@
       "ready": "AI suggestions ready"
     },
     "audioDeleteTitle": "Delete audio recording?",
-    "audioDeleted": "Audio deleted"
+    "audioDeleted": "Audio deleted",
+    "apiary": "Apiary"
   },
   "quickCheck": {
     "title": "Quick Check",

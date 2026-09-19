@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { useApiaryScope } from '@/hooks/use-apiary-scope';
 import {
   QuickCheckResponse,
   QuickCheckPhotoResponse,
@@ -10,8 +11,9 @@ import {
 
 export const QUICK_CHECK_KEYS = {
   all: ['quick-checks'] as const,
-  list: (filters?: QuickCheckFilter) =>
-    [...QUICK_CHECK_KEYS.all, 'list', filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key: see useApiaryScope.
+  list: (scope: string | null, filters?: QuickCheckFilter) =>
+    [...QUICK_CHECK_KEYS.all, 'list', scope, filters] as const,
   detail: (id: string) => [...QUICK_CHECK_KEYS.all, 'detail', id] as const,
   photoDownloadUrl: (quickCheckId: string, photoId: string) =>
     [...QUICK_CHECK_KEYS.all, 'photo-download', quickCheckId, photoId] as const,
@@ -21,8 +23,9 @@ export const useQuickChecks = (
   filters?: QuickCheckFilter,
   options?: { enabled?: boolean },
 ) => {
+  const scope = useApiaryScope();
   return useQuery<QuickCheckResponse[]>({
-    queryKey: QUICK_CHECK_KEYS.list(filters),
+    queryKey: QUICK_CHECK_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.set('hiveId', filters.hiveId);

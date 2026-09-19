@@ -19,6 +19,14 @@ const VIEW_ALL_ENDPOINTS = [
   '/api/inspections',
   '/api/todos',
   '/api/queens',
+  '/api/actions',
+  '/api/alerts',
+  '/api/photos',
+  '/api/documents',
+  '/api/quick-checks',
+  '/api/batch-inspections',
+  '/api/audio',
+  '/api/calendar',
 ];
 
 const supportsViewAll = (url: string | undefined) =>

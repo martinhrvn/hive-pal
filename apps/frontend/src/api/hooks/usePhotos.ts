@@ -1,25 +1,24 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import {
-  PhotoResponse,
-  PhotoFilter,
-} from 'shared-schemas';
+import { useApiaryScope } from '@/hooks/use-apiary-scope';
+import { PhotoResponse, PhotoFilter } from 'shared-schemas';
 
 export const PHOTO_KEYS = {
   all: ['photos'] as const,
-  list: (filters?: PhotoFilter) =>
-    [...PHOTO_KEYS.all, 'list', filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key: see useApiaryScope.
+  list: (scope: string | null, filters?: PhotoFilter) =>
+    [...PHOTO_KEYS.all, 'list', scope, filters] as const,
   detail: (id: string) => [...PHOTO_KEYS.all, 'detail', id] as const,
-  downloadUrl: (id: string) =>
-    [...PHOTO_KEYS.all, 'download-url', id] as const,
+  downloadUrl: (id: string) => [...PHOTO_KEYS.all, 'download-url', id] as const,
 };
 
 export const usePhotos = (
   filters?: PhotoFilter,
   options?: { enabled?: boolean },
 ) => {
+  const scope = useApiaryScope();
   return useQuery<PhotoResponse[]>({
-    queryKey: PHOTO_KEYS.list(filters),
+    queryKey: PHOTO_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.set('hiveId', filters.hiveId);
@@ -73,8 +72,7 @@ export const useDeletePhoto = () => {
 // --- Inspection Photo Hooks ---
 
 export const INSPECTION_PHOTO_KEYS = {
-  all: (inspectionId: string) =>
-    ['inspection-photos', inspectionId] as const,
+  all: (inspectionId: string) => ['inspection-photos', inspectionId] as const,
   downloadUrl: (inspectionId: string, photoId: string) =>
     ['inspection-photos', inspectionId, 'download-url', photoId] as const,
 };
@@ -142,9 +140,7 @@ export const useInspectionPhotoDownloadUrl = (
       const response = await apiClient.get<{
         downloadUrl: string;
         expiresIn: number;
-      }>(
-        `/api/inspections/${inspectionId}/photos/${photoId}/download-url`,
-      );
+      }>(`/api/inspections/${inspectionId}/photos/${photoId}/download-url`);
       return response.data;
     },
     enabled: options?.enabled !== false && !!inspectionId && !!photoId,
@@ -159,9 +155,7 @@ export const getInspectionPhotoDownloadUrl = async (
   const response = await apiClient.get<{
     downloadUrl: string;
     expiresIn: number;
-  }>(
-    `/api/inspections/${inspectionId}/photos/${photoId}/download-url`,
-  );
+  }>(`/api/inspections/${inspectionId}/photos/${photoId}/download-url`);
   return response.data.downloadUrl;
 };
 
@@ -172,9 +166,10 @@ export const useStandalonePhotoDownloadUrl = (
   return useQuery<{ downloadUrl: string; expiresIn: number }>({
     queryKey: PHOTO_KEYS.downloadUrl(id),
     queryFn: async () => {
-      const response = await apiClient.get<{ downloadUrl: string; expiresIn: number }>(
-        `/api/photos/${id}/download-url`,
-      );
+      const response = await apiClient.get<{
+        downloadUrl: string;
+        expiresIn: number;
+      }>(`/api/photos/${id}/download-url`);
       return response.data;
     },
     enabled: options?.enabled !== false && !!id,

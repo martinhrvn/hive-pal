@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useApiary } from '@/hooks/use-apiary';
 import {
   PlayCircle,
   Eye,
@@ -35,6 +36,7 @@ import {
 export const BatchListPage = () => {
   const navigate = useNavigate();
   const { data: batches, isLoading, error } = useBatchInspections();
+  const { viewAllApiaries, apiaries } = useApiary();
   const { mutate: startBatch, isPending: isStarting } =
     useStartBatchInspection();
   const { mutate: deleteBatch, isPending: isDeleting } =
@@ -149,6 +151,11 @@ export const BatchListPage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-xl">{batch.name}</CardTitle>
+                    {viewAllApiaries && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {apiaries?.find(a => a.id === batch.apiaryId)?.name}
+                      </p>
+                    )}
                     <p className="text-sm text-muted-foreground mt-1">
                       {batch.progress.total} hives •{' '}
                       {batch.startedAt

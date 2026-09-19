@@ -126,13 +126,7 @@ function SendToAiButton({
   );
 }
 
-type AudioStatusTone =
-  | 'gray'
-  | 'amber'
-  | 'blue'
-  | 'red'
-  | 'sky'
-  | 'green';
+type AudioStatusTone = 'gray' | 'amber' | 'blue' | 'red' | 'sky' | 'green';
 
 const TONE_CLASSES: Record<AudioStatusTone, string> = {
   gray: 'border-gray-300 text-gray-600',
@@ -188,29 +182,33 @@ const isAudioBusy = (a: ApiaryAudioResponse) =>
 
 export function FilesPage() {
   const { t } = useTranslation('common');
-  const { activeApiaryId } = useApiary();
+  const { activeApiaryId, viewAllApiaries, apiaries } = useApiary();
+  // In the all-apiaries view the lists span every apiary the user can access;
+  // otherwise they are filtered to the selected apiary.
+  const scopeApiaryId = viewAllApiaries ? undefined : activeApiaryId;
+  const hasScope = viewAllApiaries || !!activeApiaryId;
+  const audioScope = viewAllApiaries ? 'all' : activeApiaryId;
   const [fileType, setFileType] = useState<FileType>('all');
   const [hiveFilter, setHiveFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingItem, setDeletingItem] = useState<DeletingItem>(null);
 
   const { data: photos, isLoading: photosLoading } = usePhotos(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
+    scopeApiaryId ? { apiaryId: scopeApiaryId } : undefined,
+    { enabled: hasScope },
   );
   const { data: documents, isLoading: documentsLoading } = useDocuments(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
+    scopeApiaryId ? { apiaryId: scopeApiaryId } : undefined,
+    { enabled: hasScope },
   );
-  const { data: audio, isLoading: audioLoading } = useApiaryAudio(
-    activeApiaryId,
-    { enabled: !!activeApiaryId },
-  );
+  const { data: audio, isLoading: audioLoading } = useApiaryAudio(audioScope, {
+    enabled: hasScope,
+  });
   const { data: hives } = useHives();
   const deletePhotoMutation = useDeletePhoto();
   const deleteDocumentMutation = useDeleteDocument();
-  const deleteAudioMutation = useDeleteApiaryAudio(activeApiaryId);
-  const startPendingAnalysis = useStartPendingAnalysis(activeApiaryId);
+  const deleteAudioMutation = useDeleteApiaryAudio(audioScope);
+  const startPendingAnalysis = useStartPendingAnalysis(audioScope);
 
   const getHiveName = useCallback(
     (hiveId: string | null) => {
@@ -218,6 +216,12 @@ export function FilesPage() {
       return hives.find(h => h.id === hiveId)?.name ?? null;
     },
     [hives],
+  );
+
+  const getApiaryName = useCallback(
+    (apiaryId: string | null) =>
+      apiaryId ? (apiaries?.find(a => a.id === apiaryId)?.name ?? null) : null,
+    [apiaries],
   );
 
   const formatFileSize = (bytes: number) => {
@@ -232,6 +236,7 @@ export function FilesPage() {
     name: string;
     fileName: string;
     hiveId: string | null;
+    apiaryId: string | null;
     date: string;
     fileSize: number;
     mimeType: string;
@@ -254,6 +259,7 @@ export function FilesPage() {
             name: p.caption || p.fileName,
             fileName: p.fileName,
             hiveId: p.hiveId,
+            apiaryId: p.apiaryId,
             date: p.date,
             fileSize: p.fileSize,
             mimeType: p.mimeType,
@@ -272,6 +278,7 @@ export function FilesPage() {
             name: d.title,
             fileName: d.fileName,
             hiveId: d.hiveId,
+            apiaryId: d.apiaryId,
             date: d.date,
             fileSize: d.fileSize,
             mimeType: d.mimeType,
@@ -290,6 +297,8 @@ export function FilesPage() {
             name: a.fileName,
             fileName: a.fileName,
             hiveId: a.hiveId,
+            // Audio has no apiary of its own; resolve it through the hive.
+            apiaryId: hives?.find(h => h.id === a.hiveId)?.apiaryId ?? null,
             date: a.inspectionDate,
             fileSize: a.fileSize,
             mimeType: a.mimeType,
@@ -322,7 +331,7 @@ export function FilesPage() {
     return filtered.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
-  }, [photos, documents, audio, fileType, hiveFilter, searchQuery]);
+  }, [photos, documents, audio, hives, fileType, hiveFilter, searchQuery]);
 
   const showStatusColumn = fileType === 'all' || fileType === 'audio';
   const pendingAudioCount = useMemo(
@@ -474,6 +483,11 @@ export function FilesPage() {
                   <TableHead className="hidden md:table-cell">
                     {t('files.hive', { defaultValue: 'Hive' })}
                   </TableHead>
+                  {viewAllApiaries && (
+                    <TableHead className="hidden md:table-cell">
+                      {t('files.apiary', { defaultValue: 'Apiary' })}
+                    </TableHead>
+                  )}
                   <TableHead>{t('time.date')}</TableHead>
                   {showStatusColumn && (
                     <TableHead className="hidden md:table-cell">
@@ -533,6 +547,11 @@ export function FilesPage() {
                       <TableCell className="hidden md:table-cell text-sm">
                         {getHiveName(row.hiveId) ?? '-'}
                       </TableCell>
+                      {viewAllApiaries && (
+                        <TableCell className="hidden md:table-cell text-sm">
+                          {getApiaryName(row.apiaryId) ?? '-'}
+                        </TableCell>
+                      )}
                       <TableCell className="text-sm">
                         {format(new Date(row.date), 'MMM d, yyyy')}
                       </TableCell>
@@ -620,9 +639,7 @@ export function FilesPage() {
                       defaultValue: 'Delete audio recording?',
                     })}
             </DialogTitle>
-            <DialogDescription>
-              {t('messages.confirmDelete')}
-            </DialogDescription>
+            <DialogDescription>{t('messages.confirmDelete')}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
