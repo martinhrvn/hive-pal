@@ -34,11 +34,18 @@ export const ApiaryDetailPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { setActiveApiaryId } = useApiaryStore();
 
-  const { isOwner } = useApiaryPermission();
+  const { isOwner } = useApiaryPermission(id);
 
   const tabParam = searchParams.get('tab');
-  const validTabs = ['overview', 'hives', 'location', ...(isOwner ? ['sharing'] : [])];
-  const currentTab = validTabs.includes(tabParam ?? '') ? tabParam! : 'overview';
+  const validTabs = [
+    'overview',
+    'hives',
+    'location',
+    ...(isOwner ? ['sharing'] : []),
+  ];
+  const currentTab = validTabs.includes(tabParam ?? '')
+    ? tabParam!
+    : 'overview';
 
   const { data: apiary, isLoading, refetch } = useApiary(id ?? '');
   const { data: hives = [] } = useHives({ apiaryId: id ?? '' });
@@ -71,7 +78,11 @@ export const ApiaryDetailPage = () => {
           </p>
         </div>
 
-        <Tabs value={currentTab} onValueChange={handleTabChange} className="mb-6">
+        <Tabs
+          value={currentTab}
+          onValueChange={handleTabChange}
+          className="mb-6"
+        >
           <TabsList className="mb-4">
             <TabsTrigger value="overview">
               {t('apiary:detail.tabs.overview')}
@@ -82,9 +93,7 @@ export const ApiaryDetailPage = () => {
             <TabsTrigger value="location">
               {t('apiary:detail.tabs.location')}
             </TabsTrigger>
-            {isOwner && (
-              <TabsTrigger value="sharing">Sharing</TabsTrigger>
-            )}
+            {isOwner && <TabsTrigger value="sharing">Sharing</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="overview">

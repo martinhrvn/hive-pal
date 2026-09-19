@@ -47,7 +47,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   apiaryId,
 }) => {
   const navigate = useNavigate();
-  const { canEdit } = useApiaryPermission();
+  const { canEdit } = useApiaryPermission(apiaryId);
   const [editingAction, setEditingAction] = useState<ActionResponse | null>(
     null,
   );
@@ -56,8 +56,11 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   );
   const [deletingQuickCheck, setDeletingQuickCheck] =
     useState<QuickCheckResponse | null>(null);
-  const [deletingPhoto, setDeletingPhoto] = useState<PhotoResponse | null>(null);
-  const [deletingDocument, setDeletingDocument] = useState<DocumentResponse | null>(null);
+  const [deletingPhoto, setDeletingPhoto] = useState<PhotoResponse | null>(
+    null,
+  );
+  const [deletingDocument, setDeletingDocument] =
+    useState<DocumentResponse | null>(null);
   const deleteActionMutation = useDeleteAction();
   const deleteQuickCheckMutation = useDeleteQuickCheck();
   const deletePhotoMutation = useDeletePhoto();
@@ -165,7 +168,13 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         quickChecks={quickChecks ?? []}
         photos={photos ?? []}
         documents={documents ?? []}
-        isLoading={inspectionsLoading || actionsLoading || quickChecksLoading || photosLoading || documentsLoading}
+        isLoading={
+          inspectionsLoading ||
+          actionsLoading ||
+          quickChecksLoading ||
+          photosLoading ||
+          documentsLoading
+        }
         emptyMessage="No activity recorded for this hive yet"
         onEditAction={canEdit ? setEditingAction : undefined}
         onDeleteAction={canEdit ? setDeletingAction : undefined}
@@ -182,7 +191,11 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         }
         headerSlot={
           canEdit && hiveId && apiaryId ? (
-            <QuickAddMenu apiaryId={apiaryId} hiveId={hiveId} variant="inline" />
+            <QuickAddMenu
+              apiaryId={apiaryId}
+              hiveId={hiveId}
+              variant="inline"
+            />
           ) : undefined
         }
       />
@@ -284,7 +297,8 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
           <DialogHeader>
             <DialogTitle>Delete Photo?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete this photo.
+              This action cannot be undone. This will permanently delete this
+              photo.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -311,7 +325,8 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
           <DialogHeader>
             <DialogTitle>Delete Document?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete this document.
+              This action cannot be undone. This will permanently delete this
+              document.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

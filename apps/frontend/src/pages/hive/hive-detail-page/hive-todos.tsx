@@ -8,12 +8,13 @@ import { TodoQuickAdd, TodoList } from '@/pages/todo';
 
 interface HiveTodosProps {
   hiveId: string;
+  apiaryId?: string | null;
 }
 
-export const HiveTodos = ({ hiveId }: HiveTodosProps) => {
+export const HiveTodos = ({ hiveId, apiaryId }: HiveTodosProps) => {
   const { t } = useTranslation('todo');
   const { data } = useTodos();
-  const { canEdit } = useApiaryPermission();
+  const { canEdit } = useApiaryPermission(apiaryId);
 
   // Only this hive's open todos. Apiary-general (unassigned) todos live on the
   // dashboard and the /todos page, not on individual hive pages.

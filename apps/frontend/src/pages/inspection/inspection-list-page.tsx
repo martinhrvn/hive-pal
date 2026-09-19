@@ -80,7 +80,7 @@ export const InspectionListPage = () => {
 
   const navigate = useNavigate();
   const { activeApiary } = useApiary();
-  const { canEdit } = useApiaryPermission();
+  const { canEditApiary } = useApiaryPermission();
   const isSubjective = activeApiary?.settings?.inspectionType === 'subjective';
   const [searchTerm, setSearchTerm] = useState<string | undefined>('');
   const [selectedHiveId, setSelectedHiveId] = useState<string | undefined>(
@@ -111,10 +111,11 @@ export const InspectionListPage = () => {
         isSubjective,
         activeTab,
         navigate,
-        canEdit,
+        canEditApiary,
         formatTime,
       }),
-    [t, hivesData, isSubjective, activeTab, navigate, canEdit, formatTime],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- canEditApiary is recreated per render; it depends on hivesData/apiaries only
+    [t, hivesData, isSubjective, activeTab, navigate, formatTime],
   );
 
   // User-toggleable, persisted column visibility (shared across the tabs).
@@ -498,7 +499,7 @@ const buildInspectionColumns = ({
   isSubjective,
   activeTab,
   navigate,
-  canEdit,
+  canEditApiary,
   formatTime,
 }: {
   t: TFn;
@@ -506,9 +507,12 @@ const buildInspectionColumns = ({
   isSubjective: boolean;
   activeTab: InspectionTab;
   navigate: (path: string) => void;
-  canEdit: boolean;
+  // Per-row edit permission, keyed by the inspection's hive's apiary.
+  canEditApiary: (apiaryId?: string | null) => boolean;
   formatTime: (date: Date | string) => string;
 }): DataTableColumn<InspectionResponse>[] => {
+  const canEditInspection = (inspection: InspectionResponse) =>
+    canEditApiary(hives.find(h => h.id === inspection.hiveId)?.apiaryId);
   const strengthHeader =
     activeTab === InspectionTab.UPCOMING || isSubjective
       ? t('inspection:fields.status')
@@ -537,7 +541,7 @@ const buildInspectionColumns = ({
           >
             <EyeIcon className="h-4 w-4" />
           </Button>
-          {canEdit && (
+          {canEditInspection(inspection) && (
             <Button
               variant="ghost"
               size="icon"

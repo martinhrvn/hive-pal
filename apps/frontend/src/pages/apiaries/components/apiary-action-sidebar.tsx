@@ -28,7 +28,7 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
 }) => {
   const { t } = useTranslation(['apiary', 'common']);
   const navigate = useNavigate();
-  const { canEdit } = useApiaryPermission();
+  const { canEdit } = useApiaryPermission(apiaryId);
   const deleteApiary = useDeleteApiary();
 
   const deleteDialog = useDeleteDialog(
@@ -95,7 +95,7 @@ export const ApiaryActionSidebar: React.FC<ApiaryActionSidebarProps> = ({
 
       <DeleteConfirmDialog
         open={deleteDialog.isOpen}
-        onOpenChange={(open) => !open && deleteDialog.close()}
+        onOpenChange={open => !open && deleteDialog.close()}
         onConfirm={deleteDialog.handleDelete}
         isPending={deleteDialog.isPending}
         title={t('apiary:manage.deleteApiary', {

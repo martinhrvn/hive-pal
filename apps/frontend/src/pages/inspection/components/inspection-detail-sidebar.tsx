@@ -19,7 +19,7 @@ import {
 } from '@/components/sidebar';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useDeleteInspection, useInspection } from '@/api/hooks/useInspections';
-import { useHiveApiaryLookup } from '@/api/hooks/useHives';
+import { useHive, useHiveApiaryLookup } from '@/api/hooks/useHives';
 import { ActionType } from 'shared-schemas';
 import {
   Dialog,
@@ -41,7 +41,9 @@ export const InspectionDetailSidebar: React.FC<
 > = ({ inspectionId, hiveId }) => {
   const { t } = useTranslation(['inspection', 'common']);
   const navigate = useNavigate();
-  const { canEdit } = useApiaryPermission();
+  const { data: hive } = useHive(hiveId, { enabled: !!hiveId });
+  // Permissions follow the inspection's hive's apiary, not the selected one.
+  const { canEdit } = useApiaryPermission(hive?.apiaryId);
   const deleteInspection = useDeleteInspection();
   const lookupApiaryId = useHiveApiaryLookup();
   const { data: inspection } = useInspection(inspectionId, {
