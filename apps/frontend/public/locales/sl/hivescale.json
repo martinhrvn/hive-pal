@@ -1,0 +1,579 @@
+{
+  "common": {
+    "never": "Nikoli",
+    "loading": "Nalaganje …",
+    "unavailable": "Ni na voljo",
+    "saving": "Shranjevanje …",
+    "insight": "Zaznava",
+    "scale1": "Tehtnica 1",
+    "scale2": "Tehtnica 2",
+    "unknownError": "neznana napaka"
+  },
+  "loading": {
+    "fallback": "Nalaganje …",
+    "messages": [
+      "Podatki se medijo ...",
+      "Zbiramo sveže vpoglede iz panja ...",
+      "Čebele delavke razvrščajo sate ...",
+      "Točimo sladke podatke ...",
+      "Brnimo skozi vaše podatke ...",
+      "Nabiramo informacije ...",
+      "Med, obdelujemo vašo zahtevo ...",
+      "Panjska pamet razmišlja ...",
+      "Odzaglavljamo sveže podatke ...",
+      "Bodite potrpežljivi, rezultati so na poti ...",
+      "Oprašujemo vašo nadzorno ploščo ...",
+      "Ples osmine v teku ...",
+      "Preverjamo zapise matice ...",
+      "Rojimo skozi bazo podatkov ...",
+      "Gradimo satje, celico za celico ...",
+      "Panj ima vaše podatke prav tukaj ...",
+      "Čebelja magija za kulisami ...",
+      "Navzkrižno oprašujemo nabore podatkov ...",
+      "Pripravljamo svežo serijo panjskih meritev ..."
+    ]
+  },
+  "page": {
+    "title": "HiveHub",
+    "subtitle": "Prikaz teže in temperature v živo iz vašega ločenega HiveHub zaledja.",
+    "refresh": "Osveži",
+    "refreshing": "Osveževanje …",
+    "refreshError": "Podatkov HiveHub ni bilo mogoče osvežiti.",
+    "removeConfirm": "Odstranim {{name}} iz vašega računa HivePal? Napravo lahko znova dodate s kodo za prevzem, dokler je nihče drug ne uporablja.",
+    "removeSuccess": "Naprava HiveHub je odstranjena z vašega računa."
+  },
+  "setup": {
+    "title": "Naprave",
+    "description": "Izberite ali odstranite prevzeto napravo HiveHub. Razširite nastavitve za prevzem naprav, pregled stanja, preslikavo tehtnic in kalibracijo surovih odčitkov.",
+    "removeScale": "Odstrani tehtnico",
+    "noDevices": "Prevzete še ni nobene naprave — odprite nastavitve in jo dodajte.",
+    "hide": "Skrij nastavitve",
+    "show": "Pokaži nastavitve"
+  },
+  "claim": {
+    "title": "Prevzem naprave HiveHub",
+    "description": " Kode za prevzem pošilja strojna programska oprema skupaj z meritvami, dokler naprava ni prevzeta.",
+    "claimCode": "Koda za prevzem",
+    "displayName": "Prikazno ime",
+    "displayNamePlaceholder": "Severna panjska tehtnica",
+    "claim": "Prevzemi napravo",
+    "claiming": "Prevzemanje …",
+    "success": "Naprava HiveHub je prevzeta.",
+    "errors": {
+      "missingCode": "Vnesite kodo za prevzem, natisnjeno/nastavljeno za napravo."
+    }
+  },
+  "mapping": {
+    "title": "Preslikava tehtnic",
+    "description": "Te oznake ostanejo v HiveHub. Pozneje je to pravo mesto za preslikavo Tehtnica 1/2 v ID-je panjev HivePal za označevanje pregledov.",
+    "scale1Label": "Prikazno ime za Tehtnico 1",
+    "scale2Label": "Prikazno ime za Tehtnico 2",
+    "hiveNamePlaceholder": "Izberite ali vpišite ime panja",
+    "save": "Shrani preslikavo",
+    "success": "Preslikava tehtnic je posodobljena."
+  },
+  "status": {
+    "title": "Stanje naprave",
+    "deviceId": "ID naprave",
+    "role": "Vloga",
+    "lastMeasurement": "Zadnja meritev",
+    "sharing": "Deljenje",
+    "sharingHint": "Dodelite skrbniški ali ogledovalski dostop.",
+    "shareWithUser": "Deli z drugim uporabnikom",
+    "email": "E-poštni naslov",
+    "viewer": "Opazovalec",
+    "admin": "Skrbnik",
+    "sharing_progress": "Deljenje …",
+    "grantAccess": "Dodeli dostop",
+    "shareSuccess": "Dostop HiveHub je deljen.",
+    "accessRevoked": "Dostop je preklican.",
+    "revokeAccess": "Prekliči dostop",
+    "errors": {
+      "missingEmail": "Vnesite e-poštni naslov obstoječega uporabnika HivePal."
+    }
+  },
+  "calibration": {
+    "title": "Kalibracija",
+    "subtitle": "Vodena hitra kalibracija surovih odčitkov tehtnice.",
+    "instructionsAria": "Pokaži navodila za kalibracijo tehtnice",
+    "raw": "Surovo {{value}}",
+    "notCapturedYet": "Še ni zajeto",
+    "rawCapture": "{{raw}} surovo · {{time}}",
+    "openWizard": "Odpri čarovnika za kalibracijo",
+    "viewerNotice": "Opazovalski dostop lahko bere meritve, ne more pa spreminjati kalibracije.",
+    "noConfig": "Nastavitev ni bila vrnjena.",
+    "workflow": {
+      "title": "Preprost potek",
+      "step1": "Zaženite kalibracijski način in počakajte na hitre odčitke.",
+      "step2": "Zajemite odčitek prazne tehtnice.",
+      "step3": "Postavite znano utež in vnesite njeno vrednost v kg.",
+      "step4": "Zajemite odčitek z utežjo in shranite.",
+      "step5": "Aplikacija po shranjevanju sama ustavi kalibracijski način."
+    },
+    "mode": {
+      "title": "Hitri kalibracijski način",
+      "activeBadge": "Aktiven",
+      "activeDescription": "Aktiven: novi surovi odčitki naj bi prihajali vsakih nekaj sekund.",
+      "queuedBadge": "V čakalni vrsti",
+      "queuedDescription": "V čakalnem stanju: naprava se mora najprej enkrat običajno zbuditi.",
+      "offBadge": "Izklopljen",
+      "offDescription": "Izklopljen: tehtnica uporablja običajno varčevalno spanje."
+    },
+    "wizard": {
+      "title": "Čarovnik za kalibracijo tehtnice",
+      "description": "Sledite korakom po vrsti. Aplikacija uporablja samo sveže surove odčitke iz kalibracijskega načina, nato shrani in samodejno ustavi hitri način.",
+      "alertActiveTitle": "Hitri odčitki so aktivni",
+      "alertActiveDescription": "Zadnji odčitek: {{time}}.",
+      "alertQueuedTitle": "Kalibracijski način je v čakalni vrsti",
+      "alertQueuedDescription": "Naprava potrebuje en običajni prehod, preden lahko sprejme ukaz.",
+      "alertStartTitle": "Najprej zaženite kalibracijski način",
+      "alertStartDescription": "S tem za približno 10 minut onemogočite motečo zakasnitev globokega spanja.",
+      "starting": "Zaganjanje …",
+      "fastModeActive": "Hitri način aktiven",
+      "startFastMode": "Zaženi hitri način",
+      "stopping": "Ustavljanje …",
+      "stopFastMode": "Ustavi hitri način",
+      "whichScale": "Katero tehtnico kalibrirate?",
+      "latestRaw": "Zadnje surovo {{value}}",
+      "emptyScale": "Prazna tehtnica",
+      "emptyScaleHint": "Odstranite utež s {{scaleName}}, nato počakajte na en hitri odčitek.",
+      "captured": "Zajeto: {{value}}",
+      "captureEmptyRaw": "Zajemi prazno surovo vrednost",
+      "knownWeight": "Znana utež",
+      "knownWeightHint": "Postavite utež in vnesite njeno vrednost v kg.",
+      "weightKg": "Utež / kg",
+      "captureWeightRaw": "Zajemi surovo vrednost z utežjo",
+      "saveResult": "Shrani rezultat",
+      "saveResultHint": "Faktor se izračuna samodejno.",
+      "offset": "Odmik",
+      "factorRawPerKg": "Faktor / surovo na kg",
+      "saveAndStop": "Shrani in ustavi hitri način",
+      "noChangeTitle": "Zaznana ni nobena uporabna surova sprememba",
+      "noChangeDescription": "Preverite, ali je znana utež na pravi tehtnici, in počakajte na še en hitri odčitek."
+    },
+    "advanced": {
+      "title": "Napredne ročne nastavitve",
+      "sendInterval": "Interval pošiljanja (sekunde)",
+      "manualValues": "Ročne vrednosti {{scaleName}}",
+      "latestRawHint": "Zadnje surovo: {{value}}. Teža se izračuna kot (surovo - odmik) / faktor.",
+      "offsetLabel": "Odmik / surovi odčitek prazne tehtnice",
+      "useLatest": "Uporabi zadnje",
+      "knownWeightLabel": "Znana utež / kg",
+      "calculate": "Izračunaj",
+      "factorLabel": "Faktor / surovi odčitki na kg",
+      "saveManual": "Shrani ročne nastavitve",
+      "configVersion": "Različica nastavitev {{version}}. Napredne nastavitve uporabljajte le za fino uglaševanje ali obnovo."
+    },
+    "toasts": {
+      "modeQueued": "Kalibracijski način je v čakalni vrsti. Tehtnica bo preklopila na hitre odčitke, ko se zbudi.",
+      "stopQueued": "Ustavitev kalibracijskega načina je v čakalni vrsti.",
+      "startModeFirst": "Zaženite kalibracijski način in počakajte, da so hitri odčitki aktivni.",
+      "captureEmptyFirst": "Najprej zajemite prazno tehtnico.",
+      "enterKnownWeightFirst": "Najprej vnesite znano utež v kg.",
+      "waitForNewReading": "Po postavitvi znane uteži počakajte na nov hitri odčitek, nato znova zajemite.",
+      "emptyCaptured": "Odčitek prazne tehtnice {{scaleName}} je zajet.",
+      "weightedCaptured": "Odčitek tehtnice {{scaleName}} z utežjo je zajet.",
+      "calibrationSaved": "Kalibracija {{scaleName}} je shranjena.",
+      "configUpdated": "Nastavitve HiveHub so posodobljene.",
+      "offsetSet": "Odmik {{scaleName}} je nastavljen na zadnji surovi odčitek.",
+      "factorCalculated": "Faktor {{scaleName}} je izračunan: {{factor}}"
+    },
+    "errors": {
+      "sendInterval": "Uporabite celoštevilske intervale vsaj 60 sekund.",
+      "offsetsWhole": "Odmiki tehtnic morajo biti celoštevilski surovi odčitki.",
+      "factorsNonZero": "Faktorji tehtnic morajo biti neničelna števila.",
+      "noLatestRaw": "Za {{scaleName}} še ni na voljo zadnjega surovega odčitka.",
+      "validOffset": "Najprej vnesite veljaven odmik za {{scaleName}}.",
+      "knownWeight": "Vnesite znano utež, večjo od 0 kg, za {{scaleName}}.",
+      "factorNotCalculated": "Faktorja za {{scaleName}} ni bilo mogoče izračunati. Preverite zadnji surovi odčitek, odmik in znano utež."
+    },
+    "tempco": {
+      "title": "Temperaturna kompenzacija",
+      "description": "Merilne celice z driftom sledijo temperaturi. Zaledje temperaturo gladi z eksponentnim drsečim povprečjem (EMA), da zaduši kratke prehode (npr. sončni vzhod), nato pri branju korigira javljeno težo kot surovo − koef · (EMA(temp) − ref); surova teža se nikoli ne spremeni.",
+      "enableAria": "Vklopi temperaturno kompenzacijo",
+      "sourceLabel": "Vir temperature",
+      "source": {
+        "ambient": "Okolica (SHT4x)",
+        "hive1": "Sonda panja 1",
+        "hive2": "Sonda panja 2"
+      },
+      "sourceHint": "Okolica v stabilnem stanju dobro sledi ohišju celice in je priporočljena privzeta vrednost.",
+      "refLabel": "Referenčna temperatura / °C",
+      "refHint": "Temperatura, pri kateri je korekcija enaka nič.",
+      "coeffLabel": "Koeficient {{scaleName}} / kg na °C",
+      "autoFit": "Samodejno prileganje iz zgodovine",
+      "fitting": "Prileganje …",
+      "autoFitHint": "Samodejno prileganje regresira zadnje 3 dni surove teže glede na z EMA gladeno izbrano temperaturo, nato rezultat uporabi in omogoči. Za čisto prileganje zajemite okno, v katerem je fizična obremenitev stalna, temperatura pa niha.",
+      "save": "Shrani temperaturno kompenzacijo",
+      "errors": {
+        "refTemp": "Referenčna temperatura mora biti število (°C).",
+        "coeff": "Temperaturni koeficienti morajo biti števila (kg/°C)."
+      },
+      "toasts": {
+        "saved": "Nastavitve temperaturne kompenzacije so shranjene.",
+        "fitFailed": "Ni bilo mogoče prilegati {{scaleName}}: {{reason}}",
+        "noSignal": "premalo signala temperature/teže.",
+        "fitApplied": "{{scaleName}}: {{coeff}} kg/°C @ {{refTemp}} °C (R²={{r2}}, n={{n}}). Uporabljeno in omogočeno."
+      }
+    }
+  },
+  "firmware": {
+    "title": "Nalaganje strojne programske opreme",
+    "description": "Naložite binarno datoteko strojne programske opreme in jo registrirajte kot izdajo. Nove naprave ustreznega tipa jo prevzamejo ob naslednjem preverjanju posodobitev.",
+    "type": "Vrsta strojne programske opreme",
+    "selectType": "Izberite vrsto strojne programske opreme",
+    "version": "Različica",
+    "binary": "Binarna datoteka",
+    "upload": "Naloži strojno programsko opremo",
+    "uploading": "Nalaganje …",
+    "success": "Strojna programska oprema {{version}} ({{target}}) je naložena in registrirana.",
+    "update": {
+      "title": "Posodobitev strojne programske opreme",
+      "description": "Tehtnice se nikoli ne posodobijo same — vsako novo gradnjo potrdite tukaj, preden jo tehtnica namesti.",
+      "unavailable": "Stanje strojne programske opreme trenutno ni na voljo.",
+      "availableTitle": "Na voljo je strojna programska oprema {{version}}",
+      "availableBody": "Ta tehtnica poganja {{current}}. Uporabite za posodobitev na {{version}}.",
+      "officialSuffix": "To je uradna gradnja.",
+      "apply": "Uporabi posodobitev",
+      "applying": "Uporabljanje …",
+      "applied": "Strojna programska oprema {{version}} je odobrena — tehtnica se bo posodobila ob naslednji prijavi.",
+      "queued": "Posodobitev {{version}} je odobrena. Tehtnica jo bo namestila ob naslednji prijavi.",
+      "upToDate": "Strojna programska oprema je aktualna ({{version}}).",
+      "viewerNotice": "Posodobitve strojne programske opreme lahko uporabijo le lastniki naprav in skrbniki."
+    },
+    "notice": {
+      "noPermission": "Strojno programsko opremo lahko naložijo le lastniki naprav in skrbniki. Vaša vloga je »{{role}}«.",
+      "selectDevice": "Za nalaganje strojne programske opreme izberite prevzeto napravo."
+    },
+    "errors": {
+      "missingFile": "Izberite binarno datoteko strojne programske opreme (.bin) za nalaganje.",
+      "missingVersion": "Vnesite različico, npr. 0.6.3."
+    },
+    "hiveinsideOta": {
+      "title": "Sproži HiveInside OTA",
+      "description": "Nalaganje strojne programske opreme HiveInside samodejno uvrsti OTA posredovanje v obe senzorski reži prek BLE. S tem znova uvrstite aktivno izdajo v določeno režo. Med posodobitvijo naj bo senzor napajan in buden.",
+      "slot": "Senzorska reža",
+      "slotOption": "Reža {{slot}}",
+      "queue": "Uvrsti HiveInside OTA",
+      "queueing": "Uvrščanje …",
+      "success": "HiveInside OTA je uvrščen za režo {{slot}}.",
+      "autoQueued": "HiveInside OTA je samodejno uvrščen za reži {{slots}}.",
+      "autoQueueFailed": "HiveInside OTA ni bilo mogoče samodejno uvrstiti za reži {{slots}}."
+    }
+  },
+  "sdData": {
+    "title": "Uvoz podatkov s kartice SD",
+    "description": "Naložite podatke, ki ste jih prenesli s tehtnice v načinu AP. Ponovno nalaganje iste datoteke je varno — obstoječe meritve se samodejno preskočijo.",
+    "file": "Datoteka varnostne kopije SD",
+    "accepts": "Sprejme measurements.ndjson ali prenos hivescale-sd-data.tar.",
+    "upload": "Naloži podatke SD",
+    "importing": "Uvažanje …",
+    "importSuccess_one": "Uvožena {{count}} nova meritev ({{duplicates}} podvojenih preskočenih).",
+    "importSuccess_two": "Uvoženi {{count}} novi meritvi ({{duplicates}} podvojenih preskočenih).",
+    "importSuccess_few": "Uvožene {{count}} nove meritve ({{duplicates}} podvojenih preskočenih).",
+    "importSuccess_other": "Uvoženih {{count}} novih meritev ({{duplicates}} podvojenih preskočenih).",
+    "notice": {
+      "noPermission": "Podatke SD lahko uvozijo le lastniki naprav in skrbniki. Vaša vloga je »{{role}}«.",
+      "selectDevice": "Izberite prevzeto napravo za uvoz njenih podatkov s kartice SD."
+    },
+    "errors": {
+      "missingFile": "Za nalaganje izberite varnostno kopijo .ndjson ali prenos .tar s kartice SD."
+    },
+    "result": {
+      "imported": "Uvoženih {{inserted}} novih meritev, {{duplicates}} podvojenih preskočenih.",
+      "parsed_one": "Razčlenjen {{count}} zapis",
+      "parsed_two": "Razčlenjena {{count}} zapisa",
+      "parsed_few": "Razčlenjeni {{count}} zapisi",
+      "parsed_other": "Razčlenjenih {{count}} zapisov",
+      "skipped_one": " · {{count}} neberljiva vrstica preskočena.",
+      "skipped_two": " · {{count}} neberljivi vrstici preskočeni.",
+      "skipped_few": " · {{count}} neberljive vrstice preskočene.",
+      "skipped_other": " · {{count}} neberljivih vrstic preskočenih."
+    }
+  },
+  "panel": {
+    "weight": "Teža",
+    "hiveTemp": "Temperatura panja",
+    "rmsSound": "RMS zvoka",
+    "ambientTemperature": "Temperatura okolja",
+    "ambientHumidity": "Vlaga okolja",
+    "batteryCharge": "Napolnjenost baterije",
+    "solarInput": "Solarni vnos",
+    "charging": "Polnjenje",
+    "general": {
+      "title": "Splošno",
+      "description": "Okolje in napajanje"
+    },
+    "humidity": "Vlaga v panju",
+    "wirelessSensorsBattery": "Baterija brezžičnih senzorjev",
+    "sensorTypes": {
+      "hiveHeart": "HiveHeart",
+      "inHive": "Senzor v panju",
+      "scale": "Tehtnica"
+    }
+  },
+  "diagram": {
+    "title": "Meritve",
+    "subtitle": "Teža, temperatura in aktivnost na čelnici skozi čas",
+    "noMeasurements": "Z izbrano obdobje ni meritev.",
+    "noDataForSeries": "V izbranem obdobju ni podatkov.",
+    "meta": {
+      "device": "Naprava:",
+      "lastSeen": "Zadnjič videna:",
+      "lastData": "Zadnji podatki:",
+      "firmware": "Strojna programska oprema:",
+      "hiveInsideFirmware": "HiveInside:"
+    },
+    "range": {
+      "all": "Vse",
+      "from": "Od",
+      "to": "Do"
+    },
+    "series": {
+      "weight": "{{name}} teža",
+      "temp": "{{name}} temperatura",
+      "micRms": "{{name}} mikrofon RMS",
+      "vibration": "{{name}} vibracije",
+      "swarmBand": "{{name}} pas rojenja (8–30 Hz)",
+      "beesIn": "{{name}} čebele noter",
+      "beesOut": "{{name}} čebele ven",
+      "netFlow": "{{name}} neto tok",
+      "ambientTemp": "Temperatura okolja",
+      "ambientHumidity": "Vlaga okolja",
+      "batteryVoltage": "Napetost baterije",
+      "batteryCharge": "Napolnjenost baterije",
+      "solarVoltage": "Solarna napetost",
+      "solarCurrent": "Solarni tok",
+      "solarPower": "Solarna moč",
+      "humidity": "{{name}} vlaga",
+      "pressure": "{{name}} tlak",
+      "fanningBand": "{{name}} pas pahljanja (30–100 Hz)",
+      "activityBand": "{{name}} pas aktivnosti (100–200 Hz)"
+    },
+    "group": {
+      "ambient": "Okolje",
+      "offGrid": "Izven omrežja"
+    },
+    "axis": {
+      "weight": "Teža",
+      "temperature": "Temperatura",
+      "humidity": "Vlaga",
+      "voltage": "Napetost",
+      "percent": "Odstotki",
+      "current": "Tok",
+      "power": "Moč",
+      "sound": "Zvok",
+      "beecount": "Število čebel",
+      "vibration": "Vibracije",
+      "pressure": "Tlak"
+    },
+    "marker": {
+      "inspection": "Pregled",
+      "boxAdded": "Dodan naklad",
+      "action": {
+        "maintenance": "Vzdrževanje",
+        "feeding": "Krmljenje",
+        "frames": "Sati",
+        "treatment": "Zdravljenje"
+      }
+    },
+    "axisSettings": {
+      "title": "Nastavitve osi",
+      "reset": "Ponastavi",
+      "side": "Stran",
+      "left": "Levo",
+      "right": "Desno",
+      "scale": "Merilo",
+      "auto": "Samodejno",
+      "zeroToMax": "0 do max",
+      "custom": "Po meri",
+      "min": "Min",
+      "max": "Max",
+      "autoPlaceholder": "samodejno"
+    }
+  },
+  "sound": {
+    "title": "Zvok panja",
+    "description": "Energija pasov INMP441 FFT (dBFS) — {{left}} (levo) · {{right}} (desno)",
+    "hide": "Skrij zvok",
+    "show": "Pokaži zvok",
+    "micLeftFallback": "Mikrofon levo",
+    "micRightFallback": "Mikrofon desno",
+    "noDataForChannel": "Za {{name}} v tem obdobju ni podatkov.",
+    "bandReference": "Referenca pasov",
+    "thresholds": "Pragi, ki jih uporablja mehanizem zaznav: piskanje > −45 dBFS, stres > −38 dBFS, brenčanje brezmatičnosti > −40 dBFS ob tihem piskanju. Kalibrirajte glede na lastno izhodišče.",
+    "status": {
+      "noData": "Ni podatkov",
+      "micError": "Napaka mikrofona",
+      "bothActive": "{{left}} + {{right}} aktivna",
+      "oneActive": "{{name}} aktiven"
+    },
+    "table": {
+      "band": "Pas",
+      "range": "Območje",
+      "significance": "Pomen"
+    },
+    "bands": {
+      "subBass": {
+        "label": "Sub-bas",
+        "description": "Strukturne vibracije / nizko bobnenje"
+      },
+      "hum": {
+        "label": "Brenčanje",
+        "description": "Običajno brenčanje družine (osnovni ton ~200 Hz)"
+      },
+      "piping": {
+        "label": "Piskanje",
+        "description": "Piskanje matice (signal pred rojenjem)"
+      },
+      "stress": {
+        "label": "Stres",
+        "description": "Vznemirjena družina / rop"
+      },
+      "high": {
+        "label": "Visoki toni",
+        "description": "Harmonični višji toni"
+      }
+    },
+    "rmsToggleShow": "Pokaži raven RMS",
+    "rmsToggleHide": "Skrij raven RMS",
+    "rmsTitle": "Zvočna raven RMS",
+    "rmsSeries": "{{name}} RMS"
+  },
+  "beecounter": {
+    "title": "Števec čebel na čelnici",
+    "subtitle": "Čebele, ki vstopijo in izstopijo, na merilni interval",
+    "noData": "Z to napravo ni podatkov BeeCounter.",
+    "offline": "Brez povezave",
+    "gatesOk": "{{count}} vrat OK",
+    "glitches_one": "{{count}} motnja",
+    "glitches_two": "{{count}} motnji",
+    "glitches_few": "{{count}} motnje",
+    "glitches_other": "{{count}} motenj",
+    "gatesRatio": "{{healthy}}/{{total}} vrat",
+    "inPeriod": "Noter (obdobje)",
+    "outPeriod": "Ven (obdobje)",
+    "netFlow": "Neto tok",
+    "netInbound": "neto priliv",
+    "netOutbound": "neto odliv",
+    "balanced": "uravnoteženo",
+    "view": {
+      "inOut": "Noter / ven",
+      "netFlow": "Neto tok",
+      "cumulative": "Kumulativno"
+    },
+    "series": {
+      "in": "{{name}} noter",
+      "out": "{{name}} ven",
+      "net": "{{name}} neto",
+      "totalIn": "{{name}} skupaj noter",
+      "totalOut": "{{name}} skupaj ven"
+    },
+    "diagnostics": {
+      "title": "Diagnostika strojne opreme",
+      "gatesHealthy": "Zdrava vrata",
+      "glitchCount": "Število motenj",
+      "totalInLifetime": "Skupaj noter (življenjska doba)",
+      "totalOutLifetime": "Skupaj ven (življenjska doba)"
+    }
+  },
+  "insights": {
+    "title": "Zaznave",
+    "description": "Na senzorjih temelječa opozorila, izpeljana iz trendov teže in temperature.",
+    "updated": "Posodobljeno {{ago}}.",
+    "refresh": "Osveži zaznave",
+    "loadError": "Zaznav ni bilo mogoče naložiti: {{message}}",
+    "allClear": "Vse v redu",
+    "noActiveAlerts": "V zadnjih {{count}} dneh ni aktivnih opozoril.",
+    "activeAlerts_one": "{{count}} aktivno opozorilo:",
+    "activeAlerts_two": "{{count}} aktivni opozorili:",
+    "activeAlerts_few": "{{count}} aktivna opozorila:",
+    "activeAlerts_other": "{{count}} aktivnih opozoril:",
+    "confidence": "Zaupanje {{value}} %",
+    "source": "Vir: {{source}}",
+    "hiveChannel": "Panj {{channel}}",
+    "severity": {
+      "critical": "Kritično",
+      "warning": "Opozorilo",
+      "watch": "Opazovanje",
+      "info": "Info"
+    },
+    "tooltip": {
+      "ariaLabel": "Kateri testi se izvajajo?",
+      "title": "Izvedeni testi",
+      "description": "Vsak detektor se ob vsakem merilnem prehodu izvaja nad zadnjimi 14 dnevi podatkov o teži in temperaturi panja.",
+      "fullDocs": "Celotna dokumentacija"
+    },
+    "detectors": [
+      {
+        "title": "Predrojilno opazovanje (faza 1)",
+        "detail": "24-urni standardni odklon temperature plodišča ≥ 1,5× 7-dnevnega izhodišča → opazovanje."
+      },
+      {
+        "title": "Neposredno rojenje (faza 2)",
+        "detail": "Temperatura plodišča ≥ 1,5 °C nad 4-urnim izhodiščem, še narašča ≥ 0,5 °C/h, nad 36,5 °C → opozorilo."
+      },
+      {
+        "title": "Roj (dogodek, faza 3)",
+        "detail": "Padec teže ≥ 1,5 kg v ≤ 30 min. Podnevi (9.–17. ura) → kritično, sicer opozorilo."
+      },
+      {
+        "title": "Brezmaticnost (rezervno, brez zvoka)",
+        "detail": "Aktivna sezona + 7-dnevni standardni odklon temperature panja > 1,0 °C IN |sprememba teže| < 0,2 kg → opozorilo."
+      },
+      {
+        "title": "Rop",
+        "detail": "Vztrajna izguba teže ≥ 0,4 kg/h vsaj 30 min, brez rojevalskega podpisa. Pozno popoldne (15.–19. ura) → opozorilo, sicer opazovanje."
+      },
+      {
+        "title": "Intenzivnost paše",
+        "detail": "24-urna razlika teže: ≥ 1,0 kg = močan vnos (info), ≥ 0,2 kg = zmeren (info), ≤ −0,2 kg = negativen (opazovanje)."
+      },
+      {
+        "title": "Cikel zalege / stanje družine",
+        "detail": "24-urni standardni odklon temperature panja < 0,5 °C okoli 34–35 °C = aktivna zalega (info); > 2,0 °C = brez zalege / šibka (opazovanje)."
+      },
+      {
+        "title": "Trend zapuščanja / propada",
+        "detail": "14-dnevna izguba teže > 100 g/dan IN širjoči se dnevni standardni odklon temperature (pozitivni naklon) → opazovanje."
+      },
+      {
+        "title": "Tveganje preživetja zime (okt.–feb.)",
+        "detail": "Najnižja temperatura panja 7 d < povprečje okolja + 2 °C ali izguba teže > 300 g/teden. Oboje → opozorilo, eno → opazovanje."
+      },
+      {
+        "title": "Okno za točenje",
+        "detail": "Prejšnji 7-dnevni prirast > 2 kg/teden, zdaj < 0,3 kg/teden vsaj 4 dni → info."
+      }
+    ]
+  },
+  "history": {
+    "button": "Zgodovina",
+    "title": "Zgodovina zaznav",
+    "description": "Pretekla in trenutna na senzorjih temelječa opozorila, vključno z že razrešenimi. Najnovejše najprej.",
+    "summary": "Prikazanih {{count}} · aktivnih {{active}}",
+    "loadError": "Zgodovine ni bilo mogoče naložiti: {{message}}",
+    "firstSeen": "Prvič zaznano {{time}}",
+    "lastSeen": "Zadnjič zaznano {{time}}",
+    "resolvedAt": "Razrešeno {{time}}",
+    "peakConfidence": "Najvišje zaupanje {{value}} %",
+    "updates_one": "{{count}} posodobitev",
+    "updates_two": "{{count}} posodobitvi",
+    "updates_few": "{{count}} posodobitve",
+    "updates_other": "{{count}} posodobitev",
+    "status": {
+      "active": "Aktivno",
+      "resolved": "Razrešeno"
+    },
+    "filter": {
+      "all": "Vsa opozorila",
+      "active": "Samo aktivna",
+      "resolved": "Samo razrešena"
+    },
+    "empty": {
+      "title": "Še ni zgodovine",
+      "description": "Za to napravo ni zabeleženih opozoril.",
+      "descriptionFiltered": "Za to napravo ni zabeleženih opozoril, ki bi ustrezala temu filtru."
+    }
+  }
+}
