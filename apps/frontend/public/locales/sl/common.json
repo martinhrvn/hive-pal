@@ -1858,16 +1858,16 @@
         },
         "transcribe": {
           "title": "Samodejni prepis",
-          "body": "Prepis govora v besedilo (Whisper) vsak posnetek spremeni v iskano prepisano besedilo, priloženo pregledu. Večjezično že privzeto."
+          "body": "Prepis govora v besedilo vsak posnetek spremeni v preiskljiv prepis, priložen pregledu. Večjezično že privzeto."
         },
         "draft": {
           "title": "Beležke, ki jih napiše AI",
-          "body": "Lokalni jezikovni modeli iz posnetkov izluščijo opažanja matice, vzorce zalege, zdravljenja in opažanja ter jih vnaprej izpolnijo v pregled — vi samo pregledate in shranite."
+          "body": "AI iz posnetkov izlušči opažanja matice, vzorce zalege, zdravljenja in druga opažanja ter jih vnaprej izpolni v pregled — vi samo pregledate in shranite."
         }
       },
-      "assuranceLead": "Vaši posnetki, vaši modeli.",
-      "assuranceBody": "AI sklad deluje na odprtokodnih modelih (faster-whisper + Ollama) in ga lahko gostite skupaj s svojimi podatki — ali ga zaženete kot delavca na svojem domačem računalniku.",
-      "assuranceNote": "Brez tretjeosebnega oblaka"
+      "assuranceLead": "Glasovni AI je neobvezen.",
+      "assuranceBody": "AI ostaja izklopljen, dokler ga vaš strežnik ne omogoči. Ko ga uporabljate, se posnetek pošlje nastavljeni AI storitvi zgolj za sestavo osnutka pregleda — vse ostalo ostane na vašem strežniku.",
+      "assuranceNote": "Privzeto izklopljeno"
     },
     "landing": {
       "meta": {
@@ -2116,7 +2116,7 @@
             },
             "privacyAI": {
               "title": "AI z zasebnostjo na prvem mestu",
-              "body": "Glasovni in AI sklad uporablja odprte modele (faster-whisper + Ollama) in lahko teče na vaši lastni strojni opremi — brez tretjeosebnega oblaka."
+              "body": "Glasovni AI je neobvezen in ostaja izklopljen, dokler ga strežnik ne omogoči. Ko ga uporabljate, se posnetki obdelajo izključno za sestavo osnutka pregleda."
             },
             "multilingual": {
               "title": "Večjezičnost",
