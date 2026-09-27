@@ -1119,6 +1119,217 @@
         "title": "Vrstni red kontrolnih točk ni več kronološki",
         "description": "Ena od poznejših kontrolnih točk je načrtovana na isti dan ali prej kot zgodnejši obisk. Pred shranjevanjem načrta preuredite datume."
       }
+    },
+    "pagden": {
+      "badge": "Referenčna metoda",
+      "title": "Pagdenova delitev",
+      "description": "Klasična metoda delitve, pri kateri se matica preseli v nov panj na prvotnem stojišču, matična družina z zalego pa se umakne na stran.",
+      "intro": "Pagdenova delitev je preizkušena metoda nadzora rojenja in razširjanja čebeljih družin, ki loči zalegajočo matico od večine zalege tako, da matico preseli v nov panj na prvotnem stojišču. Leteče čebele se vrnejo k matici, medtem ko matična družina z zalego ostane v bližini in iz obstoječih matičnjakov vzgoji novo matico. Naknadno ukrepajte okoli 7.–8., 14.–15. in 21.–22. dne, da spremljate razvoj matičnjakov in potrdite, da se je nova matica parila in zalega.",
+      "overviewTitle": "Pregled metode",
+      "overviewLead": "Pagdenovo delitev uporabite, kadar želite nadzorovati rojevni pritisk in hkrati obdržati matico in zalego v aktivnih družinah ter imate na voljo nadomestno plodišče in izgrajeno satje.",
+      "overviewPoints": [
+        "Matica se preseli v nov panj na prvotnem stojišču, zato se leteče čebele vrnejo k njej in nova družina hitro zaživi.",
+        "Matična družina z zalego se umakne na stran in ostane s svojimi matičnjaki — vzgojila bo novo matico, kar pomeni povečanje števila družin.",
+        "Obe družini ostaneta aktivni in produktivni, zato je Pagdenova delitev dobra izbira, kadar želite povečati število družin in hkrati nadzorovati rojenje."
+      ],
+      "prerequisitesTitle": "Predpogoji",
+      "prerequisites": [
+        "Potrdite, da je družina močna z dovolj čebelami in zalego, ki upravičuje delitev.",
+        "Poiščite in zanesljivo obdržite zalegajočo matico — preseliti jo boste morali v nov panj.",
+        "Pripravite nadomestno dno panja, plodišče z izgrajenim satjem, matično rešetko, stropno desko in streho.",
+        "Pripravite drugo dno in stojalo za matično družino z zalego.",
+        "Izberite umirjeno vremensko okno, da se obe družini lahko preorganizirata brez dolgotrajne prekinitve."
+      ],
+      "stepsTitle": "Podrobnosti metode",
+      "stepsDescription": "Za izvedbo Pagdenove delitve sledite tem korakom",
+      "methodDetail": {
+        "preparation": {
+          "title": "Priprava",
+          "items": [
+            {
+              "text": "Poiščite nadomestni plodiščni naklad z izgrajenim satjem (ne z osnovo — osnova upočasni razvoj nove družine)."
+            },
+            {
+              "text": "Pripravite drugo dno panja in stojalo, postavljeno nekaj metrov stran od prvotnega mesta."
+            }
+          ]
+        },
+        "relocateQueen": {
+          "title": "Premik matice",
+          "items": [
+            {
+              "text": "Preglejte prvotni panj in poiščite zalegajočo matico."
+            },
+            {
+              "text": "Vzemite sat z matico in ga postavite na sredino novega plodiščnega naklada; odstranite morebitne matičnjake s tega sata."
+            },
+            {
+              "text": "Nov naklad napolnite s sati izgrajenega satja in matici zagotovite prostor za zaleganje."
+            },
+            {
+              "text": "Nov naklad postavite na prvotno dno panja — sem se bodo vrnile leteče čebele."
+            }
+          ]
+        },
+        "queenCells": {
+          "title": "Upravljanje matične družine",
+          "items": [
+            {
+              "text": "Prvotni panj (zdaj brez matice) premaknite na drugo dno nekaj metrov stran."
+            },
+            {
+              "text": "Preglejte vse zaležne sate in matičnjake zreducirajte na enega ali dva dobra, dobro postavljena matičnjaka — ne uničite vseh, saj matična družina potrebuje matičnjak za vzgojo nove matice."
+            },
+            {
+              "text": "Poskrbite, da ima matična družina dovolj zalog in prostora za razvoj."
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Ponovno sestavljanje",
+          "items": [
+            {
+              "text": "Na vrh novega panja (z matico) položite matično rešetko, če želite dodati medišča za shranjevanje medu."
+            },
+            {
+              "text": "Dodajte medišča glede na sezonsko nektarjevo pašo."
+            },
+            {
+              "text": "Na oba panja namestite stropno desko in streho."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Zakaj metoda deluje",
+      "advantagesDescription": "Pagdenova delitev razreši rojevni pritisk z ločitvijo matice od zalege, hkrati pa ohrani dve produktivni družini.",
+      "advantages": [
+        "Matica na prvotnem stojišču privablja leteče čebele, kar hitro gradi novo družino in ohranja zbiralno aktivnost.",
+        "Matična družina z zalego se umakne na stran in ostane s svojimi matičnjaki, kar ji omogoča vzgojo nove matice in razvoj v drugo produktivno družino.",
+        "Obe družini ostaneta aktivni in lahko prispevata k pridelku medu ali se gradita za zimo."
+      ],
+      "followUpTitle": "Časovnik naknadnih pregledov",
+      "followUpDayHeader": "Dan",
+      "followUpTaskHeader": "Naloga",
+      "followUp": [
+        {
+          "day": "Dan 7-8",
+          "task": "Preglejte matično družino in matičnjake zreducirajte na enega ali dva dobro postavljena, lepo oblikovana matičnjaka. Družina potrebuje vsaj enega za vzgojo nove matice."
+        },
+        {
+          "day": "Dan 14-15",
+          "task": "Preverite, da je obdržani matičnjak poklopljen in se razvija. Poiščite morebitne dodatne začete matičnjake in odstranite odvečne, da ostane le en."
+        },
+        {
+          "day": "Dan 21-22",
+          "task": "Opravite končni pregled, ocenite obe družini in odločite o naslednjih korakih sezone."
+        }
+      ],
+      "prosConsTitle": "Prednosti in slabosti",
+      "prosTitle": "Prednosti",
+      "consTitle": "Slabosti",
+      "pros": [
+        "Učinkovit nadzor rojenja z ohranitvijo dveh produktivnih družin.",
+        "Matica na prvotnem stojišču privablja leteče čebele in hitro gradi novo družino.",
+        "Obe družini lahko prispevata k pridelku medu.",
+        "Preprostejša od nekaterih metod — brez zapletenega skladanja ali rešetk.",
+        "Primerna za povečevanje števila družin ob nadzoru rojevnega pritiska."
+      ],
+      "cons": [
+        "Zahteva iskanje in premik matice, kar terja spretnost in samozavest.",
+        "Zahteva nadomestno plodišče z izgrajenim satjem in drugo dno.",
+        "Matična družina lahko vzgoji mlado matico, ki se mora uspešno pariti.",
+        "Redni pregledi so nujni za upravljanje matičnjakov.",
+        "Ni primerna za začetnike, ki niso vešči ravnanja z matico."
+      ],
+      "faq": {
+        "title": "Pogosta vprašanja",
+        "items": [
+          {
+            "question": "Kaj je Pagdenova delitev?",
+            "answer": "Pagdenova delitev je metoda nadzora rojenja, pri kateri se zalegajoča matica preseli v nov panj na prvotnem stojišču, matična družina z zalego pa se umakne na stran. Leteče čebele se vrnejo k matici in gradijo novo družino, medtem ko se matična družina razvija in vzgoji novo matico."
+          },
+          {
+            "question": "Kdaj naj uporabim Pagdenovo delitev?",
+            "answer": "Pagdenovo delitev uporabite na močnih družinah z jasnim rojevnim pritiskom, kadar želite nadzorovati rojenje in hkrati ohraniti dve produktivni družini. Dobro deluje, kadar imate nadomestno opremo in ste sigurni pri iskanju ter premiku matice."
+          },
+          {
+            "question": "Kakšno je največje tveganje Pagdenove delitve?",
+            "answer": "Glavno tveganje je, da v matični družini pustite preveč matičnjakov — prva izvaljena mlada matica lahko z delom čebel odroji, če so prisotni še drugi poklopljeni matičnjaki. Pri pregledu 7.–8. dne jih zreducirajte na enega ali dva dobro postavljena, pri čemer čebele stresite s satov, da jih opazite vse. Ne uničite vseh, saj družina enega potrebuje za vzgojo nove matice."
+          },
+          {
+            "question": "Koliko časa potrebuje matična družina za novo matico?",
+            "answer": "Matična družina bo iz najmlajših ličink vzgojila nadomestno matico. Nova matica se izvali okoli 16. dne in potrebuje 1–2 tedna za parjenje in začetek zaleganja, zato matična družina običajno znova zalega do 21.–28. dne."
+          }
+        ]
+      },
+      "planner": {
+        "title": "Načrtovalnik Pagdenovih pregledov",
+        "description": "Ustvarite standardne kontrolne točke, po potrebi prilagodite datume in jih shranite kot načrtovane preglede za en panj.",
+        "selectHiveLabel": "Panj",
+        "selectHivePlaceholder": "Izberite panj",
+        "startDateLabel": "Datum Pagdenove delitve",
+        "startDatePlaceholder": "Izberite datum delitve",
+        "generateButton": "Ustvari kontrolne točke",
+        "saveButton": "Shrani načrtovane preglede",
+        "checkpointPrefix": "Pagdenova kontrolna točka:",
+        "notesChecklistLabel": "Kontrolni seznam",
+        "savedSuccess": "Shranjena {{count}} Pagdenova kontrolna točka kot načrtovan pregled.",
+        "savedPartial": "Shranjenih {{successCount}} kontrolnih točk, a {{failedCount}} ni uspelo. Pred ponovnim poskusom preglejte prihajajoče preglede.",
+        "savedError": "Pagdenovega načrta ni mogoče shraniti. Nekateri pregledi morda niso bili ustvarjeni.",
+        "noHivesMessage": "V aktivnem čebelnjaku potrebujete vsaj en panj, preden lahko ustvarite Pagdenov načrt.",
+        "checkpoints": {
+          "setup": {
+            "title": "Začetna Pagdenova delitev",
+            "summary": "Matico preselite v nov panj na prvotnem stojišču, matično družino z zalego umaknite na stran in matičnjake zreducirajte na enega ali dva dobro postavljena.",
+            "checklist": [
+              "Poiščite zalegajočo matico in jo preselite v nov panj na prvotnem stojišču.",
+              "Matično družino z zalego premaknite na novo mesto nekaj metrov stran.",
+              "Matičnjake v matični družini zreducirajte na enega ali dva dobro oblikovana, dobro postavljena — družina potrebuje vsaj enega za vzgojo nove matice."
+            ]
+          },
+          "queenCellCheck": {
+            "title": "Pregled matičnjakov",
+            "summary": "Okoli 7.–8. dne preglejte matično družino in matičnjake zreducirajte na enega; pustite najbolje postavljenega, lepo oblikovanega za vzgojo nove matice.",
+            "checklist": [
+              "Preglejte vsak zaležni sat v matični družini in poiščite matičnjake.",
+              "Obdržite en dobro postavljen, lepo oblikovan matičnjak in odstranite vse druge, da zmanjšate tveganje ponovnega rojenja.",
+              "Potrdite, da ima matična družina dovolj zalog in prostora."
+            ]
+          },
+          "secondQueenCellCheck": {
+            "title": "Drugi pregled matičnjakov",
+            "summary": "Približno teden dni pozneje znova preverite, da ujamete pozno začete matičnjake in potrdite, da se nova matica razvija.",
+            "checklist": [
+              "Znova poiščite novo začete ali spregledane matičnjake.",
+              "Preverite, ali se matična družina normalno razvija.",
+              "Zabeležite, ali se nova matica izvaljuje ali je že izvaljena."
+            ]
+          },
+          "colonyReview": {
+            "title": "Pregled družin",
+            "summary": "Ocenite obe družini, potrdite, da nova matica zalega, in odločite o naslednjih korakih sezone.",
+            "checklist": [
+              "Preverite vzorec zaleganja in zaloge v novi družini.",
+              "Potrdite, da ima matična družina zalegajočo matico.",
+              "Ocenite prostor, vzorec zalege in vnos nektarja v obeh družinah."
+            ]
+          }
+        }
+      },
+      "warnings": {
+        "lateQueenCellCheck": {
+          "title": "Prvi pregled matičnjakov je pozneje kot 8. dne",
+          "description": "Ta zamuda povečuje tveganje, da se matičnjaki izvalijo, preden jih lahko pregledate in zreducirate. Prvi naknadni pregled poskusite ohraniti v oknu 7.–8. dne."
+        },
+        "unsafeCheckpointSpacing": {
+          "title": "Razmiki med kontrolnimi točkami so videti tvegani",
+          "description": "Ti naknadni pregledi so nenavadno narazen ali pretesno zgoščeni, kar lahko zmanjša zanesljivost nadzora matičnjakov."
+        },
+        "illogicalScheduleOrder": {
+          "title": "Vrstni red kontrolnih točk ni več kronološki",
+          "description": "Ena od poznejših kontrolnih točk je načrtovana na isti dan ali prej kot zgodnejši obisk. Pred shranjevanjem načrta preuredite datume."
+        }
+      }
     }
   }
 }
