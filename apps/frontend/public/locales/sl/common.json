@@ -1,0 +1,1124 @@
+{
+  "navigation": {
+    "home": "Domov",
+    "dashboard": "Nadzorna plošča",
+    "apiaries": "Čebelnjaki",
+    "hives": "Panji",
+    "inspections": "Pregledi",
+    "queens": "Matice",
+    "allQueens": "Vse matice",
+    "todos": "Opravila",
+    "allTodos": "Vsa opravila",
+    "settings": "Nastavitve",
+    "admin": "Skrbnik",
+    "users": "Uporabniki",
+    "feedback": "Povratne informacije",
+    "logout": "Odjava",
+    "allApiaries": "Vsi čebelnjaki",
+    "createApiary": "Ustvari čebelnjak",
+    "allHives": "Vsi panji",
+    "allInspections": "Vsi pregledi",
+    "schedule": "Razpored",
+    "recent": "Nedavno",
+    "upcoming": "Prihajajoče",
+    "general": "Splošno",
+    "harvests": "Pridelki",
+    "allHarvests": "Vsi pridelki",
+    "reports": "Poročila",
+    "metrics": "Metrike",
+    "files": "Datoteke",
+    "calendar": "Koledar",
+    "equipment": "Oprema",
+    "actions": "Paketni vnos",
+    "tools": "Orodja",
+    "syrupCalculator": "Kalkulator sirupa",
+    "broodTimeline": "Časovnica zalege",
+    "swarmManagement": "Upravljanje rojenja",
+    "liebefelder": "Liebefeldska metoda",
+    "varroaManagement": "Upravljanje varoj",
+    "documentation": "Dokumentacija"
+  },
+  "actions": {
+    "save": "Shrani",
+    "cancel": "Prekliči",
+    "delete": "Izbriši",
+    "edit": "Uredi",
+    "create": "Ustvari",
+    "add": "Dodaj",
+    "remove": "Odstrani",
+    "search": "Išči",
+    "filter": "Filtriraj",
+    "export": "Izvozi",
+    "import": "Uvozi",
+    "submit": "Pošlji",
+    "back": "Nazaj",
+    "next": "Naprej",
+    "previous": "Prejšnji",
+    "close": "Zapri",
+    "confirm": "Potrdi",
+    "view": "Poglej",
+    "download": "Prenesi",
+    "upload": "Naloži",
+    "refresh": "Osveži",
+    "actions": "Dejanja",
+    "createNew": "Ustvari novo",
+    "navigate": "Navigacija",
+    "refreshData": "Osveži podatke",
+    "notifications": "Obvestila",
+    "newHive": "Nov panj",
+    "language": "Jezik",
+    "logout": "Odjava",
+    "newInspection": "Nov pregled",
+    "scheduleInspection": "Načrtuj pregled",
+    "newQueen": "Nova matica",
+    "recentInspections": "Nedavni pregledi"
+  },
+  "status": {
+    "loading": "Nalaganje ...",
+    "success": "Uspeh",
+    "error": "Napaka",
+    "warning": "Opozorilo",
+    "info": "Obvestilo",
+    "pending": "Na čakanju",
+    "completed": "Zaključeno",
+    "failed": "Ni uspelo",
+    "active": "Aktivno",
+    "inactive": "Neaktivno",
+    "archived": "Arhivirano"
+  },
+  "messages": {
+    "confirmDelete": "Ali ste prepričani, da želite izbrisati ta element?",
+    "changesSaved": "Spremembe uspešno shranjene",
+    "errorOccurred": "Prišlo je do napake",
+    "noData": "Ni podatkov",
+    "required": "To polje je obvezno",
+    "invalidEmail": "Neveljaven e-poštni naslov",
+    "invalidFormat": "Neveljavna oblika",
+    "notificationsComingSoon": "Funkcija obvestil prihaja kmalu"
+  },
+  "releaseNotes": {
+    "title": "Kaj je novega v HivePal",
+    "version": "Različica {{version}}",
+    "released": "Izdano {{date}}",
+    "newVersionAvailable": "Na voljo je nova različica v{{version}}!",
+    "checkLatestFeatures": "Poglejte najnovejše funkcije in izboljšave.",
+    "whatsNew": "Kaj je novega",
+    "dismiss": "Zavrni"
+  },
+  "time": {
+    "today": "Danes",
+    "yesterday": "Včeraj",
+    "tomorrow": "Jutri",
+    "week": "Teden",
+    "month": "Mesec",
+    "year": "Leto",
+    "date": "Datum",
+    "time": "Ura",
+    "days": "Dnevi",
+    "hours": "Ure",
+    "minutes": "Minute",
+    "seconds": "Sekunde"
+  },
+  "months": {
+    "selectMonth": "Izberite mesec",
+    "january": "Januar",
+    "february": "Februar",
+    "march": "Marec",
+    "april": "April",
+    "may": "Maj",
+    "june": "Junij",
+    "july": "Julij",
+    "august": "Avgust",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "December"
+  },
+  "weather": {
+    "selectHiveToView": "Za prikaz vremena izberite panj s čebelnjakom",
+    "unableToLoad": "Vremenskih podatkov ni mogoče naložiti",
+    "noWeatherData": "Vremenski podatki niso na voljo",
+    "currentWeather": "Trenutno vreme",
+    "feelsLike": "Občuti se kot {{temperature}} °C",
+    "humidity": "Vlaga",
+    "wind": "Veter",
+    "nextHours": "Naslednjih 5 ur",
+    "dayForecast": "7-dnevna napoved",
+    "weatherForecast": "Vremenska napoved"
+  },
+  "settings": {
+    "managePreferences": "Upravljajte svoj račun in nastavitve aplikacije",
+    "generalSettings": "Splošne nastavitve",
+    "configureLanguageRegional": "Nastavite jezik in regionalne nastavitve",
+    "dateFormat": "Oblika datuma",
+    "firstDayOfWeek": "Prvi dan v tednu",
+    "monday": "Ponedeljek",
+    "sunday": "Nedelja",
+    "timeFormat": "Oblika ure",
+    "time24h": "24-urna (17:00)",
+    "time12h": "12-urna (5:00 PM)",
+    "unitsOfMeasurement": "Merske enote",
+    "metric": "Metrične (kg, km, °C)",
+    "imperial": "Imperialne (lbs, milje, °F)",
+    "displayPreferences": "Nastavitve prikaza",
+    "customizeAppearance": "Prilagodite videz aplikacije",
+    "theme": "Tema",
+    "light": "Svetla",
+    "dark": "Temna",
+    "system": "Sistemska",
+    "notificationPreferences": "Nastavitve obvestil",
+    "chooseNotificationMethod": "Izberite, kako želite prejemati obvestila o pomembnih dogodkih",
+    "emailNotifications": "E-poštna obvestila",
+    "receiveEmailUpdates": "Prejemajte posodobitve po e-pošti",
+    "pushNotifications": "Potisna obvestila",
+    "receiveBrowserNotifications": "Prejemajte potisna obvestila brskalnika",
+    "inspectionReminders": "Opomniki za preglede",
+    "upcomingInspectionsNotify": "Prejmite obvestilo o prihajajočih pregledih",
+    "harvestReminders": "Opomniki za pridelke",
+    "harvestSchedulesNotify": "Prejmite obvestilo o razporedu pridelkov",
+    "accountSettings": "Nastavitve računa",
+    "manageAccountInfo": "Upravljajte podatke svojega računa",
+    "name": "Ime",
+    "enterName": "Vnesite svoje ime",
+    "email": "E-pošta",
+    "enterEmail": "Vnesite svojo e-pošto",
+    "password": "Geslo",
+    "changePassword": "Zamenjajte geslo svojega računa",
+    "passkeys": "Ključi poteka (passkeys)",
+    "passkeysDescription": "Prijavite se brez gesla z biometrijo naprave ali varnostnim ključem",
+    "passkeyNamePlaceholder": "Ime (npr. MacBook Touch ID)",
+    "passkeyAdd": "Dodaj ključ",
+    "passkeyAdding": "Dodajanje …",
+    "passkeyRemove": "Odstrani",
+    "passkeyUnnamed": "Neimenovan ključ",
+    "passkeyAddedOn": "Dodano {{date}}",
+    "passkeysLoading": "Nalaganje …",
+    "passkeysEmpty": "Še ni ključev.",
+    "passkeysLoadFailed": "Ključev ni bilo mogoče naložiti",
+    "passkeyAddFailed": "Ključa ni bilo mogoče dodati",
+    "passkeyAddCancelled": "Vpis ključa je preklican ali ni uspel",
+    "passkeyDeleteFailed": "Ključa ni bilo mogoče izbrisati",
+    "saveSettings": "Shrani nastavitve",
+    "preferencesUpdated": "Vaše nastavitve so bile uspešno posodobljene.",
+    "saving": "Shranjevanje ...",
+    "dangerZone": "Nevarno območje",
+    "dangerZoneDescription": "Nepovratna dejanja za vaš račun.",
+    "deleteAccount": "Izbriši račun",
+    "deleteAccountDescription": "Trajno izbriše vaš račun in vse čebelnjake, panje, preglede, fotografije ter druge podatke. Tega ni mogoče razveljaviti. Če želite obdržati kopijo, najprej izvozite podatke.",
+    "deleteAccountConfirmTitle": "Izbrišem vaš račun?",
+    "deleteAccountConfirmDescription": "S tem trajno izbrišete svoj račun in vse podatke, ki jih imate v lasti. Čebelnjaki, ki so jih z vami delili drugi, ostanejo nedotaknjeni; vsebina, s katero ste prispevali v tuje čebelnjake, se ohrani, a anonimizira. Tega dejanja ni mogoče razveljaviti.",
+    "deleteAccountExportReminder": "Želite obdržati kopijo? Izvozite podatke pred brisanjem.",
+    "deleteAccountExportLink": "Izvozi moje podatke",
+    "deleteAccountTypeEmail": "Za potrditev vpišite svoj e-poštni naslov {{email}}:",
+    "deleteAccountButton": "Izbriši moj račun",
+    "deleteAccountDeleting": "Brisanje računa ...",
+    "accountDeleted": "Vaš račun je bil izbrisan.",
+    "deleteAccountFailed": "Brisanje računa ni uspelo. Poskusite znova."
+  },
+  "feedback": {
+    "title": "Pošlji povratne informacije",
+    "description": "Cenimo vaše mnenje! Pomagajte nam izboljšati HivePal z idejami, prijavami hroščev ali predlogi novih funkcij.",
+    "sendFeedback": "Pošlji povratne informacije",
+    "type": "Vrsta povratnih informacij",
+    "selectType": "Izberite vrsto",
+    "typeBug": "Prijava hrošča",
+    "typeSuggestion": "Predlog funkcije",
+    "typeOther": "Drugo",
+    "subject": "Zadeva",
+    "subjectPlaceholder": "Kratek povzetek vaših povratnih informacij",
+    "message": "Sporočilo",
+    "messagePlaceholder": "Navedite podrobne informacije o svojih povratnih informacijah ...",
+    "email": "E-pošta (neobvezno)",
+    "emailPlaceholder": "vase@eposta.si",
+    "emailDescription": "Navedite e-pošto, če želite prejeti odgovor",
+    "submit": "Pošlji povratne informacije",
+    "thankYou": "Hvala!",
+    "submittedMessage": "Vaše povratne informacije so bile uspešno poslane. Cenimo vaš prispevek in ga bomo kmalu pregledali.",
+    "submitAnother": "Pošlji nove povratne informacije"
+  },
+  "alerts": {
+    "alert": "opozorilo",
+    "alerts": "opozorila",
+    "activeAlerts": "Aktivna opozorila",
+    "activeAlert": "Aktivno opozorilo"
+  },
+  "calendar": {
+    "title": "Koledar",
+    "both": "Oboje",
+    "inspections": "Pregledi",
+    "actions": "Ukrepi",
+    "today": "Danes",
+    "noEventsScheduled": "Ni načrtovanih dogodkov",
+    "sevenDayViewTitle": "{{date}} – 7-dnevni pogled",
+    "previousWeek": "Prejšnji teden",
+    "previousDay": "Prejšnji dan",
+    "nextDay": "Naslednji dan",
+    "nextWeek": "Naslednji teden",
+    "dayHeader": "{{date}}",
+    "noEvents": "Ni dogodkov",
+    "overdueInspections": "Zapadli pregledi ({{overdueInspectionsSize}})",
+    "viewInspection": "Poglej pregled"
+  },
+  "quickAdd": {
+    "title": "Dodaj vnos",
+    "quickCheck": "Hitri pregled",
+    "inspection": "Pregled",
+    "action": "Ukrep",
+    "photo": "Fotografija",
+    "document": "Dokument"
+  },
+  "photo": {
+    "title": "Dodaj fotografijo",
+    "description": "Naložite fotografijo z neobveznim napisom.",
+    "caption": "Napis",
+    "optional": "neobvezno",
+    "captionPlaceholder": "Opišite fotografijo ...",
+    "selectPhoto": "Izberite fotografijo",
+    "upload": "Naloži fotografijo",
+    "uploading": "Nalaganje ...",
+    "uploadSuccess": "Fotografija naložena",
+    "uploadFailed": "Nalaganje fotografije ni uspelo",
+    "replace": "Zamenjaj",
+    "featurePhoto": "Naslovna fotografija",
+    "deleteTitle": "Izbrišem fotografijo?",
+    "deleteDescription": "Tega dejanja ni mogoče razveljaviti. S tem bo fotografija trajno izbrisana.",
+    "deleted": "Fotografija izbrisana",
+    "deleteFailed": "Brisanje fotografije ni uspelo"
+  },
+  "document": {
+    "title": "Dodaj dokument",
+    "description": "Naložite PDF ali optično prebran dokument.",
+    "titleField": "Naslov",
+    "titlePlaceholder": "Naslov dokumenta",
+    "notes": "Beležke",
+    "optional": "neobvezno",
+    "notesPlaceholder": "Dodajte beležke o tem dokumentu ...",
+    "selectFile": "Izberite datoteko (PDF, JPEG, PNG)",
+    "upload": "Naloži dokument",
+    "uploading": "Nalaganje ...",
+    "uploadSuccess": "Dokument naložen",
+    "uploadFailed": "Nalaganje dokumenta ni uspelo",
+    "deleteTitle": "Izbrišem dokument?",
+    "deleteDescription": "Tega dejanja ni mogoče razveljaviti. S tem bo dokument trajno izbrisan.",
+    "deleted": "Dokument izbrisan",
+    "deleteFailed": "Brisanje dokumenta ni uspelo"
+  },
+  "files": {
+    "title": "Datoteke",
+    "allFiles": "Vse datoteke",
+    "photos": "Fotografije",
+    "documents": "Dokumenti",
+    "audio": "Zvok",
+    "search": "Išči datoteke ...",
+    "filterByHive": "Filtriraj po panju",
+    "filterByType": "Filtriraj po vrsti",
+    "noFiles": "Naložena ni še nobena datoteka",
+    "name": "Ime",
+    "type": "Vrsta",
+    "hive": "Panj",
+    "size": "Velikost",
+    "status": "Status",
+    "download": "Prenesi",
+    "delete": "Izbriši",
+    "sendToAi": "Pošlji AI",
+    "sendAllPending": "Pošlji vse AI ({{count}})",
+    "sentToAi": "AI zagnan za {{count}} posnetkov",
+    "audioStatus": {
+      "notTranscribed": "Ni prepisano",
+      "queued": "V čakalni vrsti",
+      "transcribing": "Prepisovanje …",
+      "failed": "Prepis ni uspel",
+      "transcribed": "Prepisano",
+      "analyzing": "Analiziranje …",
+      "analysisFailed": "Analiza ni uspela",
+      "ready": "AI predlogi pripravljeni"
+    },
+    "audioDeleteTitle": "Izbrišem zvočni posnetek?",
+    "audioDeleted": "Zvočni posnetek izbrisan",
+    "apiary": "Čebelnjak"
+  },
+  "quickCheck": {
+    "title": "Hitri pregled",
+    "description": "Tega dejanja ni mogoče razveljaviti. S tem boste trajno izbrisali ta hitri pregled in njegove fotografije.",
+    "deleteTitle": "Izbrišem hitri pregled?",
+    "deleteDescription": "Tega dejanja ni mogoče razveljaviti. S tem boste trajno izbrisali ta hitri pregled in njegove fotografije.",
+    "deleted": "Hitri pregled izbrisan",
+    "deleteFailed": "Brisanje hitrega pregleda ni uspelo"
+  },
+  "timeline": {
+    "recentActivity": "Nedavna aktivnost",
+    "noActivity": "Zabeležena ni še nobena aktivnost",
+    "noActivityApiary": "V tem čebelnjaku še ni zabeležene aktivnosti",
+    "noMatchingFilters": "Noben dogodek ne ustreza izbranim filtrom",
+    "allEvents": "Vsi dogodki",
+    "inspections": "Pregledi",
+    "feeding": "Krmljenje",
+    "treatments": "Zdravljenja",
+    "harvests": "Pridelki",
+    "notes": "Beležke",
+    "quickChecks": "Hitri pregledi",
+    "other": "Drugo",
+    "allTime": "Vse obdobje",
+    "lastMonth": "Zadnji mesec",
+    "last3Months": "Zadnji 3 meseci",
+    "last6Months": "Zadnjih 6 mesecev",
+    "lastYear": "Zadnje leto",
+    "allHives": "Vsi panji",
+    "clearFilters": "Počisti filtre",
+    "showMore": "Pokaži še {{count}}",
+    "showLess": "Pokaži manj",
+    "notesAvailable": "Beležke na voljo",
+    "boxConfiguration": "Konfiguracija nakladov",
+    "maintenance": "Vzdrževanje",
+    "inspection": "Pregled",
+    "overdue": "Zapadel",
+    "scheduled": "Načrtovan",
+    "cancelled": "Preklican",
+    "doInspection": "Opravi pregled",
+    "reschedule": "Prestavi",
+    "inspectHive": "Preglej {{hiveName}}",
+    "strength": "Moč",
+    "honey": "Med",
+    "queenSeen": "Matica opažena",
+    "queenNotSeen": "Matica ni opažena",
+    "photos": "Fotografije",
+    "documents": "Dokumenti",
+    "fromInspection": "Iz pregleda",
+    "today": "Danes",
+    "yesterday": "Včeraj",
+    "filterEventType": "Vrsta",
+    "filterDateRange": "Obdobje",
+    "filterHive": "Panj"
+  },
+  "syrupCalculator": {
+    "title": "Kalkulator sirupa",
+    "description": "Izračun količin sladkorja in vode za krmni sirup",
+    "intro": "Brezplačen kalkulator sladkornega sirupa za čebelarje. Uporabite 1:1 (redek) sirup za spomladansko spodbujanje, 3:2 (srednji) kot univerzalno krmo in 2:1 (gost) za jesensko krmljenje in gradnjo zimskih zalog. Izberite velikost posode in razmerje — točni teži sladkorja in vode se izračunata iz izpodriva saharoze, tako da končni sirup napolni vašo posodo.",
+    "units": "Enote",
+    "unitsDescription": "Preklop med metričnimi in imperialnimi merskimi enotami",
+    "metric": "Metrične (L, g, kg)",
+    "imperial": "Imperialne (qt, gal, lb)",
+    "ratio": "Razmerje sirupa",
+    "ratioDescription": "Razmerje sladkorja in vode (po teži proti prostornini)",
+    "thin": "Redek (1:1)",
+    "medium": "Srednji (3:2)",
+    "thick": "Gost (2:1)",
+    "containerSize": "Velikost posode",
+    "containerDescription": "Skupna prostornina sirupa za pripravo",
+    "customSize": "Po meri",
+    "results": "Rezultati",
+    "water": "Voda",
+    "sugar": "Sladkor",
+    "totalWeight": "Skupna teža",
+    "instructions": "Navodila",
+    "step1": "Odmerite {{water}} vode",
+    "step2": "Vodo segrejte, da postane mlačna (ne vre)",
+    "step3": "Dodajte {{sugar}} belega kristalnega sladkorja",
+    "step4": "Mešajte, dokler se sladkor popolnoma ne raztopi",
+    "step5": "Pred krmljenjem pustite sirup ohladiti na sobno temperaturo",
+    "tips": "Nasveti in vodič uporabe",
+    "tip1Title": "Redek sirup (1:1)",
+    "tip1Description": "Najboljši za spomladansko krmljenje, da spodbudite zaleganje in posnemete nektarjevo pašo. Uporabite, ko čebele potrebujejo spodbudo za razvoj.",
+    "tip2Title": "Srednji sirup (3:2)",
+    "tip2Description": "Dober univerzalni sirup. Deluje tako za spomladansko spodbujanje kot za lažje jesensko krmljenje.",
+    "tip3Title": "Gost sirup (2:1)",
+    "tip3Description": "Najboljši za jesensko krmljenje in gradnjo zimskih zalog. Čebele ga lahko hitro uskladiščijo z manj izhlapevanja odvečne vode.",
+    "tip4Title": "Splošni nasveti",
+    "tip4Description": "Vedno uporabljajte beli kristalni sladkor — nikoli rjavega, melase ali umetnih sladil. Sirupa ne kuhajte, saj lahko nastane HMF (hidroksimetilfurfural), ki je čebelam strupen. Krmite zvečer, da zmanjšate rop.",
+    "faq": {
+      "title": "Pogosta vprašanja",
+      "items": [
+        {
+          "question": "Kakšno razmerje sladkorja in vode naj uporabim za krmljenje čebel?",
+          "answer": "Spomladi uporabite sirup 1:1 (enaka dela sladkorja in vode po teži) za spodbujanje zalege, 3:2 kot univerzalno krmo in 2:1 (dva dela sladkorja, en del vode) jeseni za gradnjo zimskih zalog. Gost sirup čebele lažje predelajo v pokrite zaloge; redek posnema nektarjevo pašo."
+        },
+        {
+          "question": "Kdaj naj čebele krmim z redkim (1:1) sirupom?",
+          "answer": "Krmite s sirupom 1:1 spomladi ali kadar koli želite spodbuditi zaleganje. Njegova vsebnost vode posnema naravno nektarjevo pašo, kar matico spodbudi k zaleganju, družino pa k razvoju."
+        },
+        {
+          "question": "Kdaj naj čebele krmim z gostim (2:1) sirupom?",
+          "answer": "Krmite s sirupom 2:1 v poznem poletju in jeseni, da pomagate družinam zgraditi zimske zaloge. Nižja vsebnost vode pomeni, da čebele porabijo manj energije za izhlapevanje pred poklopitevijo."
+        },
+        {
+          "question": "Ali lahko za čebelji sirup uporabim rjavi sladkor, med ali melaso?",
+          "answer": "Ne. Uporabljajte samo beli kristalni trsni ali sladkorni sladkor. Rjavi sladkor, melasa in nerafinirana sladila vsebujejo spojine, ki pri čebelah povzročajo dizenterijo. Med neznanega izvora lahko prenaša bolezni."
+        },
+        {
+          "question": "Ali naj čebelji sirup zavrem?",
+          "answer": "Ne. Vodo segrejte le toliko, da se sladkor raztopi, ne kuhajte je. Kuhanje sladkornega sirupa ustvarja hidroksimetilfurfural (HMF), ki je čebelam strupen."
+        },
+        {
+          "question": "Koliko sladkorja potrebujem za liter sirupa 1:1?",
+          "answer": "Za liter končnega sirupa 1:1 potrebujete približno 715 g vode in 715 g belega kristalnega sladkorja. Točni količini sta odvisni od razmerja in končne prostornine — ta kalkulator ju izračuna na podlagi izpodriva saharoze."
+        }
+      ]
+    }
+  },
+  "liebefelder": {
+    "title": "Liebefeldska metoda ocenjevanja",
+    "description": "Ocena moči družine",
+    "intro": "Liebefeldska metoda oceni moč družine z ocenjevanjem površine satja v osminkah (koraki 1/8): koliko je pokrito s čebelami, zalego, pelodom in krmo. Ocenitvene vrednosti in sezonska priporočila temeljijo na zapiskih za oceno populacije dr. Pie Aumeier iz Nemčije.",
+    "source": "Vir: dr. Pia Aumeier, Nemčija",
+    "frameType": {
+      "title": "Vrsta sata",
+      "description": "Izberite format sata, ki ga uporabljate v panju — določa ocenitvene vrednosti na osminko.",
+      "custom": "Po meri",
+      "customDescription": "Vnesite lastne ocenitvene vrednosti za osminko satne ploskve."
+    },
+    "counts": {
+      "title": "Štetje — skupne osminke",
+      "description": "Seštejte osminke satne površine čez vse satne ploskve za vsako kategorijo. Ena osminka drži približno {{bees}} čebel ({{frame}}). Zalega in zaloge so neobvezne — potrebni sta za oceno delitve in krme."
+    },
+    "fields": {
+      "bees": "Čebele",
+      "beesHint": "satna površina, pokrita s plastjo čebel, obe strani šteti",
+      "cappedWorkerBrood": "Pokrita delavska zalega",
+      "cappedWorkerBroodHint": "izvali se v 0–12 dneh",
+      "openWorkerBrood": "Odprta delavska zalega",
+      "openWorkerBroodHint": "izvali se v 13–21 dneh",
+      "droneBrood": "Trotovska zalega",
+      "droneBroodHint": "pokrita 0–14 d, odprta 15–24 d",
+      "pollen": "Pelod",
+      "pollenHint": "shranjen čebelji kruh",
+      "feed": "Krma / med",
+      "feedHint": "pokrite ali odprte zaloge"
+    },
+    "result": {
+      "title": "Rezultat",
+      "empty": "Zgoraj vnesite osminke in prikazala se bo ocena.",
+      "bees": "Čebele",
+      "wabengassen": "Voskove ulice (Wabengassen)",
+      "wabengassenNote": "≈ 1.000 čebel vsaka",
+      "strengthField": "Polje moči",
+      "strengthFieldNote": "za pregled",
+      "cappedBrood": "Pokrita delavska zalega",
+      "openBrood": "Odprta delavska zalega",
+      "droneBrood": "Trotovska zalega",
+      "cells": "celic",
+      "pollen": "Pelod",
+      "feed": "Krma / med",
+      "emergeNote": "V naslednjih 12 dneh se iz pokrite delavske zalege izvali ~{{cells}} čebel — približno {{gassen}} dodatnih voskovih ulic. Panj pravočasno razširite."
+    },
+    "evaluation": {
+      "title": "Sezonska ocena",
+      "description": "Primerjajte izmerjeno družino s sezonskimi merili dr. Pie Aumeier, Nemčija.",
+      "selectPrompt": "Izberite kontekst za oceno družine.",
+      "enterCountsFirst": "Najprej zgoraj vnesite štetja.",
+      "contexts": {
+        "split_mid_may": "Delitev do sredine maja",
+        "split_end_may": "Delitev do konca maja",
+        "split_mid_june": "Delitev do sredine junija",
+        "winter_aug": "Ozimitev, sredina avgusta",
+        "winter_oct": "Ozimitev, konec oktobra"
+      },
+      "checks": {
+        "minBees": "≥ {{min}} čebel (izmerjeno: ~{{measured}})",
+        "minCappedBrood": "≥ {{min}} celic pokrite delavske zalege (izmerjeno: ~{{measured}})",
+        "minOpenBrood": "≥ {{min}} celic odprte delavske zalege (izmerjeno: ~{{measured}})"
+      },
+      "splitNote": "Brezmatični paritveni roj (Begattungsableger), ustvarjen do sredine maja, potrebuje le ≥ 1.000 čebel in brez zalege.",
+      "winterAug": {
+        "check": "> 15.000 čebel ne glede na zalego (izmerjeno: ~{{measured}})",
+        "note": "Velja za uveljavljene družine sredi avgusta: tako močna družina sega čez več kot 5 voskovih ulic do podnice. Šibkejše, krčeče se družine in letošnje delitve se ocenjujejo konec oktobra."
+      },
+      "winterOct": {
+        "ready": "Pripravljena na zimo — ~{{bees}} čebel na {{gassen}} voskovih ulicah (5 ali več zasedenih ulic; več kot 5.000 čebel).",
+        "minimal": "Minimalna zimska moč — ~{{bees}} čebel na 4 voskovih ulicah (okoli 5.000 čebel).",
+        "atRisk": "Močno ogrožena za zimski izpad — ~{{bees}} čebel na {{gassen}} voskovih ulicah (3 ali manj zasedenih ulic; pod 5.000 čebel). Združite ali razpustite.",
+        "note": "Ocenite čim pozneje, po hladni noči (≈ 5 °C), s štetjem voskovih ulic, ki jih zasedajo čebele."
+      }
+    },
+    "reference": {
+      "title": "Osminka satne ploskve {{frame}} vsebuje …",
+      "bees": "Čebele",
+      "drones": "Troti",
+      "workerBroodCells": "Delavska zalega (pokrita/odprta)",
+      "droneBroodCells": "Trotovska zalega (pokrita/odprta)",
+      "pollenG": "Pelod",
+      "feedG": "Krma / med",
+      "cellsValue": "{{value}} celic"
+    },
+    "tips": {
+      "coverage": {
+        "title": "Kako oceniti pokritost",
+        "pullFrames": {
+          "title": "Vzemite ven vsak sat",
+          "description": "Vzemite ven en sat za drugim. Poglejte naravnost v vsako ploskev in v osminkah ocenite, koliko satne površine pokrivajo čebele, zalega, pelod ali krma."
+        },
+        "bothSides": {
+          "title": "Štejte obe strani",
+          "description": "Vsak sat ima dve ploskvi. Sat, popolnoma pokrit s čebelami na obeh straneh, doda skupaj 16 osmink."
+        },
+        "roundDown": {
+          "title": "V dvomu zaokrožite navzdol",
+          "description": "Podcenjevanje je varnejše od precenjevanja — zaokrožite na najbližjo nižjo osminko."
+        }
+      },
+      "emergence": {
+        "title": "Kdaj se zalega izvali?",
+        "capped": {
+          "title": "Pokrita delavska zalega",
+          "description": "Vse trenutno pokrite delavske celice se izvalijo v 0–12 dneh."
+        },
+        "open": {
+          "title": "Odprta delavska zalega",
+          "description": "Odprte delavske celice se izvalijo v 13–21 dneh."
+        },
+        "drone": {
+          "title": "Trotovska zalega",
+          "description": "Pokrite trotovske celice se izvalijo v 0–14 dneh, odprte v 15–24 dneh."
+        },
+        "ruleOfThumb": {
+          "title": "Palec pravilo",
+          "description": "Približno 1.000 izvaljenih čebel napolni eno voskovo ulico — panj razširite, preden ga družina preraste."
+        }
+      },
+      "feed": {
+        "title": "Potrebne zaloge krme",
+        "yearRound": {
+          "title": "Vse leto",
+          "description": "Vedno vsaj 1 kg krme — tako za proizvodne družine kot za delitve."
+        },
+        "warmRegion": {
+          "title": "Ozimitev, toplejša regija (npr. NRW)",
+          "description": "Proizvodne družine: 13 kg čistega sladkorja = 18 kg / 13 L sirupa ≈ 8 polnih Zander satov. Delitve: 10 kg sladkorja = 14 kg / 10 L sirupa ≈ 6 polnih Zander satov."
+        },
+        "coolRegion": {
+          "title": "Ozimitev, hladnejša regija (npr. BW, Bavarska)",
+          "description": "Proizvodne družine: 20 kg čistega sladkorja = 28 kg / 20 L sirupa ≈ 12 polnih Zander satov. Delitve: 15 kg sladkorja = 21 kg / 15 L sirupa ≈ 9 polnih Zander satov."
+        },
+        "spring": {
+          "title": "Pred spomladansko pašo (feb.–mar.)",
+          "description": "V mokri, hladni zgodnji pomladi: vsaj 10 kg preostale krme."
+        }
+      },
+      "development": {
+        "title": "Razvojni časi do izvalitve",
+        "queen": {
+          "title": "Matica — 16 dni",
+          "description": "Od jajčeca (roj ali tiha zamenjava): 3 dni jajčece + 5 dni ličinka + 8 dni bubona. Nadomestni matičnjaki, začeti iz ~2 dni stare ličinke, se izvalijo že po 11 dneh. Ena matica na družino."
+        },
+        "worker": {
+          "title": "Delavka — 21 dni",
+          "description": "Iz oplojenega jajčeca: 3 dni jajčece + 6 dni ličinka + 12 dni bubona. Družina ima 5.000–40.000 delavk."
+        },
+        "drone": {
+          "title": "Trot — 24 dni",
+          "description": "Iz neoplojenega jajčeca: 3 dni jajčece + 7 dni ličinka + 14 dni bubona. Družina ima 0–1.000 trotov."
+        }
+      }
+    }
+  },
+  "broodTimeline": {
+    "title": "Časovnica razvoja zalege",
+    "description": "Raziščite razvojne stopnje matice, delavke in trota od jajčeca do odrasle čebele",
+    "intro": "Vizualizirajte razvoj zalege medovitih čebel od jajčeca do odrasle čebele. Matice se izvalijo v 16 dneh, delavke v 21, troti v 24 — razdeljeno v štiri stopnje: jajčece, ličinka, bubona in odrasla čebela. Izberite začetni datum in izračunajte dneve poklopitve ter izvalitve za načrtovanje pregledov.",
+    "beeType": "Vrsta čebele",
+    "beeTypeDescription": "Izberite kasto za prikaz njene razvojne časovnice",
+    "queen": "Matica",
+    "worker": "Delavka",
+    "drone": "Trot",
+    "compareAll": "Primerjaj vse",
+    "dateSelector": "Začetni datum",
+    "dateSelectorDescription": "Neobvezno izberite, kdaj so bila jajčeca zaležena, za prikaz koledarskih datumov na časovnici",
+    "pickDate": "Izberite datum",
+    "timeline": "Razvojna časovnica",
+    "totalDays": "Skupaj: {{days}} dni",
+    "daysUnit": "dni",
+    "stage": {
+      "egg": "Jajčece",
+      "larva": "Ličinka",
+      "pupa": "Bubona",
+      "adult": "Odrasla čebela"
+    },
+    "days": "Dnevi {{start}}–{{end}}",
+    "day": "Dan {{day}}",
+    "durationOne": "1 dan",
+    "durationOther": "{{count}} dni",
+    "queenEggDesc": "Zaleženo v matičnjak",
+    "queenLarvaDesc": "Hranjena izključno z matičnim mlečkom",
+    "queenPupaDesc": "Poklopljena, hitro se razvija",
+    "queenAdultDesc": "Se izvali, pari se v nekaj dneh",
+    "workerEggDesc": "Drobno belo jajčece pokonci v celici",
+    "workerLarvaDesc": "Hranjena z matičnim mlečkom, nato s čebeljim kruhom in medom",
+    "workerPupaDesc": "Celica poklopljena, preobrazba",
+    "workerAdultDesc": "Se izvali kot popolno oblikovana delavka",
+    "droneEggDesc": "Večje celice, neoplojena jajčeca",
+    "droneLarvaDesc": "Enako krmljenje kot delavke",
+    "dronePupaDesc": "Poklopljena, razvije se v trota",
+    "droneAdultDesc": "Se izvali kot trot",
+    "funFacts": "Zanimivosti",
+    "fact1Title": "Matica proti delavki",
+    "fact1Description": "Edina razlika med matico in delavko je prehrana. Ličinke, hranjene izključno z matičnim mlečkom, se razvijejo v matice — razvoj zaključijo v samo 16 dneh v primerjavi z 21 pri delavkah.",
+    "fact2Title": "Razvoj trota",
+    "fact2Description": "Troti se razvijajo najdlje (24 dni) in izvirajo iz neoplojenih jajčec. Nimajo očeta, imajo pa dedka!",
+    "fact3Title": "Stopnja jajčeca",
+    "fact3Description": "Vse tri kaste delijo enako 3-dnevno stopnjo jajčeca. Matica odloži vsako jajčece navpično v celico; pred izvalitvijo se postopoma nagne.",
+    "fact4Title": "Čas poklopitve",
+    "fact4Description": "Delavke poklopijo matičnjake 8. dan, delavske celice 9. dan in trotovske celice 10. dan. Opazovanje poklopljenih celic pomaga ugotoviti, kaj se razvija znotraj.",
+    "faq": {
+      "title": "Pogosta vprašanja",
+      "items": [
+        {
+          "question": "Koliko časa traja razvoj medovite čebele?",
+          "answer": "Matice se izvalijo po 16 dneh, delavke po 21 dneh, troti po 24 dneh. Vsi trije gredo skozi štiri stopnje — jajčece (3 dni), ličinka, bubona in odrasla čebela — vendar se dolžina stopenj ličinke in bubone razlikuje po kasti."
+        },
+        {
+          "question": "Kdaj so poklopljene celice delavk?",
+          "answer": "Celice delavske zalege so poklopljene 9. dan, ko ličinka sprede kokon in vstopi v stopnjo bubone. Delavke se izvalijo 21. dan."
+        },
+        {
+          "question": "Kdaj so poklopljeni matičnjaki in kdaj se matice izvalijo?",
+          "answer": "Matičnjaki so poklopljeni 8. dan, mlade matice pa se izvalijo 16. dan od zaleganja jajčeca. Matice se razvijajo najhitreje, ker so med stopnjo ličinke ves čas hranjene z matičnim mlečkom."
+        },
+        {
+          "question": "Koliko časa potrebujejo troti do izvalitve?",
+          "answer": "Troti potrebujejo 24 dni od jajčeca do izvalitve — najdlje od vseh kast. Trotovske celice so poklopljene okoli 10. dne."
+        }
+      ]
+    }
+  },
+  "reports": {
+    "title": "Poročila",
+    "selectApiary": "Izberite čebelnjak za prikaz poročil",
+    "tabs": {
+      "overview": "Pregled",
+      "charts": "Grafi",
+      "trends": "Trendi"
+    },
+    "honeyProduction": "Proizvodnja medu",
+    "feedingTotals": "Skupaj krmljenje",
+    "healthScores": "Ocene zdravja",
+    "hiveComparison": "Primerjava panjev",
+    "table": {
+      "hiveName": "Panj",
+      "honey": "Med",
+      "sugarFed": "Nakrmljen sladkor",
+      "overall": "Skupaj",
+      "population": "Moč družine",
+      "stores": "Zaloge",
+      "queen": "Matica",
+      "lastInspection": "Zadnji pregled"
+    },
+    "charts": {
+      "hiveScoreTrends": "Trendi ocen panjev"
+    },
+    "periods": {
+      "1month": "1 mesec",
+      "3months": "3 meseci",
+      "6months": "6 mesecev",
+      "ytd": "Leto do danes",
+      "1year": "1 leto",
+      "all": "Vse obdobje"
+    },
+    "filters": {
+      "period": "Obdobje"
+    },
+    "export": {
+      "title": "Izvoz",
+      "csv": "Izvozi kot CSV",
+      "pdf": "Izvozi kot PDF",
+      "success": "Poročilo uspešno izvoženo",
+      "error": "Izvoz poročila ni uspel"
+    },
+    "widget": {
+      "title": "Statistika čebelnjaka",
+      "viewReports": "Poglej poročila",
+      "apiaryDetails": "Podrobnosti čebelnjaka",
+      "noApiary": "Izberite čebelnjak za prikaz statistike"
+    }
+  },
+  "footer": {
+    "privacyPolicy": "Politika zasebnosti"
+  },
+  "bulkAdd": {
+    "title": "Paketni vnos",
+    "subtitle": "Izberite datum in panje, na katere se nanaša, sestavite ukrep, pregled ali vnos matice ter ga dodajte v čakalno vrsto.",
+    "loading": "Nalaganje panjev …",
+    "sections": {
+      "when": "Kdaj",
+      "hives": "Panji",
+      "what": "Kaj",
+      "queue": "Čakalna vrsta"
+    },
+    "tabs": {
+      "actions": "Ukrepi",
+      "inspections": "Pregledi",
+      "queens": "Matice"
+    },
+    "hives": {
+      "filterPlaceholder": "Filtriraj panje",
+      "selectAll": "Izberi vse",
+      "clearVisible": "Počisti prikazane",
+      "noMatches": "Noben panj ne ustreza »{{filter}}«"
+    },
+    "datePlaceholder": "Izberite datum",
+    "applyHint": "Uporabi za {{count}} panj dne {{date}}",
+    "applyHintPlural": "Uporabi za {{count}} panjev dne {{date}}",
+    "selectHivesHint": "Na levi izberite vsaj en panj",
+    "addToQueue": {
+      "action": "Dodaj ukrep v čakalno vrsto",
+      "inspection": "Dodaj pregled v čakalno vrsto",
+      "queen": "Dodaj matico v čakalno vrsto"
+    },
+    "queue": {
+      "clear": "Počisti",
+      "emptyTitle": "Čakalna vrsta je prazna",
+      "emptyBody": "Na levi sestavite vnos in ga dodajte v čakalno vrsto.",
+      "submit": "Pošlji",
+      "submitOne": "Pošlji {{count}} vnos",
+      "submitMany": "Pošlji {{count}} vnosov",
+      "submitting": "Pošiljanje …"
+    },
+    "kind": {
+      "action": "Ukrep",
+      "inspection": "Pregled",
+      "queen": "Matica"
+    },
+    "edit": {
+      "title": "Uredi ukrep",
+      "hive": "Panj",
+      "type": "Vrsta",
+      "date": "Datum",
+      "cancel": "Prekliči",
+      "save": "Shrani spremembe"
+    },
+    "errors": {
+      "noHives": "Izberite vsaj en panj",
+      "emptyAction": "Dodajte vsaj en ukrep za pošiljanje v čakalno vrsto",
+      "emptyInspection": "Najprej izpolnite polja pregleda",
+      "emptyQueen": "Najprej izpolnite podatke o matici",
+      "noItems": "Ni vnosov za pošiljanje"
+    },
+    "toast": {
+      "addedOne": "Dodan {{count}} vnos v čakalno vrsto",
+      "addedMany": "Dodanih {{count}} vnosov v čakalno vrsto",
+      "actionUpdated": "Ukrep posodobljen",
+      "createdOne": "Ustvarjen {{count}} vnos: {{breakdown}}",
+      "createdMany": "Ustvarjenih {{count}} vnosov: {{breakdown}}",
+      "partial": "Ustvarjenih {{success}}, neuspelih {{failed}}. Neuspeli vnosi ostanejo v čakalni vrsti.",
+      "breakdown": {
+        "actionOne": "{{count}} ukrep",
+        "actionMany": "{{count}} ukrepov",
+        "inspectionOne": "{{count}} pregled",
+        "inspectionMany": "{{count}} pregledov",
+        "queenOne": "{{count}} matica",
+        "queenMany": "{{count}} matic"
+      }
+    }
+  },
+  "pwa": {
+    "updateAvailable": "Na voljo je nova različica",
+    "reload": "Ponovno naloži"
+  },
+  "actionTypes": {
+    "feeding": "Krmljenje",
+    "treatment": "Zdravljenje",
+    "frame": "Sati",
+    "harvest": "Pridelek",
+    "boxConfiguration": "Konfiguracija nakladov",
+    "maintenance": "Vzdrževanje",
+    "note": "Beležka",
+    "other": "Drugo",
+    "weighing": "Tehtanje"
+  },
+  "table": {
+    "columns": "Stolpci",
+    "toggleColumns": "Preklopi stolpce",
+    "resetColumns": "Ponastavi na privzeto"
+  },
+  "swarmManagement": {
+    "backToOverview": "Nazaj na pregled rojenja",
+    "eyebrow": "Vodnik za nadzor rojenja",
+    "title": "Upravljanje rojenja",
+    "intro": "Brezplačni referenčni vodniki za nadzor rojenja medovitih čebel. Primerjajte preizkušene metode, kot je Demaree, načrtujte naknadne preglede in zmanjšajte tveganje izgube družin zaradi rojenja med živo pomladansko sezono.",
+    "cards": {
+      "available": "Na voljo",
+      "comingSoon": "Kmalu",
+      "placeholderCta": "Še ni na voljo",
+      "demaree": {
+        "title": "Demareejeva metoda",
+        "description": "Metoda nadzora rojenja, ki loči matico od večine zalege, zmanjša prenatrpanost in ohrani družino močno ter produktivno.",
+        "detail": "Preglejte metodo, ustvarite naknadni načrt in shranite kontrolne točke kot načrtovane preglede.",
+        "cta": "Odpri vodnik"
+      },
+      "pagden": {
+        "title": "Pagdenova delitev",
+        "description": "Klasična tehnika umetnega rojenja. Matico preselite v nov panj na prvotnem stojišču, s čimer nadzorujete rojevni nagon in ohranite moč družine.",
+        "detail": "Preglejte metodo, ustvarite naknadni načrt in shranite kontrolne točke kot načrtovane preglede.",
+        "cta": "Odpri vodnik"
+      },
+      "artificialSwarm": {
+        "title": "Umetni roj",
+        "description": "Različica, pri kateri matica ostane v matični družini. V nov panj na prvotnem stojišču preselite sat z enim matičnjakom — uporabno, kadar matice ni mogoče najti.",
+        "detail": "Preglejte metodo, ustvarite naknadni načrt in shranite kontrolne točke kot načrtovane preglede.",
+        "cta": "Odpri vodnik"
+      }
+    },
+    "aside": {
+      "title": "Izbira metode",
+      "description": "V tem razdelku primerjajte pristope k nadzoru rojenja in izberite tistega, ki ustreza vaši postavitvi panjev, delovnemu ritmu in slogu vodenja.",
+      "points": [
+        "Začnite z metodo, katere razpored naknadnih pregledov lahko v rojevni sezoni zanesljivo izpolnjujete.",
+        "Dajte prednost tehnikam, ki ustrezajo vaši želeni razporeditvi zalege, razpoložljivi opremi in temu, kako hitro in zanesljivo najdete matico.",
+        "Ko izberete metodo, odprite njen vodnik za postopni referenčni pregled in orodja za načrtovanje."
+      ],
+      "criticalTimingTitle": "Kritični čas",
+      "criticalTimingLead": "Prvi naknadni pregled je točka, kjer je čas najpomembnejši.",
+      "criticalTimingDetail": "Če se pregled matičnjakov zamakne čez priporočeno okno, so matičnjaki lahko blizu izvalitve in družina lahko hitro znova preide v rojevni način."
+    },
+    "demaree": {
+      "badge": "Referenčna metoda",
+      "title": "Demareejeva metoda",
+      "description": "Referenčni potek Demaree za močne družine pod rojevnim pritiskom, z praktičnimi termini naknadnih pregledov, vgrajenimi v načrtovalnik pregledov.",
+      "intro": "Demareejeva metoda je klasična tehnika nadzora rojenja za močne družine medovitih čebel, ki ohrani družino celoto in hkrati razreši prenatrpanost. Matica ostane pod matično rešetko na svežem satju in zalega; večina zalege se premakne nad dve medišči, s čimer se loči feromonska sled matice od plodišča. Naknadno ukrepajte okoli 7.–8., 14.–15. in 21.–22. dne, da odstranite nadomestne matičnjake, preden se izvalijo.",
+      "overviewTitle": "Pregled metode",
+      "overviewLead": "Demareejevo metodo uporabite, ko je družina močna, matica dobro zalega in želite popustiti rojevni pritisk, ne da bi proizvodno družino razbili na ločene enote.",
+      "overviewPoints": [
+        "Preden odprete panj, preberite celotno metodo, nato jo izvedite dosledno, da bodo premik zalege, vrstni red nakladov in vračanje letečih čebel podpirali isti načrt.",
+        "Zalegajočo matico obdržite pod rešetko s prostorom za nadaljnje zaleganje, večino zalege premaknite navzgor in družini dajte prostor navzgor, da se prenatrpanost ne obnovi takoj.",
+        "Ko je začetna postavitev končana, ustvarite naknadni načrt iz dejanskega datuma postavitve in opozorilne pasice razumite kot pozive k pregledu časovnika, zlasti pri pregledu matičnjakov 7.–8. dne."
+      ],
+      "prerequisitesTitle": "Predpogoji",
+      "prerequisites": [
+        "Preverite, da je panj močna družina z dovolj čebelami in zalego, ki upravičuje metodo.",
+        "Potrdite jasen rojevni pritisk, kot so prenatrpanost, napolnjeni matičnjaki ali družina, ki močno gradi v pašo.",
+        "Prepričajte se, da znate najti in zanesljivo obdržati zalegajočo matico v spodnjem plodiščnem nakladu.",
+        "Pripravite matično rešetko in vsaj dve medišči, ki ju boste naložili nad njo.",
+        "Pripravite nadomestni plodiščni naklad z izgrajenim satjem, da lahko družino preuredite, ne da bi matico pustili v tesnem.",
+        "Izberite umirjeno vremensko okno, da se družina lahko preorganizira brez dolgotrajne prekinitve."
+      ],
+      "stepsTitle": "Podrobnosti metode",
+      "stepsDescription": "Če med pregledom najdete nepričakovane matičnjake, sledite spodnjim korakom",
+      "methodDetail": {
+        "preparation": {
+          "title": "Priprava",
+          "items": [
+            {
+              "text": "Poiščite nadomestni plodiščni naklad z osnovo ali izgrajenim satjem.",
+              "children": [
+                "Uporaba osnov lahko zmanjša pridelek medu, saj čebele porabijo veliko zalog za gradnjo vošča."
+              ]
+            },
+            {
+              "text": "Umaknite plodiščni naklad z dna panja in postavite nov prazen naklad na dno."
+            }
+          ]
+        },
+        "huntTheQueen": {
+          "title": "Iskanje matice",
+          "items": [
+            {
+              "text": "Preglejte stari plodiščni naklad in poiščite matico."
+            },
+            {
+              "text": "Vzemite jo skupaj s satom, na katerem ste jo našli, in jo postavite na sredino novega naklada; odstranite morebitne matičnjake s tega sata."
+            }
+          ]
+        },
+        "broodManipulation": {
+          "title": "Manipulacija zalege",
+          "items": [
+            {
+              "text": "Če uporabljate dvojno plodišče, preuredite sate tako, da je vsa zalega v enem nakladu.",
+              "children": [
+                "Če je ne morete vse, dodajte ostanek v spodnji naklad k matici in prerazporedite prazne sate."
+              ]
+            },
+            {
+              "text": "Poskrbite, da porušite vse matičnjake.",
+              "children": [
+                "Ko je matica na varnem, lahko čebele stresete s satov, da jih zagotovo najdete vse."
+              ]
+            },
+            {
+              "text": "(Dvojno plodišče) – zdaj bi morali imeti tri plodiščne naklade.",
+              "children": [
+                "Naklad z matico, večinoma prazen, neposredno na dnu panja.",
+                "Naklad brez zalege – postavite ga nad matico, da ohranite status dvojnega plodišča.",
+                "Naklad z vso zalego – za zdaj ga odstavite na stran."
+              ]
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Ponovno sestavljanje",
+          "items": [
+            {
+              "text": "Matično rešetko položite na vrh novih plodiščnih nakladov."
+            },
+            {
+              "text": "Dodajte medišča (najmanj 2, po potrebi več)."
+            },
+            {
+              "text": "Nad medišča položite dodatno matično rešetko."
+            },
+            {
+              "text": "Naklad z vso zalego zdaj postavite na vrh medišč."
+            },
+            {
+              "text": "Namestite stropno desko in streho – delo je končano."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Zakaj metoda deluje",
+      "advantagesDescription": "Demareejeva metoda razreši rojevni pritisk s prerazporeditvijo zalege in letečih čebel, ne da bi družino razdelila na ločene delovne enote.",
+      "advantages": [
+        "Matica nadaljuje zaleganje v spodnjem nakladu, medtem ko zgornje plodiščno območje izgubi vzorec podpore, ki običajno hrani pripravo na rojenje.",
+        "Leteče čebele se še naprej vračajo na prvotno stojišče, kar pomaga ohranjati aktivnost spodaj in zmanjšuje prenatrpanost v navzgor premaknjeni zalegi.",
+        "Ker družina ostane skupaj, lahko metoda bolje ohrani medenosni zagon kot popolna umetna delitev."
+      ],
+      "followUpTitle": "Časovnik naknadnih pregledov",
+      "followUpDayHeader": "Dan",
+      "followUpTaskHeader": "Naloga",
+      "followUp": [
+        {
+          "day": "Dan 7-8",
+          "task": "Preglejte naklad z zalego nad medišči in odstranite vse začete matičnjake."
+        },
+        {
+          "day": "Dan 14-15",
+          "task": "Znova preverite pozno začete matičnjake in potrdite, da razporeditev zalege še podpira Demareejevo postavitev."
+        },
+        {
+          "day": "Dan 21-22",
+          "task": "Opravite končni pregled in odločite, ali lahko družino normalizirate ali še potrebuje pozorno spremljanje rojevnega pritiska."
+        }
+      ],
+      "prosConsTitle": "Prednosti in slabosti",
+      "prosTitle": "Prednosti",
+      "consTitle": "Slabosti",
+      "pros": [
+        "Dobro deluje kot metoda nadzora rojenja.",
+        "Uporabna je za vzgojo matičnjakov ob prisotni matici pri vzgoji matic, brez potrebe po dodatni družini.",
+        "Obnova satja je preprosta.",
+        "Dobre zaležne sate lahko izgradite v zgornjem nakladu.",
+        "Učinek je podoben umetnemu roju, a družina ostane skupaj."
+      ],
+      "cons": [
+        "Kot pri drugih metodah nadzora rojenja lahko en spregledan matičnjak v zgornjem nakladu povzroči roj.",
+        "Nastanejo velike družine, zato metoda verjetno ni primerna za začetnike, saj je treba čebele stresti z vseh satov.",
+        "Možno je težko dvigovanje.",
+        "Redni pregledi so nujni.",
+        "Osnove MORATE razumeti."
+      ],
+      "faq": {
+        "title": "Pogosta vprašanja",
+        "items": [
+          {
+            "question": "Kaj je Demareejeva metoda?",
+            "answer": "Demareejeva metoda je klasična tehnika nadzora rojenja, ki v istem panju navpično loči zalegajočo matico od večine zalege. Matica ostane pod matično rešetko na večinoma praznem satju; zalega se premakne nad dve ali več medišč, da družina ostane skupaj, medtem ko rojevni pritisk popusti."
+          },
+          {
+            "question": "Kdaj naj uporabim Demareejevo metodo?",
+            "answer": "Demareejevo metodo uporabite na močnih družinah z jasnim rojevnim pritiskom — močna prenatrpanost, napolnjeni matičnjaki ali družina, ki silovito gradi v pašo — kadar želite družino obdržati celoto, namesto da bi jo delili."
+          },
+          {
+            "question": "Kdaj naj pregledam po Demareejevi postavitvi?",
+            "answer": "Preglejte 7.–8., 14.–15. in 21.–22. dan po postavitvi. Pregled 7.–8. dne je najpomembnejši — nadomestne matičnjake, začete med rojevnim nagonom, je treba odstraniti, preden se okoli 14.–16. dne približajo izvalitvi."
+          },
+          {
+            "question": "Ali Demareejeva metoda ustvari ločen roj ali matico v jedru?",
+            "answer": "Ne. Za razliko od umetnega roja ali Pagdenove delitve Demareejeva metoda obdrži vse čebele v enem panju. Družina ostane ena delovna enota, kar pogosto bolje ohrani medenosni zagon kot delitev."
+          },
+          {
+            "question": "Katero opremo potrebujem za Demareejevo metodo?",
+            "answer": "Potrebujete matično rešetko (včasih dve), nadomestni plodiščni naklad z izgrajenim satjem ali osnovo ter vsaj dve medišči, ki ju naložite med matico in premaknjeno zalego."
+          },
+          {
+            "question": "Kakšno je največje tveganje Demareejeve metode?",
+            "answer": "Največje tveganje je spregledan matičnjak v zgornjem plodiščnem nakladu pri pregledu 7.–8. dne — družina se lahko še vedno oroji, če se nad rešetko izvali mlada matica. Stresanje čebel z vsakega zaležnega sata pomaga opaziti vse matičnjake."
+          }
+        ]
+      }
+    },
+    "planner": {
+      "title": "Načrtovalnik Demareejevih pregledov",
+      "description": "Ustvarite standardne kontrolne točke, po potrebi prilagodite datume in jih shranite kot načrtovane preglede za en panj.",
+      "hiveLabel": "Panj",
+      "hivePlaceholder": "Izberite panj",
+      "startDateLabel": "Datum Demareejeve postavitve",
+      "startDatePlaceholder": "Izberite datum postavitve",
+      "generate": "Ustvari kontrolne točke",
+      "selectedHive": "Izbrani panj",
+      "emptyState": "Izberite panj in datum postavitve, nato ustvarite naknadne kontrolne točke.",
+      "notesLabel": "Beležke pregleda",
+      "notesChecklistLabel": "Kontrolni seznam",
+      "checkpointPrefix": "Demareejeva kontrolna točka:",
+      "dayOffset_one": "Dan {{count}}",
+      "dayOffset_two": "Dan {{count}}",
+      "dayOffset_few": "Dan {{count}}",
+      "dayOffset_other": "Dan {{count}}",
+      "save": "Shrani načrtovane preglede",
+      "saving": "Shranjevanje pregledov ...",
+      "saveSuccess_one": "Shranjena {{count}} Demareejeva kontrolna točka kot načrtovan pregled.",
+      "saveSuccess_two": "Shranjeni {{count}} Demareejevi kontrolni točki kot načrtovana pregleda.",
+      "saveSuccess_few": "Shranjene {{count}} Demareejeve kontrolne točke kot načrtovani pregledi.",
+      "saveSuccess_other": "Shranjenih {{count}} Demareejevih kontrolnih točk kot načrtovani pregledi.",
+      "partialSave": "Shranjenih {{successCount}} kontrolnih točk, a {{failedCount}} ni uspelo. Pred ponovnim poskusom preglejte prihajajoče preglede.",
+      "saveError": "Demareejevega načrta ni mogoče shraniti. Nekateri pregledi morda niso bili ustvarjeni.",
+      "noHives": "V aktivnem čebelnjaku potrebujete vsaj en panj, preden lahko ustvarite Demareejev načrt.",
+      "signInTitle": "Prijavite se za načrtovanje pregledov",
+      "signInDescription": "Ustvarite brezplačen račun, da ustvarite Demareejeve kontrolne točke, jih povežete z enim od svojih panjev in shranite kot načrtovane preglede.",
+      "signInCta": "Prijava",
+      "registerCta": "Ustvari brezplačen račun",
+      "atAGlanceTitle": "Na hitro",
+      "atAGlanceDescription": "Hitri priročnik za standardne Demareejeve naknadne preglede.",
+      "checkpoints": {
+        "setup": {
+          "title": "Začetna Demareejeva postavitev",
+          "summary": "Izvedite prerazporeditev zalege, potrdite, da je zalegajoča matica pod rešetko, in pustite družini prostor navzgor.",
+          "checklist": [
+            "Potrdite, da je zalegajoča matica v spodnjem plodiščnem nakladu.",
+            "Postavite zalego in medišča v načrtovani Demareejevi vrsti.",
+            "Zabeležite vse podrobnosti, ki jih želite imeti vidne pri naslednjem pregledu."
+          ]
+        },
+        "queenCellCheck": {
+          "title": "Pregled matičnjakov",
+          "summary": "Okoli 7.–8. dne preglejte zgornje plodiščno območje in odstranite nadomestne matičnjake, preden se približajo izvalitvi.",
+          "checklist": [
+            "Preglejte vsak zaležni sat nad rešetko in poiščite matičnjake.",
+            "Odstranite matičnjake, začete med rojevnim nagonom.",
+            "Potrdite, da ima matica spodaj še prostor in aktivnost."
+          ]
+        },
+        "secondQueenCellCheck": {
+          "title": "Drugi pregled matičnjakov",
+          "summary": "Približno teden dni pozneje znova preverite, da ujamete pozno začete matičnjake in poskrbite, da plodišče ostane uravnoteženo.",
+          "checklist": [
+            "Znova poiščite novo začete ali spregledane matičnjake.",
+            "Preverite, ali je treba zalego in zaloge znova uravnotežiti.",
+            "Zabeležite, ali se družina umirja ali še vedno tišči navzgor."
+          ]
+        },
+        "colonyReview": {
+          "title": "Pregled družine",
+          "summary": "Potrdite, da je rojevni pritisk popustil, odločite, ali normalizirate skladovnico, in zabeležite naslednje korake.",
+          "checklist": [
+            "Ocenite, ali se družina lahko vrne v običajnejšo razporeditev.",
+            "Preverite prostor, vzorec zalege in vnos nektarja po vsej skladovnici.",
+            "Načrtujte morebitne dodatne preglede poleg standardnega načrta."
+          ]
+        }
+      }
+    },
+    "warnings": {
+      "bannerTitle": "Časovna opozorila",
+      "lateQueenCellCheck": {
+        "title": "Prvi pregled matičnjakov je pozneje kot 8. dne",
+        "description": "Ta zamuda povečuje tveganje, da matičnjaki dosežejo izvalitev, preden jih odstranite. Prvi naknadni pregled poskusite ohraniti v oknu 7.–8. dne."
+      },
+      "unsafeCheckpointSpacing": {
+        "title": "Razmiki med kontrolnimi točkami so videti tvegani",
+        "description": "Ti naknadni pregledi so nenavadno narazen ali pretesno zgoščeni, kar lahko zmanjša zanesljivost nadzora matičnjakov in pregleda zalege."
+      },
+      "illogicalScheduleOrder": {
+        "title": "Vrstni red kontrolnih točk ni več kronološki",
+        "description": "Ena od poznejših kontrolnih točk je načrtovana na isti dan ali prej kot zgodnejši obisk. Pred shranjevanjem načrta preuredite datume."
+      }
+    }
+  }
+}
