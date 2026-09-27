@@ -1330,6 +1330,480 @@
           "description": "Ena od poznejših kontrolnih točk je načrtovana na isti dan ali prej kot zgodnejši obisk. Pred shranjevanjem načrta preuredite datume."
         }
       }
+    },
+    "artificialSwarm": {
+      "badge": "Referenčna metoda",
+      "title": "Umetni roj",
+      "description": "Metoda nadzora rojenja, pri kateri matica ostane v matičnem panju, medtem ko na prvotnem stojišču nastane nova družina s satom, ki vsebuje matičnjak.",
+      "intro": "Metoda umetnega roja je praktična tehnika nadzora rojenja za primer, ko matice ni mogoče najti ali je ne želite premikati. Matična družina se preseli na novo stojišče, na prvotno stojišče pa se postavi nov panj z enim satom zalege, ki vsebuje jajčeca ali obstoječ matičnjak, napolnjen z izgrajenim satjem. Leteče čebele se vrnejo na prvotno stojišče in hitro zgradijo nov panj. Naknadno ukrepajte okoli 7.–8., 14.–15. in 21.–22. dne, da upravljate matičnjake in spremljate obe družini.",
+      "overviewTitle": "Pregled metode",
+      "overviewLead": "Metodo umetnega roja uporabite, kadar želite nadzorovati rojevni pritisk brez iskanja matice ali kadar želite matico obdržati v matični družini in hkrati ustvariti novo enoto.",
+      "overviewPoints": [
+        "Matica ostane v matični družini, ki se umakne na novo lokacijo.",
+        "Nov panj se postavi na prvotno stojišče z enim satom zalege z matičnjakom, kar privablja leteče čebele.",
+        "Nova družina se gradi iz matičnjaka, medtem ko matična družina nadaljuje zaleganje — nastaneta dve produktivni enoti."
+      ],
+      "prerequisitesTitle": "Predpogoji",
+      "prerequisites": [
+        "Potrdite, da je družina močna z dovolj čebelami in zalego, ki upravičuje delitev.",
+        "Določite sat z matičnjakom (ali sat, iz katerega se bo matičnjak razvil) za premik v nov panj.",
+        "Za novo družino pripravite nadomestno dno panja, plodišče z izgrajenim satjem in streho.",
+        "Pripravite drugo lokacijo za matično družino.",
+        "Izberite umirjeno vremensko okno, da se obe družini lahko preorganizirata brez dolgotrajne prekinitve."
+      ],
+      "stepsTitle": "Podrobnosti metode",
+      "stepsDescription": "Za izvedbo umetnega roja sledite tem korakom",
+      "methodDetail": {
+        "preparation": {
+          "title": "Priprava",
+          "items": [
+            {
+              "text": "Poiščite nadomestni plodiščni naklad z izgrajenim satjem (ne z osnovo — osnova upočasni razvoj nove družine)."
+            },
+            {
+              "text": "Pripravite drugo dno panja in stojalo, postavljeno nekaj metrov stran od prvotnega mesta."
+            }
+          ]
+        },
+        "relocateQueen": {
+          "title": "Premik matične družine",
+          "items": [
+            {
+              "text": "Prvotni panj (z matico) premaknite na novo lokacijo nekaj metrov stran."
+            },
+            {
+              "text": "Preglejte zaležne sate in določite en sat z matičnjakom (ali sat, iz katerega se bo matičnjak razvil)."
+            },
+            {
+              "text": "Porušite vse druge matičnjake na zaležnih satih matične družine."
+            }
+          ]
+        },
+        "queenCells": {
+          "title": "Postavitev nove družine",
+          "items": [
+            {
+              "text": "Nov plodiščni naklad postavite na prvotno dno panja — sem se bodo vrnile leteče čebele."
+            },
+            {
+              "text": "Sat z matičnjakom premaknite na sredino novega naklada."
+            },
+            {
+              "text": "Nov naklad napolnite s sati izgrajenega satja in zagotovite zadostne zaloge."
+            }
+          ]
+        },
+        "reassembly": {
+          "title": "Ponovno sestavljanje",
+          "items": [
+            {
+              "text": "Na vrh novega panja položite matično rešetko, če želite dodati medišča za shranjevanje medu."
+            },
+            {
+              "text": "Dodajte medišča glede na sezonsko nektarjevo pašo."
+            },
+            {
+              "text": "Na oba panja namestite stropno desko in streho."
+            }
+          ]
+        }
+      },
+      "advantagesTitle": "Zakaj metoda deluje",
+      "advantagesDescription": "Umetni roj razreši rojevni pritisk z ustvarjanjem nove družine na prvotnem stojišču, medtem ko matica ostane v matični družini.",
+      "advantages": [
+        "Matice ni treba premikati, zato je metoda preprostejša, kadar jo je težko najti ali je ne želite upravljati.",
+        "Leteče čebele se vrnejo na prvotno stojišče in hitro zgradijo novo družino.",
+        "Matična družina nadaljuje zaleganje in ostane produktivna ter prispeva k pridelku medu ali gradnji za zimo."
+      ],
+      "followUpTitle": "Časovnik naknadnih pregledov",
+      "followUpDayHeader": "Dan",
+      "followUpTaskHeader": "Naloga",
+      "followUp": [
+        {
+          "day": "Dan 7-8",
+          "task": "Preglejte novo družino, potrdite, da se matičnjak razvija, in preverite morebitne dodatne matičnjake."
+        },
+        {
+          "day": "Dan 14-15",
+          "task": "Preverite poklopljene matičnjake v novi družini in potrdite, da se matična družina umirja."
+        },
+        {
+          "day": "Dan 21-22",
+          "task": "Opravite končni pregled, ocenite obe družini in odločite o naslednjih korakih sezone."
+        }
+      ],
+      "prosConsTitle": "Prednosti in slabosti",
+      "prosTitle": "Prednosti",
+      "consTitle": "Slabosti",
+      "pros": [
+        "Učinkovit nadzor rojenja brez iskanja in premikanja matice.",
+        "Leteče čebele se vrnejo na prvotno stojišče in hitro zgradijo novo družino.",
+        "Obe družini ostaneta produktivni in lahko prispevata k pridelku medu.",
+        "Preprostejša od metod, ki zahtevajo ravnanje z matico.",
+        "Primerna za povečevanje števila družin ob nadzoru rojevnega pritiska."
+      ],
+      "cons": [
+        "Zahteva določitev sata z ustreznim matičnjakom.",
+        "Zahteva nadomestno plodišče z izgrajenim satjem in drugo dno.",
+        "Nova družina je odvisna od uspešnega razvoja matičnjaka.",
+        "Redni pregledi so nujni za spremljanje razvoja matičnjakov.",
+        "Matična družina lahko še kaže rojevni pritisk, če ni skrbno vodena."
+      ],
+      "faq": {
+        "title": "Pogosta vprašanja",
+        "items": [
+          {
+            "question": "Kaj je metoda umetnega roja?",
+            "answer": "Metoda umetnega roja je tehnika nadzora rojenja, pri kateri matica ostane v matični družini (preseljeni na novo lokacijo), na prvotno stojišče pa se postavi nov panj z enim satom, ki vsebuje matičnjak. Leteče čebele se vrnejo v nov panj in ga zgradijo iz matičnjaka."
+          },
+          {
+            "question": "Kdaj naj uporabim metodo umetnega roja?",
+            "answer": "Metodo umetnega roja uporabite, kadar želite nadzorovati rojevni pritisk, a matice ne morete najti ali je ne želite premikati. Dobro deluje, kadar imate nadomestno opremo in znate določiti ustrezen matičnjak."
+          },
+          {
+            "question": "Kateri sat naj premaknem v nov panj?",
+            "answer": "V nov panj premaknite en sat zalege z matičnjakom (ali sat, iz katerega se bo matičnjak razvil). Sat naj ima zadostne zaloge in naj bo postavljen na sredino novega naklada, da se matičnjak pravilno razvije."
+          },
+          {
+            "question": "Koliko časa traja, da nova matica začne zalegati?",
+            "answer": "Matica se iz matičnjaka izvali okoli 16. dne, nova matica pa potrebuje 1–2 tedna za parjenje in začetek zaleganja. Nova družina običajno znova zalega do 21.–28. dne."
+          }
+        ]
+      },
+      "planner": {
+        "title": "Načrtovalnik pregledov umetnega roja",
+        "description": "Ustvarite standardne kontrolne točke, po potrebi prilagodite datume in jih shranite kot načrtovane preglede za en panj.",
+        "selectHiveLabel": "Panj",
+        "selectHivePlaceholder": "Izberite panj",
+        "startDateLabel": "Datum umetnega roja",
+        "startDatePlaceholder": "Izberite datum roja",
+        "generateButton": "Ustvari kontrolne točke",
+        "saveButton": "Shrani načrtovane preglede",
+        "checkpointPrefix": "Kontrolna točka umetnega roja:",
+        "notesChecklistLabel": "Kontrolni seznam",
+        "savedSuccess": "Shranjena {{count}} kontrolna točka umetnega roja kot načrtovan pregled.",
+        "savedPartial": "Shranjenih {{successCount}} kontrolnih točk, a {{failedCount}} ni uspelo. Pred ponovnim poskusom preglejte prihajajoče preglede.",
+        "savedError": "Načrta umetnega roja ni mogoče shraniti. Nekateri pregledi morda niso bili ustvarjeni.",
+        "noHivesMessage": "V aktivnem čebelnjaku potrebujete vsaj en panj, preden lahko ustvarite načrt umetnega roja.",
+        "checkpoints": {
+          "setup": {
+            "title": "Začetna postavitev umetnega roja",
+            "summary": "Matično družino umaknite na stran, nov panj postavite na prvotno stojišče s satom, ki vsebuje matičnjak, in porušite druge matičnjake.",
+            "checklist": [
+              "Matično družino z matico premaknite na novo lokacijo.",
+              "Določite in premaknite en sat z matičnjakom v nov panj na prvotnem stojišču.",
+              "Porušite vse druge matičnjake na zaležnih satih matične družine."
+            ]
+          },
+          "queenCellCheck": {
+            "title": "Pregled matičnjakov",
+            "summary": "Okoli 7.–8. dne preglejte novo družino, potrdite, da se matičnjak razvija, in preverite morebitne dodatne matičnjake.",
+            "checklist": [
+              "Preglejte novo družino in potrdite, da se matičnjak razvija.",
+              "Preverite morebitne dodatne začete matičnjake.",
+              "Potrdite, da ima nova družina zadostne zaloge in prostor."
+            ]
+          },
+          "secondQueenCellCheck": {
+            "title": "Drugi pregled matičnjakov",
+            "summary": "Približno teden dni pozneje znova preverite, da je matičnjak poklopljen, in spremljajte matično družino.",
+            "checklist": [
+              "Potrdite, da je matičnjak poklopljen in se normalno razvija.",
+              "Preverite morebitne nove matičnjake v matični družini.",
+              "Ocenite prostor in zaloge v obeh družinah."
+            ]
+          },
+          "colonyReview": {
+            "title": "Pregled družin",
+            "summary": "Ocenite obe družini, potrdite, da se nova matica izvaljuje ali zalega, in odločite o naslednjih korakih sezone.",
+            "checklist": [
+              "Preverite izvalitev matice ali vzorec zaleganja v novi družini.",
+              "Potrdite, da se matična družina umirja in normalno zalega.",
+              "Ocenite prostor, vzorec zalege in vnos nektarja v obeh družinah."
+            ]
+          }
+        }
+      }
+    },
+    "cushmanCredit": {
+      "text": "Referenčne metode so povzete po čebelarski spletni strani Davea Cushmana.",
+      "linkLabel": "Čebelarska spletna stran Davea Cushmana"
+    }
+  },
+  "varroaManagement": {
+    "eyebrow": "Brezplačno orodje",
+    "title": "Načrt upravljanja varoj",
+    "intro": "Celosezonski razpored zatiranja varoj za proizvodne družine (Wirtschaftsvölker) in jedrne družine (Ableger), zasnovan na preizkušenem konceptu dr. Pie Aumeier, dr. Gerharda Liebiga in dr. Otta Boeckinga. Ključno pravilo: nikoli ne zdravite po fiksnem razporedu — najprej izmerite naravni osip varoj in zdravite šele, ko je presežen prag.",
+    "columns": {
+      "production": {
+        "title": "Proizvodna družina",
+        "subtitle": "Wirtschaftsvolk (vklj. stresen roj)"
+      },
+      "nucleus": {
+        "title": "Jedrna družina",
+        "subtitle": "Ableger (mlada družina)"
+      }
+    },
+    "treatments": {
+      "biotech": "Biotehnično",
+      "lactic": "Mlečna kislina",
+      "formic": "Mravljična kislina",
+      "oxalic": "Oksalna kislina"
+    },
+    "legend": {
+      "title": "Legenda:",
+      "threshold": "rdeč okvir = zdravite šele nad navedenim naravnim osipom varoj na dan"
+    },
+    "timeline": {
+      "springSummer": {
+        "time": "April – julij",
+        "production": {
+          "badge": "3–4×",
+          "title": "Izrezovanje trotovske zalege",
+          "items": [
+            "Ob češnjevem cvetu razširite vsako družino z matično rešetko in mediščem ter obesite prazen trotovski sat v zgornje plodišče med skrajni sat in izgrajene sate.",
+            "Sat izrežite najprej po 14 in najpozneje po 24 dneh — trotom nikoli ne dovolite izvalitve. Ponavljajte čim pogosteje od aprila do julija."
+          ]
+        },
+        "nucleus": {
+          "badge": "1×",
+          "title": "Škropljenje z mlečno kislino",
+          "items": [
+            "V brezzalegni fazi takoj po sestavi jedra poškropite čebele na vseh satih (obe strani, približno 3 brizgi na stran) s 15-% mlečno kislino.",
+            "Ob močnem napadu varoj zdravljenje ponovite čez nekaj dni."
+          ],
+          "note": "Nosite rokavice, dolga oblačila in zaščitna očala. Poškropljenih družin istega leta ne smete uporabiti za pridelavo medu."
+        }
+      },
+      "endOfJuly": {
+        "time": "Konec julija",
+        "production": {
+          "monitor": "Po zadnjem točenju medu: vstavite lepilno ploščo za točno 3 dni in preštejte naravni osip varoj.",
+          "threshold": {
+            "condition": "Naravni osip nad 10 varoj na dan:",
+            "action": "1× nujno zdravljenje"
+          },
+          "note": "Potrebno zelo redko. Pod pragom ne zdravite — prizanesite zalegi in čebelam."
+        },
+        "nucleus": {
+          "monitor": "3-dnevno štetje osipa.",
+          "threshold": {
+            "condition": "Naravni osip nad 5 varoj na dan:",
+            "action": "1× nujno zdravljenje"
+          },
+          "note": "Potrebno zelo redko. Pod pragom ne zdravite."
+        }
+      },
+      "lateAugust": {
+        "time": "Druga polovica avgusta",
+        "production": {
+          "title": "Začetek poznopoletne nege",
+          "items": [
+            "Zgoščite družino z odstranitvijo spodnjega plodiščnega naklada (higiena satja).",
+            "1× zdravljenje z mravljično kislino.",
+            "Nato nakrmite zimske zaloge v enem velikem obroku."
+          ],
+          "note": "Alternativa: družino naredite brezzalegno z »deli in zdrav« ter namesto mravljične uporabite oksalno kislino — glejte podroben vodnik spodaj."
+        },
+        "nucleus": {
+          "title": "Brez zdravljenja",
+          "items": [
+            "Preprosto nadaljujte s krmljenjem v manjših obrokih in pustite, da se družina razvija in izgrajuje sate."
+          ]
+        }
+      },
+      "september": {
+        "time": "Zgodaj – sredina septembra",
+        "production": {
+          "monitor": "Po končanem krmljenju: 3-dnevno štetje osipa.",
+          "threshold": {
+            "condition": "Naravni osip nad 5 varoj na dan:",
+            "action": "1× zdravljenje"
+          },
+          "note": "Pod pragom nadaljnje zdravljenje ni potrebno."
+        },
+        "nucleus": {
+          "monitor": "3-dnevno štetje osipa.",
+          "threshold": {
+            "condition": "Naravni osip nad 1varojo na dan:",
+            "action": "1× zdravljenje"
+          },
+          "note": "Zimsko krmljenje sledi po zdravljenju."
+        }
+      },
+      "novemberDecember": {
+        "time": "Konec nov. – sredina dec.",
+        "production": {
+          "monitor": "V brezzalegnem zimskem obdobju: 3-dnevno štetje osipa.",
+          "threshold": {
+            "condition": "Naravni osip nad 1 varojo na dan:",
+            "action": "1× preostalo odvarovanje"
+          },
+          "note": "Nakapajte 30–50 ml 3,5-% raztopine oksalne kisline na čebele v zasedenih ulicah. Pod pragom zdravljenje ni potrebno."
+        },
+        "nucleus": {
+          "monitor": "V brezzalegnem zimskem obdobju: 3-dnevno štetje osipa.",
+          "threshold": {
+            "condition": "Naravni osip nad 1 varojo na dan:",
+            "action": "1× preostalo odvarovanje"
+          },
+          "note": "Nakapajte 30–50 ml 3,5-% raztopine oksalne kisline. Pod pragom zdravljenje ni potrebno."
+        }
+      }
+    },
+    "divideAndTreat": {
+      "title": "Deli in zdrav (Teilen und Behandeln)",
+      "summary": "Vam je mravljična kislina že presedla? Deli in zdrav naredi proizvodno družino brezzalegno po zadnjem točenju medu, tako da eno samo, od vremena neodvisno zdravljenje z oksalno ali mlečno kislino zadane vsako varjo. Tukaj je metoda flightling in broodling, korak za korakom.",
+      "intro": {
+        "0": "Konec julija močna proizvodna družina drži do 30.000 čebel in 30.000 zaleženih celic. Več zalege kot je, težje je doseber rezultat zdravljenja z mravljično kislino brez škode na zalegi — zlasti v hladnem, vlažnem vremenu. Deli in zdrav, izpopolnjeno iz Cellejskega rotacijskega sistema v nemškem projektu »Betriebsweisen im Vergleich«, težavo povsem obide: družina se razdeli na dve brezzalegni polovici, ki ju je mogoče vsako zanesljivo zdraviti z oksalno ali mlečno kislino, neodvisno od vremena.",
+        "1": "Proizvodno družino razdelite na flightling z matico (leteče čebele) in broodling brez matice (zalega). Vse, kar potrebujete, je nadomestno dno, stropna deska ali folija, pokrov in kletka za matico z bombonskim ali marshmallow zapiralom. Pet obiskov čebelnjaka in približno 15 minut skupnega dela družino odvaroji v dveh potezah, omogoči popolno obnovo satja in — če želite — vzgojo mlade matice ter nove družine ob strani."
+      },
+      "concepts": {
+        "flightling": {
+          "title": "Flightling (Flugling)",
+          "subtitle": "Družina letečih čebel z matico",
+          "points": [
+            "Posneto medišče s čebelami, postavljeno na prvotno dno na prvotnem stojišču — vse leteče čebele se vrnejo vanj.",
+            "Obdrži staro matico, zaprto v kletki pod bombonskim zapiralom, dokler je delavke ne osvobodijo.",
+            "Takoj brezzalegen: vsaka varja sedi na čebelah, zato jih eno zdravljenje na dan X+2 zajame vse.",
+            "Dva dneva po delitvi drži do dve tretjini čebel; matica je že sproščena in znova zalega."
+          ]
+        },
+        "broodling": {
+          "title": "Broodling (Brutling)",
+          "subtitle": "Brezmatična zaležna družina",
+          "points": [
+            "Oba plodiščna naklada na novem dnu — bodisi neposredno nad flightlingom (ista smer leta) bodisi nekaj metrov stran.",
+            "Vsebuje vso zalego in približno 90 % varoj, a izgubi leteče čebele v korist flightlinga.",
+            "Iz najmlajših ličink vzgoji nadomestno matico; v približno 90 % primerov se uspešno pari.",
+            "Brez zalege na dan X+21, ko se izvali vsa delavska zalega — to je trenutek za zdravljenje."
+          ]
+        }
+      },
+      "stepsTitle": "Korak za korakom",
+      "steps": {
+        "preparation": {
+          "day": "Pred dnem X",
+          "title": "Priprava",
+          "items": [
+            "Med sredino julija in sredino avgusta poberite poletni med. Matično rešetko odnesite domov, pod panj pa vstavite lepilno ploščo za štetje osipa.",
+            "Če je mogoče, iztočeno medišče čez dan vrnite na panj in pustite čebelam dva do tri dni, da ga očistijo.",
+            "Preštejte naravni osip iz 2–3 dni, kolikor je bila plošča vstavljena: ne sme presegati 30 varoj na dan. Močneje napadene družine lahko propadejo pred dnem X+21 — te zdravite z mravljično kislino."
+          ]
+        },
+        "dayZero": {
+          "day": "Dan X",
+          "title": "Delitev družine",
+          "items": [
+            "Ob lepem vremenu družino razstavite. Medišče s čebelami postavite na prvotno dno družine — to postane flightling. Če sploh nima zalog, obesite vanj krmni sat (1–2 kg, običajno na robu zgornjega plodišča).",
+            "Poiščite matico v plodišču (običajno je v zgornjem nakladu), jo zaprite v kletko pod bombonskim ali marshmallow zapiralom in kletko obesite v flightling.",
+            "Matice ne najdete ali so čebele preobrambne? Namesto tega obesite v flightling en sat odprte zalege in ga čez dva dneva zamenjate za matico — v broodlingu, osiromašenem za čebele, jo je precej lažje najti. Dan X+21 takrat postane X+23.",
+            "Oba plodiščna naklada (starejše sate na dno) postavite na novo dno, bodisi neposredno nad flightling v isti smeri bodisi nekaj metrov stran — to postane broodling. Nikoli povsem zraven flightlinga, sicer leteče čebele odtekajo k večji enoti.",
+            "Zapori obeh enot zožite na približno 2 cm — broodling nekaj dni nima niti matice niti letečih čebel in je zelo izpostavljen ropu.",
+            "Na dan delitve nikoli ne krmite s tekočo krmo: to sproži rop."
+          ]
+        },
+        "dayTwo": {
+          "day": "Dan X+2",
+          "title": "Zdravljenje flightlinga",
+          "items": [
+            "Do dve tretjini čebel je zdaj v flightlingu; matica je prosta in zalega.",
+            "Zgodaj zjutraj, ko čebele tesno sedijo, nakapajte 100–200 ml 3,5-% raztopine oksalne kisline — ali še bolje: podnevi izvlecite vse sate in čebele poškropite s 3-% raztopino oksalne kisline (poleti škropljenje deluje bolje kot kapljanje).",
+            "Eno zdravljenje zadostuje: približno 90 % varoj sedi v zalegi in na dojilcah, torej v broodlingu.",
+            "Če pozne paše ne pričakujete, flightling zdaj nakrmite z do 6 litri sirupa — nato do oktobra nič več, da ne zadušite zaleganja."
+          ]
+        },
+        "dayTwentyOne": {
+          "day": "Dan X+21",
+          "title": "Zdravljenje broodlinga",
+          "items": [
+            "Vsa delavska zalega se je zdaj izvalila, broodling je brezzalegen. Nadomestna matica se je običajno že izvalila, a še ne zalega — jajčec ne iščite po nepotrebnem.",
+            "Broodling razstavite in zgoščite na en naklad: odstranite stare sate (klasično 10 starejših, spodnjih) in njihove čebele stresite v broodling ali pred njegovo čelnico. Če zaležni sati vsebujejo gozdni ali resov med, jih lahko vse poberete in družino postavite na osnove plus en krmni sat.",
+            "Zdravite natanko kot prej flightling: kapljanje ali škropljenje z oksalno kislino v brezzalegnem stanju.",
+            "Tukaj je pogosto potrebno drugo zdravljenje čez štiri dni: če v tednu po zdravljenju pade več kot 5.000 varoj, takoj znova zdravite.",
+            "Krmite po zdravljenju — ali počakajte, da je mlada matica potrjeno zalegajoča; zalegajoča matica zmanjša tveganje ropa."
+          ]
+        },
+        "dayTwentyEight": {
+          "day": "Dan X+28",
+          "title": "Preverjanje mlade matice",
+          "items": [
+            "Ali je bilo prejšnji teden vreme za paritvene polete (20 °C, sončno, mirno)? Potem ima zdaj 9 od 10 broodlingov mlado, zalegajočo matico — preverite jajčeca.",
+            "Če zalegajoče matice ni, broodling razpustite tako, da njegove čebele s satov stresete pred čelnico flightlinga."
+          ]
+        },
+        "october": {
+          "day": "Oktober",
+          "title": "Združitev — ali ločeno prezimovanje",
+          "items": [
+            "Če želite eno močno družino: broodling preprosto postavite na flightling, časopis ni potreben. Praviloma preživi matica zgornje družine — če želite zagotovo določeno matico, drugo prej odstranite. Pozna združitev da trdne zimske družine z mlado matico.",
+            "Če obdržite obe enoti, vsako nakrmite tako, da gre v zimo z vsaj 15 kg zalog (približno 15 litrov sirupa, če so sati prazni), po možnosti razdeljeno v zgodnji in pozni obrok."
+          ]
+        }
+      },
+      "advantagesTitle": "Zakaj deli in zdrav?",
+      "advantages": [
+        "Od vremena neodvisen nadzor varoj na prosto izbranem razporedu — brez skrbi pri izhlapevanju mravljične kisline.",
+        "Popolna higiena in obnova satja v istem posegu.",
+        "Med je mogoče pobrati tudi iz z medom zadrgnjenih plodišč (vključno s pozno gozdno ali resovo pašo).",
+        "Ni neželenih nadomestnih matičnjakov, ki bi jih morali iskati in rušiti, za razliko od tednov dolgega zapiranja matice.",
+        "Brez tveganja za matico zaradi tednov zapiranja: približno vsaka peta zaprta matica je po izpustu zavrnjena s strani delavk — ta metoda se temu povsem izogne.",
+        "Ob oktobrski združitvi obeh polovic običajno izjemno močne zimske družine z mladimi maticami.",
+        "Alternativno brezplačno povečanje števila družin julija/avgusta namesto združitve."
+      ],
+      "caution": {
+        "title": "Kdaj je ne uporabiti",
+        "body": "Pred delitvijo preštejte naravni osip. Nad približno 30 varoj na dan je zalega tako močno napadena, da se izvaljene čebele broodlinga hitro umirajo in broodling propade pred dnem X+21 — take družine takoj zdravite z mravljično kislino.",
+        "robbing": "In nikoli ne krmite s tekočo krmo na dan delitve — brezzalegni broodling z malo stražarkami bi takoj izropali."
+      }
+    },
+    "monitoring": {
+      "title": "Merjenje naravnega osipa varoj (Gemülldiagnose)",
+      "summary": "Vsaka odločitev o zdravljenju v tem načrtu visi na eni številki: naravni osip varoj na dan. Tukaj je postopek pravilnega merjenja.",
+      "intro": "Prezgodaj, prepogosto, prepozno — poznopoletno zdravljenje varoj redko ustreza potrebam družine. Kjer beležijo naravni osip z ustrezno lepilno ploščo, točno vedo, kje je vsaka družina, se z varojami borijo ciljno in se izognejo neprijetnim presenečenjem.",
+      "items": [
+        "Uporabite mrežasto dno (3 mm mreža), pod katero se da lepilna plošča vstaviti čebelam nedostopno.",
+        "Pred diagnostiko odstranite zožitve čelnice in mreže proti mišem.",
+        "Ploščo vstavite za točno 3 dni pred vsakim načrtovanim zdravljenjem (prvič: konec julija, pred prvim zdravljenjem).",
+        "Ploščo izvlecite in preštejte temne ter svetlo rjave varoje — po potrebi uporabite lupo.",
+        "Število delite s 3: to je naravni osip na dan, številka, na katero se nanašajo vsi pragovi v načrtu."
+      ],
+      "conversionTitle": "Kaj pomeni ena mrtva varoja na dan",
+      "conversion": [
+        "Konec julija – sredina avgusta: približno 150–250 živih varoj v družini",
+        "Zgodaj – sredina septembra: približno 250–350 živih varoj",
+        "Konec novembra: približno 500 živih varoj"
+      ],
+      "note": "Plošče ne puščajte vstavljené stalno — privablja mravlje in voščenega molja ter je potrebna le za diagnostiko (ali med zdravljenjem z mravljično kislino). Pranje čebel je bolj zamudno in nič bolj zanesljivo kot diagnostika osipa."
+    },
+    "aside": {
+      "thresholdsTitle": "Pragovi zdravljenja",
+      "thresholdsDescription": "Zdravljenje je nujno potrebno pri naravnem osipu nad ... na dan:",
+      "periodHeader": "Kdaj",
+      "productionHeader": "Proizv.",
+      "nucleusHeader": "Jedro",
+      "thresholdRows": [
+        {
+          "period": "Sredina jul. – sredina avg. (po točenju)",
+          "production": "10 /dan",
+          "nucleus": "5 /dan"
+        },
+        {
+          "period": "Zgodaj sept. – sredina sept. (po krmljenju)",
+          "production": "5 /dan",
+          "nucleus": "1 /dan"
+        },
+        {
+          "period": "Sredina nov. – zgodaj dec.",
+          "production": "1 /dan",
+          "nucleus": "1 /dan"
+        }
+      ],
+      "thresholdsNote": "Naravni osip na dan, merjen točno 3 dni z lepilno ploščo pod mrežastim dnom.",
+      "principleTitle": "Ne zdravite na slepo!",
+      "principleBody": "Dejavnik uspeha recepta: beležite naravni osip z mrežastimi dni in lepilnimi ploščami namesto zdravljenja po fiksnem koledarju. Vsako zdravljenje je usklajeno z dejanskim napadom in razvojem družine. Ta pristop, v uporabi po vsej državi od leta 2008 v 140 ljubiteljskih, poklicnih in institucionalnih čebelnjakih, je držal izgube družin pri 7 % ali manj — brez kemikalij med nektarjevo pašo in brez ostankov ter odpornosti spodbujajočih varoacidov.",
+      "sourceTitle": "Vir",
+      "sourceBody": "Koncept dr. Pie Aumeier, razvit z dr. Gerhardom Liebigom in dr. Ottom Boeckingom na Ruhrski univerzi v Bochumu v projektu »Imkerberatung NRW«; metoda deli in zdrav, kot je objavljena v Deutsches Bienen-Journal (DNB 07/2017)."
     }
   }
 }
