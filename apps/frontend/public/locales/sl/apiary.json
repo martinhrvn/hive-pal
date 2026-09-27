@@ -1,0 +1,101 @@
+{
+  "title": "Čebelnjaki",
+  "singular": "Čebelnjak",
+  "plural": "Čebelnjaki",
+  "list": {
+    "title": "Seznam čebelnjakov",
+    "caption": "Seznam vseh vaših čebelnjakov",
+    "searchPlaceholder": "Išči čebelnjake ...",
+    "noApiaries": "Ni čebelnjakov",
+    "noApiariesMatching": "Ni čebelnjakov, ki bi ustrezali »{{searchTerm}}«",
+    "clearFilters": "Počisti filtre"
+  },
+  "create": {
+    "title": "Nov čebelnjak",
+    "button": "Ustvari nov čebelnjak",
+    "success": "Čebelnjak uspešno ustvarjen"
+  },
+  "edit": {
+    "title": "Uredi čebelnjak",
+    "success": "Čebelnjak uspešno posodobljen"
+  },
+  "delete": {
+    "confirm": "Ali ste prepričani, da želite izbrisati ta čebelnjak?",
+    "success": "Čebelnjak uspešno izbrisan"
+  },
+  "detail": {
+    "notFound": "Čebelnjak ni najden",
+    "noLocationSpecified": "Lokacija ni določena",
+    "tabs": {
+      "overview": "Pregled",
+      "hives": "Panji",
+      "location": "Lokacija"
+    },
+    "apiaryInformation": "Podatki o čebelnjaku",
+    "locationMap": "Zemljevid lokacije",
+    "apiaryLocation": "Lokacija čebelnjaka",
+    "noCoordinates": "Za ta čebelnjak ni koordinat"
+  },
+  "fields": {
+    "name": "Ime",
+    "location": "Lokacija",
+    "locationDescription": "Opis lokacije",
+    "coordinates": "Koordinate",
+    "hivesCount": "Število panjev",
+    "latitude": "Zemljepisna širina",
+    "longitude": "Zemljepisna dolžina",
+    "notSpecified": "Ni določeno",
+    "noLocation": "Brez lokacije",
+    "noCoordinates": "Brez koordinat"
+  },
+  "actions": {
+    "details": "Podrobnosti",
+    "refreshData": "Osveži podatke",
+    "exportCSV": "Izvozi v CSV",
+    "print": "Natisni seznam čebelnjakov",
+    "share": "Deli seznam čebelnjakov",
+    "dataOptions": "Možnosti podatkov"
+  },
+  "messages": {
+    "exportComingSoon": "Funkcija izvoza prihaja kmalu",
+    "shareComingSoon": "Funkcija deljenja prihaja kmalu"
+  },
+  "switcher": {
+    "teams": "Ekipa",
+    "addApiary": "Dodaj čebelnjak",
+    "noApiarySelected": "Izbran ni noben čebelnjak",
+    "selectOrCreate": "Izberite ali ustvarite čebelnjak",
+    "allApiaries": "Vsi čebelnjaki",
+    "allApiariesSubtitle": "Prikaz vseh čebelnjakov"
+  },
+  "map": {
+    "selectLocation": "Izberite lokacijo čebelnjaka",
+    "selectedLocation": "Izbrana lokacija",
+    "apiaryLocation": "Lokacija čebelnjaka"
+  },
+  "calendarSubscription": {
+    "title": "Naročnina na koledar",
+    "description": "Naročite se na razpored pregledov tega čebelnjaka v svoji koledarski aplikaciji",
+    "addToCalendar": "Dodaj v koledar",
+    "regenerateUrl": "Ponovno ustvari URL",
+    "regenerated": "URL naročnine je ponovno ustvarjen",
+    "regenerateFailed": "Ponovno ustvarjanje URL naročnine ni uspelo",
+    "copied": "URL naročnine kopiran v odložišče",
+    "copyFailed": "Kopiranje v odložišče ni uspelo",
+    "readOnlyNote": "Ta URL omogoča samo branje razporeda pregledov. Ponovno ustvarjanje URL razveljavi prejšnjega.",
+    "copyUrl": "Kopiraj URL",
+    "includeScheduledInspections": "Vključi samodejno ustvarjene preglede",
+    "updateFailed": "Posodobitev nastavitev koledarja ni uspela"
+  },
+  "form": {
+    "namePlaceholder": "Ime čebelnjaka",
+    "locationPlaceholder": "Opis lokacije",
+    "inspectionType": {
+      "label": "Vrsta pregleda",
+      "placeholder": "Izberite vrsto pregleda",
+      "dataDriven": "Podatkovno voden",
+      "subjective": "Subjektiven",
+      "description": "Podatkovno voden uporablja štetje satov in samodejno ocenjevanje. Subjektiven uporablja kvalitativne ocene 0–10."
+    }
+  }
+}

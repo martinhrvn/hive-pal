@@ -1,0 +1,68 @@
+{
+  "title": "Upravljanje uporabnikov",
+  "description": "Upravljajte uporabnike in ponastavite gesla",
+  "table": {
+    "email": "E-pošta",
+    "name": "Ime",
+    "role": "Vloga",
+    "passwordChangeRequired": "Zahtevana menjava gesla",
+    "createdAt": "Ustvarjeno",
+    "actions": "Dejanja",
+    "apiaries": "Čebelnjaki",
+    "hives": "Panji",
+    "inspections": "Pregledi",
+    "lastActivity": "Zadnja aktivnost"
+  },
+  "actions": {
+    "resetPassword": "Ponastavi geslo"
+  },
+  "resetPasswordDialog": {
+    "title": "Ponastavitev gesla uporabnika",
+    "description": "Nastavite začasno geslo za {email}. Uporabnik bo moral geslo zamenjati ob naslednji prijavi.",
+    "tempPasswordLabel": "Začasno geslo",
+    "tempPasswordPlaceholder": "Vnesite začasno geslo",
+    "minCharacters": "Najmanj 6 znakov",
+    "submit": "Ponastavi geslo"
+  },
+  "messages": {
+    "loading": "Nalaganje ...",
+    "loadingUsers": "Nalaganje uporabnikov ...",
+    "noUsers": "Ni uporabnikov",
+    "resetSuccess": "Geslo uspešno ponastavljeno! Uporabnik ga bo moral zamenjati ob naslednji prijavi.",
+    "failedToFetch": "Pridobivanje podatkov ni uspelo",
+    "failedToReset": "Ponastavitev gesla ni uspela",
+    "unexpectedError": "Prišlo je do nepričakovane napake"
+  },
+  "status": {
+    "yes": "Da",
+    "no": "Ne",
+    "dash": "-"
+  },
+  "userDetail": {
+    "backToList": "Nazaj na uporabnike",
+    "summary": {
+      "totalApiaries": "Vsi čebelnjaki",
+      "totalHives": "Vsi panji",
+      "totalInspections": "Vsi pregledi",
+      "lastActivity": "Zadnja aktivnost",
+      "lastInspection": "Zadnji pregled"
+    },
+    "recentActivity": {
+      "title": "Nedavna aktivnost",
+      "period": "Zadnjih 30 dni",
+      "inspections": "Pregledi",
+      "actions": "Dejanja",
+      "byType": "Dejanja po vrsti"
+    },
+    "apiaryBreakdown": {
+      "title": "Pregled po čebelnjakih",
+      "name": "Ime čebelnjaka",
+      "location": "Lokacija",
+      "coordinates": "Koordinate",
+      "hives": "Panji",
+      "inspections": "Pregledi",
+      "lastInspection": "Zadnji pregled",
+      "noApiaries": "Za tega uporabnika ni čebelnjakov"
+    }
+  }
+}

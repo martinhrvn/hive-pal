@@ -1,0 +1,61 @@
+{
+  "title": "Dobrodošli v Hive-Pal!",
+  "subtitle": "Nastavimo vaše čebelarsko okolje",
+  "steps": {
+    "welcome": "Dobrodošli",
+    "createApiary": "Ustvari čebelnjak",
+    "addHive": "Dodaj prvi panj",
+    "complete": "Zaključek"
+  },
+  "welcome": {
+    "title": "Začnite svojo čebelarsko pot",
+    "description": "Dobrodošli v Hive-Pal, vašem digitalnem čebelarskem pomočniku! Vodili vas bomo pri nastavitvi prvega čebelnjaka in panja.",
+    "action": "Začnimo"
+  },
+  "apiary": {
+    "title": "Ustvarite prvi čebelnjak",
+    "description": "Čebelnjak je lokacija, kjer stojijo vaši panji. Ustvarimo prvega."
+  },
+  "hive": {
+    "title": "Dodajte prvi panj",
+    "description": "Zdaj dodajmo prvi panj v vaš novi čebelnjak: {{apiaryName}}.",
+    "skip": "Preskoči za zdaj"
+  },
+  "complete": {
+    "title": "Čestitke!",
+    "description": "Uspešno ste nastavili prvi čebelnjak in panj. Pripravljeni ste na spremljanje čebelarskih aktivnosti s Hive-Pal!",
+    "action": "Na nadzorno ploščo"
+  },
+  "nudges": {
+    "addHive": {
+      "title": "Videti je, da ste tu novi",
+      "description": "Dodajte prvi panj in začnite spremljati preglede in aktivnost.",
+      "action": "Dodaj panj"
+    },
+    "addLocation": {
+      "title": "Vreme za vaš čebelnjak",
+      "description": "Dodajte lokacijo čebelnjaka in odklenite vremenske podatke in napovedi.",
+      "action": "Dodaj lokacijo"
+    }
+  },
+  "empty": {
+    "noApiary": {
+      "title": "Ustvarite prvi čebelnjak",
+      "description": "Čebelnjak je lokacija, kjer stojijo vaši panji. Ustvarite ga za začetek.",
+      "action": "Ustvari čebelnjak",
+      "guided": "Želite vodeno nastavitev?"
+    },
+    "noHives": {
+      "title": "Še ni panjev",
+      "description": "Dodajte prvi panj v ta čebelnjak in ga začnite spremljati.",
+      "action": "Dodajte prvi panj",
+      "descriptionAll": "Dodajte panj v katerikoli čebelnjak in ga začnite spremljati."
+    },
+    "noLocation": {
+      "title": "Dodajte lokacijo za vreme",
+      "description": "Nastavite lokacijo čebelnjaka in prejemske vremenske podatke ter napovedi.",
+      "action": "Dodaj lokacijo",
+      "dismiss": "Opusti"
+    }
+  }
+}

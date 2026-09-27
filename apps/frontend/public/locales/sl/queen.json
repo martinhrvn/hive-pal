@@ -1,0 +1,72 @@
+{
+  "title": "Matice",
+  "singular": "Matica",
+  "plural": "Matice",
+  "create": {
+    "title": "Nova matica",
+    "button": "Ustvari matico",
+    "success": "Matica uspešno ustvarjena"
+  },
+  "edit": {
+    "title": "Uredi matico",
+    "button": "Shrani spremembe",
+    "success": "Matica uspešno posodobljena"
+  },
+  "delete": {
+    "confirm": "Ali ste prepričani, da želite izbrisati to matico?",
+    "success": "Matica uspešno izbrisana"
+  },
+  "fields": {
+    "hive": "Panj",
+    "year": "Leto",
+    "color": "Barva",
+    "marking": "Označba",
+    "source": "Izvor",
+    "status": "Status",
+    "installationDate": "Datum vnosa",
+    "replacedDate": "Datum zamenjave (neobvezno)",
+    "installedOn": "Vnesena {{date}}",
+    "via": "preko {{source}}"
+  },
+  "colors": {
+    "blue": "Modra",
+    "green": "Zelena",
+    "red": "Rdeča",
+    "yellow": "Rumena",
+    "purple": "Vijolična",
+    "indigo": "Indigo",
+    "pink": "Roza",
+    "gray": "Siva",
+    "black": "Črna",
+    "white": "Bela"
+  },
+  "status": {
+    "active": "Aktivna",
+    "replaced": "Zamenjana",
+    "dead": "Mrtva",
+    "unknown": "Neznano"
+  },
+  "actions": {
+    "transferQueen": "Premesti matico",
+    "replaceQueen": "Zamenjaj matico",
+    "markAsDead": "Označi kot mrtvo",
+    "markAsLostMissing": "Označi kot izgubljeno/pogrešano",
+    "addQueen": "Dodaj matico",
+    "editQueen": "Uredi matico",
+    "viewDetails": "Poglej podrobnosti",
+    "manageQueen": "Upravljaj matico"
+  },
+  "form": {
+    "selectHive": "Izberite panj",
+    "enterYear": "Vnesite leto",
+    "selectColor": "Izberite barvo",
+    "enterMarking": "Vnesite označbo matice",
+    "enterSource": "Vnesite izvor matice",
+    "selectStatus": "Izberite status",
+    "pickDate": "Izberite datum"
+  },
+  "information": {
+    "noActiveQueen": "Aktivne matice ni mogoče najti",
+    "hasActiveQueen": "Ta panj že ima aktivno matico. Zamenjava bo trenutno matico označila kot zamenjano."
+  }
+}

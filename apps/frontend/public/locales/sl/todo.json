@@ -1,0 +1,46 @@
+{
+  "list": {
+    "title": "Opravila",
+    "caption": "Spremljajte naloge za ta čebelnjak.",
+    "empty": "Še ni opravil.",
+    "emptyOpen": "Ni odprtih opravil. Odlično opravljeno!",
+    "showCompleted": "Pokaži zaključena",
+    "captionAll": "Spremljajte naloge za vse čebelnjake."
+  },
+  "quickAdd": {
+    "placeholder": "Dodaj opravilo …",
+    "button": "Dodaj"
+  },
+  "hive": {
+    "title": "Opravila",
+    "empty": "Za ta panj ni opravil."
+  },
+  "edit": {
+    "title": "Uredi opravilo",
+    "description": "Posodobite podrobnosti tega opravila.",
+    "success": "Opravilo posodobljeno",
+    "error": "Posodobitev opravila ni uspela"
+  },
+  "delete": {
+    "success": "Opravilo izbrisano",
+    "error": "Izbris opravila ni uspel"
+  },
+  "fields": {
+    "title": "Naslov",
+    "description": "Opis",
+    "dueDate": "Rok",
+    "hive": "Panj"
+  },
+  "form": {
+    "titlePlaceholder": "Kaj je treba narediti?",
+    "descriptionPlaceholder": "Dodajte več podrobnosti …",
+    "hivePlaceholder": "Izberite panj",
+    "noHive": "Brez panja"
+  },
+  "validation": {
+    "titleRequired": "Naslov je obvezen"
+  },
+  "actions": {
+    "toggleComplete": "Preklopi zaključenost"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "badge": {
+    "label": "AI"
+  },
+  "banner": {
+    "title": "Na voljo so AI sugestije",
+    "pending_one": "{{count}} čakajoč predlog",
+    "pending_two": "{{count}} čakajoča predloga",
+    "pending_few": "{{count}} čakajoči predlogi",
+    "pending_other": "{{count}} čakajočih predlogov",
+    "conflicts_one": "{{count}} spor",
+    "conflicts_two": "{{count}} spora",
+    "conflicts_few": "{{count}} spori",
+    "conflicts_other": "{{count}} sporov",
+    "summary": "{{pending}}.",
+    "summaryWithConflicts": "{{pending}}, {{conflicts}}.",
+    "acceptAllSafe": "Sprejmi vse varne",
+    "reviewConflicts": "Preglej spore",
+    "dismissAll": "Zavrni vse"
+  },
+  "field": {
+    "conflict": "AI predlog je v sporu z obstoječo vrednostjo",
+    "available": "Na voljo je AI predlog",
+    "accept": "Sprejmi",
+    "dismiss": "Zavrni"
+  },
+  "preview": {
+    "conflictNote": "Vsebuje vrednosti, ki bi prepisale obstoječo vsebino",
+    "contentNote": "Vsebuje vsebino, ki jo predlaga AI",
+    "review": "Preglej",
+    "hidePreview": "Skrij predogled",
+    "current": "Trenutno",
+    "ai": "AI",
+    "empty": "Prazno",
+    "accept": "Sprejmi",
+    "dismiss": "Zavrni"
+  },
+  "suggestion": {
+    "conflict": "V sporu z obstoječo vrednostjo",
+    "willFill": "Izpolnilo bo to polje"
+  }
+}
