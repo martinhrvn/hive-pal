@@ -1523,6 +1523,20 @@
             ]
           }
         }
+      },
+      "warnings": {
+        "lateQueenCellCheck": {
+          "title": "Prvi pregled matičnjakov je pozneje kot 8. dne",
+          "description": "Ta zamuda povečuje tveganje, da spregledate razvoj matičnjakov. Prvi naknadni pregled poskusite ohraniti v oknu 7.–8. dne."
+        },
+        "unsafeCheckpointSpacing": {
+          "title": "Razmiki med kontrolnimi točkami so videti tvegani",
+          "description": "Ti naknadni pregledi so nenavadno narazen ali pretesno zgoščeni, kar lahko zmanjša zanesljivost spremljanja."
+        },
+        "illogicalScheduleOrder": {
+          "title": "Vrstni red kontrolnih točk ni več kronološki",
+          "description": "Ena od poznejših kontrolnih točk je načrtovana na isti dan ali prej kot zgodnejši obisk. Pred shranjevanjem načrta preuredite datume."
+        }
       }
     },
     "cushmanCredit": {
