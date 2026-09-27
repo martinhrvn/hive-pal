@@ -1819,5 +1819,360 @@
       "sourceTitle": "Vir",
       "sourceBody": "Koncept dr. Pie Aumeier, razvit z dr. Gerhardom Liebigom in dr. Ottom Boeckingom na Ruhrski univerzi v Bochumu v projektu »Imkerberatung NRW«; metoda deli in zdrav, kot je objavljena v Deutsches Bienen-Journal (DNB 07/2017)."
     }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Funkcije",
+      "freeTools": "Brezplačna orodja",
+      "documentation": "Dokumentacija",
+      "releaseNotes": "Opombe izdaj",
+      "github": "GitHub",
+      "signIn": "Prijava",
+      "startFree": "Začni brezplačno"
+    },
+    "footer": {
+      "tagline": "Brezplačno, odprtokodno vodenje čebelarjenja. Da bo obrt preprostejša, bolj produktivna in malce prijetnejša.",
+      "product": "Izdelek",
+      "features": "Funkcije",
+      "freeTools": "Brezplačna orodja",
+      "releaseNotes": "Opombe izdaj",
+      "project": "Projekt",
+      "documentation": "Dokumentacija",
+      "reportIssue": "Prijavi težavo",
+      "privacyPolicy": "Politika zasebnosti",
+      "source": "Izvorna koda",
+      "github": "GitHub",
+      "signIn": "Prijava",
+      "createAccount": "Ustvari račun",
+      "copyright": "© 2025 Hive Pal · licenca MIT",
+      "builtWith": "Zgrajeno s skrbjo za čebelarje povsod po svetu."
+    },
+    "ai": {
+      "eyebrow": "Glas in AI",
+      "title": "Pregledujte z glasom,<br/><accent>ne s tipkovnico</accent>.",
+      "lede": "Hive Pal med pregledom posname zvok, ga samodejno prepiše in z AI pripravi strukturirane beležke — tako se administracija zgodi, medtem ko ste še v čebelnjaku.",
+      "items": {
+        "record": {
+          "title": "Snemajte ob panju",
+          "body": "Na telefonu pritisnite snemanje, na glas opišite, kar vidite na vsakem satu, in nadaljujte. Posnetki se naložijo neposredno v pregled — tudi če sredi čebelnjaka izgubite signal."
+        },
+        "transcribe": {
+          "title": "Samodejni prepis",
+          "body": "Prepis govora v besedilo (Whisper) vsak posnetek spremeni v iskano prepisano besedilo, priloženo pregledu. Večjezično že privzeto."
+        },
+        "draft": {
+          "title": "Beležke, ki jih napiše AI",
+          "body": "Lokalni jezikovni modeli iz posnetkov izluščijo opažanja matice, vzorce zalege, zdravljenja in opažanja ter jih vnaprej izpolnijo v pregled — vi samo pregledate in shranite."
+        }
+      },
+      "assuranceLead": "Vaši posnetki, vaši modeli.",
+      "assuranceBody": "AI sklad deluje na odprtokodnih modelih (faster-whisper + Ollama) in ga lahko gostite skupaj s svojimi podatki — ali ga zaženete kot delavca na svojem domačem računalniku.",
+      "assuranceNote": "Brez tretjeosebnega oblaka"
+    },
+    "landing": {
+      "meta": {
+        "title": "Hive Pal — čebelarska programska oprema z AI",
+        "description": "Učinkovito vodite svoje panje s Hive Pal. Snemajte glasovne beležke ob panju in pustite, da AI prepiše in sestavi vaše preglede. Odprtokodno, samo-gostljivo in brezplačno za zgodnje uporabnike.",
+        "ogTitle": "Hive Pal — čebelarska programska oprema z AI",
+        "ogDescription": "Brezplačna, odprtokodna čebelarska platforma z AI glasovnimi pregledi. Snemajte zvok v čebelnjaku in pustite, da AI samodejno sestavi beležke pregleda."
+      },
+      "hero": {
+        "badge": "Novo · AI glasovni pregledi",
+        "title": "Vaš odprtokodni<br/>čebelarski <accent>sopotnik</accent>.",
+        "lede": "Snemajte glasovne beležke ob panju. Pustite, da AI samodejno prepiše in sestavi vaše preglede — da imate roke na satih, ne na tipkovnici.",
+        "ctaSignup": "Registrirajte se — brezplačno je",
+        "ctaSelfHost": "Gostite sami",
+        "tagline": "licenca MIT · samo-gostljivo · glas na prvem mestu"
+      },
+      "features": {
+        "label": "Moderno čebelarjenje",
+        "title": "Vse, kar potrebujete za <accent>skrb</accent> za panje.",
+        "lede": "Profesionalna orodja, ki so jih zasnovali čebelarji za čebelarje — da družine ostanejo zdrave, produktivne in dobro dokumentirane skozi vse letne čase.",
+        "pillars": "Štirje stebri · vgrajeni v eno platformo",
+        "seeAll": "Razišči vse funkcije",
+        "items": {
+          "apiary": {
+            "title": "Vodenje čebelnjakov",
+            "body": "Organizirajte in spremljajte več čebelnjakov s podrobnimi podatki o lokaciji, vremenu in beležkami, specifičnimi za posamezno lokacijo."
+          },
+          "inspections": {
+            "title": "Pregledi panjev",
+            "body": "Načrtujte in beležite podrobne preglede s prilagodljivimi kontrolnimi seznami, fotografijami in ocenami zdravja."
+          },
+          "queen": {
+            "title": "Spremljanje matic",
+            "body": "Spremljajte uspešnost matic, vzrejne zapise in razpored zamenjav, da ohranite močne družine."
+          },
+          "harvest": {
+            "title": "Vodenje pridelkov",
+            "body": "Spremljajte pridelavo medu, datume predelave in donose po sezonah in lokacijah panjev."
+          }
+        }
+      },
+      "run": {
+        "label": "Kako ga zagnati",
+        "title": "Gostite sami ali pustite, da ga <accent>poganjamo</accent> mi.",
+        "lede": "Dva načina uporabe Hive Pal — oba brezplačna, oba poganjata isto odprtokodno kodo.",
+        "selfHosted": {
+          "title": "Samo-gostitev",
+          "badge": "Brezplačno, za vedno",
+          "body": "Popoln nadzor nad svojimi podatki in infrastrukturo. Zaženite ga na svojem strežniku, prenosniku, Raspberry Pi — kjer koli vam ustreza.",
+          "items": [
+            "Licenca MIT — berite, razvejite, objavljajte",
+            "Gostite kjer koli, kjer teče Docker",
+            "Vaši podatki ostanejo na vaši strojni opremi",
+            "Podpora skupnosti prek GitHuba"
+          ],
+          "cta": "Preberite dokumentacijo"
+        },
+        "hosted": {
+          "title": "Gostimo mi",
+          "badge": "Brezplačno",
+          "body": "Brez namestitve. Mi poganjamo strežnike, skrbimo za posodobitve in držimo sistem v teku. Ista odprtokodna aplikacija — le na naši strojni opremi.",
+          "items": [
+            "Registracija in takojšnja uporaba — brez namestitve",
+            "Samodejne posodobitve in varnostne kopije",
+            "Spremljana razpoložljivost po najboljših močeh",
+            "Podpora skupnosti prek GitHuba"
+          ],
+          "cta": "Registrirajte se — brezplačno je"
+        }
+      },
+      "tools": {
+        "label": "Brezplačna orodja",
+        "title": "Brezplačna orodja, brez registracije.",
+        "lede": "Priročni kalkulatorji in načrtovalniki, ki jih uporabite kar v brskalniku — dodajte jih med zaznamke za v čebelnjak.",
+        "seeAll": "Poglej vsa orodja",
+        "items": {
+          "syrup": {
+            "title": "Kalkulator sladkornega sirupa",
+            "body": "Natančni količini sladkorja in vode za sirup 1:1, 3:2 ali 2:1 pri poljubni velikosti posode. Metrično ali imperialno."
+          },
+          "brood": {
+            "title": "Časovnica razvoja zalege",
+            "body": "Vizualizirajte stopnje zalege matice, delavk in trotov z dnevi in izračunanimi datumi od poljubnega začetnega dne."
+          },
+          "swarm": {
+            "title": "Upravljanje rojenja",
+            "body": "Postopni Demareejev potek nadzora rojenja s termini naknadnih pregledov in načrtovalnikom pregledov."
+          },
+          "liebefelder": {
+            "title": "Liebefeldska metoda ocenjevanja",
+            "body": "Ocenite moč družine — čebele, zalego, pelod in krmo — s štetjem osmink satja, s sezonskimi smernicami za oceno."
+          },
+          "varroa": {
+            "title": "Načrt upravljanja varoj",
+            "body": "Celosezonski razpored zdravljenja za proizvodne in jedrne družine s pragovi osipa varoj ter metodo deli-in-zdrav, razloženo korak za korakom."
+          }
+        }
+      },
+      "cta": {
+        "title": "Poskusite <accent>ga</accent>.",
+        "lede": "Registrirajte se v gostovani različici ali pa prevzemite izvorno kodo in jo zaženite sami. Kakor koli — brezplačno je.",
+        "signup": "Brezplačna registracija",
+        "github": "Poglej na GitHubu"
+      }
+    },
+    "features": {
+      "meta": {
+        "title": "Funkcije — vse, kar Hive Pal ponudi čebelarjem",
+        "description": "Raziščite vse funkcije Hive Pal: AI glasovni pregledi s samodejnim prepisom, vodenje panjev in matic, paketni pregledi, načrtovanje in poročila, spremljanje pridelkov, sodelovanje ter odprtokodna, samo-gostljiva programska oprema z zasebnostjo na prvem mestu.",
+        "ogTitle": "Funkcije Hive Pal — AI glasovni pregledi in vodenje čebelarjenja",
+        "ogDescription": "AI glasovni pregledi, vodenje panjev in matic, načrtovanje, poročila, sodelovanje in odprtokodna samo-gostitev. Poglejte vse, kar zmore Hive Pal."
+      },
+      "hero": {
+        "eyebrow": "Vse na enem mestu",
+        "title": "Vse, kar potrebujete za <accent>vodenje čebel</accent>.",
+        "lede": "Hive Pal združuje glasovno vodene AI preglede, evidence družin in matic, načrtovanje, poročila in sodelovanje v eni odprtokodni platformi — brezplačna za uporabo in vaša za gostovanje.",
+        "ctaSignup": "Registrirajte se — brezplačno je",
+        "ctaSelfHost": "Gostite sami",
+        "tagline": "licenca MIT · samo-gostljivo · glas na prvem mestu"
+      },
+      "groups": {
+        "inspections": {
+          "label": "Pregledi in evidenca",
+          "title": "Vsak pregled, zabeležen do podrobnosti",
+          "lede": "Beležite, kar vidite ob panju, s strukturiranimi, ponovljivimi pregledi — in to znova najdete v trenutku, ko potrebujete.",
+          "items": {
+            "structured": {
+              "title": "Strukturirani pregledi",
+              "body": "Beležite vzorec zalege, zaloge, temperament, prostor in stanje matice z doslednimi polji, da so družine primerljive med obiski in sezonami."
+            },
+            "quickChecks": {
+              "title": "Hitri pregledi",
+              "body": "Lahek potek pregleda za hitre ohode čez čebelnjak, ko morate zabeležiti le bistvo in nadaljevati."
+            },
+            "batch": {
+              "title": "Paketni pregledi",
+              "body": "Preglejte cel čebelnjak v enem sedenju — vodeno zaporedje čez vse panje brez ročnega odpiranja vsakega zapisa."
+            },
+            "scheduled": {
+              "title": "Načrtovani pregledi in opomniki",
+              "body": "Načrtujte prihodnje obiske in prejemajte opomnike za izdaje in naloge, da se nič ne izgubi med sezonami."
+            },
+            "photos": {
+              "title": "Fotografije in opažanja",
+              "body": "Vsakemu pregledu priložite fotografije in proste beležke ter dokumentirajte znake bolezni, satje ali karkoli, kar si zasluži drug pogled."
+            },
+            "actions": {
+              "title": "Ukrepi in zdravljenja",
+              "body": "Krmljenje, zdravljenja in managerske ukrepe beležite kot del pregleda in gradite celotno zgodovino posamezne družine."
+            }
+          }
+        },
+        "colony": {
+          "label": "Vodenje družin in panjev",
+          "title": "Organizirajte čebelnjake, panje in matice",
+          "lede": "Jasen model vašega čebelarjenja — od čebelnjakov do posameznih satov in rodoslovja matic.",
+          "items": {
+            "apiaries": {
+              "title": "Več čebelnjakov",
+              "body": "Združujte panje po lokacijah z beležkami o lokaciji in lokalnim vremenskim kontekstom za vsak čebelnjak."
+            },
+            "hiveConfig": {
+              "title": "Konfiguracija panja",
+              "body": "Spremljajte naklade, sate in konfiguracijo po panjih, da zapis odraža dejansko opremo na terenu."
+            },
+            "queens": {
+              "title": "Spremljanje matic",
+              "body": "Sledite označbi, izvoru, rodoslovju, uspešnosti in zgodovini zamenjav vsake matice, da ohranite močne družine."
+            },
+            "equipment": {
+              "title": "Načrtovanje opreme",
+              "body": "Načrtujte in evidentirajte naklade, sate in opremo po panjih, da veste, kaj zgraditi pred sezono."
+            },
+            "qrCodes": {
+              "title": "QR kode",
+              "body": "Ustvarite in natisnite QR nalepke za panje ter jih v čebelnjaku skenirate za neposreden skok na pravi zapis."
+            },
+            "hiveScale": {
+              "title": "Spremljanje s panjsko tehtnico",
+              "body": "Povežite panjske tehtnice in spremljajte trende teže — nektarjevo pašo, porabo in prezimljenje na en pogled."
+            }
+          }
+        },
+        "planning": {
+          "label": "Načrtovanje in vpogled",
+          "title": "Glejte sezono, ne le dneva",
+          "lede": "Spremenite svoje zapise v načrt in sliko o tem, kako gre vašemu čebelarjenju.",
+          "items": {
+            "calendar": {
+              "title": "Koledar",
+              "body": "Enoten koledar pregledov in načrtovanih nalog čez vse čebelnjake, da je prihodnji teden vedno viden."
+            },
+            "reports": {
+              "title": "Poročila in analitika",
+              "body": "Združite podatke v poročila o zdravju in produktivnosti družin, da zgodaj opazite trende in šibke panje."
+            },
+            "harvest": {
+              "title": "Spremljanje pridelkov",
+              "body": "Beležite pridelke medu, datume predelave in donose po panjih in sezonah ter merite dejanski izplen."
+            },
+            "assistant": {
+              "title": "AI pomočnik",
+              "body": "Postavljajte vprašanja o svojem čebelnjaku in dobite pomoč pri razumevanju svojih zapisov — kar v aplikaciji."
+            },
+            "bulkActions": {
+              "title": "Paketni ukrepi",
+              "body": "Isti ukrep uporabite na mnogih panjih hkrati, namesto da jih urejate enega za drugim."
+            }
+          }
+        },
+        "collaboration": {
+          "label": "Sodelovanje in deljenje",
+          "title": "Čebelarjenje redkokdaj poteka sam",
+          "lede": "Čebelarite s partnerji, društvi ali mentoriranci — in delite, kar je pomembno, ne da bi predali ključe.",
+          "items": {
+            "sharing": {
+              "title": "Deljenje čebelnjaka",
+              "body": "Povabite druge čebelarje k sodelovanju na čebelnjaku, da celotna ekipa dela z istimi zapisi."
+            },
+            "inviteLinks": {
+              "title": "Povabilne povezave",
+              "body": "Delite povezavo za pridružitev in nekoga hitro vključite v čebelnjak — brez ročnega urejanja računov."
+            },
+            "sharedViews": {
+              "title": "Deljeni pogledi",
+              "body": "Dodelite dostop samo za branje k družinam ali podatkom, da lahko mentor ali društvo spremlja brez urejanja."
+            }
+          }
+        },
+        "data": {
+          "label": "Vaši podatki, vaša pravila",
+          "title": "Odprtokodno, zasebno in prenosljivo",
+          "lede": "Hive Pal je prosta programska oprema, ki jo lahko poganjate sami — vaši zapisi ostanejo vaši.",
+          "items": {
+            "openSource": {
+              "title": "Odprtokodno (MIT)",
+              "body": "Celotna aplikacija ima licenco MIT. Berite jo, razvejite, revidirajte ali prispevajte — brez črnih skrinj."
+            },
+            "selfHostable": {
+              "title": "Samo-gostljivo",
+              "body": "Poganjajte jo kjer koli, kjer teče Docker: strežnik, prenosnik ali Raspberry Pi. Gostovana različica poganja isto kodo."
+            },
+            "importExport": {
+              "title": "Uvoz in izvoz",
+              "body": "Podatke prosto prenašajte noter in ven. Vaša čebelarska zgodovina ni nikoli zaklenjena v aplikaciji."
+            },
+            "privacyAI": {
+              "title": "AI z zasebnostjo na prvem mestu",
+              "body": "Glasovni in AI sklad uporablja odprte modele (faster-whisper + Ollama) in lahko teče na vaši lastni strojni opremi — brez tretjeosebnega oblaka."
+            },
+            "multilingual": {
+              "title": "Večjezičnost",
+              "body": "Uporabljajte Hive Pal v svojem jeziku, s skupnostnimi prevodi, ki se upravljajo prek Weblate in s časom rastejo."
+            },
+            "pwa": {
+              "title": "Namestljivo in offline",
+              "body": "Namestite ga kot PWA na telefon in nadaljujte z delom v čebelnjaku, tudi ko signal izgine."
+            }
+          }
+        }
+      },
+      "tools": {
+        "label": "Registracija ni potrebna",
+        "title": "Brezplačna orodja, ki jih lahko uporabite takoj",
+        "lede": "Kalkulatorji in načrtovalniki, ki delujejo v brskalniku, brez računa — vpogled v to, kako Hive Pal razmišlja o čebelarjenju.",
+        "seeAll": "Poglej vsa orodja"
+      },
+      "cta": {
+        "title": "Ste pripravljeni <accent>poskusiti</accent>?",
+        "lede": "Registrirajte se v gostovani različici ali pa prevzemite izvorno kodo in jo zaženite sami. Kakor koli — brezplačno je.",
+        "signup": "Brezplačna registracija",
+        "github": "Poglej na GitHubu"
+      }
+    },
+    "toolsIndex": {
+      "meta": {
+        "title": "Brezplačna čebelarska orodja — Hive Pal",
+        "description": "Brezplačni, odprtokodni kalkulatorji in referenčni vodniki za čebelarje. Kalkulator sladkornega sirupa, časovnica razvoja zalege in poteki upravljanja rojenja.",
+        "ogDescription": "Brezplačni kalkulatorji in referenčni vodniki za čebelarje — brez registracije."
+      },
+      "eyebrow": "Brezplačna orodja",
+      "title": "Čebelarska orodja, brez registracije",
+      "intro": "Odprtokodni kalkulatorji in referenčni vodniki, ki jih uporabite kar v brskalniku. Dodajte jih med zaznamke za v čebelnjak.",
+      "items": {
+        "syrup": {
+          "title": "Kalkulator sladkornega sirupa",
+          "body": "Natančni količini sladkorja in vode za sirup 1:1, 3:2 ali 2:1 pri poljubni velikosti posode. Metrično ali imperialno."
+        },
+        "brood": {
+          "title": "Časovnica razvoja zalege",
+          "body": "Vizualizirajte stopnje zalege matice, delavk in trotov z dnevi in izračunanimi datumi od poljubnega začetnega dne."
+        },
+        "swarm": {
+          "title": "Upravljanje rojenja",
+          "body": "Postopni Demareejev potek nadzora rojenja s termini naknadnih pregledov in načrtovalnikom pregledov."
+        },
+        "liebefelder": {
+          "title": "Liebefeldska metoda ocenjevanja",
+          "body": "Ocenite moč družine in število čebel s štetjem pokritih satnih ploskev v korakih 1/8 — standardna metoda Švicarskega čebelarskega raziskovalnega središča."
+        },
+        "varroa": {
+          "title": "Načrt upravljanja varoj",
+          "body": "Celosezonski razpored zdravljenja za proizvodne in jedrne družine s pragovi osipa varoj ter metodo deli-in-zdrav, razloženo korak za korakom."
+        }
+      }
+    }
   }
 }
