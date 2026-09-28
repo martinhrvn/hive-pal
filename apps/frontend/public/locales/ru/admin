@@ -1,0 +1,68 @@
+{
+  "title": "Управление пользователями",
+  "description": "Управление пользователями и сброс паролей",
+  "table": {
+    "email": "Электронная почта",
+    "name": "Имя",
+    "role": "Роль",
+    "passwordChangeRequired": "Требуется смена пароля",
+    "createdAt": "Дата создания",
+    "actions": "Действия",
+    "apiaries": "Пасеки",
+    "hives": "Ульи",
+    "inspections": "Осмотры",
+    "lastActivity": "Последняя активность"
+  },
+  "actions": {
+    "resetPassword": "Сбросить пароль"
+  },
+  "resetPasswordDialog": {
+    "title": "Сброс пароля пользователя",
+    "description": "Задайте временный пароль для {email}. Пользователь будет обязан сменить пароль при следующем входе.",
+    "tempPasswordLabel": "Временный пароль",
+    "tempPasswordPlaceholder": "Введите временный пароль",
+    "minCharacters": "Минимум 6 символов",
+    "submit": "Сбросить пароль"
+  },
+  "messages": {
+    "loading": "Загрузка...",
+    "loadingUsers": "Загрузка пользователей...",
+    "noUsers": "Пользователи не найдены",
+    "resetSuccess": "Пароль успешно сброшен! Пользователь будет обязан сменить пароль при следующем входе.",
+    "failedToFetch": "Не удалось получить данные",
+    "failedToReset": "Не удалось сбросить пароль",
+    "unexpectedError": "Произошла непредвиденная ошибка"
+  },
+  "status": {
+    "yes": "Да",
+    "no": "Нет",
+    "dash": "-"
+  },
+  "userDetail": {
+    "backToList": "Назад к пользователям",
+    "summary": {
+      "totalApiaries": "Всего пасек",
+      "totalHives": "Всего ульев",
+      "totalInspections": "Всего осмотров",
+      "lastActivity": "Последняя активность",
+      "lastInspection": "Последний осмотр"
+    },
+    "recentActivity": {
+      "title": "Недавняя активность",
+      "period": "Последние 30 дней",
+      "inspections": "Осмотры",
+      "actions": "Действия",
+      "byType": "Действия по типу"
+    },
+    "apiaryBreakdown": {
+      "title": "Разбивка по пасекам",
+      "name": "Название пасеки",
+      "location": "Местоположение",
+      "coordinates": "Координаты",
+      "hives": "Ульи",
+      "inspections": "Осмотры",
+      "lastInspection": "Последний осмотр",
+      "noApiaries": "У этого пользователя пасеки не найдены"
+    }
+  }
+}
