@@ -58,15 +58,15 @@
 - [ ] Compact, single-column layouts for mobile
 
 
-## HiveScale Integration
+## HiveHub Integration
 
-- [x] Proxy HiveScale backend routes through the HivePal backend
-- [x] Add HiveScale page for claiming devices and viewing latest measurements
-- [x] Add scale channel naming for mapping Scale 1 / Scale 2 to hive names
-- [x] Display off-grid telemetry fields from HiveScale measurements
-- [x] Chart battery, solar, and cellular telemetry when available
-- [ ] Verify HivePal calibration-mode controls against the deployed HiveScale backend routes
-- [ ] Add user-facing screenshots to the HiveScale documentation
-- [ ] Add explicit empty states for partially configured off-grid devices
+- [x] Proxy HiveHub backend routes through the HivePal backend
+- [x] HiveHub page for claiming devices and viewing latest measurements
+- [x] Name all 18 hive slots and link them to HivePal hives (stored in HiveHub)
+- [x] Display off-grid telemetry (battery, solar, signal) on the General card and Health tab
+- [x] Chart battery and solar telemetry when available
+- [x] Calibration-mode controls against the HiveHub calibration routes
+- [x] Inspection mode (start/stop, history, chart shading, prompt from HivePal inspections)
+- [x] Replace the HivePal swarm alert with HiveHub insight alert emails
+- [ ] Add user-facing screenshots to the HiveHub documentation
 - [ ] Add alerts for low battery, missing solar monitor, and poor cellular signal
-- [ ] swarm alert integration

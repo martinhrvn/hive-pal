@@ -26,7 +26,7 @@ A modern beekeeping management application designed for both mobile and desktop 
 - **Multilingual**: Available in multiple languages with community translations
 - **Data Portability**: Import and export your data — your records stay yours
 - **Open Source & Self-Hostable**: MIT-licensed and free to run on your own hardware
-- **HiveScale Integration**: Claim and monitor self-hosted HiveScale devices, including weight, temperature, battery, solar, and cellular telemetry
+- **HiveHub Integration**: Claim and monitor self-hosted HiveHub (formerly HiveScale) devices with up to 18 hives each — weight, in-hive climate, traffic, sound, power and connectivity — plus inspection mode, audio recordings, firmware management and alert emails
 
 ## Getting Started
 
@@ -99,31 +99,36 @@ The application will be available at http://localhost.
 
 #### Optional
 
-| Variable                    | Description                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------ |
-| `PASSKEY_RP_ID`             | WebAuthn relying-party ID for passkeys (default: `localhost`)                  |
-| `COOKIE_DOMAIN`             | Set in production when frontend and backend share a parent domain              |
-| `MAIL_PROVIDER`             | Force a specific provider: `resend`, `smtp`, or `none` (auto-selects if unset) |
-| `RESEND_API_KEY`            | API key for Resend email provider                                              |
-| `SMTP_HOST`                 | SMTP server hostname                                                           |
-| `SMTP_PORT`                 | SMTP server port                                                               |
-| `SMTP_USER`                 | SMTP username                                                                  |
-| `SMTP_PASS`                 | SMTP password                                                                  |
-| `SMTP_SECURE`               | Use TLS (`true` for port 465, `false` for 587)                                 |
-| `SMTP_REJECT_UNAUTHORIZED`  | Reject invalid TLS certificates (default `true`; set `false` for self-signed)  |
-| `FROM_EMAIL`                | Sender email address                                                           |
-| `STORAGE_TYPE`              | `s3` (default) or `local` for filesystem storage                               |
-| `STORAGE_LOCAL_PATH`        | Directory for local file storage (default: `/data/uploads`)                    |
-| `S3_ENDPOINT`               | S3-compatible endpoint URL                                                     |
-| `S3_REGION`                 | S3 region (default: `us-east-1`)                                               |
-| `S3_BUCKET`                 | S3 bucket name                                                                 |
-| `S3_ACCESS_KEY_ID`          | S3 access key                                                                  |
-| `S3_SECRET_ACCESS_KEY`      | S3 secret key                                                                  |
-| `SENTRY_DSN`                | Backend Sentry DSN                                                             |
-| `VITE_SENTRY_DSN`           | Frontend Sentry DSN                                                            |
-| `VITE_SENTRY_ENVIRONMENT`   | Frontend Sentry environment                                                    |
-| `HIVESCALE_API_BASE_URL`    | Base URL of the HiveScale backend for scale integration                        |
-| `HIVESCALE_SERVICE_API_KEY` | Shared service key used by HivePal to call HiveScale                           |
+| Variable                            | Description                                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `PASSKEY_RP_ID`                     | WebAuthn relying-party ID for passkeys (default: `localhost`)                                                                  |
+| `COOKIE_DOMAIN`                     | Set in production when frontend and backend share a parent domain                                                              |
+| `MAIL_PROVIDER`                     | Force a specific provider: `resend`, `smtp`, or `none` (auto-selects if unset)                                                 |
+| `RESEND_API_KEY`                    | API key for Resend email provider                                                                                              |
+| `SMTP_HOST`                         | SMTP server hostname                                                                                                           |
+| `SMTP_PORT`                         | SMTP server port                                                                                                               |
+| `SMTP_USER`                         | SMTP username                                                                                                                  |
+| `SMTP_PASS`                         | SMTP password                                                                                                                  |
+| `SMTP_SECURE`                       | Use TLS (`true` for port 465, `false` for 587)                                                                                 |
+| `SMTP_REJECT_UNAUTHORIZED`          | Reject invalid TLS certificates (default `true`; set `false` for self-signed)                                                  |
+| `FROM_EMAIL`                        | Sender email address                                                                                                           |
+| `STORAGE_TYPE`                      | `s3` (default) or `local` for filesystem storage                                                                               |
+| `STORAGE_LOCAL_PATH`                | Directory for local file storage (default: `/data/uploads`)                                                                    |
+| `S3_ENDPOINT`                       | S3-compatible endpoint URL                                                                                                     |
+| `S3_REGION`                         | S3 region (default: `us-east-1`)                                                                                               |
+| `S3_BUCKET`                         | S3 bucket name                                                                                                                 |
+| `S3_ACCESS_KEY_ID`                  | S3 access key                                                                                                                  |
+| `S3_SECRET_ACCESS_KEY`              | S3 secret key                                                                                                                  |
+| `SENTRY_DSN`                        | Backend Sentry DSN                                                                                                             |
+| `VITE_SENTRY_DSN`                   | Frontend Sentry DSN                                                                                                            |
+| `VITE_SENTRY_ENVIRONMENT`           | Frontend Sentry environment                                                                                                    |
+| `HIVEHUB_API_BASE_URL`              | Base URL of the HiveHub backend (legacy name `HIVESCALE_API_BASE_URL`)                                                         |
+| `HIVEHUB_SERVICE_API_KEY`           | Service key HivePal sends to HiveHub; must equal HiveHub's `HIVEPAL_SERVICE_API_KEY` (legacy name `HIVESCALE_SERVICE_API_KEY`) |
+| `JWT_SECRET`                        | Signs the user token forwarded to HiveHub; must equal HiveHub's `HIVEPAL_JWT_SECRET`. Required for the HiveHub integration     |
+| `HIVESCALE_SD_IMPORT_MAX_FILE_SIZE` | Max HiveHub SD-import upload in bytes (default 250 MB)                                                                         |
+| `HIVEHUB_FIRMWARE_MAX_FILE_SIZE`    | Max HiveHub firmware upload in bytes (default 16 MB)                                                                           |
+
+HiveHub alert emails use the configured mail provider and link to `FRONTEND_URL`. See [`apps/hivescale/hivescale-integration.md`](apps/hivescale/hivescale-integration.md) for the full HiveHub setup.
 
 ## Development
 
@@ -150,7 +155,7 @@ pnpm dev
 /apps
   /frontend - React frontend application
   /backend - NestJS API server
-  /hivescale - HiveScale integration notes and compose overlay
+  /hivescale - HiveHub integration notes and a compose file for HivePal with the HiveHub variables
   /e2e - End-to-end tests with Playwright
 /packages
   /shared-schemas - Shared Zod validation schemas
