@@ -1,5 +1,5 @@
 /**
- * Parses measurement records out of a HiveScale SD-card download.
+ * Parses measurement records out of a HiveHub SD-card download.
  *
  * The firmware keeps an append-only `/measurements.ndjson` backup (one JSON
  * object per line) and, in AP mode, lets the beekeeper download the whole card
@@ -110,4 +110,22 @@ export function parseSdMeasurements(
   const text = isTar ? extractNdjsonFromTar(buffer) : buffer.toString('utf8');
 
   return parseNdjson(text);
+}
+
+/**
+ * Distinct `device_id` values stamped into the records, in first-seen order.
+ * The firmware writes the recording device into every backup line, which is
+ * what lets an import notice a card pulled from a different hub.
+ */
+export function deviceIdsInRecords(
+  records: Record<string, unknown>[],
+): string[] {
+  const seen = new Set<string>();
+  for (const record of records) {
+    const id = record.device_id;
+    if (typeof id === 'string' && id.trim()) {
+      seen.add(id.trim());
+    }
+  }
+  return [...seen];
 }
