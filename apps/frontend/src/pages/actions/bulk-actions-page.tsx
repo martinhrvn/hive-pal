@@ -142,7 +142,13 @@ export const BulkActionsPage = () => {
     try {
       const result = await submitStagedItems(stagedItems, {
         createAction,
-        createInspection,
+        // Pin each inspection to its hive's apiary so cross-apiary bulk-add
+        // works in view-all mode.
+        createInspection: data =>
+          createInspection({
+            data,
+            apiaryId: hives.find(h => h.id === data.hiveId)?.apiaryId,
+          }),
         createQueen,
       });
       const { counts, failedIds, succeededIds } = result;

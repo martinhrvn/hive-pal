@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   Form,
   FormControl,
@@ -48,7 +49,14 @@ import { PhotosSection, PendingPhoto } from './photos-section';
 import { ScorePreviewSection } from './score-preview';
 import { AiMergeBanner } from '@/pages/inspection/components/inspection-form/ai-merge-banner';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
+import {
+  getDefaultInspectionDateTime,
+  saveLastInspectionTimePreference,
+} from '@/utils/inspection-time-preference';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { FrameCountSection } from './frame-counts';
+import { WeightSection } from './weight-section';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 import { uploadPendingPhotos } from './upload-pending-photos';
 import { uploadPendingRecordings } from './upload-pending-recordings';
 import { useInspectionAiMerge } from './use-inspection-ai-merge';
@@ -121,6 +129,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   aiSuggestedFields = [],
 }) => {
   const { t } = useTranslation('inspection');
+  const { formatTime } = useDateFormat();
   const [searchParams] = useSearchParams();
   const fromScheduled = searchParams.get('from') === 'scheduled';
   const { data: hives } = useHiveOptions();
@@ -133,13 +142,26 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     enabled: !!inspectionId,
   });
 
+  // For a brand-new inspection, seed the date/time and all-day flag from the
+  // user's last-used choice (persisted in localStorage). Computed once on mount.
+  // Editing an existing inspection keeps that inspection's own stored values.
+  const [newInspectionDefaults] = useState(() =>
+    inspectionId ? null : getDefaultInspectionDateTime(),
+  );
+
+  // Weights are stored canonically in kg; convert to the user's display unit
+  // when prefilling the form for editing.
+  const { formatWeight: formatWeightDisplay } = useUnitFormat();
+
   const form = useForm<InspectionFormData>({
     resolver: zodResolver(inspectionSchema),
     defaultValues: {
       hiveId,
       ...inspection,
-      date: inspection?.date ? new Date(inspection.date) : new Date(),
-      isAllDay: inspection?.isAllDay ?? true,
+      date: inspection?.date
+        ? new Date(inspection.date)
+        : (newInspectionDefaults?.date ?? new Date()),
+      isAllDay: inspection?.isAllDay ?? newInspectionDefaults?.isAllDay ?? true,
       // Cast: RHF types defaultValues as DeepPartial, which makes the action
       // discriminant (`type`) optional and breaks discriminated-union narrowing.
       // The mapping below produces correctly-shaped action objects at runtime.
@@ -194,6 +216,15 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             };
           }
 
+          if (action.details.type === ActionType.STATUS_CHANGE) {
+            const details = action.details;
+            return {
+              type: ActionType.STATUS_CHANGE,
+              notes: action.notes ?? '',
+              toStatus: details.toStatus,
+            };
+          }
+
           if (action.details.type === ActionType.BOX_CONFIGURATION) {
             const details = action.details;
             return {
@@ -213,6 +244,17 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             notes: action.notes || '',
           };
         }) || []) as InspectionFormData['actions'],
+      weights: (inspection?.weights?.map(w => {
+        const display = formatWeightDisplay(w.value);
+        return {
+          id: w.id,
+          value: display.value,
+          unit: display.unit,
+          boxId: w.boxId,
+          side: w.side,
+          recordedAt: w.recordedAt,
+        };
+      }) ?? []) as InspectionFormData['weights'],
     },
   });
 
@@ -328,15 +370,27 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   });
 
   const onSubmit = useUpsertInspection(inspectionId, {
+    // The hive's own apiary — required for cross-apiary writes in view-all mode.
+    apiaryId: selectedHive?.apiaryId,
     onBeforeNavigate: async (id: string) => {
-      await Promise.all([
+      const [, photoResult] = await Promise.all([
         pendingRecordings.length > 0
           ? uploadPendingRecordings(id, pendingRecordings)
           : Promise.resolve(),
         pendingPhotos.length > 0
           ? uploadPendingPhotos(id, pendingPhotos)
-          : Promise.resolve(),
+          : Promise.resolve(null),
       ]);
+
+      // The inspection itself saved fine at this point, so a dropped photo
+      // would otherwise look to the user like it had been stored.
+      if (photoResult && photoResult.failed.length > 0) {
+        toast.error(
+          t('inspection:form.photos.someFailed', {
+            count: photoResult.failed.length,
+          }),
+        );
+      }
     },
   });
 
@@ -364,6 +418,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       onSubmitSuccess(formattedData);
       return;
     }
+    // Remember this time-of-day choice so the next new inspection defaults to it.
+    saveLastInspectionTimePreference(data.date, data.isAllDay ?? true);
     const status = fromScheduled ? InspectionStatus.COMPLETED : undefined;
     // Return the promise so RHF's isSubmitting stays true until the save
     // resolves — otherwise the save button re-enables before the request
@@ -383,6 +439,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       onSubmitSuccess(formattedData);
       return;
     }
+    // Remember this time-of-day choice so the next new inspection defaults to it.
+    saveLastInspectionTimePreference(data.date, data.isAllDay ?? true);
     await onSubmit(formattedData, InspectionStatus.COMPLETED);
   });
 
@@ -464,9 +522,13 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                           )}
                         >
                           {field.value ? (
-                            isAllDay
-                              ? format(field.value, 'PPP')
-                              : format(field.value, 'PPP HH:mm')
+                            isAllDay ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              `${format(field.value, 'PPP')} ${formatTime(
+                                field.value,
+                              )}`
+                            )
                           ) : (
                             <span>{t('inspection:form.pickDate')}</span>
                           )}
@@ -504,6 +566,19 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                         form.setValue('isAllDay', checked)
                       }
                     />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      onClick={() => {
+                        // Set the inspection to the current date and time.
+                        form.setValue('isAllDay', false);
+                        field.onChange(new Date());
+                      }}
+                    >
+                      {t('inspection:form.now', { defaultValue: 'Now' })}
+                    </Button>
                   </div>
 
                   {isAiSuggested('date') &&
@@ -593,12 +668,16 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                 </>
               )}
 
+              <WeightSection hiveBoxes={selectedHive?.boxes ?? []} />
+
               <hr className="border-t border-border" />
               <ActionsSection
                 hiveBoxes={selectedHive?.boxes ?? []}
                 hiveId={selectedHive?.id}
                 baseBroodFrames={baseBroodFrames}
                 broodFrameCapacity={broodFrameCapacity}
+                enableStatusChange
+                hiveStatus={selectedHive?.status}
                 isAiSuggested={isAiSuggested}
                 aiMergeState={aiMergeState}
                 onAcceptSuggestion={acceptAiSuggestion}

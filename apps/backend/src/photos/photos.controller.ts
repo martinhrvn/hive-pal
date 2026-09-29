@@ -18,7 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PhotosService } from './photos.service';
 import { ZodValidation } from '../common';
@@ -31,6 +32,7 @@ import {
 } from 'shared-schemas';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 @Controller('photos')
 export class PhotosController {
   constructor(
@@ -45,7 +47,7 @@ export class PhotosController {
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: Record<string, string>,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse> {
     if (!file) {
       throw new BadRequestException('No file provided');
@@ -75,7 +77,7 @@ export class PhotosController {
   @ZodValidation(photoFilterSchema)
   async findAll(
     @Query() query: PhotoFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse[]> {
     this.logger.log({
       message: 'Listing photos',
@@ -92,7 +94,7 @@ export class PhotosController {
   @Get(':id')
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse> {
     return this.photosService.findOne(id, {
       apiaryId: req.apiaryId,
@@ -101,7 +103,10 @@ export class PhotosController {
   }
 
   @Get(':id/download-url')
-  async getDownloadUrl(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  async getDownloadUrl(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiaryScope,
+  ) {
     return this.photosService.getDownloadUrl(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -112,7 +117,7 @@ export class PhotosController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<void> {
     this.logger.log({
       message: 'Deleting photo',

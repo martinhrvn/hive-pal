@@ -4,15 +4,23 @@ import { DayPicker } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  weekStartsOn,
   ...props
 }: React.ComponentProps<typeof DayPicker>) {
+  // Fall back to the user's "first day of week" preference when the caller
+  // does not pass weekStartsOn explicitly, so every calendar in the app honors
+  // the setting without threading the prop through ~40 call sites.
+  const { weekStartsOn: preferredWeekStartsOn } = useDateFormat();
+
   return (
     <DayPicker
+      weekStartsOn={weekStartsOn ?? preferredWeekStartsOn}
       showOutsideDays={showOutsideDays}
       className={cn('p-3', className)}
       classNames={{

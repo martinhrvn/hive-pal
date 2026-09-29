@@ -51,6 +51,11 @@ import { AssistantModule } from './assistant/assistant.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { AccountTransferModule } from './account-transfer/account-transfer.module';
 
+// Static files that must always be revalidated rather than served from the
+// browser's HTTP cache, so a deployed update is picked up (see the
+// ServeStaticModule setHeaders hook below).
+const NO_STORE_FILES = /(?:^|[\\/])(?:sw\.js|registerSW\.js|index\.html)$/;
+
 @Module({
   imports: [
     SentryModule.forRoot(),
@@ -66,6 +71,22 @@ import { AccountTransferModule } from './account-transfer/account-transfer.modul
       rootPath: join(__dirname, '..', 'static'),
       exclude: ['/api{/*path}'],
       renderPath: /^(?!\/assets\/)/,
+      serveStaticOptions: {
+        setHeaders: (res, filePath) => {
+          // The service worker script and its registration shim must never be
+          // answered from the HTTP cache: browsers are allowed to reuse a
+          // cached sw.js for up to 24h, which is how clients stay stuck on the
+          // previous build after a deploy — the new worker is never fetched, so
+          // no update is offered. Hashed files under /assets are content-
+          // addressed and stay cacheable.
+          if (NO_STORE_FILES.test(filePath)) {
+            res.setHeader(
+              'Cache-Control',
+              'no-cache, no-store, must-revalidate',
+            );
+          }
+        },
+      },
     }),
     StorageModule,
     BetterAuthModule,

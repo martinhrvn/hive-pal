@@ -1,15 +1,22 @@
 import {
   Injectable,
   NotFoundException,
+  ForbiddenException,
+  BadRequestException,
   Inject,
   forwardRef,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
-import { Observation, Prisma } from '@/prisma/client';
+import { Measurement, Observation, Prisma } from '@/prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import {
+  apiaryAccessWhere,
+  apiaryReadScope,
+  apiaryWriteScope,
+} from '../common';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionCreatedEvent } from '../events/hive.events';
@@ -25,6 +32,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 type InspectionWithIncludes = Prisma.InspectionGetPayload<{
   include: {
     observations: true;
+    measurements: true;
     notes: true;
     actions: {
       include: {
@@ -34,6 +42,7 @@ type InspectionWithIncludes = Prisma.InspectionGetPayload<{
         harvestAction: true;
         boxConfigurationAction: true;
         maintenanceAction: true;
+        statusChangeAction: true;
         createdByUser: { select: { name: true; email: true } };
       };
     };
@@ -72,6 +81,9 @@ import {
   ScoreResult,
   parseApiaryInspectionType,
   calculateScores,
+  WeightReading,
+  WeightReadingResponse,
+  WEIGHT_METRIC,
 } from 'shared-schemas';
 
 const ACTION_INCLUDE = {
@@ -81,6 +93,7 @@ const ACTION_INCLUDE = {
   harvestAction: true,
   boxConfigurationAction: true,
   maintenanceAction: true,
+  statusChangeAction: true,
   createdByUser: { select: { name: true, email: true } },
 };
 
@@ -90,6 +103,7 @@ const ACTION_INCLUDE = {
  */
 const INSPECTION_INCLUDE = {
   observations: true,
+  measurements: true,
   notes: true,
   actions: {
     include: ACTION_INCLUDE,
@@ -215,18 +229,17 @@ export class InspectionsService {
 
   async create(
     createInspectionDto: CreateInspection,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<CreateInspectionResponse> {
-    // Verify that the hive belongs to the user's apiary
+    // The user must be able to write to the hive's apiary.
     const hive = await this.prisma.hive.findFirst({
       where: {
         id: createInspectionDto.hiveId,
-        apiary: {
-          id: filter.apiaryId,
-        },
+        apiary: apiaryWriteScope(filter),
       },
       select: {
         id: true,
+        apiaryId: true,
         apiary: {
           select: {
             settings: true,
@@ -235,15 +248,17 @@ export class InspectionsService {
       },
     });
 
-    if (!hive) {
+    if (!hive?.apiaryId) {
       throw new NotFoundException(
         `Hive with ID ${createInspectionDto.hiveId} not found or doesn't belong to this apiary`,
       );
     }
+    const hiveApiaryId = hive.apiaryId;
     const {
       observations,
       notes,
       actions,
+      weights,
       score: scoreOverride,
       ...inspectionData
     } = createInspectionDto;
@@ -291,6 +306,17 @@ export class InspectionsService {
           });
         }
 
+        // Persist manual weight readings captured during the inspection
+        if (weights && weights.length > 0) {
+          await this.createWeightMeasurements(
+            tx,
+            inspection.hiveId,
+            inspection.id,
+            inspection.date,
+            weights,
+          );
+        }
+
         // Add actions using ActionsService
         if (actions && actions.length > 0) {
           await this.actionsService.createActions(
@@ -313,7 +339,7 @@ export class InspectionsService {
           'inspection.created',
           new InspectionCreatedEvent(
             inspection.hiveId,
-            filter.apiaryId,
+            hiveApiaryId,
             filter.userId,
             inspection.id,
             inspection.date,
@@ -334,7 +360,7 @@ export class InspectionsService {
   }
 
   async findAll(
-    filter: InspectionFilter & Partial<ApiaryUserFilter>,
+    filter: InspectionFilter & ApiaryScopeFilter,
   ): Promise<InspectionResponse[]> {
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
@@ -364,15 +390,15 @@ export class InspectionsService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<InspectionResponse | null> {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
         hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
+          apiary: filter.apiaryId
+            ? { id: filter.apiaryId }
+            : apiaryAccessWhere(filter.userId),
         },
       },
       include: INSPECTION_INCLUDE,
@@ -387,18 +413,14 @@ export class InspectionsService {
   async update(
     id: string,
     updateInspectionDto: UpdateInspection,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<UpdateInspectionResponse> {
     this.logger.debug({ message: 'Updating inspection', updateInspectionDto });
-    // Verify inspection exists and belongs to user's apiary
+    // The user must be able to write to the inspection's hive's apiary.
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
-        hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
-        },
+        hive: { apiary: apiaryWriteScope(filter) },
       },
       select: {
         id: true,
@@ -425,9 +447,24 @@ export class InspectionsService {
       observations,
       notes,
       actions,
+      weights,
       score: scoreOverride,
       ...inspectionData
     } = updateInspectionDto;
+
+    // Re-parenting the inspection requires write access to the target hive's
+    // apiary as well.
+    if (inspectionData.hiveId && inspectionData.hiveId !== inspection.hiveId) {
+      const targetHive = await this.prisma.hive.findFirst({
+        where: { id: inspectionData.hiveId, apiary: apiaryWriteScope(filter) },
+        select: { id: true },
+      });
+      if (!targetHive) {
+        throw new NotFoundException(
+          `Hive with ID ${inspectionData.hiveId} not found or you cannot edit its apiary`,
+        );
+      }
+    }
 
     return this.prisma.$transaction(
       async (tx): Promise<UpdateInspectionResponse> => {
@@ -507,6 +544,22 @@ export class InspectionsService {
           where: { id },
           data: updateData,
         });
+
+        // Replace weight readings when the payload includes them (delete-and-
+        // recreate, mirroring how observations are handled above).
+        if (weights !== undefined) {
+          await tx.measurement.deleteMany({
+            where: { inspectionId: id, metric: WEIGHT_METRIC },
+          });
+          await this.createWeightMeasurements(
+            tx,
+            inspection.hiveId,
+            id,
+            updated.date,
+            weights,
+          );
+        }
+
         return {
           date: updated.date.toISOString(),
           id: updated.id,
@@ -518,16 +571,12 @@ export class InspectionsService {
     );
   }
 
-  async remove(id: string, filter: ApiaryUserFilter, revertFrames = false) {
-    // Verify inspection exists and belongs to user's apiary
+  async remove(id: string, filter: ApiaryScopeFilter, revertFrames = false) {
+    // The user must be able to write to the inspection's hive's apiary.
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
-        hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
-        },
+        hive: { apiary: apiaryWriteScope(filter) },
       },
     });
 
@@ -579,7 +628,7 @@ export class InspectionsService {
   }
 
   async findOverdueInspections(
-    filter: Partial<ApiaryUserFilter>,
+    filter: ApiaryScopeFilter,
   ): Promise<InspectionResponse[]> {
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
@@ -600,7 +649,7 @@ export class InspectionsService {
   }
 
   async findDueTodayInspections(
-    filter: Partial<ApiaryUserFilter>,
+    filter: ApiaryScopeFilter,
   ): Promise<InspectionResponse[]> {
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
 
@@ -630,6 +679,73 @@ export class InspectionsService {
     });
 
     return this.mapInspectionsToDto(inspections);
+  }
+
+  /**
+   * Persists manual weight readings captured during an inspection as
+   * `Measurement` rows (metric = "weight"). Validates that any referenced box
+   * belongs to the inspection's hive. Values are stored as received (canonical
+   * kg); recordedAt defaults to the inspection date.
+   */
+  private async createWeightMeasurements(
+    tx: Prisma.TransactionClient,
+    hiveId: string,
+    inspectionId: string,
+    inspectionDate: Date,
+    weights: WeightReading[],
+  ): Promise<void> {
+    if (!weights || weights.length === 0) return;
+
+    const boxIds = [
+      ...new Set(
+        weights
+          .map((w) => w.boxId)
+          .filter((b): b is string => typeof b === 'string'),
+      ),
+    ];
+    if (boxIds.length > 0) {
+      const boxes = await tx.box.findMany({
+        where: { id: { in: boxIds }, hiveId },
+        select: { id: true },
+      });
+      const validBoxIds = new Set(boxes.map((b) => b.id));
+      const invalid = boxIds.filter((id) => !validBoxIds.has(id));
+      if (invalid.length > 0) {
+        throw new BadRequestException(
+          `Box(es) ${invalid.join(', ')} do not belong to hive ${hiveId}`,
+        );
+      }
+    }
+
+    await tx.measurement.createMany({
+      data: weights.map((w) => ({
+        hiveId,
+        inspectionId,
+        metric: WEIGHT_METRIC,
+        value: w.value,
+        unit: w.unit ?? 'kg',
+        recordedAt: w.recordedAt ? new Date(w.recordedAt) : inspectionDate,
+        source: 'inspection',
+        boxId: w.boxId ?? null,
+        side: w.side ?? null,
+      })),
+    });
+  }
+
+  private mapWeightsToDto(
+    measurements: Measurement[],
+  ): WeightReadingResponse[] {
+    return measurements
+      .filter((m) => m.metric === WEIGHT_METRIC)
+      .sort((a, b) => a.recordedAt.getTime() - b.recordedAt.getTime())
+      .map((m) => ({
+        id: m.id,
+        value: m.value,
+        unit: m.unit,
+        boxId: m.boxId,
+        side: m.side,
+        recordedAt: m.recordedAt.toISOString(),
+      }));
   }
 
   private buildObservationRecords(observations: ObservationSchemaType) {
@@ -727,15 +843,16 @@ export class InspectionsService {
       : {};
   }
 
-  private getApiaryFilter(filter: Partial<ApiaryUserFilter>) {
-    if (!filter.apiaryId || !filter.userId) return {};
-    return {
-      hive: {
-        apiary: {
-          id: filter.apiaryId,
-        },
-      },
-    };
+  private getApiaryFilter(
+    filter: ApiaryScopeFilter,
+  ): Prisma.InspectionWhereInput {
+    // Scope to the selected apiary when one is set, otherwise to every apiary
+    // the user owns or is an active member of. Never fall through to an
+    // unscoped query, which would leak other users' inspections.
+    if (!filter.userId) {
+      throw new ForbiddenException('User is not authenticated');
+    }
+    return { hive: { apiary: apiaryReadScope(filter) } };
   }
 
   private mapInspectionsToDto(
@@ -774,6 +891,7 @@ export class InspectionsService {
         weatherConditions: inspection.weatherConditions ?? null,
         notes: inspection.notes?.[0]?.text ?? null,
         observations: metrics,
+        weights: this.mapWeightsToDto(inspection.measurements),
         status: inspection.status as InspectionStatus,
         score,
         actions,

@@ -16,7 +16,8 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
 import { CalendarService } from './calendar.service';
 import { ICalService } from './ical.service';
@@ -45,13 +46,14 @@ export class CalendarController {
 
   @Get()
   @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+  @ApiaryOptional()
   @ZodValidation(calendarFilterSchema)
   async getCalendarEvents(
     @Query() query: CalendarFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<CalendarResponse> {
     this.logger.log(
-      `Getting calendar events for apiary ${req.apiaryId}${query.hiveId ? `, hive ${query.hiveId}` : ''}`,
+      `Getting calendar events for apiary ${req.apiaryId ?? 'ALL'}${query.hiveId ? `, hive ${query.hiveId}` : ''}`,
     );
 
     return this.calendarService.getCalendarEvents({

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import { useApiaryStore } from '@/hooks/use-apiary';
+import { useApiaryScope } from '@/hooks/use-apiary-scope';
 import {
   CalendarFilter,
   CalendarResponse,
@@ -13,17 +13,18 @@ export type { CalendarEvent, SubscriptionUrlResponse } from 'shared-schemas';
 const CALENDAR_KEYS = {
   all: ['calendar'] as const,
   lists: () => [...CALENDAR_KEYS.all, 'list'] as const,
-  list: (filters: CalendarFilter | undefined) =>
-    [...CALENDAR_KEYS.lists(), filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key: see useApiaryScope.
+  list: (scope: string | null, filters: CalendarFilter | undefined) =>
+    [...CALENDAR_KEYS.lists(), scope, filters] as const,
   subscription: (apiaryId: string) =>
     [...CALENDAR_KEYS.all, 'subscription', apiaryId] as const,
 };
 
 // Get calendar events with optional filtering
 export const useCalendar = (filters?: CalendarFilter) => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<CalendarResponse>({
-    queryKey: CALENDAR_KEYS.list(filters),
+    queryKey: CALENDAR_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.append('hiveId', filters.hiveId);
@@ -34,7 +35,7 @@ export const useCalendar = (filters?: CalendarFilter) => {
       const response = await apiClient.get<CalendarResponse>(url);
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
@@ -56,7 +57,11 @@ export const useCalendarSubscription = (apiaryId: string) => {
 export const useToggleCalendarInspections = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<{ updated: number }, Error, { apiaryId: string; enabled: boolean }>({
+  return useMutation<
+    { updated: number },
+    Error,
+    { apiaryId: string; enabled: boolean }
+  >({
     mutationFn: async ({ apiaryId, enabled }) => {
       const response = await apiClient.patch<{ updated: number }>(
         `/api/calendar/apiary/${apiaryId}/calendar-inspections`,

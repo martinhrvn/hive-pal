@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import {
   FileUploadService,
   FileUploadConfig,
@@ -27,9 +27,11 @@ export class DocumentsService {
   async create(
     dto: CreateDocument,
     file: Express.Multer.File,
-    _filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<DocumentResponse> {
     this.fileUpload.validateFile(file, CONFIG);
+    // The target apiary comes from the body: it must be one the user can edit.
+    await this.fileUpload.assertApiaryWritable(dto.apiaryId, filter.userId);
     if (dto.hiveId) {
       await this.fileUpload.validateHiveBelongsToApiary(
         dto.hiveId,
@@ -78,7 +80,7 @@ export class DocumentsService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<DocumentResponse> {
     const document = await this.prisma.document.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
@@ -93,7 +95,7 @@ export class DocumentsService {
 
   async getDownloadUrl(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     const document = await this.prisma.document.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
@@ -106,9 +108,9 @@ export class DocumentsService {
     return this.fileUpload.getDownloadUrl(document.storageKey);
   }
 
-  async delete(id: string, filter: ApiaryUserFilter): Promise<void> {
+  async delete(id: string, filter: ApiaryScopeFilter): Promise<void> {
     const document = await this.prisma.document.findFirst({
-      where: this.fileUpload.ownershipWhere(id, filter),
+      where: this.fileUpload.ownershipWhere(id, filter, 'write'),
     });
 
     if (!document) {

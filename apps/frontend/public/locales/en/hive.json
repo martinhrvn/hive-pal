@@ -23,7 +23,8 @@
   },
   "edit": {
     "title": "Edit Hive",
-    "success": "Hive updated successfully"
+    "success": "Hive updated successfully",
+    "error": "Failed to save the hive. Please try again."
   },
   "delete": {
     "confirm": "Are you sure you want to delete this hive?",
@@ -142,7 +143,8 @@
     "hivePlaceholder": "hive 01",
     "notesPlaceholder": "Good hive",
     "pickDate": "Pick a date",
-    "submit": "Submit"
+    "submit": "Submit",
+    "validationError": "Cannot save — please check: {{fields}}"
   },
   "settings": {
     "title": "Hive Settings",
@@ -198,7 +200,7 @@
     "saveAllChanges": "Save All Changes",
     "equipmentPlanningOverview": "Equipment Planning Overview",
     "trackCurrentEquipment": "Track your current equipment and plan for seasonal expansion",
-    "table":{
+    "table": {
       "title": "Equipment",
       "addEquipment": "Add Equipment",
       "equipmentName": "Equipment Name",
@@ -222,7 +224,7 @@
   },
   "llmPrompt": {
     "title": "LLM Prompt for {{hiveName}}",
-    "description":"Copy this prompt and paste it into your preferred AI assistant for a\nhive health assessment. You can edit the text before copying.",
+    "description": "Copy this prompt and paste it into your preferred AI assistant for a\nhive health assessment. You can edit the text before copying.",
     "charactersLength": "{{length}} characters",
     "promptCopied": "Copied",
     "promptCopyToClipboard": "Copy to clipboard",

@@ -5,7 +5,8 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryReadScope, apiaryWriteScope } from '../common';
 import {
   FileUploadService,
   FileUploadConfig,
@@ -31,9 +32,11 @@ export class PhotosService {
   async create(
     dto: CreatePhoto,
     file: Express.Multer.File,
-    _filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<PhotoResponse> {
     this.fileUpload.validateFile(file, CONFIG);
+    // The target apiary comes from the body: it must be one the user can edit.
+    await this.fileUpload.assertApiaryWritable(dto.apiaryId, filter.userId);
     if (dto.hiveId) {
       await this.fileUpload.validateHiveBelongsToApiary(
         dto.hiveId,
@@ -79,7 +82,7 @@ export class PhotosService {
     return photos.map((p) => this.mapToResponse(p));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<PhotoResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<PhotoResponse> {
     const photo = await this.prisma.photo.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
     });
@@ -93,7 +96,7 @@ export class PhotosService {
 
   async getDownloadUrl(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     const photo = await this.prisma.photo.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
@@ -106,9 +109,9 @@ export class PhotosService {
     return this.fileUpload.getDownloadUrl(photo.storageKey);
   }
 
-  async delete(id: string, filter: ApiaryUserFilter): Promise<void> {
+  async delete(id: string, filter: ApiaryScopeFilter): Promise<void> {
     const photo = await this.prisma.photo.findFirst({
-      where: this.fileUpload.ownershipWhere(id, filter),
+      where: this.fileUpload.ownershipWhere(id, filter, 'write'),
     });
 
     if (!photo) {
@@ -124,7 +127,7 @@ export class PhotosService {
   async createForInspection(
     inspectionId: string,
     file: Express.Multer.File,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
     caption?: string,
   ): Promise<PhotoResponse> {
     this.fileUpload.validateFile(file, CONFIG);
@@ -132,11 +135,12 @@ export class PhotosService {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id: inspectionId,
-        hive: { apiary: { id: filter.apiaryId } },
+        hive: { apiary: apiaryWriteScope(filter) },
       },
+      include: { hive: { select: { apiaryId: true } } },
     });
 
-    if (!inspection) {
+    if (!inspection?.hive.apiaryId) {
       throw new NotFoundException(
         `Inspection with ID ${inspectionId} not found`,
       );
@@ -158,7 +162,7 @@ export class PhotosService {
     const photo = await this.prisma.photo.create({
       data: {
         id,
-        apiaryId: filter.apiaryId,
+        apiaryId: inspection.hive.apiaryId,
         hiveId: inspection.hiveId,
         inspectionId,
         caption: caption ?? null,
@@ -179,12 +183,12 @@ export class PhotosService {
 
   async findByInspection(
     inspectionId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<PhotoResponse[]> {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id: inspectionId,
-        hive: { apiary: { id: filter.apiaryId } },
+        hive: { apiary: apiaryReadScope(filter) },
       },
     });
 
@@ -205,14 +209,14 @@ export class PhotosService {
   async getInspectionPhotoDownloadUrl(
     inspectionId: string,
     photoId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     const photo = await this.prisma.photo.findFirst({
       where: {
         id: photoId,
         inspectionId,
         inspection: {
-          hive: { apiary: { id: filter.apiaryId } },
+          hive: { apiary: apiaryReadScope(filter) },
         },
       },
     });
@@ -227,14 +231,14 @@ export class PhotosService {
   async deleteInspectionPhoto(
     inspectionId: string,
     photoId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<void> {
     const photo = await this.prisma.photo.findFirst({
       where: {
         id: photoId,
         inspectionId,
         inspection: {
-          hive: { apiary: { id: filter.apiaryId } },
+          hive: { apiary: apiaryWriteScope(filter) },
         },
       },
     });

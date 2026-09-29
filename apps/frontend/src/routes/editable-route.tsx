@@ -9,21 +9,25 @@ interface EditableRouteProps {
 
 /**
  * Route guard that only allows access for users with edit permissions
- * on the active apiary (OWNER or EDITOR role).
- * Redirects VIEWER users to the specified path or home.
+ * (OWNER or EDITOR role). In single-apiary mode this is the selected apiary's
+ * role; in the all-apiaries view the edited resource may live in any apiary,
+ * so the guard only requires edit rights on at least one apiary and leaves the
+ * exact check to the page and the backend.
+ * Redirects VIEWER-only users to the specified path or home.
  */
 export function EditableRoute({
   children,
   redirectTo = '/',
 }: EditableRouteProps) {
-  const { canEdit, role } = useApiaryPermission();
+  const { canEdit, canEditAny, viewAllApiaries, isLoaded } =
+    useApiaryPermission();
 
-  // If role is undefined (still loading), render children to avoid flash
-  if (role === undefined) {
+  // Apiaries still loading: render children to avoid a redirect flash
+  if (!isLoaded) {
     return <>{children}</>;
   }
 
-  if (!canEdit) {
+  if (!(viewAllApiaries ? canEditAny : canEdit)) {
     return <Navigate to={redirectTo} replace />;
   }
 

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import {
+  ArrowLeftRight,
   Box,
   ClipboardCheck,
   Droplet,
@@ -19,6 +20,7 @@ import {
   FrameActionDetails,
   MaintenanceActionDetails,
   NoteActionDetails,
+  StatusChangeActionDetails,
   TreatmentActionDetails,
 } from 'shared-schemas';
 import { cn } from '@/lib/utils';
@@ -52,6 +54,10 @@ const ACTION_VISUAL: Record<
   [ActionType.NOTE]: {
     Icon: MessageSquare,
     tone: 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
+  },
+  [ActionType.STATUS_CHANGE]: {
+    Icon: ArrowLeftRight,
+    tone: 'bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300',
   },
   [ActionType.HARVEST]: {
     Icon: ClipboardCheck,
@@ -238,6 +244,37 @@ const NoteDetails = ({ details }: { details: NoteActionDetails }) => (
   </p>
 );
 
+const HIVE_STATUS_LABEL: Record<string, string> = {
+  ACTIVE: 'Active',
+  INACTIVE: 'Inactive',
+  DEAD: 'Dead',
+  SOLD: 'Sold',
+  UNKNOWN: 'Unknown',
+  ARCHIVED: 'Archived',
+};
+
+const statusLabel = (status: string) => HIVE_STATUS_LABEL[status] ?? status;
+
+const StatusChangeDetails = ({
+  details,
+}: {
+  details: StatusChangeActionDetails;
+}) => (
+  <div className="flex gap-2 flex-wrap items-center">
+    {details.fromStatus && (
+      <>
+        <Badge className="bg-stone-100 text-stone-800 hover:bg-stone-200 font-normal">
+          {statusLabel(details.fromStatus)}
+        </Badge>
+        <span className="text-stone-500 dark:text-stone-400">→</span>
+      </>
+    )}
+    <Badge className="bg-sky-100 text-sky-800 hover:bg-sky-200 font-normal">
+      {statusLabel(details.toStatus)}
+    </Badge>
+  </div>
+);
+
 // ─── Action label ─────────────────────────────────────────────────────────────
 
 const ACTION_LABELS: Record<string, string> = {
@@ -247,6 +284,7 @@ const ACTION_LABELS: Record<string, string> = {
   BOX_CONFIGURATION: 'Box Configuration',
   MAINTENANCE: 'Maintenance',
   NOTE: 'Note',
+  STATUS_CHANGE: 'Status Change',
   HARVEST: 'Harvest',
   OTHER: 'Other',
 };
@@ -278,6 +316,8 @@ const ActionItem = ({
         return <MaintenanceDetails details={details} />;
       case 'NOTE':
         return <NoteDetails details={details} />;
+      case 'STATUS_CHANGE':
+        return <StatusChangeDetails details={details} />;
       default:
         return null;
     }

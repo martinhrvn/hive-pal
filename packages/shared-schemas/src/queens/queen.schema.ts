@@ -30,6 +30,9 @@ export const queenResponseSchema = z.object({
   status: queenStatusSchema.nullable(),
   installedAt: z.string().datetime().optional().nullable(),
   replacedAt: z.string().datetime().optional().nullable(),
+  // Apiary of the queen's current hive (null for a queen not in a hive).
+  apiaryId: z.string().uuid().optional().nullable(),
+  apiaryName: z.string().optional().nullable(),
 });
 
 export const activeQueenSchema = z.object({

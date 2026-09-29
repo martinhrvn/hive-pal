@@ -44,7 +44,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('inspection');
-  const { canEdit } = useApiaryPermission();
+  const { canEditApiary } = useApiaryPermission();
   const [showAll, setShowAll] = useState(false);
   const MAX_DISPLAYED = 5;
   const { data: hives } = useHives();
@@ -227,19 +227,23 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                                 <Eye className="h-4 w-4 mr-2" />
                                 {t('inspection:timeline.viewDetails')}
                               </DropdownMenuItem>
-                              {canEdit && inspection.status !==
-                                InspectionStatus.CANCELLED && (
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    navigate(
-                                      `/inspections/${inspection.id}/edit`,
-                                    )
-                                  }
-                                >
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  {t('inspection:timeline.edit')}
-                                </DropdownMenuItem>
-                              )}
+                              {canEditApiary(
+                                hives?.find(h => h.id === inspection.hiveId)
+                                  ?.apiaryId,
+                              ) &&
+                                inspection.status !==
+                                  InspectionStatus.CANCELLED && (
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      navigate(
+                                        `/inspections/${inspection.id}/edit`,
+                                      )
+                                    }
+                                  >
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    {t('inspection:timeline.edit')}
+                                  </DropdownMenuItem>
+                                )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -251,7 +255,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               size={16}
                               className="text-muted-foreground"
                             />
-                            <span className="text-sm">{t('inspection:timeline.strength')}</span>
+                            <span className="text-sm">
+                              {t('inspection:timeline.strength')}
+                            </span>
                             <span
                               className={`font-semibold ${getStrengthColor(inspection.observations?.strength ?? null)}`}
                             >
@@ -264,7 +270,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               size={16}
                               className="text-muted-foreground"
                             />
-                            <span className="text-sm">{t('inspection:timeline.honey')}</span>
+                            <span className="text-sm">
+                              {t('inspection:timeline.honey')}
+                            </span>
                             <span
                               className={`font-semibold ${getHoneyColor(inspection.observations?.honeyStores ?? null)}`}
                             >
@@ -277,7 +285,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               size={16}
                               className="text-muted-foreground"
                             />
-                            <span className="text-sm">{t('inspection:timeline.brood')}</span>
+                            <span className="text-sm">
+                              {t('inspection:timeline.brood')}
+                            </span>
                             <span
                               className={`font-semibold ${getBroodColor(calculateBroodScore(inspection) as number | null)}`}
                             >
@@ -352,7 +362,9 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
               >
                 {showAll
                   ? t('inspection:timeline.showFewer')
-                  : t('inspection:timeline.showAllCount', { count: sortedInspections.length })}
+                  : t('inspection:timeline.showAllCount', {
+                      count: sortedInspections.length,
+                    })}
                 <ChevronDownIcon
                   className={`ml-2 h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`}
                 />

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ActionType } from './types';
 import { boxTypeSchema } from '../hives/box.schema';
+import { hiveStatusSchema } from '../hives/status';
 
 // Treatment product configuration with default units and quantity requirements
 export const TREATMENT_PRODUCTS = {
@@ -80,6 +81,14 @@ export const noteActionDetailsSchema = z.object({
   content: z.string().min(1),
 });
 
+// Status change details. `fromStatus` is optional on create — the backend fills
+// it in from the hive's current status — and always present on responses.
+export const statusChangeActionDetailsSchema = z.object({
+  type: z.literal(ActionType.STATUS_CHANGE),
+  fromStatus: hiveStatusSchema.nullish(),
+  toStatus: hiveStatusSchema,
+});
+
 export const otherActionDetailsSchema = z.object({
   type: z.literal(ActionType.OTHER),
 });
@@ -93,6 +102,7 @@ export const actionDetailsSchema = z.discriminatedUnion('type', [
   boxConfigurationActionDetailsSchema,
   maintenanceActionDetailsSchema,
   noteActionDetailsSchema,
+  statusChangeActionDetailsSchema,
   otherActionDetailsSchema,
 ]);
 
@@ -105,5 +115,8 @@ export type MaintenanceActionDetails = z.infer<typeof maintenanceActionDetailsSc
 export type MaintenanceComponent = z.infer<typeof maintenanceComponentSchema>;
 export type MaintenanceStatus = z.infer<typeof maintenanceStatusSchema>;
 export type NoteActionDetails = z.infer<typeof noteActionDetailsSchema>;
+export type StatusChangeActionDetails = z.infer<
+  typeof statusChangeActionDetailsSchema
+>;
 export type OtherActionDetails = z.infer<typeof otherActionDetailsSchema>;
 export type ActionDetails = z.infer<typeof actionDetailsSchema>;

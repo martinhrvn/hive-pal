@@ -64,7 +64,9 @@
     "teams": "Teams",
     "addApiary": "Add apiary",
     "noApiarySelected": "No apiary selected",
-    "selectOrCreate": "Select or create an apiary"
+    "selectOrCreate": "Select or create an apiary",
+    "allApiaries": "All apiaries",
+    "allApiariesSubtitle": "Showing every apiary"
   },
   "map": {
     "selectLocation": "Select Apiary Location",

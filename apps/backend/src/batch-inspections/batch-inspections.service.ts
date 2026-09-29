@@ -17,6 +17,7 @@ import {
   CreateInspection,
 } from 'shared-schemas';
 import { InspectionsService } from '../inspections/inspections.service';
+import { apiaryReadScope, apiaryWriteAccessWhere } from '../common';
 
 // Type for batch inspection with included hives
 type BatchInspectionWithHives = Prisma.BatchInspectionGetPayload<{
@@ -47,13 +48,20 @@ export class BatchInspectionsService {
    * Create a new batch inspection
    */
   async create(
-    apiaryId: string,
+    selectedApiaryId: string | undefined,
     userId: string,
     createDto: CreateBatchInspection,
   ): Promise<BatchInspectionResponse> {
-    // Verify apiary ownership
+    // A batch belongs to the apiary named in the body (falling back to the
+    // selected apiary), which must be writable.
+    const apiaryId = createDto.apiaryId ?? selectedApiaryId;
+    if (!apiaryId) {
+      throw new BadRequestException(
+        'Select an apiary to create a batch inspection',
+      );
+    }
     const apiary = await this.prisma.apiary.findFirst({
-      where: { id: apiaryId, userId },
+      where: { id: apiaryId, ...apiaryWriteAccessWhere(userId) },
     });
 
     if (!apiary) {
@@ -113,12 +121,9 @@ export class BatchInspectionsService {
   /**
    * Get all batch inspections for an apiary
    */
-  async findAll(apiaryId: string, userId: string) {
-    // Verify apiary ownership
-    await this.verifyApiaryOwnership(apiaryId, userId);
-
+  async findAll(apiaryId: string | undefined, userId: string) {
     const batchInspections = await this.prisma.batchInspection.findMany({
-      where: { apiaryId },
+      where: { apiary: apiaryReadScope({ apiaryId, userId }) },
       include: {
         hives: {
           include: {
@@ -149,14 +154,11 @@ export class BatchInspectionsService {
    */
   async findOne(
     id: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
   ): Promise<BatchInspectionResponse> {
-    // Verify apiary ownership
-    await this.verifyApiaryOwnership(apiaryId, userId);
-
     const batchInspection = await this.prisma.batchInspection.findFirst({
-      where: { id, apiaryId },
+      where: { id, apiary: apiaryReadScope({ apiaryId, userId }) },
       include: {
         hives: {
           include: {
@@ -188,12 +190,17 @@ export class BatchInspectionsService {
    */
   async update(
     id: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
     updateDto: UpdateBatchInspection,
   ): Promise<BatchInspectionResponse> {
     // Verify apiary ownership and get batch
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'write',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
@@ -233,8 +240,17 @@ export class BatchInspectionsService {
   /**
    * Delete batch inspection (only when DRAFT)
    */
-  async delete(id: string, apiaryId: string, userId: string): Promise<void> {
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+  async delete(
+    id: string,
+    apiaryId: string | undefined,
+    userId: string,
+  ): Promise<void> {
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'write',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
@@ -254,11 +270,16 @@ export class BatchInspectionsService {
    */
   async reorderHives(
     id: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
     reorderDto: ReorderBatchHives,
   ): Promise<BatchInspectionResponse> {
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'write',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
@@ -291,10 +312,15 @@ export class BatchInspectionsService {
    */
   async start(
     id: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
   ): Promise<BatchInspectionResponse> {
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'write',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) !== BatchInspectionStatus.DRAFT
@@ -337,10 +363,15 @@ export class BatchInspectionsService {
    */
   async getCurrentHive(
     id: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
   ): Promise<CurrentHiveToInspect> {
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'read',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) !==
@@ -408,10 +439,15 @@ export class BatchInspectionsService {
    */
   async skipHive(
     id: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
   ): Promise<CurrentHiveToInspect> {
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'write',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) !==
@@ -462,10 +498,15 @@ export class BatchInspectionsService {
   async cancelHive(
     id: string,
     hiveId: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
   ): Promise<BatchInspectionResponse> {
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'write',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) ===
@@ -495,11 +536,16 @@ export class BatchInspectionsService {
    */
   async createInspectionAndNext(
     id: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
     inspectionData: CreateInspection,
   ): Promise<{ inspection: any; next: CurrentHiveToInspect | null }> {
-    const batch = await this.getBatchAndVerifyOwnership(id, apiaryId, userId);
+    const batch = await this.getBatchAndVerifyAccess(
+      id,
+      apiaryId,
+      userId,
+      'write',
+    );
 
     if (
       (batch.status as BatchInspectionStatus) !==
@@ -532,7 +578,7 @@ export class BatchInspectionsService {
 
     // Create the inspection
     const inspection = await this.inspectionsService.create(inspectionData, {
-      apiaryId,
+      apiaryId: batch.apiaryId,
       userId,
     });
 
@@ -584,33 +630,23 @@ export class BatchInspectionsService {
   }
 
   /**
-   * Verify apiary ownership
+   * Load a batch the user can access. Reads honour the selected apiary as a
+   * filter; writes require OWNER/EDITOR on the batch's own apiary.
    */
-  private async verifyApiaryOwnership(
-    apiaryId: string,
-    userId: string,
-  ): Promise<void> {
-    const apiary = await this.prisma.apiary.findFirst({
-      where: { id: apiaryId, userId },
-    });
-
-    if (!apiary) {
-      throw new ForbiddenException('Apiary not found or access denied');
-    }
-  }
-
-  /**
-   * Get batch and verify ownership
-   */
-  private async getBatchAndVerifyOwnership(
+  private async getBatchAndVerifyAccess(
     batchId: string,
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
+    mode: 'read' | 'write',
   ) {
-    await this.verifyApiaryOwnership(apiaryId, userId);
-
     const batch = await this.prisma.batchInspection.findFirst({
-      where: { id: batchId, apiaryId },
+      where: {
+        id: batchId,
+        apiary:
+          mode === 'write'
+            ? apiaryWriteAccessWhere(userId)
+            : apiaryReadScope({ apiaryId, userId }),
+      },
     });
 
     if (!batch) {

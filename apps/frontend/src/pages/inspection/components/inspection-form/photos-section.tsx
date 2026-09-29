@@ -1,5 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isAxiosError } from 'axios';
+import { toast } from 'sonner';
 import { Camera, Loader2, Info, X, ImagePlus } from 'lucide-react';
 import {
   useInspectionPhotos,
@@ -12,6 +14,51 @@ import { Button } from '@/components/ui/button';
 
 const MAX_PHOTOS = 5;
 const ACCEPTED_TYPES = 'image/jpeg,image/png,image/webp,image/heic';
+const ACCEPTED_TYPE_LIST = ACCEPTED_TYPES.split(',');
+// Mirrors the limit the API enforces (photos.service.ts). Checking here too
+// lets us name the offending file instead of failing anonymously mid-upload.
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE_MB = MAX_FILE_SIZE / 1024 / 1024;
+
+type Translate = (key: string, options?: Record<string, unknown>) => string;
+
+/** Returns why a file cannot be accepted, or null when it is fine. */
+function rejectionReason(file: File, t: Translate): string | null {
+  // Some browsers report an empty type for HEIC; only reject what we can judge.
+  if (file.type && !ACCEPTED_TYPE_LIST.includes(file.type)) {
+    return t('inspection:form.photos.unsupportedType', { name: file.name });
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    return t('inspection:form.photos.tooLarge', {
+      name: file.name,
+      max: MAX_FILE_SIZE_MB,
+    });
+  }
+  return null;
+}
+
+function uploadErrorMessage(
+  error: unknown,
+  fileName: string,
+  t: Translate,
+): string {
+  if (isAxiosError(error)) {
+    // A reverse proxy can reject the body before it ever reaches the API,
+    // in which case there is no API message to show.
+    if (error.response?.status === 413) {
+      return t('inspection:form.photos.tooLarge', {
+        name: fileName,
+        max: MAX_FILE_SIZE_MB,
+      });
+    }
+    const apiMessage = (error.response?.data as { message?: unknown } | undefined)
+      ?.message;
+    if (typeof apiMessage === 'string' && apiMessage.length > 0) {
+      return apiMessage;
+    }
+  }
+  return t('inspection:form.photos.uploadFailed', { name: fileName });
+}
 
 export interface PendingPhoto {
   id: string;
@@ -64,7 +111,26 @@ export function PhotosSection({
       e.target.value = '';
 
       const remaining = MAX_PHOTOS - totalCount;
-      const filesToAdd = files.slice(0, remaining);
+      if (remaining <= 0) {
+        toast.error(t('inspection:form.photos.maxReached', { max: MAX_PHOTOS }));
+        return;
+      }
+
+      const accepted: File[] = [];
+      for (const file of files) {
+        const reason = rejectionReason(file, t);
+        if (reason) {
+          toast.error(reason);
+        } else {
+          accepted.push(file);
+        }
+      }
+      if (accepted.length === 0) return;
+
+      const filesToAdd = accepted.slice(0, remaining);
+      if (filesToAdd.length < accepted.length) {
+        toast.error(t('inspection:form.photos.maxReached', { max: MAX_PHOTOS }));
+      }
 
       if (isNewInspection) {
         const newPending: PendingPhoto[] = filesToAdd.map(file => ({
@@ -73,12 +139,20 @@ export function PhotosSection({
           previewUrl: URL.createObjectURL(file),
         }));
         onPendingPhotosChange?.([...pendingPhotos, ...newPending]);
-      } else {
-        for (const file of filesToAdd) {
+        return;
+      }
+
+      for (const file of filesToAdd) {
+        try {
           const formData = new FormData();
           formData.append('file', file);
           formData.append('fileName', file.name);
           await uploadPhoto(formData);
+        } catch (error) {
+          // Without this the rejection was swallowed by the event handler and
+          // the picked photo simply never appeared.
+          console.error('Failed to upload photo:', file.name, error);
+          toast.error(uploadErrorMessage(error, file.name, t));
         }
       }
     },
@@ -88,6 +162,7 @@ export function PhotosSection({
       onPendingPhotosChange,
       pendingPhotos,
       uploadPhoto,
+      t,
     ],
   );
 
@@ -97,11 +172,17 @@ export function PhotosSection({
         const photo = pendingPhotos.find(p => p.id === photoId);
         if (photo) URL.revokeObjectURL(photo.previewUrl);
         onPendingPhotosChange?.(pendingPhotos.filter(p => p.id !== photoId));
-      } else {
+        return;
+      }
+
+      try {
         await deletePhoto.mutateAsync(photoId);
+      } catch (error) {
+        console.error('Failed to delete photo:', photoId, error);
+        toast.error(t('inspection:form.photos.deleteFailed'));
       }
     },
-    [onPendingPhotosChange, pendingPhotos, deletePhoto],
+    [onPendingPhotosChange, pendingPhotos, deletePhoto, t],
   );
 
   if (features && !features.storageEnabled) {

@@ -6,7 +6,12 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import {
+  apiaryReadScope,
+  apiaryWriteAccessWhere,
+  apiaryWriteScope,
+} from '../common';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CreateQuickCheck,
@@ -26,7 +31,8 @@ const MAX_PHOTO_SIZE = 10 * 1024 * 1024; // 10MB
 
 interface QuickCheckFilterInternal {
   hiveId?: string;
-  apiaryId: string;
+  // Selected apiary (a filter); absent = every apiary the user can access.
+  apiaryId?: string;
   userId: string;
   startDate?: string;
   endDate?: string;
@@ -42,24 +48,49 @@ export class QuickChecksService {
 
   async create(
     dto: CreateQuickCheck,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QuickCheckResponse> {
-    // If hiveId is provided, verify it belongs to the apiary
+    // The quick check belongs to the hive's apiary when a hive is given,
+    // otherwise to the selected apiary; either way it must be writable.
+    let apiaryId: string;
     if (dto.hiveId) {
       const hive = await this.prisma.hive.findFirst({
-        where: { id: dto.hiveId, apiaryId: filter.apiaryId },
+        where: { id: dto.hiveId, apiary: apiaryWriteScope(filter) },
+        select: { apiaryId: true },
       });
 
-      if (!hive) {
+      if (!hive?.apiaryId) {
         throw new NotFoundException(
-          `Hive with ID ${dto.hiveId} not found in apiary`,
+          `Hive with ID ${dto.hiveId} not found or you cannot edit its apiary`,
         );
       }
+      apiaryId = hive.apiaryId;
+    } else {
+      // The apiary named in the body, falling back to the selected apiary.
+      const targetApiaryId = dto.apiaryId ?? filter.apiaryId;
+      if (!targetApiaryId) {
+        throw new BadRequestException(
+          'Select an apiary to create a quick check',
+        );
+      }
+      const apiary = await this.prisma.apiary.findFirst({
+        where: {
+          id: targetApiaryId,
+          ...apiaryWriteAccessWhere(filter.userId),
+        },
+        select: { id: true },
+      });
+      if (!apiary) {
+        throw new NotFoundException(
+          `Apiary with ID ${targetApiaryId} not found or you cannot edit it`,
+        );
+      }
+      apiaryId = apiary.id;
     }
 
     const quickCheck = await this.prisma.quickCheck.create({
       data: {
-        apiaryId: filter.apiaryId,
+        apiaryId,
         hiveId: dto.hiveId ?? null,
         date: dto.date ? new Date(dto.date) : new Date(),
         note: dto.note ?? null,
@@ -75,7 +106,7 @@ export class QuickChecksService {
     this.logger.log({
       message: 'Quick check created',
       quickCheckId: quickCheck.id,
-      apiaryId: filter.apiaryId,
+      apiaryId,
       hiveId: dto.hiveId,
       userId: filter.userId,
     });
@@ -86,19 +117,8 @@ export class QuickChecksService {
   async findAll(
     filter: QuickCheckFilterInternal,
   ): Promise<QuickCheckResponse[]> {
-    // Verify apiary belongs to user
-    const apiary = await this.prisma.apiary.findFirst({
-      where: { id: filter.apiaryId },
-    });
-
-    if (!apiary) {
-      throw new NotFoundException(
-        `Apiary with ID ${filter.apiaryId} not found`,
-      );
-    }
-
     const where: Record<string, unknown> = {
-      apiary: { id: filter.apiaryId },
+      apiary: apiaryReadScope(filter),
     };
 
     if (filter.hiveId) {
@@ -126,12 +146,12 @@ export class QuickChecksService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QuickCheckResponse> {
     const quickCheck = await this.prisma.quickCheck.findFirst({
       where: {
         id,
-        apiary: { id: filter.apiaryId },
+        apiary: apiaryReadScope(filter),
       },
       include: {
         photos: true,
@@ -146,11 +166,11 @@ export class QuickChecksService {
     return this.mapToResponse(quickCheck);
   }
 
-  async delete(id: string, filter: ApiaryUserFilter): Promise<void> {
+  async delete(id: string, filter: ApiaryScopeFilter): Promise<void> {
     const quickCheck = await this.prisma.quickCheck.findFirst({
       where: {
         id,
-        apiary: { id: filter.apiaryId },
+        apiary: apiaryWriteScope(filter),
       },
       include: { photos: { select: { storageKey: true } } },
     });
@@ -185,7 +205,7 @@ export class QuickChecksService {
   async uploadPhoto(
     quickCheckId: string,
     file: Express.Multer.File,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QuickCheckPhotoResponse> {
     if (!this.storageService.isEnabled()) {
       throw new BadRequestException(
@@ -208,7 +228,7 @@ export class QuickChecksService {
     const quickCheck = await this.prisma.quickCheck.findFirst({
       where: {
         id: quickCheckId,
-        apiary: { id: filter.apiaryId },
+        apiary: apiaryWriteScope(filter),
       },
       include: { photos: { select: { id: true } } },
     });
@@ -259,7 +279,7 @@ export class QuickChecksService {
   async getPhotoDownloadUrl(
     quickCheckId: string,
     photoId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     if (!this.storageService.isEnabled()) {
       throw new BadRequestException(
@@ -272,7 +292,7 @@ export class QuickChecksService {
         id: photoId,
         quickCheckId,
         quickCheck: {
-          apiary: { id: filter.apiaryId },
+          apiary: apiaryReadScope(filter),
         },
       },
     });
@@ -293,14 +313,14 @@ export class QuickChecksService {
   async deletePhoto(
     quickCheckId: string,
     photoId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<void> {
     const photo = await this.prisma.quickCheckPhoto.findFirst({
       where: {
         id: photoId,
         quickCheckId,
         quickCheck: {
-          apiary: { id: filter.apiaryId },
+          apiary: apiaryWriteScope(filter),
         },
       },
     });

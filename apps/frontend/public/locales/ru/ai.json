@@ -1,0 +1,38 @@
+{
+  "badge": {
+    "label": "ИИ"
+  },
+  "banner": {
+    "title": "Доступны рекомендации ИИ",
+    "pending_one": "{{count}} рекомендация в ожидании",
+    "pending_other": "{{count}} рекомендаций в ожидании",
+    "conflicts_one": "{{count}} конфликт",
+    "conflicts_other": "{{count}} конфликтов",
+    "summary": "{{pending}}.",
+    "summaryWithConflicts": "{{pending}}, {{conflicts}}.",
+    "acceptAllSafe": "Принять все безопасные",
+    "reviewConflicts": "Просмотреть конфликты",
+    "dismissAll": "Отклонить все"
+  },
+  "field": {
+    "conflict": "Рекомендация ИИ конфликтует с существующим значением",
+    "available": "Доступна рекомендация ИИ",
+    "accept": "Принять",
+    "dismiss": "Отклонить"
+  },
+  "preview": {
+    "conflictNote": "Содержит значения, которые перезапишут существующее содержимое",
+    "contentNote": "Содержит содержимое, предложенное ИИ",
+    "review": "Просмотреть",
+    "hidePreview": "Скрыть предпросмотр",
+    "current": "Текущее",
+    "ai": "ИИ",
+    "empty": "Пусто",
+    "accept": "Принять",
+    "dismiss": "Отклонить"
+  },
+  "suggestion": {
+    "conflict": "Конфликтует с существующим значением",
+    "willFill": "Заполнит это поле"
+  }
+}

@@ -178,7 +178,11 @@ export const HiveDetailPage = () => {
                         </Popover>
                       )}
                       {hiveId && (
-                        <HiveStatusButton hiveId={hiveId} status={hive?.status} />
+                        <HiveStatusButton
+                          hiveId={hiveId}
+                          status={hive?.status}
+                          apiaryId={hive?.apiaryId}
+                        />
                       )}
                     </div>
                   </div>
@@ -196,9 +200,13 @@ export const HiveDetailPage = () => {
                 {((hive?.inspectionType === 'subjective' && hive?.hiveScore) ||
                   (hive?.inspectionType === 'data_driven' && hiveId)) && (
                   <div className="border-t border-stone-200 dark:border-stone-800 mt-4 px-4 @sm/hive:px-5 @lg/hive:px-6 py-4">
-                    {hive?.inspectionType === 'subjective' && hive?.hiveScore && (
-                      <StatisticCards score={hive.hiveScore} variant="inline" />
-                    )}
+                    {hive?.inspectionType === 'subjective' &&
+                      hive?.hiveScore && (
+                        <StatisticCards
+                          score={hive.hiveScore}
+                          variant="inline"
+                        />
+                      )}
                     {hive?.inspectionType === 'data_driven' && hiveId && (
                       <HiveHeaderStats hiveId={hiveId} />
                     )}
@@ -220,7 +228,11 @@ export const HiveDetailPage = () => {
           </div>
 
           {/* Tabs for different sections */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-4 sm:mb-6">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="mb-4 sm:mb-6"
+          >
             <TabsList className="mb-3 sm:mb-4 flex-wrap h-auto">
               <TabsTrigger value="overview" className="text-xs sm:text-sm">
                 Overview
@@ -248,22 +260,30 @@ export const HiveDetailPage = () => {
               {(hive?.hiveScore?.warnings?.length ?? 0) > 0 && (
                 <Alert className="mb-4 border-amber-400 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-100 dark:border-amber-600">
                   <AlertTriangle className="h-4 w-4 !text-amber-600 dark:!text-amber-400" />
-                  <AlertTitle className="font-semibold">Inspection Warnings</AlertTitle>
+                  <AlertTitle className="font-semibold">
+                    Inspection Warnings
+                  </AlertTitle>
                   <AlertDescription>
                     <ul className="mt-1 space-y-1">
-                      {hive!.hiveScore!.warnings.map((w) => (
+                      {hive!.hiveScore!.warnings.map(w => (
                         <li key={w}>{WARNING_LABELS[w] ?? w}</li>
                       ))}
                     </ul>
                   </AlertDescription>
                 </Alert>
               )}
-              {hiveId && <HiveTodos hiveId={hiveId} />}
+              {hiveId && (
+                <HiveTodos hiveId={hiveId} apiaryId={hive?.apiaryId} />
+              )}
               <HiveTimeline hiveId={hiveId} apiaryId={hive?.apiaryId} />
             </TabsContent>
 
             <TabsContent value="analytics">
-              <HiveCharts hiveId={hiveId} inspectionType={hive?.inspectionType ?? 'data_driven'} hiveScore={hive?.hiveScore} />
+              <HiveCharts
+                hiveId={hiveId}
+                inspectionType={hive?.inspectionType ?? 'data_driven'}
+                hiveScore={hive?.hiveScore}
+              />
             </TabsContent>
 
             <TabsContent value="boxes">
@@ -275,7 +295,12 @@ export const HiveDetailPage = () => {
             </TabsContent>
 
             <TabsContent value="queens">
-              {hive && <QueenHistoryTab hiveId={hive.id} activeQueen={hive.activeQueen} />}
+              {hive && (
+                <QueenHistoryTab
+                  hiveId={hive.id}
+                  activeQueen={hive.activeQueen}
+                />
+              )}
             </TabsContent>
 
             {features?.aiEnabled && (

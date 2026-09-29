@@ -340,7 +340,13 @@
         "deleteAccountButton": "Mein Konto löschen",
         "deleteAccountDeleting": "Konto wird gelöscht...",
         "accountDeleted": "Dein Konto wurde gelöscht.",
-        "deleteAccountFailed": "Das Löschen des Kontos ist fehlgeschlagen. Bitte versuchen es erneut."
+        "deleteAccountFailed": "Das Löschen des Kontos ist fehlgeschlagen. Bitte versuchen es erneut.",
+        "firstDayOfWeek": "Erster Tag der Woche",
+        "monday": "Montag",
+        "sunday": "Sonntag",
+        "timeFormat": "Zeitformat",
+        "time24h": "24-Stunden (17:00)",
+        "time12h": "12-Stunden (5:00 PM)"
     },
     "feedback": {
         "title": "Feedback senden",
@@ -567,11 +573,15 @@
             },
             "pagden": {
                 "title": "Pagden split",
-                "description": "Placeholder for a future guide covering the classic artificial swarm split."
+                "description": "Placeholder for a future guide covering the classic artificial swarm split.",
+                "detail": "",
+                "cta": ""
             },
             "artificialSwarm": {
                 "title": "Artificial swarm",
-                "description": "Placeholder for a future guide focused on moving flying bees and brood apart."
+                "description": "Placeholder for a future guide focused on moving flying bees and brood apart.",
+                "detail": "",
+                "cta": ""
             }
         },
         "aside": {
@@ -797,6 +807,429 @@
                 "title": "Checkpoint order is no longer chronological",
                 "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
             }
+        },
+        "pagden": {
+            "badge": "",
+            "title": "",
+            "description": "",
+            "intro": "",
+            "overviewTitle": "",
+            "overviewLead": "",
+            "overviewPoints": [
+                "",
+                "",
+                ""
+            ],
+            "prerequisitesTitle": "",
+            "prerequisites": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "stepsTitle": "",
+            "stepsDescription": "",
+            "methodDetail": {
+                "preparation": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "relocateQueen": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "queenCells": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "reassembly": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                }
+            },
+            "advantagesTitle": "",
+            "advantagesDescription": "",
+            "advantages": [
+                "",
+                "",
+                ""
+            ],
+            "followUpTitle": "",
+            "followUpDayHeader": "",
+            "followUpTaskHeader": "",
+            "followUp": [
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                }
+            ],
+            "prosConsTitle": "",
+            "prosTitle": "",
+            "consTitle": "",
+            "pros": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "cons": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "faq": {
+                "title": "",
+                "items": [
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    }
+                ]
+            },
+            "planner": {
+                "title": "",
+                "description": "",
+                "selectHiveLabel": "",
+                "selectHivePlaceholder": "",
+                "startDateLabel": "",
+                "startDatePlaceholder": "",
+                "generateButton": "",
+                "saveButton": "",
+                "checkpointPrefix": "",
+                "notesChecklistLabel": "",
+                "savedSuccess": "",
+                "savedPartial": "",
+                "savedError": "",
+                "noHivesMessage": "",
+                "checkpoints": {
+                    "setup": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "queenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "secondQueenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "colonyReview": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    }
+                }
+            },
+            "warnings": {
+                "lateQueenCellCheck": {
+                    "title": "",
+                    "description": ""
+                },
+                "unsafeCheckpointSpacing": {
+                    "title": "",
+                    "description": ""
+                },
+                "illogicalScheduleOrder": {
+                    "title": "",
+                    "description": ""
+                }
+            }
+        },
+        "artificialSwarm": {
+            "badge": "",
+            "title": "",
+            "description": "",
+            "intro": "",
+            "overviewTitle": "",
+            "overviewLead": "",
+            "overviewPoints": [
+                "",
+                "",
+                ""
+            ],
+            "prerequisitesTitle": "",
+            "prerequisites": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "stepsTitle": "",
+            "stepsDescription": "",
+            "methodDetail": {
+                "preparation": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "relocateQueen": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "queenCells": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "reassembly": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                }
+            },
+            "advantagesTitle": "",
+            "advantagesDescription": "",
+            "advantages": [
+                "",
+                "",
+                ""
+            ],
+            "followUpTitle": "",
+            "followUpDayHeader": "",
+            "followUpTaskHeader": "",
+            "followUp": [
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                }
+            ],
+            "prosConsTitle": "",
+            "prosTitle": "",
+            "consTitle": "",
+            "pros": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "cons": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "faq": {
+                "title": "",
+                "items": [
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    }
+                ]
+            },
+            "planner": {
+                "title": "",
+                "description": "",
+                "selectHiveLabel": "",
+                "selectHivePlaceholder": "",
+                "startDateLabel": "",
+                "startDatePlaceholder": "",
+                "generateButton": "",
+                "saveButton": "",
+                "checkpointPrefix": "",
+                "notesChecklistLabel": "",
+                "savedSuccess": "",
+                "savedPartial": "",
+                "savedError": "",
+                "noHivesMessage": "",
+                "checkpoints": {
+                    "setup": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "queenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "secondQueenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "colonyReview": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    }
+                }
+            },
+            "warnings": {
+                "lateQueenCellCheck": {
+                    "title": "",
+                    "description": ""
+                },
+                "unsafeCheckpointSpacing": {
+                    "title": "",
+                    "description": ""
+                },
+                "illogicalScheduleOrder": {
+                    "title": "",
+                    "description": ""
+                }
+            }
+        },
+        "cushmanCredit": {
+            "text": "",
+            "linkLabel": ""
         }
     },
     "varroaManagement": {
@@ -1106,5 +1539,25 @@
         "october": "Oktober",
         "november": "November",
         "december": "Dezember"
+    },
+    "pwa": {
+        "updateAvailable": "Eine neue Version ist verfügbar",
+        "reload": "Neu laden"
+    },
+    "actionTypes": {
+        "feeding": "Fütterung",
+        "treatment": "Behandlung",
+        "frame": "Rähmchen",
+        "harvest": "Ernte",
+        "boxConfiguration": "Beutenkonfiguration",
+        "maintenance": "Wartung",
+        "note": "Notiz",
+        "other": "Sonstiges",
+        "weighing": "Wägung"
+    },
+    "table": {
+        "columns": "Spalten",
+        "toggleColumns": "Spalten ein-/ausblenden",
+        "resetColumns": "Auf Standard zurücksetzen"
     }
 }

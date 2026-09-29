@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryReadScope, apiaryWriteScope } from '../common';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Alert, Prisma } from '@/prisma/client';
 import {
@@ -40,7 +41,7 @@ export class AlertsService {
   }
 
   async findAll(
-    filter: ApiaryUserFilter & AlertFilter,
+    filter: ApiaryScopeFilter & AlertFilter,
   ): Promise<AlertResponse[]> {
     this.logger.log(
       `Finding alerts for apiary ${filter.apiaryId} and user ${filter.userId}`,
@@ -52,21 +53,13 @@ export class AlertsService {
     if (filter.hiveId) {
       where.hive = {
         id: filter.hiveId,
-        apiary: {
-          id: filter.apiaryId,
-        },
+        apiary: apiaryReadScope(filter),
       };
     } else {
       // If no specific hive, ensure all alerts belong to user's apiaries
       where.OR = [
         // Hive-specific alerts
-        {
-          hive: {
-            apiary: {
-              id: filter.apiaryId,
-            },
-          },
-        },
+        { hive: { apiary: apiaryReadScope(filter) } },
         // General alerts (no hiveId) - would need different context in future
         {
           hiveId: null,
@@ -102,21 +95,25 @@ export class AlertsService {
     return alerts.map((alert) => this.mapToResponse(alert));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<AlertResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<AlertResponse> {
     this.logger.log(`Finding alert with ID: ${id}`);
+    return this.getAccessibleAlert(id, apiaryReadScope(filter));
+  }
 
+  /**
+   * Load an alert the user can access: hive alerts are scoped by the hive's
+   * apiary (read or write scope), general alerts (no hive) are visible to all.
+   */
+  private async getAccessibleAlert(
+    id: string,
+    apiary: Prisma.ApiaryWhereInput,
+  ): Promise<AlertResponse> {
     const alert = await this.prisma.alert.findFirst({
       where: {
         id,
         OR: [
           // Hive-specific alerts
-          {
-            hive: {
-              apiary: {
-                id: filter.apiaryId,
-              },
-            },
-          },
+          { hive: { apiary } },
           // General alerts (no hiveId)
           {
             hiveId: null,
@@ -146,12 +143,12 @@ export class AlertsService {
   async update(
     id: string,
     updateAlertDto: UpdateAlert,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<AlertResponse> {
     this.logger.log(`Updating alert with ID: ${id}`);
 
-    // Verify alert exists and user has access
-    await this.findOne(id, filter);
+    // Verify alert exists and the user can write to its apiary
+    await this.getAccessibleAlert(id, apiaryWriteScope(filter));
 
     const updatedAlert = await this.prisma.alert.update({
       where: { id },
@@ -170,11 +167,11 @@ export class AlertsService {
     return this.mapToResponse(updatedAlert);
   }
 
-  async dismiss(id: string, filter: ApiaryUserFilter): Promise<AlertResponse> {
+  async dismiss(id: string, filter: ApiaryScopeFilter): Promise<AlertResponse> {
     return this.update(id, { status: 'DISMISSED' }, filter);
   }
 
-  async resolve(id: string, filter: ApiaryUserFilter): Promise<AlertResponse> {
+  async resolve(id: string, filter: ApiaryScopeFilter): Promise<AlertResponse> {
     return this.update(id, { status: 'RESOLVED' }, filter);
   }
 

@@ -14,7 +14,12 @@ export default defineConfig(({ isSsrBuild }) => ({
       ? []
       : [
           VitePWA({
-            registerType: 'autoUpdate',
+            // 'prompt', not 'autoUpdate': inspections are long forms, so a new
+            // deployment must never swap itself in and reload the page while a
+            // beekeeper is typing. It is also what makes `needRefresh` fire,
+            // which is what PWAUpdatePrompt shows the user (in 'autoUpdate'
+            // mode that flag stays false and the prompt is dead code).
+            registerType: 'prompt',
             includeAssets: [
               'favicon.ico',
               'favicon-16x16.png',
@@ -26,7 +31,10 @@ export default defineConfig(({ isSsrBuild }) => ({
             manifest: false, // use existing site.webmanifest
             workbox: {
               clientsClaim: true,
-              skipWaiting: true,
+              // Deliberately no `skipWaiting`: a freshly installed worker has to
+              // stay in "waiting" until the user accepts the update, otherwise it
+              // activates behind their back and the prompt never appears.
+              // `updateServiceWorker(true)` sends SKIP_WAITING on accept.
               globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
               // The service worker falls back to index.html for navigation requests.
               // Backend-handled routes (API + better-auth, e.g. the magic-link verify

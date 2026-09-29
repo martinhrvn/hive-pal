@@ -209,6 +209,9 @@ const measurementExportSchema = z
     unit: z.string().nullable().optional(),
     recordedAt: z.string(),
     source: z.string().nullable().optional(),
+    boxId: z.string().nullable().optional(),
+    side: z.string().nullable().optional(),
+    inspectionId: z.string().nullable().optional(),
   })
   .passthrough();
 

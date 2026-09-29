@@ -148,6 +148,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
           // Remove temporary IDs
           id: box.id?.startsWith('temp-') ? undefined : box.id,
         })),
+        apiaryId: hive.apiaryId,
       });
       toast.success('Box configuration saved successfully');
       setIsEditing(false);

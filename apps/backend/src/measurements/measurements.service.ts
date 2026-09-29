@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryReadScope } from '../common';
 import {
   CreateMeasurementBatch,
   CreateMeasurementBatchResponse,
   LatestMeasurementsResponse,
   MeasurementFilter,
   MeasurementResponse,
+  MeasurementSide,
 } from 'shared-schemas';
 
 interface LatestRow {
@@ -15,6 +18,8 @@ interface LatestRow {
   unit: string | null;
   recordedAt: Date;
   source: string | null;
+  boxId: string | null;
+  side: MeasurementSide | null;
 }
 
 @Injectable()
@@ -41,6 +46,8 @@ export class MeasurementsService {
       unit: m.unit ?? null,
       recordedAt: m.recordedAt ? new Date(m.recordedAt) : now,
       source: m.source ?? null,
+      boxId: m.boxId ?? null,
+      side: m.side ?? null,
     }));
 
     const result = await this.prisma.measurement.createMany({ data: rows });
@@ -57,10 +64,10 @@ export class MeasurementsService {
 
   async findForHive(
     hiveId: string,
-    apiaryId: string,
+    scope: ApiaryScopeFilter,
     filter: MeasurementFilter,
   ): Promise<MeasurementResponse[]> {
-    await this.assertHiveInApiary(hiveId, apiaryId);
+    await this.assertHiveAccess(hiveId, scope);
 
     const where: {
       hiveId: string;
@@ -90,18 +97,21 @@ export class MeasurementsService {
       recordedAt: r.recordedAt.toISOString(),
       source: r.source,
       createdAt: r.createdAt.toISOString(),
+      boxId: r.boxId,
+      side: r.side,
+      inspectionId: r.inspectionId,
     }));
   }
 
   async findLatestForHive(
     hiveId: string,
-    apiaryId: string,
+    scope: ApiaryScopeFilter,
   ): Promise<LatestMeasurementsResponse> {
-    await this.assertHiveInApiary(hiveId, apiaryId);
+    await this.assertHiveAccess(hiveId, scope);
 
     const rows = await this.prisma.$queryRaw<LatestRow[]>`
       SELECT DISTINCT ON (metric)
-        metric, value, unit, "recordedAt", source
+        metric, value, unit, "recordedAt", source, "boxId", side
       FROM "Measurement"
       WHERE "hiveId" = ${hiveId}
       ORDER BY metric, "recordedAt" DESC
@@ -114,9 +124,27 @@ export class MeasurementsService {
         unit: row.unit,
         recordedAt: row.recordedAt.toISOString(),
         source: row.source,
+        boxId: row.boxId,
+        side: row.side,
       };
     }
     return result;
+  }
+
+  // Read access for @ApiaryOptional() handlers: the hive must be in an apiary
+  // the user can access (narrowed to the selected apiary when one is set).
+  private async assertHiveAccess(
+    hiveId: string,
+    scope: ApiaryScopeFilter,
+  ): Promise<void> {
+    const hive = await this.prisma.hive.findFirst({
+      where: { id: hiveId, apiary: apiaryReadScope(scope) },
+      select: { id: true },
+    });
+
+    if (!hive) {
+      throw new NotFoundException(`Hive with ID ${hiveId} not found`);
+    }
   }
 
   private async assertHiveInApiary(

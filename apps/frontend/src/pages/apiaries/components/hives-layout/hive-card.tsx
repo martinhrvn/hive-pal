@@ -72,7 +72,7 @@ export const HiveCard = ({
         <div className="px-2 ">
           <div className="flex flex-col items-center space-y-0.5">
              {sortedBoxes.map((box, index) => {
-               const height = getBoxHeight(box.variant, 'hive-card');
+               const height = getBoxHeight(box.variant, 'hive-card', box.type);
                const defaultColor = '#CD853F';
 
               return (
@@ -80,11 +80,11 @@ export const HiveCard = ({
                   key={box.id || index}
                   className={cn(
                     'relative w-full rounded-sm border border-gray-400/60',
-                    height,
                     index === 0 && 'rounded-t-sm',
                     index === sortedBoxes.length - 1 && 'rounded-b-sm',
                   )}
                   style={{
+                    height: `${height}px`,
                     backgroundColor: box.color || defaultColor,
                     borderColor: 'rgba(0, 0, 0, 0.3)',
                   }}
@@ -97,7 +97,7 @@ export const HiveCard = ({
                   </div>
 
                   {/* Frame count for larger boxes */}
-                  {(height === 'h-12' || height === 'h-10') && (
+                  {height >= 28 && (
                     <div className="absolute bottom-0.5 left-1 flex items-center gap-0.5">
                       <Package className="h-2.5 w-2.5 text-white/80" />
                       <span className="text-white/90 text-xs">

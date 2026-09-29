@@ -6,6 +6,8 @@ import { SyrupCalculatorPage } from '@/pages/tools/syrup-calculator-page';
 import { BroodTimelinePage } from '@/pages/tools/brood-timeline-page';
 import { SwarmManagementOverviewPage } from '@/pages/tools/swarm-management-overview-page';
 import { DemareeMethodPage } from '@/pages/tools/demaree-method-page';
+import { PagdenMethodPage } from '@/pages/tools/pagden-method-page';
+import { ArtificialSwarmMethodPage } from '@/pages/tools/artificial-swarm-method-page';
 import { LiebefelderPage } from '@/pages/tools/liebefelder-page';
 import { VarroaManagementPage } from '@/pages/tools/varroa-management-page';
 import { ReleasesPage } from '@/pages/releases';
@@ -23,6 +25,11 @@ const toolsChildren: RouteObject[] = [
   { path: 'brood-timeline', element: <BroodTimelinePage /> },
   { path: 'swarm-management', element: <SwarmManagementOverviewPage /> },
   { path: 'swarm-management/demaree', element: <DemareeMethodPage /> },
+  { path: 'swarm-management/pagden', element: <PagdenMethodPage /> },
+  {
+    path: 'swarm-management/artificial',
+    element: <ArtificialSwarmMethodPage />,
+  },
   { path: 'liebefelder', element: <LiebefelderPage /> },
   { path: 'varroa-management', element: <VarroaManagementPage /> },
 ];

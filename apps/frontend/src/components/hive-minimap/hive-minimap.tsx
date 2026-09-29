@@ -65,7 +65,7 @@ const MinimapHive = ({ hive, onClick, isHighlighted }: MinimapHiveProps) => {
         {sortedBoxes.length > 0 ? (
           <div className="flex flex-col items-center space-y-[2px]">
             {sortedBoxes.map((box, index) => {
-              const height = getBoxHeight(box.variant);
+              const height = getBoxHeight(box.variant, 'minimap', box.type);
               const defaultColor = '#CD853F';
 
               return (
@@ -73,7 +73,6 @@ const MinimapHive = ({ hive, onClick, isHighlighted }: MinimapHiveProps) => {
                   key={box.id || index}
                   className={cn(
                     'relative rounded-sm border border-gray-400/60 hover:shadow-sm transition-shadow',
-                    height,
                     index === 0 && 'rounded-t-sm',
                     index === sortedBoxes.length - 1 && 'rounded-b-sm',
                   )}
@@ -81,6 +80,7 @@ const MinimapHive = ({ hive, onClick, isHighlighted }: MinimapHiveProps) => {
                     backgroundColor: box.color || defaultColor,
                     borderColor: 'rgba(0, 0, 0, 0.3)',
                     width: '85px',
+                    height: `${height}px`,
                   }}
                 >
                   {/* Box type indicator */}
@@ -91,7 +91,7 @@ const MinimapHive = ({ hive, onClick, isHighlighted }: MinimapHiveProps) => {
                   </div>
 
                   {/* Frame count for larger boxes */}
-                  {height === 'h-15' && (
+                  {height >= 28 && (
                     <div className="absolute bottom-0.5 left-1 flex items-center gap-0.5">
                       <Package className="h-2 w-2 text-white/80" />
                       <span className="text-white/90 text-[9px]">

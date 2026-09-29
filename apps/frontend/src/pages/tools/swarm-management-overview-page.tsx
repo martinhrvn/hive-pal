@@ -1,4 +1,10 @@
-import { Beaker, Compass, Waypoints, AlertTriangle } from 'lucide-react';
+import {
+  Beaker,
+  Compass,
+  Waypoints,
+  AlertTriangle,
+  FlaskConical,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -36,7 +42,7 @@ export function SwarmManagementOverviewPage() {
         name: 'Honey Bee Swarm Management Methods',
         url: 'https://hivepal.app/tools/swarm-management',
         description:
-          'Reference guides for honey bee swarm-control methods, including the Demaree method, with prerequisites, step-by-step procedures, and follow-up inspection timing.',
+          'Reference guides for honey bee swarm-control methods, including the Demaree method, Pagden split, and artificial swarm technique, with prerequisites, step-by-step procedures, and follow-up inspection timing.',
         isAccessibleForFree: true,
         publisher: {
           '@type': 'Organization',
@@ -51,23 +57,24 @@ export function SwarmManagementOverviewPage() {
             description:
               'Reference workflow for the Demaree swarm-control method with an inspection planner.',
           },
+          {
+            '@type': 'WebPage',
+            name: 'Pagden Split',
+            url: 'https://hivepal.app/tools/swarm-management/pagden',
+            description:
+              'Reference workflow for the Pagden split swarm-control method with an inspection planner.',
+          },
+          {
+            '@type': 'WebPage',
+            name: 'Artificial Swarm',
+            url: 'https://hivepal.app/tools/swarm-management/artificial',
+            description:
+              'Reference workflow for the artificial swarm swarm-control method with an inspection planner.',
+          },
         ],
       },
     ],
   };
-
-  const placeholders = [
-    {
-      key: 'pagden',
-      title: t('swarmManagement.cards.pagden.title'),
-      description: t('swarmManagement.cards.pagden.description'),
-    },
-    {
-      key: 'artificialSwarm',
-      title: t('swarmManagement.cards.artificialSwarm.title'),
-      description: t('swarmManagement.cards.artificialSwarm.description'),
-    },
-  ];
 
   return (
     <PageGrid>
@@ -100,24 +107,41 @@ export function SwarmManagementOverviewPage() {
             }
           />
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {placeholders.map(method => (
-              <SwarmMethodCard
-                key={method.key}
-                title={method.title}
-                description={method.description}
-                cta={t('swarmManagement.cards.placeholderCta')}
-                icon={<Beaker className="h-5 w-5 text-muted-foreground" />}
-                badge={
-                  <Badge variant="secondary">
-                    {t('swarmManagement.cards.comingSoon')}
-                  </Badge>
-                }
-                className="opacity-70"
-                disabled
-              />
-            ))}
-          </div>
+          <SwarmMethodCard
+            title={t('swarmManagement.cards.pagden.title')}
+            description={t('swarmManagement.cards.pagden.description')}
+            detail={t('swarmManagement.cards.pagden.detail')}
+            cta={t('swarmManagement.cards.pagden.cta')}
+            icon={<Beaker className="h-5 w-5 text-primary" />}
+            badge={<Badge>{t('swarmManagement.cards.available')}</Badge>}
+            className="border-primary/30 bg-primary/5"
+            onClick={() => navigate(localize('/tools/swarm-management/pagden'))}
+          />
+
+          <SwarmMethodCard
+            title={t('swarmManagement.cards.artificialSwarm.title')}
+            description={t('swarmManagement.cards.artificialSwarm.description')}
+            detail={t('swarmManagement.cards.artificialSwarm.detail')}
+            cta={t('swarmManagement.cards.artificialSwarm.cta')}
+            icon={<FlaskConical className="h-5 w-5 text-primary" />}
+            badge={<Badge>{t('swarmManagement.cards.available')}</Badge>}
+            className="border-primary/30 bg-primary/5"
+            onClick={() =>
+              navigate(localize('/tools/swarm-management/artificial'))
+            }
+          />
+
+          <p className="text-sm text-muted-foreground">
+            {t('swarmManagement.cushmanCredit.text')}{' '}
+            <a
+              href="https://www.dave-cushman.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              {t('swarmManagement.cushmanCredit.linkLabel')}
+            </a>
+          </p>
         </div>
       </MainContent>
 

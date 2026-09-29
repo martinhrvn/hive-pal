@@ -1,10 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import {
-  CreateTodo,
-  UpdateTodo,
-  TodoResponse,
-} from 'shared-schemas';
+import { CreateTodo, UpdateTodo, TodoResponse } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import { logApiError } from '../errorLogger';
@@ -16,20 +12,21 @@ const TODOS_KEYS = {
   // The active apiary is part of the key: todos are apiary-scoped (via the
   // x-apiary-id header) and the query cache is persisted, so omitting it would
   // let one apiary's list be served for another apiary.
-  list: (apiaryId: string | null) =>
-    [...TODOS_KEYS.lists(), apiaryId] as const,
+  list: (apiaryId: string | null) => [...TODOS_KEYS.lists(), apiaryId] as const,
   details: () => [...TODOS_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...TODOS_KEYS.details(), id] as const,
 };
 
-// Get all todos for the active apiary
+// Get all todos for the active apiary (or across all apiaries in view-all mode)
 export const useTodos = (
   queryOptions?: Omit<UseQueryOptions<TodoResponse[]>, 'queryKey' | 'queryFn'>,
 ) => {
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const viewAllApiaries = useApiaryStore(state => state.viewAllApiaries);
+  const scope = viewAllApiaries ? 'all' : activeApiaryId;
   return useQuery<TodoResponse[]>({
-    queryKey: TODOS_KEYS.list(activeApiaryId),
-    enabled: !!activeApiaryId && queryOptions?.enabled !== false,
+    queryKey: TODOS_KEYS.list(scope),
+    enabled: !!scope && queryOptions?.enabled !== false,
     queryFn: async () => {
       try {
         const response = await apiClient.get<TodoResponse[]>('/api/todos');

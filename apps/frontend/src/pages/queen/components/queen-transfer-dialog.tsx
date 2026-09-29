@@ -15,7 +15,9 @@ import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -26,7 +28,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { useRecordQueenTransfer, useHives } from '@/api/hooks';
+import { useRecordQueenTransfer, useHives, useApiaries } from '@/api/hooks';
 import { QueenResponse } from 'shared-schemas';
 
 interface QueenTransferDialogProps {
@@ -45,8 +47,21 @@ export const QueenTransferDialog: React.FC<QueenTransferDialogProps> = ({
   const [reason, setReason] = useState('');
   const [notes, setNotes] = useState('');
 
-  const { data: hives } = useHives();
+  // A queen may move to any hive in an apiary the user can edit, not only
+  // the selected one, so list hives across all apiaries grouped by apiary.
+  const { data: hives } = useHives({ allApiaries: true });
+  const { data: apiaries } = useApiaries();
   const { mutateAsync: recordTransfer, isPending } = useRecordQueenTransfer();
+
+  const hiveGroups = (apiaries ?? [])
+    .filter(apiary => apiary.role !== 'VIEWER')
+    .map(apiary => ({
+      apiary,
+      hives: (hives ?? []).filter(
+        hive => hive.apiaryId === apiary.id && hive.id !== queen.hiveId,
+      ),
+    }))
+    .filter(group => group.hives.length > 0);
 
   const isNoOp = toHiveId === queen.hiveId;
 
@@ -78,22 +93,31 @@ export const QueenTransferDialog: React.FC<QueenTransferDialogProps> = ({
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="toHive">Move to Hive</Label>
+            {queen.hiveName && (
+              <p className="text-xs text-muted-foreground">
+                Currently in {queen.hiveName}
+                {queen.apiaryName ? ` (${queen.apiaryName})` : ''}
+              </p>
+            )}
             <Select
               value={toHiveId ?? 'none'}
               onValueChange={val => setToHiveId(val === 'none' ? null : val)}
             >
-              <SelectTrigger>
+              <SelectTrigger id="toHive">
                 <SelectValue placeholder="Select destination hive" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Remove from hive</SelectItem>
-                {hives
-                  ?.filter(h => h.id !== queen.hiveId)
-                  .map(hive => (
-                    <SelectItem key={hive.id} value={hive.id}>
-                      {hive.name}
-                    </SelectItem>
-                  ))}
+                {hiveGroups.map(({ apiary, hives: groupHives }) => (
+                  <SelectGroup key={apiary.id}>
+                    <SelectLabel>{apiary.name}</SelectLabel>
+                    {groupHives.map(hive => (
+                      <SelectItem key={hive.id} value={hive.id}>
+                        {hive.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))}
               </SelectContent>
             </Select>
           </div>

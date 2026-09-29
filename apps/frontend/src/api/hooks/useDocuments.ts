@@ -1,14 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import {
-  DocumentResponse,
-  DocumentFilter,
-} from 'shared-schemas';
+import { useApiaryScope } from '@/hooks/use-apiary-scope';
+import { DocumentResponse, DocumentFilter } from 'shared-schemas';
 
 export const DOCUMENT_KEYS = {
   all: ['documents'] as const,
-  list: (filters?: DocumentFilter) =>
-    [...DOCUMENT_KEYS.all, 'list', filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key: see useApiaryScope.
+  list: (scope: string | null, filters?: DocumentFilter) =>
+    [...DOCUMENT_KEYS.all, 'list', scope, filters] as const,
   detail: (id: string) => [...DOCUMENT_KEYS.all, 'detail', id] as const,
   downloadUrl: (id: string) =>
     [...DOCUMENT_KEYS.all, 'download-url', id] as const,
@@ -18,8 +17,9 @@ export const useDocuments = (
   filters?: DocumentFilter,
   options?: { enabled?: boolean },
 ) => {
+  const scope = useApiaryScope();
   return useQuery<DocumentResponse[]>({
-    queryKey: DOCUMENT_KEYS.list(filters),
+    queryKey: DOCUMENT_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.set('hiveId', filters.hiveId);
@@ -77,9 +77,10 @@ export const useDocumentDownloadUrl = (
   return useQuery<{ downloadUrl: string; expiresIn: number }>({
     queryKey: DOCUMENT_KEYS.downloadUrl(id),
     queryFn: async () => {
-      const response = await apiClient.get<{ downloadUrl: string; expiresIn: number }>(
-        `/api/documents/${id}/download-url`,
-      );
+      const response = await apiClient.get<{
+        downloadUrl: string;
+        expiresIn: number;
+      }>(`/api/documents/${id}/download-url`);
       return response.data;
     },
     enabled: options?.enabled !== false && !!id,

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { useApiaryScope } from '@/hooks/use-apiary-scope';
 import { AlertResponse, AlertFilter, UpdateAlert } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
@@ -7,8 +8,9 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 const ALERTS_KEYS = {
   all: ['alerts'] as const,
   lists: () => [...ALERTS_KEYS.all, 'list'] as const,
-  list: (filters: AlertFilter | undefined) =>
-    [...ALERTS_KEYS.lists(), filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key: see useApiaryScope.
+  list: (scope: string | null, filters: AlertFilter | undefined) =>
+    [...ALERTS_KEYS.lists(), scope, filters] as const,
   details: () => [...ALERTS_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...ALERTS_KEYS.details(), id] as const,
 };
@@ -18,9 +20,10 @@ export const useAlerts = (
   filters?: AlertFilter,
   queryOptions?: UseQueryOptions<AlertResponse[]>,
 ) => {
+  const scope = useApiaryScope();
   return useQuery<AlertResponse[]>({
     ...queryOptions,
-    queryKey: ALERTS_KEYS.list(filters),
+    queryKey: ALERTS_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.append('hiveId', filters.hiveId);

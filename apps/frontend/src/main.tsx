@@ -2,37 +2,15 @@ import * as Sentry from '@sentry/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
-import { registerSW } from 'virtual:pwa-register';
 import './index.css';
 import './lib/i18n';
 import { initFaro } from './lib/faro';
 import App from './App.tsx';
 
-// Register PWA service worker using auto-update behavior.
-// This keeps deployed clients fresher without requiring a manual hard refresh.
-registerSW({
-  onRegisteredSW(swUrl, registration) {
-    if (!registration) return;
-
-    // Optional periodic update check while the app stays open.
-    // Helps long-lived tabs pick up new deployments sooner.
-    if (import.meta.env.PROD) {
-      window.setInterval(() => {
-        registration.update().catch(() => {
-          // ignore update polling errors
-        });
-      }, 60 * 60 * 1000);
-    }
-
-    console.debug('[PWA] service worker registered:', swUrl);
-  },
-  onRegisterError(error) {
-    console.error('[PWA] service worker registration error', error);
-  },
-  onOfflineReady() {
-    console.debug('[PWA] app ready to work offline');
-  },
-});
+// The service worker is registered exactly once, from PWAUpdatePrompt (rendered
+// by App), because that component also needs the registration's update state.
+// Registering here as well would create a second Workbox instance with its own
+// listeners, which made update detection unreliable.
 
 // Handle chunk load errors from version skew (new deploy with old chunks cached)
 window.addEventListener('vite:preloadError', () => {

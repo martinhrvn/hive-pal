@@ -10,7 +10,8 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
   ApiaryAudioListItem,
@@ -18,6 +19,7 @@ import {
 } from './inspection-audio.service';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 @Controller('audio')
 export class ApiaryAudioController {
   constructor(
@@ -28,7 +30,9 @@ export class ApiaryAudioController {
   }
 
   @Get()
-  async findAll(@Req() req: RequestWithApiary): Promise<ApiaryAudioListItem[]> {
+  async findAll(
+    @Req() req: RequestWithApiaryScope,
+  ): Promise<ApiaryAudioListItem[]> {
     return this.audioService.findAllForApiary({
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -38,7 +42,7 @@ export class ApiaryAudioController {
   @Post('analyze-pending')
   @HttpCode(HttpStatus.ACCEPTED)
   async startAnalysisForPending(
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<{ started: number }> {
     return this.audioService.startAnalysisForPending({
       apiaryId: req.apiaryId,

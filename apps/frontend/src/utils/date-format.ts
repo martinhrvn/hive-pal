@@ -2,11 +2,38 @@ import { format, parseISO } from 'date-fns';
 
 export type DateFormatPreference = 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
 
+export type TimeFormatPreference = '12h' | '24h';
+
 const FORMAT_MAP: Record<DateFormatPreference, string> = {
   'MM/DD/YYYY': 'MM/dd/yyyy',
   'DD/MM/YYYY': 'dd/MM/yyyy',
   'YYYY-MM-DD': 'yyyy-MM-dd',
 };
+
+// date-fns time patterns: 'h:mm a' -> "5:00 PM", 'HH:mm' -> "17:00"
+const TIME_FORMAT_MAP: Record<TimeFormatPreference, string> = {
+  '12h': 'h:mm a',
+  '24h': 'HH:mm',
+};
+
+/**
+ * Format a time according to the user's 12h/24h preference
+ * @param date - Date object, Date string, or ISO string
+ * @param preference - User's preferred time format (defaults to 24h)
+ * @returns Formatted time string (e.g. "17:00" or "5:00 PM")
+ */
+export function formatTimeWithPreference(
+  date: Date | string,
+  preference: TimeFormatPreference = '24h',
+): string {
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    return format(dateObj, TIME_FORMAT_MAP[preference]);
+  } catch (error) {
+    console.warn('Failed to format time:', error);
+    return typeof date === 'string' ? date : date.toISOString();
+  }
+}
 
 /**
  * Format a date according to user preference
@@ -37,11 +64,12 @@ export function formatDateWithPreference(
 export function formatDateTimeWithPreference(
   date: Date | string,
   preference: DateFormatPreference = 'MM/DD/YYYY',
+  timeFormat: TimeFormatPreference = '24h',
 ): string {
   try {
     const dateObj = typeof date === 'string' ? parseISO(date) : date;
     const dateFormatString = FORMAT_MAP[preference];
-    const fullFormatString = `${dateFormatString} HH:mm`;
+    const fullFormatString = `${dateFormatString} ${TIME_FORMAT_MAP[timeFormat]}`;
     return format(dateObj, fullFormatString);
   } catch (error) {
     console.warn('Failed to format date with time:', error);

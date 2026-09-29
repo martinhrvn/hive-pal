@@ -129,9 +129,31 @@ Add action-specific observations or tasks:
 - Important observations
 - Follow-up reminders
 
-## Notes
+## Weight
 
-Add general inspection notes, observations, or reminders that don't fit into specific categories.
+Record hive weight readings taken during the inspection — for example a full
+weighing, or weighing by lifting one side of the hive with a scale. Add one row
+per reading with the **Add reading** button.
+
+Each reading captures **where** you measured, so values stay comparable over
+time:
+
+- **Position** — the box (Zarge) you lifted at. Choose **Whole hive (base)**
+  when you lift the whole stack from the bottom (the reading is not tied to a
+  single box), or pick a configured box (e.g. the top honey super).
+- **Side** — the side the scale was applied at: **Front (entrance)**, **Back**,
+  **Left** or **Right**. Choose **Whole (no side)** for a full weighing rather
+  than a one-sided lift.
+
+Conventions:
+
+- **No side selected** → the value is treated as the **whole/total weight**.
+- **Whole hive (base) selected** → the reading was taken at the **base**, lifting
+  the whole hive from the bottom.
+
+Weights are stored in kilograms and shown in your preferred unit (kg/lb). The
+**Weight** chart in a hive's Analytics tab plots these readings over time,
+grouped by position and side, so each measurement spot forms its own trend line.
 
 ## Inspection Scoring System
 

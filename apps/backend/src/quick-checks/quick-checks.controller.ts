@@ -18,7 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 import { CustomLoggerService } from '../logger/logger.service';
 import { QuickChecksService } from './quick-checks.service';
 import { ZodValidation } from '../common';
@@ -32,6 +33,7 @@ import {
 } from 'shared-schemas';
 
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+@ApiaryOptional()
 @Controller('quick-checks')
 export class QuickChecksController {
   constructor(
@@ -45,7 +47,7 @@ export class QuickChecksController {
   @ZodValidation(createQuickCheckSchema)
   async create(
     @Body() dto: CreateQuickCheck,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QuickCheckResponse> {
     this.logger.log({
       message: 'Creating quick check',
@@ -63,7 +65,7 @@ export class QuickChecksController {
   @ZodValidation(quickCheckFilterSchema)
   async findAll(
     @Query() query: QuickCheckFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QuickCheckResponse[]> {
     this.logger.log({
       message: 'Listing quick checks',
@@ -80,7 +82,7 @@ export class QuickChecksController {
   @Get(':id')
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QuickCheckResponse> {
     this.logger.log({
       message: 'Getting quick check',
@@ -97,7 +99,7 @@ export class QuickChecksController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<void> {
     this.logger.log({
       message: 'Deleting quick check',
@@ -115,7 +117,7 @@ export class QuickChecksController {
   async uploadPhoto(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QuickCheckPhotoResponse> {
     if (!file) {
       throw new BadRequestException('No photo file provided');
@@ -138,7 +140,7 @@ export class QuickChecksController {
   async getPhotoDownloadUrl(
     @Param('id') id: string,
     @Param('photoId') photoId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     this.logger.log({
       message: 'Getting photo download URL',
@@ -157,7 +159,7 @@ export class QuickChecksController {
   async deletePhoto(
     @Param('id') id: string,
     @Param('photoId') photoId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<void> {
     this.logger.log({
       message: 'Deleting quick check photo',

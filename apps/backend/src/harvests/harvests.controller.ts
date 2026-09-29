@@ -26,7 +26,8 @@ import {
   harvestFilterSchema,
 } from 'shared-schemas';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
 
 @Controller('harvests')
 @UseGuards(JwtAuthGuard)
@@ -35,9 +36,10 @@ export class HarvestsController {
 
   @Post()
   @UseGuards(ApiaryContextGuard, ApiaryPermissionGuard)
+  @ApiaryOptional()
   @ZodValidation(createHarvestSchema)
   async create(
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
     @Body() createHarvestDto: CreateHarvest,
   ) {
     return this.harvestsService.create(

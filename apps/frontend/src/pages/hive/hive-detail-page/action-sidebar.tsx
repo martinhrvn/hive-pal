@@ -13,10 +13,7 @@ import {
 import { bee } from '@lucide/lab';
 import { useTranslation } from 'react-i18next';
 
-import {
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from '@/components/ui/sidebar';
+import { SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { AlertItem } from '@/components/alerts';
 import { useHive, useDeleteHive } from '@/api/hooks';
 import { QRCodeDialog } from './qr-code-dialog';
@@ -43,14 +40,17 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation(['hive', 'inspection', 'common']);
-  const { canEdit } = useApiaryPermission();
   const { data: hive } = useHive(hiveId || '', { enabled: !!hiveId });
+  // Permissions follow the hive's own apiary, not the selected one.
+  const { canEdit } = useApiaryPermission(hive?.apiaryId);
   const deleteHive = useDeleteHive();
 
   const deleteDialog = useDeleteDialog(
     () => {
       if (!hiveId) throw new Error('Hive ID is required');
-      return deleteHive.mutateAsync(hiveId);
+      // Pass the hive's own apiary so the delete targets the right apiary even
+      // in cross-apiary "view all" mode (where the selected apiary may differ).
+      return deleteHive.mutateAsync({ id: hiveId, apiaryId: hive?.apiaryId });
     },
     () => navigate(`/apiaries/${hive?.apiaryId}`),
   );
@@ -153,7 +153,9 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               label={t('hive:actions.addQueen', {
                 defaultValue: 'Add Queen',
               })}
-              onClick={() => hiveId && navigate(`/hives/${hiveId}/queens/create`)}
+              onClick={() =>
+                hiveId && navigate(`/hives/${hiveId}/queens/create`)
+              }
               tooltip={t('hive:actions.addQueen', {
                 defaultValue: 'Add Queen',
               })}
@@ -188,7 +190,9 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
                   disabled
                   tooltip={t('hive:actions.qr', { defaultValue: 'QR Code' })}
                 >
-                  <span>{t('hive:actions.qr', { defaultValue: 'QR Code' })}</span>
+                  <span>
+                    {t('hive:actions.qr', { defaultValue: 'QR Code' })}
+                  </span>
                 </SidebarMenuButton>
               )}
             </SidebarMenuItem>
@@ -198,7 +202,9 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               ) : (
                 <SidebarMenuButton
                   disabled
-                  tooltip={t('hive:manage.llmPrompt', { defaultValue: 'LLM Prompt', })}
+                  tooltip={t('hive:manage.llmPrompt', {
+                    defaultValue: 'LLM Prompt',
+                  })}
                 >
                   <span>
                     {t('hive:manage.llmPrompt', { defaultValue: 'LLM Prompt' })}
@@ -208,9 +214,13 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             </SidebarMenuItem>
             <MenuItemButton
               icon={<TrashIcon className="h-4 w-4" />}
-              label={t('hive:manage.removeHive', { defaultValue: 'Remove Hive' })}
+              label={t('hive:manage.removeHive', {
+                defaultValue: 'Remove Hive',
+              })}
               onClick={deleteDialog.open}
-              tooltip={t('hive:manage.removeHive', { defaultValue: 'Remove Hive' })}
+              tooltip={t('hive:manage.removeHive', {
+                defaultValue: 'Remove Hive',
+              })}
               disabled={!hiveId}
             />
           </ActionSidebarGroup>
@@ -218,7 +228,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
 
         <DeleteConfirmDialog
           open={deleteDialog.isOpen}
-          onOpenChange={(open) => !open && deleteDialog.close()}
+          onOpenChange={open => !open && deleteDialog.close()}
           onConfirm={deleteDialog.handleDelete}
           isPending={deleteDialog.isPending}
           title={t('hive:manage.removeHive', { defaultValue: 'Remove Hive' })}

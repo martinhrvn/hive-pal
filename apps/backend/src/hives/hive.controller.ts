@@ -18,7 +18,8 @@ import { HiveService } from './hive.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { ApiaryOptional } from '../guards/apiary-optional.decorator';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
 import {
@@ -49,55 +50,64 @@ export class HiveController {
   }
 
   @Post()
+  @ApiaryOptional()
   @ApiConsumes('application/json')
   @ZodValidation(createHiveSchema)
   create(
     @Body() createHiveDto: CreateHive,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<CreateHiveResponse> {
     this.logger.log(
       `Creating hive in apiary: ${createHiveDto.apiaryId} by user: ${req.user.id}`,
     );
-    // Set the apiaryId from the request
-    return this.hiveService.create(createHiveDto);
+    // The target apiary comes from the body and is checked for write access.
+    return this.hiveService.create(createHiveDto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Get()
+  @ApiaryOptional()
   @ZodValidation(hiveFilterSchema)
   findAll(
     @Query() query: HiveFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<HiveResponse[]> {
     this.logger.log(
-      `Getting all hives for apiary: ${req.apiaryId} and user: ${req.user.id}`,
+      `Getting all hives for apiary: ${req.apiaryId ?? 'ALL'} and user: ${req.user.id}`,
     );
     return this.hiveService.findAll({
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
       ...query,
     });
   }
 
   @Get(':id')
+  @ApiaryOptional()
   findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<HiveDetailResponse> {
     this.logger.log(
-      `Getting hive details for ID: ${id} in apiary: ${req.apiaryId}`,
+      `Getting hive details for ID: ${id} in apiary: ${req.apiaryId ?? 'ALL'}`,
     );
     return this.hiveService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Patch(':id')
+  @ApiaryOptional()
   @ZodValidation(updateHiveSchema)
   update(
     @Param('id') id: string,
     @Body() updateHiveDto: UpdateHive,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<UpdateHiveResponse> {
     return this.hiveService.update(id, updateHiveDto, {
       apiaryId: req.apiaryId,
@@ -106,7 +116,8 @@ export class HiveController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  @ApiaryOptional()
+  remove(@Param('id') id: string, @Req() req: RequestWithApiaryScope) {
     return this.hiveService.remove(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
@@ -114,12 +125,13 @@ export class HiveController {
   }
 
   @Put(':id/boxes')
+  @ApiaryOptional()
   @ApiConsumes('application/json')
   @ZodValidation(updateHiveBoxesSchema)
   updateBoxes(
     @Param('id') id: string,
     @Body() updateHiveBoxesDto: UpdateHiveBoxes,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<UpdateHiveResponse> {
     this.logger.log(
       `Updating boxes for hive ID: ${id} with ${updateHiveBoxesDto.boxes.length} boxes`,

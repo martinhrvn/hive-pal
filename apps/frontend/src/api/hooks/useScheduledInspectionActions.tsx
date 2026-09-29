@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUpdateInspection } from './useInspections';
+import { useHiveApiaryLookup } from './useHives';
 import { InspectionResponse, InspectionStatus } from 'shared-schemas';
 import { RescheduleDialog } from '@/pages/inspection/components/reschedule-dialog';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
@@ -16,6 +17,7 @@ export const useScheduledInspectionActions = (
   const [reschedulingInspection, setReschedulingInspection] =
     useState<InspectionResponse | null>(null);
   const { mutate: updateInspection } = useUpdateInspection();
+  const lookupApiaryId = useHiveApiaryLookup();
 
   const handleDoInspection = (inspection: InspectionResponse) => {
     navigate(`/inspections/${inspection.id}/edit?from=scheduled`);
@@ -31,6 +33,7 @@ export const useScheduledInspectionActions = (
           isAllDay,
           status: InspectionStatus.SCHEDULED,
         },
+        apiaryId: lookupApiaryId(reschedulingInspection.hiveId),
       },
       { onSuccess: () => setReschedulingInspection(null) },
     );

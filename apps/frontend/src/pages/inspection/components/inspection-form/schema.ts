@@ -2,9 +2,26 @@ import { z } from 'zod';
 import {
   createInspectionSchema,
   ActionType,
+  HiveStatus,
   observationBaseSchema,
+  measurementSideSchema,
 } from 'shared-schemas';
 import type { Box } from 'shared-schemas';
+
+// A weight reading as edited in the form. `value` is held in the user's
+// preferred display unit (kg/lb); it is converted to canonical kg when the
+// inspection payload is built (see useUpsertInspection). No zod default here so
+// the form's input and output types stay identical.
+export const weightFormSchema = z.object({
+  id: z.string().uuid().optional(),
+  value: z.number().nonnegative(),
+  unit: z.string().optional(),
+  boxId: z.string().uuid().nullable().optional(),
+  side: measurementSideSchema.nullable().optional(),
+  recordedAt: z.string().datetime().optional(),
+});
+
+export type WeightFormData = z.infer<typeof weightFormSchema>;
 
 // Frontend-specific modifications for the form
 // We use date object instead of datetime string.
@@ -59,6 +76,13 @@ export const maintenanceActionSchema = z.object({
   notes: z.string().optional(),
 });
 
+// Status change action
+export const statusChangeActionSchema = z.object({
+  type: z.literal(ActionType.STATUS_CHANGE),
+  toStatus: z.nativeEnum(HiveStatus),
+  notes: z.string().optional(),
+});
+
 // Other action
 export const otherActionSchema = z.object({
   type: z.literal(ActionType.OTHER),
@@ -93,6 +117,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   framesActionSchema,
   maintenanceActionSchema,
   noteActionSchema,
+  statusChangeActionSchema,
   otherActionSchema,
   boxConfigurationActionSchema,
 ]);
@@ -110,6 +135,7 @@ export const scoreFormSchema = z.object({
 export const subjectiveInspectionSchema = inspectionFormSchema.extend({
   actions: z.array(actionSchema).optional(),
   score: scoreFormSchema.optional(),
+  weights: z.array(weightFormSchema).optional(),
   observations: observationBaseSchema
     .extend({
       strength: z.number().int().min(0).max(10).nullish(),
@@ -121,6 +147,7 @@ export const subjectiveInspectionSchema = inspectionFormSchema.extend({
 export const inspectionSchema = inspectionFormSchema.extend({
   actions: z.array(actionSchema).optional(),
   score: scoreFormSchema.optional(),
+  weights: z.array(weightFormSchema).optional(),
 });
 
 export type ObservationFormData = z.infer<typeof observationBaseSchema>;
@@ -129,6 +156,7 @@ export type TreatmentActionData = z.infer<typeof treatmentActionSchema>;
 export type FramesActionData = z.infer<typeof framesActionSchema>;
 export type MaintenanceActionData = z.infer<typeof maintenanceActionSchema>;
 export type NoteActionData = z.infer<typeof noteActionSchema>;
+export type StatusChangeActionData = z.infer<typeof statusChangeActionSchema>;
 export type BoxConfigurationActionData = z.infer<typeof boxConfigurationActionSchema>;
 export type ActionData = z.infer<typeof actionSchema>;
 export type InspectionFormData = z.infer<typeof inspectionSchema>;

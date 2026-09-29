@@ -6,7 +6,13 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from './storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import {
+  apiaryReadScope,
+  apiaryWriteAccessWhere,
+  apiaryWriteScope,
+} from '../common/apiary-scope';
+import { Prisma } from '@/prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 
 const MIME_TO_EXT: Record<string, string> = {
@@ -26,7 +32,8 @@ export interface FileUploadConfig {
 
 export interface FileFilterInternal {
   hiveId?: string;
-  apiaryId: string;
+  // Selected apiary (a filter); absent = every apiary the user can access.
+  apiaryId?: string;
   userId: string;
   startDate?: string;
   endDate?: string;
@@ -57,6 +64,22 @@ export class FileUploadService {
     if (file.size > config.maxFileSize) {
       throw new BadRequestException(
         `File size exceeds maximum allowed (${config.maxFileSize / 1024 / 1024}MB)`,
+      );
+    }
+  }
+
+  /** Verifies the user can write to the given apiary (owner, or active
+   *  EDITOR/OWNER member). Used for the target apiary an upload names in its
+   *  body, which the guard does not see. */
+  async assertApiaryWritable(apiaryId: string, userId: string): Promise<void> {
+    const apiary = await this.prisma.apiary.findFirst({
+      where: { id: apiaryId, ...apiaryWriteAccessWhere(userId) },
+      select: { id: true },
+    });
+
+    if (!apiary) {
+      throw new NotFoundException(
+        `Apiary with ID ${apiaryId} not found or you cannot edit it`,
       );
     }
   }
@@ -132,7 +155,7 @@ export class FileUploadService {
   /** Builds a Prisma where clause for list queries with apiary ownership, optional hive and date filters. */
   buildWhereClause(filter: FileFilterInternal): Record<string, unknown> {
     const where: Record<string, unknown> = {
-      apiary: { id: filter.apiaryId },
+      apiary: apiaryReadScope(filter),
     };
 
     if (filter.hiveId) {
@@ -150,13 +173,17 @@ export class FileUploadService {
   }
 
   /** Builds the ownership where clause for single-entity lookups. */
+  /** Where-clause for one file: read scope honours the selected apiary as a
+   *  filter, write scope requires OWNER/EDITOR on the file's apiary. */
   ownershipWhere(
     id: string,
-    filter: ApiaryUserFilter,
-  ): { id: string; apiary: { id: string } } {
+    filter: ApiaryScopeFilter,
+    mode: 'read' | 'write' = 'read',
+  ): { id: string; apiary: Prisma.ApiaryWhereInput } {
     return {
       id,
-      apiary: { id: filter.apiaryId },
+      apiary:
+        mode === 'write' ? apiaryWriteScope(filter) : apiaryReadScope(filter),
     };
   }
 }

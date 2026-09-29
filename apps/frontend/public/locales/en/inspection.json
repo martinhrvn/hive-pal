@@ -31,6 +31,8 @@
     "scoreStatus": "Score/Status",
     "status": "Status",
     "queenSeen": "Queen Seen",
+    "notes": "Notes",
+    "actions": "Actions",
     "temperature": "Temperature",
     "weatherConditions": "Weather Conditions",
     "notRecorded": "Not recorded",
@@ -118,6 +120,8 @@
   },
   "actions": {
     "details": "Details",
+    "view": "View",
+    "edit": "Edit",
     "createInspection": "Create Inspection",
     "addInspection": "Add Inspection",
     "mobileInspection": "Mobile Inspection",
@@ -237,6 +241,7 @@
     "inspectionDate": "Inspection date",
     "pickDate": "Pick a date",
     "allDay": "All day",
+    "now": "Now",
     "specificTime": "Set specific time",
     "futureScheduled": "This inspection is scheduled for the future",
     "futureScheduledDescription": "You are scheduling an inspection for a future date.",
@@ -261,6 +266,32 @@
       "description": "Add any additional notes about this inspection",
       "label": "Notes",
       "placeholder": "Enter any observations, findings, or actions taken during the inspection..."
+    },
+    "weights": {
+      "title": "Weight",
+      "description": "Record hive weight readings. Note where you placed the scale — leave the side empty for a whole-hive weighing, and use the base for lifting the whole hive from the bottom.",
+      "empty": "No weight readings yet.",
+      "add": "Add reading",
+      "remove": "Remove reading",
+      "value": "Weight ({{unit}})",
+      "position": "Position",
+      "wholeHive": "Whole hive (base)",
+      "boxLabel": "Box {{position}} · {{type}}",
+      "boxType": {
+        "BROOD": "Brood",
+        "HONEY": "Honey",
+        "FEEDER": "Feeder"
+      },
+      "side": "Side",
+      "wholeWeight": "Whole (no side)",
+      "sides": {
+        "FRONT": "Front (entrance)",
+        "BACK": "Back",
+        "LEFT": "Left",
+        "RIGHT": "Right"
+      },
+      "chartTitle": "Weight",
+      "chartDescription": "Recorded hive weights over time ({{unit}}), grouped by position and side"
     },
     "actions": {
       "title": "Actions",
@@ -330,6 +361,13 @@
         "replaced": "Replaced",
         "notesOptional": "Notes (optional)",
         "notesPlaceholder": "Additional notes about the maintenance..."
+      },
+      "statusChange": "Change Status",
+      "statusChange_section": {
+        "title": "Status Change",
+        "current": "Current",
+        "newStatus": "New status",
+        "notesOptional": "Reason (optional)"
       }
     },
     "audio": {
@@ -344,7 +382,13 @@
       "pendingUpload": "{{count}} pending upload",
       "uploadWarning": "Photos will be uploaded when you save the inspection.",
       "deleteConfirm": "Delete this photo?",
-      "maxReached": "Maximum {{max}} photos per inspection"
+      "maxReached": "Maximum {{max}} photos per inspection",
+      "unsupportedType": "{{name}}: unsupported image format",
+      "tooLarge": "{{name}} is larger than {{max}} MB",
+      "uploadFailed": "Could not upload {{name}}",
+      "deleteFailed": "Could not delete the photo",
+      "someFailed_one": "{{count}} photo could not be uploaded",
+      "someFailed_other": "{{count}} photos could not be uploaded"
     }
   },
   "detailSidebar": {

@@ -14,12 +14,14 @@ import {
 } from '@/components/sidebar';
 import { RefreshButton } from '@/components/sidebar/refresh-button';
 import { useTodos } from '@/api/hooks/useTodos';
+import { useApiary } from '@/hooks/use-apiary';
 import { TodoQuickAdd } from './components/todo-quick-add';
 import { TodoList } from './components/todo-list';
 
 export const TodoListPage = () => {
   const { t } = useTranslation(['todo', 'common']);
   const { data, isLoading, refetch } = useTodos();
+  const { viewAllApiaries } = useApiary();
   const [showCompleted, setShowCompleted] = useState(false);
 
   const allTodos = data ?? [];
@@ -33,7 +35,11 @@ export const TodoListPage = () => {
         <div className="space-y-6">
           <div>
             <h1 className="text-2xl font-bold">{t('todo:list.title')}</h1>
-            <p className="text-muted-foreground">{t('todo:list.caption')}</p>
+            <p className="text-muted-foreground">
+              {t(
+                viewAllApiaries ? 'todo:list.captionAll' : 'todo:list.caption',
+              )}
+            </p>
           </div>
 
           <TodoQuickAdd />

@@ -10,6 +10,8 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryWriteScope } from '../common';
 
 export interface AiTranscript {
   text: string;
@@ -41,14 +43,20 @@ export class AiService {
   async analyzeInspectionAudio(
     inspectionId: string,
     audioId: string,
+    filter: ApiaryScopeFilter,
   ): Promise<AiProcessUploadResponse> {
     const enabled = this.config.get<string>('AI_ENABLED') === 'true';
     if (!enabled) {
       throw new BadRequestException('AI is disabled');
     }
 
+    // The caller must be able to write to the apiary the inspection belongs to.
     const audio = await this.prisma.inspectionAudio.findFirst({
-      where: { id: audioId, inspectionId },
+      where: {
+        id: audioId,
+        inspectionId,
+        inspection: { hive: { apiary: apiaryWriteScope(filter) } },
+      },
     });
 
     if (!audio) {

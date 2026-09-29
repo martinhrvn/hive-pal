@@ -48,7 +48,8 @@
     "noHives": {
       "title": "No hives yet",
       "description": "Add your first hive to this apiary to start tracking it.",
-      "action": "Add your first hive"
+      "action": "Add your first hive",
+      "descriptionAll": "Add a hive to any of your apiaries to start tracking it."
     },
     "noLocation": {
       "title": "Add a location for weather",

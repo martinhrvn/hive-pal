@@ -18,6 +18,7 @@ import {
   ActionType,
 } from 'shared-schemas';
 import { Prisma } from '@/prisma/client';
+import { apiaryAccessWhere, apiaryWriteAccessWhere } from '../common';
 
 @Injectable()
 export class HarvestsService {
@@ -28,16 +29,16 @@ export class HarvestsService {
   ) {}
 
   async create(
-    apiaryId: string,
+    apiaryId: string | undefined,
     userId: string,
     createHarvestDto: CreateHarvest,
   ): Promise<HarvestResponse> {
-    // Verify the apiary belongs to the user
+    // A harvest belongs to the selected apiary, which must be writable.
+    if (!apiaryId) {
+      throw new BadRequestException('Select an apiary to create a harvest');
+    }
     const apiary = await this.prisma.apiary.findFirst({
-      where: {
-        id: apiaryId,
-        userId,
-      },
+      where: { id: apiaryId, ...apiaryWriteAccessWhere(userId) },
     });
 
     if (!apiary) {
@@ -94,9 +95,7 @@ export class HarvestsService {
     const harvest = await this.prisma.harvest.findFirst({
       where: {
         id: harvestId,
-        apiary: {
-          userId,
-        },
+        apiary: apiaryWriteAccessWhere(userId),
       },
     });
 
@@ -108,6 +107,20 @@ export class HarvestsService {
       throw new BadRequestException(
         'Cannot edit completed harvest. Reopen it first.',
       );
+    }
+
+    // Replacement hives must belong to the harvest's apiary
+    if (updateHarvestDto.harvestHives) {
+      const hiveIds = updateHarvestDto.harvestHives.map((hh) => hh.hiveId);
+      const hives = await this.prisma.hive.findMany({
+        where: { id: { in: hiveIds }, apiaryId: harvest.apiaryId },
+        select: { id: true },
+      });
+      if (hives.length !== new Set(hiveIds).size) {
+        throw new BadRequestException(
+          'One or more hives not found in this apiary',
+        );
+      }
     }
 
     // Get user preferences to determine unit
@@ -185,9 +198,7 @@ export class HarvestsService {
     const harvest = await this.prisma.harvest.findFirst({
       where: {
         id: harvestId,
-        apiary: {
-          userId,
-        },
+        apiary: apiaryWriteAccessWhere(userId),
       },
     });
 
@@ -246,9 +257,7 @@ export class HarvestsService {
     const harvest = await this.prisma.harvest.findFirst({
       where: {
         id: harvestId,
-        apiary: {
-          userId,
-        },
+        apiary: apiaryWriteAccessWhere(userId),
       },
       include: {
         harvestHives: true,
@@ -328,9 +337,7 @@ export class HarvestsService {
     const harvest = await this.prisma.harvest.findFirst({
       where: {
         id: harvestId,
-        apiary: {
-          userId,
-        },
+        apiary: apiaryWriteAccessWhere(userId),
       },
     });
 
@@ -393,9 +400,7 @@ export class HarvestsService {
     const harvest = await this.prisma.harvest.findFirst({
       where: {
         id: harvestId,
-        apiary: {
-          userId,
-        },
+        apiary: apiaryAccessWhere(userId),
       },
       include: {
         harvestHives: {
@@ -419,7 +424,7 @@ export class HarvestsService {
   ): Promise<HarvestListResponse[]> {
     const whereClause: Prisma.HarvestWhereInput = {
       apiary: {
-        userId,
+        ...apiaryAccessWhere(userId),
         ...(filter.apiaryId && { id: filter.apiaryId }),
       },
       ...(filter.status && { status: filter.status }),
@@ -462,9 +467,7 @@ export class HarvestsService {
     const harvest = await this.prisma.harvest.findFirst({
       where: {
         id: harvestId,
-        apiary: {
-          userId,
-        },
+        apiary: apiaryWriteAccessWhere(userId),
       },
     });
 

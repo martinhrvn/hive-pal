@@ -31,6 +31,8 @@
         "scoreStatus": "Bewertung/Status",
         "status": "Status",
         "queenSeen": "Königin gesehen",
+        "notes": "Notizen",
+        "actions": "Aktionen",
         "temperature": "Temperatur",
         "weatherConditions": "Wetterbedingungen",
         "notRecorded": "Nicht erfasst",
@@ -96,8 +98,36 @@
             "prepare_for_winter": "Auf Winter vorbereiten"
         }
     },
+    "weights": {
+      "title": "Gewicht",
+      "description": "Erfasse Beutengewichte. Halte fest, wo du die Waage angesetzt hast — lass die Seite leer für eine Wägung der ganzen Beute, und nutze „ganz unten“ zum Anheben der ganzen Beute vom Boden.",
+      "empty": "Noch keine Gewichtswerte.",
+      "add": "Wert hinzufügen",
+      "remove": "Wert entfernen",
+      "value": "Gewicht ({{unit}})",
+      "position": "Position",
+      "wholeHive": "Ganze Beute (ganz unten)",
+      "boxLabel": "Zarge {{position}} · {{type}}",
+      "boxType": {
+        "BROOD": "Brutraum",
+        "HONEY": "Honigraum",
+        "FEEDER": "Futterzarge"
+      },
+      "side": "Seite",
+      "wholeWeight": "Ganz (keine Seite)",
+      "sides": {
+        "FRONT": "Vorne (Flugloch)",
+        "BACK": "Hinten",
+        "LEFT": "Links",
+        "RIGHT": "Rechts"
+      },
+      "chartTitle": "Gewicht",
+      "chartDescription": "Erfasste Beutengewichte über die Zeit ({{unit}}), gruppiert nach Position und Seite"
+    },
     "actions": {
         "details": "Details",
+        "view": "Ansehen",
+        "edit": "Bearbeiten",
         "createInspection": "Inspektion erstellen",
         "addInspection": "Inspektion hinzufügen",
         "scheduleInspection": "Inspektion planen",
@@ -214,6 +244,7 @@
         "inspectionDate": "Inspektionsdatum",
         "pickDate": "Datum auswählen",
         "allDay": "All day",
+        "now": "Jetzt",
         "specificTime": "Set specific time",
         "futureScheduled": "Diese Inspektion ist für die Zukunft geplant",
         "futureScheduledDescription": "Sie planen eine Inspektion für ein zukünftiges Datum.",
@@ -294,12 +325,34 @@
                 "remove": "Entfernen",
                 "saveNote": "Notiz speichern",
                 "edit": "Bearbeiten"
+            },
+            "statusChange": "Statuswechsel",
+            "statusChange_section": {
+                "title": "Statuswechsel",
+                "current": "Aktuell",
+                "newStatus": "Neuer Status",
+                "notesOptional": "Grund (optional)"
             }
         },
         "audio": {
             "title": "Audio-Notizen",
             "pendingUpload": "{{count}} ausstehend zum Hochladen",
             "uploadWarning": "Audioaufnahmen werden beim Speichern der Inspektion hochgeladen."
+        },
+        "photos": {
+            "title": "Fotos",
+            "takePhoto": "Foto aufnehmen",
+            "addPhoto": "Foto hinzufügen",
+            "pendingUpload": "{{count}} ausstehend zum Hochladen",
+            "uploadWarning": "Fotos werden beim Speichern der Durchsicht hochgeladen.",
+            "deleteConfirm": "Dieses Foto löschen?",
+            "maxReached": "Maximal {{max}} Fotos pro Durchsicht",
+            "unsupportedType": "{{name}}: nicht unterstütztes Bildformat",
+            "tooLarge": "{{name}} ist größer als {{max}} MB",
+            "uploadFailed": "{{name}} konnte nicht hochgeladen werden",
+            "deleteFailed": "Das Foto konnte nicht gelöscht werden",
+            "someFailed_one": "{{count}} Foto konnte nicht hochgeladen werden",
+            "someFailed_other": "{{count}} Fotos konnten nicht hochgeladen werden"
         }
     },
     "detailSidebar": {

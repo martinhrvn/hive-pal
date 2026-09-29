@@ -29,6 +29,8 @@ export const userPreferencesSchema = z.object({
   language: z.string().optional(),
   theme: z.enum(['light', 'dark', 'system']).optional(),
   dateFormat: z.enum(['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']).optional(),
+  weekStartsOn: z.enum(['monday', 'sunday']).optional(),
+  timeFormat: z.enum(['12h', '24h']).optional(),
   units: z.enum(['metric', 'imperial']).optional(),
   emailNotifications: z.boolean().optional(),
   pushNotifications: z.boolean().optional(),
