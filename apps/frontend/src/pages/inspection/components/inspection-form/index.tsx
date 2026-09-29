@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { HiveHubInspectionPrompt } from '@/pages/hivescale/hivehub-inspection-prompt';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'react-router-dom';
@@ -72,9 +73,7 @@ const formatAiDateSuggestion = (value: unknown): string => {
 };
 
 const normalizeBoxSummary = (
-  boxesSummary:
-    | Array<{ type: string; frameCount: number }>
-    | undefined,
+  boxesSummary: Array<{ type: string; frameCount: number }> | undefined,
   fallbackBoxes: Box[] = [],
 ): Box[] | undefined => {
   if (!boxesSummary?.length) return undefined;
@@ -166,84 +165,84 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       // discriminant (`type`) optional and breaks discriminated-union narrowing.
       // The mapping below produces correctly-shaped action objects at runtime.
       actions: (inspection?.actions?.map(action => {
-          if (action.details.type === ActionType.FEEDING) {
-            const details = action.details;
-            return {
-              type: ActionType.FEEDING,
-              notes: action.notes ?? '',
-              feedType: details.feedType,
-              quantity: details.amount,
-              unit: details.unit,
-              concentration: details.concentration ?? '',
-            };
-          }
-
-          if (action.details.type === ActionType.TREATMENT) {
-            const details = action.details;
-            return {
-              type: ActionType.TREATMENT,
-              notes: action.notes ?? '',
-              amount: details.quantity,
-              treatmentType: details.product,
-              unit: details.unit,
-            };
-          }
-
-          if (action.details.type === ActionType.FRAME) {
-            const details = action.details;
-            return {
-              type: ActionType.FRAME,
-              notes: action.notes ?? '',
-              frames: details.quantity,
-            };
-          }
-
-          if (action.details.type === ActionType.MAINTENANCE) {
-            const details = action.details;
-            return {
-              type: ActionType.MAINTENANCE,
-              notes: action.notes ?? '',
-              component: details.component,
-              status: details.status,
-            };
-          }
-
-          if (action.details.type === ActionType.NOTE) {
-            const details = action.details;
-            return {
-              type: ActionType.NOTE,
-              notes: details.content || action.notes || '',
-            };
-          }
-
-          if (action.details.type === ActionType.STATUS_CHANGE) {
-            const details = action.details;
-            return {
-              type: ActionType.STATUS_CHANGE,
-              notes: action.notes ?? '',
-              toStatus: details.toStatus,
-            };
-          }
-
-          if (action.details.type === ActionType.BOX_CONFIGURATION) {
-            const details = action.details;
-            return {
-              type: ActionType.BOX_CONFIGURATION,
-              boxesAdded: details.boxesAdded,
-              boxesRemoved: details.boxesRemoved,
-              framesAdded: details.framesAdded,
-              framesRemoved: details.framesRemoved,
-              totalBoxes: details.totalBoxes,
-              totalFrames: details.totalFrames,
-              boxesSummary: details.boxes,
-            };
-          }
-
+        if (action.details.type === ActionType.FEEDING) {
+          const details = action.details;
           return {
-            type: ActionType.OTHER,
-            notes: action.notes || '',
+            type: ActionType.FEEDING,
+            notes: action.notes ?? '',
+            feedType: details.feedType,
+            quantity: details.amount,
+            unit: details.unit,
+            concentration: details.concentration ?? '',
           };
-        }) || []) as InspectionFormData['actions'],
+        }
+
+        if (action.details.type === ActionType.TREATMENT) {
+          const details = action.details;
+          return {
+            type: ActionType.TREATMENT,
+            notes: action.notes ?? '',
+            amount: details.quantity,
+            treatmentType: details.product,
+            unit: details.unit,
+          };
+        }
+
+        if (action.details.type === ActionType.FRAME) {
+          const details = action.details;
+          return {
+            type: ActionType.FRAME,
+            notes: action.notes ?? '',
+            frames: details.quantity,
+          };
+        }
+
+        if (action.details.type === ActionType.MAINTENANCE) {
+          const details = action.details;
+          return {
+            type: ActionType.MAINTENANCE,
+            notes: action.notes ?? '',
+            component: details.component,
+            status: details.status,
+          };
+        }
+
+        if (action.details.type === ActionType.NOTE) {
+          const details = action.details;
+          return {
+            type: ActionType.NOTE,
+            notes: details.content || action.notes || '',
+          };
+        }
+
+        if (action.details.type === ActionType.STATUS_CHANGE) {
+          const details = action.details;
+          return {
+            type: ActionType.STATUS_CHANGE,
+            notes: action.notes ?? '',
+            toStatus: details.toStatus,
+          };
+        }
+
+        if (action.details.type === ActionType.BOX_CONFIGURATION) {
+          const details = action.details;
+          return {
+            type: ActionType.BOX_CONFIGURATION,
+            boxesAdded: details.boxesAdded,
+            boxesRemoved: details.boxesRemoved,
+            framesAdded: details.framesAdded,
+            framesRemoved: details.framesRemoved,
+            totalBoxes: details.totalBoxes,
+            totalFrames: details.totalFrames,
+            boxesSummary: details.boxes,
+          };
+        }
+
+        return {
+          type: ActionType.OTHER,
+          notes: action.notes || '',
+        };
+      }) || []) as InspectionFormData['actions'],
       weights: (inspection?.weights?.map(w => {
         const display = formatWeightDisplay(w.value);
         return {
@@ -276,15 +275,22 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   );
 
   const effectiveBoxes =
-    boxConfigAction?.updatedBoxes ?? summarizedBoxes ?? selectedHive?.boxes ?? [];
+    boxConfigAction?.updatedBoxes ??
+    summarizedBoxes ??
+    selectedHive?.boxes ??
+    [];
 
   const totalFrames =
     effectiveBoxes
       .filter((box: { type: string }) => box.type === 'BROOD')
-      .reduce((sum: number, box: { frameCount: number }) => sum + box.frameCount, 0) || null;
+      .reduce(
+        (sum: number, box: { frameCount: number }) => sum + box.frameCount,
+        0,
+      ) || null;
 
   const broodBoxCount =
-    effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD').length || null;
+    effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD')
+      .length || null;
 
   // Live frame (Rähmchen) delta from the form's current FRAME action(s)
   const liveFrameDelta = formActions
@@ -505,6 +511,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
           />
 
           {mode !== 'batch' && (
+            <HiveHubInspectionPrompt hiveId={selectedHiveId ?? hiveId} />
+          )}
+
+          {mode !== 'batch' && (
             <FormField
               control={form.control}
               name="date"
@@ -581,23 +591,20 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     </Button>
                   </div>
 
-                  {isAiSuggested('date') &&
-                    aiMergeState?.suggestions.date && (
-                      <AiSuggestionPreview
-                        currentValue={
-                          field.value
-                            ? format(field.value, 'PPP HH:mm')
-                            : null
-                        }
-                        suggestedValue={formatAiDateSuggestion(
-                          aiMergeState.suggestions.date.aiValue,
-                        )}
-                        hasConflict={aiMergeState.suggestions.date.hasConflict}
-                        status={aiMergeState.suggestions.date.status}
-                        onAccept={() => acceptAiSuggestion('date')}
-                        onDismiss={() => dismissAiSuggestion('date')}
-                      />
-                    )}
+                  {isAiSuggested('date') && aiMergeState?.suggestions.date && (
+                    <AiSuggestionPreview
+                      currentValue={
+                        field.value ? format(field.value, 'PPP HH:mm') : null
+                      }
+                      suggestedValue={formatAiDateSuggestion(
+                        aiMergeState.suggestions.date.aiValue,
+                      )}
+                      hasConflict={aiMergeState.suggestions.date.hasConflict}
+                      status={aiMergeState.suggestions.date.status}
+                      onAccept={() => acceptAiSuggestion('date')}
+                      onDismiss={() => dismissAiSuggestion('date')}
+                    />
+                  )}
 
                   {isInFuture && (
                     <div className="rounded p-4">

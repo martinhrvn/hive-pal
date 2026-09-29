@@ -35,7 +35,7 @@
   },
   "page": {
     "title": "HiveHub",
-    "subtitle": "Live weight and temperature visualisation from your separate HiveHub backend.",
+    "subtitle": "Weight, climate, sound, traffic and alerts from your HiveHub devices.",
     "refresh": "Refresh",
     "refreshing": "Refreshing…",
     "refreshError": "Could not refresh HiveHub data.",
@@ -43,16 +43,26 @@
     "removeSuccess": "HiveHub device removed from your account.",
     "removeSuccessShared": "You no longer have access to this HiveHub device. Other users still have it, so its claim code stays in use.",
     "releaseConfirm": "Release {{name}} completely? Every user loses access and the device becomes claimable again with its claim code. Readings are kept.",
-    "releaseSuccess": "HiveHub device released. It can be claimed again with its claim code."
+    "releaseSuccess": "HiveHub device released. It can be claimed again with its claim code.",
+    "unavailableTitle": "HiveHub is not reachable",
+    "inspectionActiveTitle": "Inspection mode is on",
+    "inspectionActiveBody": "Readings are masked while the hives are open, so lifting frames does not raise false alerts.",
+    "openInspections": "Open inspections",
+    "tabs": {
+      "overview": "Overview",
+      "inspections": "Inspections",
+      "audio": "Audio",
+      "health": "Health",
+      "setup": "Setup"
+    }
   },
   "setup": {
     "title": "Devices",
-    "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
     "releaseScale": "Release device",
     "noDevices": "No devices claimed yet — open the setup to add one.",
-    "hide": "Hide setup",
-    "show": "Show setup"
+    "selectDevice": "HiveHub device",
+    "noDevicesYet": "No HiveHub device claimed yet. Claim one with the code the hub shows in its setup portal."
   },
   "claim": {
     "title": "Claim HiveHub device",
@@ -65,16 +75,30 @@
     "success": "HiveHub device claimed.",
     "errors": {
       "missingCode": "Enter the claim code printed/configured for the device."
-    }
+    },
+    "hive1Name": "Name of hive 1",
+    "hive2Name": "Name of hive 2",
+    "optional": "Optional"
   },
   "mapping": {
-    "title": "Scale mapping",
-    "description": "These labels stay in HiveHub. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
-    "scale1Label": "Display name for Scale 1",
-    "scale2Label": "Display name for Scale 2",
+    "title": "Hives",
     "hiveNamePlaceholder": "Select or type a hive name",
-    "save": "Save mapping",
-    "success": "Scale mapping updated."
+    "save": "Save hives",
+    "success": "Hive slots saved to HiveHub.",
+    "slotsDescription": "Name each hive slot and link it to a HivePal hive. The link lets inspections, the hive page and alert emails know which colony a slot is. A green dot marks slots the hub currently reports.",
+    "mapSlot": "Map slot {{slot}}",
+    "add": "Add",
+    "reporting": "Reported by the hub",
+    "unknownHive": "Hive not found",
+    "mappedCount": "{{count}}/{{total}} slots mapped",
+    "dialogTitle": "Hive slot {{slot}}",
+    "dialogDescription": "Link the slot to one of your HivePal hives and choose the name HiveHub shows for it.",
+    "linkedHive": "HivePal hive",
+    "notLinked": "Not linked",
+    "linkHint": "Linking survives renaming the hive. Picking a hive fills in its name if the name is empty.",
+    "displayName": "Display name",
+    "clearSlot": "Clear slot",
+    "applySlot": "Apply"
   },
   "status": {
     "title": "Device status",
@@ -94,6 +118,13 @@
     "revokeAccess": "Revoke access",
     "errors": {
       "missingEmail": "Enter the email address of an existing HivePal user."
+    },
+    "lastSeen": "Last check-in",
+    "claimedAt": "Claimed",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "viewer": "Viewer"
     }
   },
   "calibration": {
@@ -203,11 +234,9 @@
       },
       "sourceHint": "Ambient tracks the cell body closely in steady state and is the recommended default.",
       "refLabel": "Reference temperature / °C",
-      "refHint": "Temperature at which the correction is zero.",
       "coeffLabel": "{{scaleName}} coefficient / kg per °C",
       "autoFit": "Auto-fit from history",
       "fitting": "Fitting…",
-      "autoFitHint": "Auto-fit regresses the last 3 days of raw weight against the EMA-smoothed selected temperature, then applies and enables the result. For a clean fit, capture a window where the physical load is constant and the temperature swings.",
       "save": "Save temperature compensation",
       "errors": {
         "refTemp": "Reference temperature must be a number (°C).",
@@ -219,11 +248,33 @@
         "noSignal": "not enough temperature/weight signal.",
         "fitApplied": "{{scaleName}}: {{coeff}} kg/°C @ {{refTemp}}°C (R²={{r2}}, n={{n}}). Applied and enabled."
       }
+    },
+    "perHive": {
+      "hive": "Hive {{index}}",
+      "hiveNamed": "Hive {{index}} · {{name}}",
+      "hiveLabel": "Hive",
+      "knownWeightPlaceholder": "e.g. 10",
+      "manualSaveHint": "Switch hives to edit another scale; all edits are sent together when you save. Hives 3 and up are only written when changed.",
+      "tempco": {
+        "refHint": "The temperature at which the scales read true, i.e. the one they were tared and spanned at. The correction is zero there; fitting leaves it alone unless you ask it to.",
+        "lookbackLabel": "Fit lookback / days",
+        "setRefTemp": "Also set the reference temperature",
+        "setRefTempHint": "Replaces the reference with the mean temperature of the fitted window. Leave off if the scale was calibrated at a known temperature.",
+        "fitOnly": "Fit only (preview)",
+        "fitAndApply": "Fit & apply",
+        "fitSummary": "{{scaleName}}: {{coeff}} kg/°C, R² {{r2}} over {{n}} readings from {{min}}–{{max}} °C (window mean {{mean}} °C).",
+        "lowRSquared": "R² below 0.5: temperature explains little of this drift. Fit over a stretch with a constant load and a wide day/night swing.",
+        "autoFitHint": "Auto-fit regresses the selected hive's stored weight over the lookback window against the EMA-smoothed selected temperature. \"Fit only\" fills the coefficient for review before you save; \"Fit & apply\" stores it and enables compensation. For a clean fit, pick a window where the physical load is constant and the temperature swings.",
+        "errors": {
+          "lookback": "Lookback must be a whole number of days between 1 and 90."
+        },
+        "toasts": {
+          "fitFilled": "{{scaleName}}: {{coeff}} kg/°C (R²={{r2}}, n={{n}}). Filled in — review and save."
+        }
+      }
     }
   },
   "firmware": {
-    "title": "Firmware upload",
-    "description": "Upload a firmware binary and register it as a release. New devices of the matching type pick it up on their next update check.",
     "type": "Firmware type",
     "selectType": "Select firmware type",
     "version": "Version",
@@ -253,16 +304,87 @@
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
     },
-    "hiveinsideOta": {
-      "title": "Trigger HiveInside OTA",
-      "description": "Uploading a HiveInside firmware now automatically queues the OTA relay to both sensor slots over BLE. Use this to re-queue the active release to a specific slot. Keep the sensor powered and awake during the update.",
-      "slot": "Sensor slot",
-      "slotOption": "Slot {{slot}}",
-      "queue": "Queue HiveInside OTA",
+    "board": {
+      "cardTitle": "Firmware",
+      "cardDescription": "Firmware of this HiveHub and of the HiveInside nodes and HiveTraffic counters it carries. Uploading registers a release; approving (hub) or relaying (nodes) installs it.",
+      "current": "Current",
+      "latest": "Latest",
+      "approved": "Approved",
+      "board": "Board",
+      "badgePending": "Update pending approval",
+      "badgeApproved": "Update approved",
+      "badgeUpToDate": "Up to date",
+      "approveFlash": "Approve & flash {{version}}",
+      "approveConfirm": "Approve firmware {{version}} and flash it over the air?\n\nThe HiveHub installs it on its next check-in and reboots. A remote device that fails mid-update may need physical access to recover.",
+      "otherBoards": "Also uploaded for another board (not applied to this {{board}} device): {{releases}}. A build only reaches a device whose board matches — check the board when uploading.",
+      "otherBoardsUnknown": "Also uploaded for another board (not applied to this device): {{releases}}. A build only reaches a device whose board matches — check the board when uploading."
+    },
+    "relays": {
+      "hiveFallback": "Hive {{slot}}",
+      "latest": "latest {{version}}",
+      "updateAvailable": "update available: {{version}}",
+      "status": {
+        "pending": "relay queued",
+        "running": "relaying…",
+        "completed": "relay completed",
+        "failed": "relay failed",
+        "expired": "relay timed out"
+      },
+      "statusTitle": "Relay of {{version}}: {{status}} ({{date}})",
+      "failedDetail": "Last relay failed — {{message}} ({{date}})",
+      "noReason": "no reason reported",
+      "alreadyQueued": "A relay is already queued for this node",
       "queueing": "Queuing…",
-      "success": "HiveInside OTA queued for slot {{slot}}.",
-      "autoQueued": "HiveInside OTA auto-queued for slots {{slots}}.",
-      "autoQueueFailed": "Could not auto-queue the HiveInside OTA for slots {{slots}}."
+      "relayAnyway": "Relay anyway",
+      "confirm": "Relay {{name}} {{version}} to {{hive}}?\n\nThe HiveHub picks this up on its next upload cycle — normally within about 10 minutes, or whatever send interval this device uses. It then streams the image over BLE for a few minutes and the node reboots into it. The node must be awake and in range, or the relay fails and has to be queued again.",
+      "queued": "Relay of {{version}} queued for {{hive}}.",
+      "queuedFrom": "Relay queued for {{hive}} ({{current}} → {{version}}).",
+      "hiveinside": {
+        "name": "HiveInside",
+        "title": "HiveInside nodes",
+        "description": "Firmware each in-hive node advertises. Uploading a HiveInside image only registers the release — nothing reaches a node until you press “Relay to node”. The version shown here is what confirms the update took.",
+        "relay": "Relay to node",
+        "unnamed": "Advertises no name of its own (HiveInside before 0.5.0)",
+        "noRelease": "No HiveInside release uploaded yet — upload one below to relay it."
+      },
+      "beecounter": {
+        "name": "HiveTraffic",
+        "title": "HiveTraffic counters",
+        "description": "Firmware each HiveTraffic counter reports. Uploading a HiveTraffic image only registers the release — nothing reaches a counter until you press “Relay to counter”. Counters older than about v0.1.0 report no version but can still be updated.",
+        "relay": "Relay to counter",
+        "unnamed": "Reports no name or address",
+        "noRelease": "No HiveTraffic release uploaded yet — upload one below to relay it.",
+        "countingWarning": "A counter stops counting bees for the whole transfer, so relay when traffic is low.",
+        "confirmExtra": "The counter stops counting bees for the whole transfer — any traffic during those few minutes is lost."
+      }
+    },
+    "uploadForm": {
+      "title": "Upload firmware",
+      "description": "Uploading only registers a release — it never installs anything on its own. Approve the hub update above, or relay a node or counter release from its row.",
+      "board": "Board",
+      "targets": {
+        "hivehub": "HiveHub hub",
+        "hiveinside": "HiveInside",
+        "beecounter": "HiveTraffic counter"
+      },
+      "boards": {
+        "auto": "Auto (from filename)",
+        "esp32": "ESP32 (classic 30-pin)",
+        "esp32-c6": "ESP32-C6",
+        "nrf54lm20a": "nRF54LM20A"
+      },
+      "boardHint": {
+        "hivehub": "Hub firmware must state its board: pick one, or keep auto when the file is named like hivehub_esp32-c6_0.30.5.bin.",
+        "hiveinside": "HiveInside ships only for the nRF54LM20A. Upload the build artifact as-is (e.g. hiveinside_nrf54lm20a_1.4.0.bin) and target and version are filled in from its name.",
+        "beecounter": "The HiveTraffic counter is an ESP32-C6. Upload the application image (e.g. beecounter_esp32-c6_0.7.1.bin), not a merged factory image."
+      },
+      "detected": "{{name}} — filled in {{fields}}.",
+      "nothingDetected": "{{name}} — no target, board or version recognized in the name; set them below.",
+      "detectedTarget": "target “{{target}}”",
+      "detectedBoard": "board {{board}}",
+      "detectedVersion": "version {{version}}",
+      "autoQueued": "Relay queued automatically for {{hives}}.",
+      "autoQueueFailed": "Could not queue the relay automatically for {{hives}}."
     }
   },
   "sdData": {
@@ -287,12 +409,18 @@
       "parsed_other": "Parsed {{count}} records",
       "skipped_one": " · {{count}} unreadable line skipped.",
       "skipped_other": " · {{count}} unreadable lines skipped."
+    },
+    "mismatch": {
+      "title": "File from a different hub",
+      "description": "This file was recorded by another hub, not by {{device}}.",
+      "fileDevices_one": "Device ID in the file:",
+      "fileDevices_other": "Device IDs in the file:",
+      "hint": "Import it anyway only if the SD card really belongs to this device (for example after replacing the hub's board).",
+      "cancel": "Cancel",
+      "force": "Import into this device anyway"
     }
   },
   "panel": {
-    "weight": "Weight",
-    "hiveTemp": "Hive temp",
-    "rmsSound": "RMS sound",
     "ambientTemperature": "Ambient temperature",
     "ambientHumidity": "Ambient humidity",
     "batteryCharge": "Battery charge",
@@ -302,7 +430,6 @@
       "title": "General",
       "description": "Ambient & power"
     },
-    "humidity": "Hive humidity",
     "wirelessSensorsBattery": "Wireless sensors battery",
     "sensorTypes": {
       "hiveHeart": "HiveHeart",
@@ -311,178 +438,36 @@
     }
   },
   "diagram": {
-    "title": "Measurements",
-    "subtitle": "Weight, temperature, and entrance activity over time",
-    "noMeasurements": "No measurements for the selected range.",
-    "noDataForSeries": "No data in the selected range.",
-    "meta": {
-      "device": "Device:",
-      "lastSeen": "Last seen:",
-      "lastData": "Last data:",
-      "firmware": "Firmware:",
-      "hiveInsideFirmware": "HiveInside:"
-    },
     "range": {
       "all": "All",
       "from": "From",
       "to": "To"
     },
-    "series": {
-      "weight": "{{name}} weight",
-      "temp": "{{name}} temp",
-      "micRms": "{{name}} mic RMS",
-      "vibration": "{{name}} vibration",
-      "swarmBand": "{{name}} swarm band (8–30 Hz)",
-      "beesIn": "{{name}} bees in",
-      "beesOut": "{{name}} bees out",
-      "netFlow": "{{name}} net flow",
-      "ambientTemp": "Ambient temp",
-      "ambientHumidity": "Ambient humidity",
-      "batteryVoltage": "Battery voltage",
-      "batteryCharge": "Battery charge",
-      "solarVoltage": "Solar voltage",
-      "solarCurrent": "Solar current",
-      "solarPower": "Solar power",
-      "humidity": "{{name}} humidity",
-      "pressure": "{{name}} pressure",
-      "fanningBand": "{{name}} fanning band (30–100 Hz)",
-      "activityBand": "{{name}} activity band (100–200 Hz)"
-    },
-    "group": {
-      "ambient": "Ambient",
-      "offGrid": "Off-grid"
-    },
-    "axis": {
-      "weight": "Weight",
-      "temperature": "Temperature",
-      "humidity": "Humidity",
-      "voltage": "Voltage",
-      "percent": "Percent",
-      "current": "Current",
-      "power": "Power",
-      "sound": "Sound",
-      "beecount": "Bee count",
-      "vibration": "Vibration",
-      "pressure": "Pressure"
-    },
     "marker": {
-      "inspection": "Inspection",
-      "boxAdded": "Box added",
-      "action": {
-        "maintenance": "Maintenance",
-        "feeding": "Feeding",
-        "frames": "Frames",
-        "treatment": "Treatment"
-      }
-    },
-    "axisSettings": {
-      "title": "Axis settings",
-      "reset": "Reset",
-      "side": "Side",
-      "left": "Left",
-      "right": "Right",
-      "scale": "Scale",
-      "auto": "Auto",
-      "zeroToMax": "0 to max",
-      "custom": "Custom",
-      "min": "Min",
-      "max": "Max",
-      "autoPlaceholder": "auto"
+      "inspection": "Inspection"
     }
   },
   "sound": {
-    "title": "Hive sound",
-    "description": "INMP441 FFT band energy (dBFS) — {{left}} (left) · {{right}} (right)",
-    "hide": "Hide sound",
-    "show": "Show sound",
-    "micLeftFallback": "Mic left",
-    "micRightFallback": "Mic right",
-    "noDataForChannel": "No data for {{name}} in this range.",
-    "bandReference": "Band reference",
-    "thresholds": "Thresholds used by the Insights engine: piping > −45 dBFS, stress > −38 dBFS, queenless hum > −40 dBFS with quiet piping. Calibrate against your own baseline.",
-    "status": {
-      "noData": "No data",
-      "micError": "Mic error",
-      "bothActive": "{{left}} + {{right}} active",
-      "oneActive": "{{name}} active"
-    },
-    "table": {
-      "band": "Band",
-      "range": "Range",
-      "significance": "Significance"
-    },
     "bands": {
       "subBass": {
-        "label": "Sub-bass",
-        "description": "Structural vibration / low rumble"
+        "label": "Sub-bass"
       },
       "hum": {
-        "label": "Hum",
-        "description": "Normal colony hum (~200 Hz fundamental)"
+        "label": "Hum"
       },
       "piping": {
-        "label": "Piping",
-        "description": "Queen piping / tooting (pre-swarm signal)"
+        "label": "Piping"
       },
       "stress": {
-        "label": "Stress",
-        "description": "Agitated colony / robbing"
+        "label": "Stress"
       },
       "high": {
-        "label": "High",
-        "description": "Harmonic overtones"
+        "label": "High"
       }
-    },
-    "rmsToggleShow": "Show RMS level",
-    "rmsToggleHide": "Hide RMS level",
-    "rmsTitle": "RMS sound level",
-    "rmsSeries": "{{name}} RMS"
-  },
-  "beecounter": {
-    "title": "Entrance Counter",
-    "subtitle": "Bees entering and exiting per measurement interval",
-    "noData": "No BeeCounter data found for this device.",
-    "offline": "Offline",
-    "gatesOk": "{{count}} gates OK",
-    "glitches_one": "{{count}} glitch",
-    "glitches_other": "{{count}} glitches",
-    "gatesRatio": "{{healthy}}/{{total}} gates",
-    "inPeriod": "In (period)",
-    "outPeriod": "Out (period)",
-    "netFlow": "Net flow",
-    "netInbound": "net inbound",
-    "netOutbound": "net outbound",
-    "balanced": "balanced",
-    "view": {
-      "inOut": "In / Out",
-      "netFlow": "Net flow",
-      "cumulative": "Cumulative"
-    },
-    "series": {
-      "in": "{{name}} in",
-      "out": "{{name}} out",
-      "net": "{{name}} net",
-      "totalIn": "{{name}} total in",
-      "totalOut": "{{name}} total out"
-    },
-    "diagnostics": {
-      "title": "Hardware diagnostics",
-      "gatesHealthy": "Gates healthy",
-      "glitchCount": "Glitch count",
-      "totalInLifetime": "Total in (lifetime)",
-      "totalOutLifetime": "Total out (lifetime)"
     }
   },
   "insights": {
-    "title": "Insights",
-    "description": "Sensor-based alerts derived from weight and temperature trends.",
-    "updated": "Updated {{ago}}.",
-    "refresh": "Refresh insights",
-    "loadError": "Failed to load insights: {{message}}",
     "allClear": "All clear",
-    "noActiveAlerts": "No active alerts in the last {{count}} days.",
-    "activeAlerts_one": "{{count}} active alert:",
-    "activeAlerts_other": "{{count}} active alerts:",
     "confidence": "Confidence {{value}}%",
     "source": "Source: {{source}}",
     "hiveChannel": "Hive {{channel}}",
@@ -566,6 +551,721 @@
       "title": "No history yet",
       "description": "No alerts have been recorded for this device.",
       "descriptionFiltered": "No alerts have been recorded for this device matching this filter."
+    }
+  },
+  "inspectionMode": {
+    "title": "Inspection mode",
+    "description": "While inspection mode is on, HiveHub keeps measuring but keeps the readings out of charts, insights and alerts, so lifting frames isn't mistaken for a swarm.",
+    "status": {
+      "active": "Active since {{time}}",
+      "pending": "Pending hub pickup",
+      "off": "Off"
+    },
+    "pendingHint": "Requested — the hub picks it up on its next check-in.",
+    "timeoutNote_one": "Ends automatically after {{count}} minute if nobody stops it.",
+    "timeoutNote_other": "Ends automatically after {{count}} minutes if nobody stops it.",
+    "scope": {
+      "wholeHub": "Whole hub",
+      "label": "Covers: {{hives}}"
+    },
+    "start": "Start inspection mode",
+    "stop": "Stop inspection mode",
+    "starting": "Starting…",
+    "stopping": "Stopping…",
+    "cancel": "Cancel",
+    "noteLabel": "Note (optional)",
+    "notePlaceholder": "e.g. Added a honey super",
+    "viewerHint": "Only owners and admins can start or stop inspection mode.",
+    "loadFailed": "Could not load the inspection status.",
+    "startDialog": {
+      "title": "Start inspection mode",
+      "description": "Readings from the selected hives are masked until you stop inspection mode or it times out.",
+      "hivesLabel": "Hives",
+      "wholeHub": "Whole hub (all hives)",
+      "selectHive": "Pick at least one hive, or the whole hub.",
+      "confirm": "Start"
+    },
+    "stopDialog": {
+      "title": "Stop inspection mode",
+      "description": "HiveHub goes back to normal readings and alerts.",
+      "confirm": "Stop"
+    },
+    "toast": {
+      "started": "Inspection mode started",
+      "stopped": "Inspection mode stopped",
+      "noteSaved": "Note saved"
+    },
+    "history": {
+      "title": "Recent inspections",
+      "empty": "No inspections recorded yet.",
+      "ongoing": "ongoing",
+      "startedVia": "Started via {{source}}",
+      "ended": "Ended: {{reason}}",
+      "editNote": "Edit note",
+      "addNote": "Add note",
+      "saveNote": "Save"
+    },
+    "duration": {
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    },
+    "source": {
+      "device": "hub button",
+      "api": "app",
+      "dashboard": "local dashboard"
+    },
+    "endReason": {
+      "timeout": "timed out",
+      "device": "hub button",
+      "api": "stopped in app",
+      "dashboard": "stopped on local dashboard"
+    }
+  },
+  "hiveLink": {
+    "prompt": {
+      "message": "This hive is monitored by HiveHub {{device}} ({{hive}}). Start inspection mode so opening the hive doesn't trigger false alerts.",
+      "active": "Inspection mode is on for {{hive}} on HiveHub {{device}}.",
+      "pending": "Inspection mode requested for {{hive}} on HiveHub {{device}} — the hub picks it up on its next check-in.",
+      "activeOther": "Inspection mode is on for other hives on HiveHub {{device}}, not for {{hive}}. Stop it first to start one for this hive."
+    },
+    "card": {
+      "title": "HiveHub",
+      "description": "Live readings from the linked HiveHub sensors.",
+      "weight": "Weight",
+      "weightChange24h": "24 h change",
+      "temperature": "Hive temperature",
+      "humidity": "Humidity",
+      "lastReading": "Last reading: {{time}}",
+      "openHiveHub": "Open HiveHub"
+    }
+  },
+  "traffic": {
+    "title": "HiveTraffic bee counters",
+    "description": "Night mode and emitter banks for every HiveTraffic counter paired to this hub. The IR emitters are by far the largest item in a counter's power budget, so these settings decide whether it fits an off-grid supply.",
+    "readOnly": "Only device owners and admins can change these settings. Your role is “{{role}}”.",
+    "hiveFallback": "Hive {{slot}}",
+    "noChanges": "No changes to save",
+    "saved": "Bee counter settings saved. Counters pick them up on the next check-in.",
+    "appliesToAll": "Applies to every HiveTraffic counter paired to this device. The counter is told on the hub's next upload cycle.",
+    "status": {
+      "title": "Counters right now",
+      "none": "No HiveTraffic counter reported in the latest reading.",
+      "counting": "Counting",
+      "nightIdle": "Night idle",
+      "nightIdleFor_one": "Night idle · {{count}} min left",
+      "nightIdleFor_other": "Night idle · {{count}} min left",
+      "banksRunning": "Running emitter banks: {{banks}}",
+      "banksUnknown": "Emitter banks not reported (counter firmware older than 0.3.0)",
+      "applied": "Banks applied",
+      "pending": "Banks pending next check-in"
+    },
+    "night": {
+      "title": "Night mode",
+      "description": "Honey bees are diurnal — flight needs light and stops below about 10 °C anyway. During this window the counter stops sensing to save power. It keeps advertising, so readings and firmware updates still work.",
+      "enable": "Enable night mode",
+      "start": "Night starts (local time)",
+      "end": "Night ends (local time)",
+      "windowHelp": "The window may cross midnight (e.g. 20:00 → 06:00). Setting start and end to the same time makes the window empty — it never applies — rather than covering the whole day. Leave a margin around dusk and dawn: activity peaks just before sunset and sunrise.",
+      "emptyWindow": "Start and end are the same, so the window is empty and night mode would never apply.",
+      "wrapsMidnight": "The window crosses midnight: from {{start}} until {{end}} the next morning.",
+      "timezone": "Timezone",
+      "tzCustom": "POSIX TZ string",
+      "timezoneHelp": "The hub's clock runs in UTC. Without the right timezone the window is off by your UTC offset and drifts by an hour at each daylight-saving change.",
+      "tzPresets": {
+        "cet": "Central Europe (Berlin, Paris, Madrid, Vienna)",
+        "uk": "United Kingdom / Ireland",
+        "eet": "Eastern Europe (Helsinki, Athens)",
+        "usEastern": "US Eastern",
+        "usCentral": "US Central",
+        "usMountain": "US Mountain",
+        "usPacific": "US Pacific",
+        "utc": "UTC (no local time)",
+        "custom": "Custom…"
+      },
+      "maxTraffic": "Postpone above (crossings per cycle)",
+      "maxTrafficHelp": "Postpone night mode while more than this many crossings (in + out) were counted in the last upload cycle, so a colony still flying late on a summer evening is not cut off. 0 goes by the clock only.",
+      "save": "Save night mode"
+    },
+    "banks": {
+      "title": "Emitter banks",
+      "description": "The counter's IR emitters are switched in three banks of eight gates. Each bank draws about 80 mA. Switch one off if the entrance is narrower than 24 gates, part of it is closed, or the supply cannot carry the whole board.",
+      "bank": "Bank {{bank}} — gates {{gates}}",
+      "current_one": "{{count}} bank on · about {{ma}} mA on the counter's 3.3 V rail",
+      "current_other": "{{count}} banks on · about {{ma}} mA on the counter's 3.3 V rail",
+      "help": "A switched-off bank does not count its gates at all, so totals drop roughly in proportion — do not compare a narrowed counter with its own history. At least one bank must stay on; unpair a counter that should count nothing.",
+      "firmwareNote": "Needs counter firmware 0.3.0 or newer. The setting is re-sent after every counter reset.",
+      "save": "Save emitter banks"
+    },
+    "errors": {
+      "loadFailed": "Could not load the device configuration.",
+      "saveFailed": "Could not save the bee counter settings",
+      "invalidTime": "Enter a valid start and end time (HH:MM).",
+      "invalidMaxTraffic": "The postpone threshold must be a whole number of 0 or more.",
+      "emptyWindow": "Night mode start and end are the same — the window would never apply.",
+      "noBank": "At least one emitter bank must stay on — unpair the counter instead."
+    }
+  },
+  "hubAccess": {
+    "title": "Hub access",
+    "description": "Reach the hub on site without opening the enclosure, and set how long an inspection may run.",
+    "readOnly": "Only device owners and admins can change these settings. Your role is “{{role}}”.",
+    "noChanges": "No changes to save",
+    "cancel": "Cancel",
+    "ap": {
+      "title": "Setup access point",
+      "description": "Opens the hub's HiveHub-Setup Wi-Fi network, the same as a short press on the setup button: change Wi-Fi, pair sensors or download the SD card data.",
+      "lastCheckIn": "Last check-in: {{time}}",
+      "open": "Open setup access point",
+      "confirmTitle": "Open the setup access point?",
+      "confirmTiming_one": "The request is queued. The hub is asleep between cycles, so the access point opens after its next check-in — up to {{count}} minute from now.",
+      "confirmTiming_other": "The request is queued. The hub is asleep between cycles, so the access point opens after its next check-in — up to {{count}} minutes from now.",
+      "confirmTimingUnknown": "The request is queued. The hub is asleep between cycles, so the access point opens after its next check-in — up to one send interval from now.",
+      "confirmOffline": "While the access point is open the hub is off Wi-Fi and sends no readings.",
+      "confirmTimeout": "It closes by itself after the setup portal timeout if nobody connects, so only start it when someone is at the hive.",
+      "confirm": "Queue access point",
+      "queueing": "Queueing…",
+      "queued": "Access point queued. It opens after the hub's next check-in.",
+      "failed": "Could not queue the access point"
+    },
+    "inspection": {
+      "title": "Inspection timeout",
+      "description": "A safety net: an inspection ends by itself after this many minutes, so a forgotten button press does not blank a hive's data indefinitely. Default 60.",
+      "label": "Timeout (minutes, 1–1440)",
+      "save": "Save timeout",
+      "saved": "Inspection timeout saved",
+      "saveFailed": "Could not save the inspection timeout",
+      "invalid": "Enter a whole number of minutes between 1 and 1440."
+    }
+  },
+  "dataTools": {
+    "title": "Data export & cleanup",
+    "description": "Back up this hub's readings or remove bad ones.",
+    "hiveFallback": "Hive {{slot}}",
+    "cancel": "Cancel",
+    "export": {
+      "title": "Export readings",
+      "description": "Download the stored readings as an NDJSON backup.",
+      "from": "From (optional)",
+      "to": "To (optional)",
+      "rangeHelp": "Leave both empty to export everything. Dates cover whole days in your local time.",
+      "hives": "Hives (optional)",
+      "allHives": "All hives are included.",
+      "someHives_one": "Only {{count}} selected hive is included. The count below covers all readings in the range.",
+      "someHives_other": "Only {{count}} selected hives are included. The count below covers all readings in the range.",
+      "invalidRange": "The start date is after the end date.",
+      "summaryFailed": "Could not count the readings.",
+      "count_one": "{{count}} reading",
+      "count_other": "{{count}} readings",
+      "span": "From {{first}} to {{last}}",
+      "download": "Download",
+      "formatHelp": "One JSON reading per line. The file can be imported again with the SD card import.",
+      "noPermission": "Only device owners and admins can export data. Your role is “{{role}}”."
+    },
+    "delete": {
+      "title": "Delete readings in a range",
+      "description": "Removes spurious readings — for example the weight spikes a hub records at boot before its scales are calibrated, which otherwise distort charts and insights.",
+      "warningTitle": "This cannot be undone",
+      "warning": "Deleted readings are gone for good. Export the range first if you might need it.",
+      "start": "Start",
+      "end": "End",
+      "claimCode": "Claim code",
+      "claimCodeHelp": "The hub's claim code, as a second confirmation.",
+      "review": "Review deletion",
+      "confirmTitle": "Delete these readings?",
+      "confirmRange": "From {{start}} to {{end}}.",
+      "confirmCount_one": "{{count}} reading will be permanently deleted.",
+      "confirmCount_other": "{{count}} readings will be permanently deleted.",
+      "confirmIrreversible": "This cannot be undone.",
+      "countFailed": "Could not count the readings in this range.",
+      "confirm_one": "Delete {{count}} reading",
+      "confirm_other": "Delete {{count}} readings",
+      "deleting": "Deleting…",
+      "success_one": "Deleted {{count}} reading.",
+      "success_other": "Deleted {{count}} readings.",
+      "noPermission": "Only the device owner can delete readings. Your role is “{{role}}”.",
+      "errors": {
+        "missingRange": "Choose a start and an end.",
+        "invalidRange": "The end must be at or after the start.",
+        "missingClaimCode": "Enter the hub's claim code."
+      }
+    }
+  },
+  "alertSettings": {
+    "title": "HiveHub email alerts",
+    "description": "Get an email when HiveHub spots something at your hives — swarming, robbing, a queenless colony and more.",
+    "enable": "Email me about HiveHub alerts",
+    "minSeverity": "Minimum severity",
+    "minSeverityHelp": "Alerts below this level are never emailed.",
+    "severity": {
+      "watch": "Watch and above",
+      "warning": "Warning and above",
+      "critical": "Critical only"
+    },
+    "help": {
+      "schedule": "HivePal checks for new alerts every 15 minutes.",
+      "once": "Each alert is emailed once when it appears, and again only if it escalates.",
+      "scope": "Covers all HiveHub devices you have access to.",
+      "email": "Requires email to be configured on the HivePal server."
+    },
+    "saved": "Alert settings saved",
+    "saveFailed": "Could not save the alert settings",
+    "loadFailed": "Could not load your preferences."
+  },
+  "health": {
+    "title": "Sensor health",
+    "description": "Per-sensor health as reported by {{name}}.",
+    "descriptionAt": "Sensor health from the last check-in · {{ago}}.",
+    "noData": "No sensor health reported yet — it appears once the device sends its first reading.",
+    "hubHeading": "Hub",
+    "hiveIndex": "Hive {{n}}",
+    "noHiveSensors": "No sensors reported for this hive.",
+    "faultNote": "The hub reports its own subsystems as pass/fail — it sends no error code for them, so each fault above says what failed instead. The entrance counter does report a status code, and it is shown with the fault wherever one was read.",
+    "summary": {
+      "noData": "No sensor data",
+      "allOk": "All OK",
+      "faults_one": "{{count}} fault",
+      "faults_other": "{{count}} faults"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Fault",
+      "notFitted": "Not fitted",
+      "notHeard": "Not heard"
+    },
+    "hub": {
+      "sht_ok": "Ambient temp/humidity (SHT40)",
+      "rtc_ok": "Real-time clock",
+      "sd_ok": "SD card",
+      "mic_ok": "Microphone",
+      "mic_left_ok": "Microphone · left",
+      "mic_right_ok": "Microphone · right",
+      "battery_monitor_ok": "Battery monitor",
+      "solar_monitor_ok": "Solar monitor"
+    },
+    "hubReason": {
+      "sht_ok": "The ambient sensor did not return a valid reading this cycle, so this check-in carries no ambient temperature or humidity. Usually an I²C bus or wiring fault; a sensor that was never detected at boot reads the same way.",
+      "rtc_ok": "The real-time clock did not answer on the I²C bus. Timestamps fall back to network time, so a reading taken while offline can be misdated.",
+      "sd_ok": "The SD card was not mounted this cycle — missing, unreadable, or an SPI/wiring fault. Readings are not buffered to the card while this persists.",
+      "mic_ok": "The microphone capture returned no usable samples, so this check-in carries no acoustic bands.",
+      "mic_left_ok": "The left microphone returned no usable samples.",
+      "mic_right_ok": "The right microphone returned no usable samples.",
+      "battery_monitor_ok": "The battery fuel gauge did not answer on the I²C bus — battery voltage and state of charge are missing from this check-in.",
+      "solar_monitor_ok": "The solar monitor did not answer on the I²C bus — solar voltage, current and power are missing from this check-in."
+    },
+    "sensor": {
+      "scale": "Scale",
+      "inHive": "In-hive sensor",
+      "counter": "HiveTraffic counter",
+      "hiveheart": "HiveHeart"
+    },
+    "reason": {
+      "scale": "A scale is configured for this hive but produced no usable reading this cycle, so this check-in carries no weight for it.",
+      "inHive": "No advertisement from the paired {{kind}} during this cycle's BLE scan — out of range, flat battery, or powered off.",
+      "inHiveKindFallback": "in-hive sensor",
+      "node": "Node {{node}}.",
+      "lastHeard": "Last heard {{ago}}.",
+      "notHeardInRange": "Not heard in the loaded range.",
+      "counter": "The entrance counter did not answer its GATT read this cycle — out of range, powered off, or busy when HiveHub dialled.",
+      "counterNode": "Counter {{node}}.",
+      "lastAnswered": "Last answered {{ago}}.",
+      "notAnsweredInRange": "It has not answered in the loaded range.",
+      "statusThen": "Status then: {{status}}.",
+      "expandersThen_one": "{{count}} of 3 port expanders answering then.",
+      "expandersThen_other": "{{count}} of 3 port expanders answering then.",
+      "hiveheart": "The HiveHeart was not heard this cycle — out of range, flat battery, or powered off."
+    },
+    "counter": {
+      "nightIdle": "night-mode idle",
+      "nightIdleBadge": "Night idle",
+      "otherBits": "counter-specific bits {{hex}}",
+      "noFlags": "no flags set",
+      "statusCode": "status {{hex}}",
+      "expanders_one": "{{count}}/3 gate expanders",
+      "expanders_other": "{{count}}/3 gate expanders",
+      "glitches_one": "{{count}} glitch",
+      "glitches_other": "{{count}} glitches",
+      "banks": "Banks {{list}}",
+      "noBanks": "No emitter banks"
+    },
+    "meta": {
+      "firmware": "v{{version}}",
+      "batteryPercent": "Battery {{value}} %",
+      "batteryMv": "Battery {{value}} mV",
+      "batteryV": "Battery {{value}} V",
+      "rssi": "{{value}} dBm"
+    }
+  },
+  "hubStatus": {
+    "title": "Hub status",
+    "description": "Uplink, clock and power of the HiveHub itself.",
+    "noData": "No reading received from this hub yet.",
+    "staleWarning": "No reading for {{ago}} — the hub has missed several check-ins.",
+    "badge": {
+      "live": "Live",
+      "stale": "Stale",
+      "inspection": "Inspection in progress",
+      "calibration": "Calibration mode"
+    },
+    "section": {
+      "connectivity": "Connectivity",
+      "battery": "Battery",
+      "solar": "Solar"
+    },
+    "row": {
+      "signal": "Signal",
+      "transport": "Transport",
+      "timeSource": "Time source",
+      "lastSeen": "Last seen",
+      "lastReading": "Last reading",
+      "firmware": "Firmware",
+      "bootCount": "Boot count",
+      "stateOfCharge": "State of charge",
+      "batteryVoltage": "Voltage",
+      "batteryAlert": "Battery alert",
+      "solarPower": "Solar power",
+      "solarCurrent": "Solar current",
+      "solarBus": "Panel (bus) voltage",
+      "solarLoad": "Load voltage"
+    },
+    "signalQuality": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "transport": {
+      "wifi": "Wi-Fi",
+      "cellular": "Cellular"
+    },
+    "rtc": {
+      "ok": "RTC OK",
+      "fault": "RTC fault"
+    },
+    "batteryAlertActive": "Low battery"
+  },
+  "hiveCards": {
+    "empty": "No hives reported by this device yet.",
+    "hiveIndex": "Hive {{n}}",
+    "weight": "Weight",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "delta24h": "24 h {{value}} kg",
+    "lastReported": "Last reported {{ago}}",
+    "inspection": "Inspection",
+    "insightsLoading": "Loading insights",
+    "insightsUnavailable": "Insights unavailable",
+    "noSensors": "No sensors reported",
+    "traffic": "In {{in}} · Out {{out}}",
+    "trafficTitle": "Bees in/out during the last interval",
+    "alerts_one": "{{count}} active alert",
+    "alerts_other": "{{count}} active alerts",
+    "sensor": {
+      "scale": "Scale",
+      "inHive": "In-hive sensor",
+      "counter": "HiveTraffic counter",
+      "hiveheart": "HiveHeart"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Not heard / fault"
+    }
+  },
+  "audio": {
+    "title": "Hive audio",
+    "description": "Ask a hive's HiveInside node to record, then listen to it here. The hub collects the request on its next wake, so a recording appears within one reporting interval rather than immediately.",
+    "noNodes": "No HiveInside node is paired on this hub. Only HiveInside has a microphone — a HolyIot or RuuviTag beacon cannot record.",
+    "hive": "Hive",
+    "hiveFallback": "Hive {{slot}}",
+    "length": "Length",
+    "durationOption_one": "{{count}} second",
+    "durationOption_other": "{{count}} seconds",
+    "gain": "Gain",
+    "gainValue": "{{gain}} dB",
+    "record": "Record",
+    "nextWake": "Reaches the hub on its next wake.",
+    "viewerNote": "An owner or admin can request a recording.",
+    "lengthHint": "Shorter is usually better: 10–20 seconds is enough to hear what an insight flagged, and costs less battery and less time with the hive off the air — a connected node neither advertises nor samples.",
+    "requestSuccess": "Recording requested. It reaches the hub on its next wake.",
+    "requestError": "The request could not be queued: {{message}}",
+    "listTitle": "Recordings",
+    "onlySelectedHive": "Only {{name}}",
+    "loadError": "Could not list recordings: {{message}}",
+    "empty": "No recordings yet. Ask a hive to record and it will appear here. A session is 10–60 seconds of 16 kHz audio pulled off the node over BLE.",
+    "requestedLength_one": "{{count}} s requested",
+    "requestedLength_other": "{{count}} s requested",
+    "requestedBy": "Requested by {{name}}",
+    "status": {
+      "requested": "Waiting for hub",
+      "streaming": "Recording…",
+      "ready": "Ready",
+      "readyIncomplete": "Ready, not whole",
+      "failed": "Failed"
+    },
+    "waitingNote": "Waiting for the hub to wake and pick this up — nothing recorded yet. A request the hub has not collected within 45 minutes is marked failed.",
+    "streamingNote": "Recording — the audio appears here as it arrives.",
+    "streamingPartial": "Still recording — this is what has arrived so far. Play it again when the session ends to hear the whole thing.",
+    "failedFallback": "This recording failed.",
+    "seconds": "{{value}} s",
+    "bytes": "{{value}} B",
+    "percent": "{{value}} %",
+    "download": "Download WAV",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this recording? Nothing else ever will — there is no automatic clean-up.",
+    "deleteSuccess": "Recording deleted.",
+    "deleteError": "Could not delete the recording: {{message}}",
+    "confirmation": {
+      "verified": "verified",
+      "reported": "unverified",
+      "confirmed": "hub confirmed",
+      "unknown": "not confirmed"
+    },
+    "quality": {
+      "length": "Length",
+      "dropped": "Dropped",
+      "gaps": "Gaps",
+      "hubBuffer": "Hub buffer",
+      "clipping": "Clipping",
+      "checksum": "Checksum",
+      "cause": {
+        "dropped": "the node could not push audio out fast enough",
+        "gaps": "packets were lost on the air",
+        "hubBuffer": "the hub's upload fell behind its buffer"
+      },
+      "gapNote": "Audio either side of a gap is real, but the join is not. Cause: {{causes}}.",
+      "clippingNote": "Lower the gain for a cleaner recording.",
+      "unknownNote": "The hub never reported on this session, so nothing checked whether the audio is whole. What is here plays."
+    }
+  },
+  "dashboard": {
+    "hiveFallback": "Hive {{index}}",
+    "units": {
+      "bees": "bees"
+    },
+    "range": {
+      "24h": "24h",
+      "7d": "7d",
+      "30d": "30d",
+      "365d": "365d",
+      "custom": "Custom",
+      "invalid": "The start date must not be after the end date."
+    },
+    "header": {
+      "title": "My dashboard",
+      "description": "User-configurable widgets. The selected hives above control hive-based charts.",
+      "editDescription": "Edit mode: drag the handle to move widgets and drag the corner to resize them on a 4-column grid.",
+      "edit": "Edit dashboard",
+      "done": "Done",
+      "addWidget": "Add widget",
+      "reset": "Reset",
+      "editBanner": "Dashboard edit mode is active. Use the grip handle in each widget header to move it, and drag the lower-right corner to resize width or height. Layout changes are saved automatically for this HiveHub device.",
+      "dropEnd": "Drop here to move a widget to the end of the dashboard.",
+      "noWidgets": "No widgets yet. Add a template to build your dashboard.",
+      "restoreDefaults": "Restore defaults"
+    },
+    "overview": {
+      "title": "Hive overview",
+      "description": "Compact status for mapped hives. Select tiles to drive the dashboard widgets below.",
+      "lastData": "Last data",
+      "hivesOnline": "Hives online",
+      "hubFirmware": "HiveHub FW",
+      "hiveInsideFirmware": "HiveInside FW",
+      "selected_one": "{{count}} selected",
+      "selected_other": "{{count}} selected",
+      "hide": "Hide overview",
+      "show": "Show overview",
+      "slot": "Slot {{index}}",
+      "ok": "OK",
+      "noData": "No data",
+      "weight": "Weight",
+      "temperature": "Temp",
+      "humidity": "RH",
+      "empty": "Map HiveHub slots to HivePal hives in the device setup panel to show overview tiles here."
+    },
+    "sensors": {
+      "scale": "scale",
+      "inHive": "in-hive",
+      "accel": "accel",
+      "counter": "counter",
+      "none": "no sensors"
+    },
+    "widgetShell": {
+      "move": "Move {{title}}",
+      "moveHint": "Drag to move this widget",
+      "remove": "Remove {{title}}",
+      "resize": "Resize {{title}}",
+      "resizeHint": "Drag to resize this widget"
+    },
+    "addWidget": {
+      "title": "Add widget",
+      "description": "Start from a template. The widget will use the selected hives from the overview grid where applicable.",
+      "defaultSize": "Default size {{w}} x {{h}}"
+    },
+    "widgets": {
+      "weightComparison": {
+        "title": "Weight comparison",
+        "description": "Compare selected hives over the current date range."
+      },
+      "dailyMaxWeight": {
+        "title": "Daily max weight",
+        "description": "Highest compensated weight per day for the selected hives."
+      },
+      "climate": {
+        "title": "Hive climate",
+        "description": "Temperature and humidity for selected hives."
+      },
+      "power": {
+        "title": "Power health",
+        "description": "Battery charge, battery voltage, and solar input."
+      },
+      "beeTraffic": {
+        "title": "Bee traffic",
+        "description": "Aggregate in/out traffic and net flow."
+      },
+      "soundRms": {
+        "title": "Sound / acoustic bands",
+        "description": "Per-hive acoustic RMS and FFT/HiveHeart bands when available."
+      },
+      "hiveHeartSpectrum": {
+        "title": "HiveHeart spectrum",
+        "description": "Latest HiveHeart FFT levels (0–15) across 16 frequency ranges for the selected hives."
+      },
+      "vibration": {
+        "title": "Vibration bands",
+        "description": "RMS vibration, swarm, fanning, and activity bands."
+      },
+      "configurableDiagram": {
+        "title": "Configurable diagram",
+        "description": "Choose the hive, sound, traffic, climate, and device metrics to plot."
+      },
+      "temperatureHeatmap": {
+        "title": "Temperature heatmap",
+        "description": "Compact all-hive temperature overview."
+      },
+      "insights": {
+        "title": "Insights feed",
+        "description": "Active alerts and evidence snippets."
+      },
+      "dataQuality": {
+        "title": "Data quality",
+        "description": "Sensor availability and missing readings."
+      }
+    },
+    "metricGroups": {
+      "scale": "Scale",
+      "climate": "Climate",
+      "beeTraffic": "Bee traffic",
+      "vibration": "Vibration",
+      "sound": "Sound",
+      "device": "Device"
+    },
+    "metrics": {
+      "weight": "Weight",
+      "temperature": "Temperature",
+      "humidity": "Humidity",
+      "pressure": "Pressure",
+      "beeIn": "Bees in",
+      "beeOut": "Bees out",
+      "beeNet": "Net flow",
+      "vibration": "Vibration RMS",
+      "swarmBand": "Swarm band",
+      "fanningBand": "Fanning band",
+      "activityBand": "Activity band",
+      "soundRms": "Sound RMS",
+      "soundHum": "Hum band",
+      "soundPiping": "Piping band",
+      "soundStress": "Stress band",
+      "hiveHeartFrequency": "HiveHeart frequency",
+      "hiveHeartEnergy": "HiveHeart energy",
+      "batterySoc": "Battery charge",
+      "batteryVoltage": "Battery voltage",
+      "solarPower": "Solar power"
+    },
+    "axes": {
+      "weight": "Weight",
+      "temperature": "Temperature",
+      "humidity": "Humidity",
+      "pressure": "Pressure",
+      "beecount": "Bee count",
+      "vibration": "Vibration",
+      "dbfs": "Sound level",
+      "frequency": "Frequency",
+      "energy": "Energy",
+      "percent": "Charge",
+      "voltage": "Voltage",
+      "power": "Power"
+    },
+    "soundMetrics": {
+      "rms": "RMS",
+      "hiveHeartFrequency": "HiveHeart frequency",
+      "hiveHeartEnergy": "HiveHeart energy",
+      "hiveHeartPeak": "HiveHeart peak"
+    },
+    "vibrationMetrics": {
+      "rms": "RMS",
+      "swarmBand": "Swarm band",
+      "fanningBand": "Fanning band",
+      "activityBand": "Activity band"
+    },
+    "series": {
+      "temperature": "{{name}} temp",
+      "humidity": "{{name}} RH",
+      "beeIn": "In",
+      "beeOut": "Out",
+      "beeNet": "Net"
+    },
+    "axisScale": {
+      "auto": "auto",
+      "setBound": "Set {{axis}} {{bound}}",
+      "clearHint": "Leave empty and press Enter for auto",
+      "tickTitle": "Click to set {{bound}}; clear for auto",
+      "reset": "reset",
+      "help": "Click the lowest or highest y-axis label to edit. Clear the value for auto."
+    },
+    "chart": {
+      "downloadCsv": "Download CSV"
+    },
+    "inspection": {
+      "legendHint_one": "{{count}} inspection window shaded; readings may be disturbed",
+      "legendHint_other": "{{count}} inspection windows shaded; readings may be disturbed"
+    },
+    "empty": {
+      "noData": "No data for the selected hives and range.",
+      "climate": "No climate data for the selected range.",
+      "power": "No power data for the selected range.",
+      "beeTraffic": "No bee counter data for the selected hives.",
+      "sound": "No per-hive acoustic data for the selected hives.",
+      "vibration": "No vibration or accelerometer band data for the selected hives.",
+      "configurable": "Select at least one metric with data for the selected hives and range.",
+      "dailyMaxWeight": "No weight data for the selected hives and range.",
+      "hiveHeart": "No HiveHeart FFT data for the selected hives and range.",
+      "unknownWidget": "Unknown widget type."
+    },
+    "soundFootnote": "Shows per-hive acoustic readings first. Legacy left/right microphone data is mapped to the configured hive names for slots 1 and 2 when no per-hive acoustic block is present.",
+    "heatmap": {
+      "low": "low <33 °C",
+      "optimal": "optimal brood 33–36 °C",
+      "high": "high >36 °C"
+    },
+    "insights": {
+      "loading": "Loading insights…",
+      "unavailable": "Insights are unavailable.",
+      "noAlerts": "No active alerts for the selected hives.",
+      "showing_one": "Showing {{count}} active alert for the selected hives.",
+      "showing_other": "Showing {{count}} active alerts for the selected hives.",
+      "confidence": "confidence {{percent}}%"
+    },
+    "dataQuality": {
+      "activeSlots": "Active slots",
+      "noScale": "No scale",
+      "noClimate": "No climate",
+      "noRecentData": "no recent data"
+    },
+    "hiveHeart": {
+      "level": "level",
+      "dominant": "dominant frequency {{hz}} Hz",
+      "noDominant": "no dominant frequency reported",
+      "footnote": "Relative levels 0–15 (not dBFS) of the latest reading in the range. Dashed lines mark the dominant frequency HiveHeart reports; the Sub-bass/Hum/Piping/Stress headings are approximate and span several ranges."
     }
   }
 }

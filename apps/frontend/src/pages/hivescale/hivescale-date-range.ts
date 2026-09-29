@@ -105,3 +105,48 @@ export const createPresetDateRange = (
       };
   }
 };
+
+const pad2 = (value: number) => String(value).padStart(2, '0');
+
+/** `YYYY-MM-DD` in local time, as an `<input type="date">` expects. */
+export const toLocalDateInputValue = (
+  value: string | number | Date | null | undefined,
+): string => {
+  if (value === null || value === undefined || value === '') return '';
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return '';
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+};
+
+const parseLocalDateInput = (value: string): Date | null => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+  );
+  return Number.isFinite(date.getTime()) ? date : null;
+};
+
+/**
+ * Build a custom range from two local calendar days. The end day is inclusive
+ * (up to 23:59:59.999 local), and an empty end means "until now". Returns null
+ * when the start is missing/invalid or lies after the end.
+ */
+export const createCustomDateRange = (
+  startDate: string,
+  endDate: string,
+): HiveScaleDateRange | null => {
+  const start = parseLocalDateInput(startDate);
+  if (!start) return null;
+  let endAt: string | undefined;
+  if (endDate.trim()) {
+    const end = parseLocalDateInput(endDate);
+    if (!end) return null;
+    end.setHours(23, 59, 59, 999);
+    if (end.getTime() < start.getTime()) return null;
+    endAt = end.toISOString();
+  }
+  return { preset: 'custom', startAt: start.toISOString(), endAt };
+};

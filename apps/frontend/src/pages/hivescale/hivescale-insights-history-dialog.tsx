@@ -34,7 +34,7 @@ interface HiveScaleInsightsHistoryDialogProps {
   scale1Name: string;
   scale2Name: string;
   /** When set, only show history entries for this scale/hive channel. */
-  channel?: 1 | 2;
+  channel?: number;
   /** Render an icon-only trigger suitable for inline placement in a panel. */
   compact?: boolean;
 }

@@ -1,28 +1,16 @@
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import {
   AlertOctagon,
   AlertTriangle,
-  CheckCircle2,
   ExternalLink,
   Eye,
   Info,
-  Loader2,
-  RefreshCw,
 } from 'lucide-react';
 import { formatDistanceToNowStrict } from 'date-fns';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
@@ -32,16 +20,7 @@ import { cn } from '@/lib/utils';
 import {
   HiveScaleInsightAlert,
   HiveScaleInsightSeverity,
-  useHiveScaleInsights,
 } from '@/api/hooks/useHiveScale';
-import { HiveScaleInsightsHistoryDialog } from './hivescale-insights-history-dialog';
-
-interface HiveScaleInsightsCardProps {
-  deviceId: string;
-  scale1Name: string;
-  scale2Name: string;
-  lookbackDays?: number;
-}
 
 /**
  * Public link to the long-form description of every detector. Lives in the
@@ -235,12 +214,7 @@ export function HiveScaleAlertList({
         const cfg = severityConfig[alert.severity];
         const Icon = cfg.icon;
         const windowEnd = alert.window_end ? new Date(alert.window_end) : null;
-        const hiveName = channelLabel(
-          alert.channel,
-          scale1Name,
-          scale2Name,
-          t,
-        );
+        const hiveName = channelLabel(alert.channel, scale1Name, scale2Name, t);
 
         return (
           <li
@@ -300,143 +274,6 @@ export function HiveScaleAlertList({
         );
       })}
     </ul>
-  );
-}
-
-export function HiveScaleInsightsCard({
-  deviceId,
-  scale1Name,
-  scale2Name,
-  lookbackDays = 14,
-}: HiveScaleInsightsCardProps) {
-  const { t } = useTranslation('hivescale');
-  const insights = useHiveScaleInsights(deviceId, { lookbackDays });
-
-  const sortedAlerts = useMemo<HiveScaleInsightAlert[]>(
-    () => sortAlerts(insights.data?.alerts),
-    [insights.data?.alerts],
-  );
-
-  const severityCounts = useMemo(() => {
-    const counts: Record<HiveScaleInsightSeverity, number> = {
-      critical: 0,
-      warning: 0,
-      watch: 0,
-      info: 0,
-    };
-    for (const alert of sortedAlerts) {
-      counts[alert.severity] += 1;
-    }
-    return counts;
-  }, [sortedAlerts]);
-
-  const computedAt = insights.data?.computed_at
-    ? new Date(insights.data.computed_at)
-    : null;
-
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <CardTitle className="flex items-center gap-2">
-              {t('insights.title')}
-              {insights.isFetching && !insights.isLoading && (
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-              )}
-              <InsightsInfoTooltip />
-            </CardTitle>
-            <CardDescription>
-              {t('insights.description')}
-              {computedAt && (
-                <>
-                  {' '}
-                  {t('insights.updated', {
-                    ago: formatDistanceToNowStrict(computedAt, {
-                      addSuffix: true,
-                    }),
-                  })}
-                </>
-              )}
-            </CardDescription>
-          </div>
-          <div className="flex shrink-0 items-center gap-1">
-            <HiveScaleInsightsHistoryDialog
-              deviceId={deviceId}
-              scale1Name={scale1Name}
-              scale2Name={scale2Name}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              onClick={() => insights.refetch()}
-              disabled={insights.isFetching}
-              aria-label={t('insights.refresh')}
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        {insights.isLoading ? (
-          <>
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-          </>
-        ) : insights.isError ? (
-          <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-            {t('insights.loadError', {
-              message:
-                (insights.error as Error)?.message ??
-                t('common.unknownError'),
-            })}
-          </div>
-        ) : sortedAlerts.length === 0 ? (
-          <div className="flex items-center gap-3 rounded-md border bg-muted/30 p-4">
-            <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            <div className="space-y-0.5">
-              <p className="text-sm font-medium">{t('insights.allClear')}</p>
-              <p className="text-xs text-muted-foreground">
-                {t('insights.noActiveAlerts', { count: lookbackDays })}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Severity summary */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                {t('insights.activeAlerts', { count: sortedAlerts.length })}
-              </span>
-              {(['critical', 'warning', 'watch', 'info'] as const).map(
-                severity =>
-                  severityCounts[severity] > 0 ? (
-                    <Badge
-                      key={severity}
-                      variant="outline"
-                      className={cn(severityConfig[severity].badgeClass)}
-                    >
-                      {t(severityConfig[severity].labelKey)}:{' '}
-                      {severityCounts[severity]}
-                    </Badge>
-                  ) : null,
-              )}
-            </div>
-
-            {/* Alert list */}
-            <HiveScaleAlertList
-              alerts={sortedAlerts}
-              scale1Name={scale1Name}
-              scale2Name={scale2Name}
-            />
-          </>
-        )}
-      </CardContent>
-    </Card>
   );
 }
 
