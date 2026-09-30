@@ -36,7 +36,8 @@
     "swarmManagement": "Управление роением",
     "liebefelder": "Либфельдерский метод",
     "varroaManagement": "Управление варроа",
-    "documentation": "Документация"
+    "documentation": "Документация",
+    "hivehub": "HiveHub"
   },
   "actions": {
     "save": "Сохранить",

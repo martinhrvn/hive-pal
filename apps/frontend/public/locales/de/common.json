@@ -36,7 +36,8 @@
         "syrupCalculator": "Sirup-Rechner",
         "broodTimeline": "Brutzeitplan",
         "swarmManagement": "Schwarmmanagement",
-        "documentation": "Dokumentation"
+        "documentation": "Dokumentation",
+        "hivehub": "HiveHub"
     },
     "liebefelder": {
         "title": "Liebefelder Schätzmethode",

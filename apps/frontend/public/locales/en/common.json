@@ -36,7 +36,8 @@
     "swarmManagement": "Swarm Management",
     "liebefelder": "Liebefelder Method",
     "varroaManagement": "Varroa Management",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "hivehub": "HiveHub"
   },
   "actions": {
     "save": "Save",

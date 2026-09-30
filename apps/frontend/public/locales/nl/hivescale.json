@@ -35,7 +35,7 @@
   },
   "page": {
     "title": "HiveHub",
-    "subtitle": "Live weight and temperature visualisation from your separate HiveHub backend.",
+    "subtitle": "Gewicht, klimaat, geluid, vliegverkeer en meldingen van je HiveHub-apparaten.",
     "refresh": "Refresh",
     "refreshing": "Refreshing…",
     "refreshError": "Could not refresh HiveHub data.",
@@ -43,16 +43,26 @@
     "removeSuccess": "HiveHub device removed from your account.",
     "removeSuccessShared": "Je hebt geen toegang meer tot dit HiveHub-apparaat. Andere gebruikers hebben het nog, dus de claimcode blijft in gebruik.",
     "releaseConfirm": "{{name}} volledig vrijgeven? Alle gebruikers verliezen toegang en het apparaat kan opnieuw worden geclaimd met zijn claimcode. Metingen blijven bewaard.",
-    "releaseSuccess": "HiveHub-apparaat vrijgegeven. Het kan opnieuw worden geclaimd met zijn claimcode."
+    "releaseSuccess": "HiveHub-apparaat vrijgegeven. Het kan opnieuw worden geclaimd met zijn claimcode.",
+    "unavailableTitle": "HiveHub is niet bereikbaar",
+    "inspectionActiveTitle": "Inspectiemodus staat aan",
+    "inspectionActiveBody": "Metingen worden gemaskeerd terwijl de kasten open zijn, zodat het uitnemen van ramen geen valse meldingen geeft.",
+    "openInspections": "Inspecties openen",
+    "tabs": {
+      "overview": "Overzicht",
+      "inspections": "Inspecties",
+      "audio": "Audio",
+      "health": "Status",
+      "setup": "Instellingen"
+    }
   },
   "setup": {
     "title": "Devices",
-    "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
     "releaseScale": "Apparaat vrijgeven",
     "noDevices": "No devices claimed yet — open the setup to add one.",
-    "hide": "Hide setup",
-    "show": "Show setup"
+    "selectDevice": "HiveHub-apparaat",
+    "noDevicesYet": "Nog geen HiveHub-apparaat geclaimd. Claim er een met de code die de hub in zijn installatieportaal toont."
   },
   "claim": {
     "title": "Claim HiveHub device",
@@ -65,16 +75,30 @@
     "success": "HiveHub device claimed.",
     "errors": {
       "missingCode": "Enter the claim code printed/configured for the device."
-    }
+    },
+    "hive1Name": "Naam van kast 1",
+    "hive2Name": "Naam van kast 2",
+    "optional": "Optioneel"
   },
   "mapping": {
-    "title": "Scale mapping",
-    "description": "These labels stay in HiveHub. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
-    "scale1Label": "Display name for Scale 1",
-    "scale2Label": "Display name for Scale 2",
+    "title": "Kasten",
     "hiveNamePlaceholder": "Select or type a hive name",
-    "save": "Save mapping",
-    "success": "Scale mapping updated."
+    "save": "Kasten opslaan",
+    "success": "Kastplaatsen opgeslagen in HiveHub.",
+    "slotsDescription": "Geef elke kastplaats een naam en koppel hem aan een HivePal-kast. Via de koppeling weten inspecties, de kastpagina en meldingsmails welk volk bij een plaats hoort. Een groene stip markeert plaatsen die de hub op dit moment meldt.",
+    "mapSlot": "Plaats {{slot}} koppelen",
+    "add": "Toevoegen",
+    "reporting": "Gemeld door de hub",
+    "unknownHive": "Kast niet gevonden",
+    "mappedCount": "{{count}}/{{total}} plaatsen gekoppeld",
+    "dialogTitle": "Kastplaats {{slot}}",
+    "dialogDescription": "Koppel de plaats aan een van je HivePal-kasten en kies de naam die HiveHub ervoor toont.",
+    "linkedHive": "HivePal-kast",
+    "notLinked": "Niet gekoppeld",
+    "linkHint": "De koppeling blijft behouden als je de kast hernoemt. Kies je een kast, dan wordt de naam ingevuld als het naamveld leeg is.",
+    "displayName": "Weergavenaam",
+    "clearSlot": "Plaats leegmaken",
+    "applySlot": "Toepassen"
   },
   "status": {
     "title": "Device status",
@@ -94,6 +118,13 @@
     "revokeAccess": "Revoke access",
     "errors": {
       "missingEmail": "Enter the email address of an existing HivePal user."
+    },
+    "lastSeen": "Laatste melding",
+    "claimedAt": "Geclaimd",
+    "roles": {
+      "owner": "Eigenaar",
+      "admin": "Beheerder",
+      "viewer": "Kijker"
     }
   },
   "calibration": {
@@ -203,11 +234,9 @@
       },
       "sourceHint": "De omgevingstemperatuur volgt het cellichaam in stabiele toestand nauwkeurig en is de aanbevolen standaard.",
       "refLabel": "Referentietemperatuur / °C",
-      "refHint": "Temperatuur waarbij de correctie nul is.",
       "coeffLabel": "{{scaleName}}-coëfficiënt / kg per °C",
       "autoFit": "Automatisch afstemmen op geschiedenis",
       "fitting": "Afstemmen…",
-      "autoFitHint": "Automatisch afstemmen voert een regressie uit van het ruwe gewicht van de afgelopen 3 dagen tegen de met EMA gladgestreken geselecteerde temperatuur en past het resultaat vervolgens toe en schakelt het in. Leg voor een schone afstemming een venster vast waarin de fysieke belasting constant is en de temperatuur varieert.",
       "save": "Temperatuurcompensatie opslaan",
       "errors": {
         "refTemp": "De referentietemperatuur moet een getal zijn (°C).",
@@ -219,11 +248,33 @@
         "noSignal": "onvoldoende temperatuur-/gewichtssignaal.",
         "fitApplied": "{{scaleName}}: {{coeff}} kg/°C bij {{refTemp}}°C (R²={{r2}}, n={{n}}). Toegepast en ingeschakeld."
       }
+    },
+    "perHive": {
+      "hive": "Kast {{index}}",
+      "hiveNamed": "Kast {{index}} · {{name}}",
+      "hiveLabel": "Kast",
+      "knownWeightPlaceholder": "bijv. 10",
+      "manualSaveHint": "Wissel van kast om een andere weegschaal te bewerken; alle wijzigingen worden samen verstuurd wanneer je opslaat. Kasten vanaf 3 worden alleen weggeschreven als ze gewijzigd zijn.",
+      "tempco": {
+        "refHint": "De temperatuur waarbij de weegschalen correct wegen, d.w.z. die waarbij ze getarreerd en gekalibreerd zijn. Daar is de correctie nul; het fitten laat deze ongemoeid, tenzij je daarom vraagt.",
+        "lookbackLabel": "Fitperiode / dagen",
+        "setRefTemp": "Ook de referentietemperatuur instellen",
+        "setRefTempHint": "Vervangt de referentie door de gemiddelde temperatuur van het gefitte venster. Laat uit als de weegschaal bij een bekende temperatuur gekalibreerd is.",
+        "fitOnly": "Alleen fitten (voorbeeld)",
+        "fitAndApply": "Fitten & toepassen",
+        "fitSummary": "{{scaleName}}: {{coeff}} kg/°C, R² {{r2}} over {{n}} metingen van {{min}}–{{max}} °C (venstergemiddelde {{mean}} °C).",
+        "lowRSquared": "R² onder 0,5: de temperatuur verklaart weinig van deze drift. Fit over een periode met een constante belasting en een groot dag-/nachtverschil.",
+        "autoFitHint": "Automatisch fitten voert een regressie uit van het opgeslagen gewicht van de gekozen kast over de terugkijkperiode tegen de EMA-afgevlakte gekozen temperatuur. \"Alleen fitten\" vult de coëfficiënt in zodat je hem kunt controleren voordat je opslaat; \"Fitten & toepassen\" slaat hem op en schakelt de compensatie in. Kies voor een schone fit een venster waarin de fysieke belasting constant is en de temperatuur schommelt.",
+        "errors": {
+          "lookback": "De terugkijkperiode moet een geheel aantal dagen tussen 1 en 90 zijn."
+        },
+        "toasts": {
+          "fitFilled": "{{scaleName}}: {{coeff}} kg/°C (R²={{r2}}, n={{n}}). Ingevuld — controleer en sla op."
+        }
+      }
     }
   },
   "firmware": {
-    "title": "Firmware upload",
-    "description": "Upload a firmware binary and register it as a release. New devices of the matching type pick it up on their next update check.",
     "type": "Firmware type",
     "selectType": "Select firmware type",
     "version": "Version",
@@ -238,6 +289,102 @@
     "errors": {
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
+    },
+    "update": {
+      "title": "Firmware-update",
+      "description": "Weegschalen updaten nooit vanzelf — je keurt hier elke nieuwe build goed voordat deze weegschaal hem installeert.",
+      "unavailable": "Firmwarestatus is op dit moment niet beschikbaar.",
+      "availableTitle": "Firmware {{version}} is beschikbaar",
+      "availableBody": "Deze weegschaal draait {{current}}. Pas toe om hem bij te werken naar {{version}}.",
+      "officialSuffix": "Dit is een officiële build.",
+      "apply": "Update toepassen",
+      "applying": "Bezig met toepassen…",
+      "applied": "Firmware {{version}} goedgekeurd — de weegschaal werkt bij bij de volgende melding.",
+      "queued": "Update {{version}} goedgekeurd. De weegschaal installeert hem bij de volgende melding.",
+      "upToDate": "Firmware is up-to-date ({{version}}).",
+      "viewerNotice": "Alleen eigenaars en beheerders van het apparaat kunnen firmware-updates toepassen."
+    },
+    "board": {
+      "cardTitle": "Firmware",
+      "cardDescription": "Firmware van deze HiveHub en van de HiveInside-nodes en HiveTraffic-tellers die eraan gekoppeld zijn. Uploaden registreert een release; goedkeuren (hub) of doorsturen (nodes) installeert hem.",
+      "current": "Huidig",
+      "latest": "Nieuwste",
+      "approved": "Goedgekeurd",
+      "board": "Board",
+      "badgePending": "Update wacht op goedkeuring",
+      "badgeApproved": "Update goedgekeurd",
+      "badgeUpToDate": "Up-to-date",
+      "approveFlash": "{{version}} goedkeuren & flashen",
+      "approveConfirm": "Firmware {{version}} goedkeuren en draadloos flashen?\n\nDe HiveHub installeert hem bij de volgende melding en start opnieuw op. Een apparaat op afstand waarbij de update halverwege mislukt, kan fysieke toegang nodig hebben om te herstellen.",
+      "otherBoards": "Ook geüpload voor een ander board (niet toegepast op dit {{board}}-apparaat): {{releases}}. Een build bereikt alleen een apparaat met een overeenkomend board — controleer het board bij het uploaden.",
+      "otherBoardsUnknown": "Ook geüpload voor een ander board (niet toegepast op dit apparaat): {{releases}}. Een build bereikt alleen een apparaat met een overeenkomend board — controleer het board bij het uploaden."
+    },
+    "relays": {
+      "hiveFallback": "Kast {{slot}}",
+      "latest": "nieuwste {{version}}",
+      "updateAvailable": "update beschikbaar: {{version}}",
+      "status": {
+        "pending": "doorsturen in wachtrij",
+        "running": "bezig met doorsturen…",
+        "completed": "doorsturen voltooid",
+        "failed": "doorsturen mislukt",
+        "expired": "doorsturen verlopen"
+      },
+      "statusTitle": "Doorsturen van {{version}}: {{status}} ({{date}})",
+      "failedDetail": "Laatste doorsturen mislukt — {{message}} ({{date}})",
+      "noReason": "geen reden gemeld",
+      "alreadyQueued": "Er staat al een doorsturing in de wachtrij voor deze node",
+      "queueing": "In wachtrij plaatsen…",
+      "relayAnyway": "Toch doorsturen",
+      "confirm": "{{name}} {{version}} doorsturen naar {{hive}}?\n\nDe HiveHub pakt dit op bij de volgende uploadcyclus — normaal binnen ongeveer 10 minuten, of het verzendinterval dat dit apparaat gebruikt. Daarna streamt hij het image enkele minuten via BLE en start de node ermee opnieuw op. De node moet wakker en binnen bereik zijn, anders mislukt het doorsturen en moet het opnieuw in de wachtrij worden gezet.",
+      "queued": "Doorsturen van {{version}} in de wachtrij gezet voor {{hive}}.",
+      "queuedFrom": "Doorsturen in de wachtrij gezet voor {{hive}} ({{current}} → {{version}}).",
+      "hiveinside": {
+        "name": "HiveInside",
+        "title": "HiveInside-nodes",
+        "description": "Firmware die elke node in de kast meldt. Het uploaden van een HiveInside-image registreert alleen de release — er bereikt niets een node totdat je op „Doorsturen naar node” drukt. De hier getoonde versie bevestigt dat de update gelukt is.",
+        "relay": "Doorsturen naar node",
+        "unnamed": "Meldt geen eigen naam (HiveInside vóór 0.5.0)",
+        "noRelease": "Nog geen HiveInside-release geüpload — upload er hieronder een om hem door te sturen."
+      },
+      "beecounter": {
+        "name": "HiveTraffic",
+        "title": "HiveTraffic-tellers",
+        "description": "Firmware die elke HiveTraffic-teller meldt. Het uploaden van een HiveTraffic-image registreert alleen de release — er bereikt niets een teller totdat je op „Doorsturen naar teller” drukt. Tellers ouder dan ongeveer v0.1.0 melden geen versie, maar kunnen toch worden bijgewerkt.",
+        "relay": "Doorsturen naar teller",
+        "unnamed": "Meldt geen naam of adres",
+        "noRelease": "Nog geen HiveTraffic-release geüpload — upload er hieronder een om hem door te sturen.",
+        "countingWarning": "Een teller telt tijdens de hele overdracht geen bijen, dus stuur door wanneer er weinig vliegverkeer is.",
+        "confirmExtra": "De teller telt tijdens de hele overdracht geen bijen — al het vliegverkeer in die paar minuten gaat verloren."
+      }
+    },
+    "uploadForm": {
+      "title": "Firmware uploaden",
+      "description": "Uploaden registreert alleen een release — het installeert nooit zelf iets. Keur hierboven de hub-update goed, of stuur een node- of tellerrelease door vanuit de bijbehorende rij.",
+      "board": "Board",
+      "targets": {
+        "hivehub": "HiveHub-hub",
+        "hiveinside": "HiveInside",
+        "beecounter": "HiveTraffic-teller"
+      },
+      "boards": {
+        "auto": "Automatisch (uit bestandsnaam)",
+        "esp32": "ESP32 (klassiek, 30-pins)",
+        "esp32-c6": "ESP32-C6",
+        "nrf54lm20a": "nRF54LM20A"
+      },
+      "boardHint": {
+        "hivehub": "Hub-firmware moet zijn board vermelden: kies er een, of laat op automatisch staan als het bestand heet zoals hivehub_esp32-c6_0.30.5.bin.",
+        "hiveinside": "HiveInside bestaat alleen voor de nRF54LM20A. Upload het build-artefact ongewijzigd (bijv. hiveinside_nrf54lm20a_1.4.0.bin); doel en versie worden uit de naam ingevuld.",
+        "beecounter": "De HiveTraffic-teller is een ESP32-C6. Upload het applicatie-image (bijv. beecounter_esp32-c6_0.7.1.bin), geen samengevoegd factory-image."
+      },
+      "detected": "{{name}} — {{fields}} ingevuld.",
+      "nothingDetected": "{{name}} — geen doel, board of versie herkend in de naam; stel ze hieronder in.",
+      "detectedTarget": "doel „{{target}}”",
+      "detectedBoard": "board {{board}}",
+      "detectedVersion": "versie {{version}}",
+      "autoQueued": "Doorsturen automatisch in de wachtrij gezet voor {{hives}}.",
+      "autoQueueFailed": "Kon het doorsturen niet automatisch in de wachtrij zetten voor {{hives}}."
     }
   },
   "sdData": {
@@ -262,12 +409,18 @@
       "parsed_other": "Parsed {{count}} records",
       "skipped_one": " · {{count}} unreadable line skipped.",
       "skipped_other": " · {{count}} unreadable lines skipped."
+    },
+    "mismatch": {
+      "title": "Bestand van een andere hub",
+      "description": "Dit bestand is opgenomen door een andere hub, niet door {{device}}.",
+      "fileDevices_one": "Apparaat-ID in het bestand:",
+      "fileDevices_other": "Apparaat-ID's in het bestand:",
+      "hint": "Importeer het alleen toch als de SD-kaart echt bij dit apparaat hoort (bijvoorbeeld na het vervangen van de printplaat van de hub).",
+      "cancel": "Annuleren",
+      "force": "Toch in dit apparaat importeren"
     }
   },
   "panel": {
-    "weight": "Weight",
-    "hiveTemp": "Hive temp",
-    "rmsSound": "RMS sound",
     "ambientTemperature": "Ambient temperature",
     "ambientHumidity": "Ambient humidity",
     "batteryCharge": "Battery charge",
@@ -277,7 +430,6 @@
       "title": "General",
       "description": "Ambient & power"
     },
-    "humidity": "Hive humidity",
     "wirelessSensorsBattery": "Wireless sensors battery",
     "sensorTypes": {
       "hiveHeart": "HiveHeart",
@@ -286,174 +438,36 @@
     }
   },
   "diagram": {
-    "title": "Measurements",
-    "subtitle": "Weight, temperature, and entrance activity over time",
-    "noMeasurements": "No measurements for the selected range.",
-    "noDataForSeries": "No data in the selected range.",
-    "meta": {
-      "device": "Device:",
-      "lastSeen": "Last seen:",
-      "lastData": "Last data:",
-      "firmware": "Firmware:"
-    },
     "range": {
       "all": "All",
       "from": "From",
       "to": "To"
     },
-    "series": {
-      "weight": "{{name}} weight",
-      "temp": "{{name}} temp",
-      "micRms": "{{name}} mic RMS",
-      "beesIn": "{{name}} bees in",
-      "beesOut": "{{name}} bees out",
-      "netFlow": "{{name}} net flow",
-      "ambientTemp": "Ambient temp",
-      "ambientHumidity": "Ambient humidity",
-      "batteryVoltage": "Battery voltage",
-      "batteryCharge": "Battery charge",
-      "solarVoltage": "Solar voltage",
-      "solarCurrent": "Solar current",
-      "solarPower": "Solar power",
-      "humidity": "{{name}} vochtigheid",
-      "pressure": "{{name}} luchtdruk",
-      "fanningBand": "{{name}} fanning band (30–100 Hz)",
-      "activityBand": "{{name}} activity band (100–200 Hz)"
-    },
-    "group": {
-      "ambient": "Ambient",
-      "offGrid": "Off-grid"
-    },
-    "axis": {
-      "weight": "Weight",
-      "temperature": "Temperature",
-      "humidity": "Humidity",
-      "voltage": "Voltage",
-      "percent": "Percent",
-      "current": "Current",
-      "power": "Power",
-      "sound": "Sound",
-      "beecount": "Bee count",
-      "pressure": "Luchtdruk"
-    },
     "marker": {
-      "inspection": "Inspection",
-      "boxAdded": "Box added",
-      "action": {
-        "maintenance": "Maintenance",
-        "feeding": "Feeding",
-        "frames": "Frames",
-        "treatment": "Treatment"
-      }
-    },
-    "axisSettings": {
-      "title": "Axis settings",
-      "reset": "Reset",
-      "side": "Side",
-      "left": "Left",
-      "right": "Right",
-      "scale": "Scale",
-      "auto": "Auto",
-      "zeroToMax": "0 to max",
-      "custom": "Custom",
-      "min": "Min",
-      "max": "Max",
-      "autoPlaceholder": "auto"
+      "inspection": "Inspection"
     }
   },
   "sound": {
-    "title": "Hive sound",
-    "description": "INMP441 FFT band energy (dBFS) — {{left}} (left) · {{right}} (right)",
-    "hide": "Hide sound",
-    "show": "Show sound",
-    "micLeftFallback": "Mic left",
-    "micRightFallback": "Mic right",
-    "noDataForChannel": "No data for {{name}} in this range.",
-    "bandReference": "Band reference",
-    "thresholds": "Thresholds used by the Insights engine: piping > −45 dBFS, stress > −38 dBFS, queenless hum > −40 dBFS with quiet piping. Calibrate against your own baseline.",
-    "status": {
-      "noData": "No data",
-      "micError": "Mic error",
-      "bothActive": "{{left}} + {{right}} active",
-      "oneActive": "{{name}} active"
-    },
-    "table": {
-      "band": "Band",
-      "range": "Range",
-      "significance": "Significance"
-    },
     "bands": {
       "subBass": {
-        "label": "Sub-bass",
-        "description": "Structural vibration / low rumble"
+        "label": "Sub-bass"
       },
       "hum": {
-        "label": "Hum",
-        "description": "Normal colony hum (~200 Hz fundamental)"
+        "label": "Hum"
       },
       "piping": {
-        "label": "Piping",
-        "description": "Queen piping / tooting (pre-swarm signal)"
+        "label": "Piping"
       },
       "stress": {
-        "label": "Stress",
-        "description": "Agitated colony / robbing"
+        "label": "Stress"
       },
       "high": {
-        "label": "High",
-        "description": "Harmonic overtones"
+        "label": "High"
       }
-    },
-    "rmsToggleShow": "Show RMS level",
-    "rmsToggleHide": "Hide RMS level",
-    "rmsTitle": "RMS sound level",
-    "rmsSeries": "{{name}} RMS"
-  },
-  "beecounter": {
-    "title": "Entrance Counter",
-    "subtitle": "Bees entering and exiting per measurement interval",
-    "noData": "No BeeCounter data found for this device.",
-    "offline": "Offline",
-    "gatesOk": "{{count}} gates OK",
-    "glitches_one": "{{count}} glitch",
-    "glitches_other": "{{count}} glitches",
-    "gatesRatio": "{{healthy}}/{{total}} gates",
-    "inPeriod": "In (period)",
-    "outPeriod": "Out (period)",
-    "netFlow": "Net flow",
-    "netInbound": "net inbound",
-    "netOutbound": "net outbound",
-    "balanced": "balanced",
-    "view": {
-      "inOut": "In / Out",
-      "netFlow": "Net flow",
-      "cumulative": "Cumulative"
-    },
-    "series": {
-      "in": "{{name}} in",
-      "out": "{{name}} out",
-      "net": "{{name}} net",
-      "totalIn": "{{name}} total in",
-      "totalOut": "{{name}} total out"
-    },
-    "diagnostics": {
-      "title": "Hardware diagnostics",
-      "gatesHealthy": "Gates healthy",
-      "glitchCount": "Glitch count",
-      "totalInLifetime": "Total in (lifetime)",
-      "totalOutLifetime": "Total out (lifetime)"
     }
   },
   "insights": {
-    "title": "Insights",
-    "description": "Sensor-based alerts derived from weight and temperature trends.",
-    "updated": "Updated {{ago}}.",
-    "refresh": "Refresh insights",
-    "loadError": "Failed to load insights: {{message}}",
     "allClear": "All clear",
-    "noActiveAlerts": "No active alerts in the last {{count}} days.",
-    "activeAlerts_one": "{{count}} active alert:",
-    "activeAlerts_other": "{{count}} active alerts:",
     "confidence": "Confidence {{value}}%",
     "source": "Source: {{source}}",
     "hiveChannel": "Hive {{channel}}",
@@ -537,6 +551,721 @@
       "title": "No history yet",
       "description": "No alerts have been recorded for this device.",
       "descriptionFiltered": "No alerts have been recorded for this device matching this filter."
+    }
+  },
+  "inspectionMode": {
+    "title": "Inspectiemodus",
+    "description": "Zolang de inspectiemodus aan staat, blijft HiveHub meten maar houdt de metingen buiten grafieken, inzichten en meldingen, zodat het uitnemen van ramen niet voor een zwerm wordt aangezien.",
+    "status": {
+      "active": "Actief sinds {{time}}",
+      "pending": "Wacht op ophalen door hub",
+      "off": "Uit"
+    },
+    "pendingHint": "Aangevraagd — de hub pakt het op bij de volgende melding.",
+    "timeoutNote_one": "Stopt automatisch na {{count}} minuut als niemand hem stopt.",
+    "timeoutNote_other": "Stopt automatisch na {{count}} minuten als niemand hem stopt.",
+    "scope": {
+      "wholeHub": "Hele hub",
+      "label": "Omvat: {{hives}}"
+    },
+    "start": "Inspectiemodus starten",
+    "stop": "Inspectiemodus stoppen",
+    "starting": "Bezig met starten…",
+    "stopping": "Bezig met stoppen…",
+    "cancel": "Annuleren",
+    "noteLabel": "Notitie (optioneel)",
+    "notePlaceholder": "bijv. Honingkamer opgezet",
+    "viewerHint": "Alleen eigenaars en beheerders kunnen de inspectiemodus starten of stoppen.",
+    "loadFailed": "Kon de inspectiestatus niet laden.",
+    "startDialog": {
+      "title": "Inspectiemodus starten",
+      "description": "Metingen van de geselecteerde kasten worden gemaskeerd totdat je de inspectiemodus stopt of deze verloopt.",
+      "hivesLabel": "Kasten",
+      "wholeHub": "Hele hub (alle kasten)",
+      "selectHive": "Kies minstens één kast, of de hele hub.",
+      "confirm": "Starten"
+    },
+    "stopDialog": {
+      "title": "Inspectiemodus stoppen",
+      "description": "HiveHub keert terug naar normale metingen en meldingen.",
+      "confirm": "Stoppen"
+    },
+    "toast": {
+      "started": "Inspectiemodus gestart",
+      "stopped": "Inspectiemodus gestopt",
+      "noteSaved": "Notitie opgeslagen"
+    },
+    "history": {
+      "title": "Recente inspecties",
+      "empty": "Nog geen inspecties vastgelegd.",
+      "ongoing": "bezig",
+      "startedVia": "Gestart via {{source}}",
+      "ended": "Beëindigd: {{reason}}",
+      "editNote": "Notitie bewerken",
+      "addNote": "Notitie toevoegen",
+      "saveNote": "Opslaan"
+    },
+    "duration": {
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hoursMinutes": "{{hours}} u {{minutes}} min"
+    },
+    "source": {
+      "device": "hubknop",
+      "api": "app",
+      "dashboard": "lokaal dashboard"
+    },
+    "endReason": {
+      "timeout": "verlopen",
+      "device": "hubknop",
+      "api": "gestopt in app",
+      "dashboard": "gestopt op lokaal dashboard"
+    }
+  },
+  "hiveLink": {
+    "prompt": {
+      "message": "Deze kast wordt bewaakt door HiveHub {{device}} ({{hive}}). Start de inspectiemodus zodat het openen van de kast geen valse meldingen geeft.",
+      "active": "Inspectiemodus staat aan voor {{hive}} op HiveHub {{device}}.",
+      "pending": "Inspectiemodus aangevraagd voor {{hive}} op HiveHub {{device}} — de hub pakt het op bij de volgende melding.",
+      "activeOther": "Inspectiemodus staat aan voor andere kasten op HiveHub {{device}}, niet voor {{hive}}. Stop hem eerst om er een voor deze kast te starten."
+    },
+    "card": {
+      "title": "HiveHub",
+      "description": "Live metingen van de gekoppelde HiveHub-sensoren.",
+      "weight": "Gewicht",
+      "weightChange24h": "Verandering 24 u",
+      "temperature": "Kasttemperatuur",
+      "humidity": "Luchtvochtigheid",
+      "lastReading": "Laatste meting: {{time}}",
+      "openHiveHub": "HiveHub openen"
+    }
+  },
+  "traffic": {
+    "title": "HiveTraffic-bijentellers",
+    "description": "Nachtmodus en emitterbanken voor elke HiveTraffic-teller die aan deze hub gekoppeld is. De IR-emitters zijn verreweg de grootste post in het stroombudget van een teller, dus deze instellingen bepalen of hij op een off-grid voeding past.",
+    "readOnly": "Alleen eigenaars en beheerders van het apparaat kunnen deze instellingen wijzigen. Je rol is „{{role}}”.",
+    "hiveFallback": "Kast {{slot}}",
+    "noChanges": "Geen wijzigingen om op te slaan",
+    "saved": "Bijentellerinstellingen opgeslagen. Tellers nemen ze over bij de volgende melding.",
+    "appliesToAll": "Geldt voor elke HiveTraffic-teller die aan dit apparaat gekoppeld is. De teller krijgt het door bij de volgende uploadcyclus van de hub.",
+    "status": {
+      "title": "Tellers op dit moment",
+      "none": "Geen HiveTraffic-teller gemeld in de laatste meting.",
+      "counting": "Telt",
+      "nightIdle": "Nachtrust",
+      "nightIdleFor_one": "Nachtrust · nog {{count}} min",
+      "nightIdleFor_other": "Nachtrust · nog {{count}} min",
+      "banksRunning": "Actieve emitterbanken: {{banks}}",
+      "banksUnknown": "Emitterbanken niet gemeld (tellerfirmware ouder dan 0.3.0)",
+      "applied": "Banken toegepast",
+      "pending": "Banken wachten op volgende melding"
+    },
+    "night": {
+      "title": "Nachtmodus",
+      "description": "Honingbijen zijn dagactief — vliegen vereist licht en stopt onder ongeveer 10 °C sowieso. Tijdens dit venster stopt de teller met meten om stroom te besparen. Hij blijft adverteren, dus metingen en firmware-updates werken nog steeds.",
+      "enable": "Nachtmodus inschakelen",
+      "start": "Nacht begint (lokale tijd)",
+      "end": "Nacht eindigt (lokale tijd)",
+      "windowHelp": "Het venster mag over middernacht lopen (bijv. 20:00 → 06:00). Als begin en einde gelijk zijn, is het venster leeg — het geldt nooit — in plaats van de hele dag te beslaan. Houd een marge rond schemering en dageraad aan: de activiteit piekt vlak voor zonsondergang en zonsopgang.",
+      "emptyWindow": "Begin en einde zijn gelijk, dus het venster is leeg en de nachtmodus zou nooit gelden.",
+      "wrapsMidnight": "Het venster loopt over middernacht: van {{start}} tot {{end}} de volgende ochtend.",
+      "timezone": "Tijdzone",
+      "tzCustom": "POSIX-TZ-string",
+      "timezoneHelp": "De klok van de hub loopt in UTC. Zonder de juiste tijdzone verschuift het venster met je UTC-afwijking en schuift het bij elke zomer-/wintertijdwissel een uur op.",
+      "tzPresets": {
+        "cet": "Midden-Europa (Berlijn, Parijs, Madrid, Wenen)",
+        "uk": "Verenigd Koninkrijk / Ierland",
+        "eet": "Oost-Europa (Helsinki, Athene)",
+        "usEastern": "VS Eastern",
+        "usCentral": "VS Central",
+        "usMountain": "VS Mountain",
+        "usPacific": "VS Pacific",
+        "utc": "UTC (geen lokale tijd)",
+        "custom": "Aangepast…"
+      },
+      "maxTraffic": "Uitstellen boven (passages per cyclus)",
+      "maxTrafficHelp": "Stel de nachtmodus uit zolang er in de laatste uploadcyclus meer dan dit aantal passages (in + uit) is geteld, zodat een volk dat op een zomeravond nog laat vliegt niet wordt afgekapt. 0 gaat alleen op de klok af.",
+      "save": "Nachtmodus opslaan"
+    },
+    "banks": {
+      "title": "Emitterbanken",
+      "description": "De IR-emitters van de teller worden geschakeld in drie banken van acht poortjes. Elke bank verbruikt ongeveer 80 mA. Schakel er een uit als het vlieggat smaller is dan 24 poortjes, deels gesloten is, of de voeding het hele board niet aankan.",
+      "bank": "Bank {{bank}} — poortjes {{gates}}",
+      "current_one": "{{count}} bank aan · ongeveer {{ma}} mA op de 3,3 V-rail van de teller",
+      "current_other": "{{count}} banken aan · ongeveer {{ma}} mA op de 3,3 V-rail van de teller",
+      "help": "Een uitgeschakelde bank telt zijn poortjes helemaal niet, dus de totalen dalen ongeveer evenredig — vergelijk een versmalde teller niet met zijn eigen geschiedenis. Minstens één bank moet aan blijven; ontkoppel een teller die niets moet tellen.",
+      "firmwareNote": "Vereist tellerfirmware 0.3.0 of nieuwer. De instelling wordt na elke reset van de teller opnieuw verstuurd.",
+      "save": "Emitterbanken opslaan"
+    },
+    "errors": {
+      "loadFailed": "Kon de apparaatconfiguratie niet laden.",
+      "saveFailed": "Kon de bijentellerinstellingen niet opslaan",
+      "invalidTime": "Voer een geldige begin- en eindtijd in (UU:MM).",
+      "invalidMaxTraffic": "De uitsteldrempel moet een geheel getal van 0 of meer zijn.",
+      "emptyWindow": "Begin en einde van de nachtmodus zijn gelijk — het venster zou nooit gelden.",
+      "noBank": "Minstens één emitterbank moet aan blijven — ontkoppel in plaats daarvan de teller."
+    }
+  },
+  "hubAccess": {
+    "title": "Hubtoegang",
+    "description": "Bereik de hub ter plaatse zonder de behuizing te openen, en stel in hoe lang een inspectie mag duren.",
+    "readOnly": "Alleen eigenaars en beheerders van het apparaat kunnen deze instellingen wijzigen. Je rol is „{{role}}”.",
+    "noChanges": "Geen wijzigingen om op te slaan",
+    "cancel": "Annuleren",
+    "ap": {
+      "title": "Installatie-accesspoint",
+      "description": "Opent het wifi-netwerk HiveHub-Setup van de hub, net als een korte druk op de setupknop: wifi wijzigen, sensoren koppelen of de SD-kaartgegevens downloaden.",
+      "lastCheckIn": "Laatste melding: {{time}}",
+      "open": "Installatie-accesspoint openen",
+      "confirmTitle": "Het installatie-accesspoint openen?",
+      "confirmTiming_one": "Het verzoek wordt in de wachtrij gezet. De hub slaapt tussen cycli, dus het accesspoint opent na de volgende melding — uiterlijk over {{count}} minuut.",
+      "confirmTiming_other": "Het verzoek wordt in de wachtrij gezet. De hub slaapt tussen cycli, dus het accesspoint opent na de volgende melding — uiterlijk over {{count}} minuten.",
+      "confirmTimingUnknown": "Het verzoek wordt in de wachtrij gezet. De hub slaapt tussen cycli, dus het accesspoint opent na de volgende melding — uiterlijk over één verzendinterval.",
+      "confirmOffline": "Zolang het accesspoint open is, is de hub niet met wifi verbonden en verstuurt hij geen metingen.",
+      "confirmTimeout": "Het sluit vanzelf na de time-out van het installatieportaal als niemand verbinding maakt, dus start het alleen als er iemand bij de kast is.",
+      "confirm": "Accesspoint in wachtrij zetten",
+      "queueing": "In wachtrij plaatsen…",
+      "queued": "Accesspoint in de wachtrij gezet. Het opent na de volgende melding van de hub.",
+      "failed": "Kon het accesspoint niet in de wachtrij zetten"
+    },
+    "inspection": {
+      "title": "Inspectie-time-out",
+      "description": "Een vangnet: een inspectie stopt vanzelf na dit aantal minuten, zodat een vergeten druk op de knop de gegevens van een kast niet eindeloos wegmaskeert. Standaard 60.",
+      "label": "Time-out (minuten, 1–1440)",
+      "save": "Time-out opslaan",
+      "saved": "Inspectie-time-out opgeslagen",
+      "saveFailed": "Kon de inspectie-time-out niet opslaan",
+      "invalid": "Voer een geheel aantal minuten in tussen 1 en 1440."
+    }
+  },
+  "dataTools": {
+    "title": "Gegevensexport & opschonen",
+    "description": "Maak een back-up van de metingen van deze hub of verwijder foutieve.",
+    "hiveFallback": "Kast {{slot}}",
+    "cancel": "Annuleren",
+    "export": {
+      "title": "Metingen exporteren",
+      "description": "Download de opgeslagen metingen als NDJSON-back-up.",
+      "from": "Van (optioneel)",
+      "to": "Tot (optioneel)",
+      "rangeHelp": "Laat beide leeg om alles te exporteren. Datums omvatten hele dagen in je lokale tijd.",
+      "hives": "Kasten (optioneel)",
+      "allHives": "Alle kasten zijn inbegrepen.",
+      "someHives_one": "Alleen {{count}} geselecteerde kast is inbegrepen. Het aantal hieronder omvat alle metingen in de periode.",
+      "someHives_other": "Alleen {{count}} geselecteerde kasten zijn inbegrepen. Het aantal hieronder omvat alle metingen in de periode.",
+      "invalidRange": "De begindatum ligt na de einddatum.",
+      "summaryFailed": "Kon de metingen niet tellen.",
+      "count_one": "{{count}} meting",
+      "count_other": "{{count}} metingen",
+      "span": "Van {{first}} tot {{last}}",
+      "download": "Downloaden",
+      "formatHelp": "Eén JSON-meting per regel. Het bestand kan opnieuw worden geïmporteerd met de SD-kaartimport.",
+      "noPermission": "Alleen eigenaars en beheerders van het apparaat kunnen gegevens exporteren. Je rol is „{{role}}”."
+    },
+    "delete": {
+      "title": "Metingen in een periode verwijderen",
+      "description": "Verwijdert foutieve metingen — bijvoorbeeld de gewichtspieken die een hub bij het opstarten vastlegt voordat zijn weegschalen gekalibreerd zijn, en die anders grafieken en inzichten vertekenen.",
+      "warningTitle": "Dit kan niet ongedaan worden gemaakt",
+      "warning": "Verwijderde metingen zijn definitief weg. Exporteer de periode eerst als je die misschien nog nodig hebt.",
+      "start": "Begin",
+      "end": "Einde",
+      "claimCode": "Claimcode",
+      "claimCodeHelp": "De claimcode van de hub, als tweede bevestiging.",
+      "review": "Verwijdering controleren",
+      "confirmTitle": "Deze metingen verwijderen?",
+      "confirmRange": "Van {{start}} tot {{end}}.",
+      "confirmCount_one": "{{count}} meting wordt definitief verwijderd.",
+      "confirmCount_other": "{{count}} metingen worden definitief verwijderd.",
+      "confirmIrreversible": "Dit kan niet ongedaan worden gemaakt.",
+      "countFailed": "Kon de metingen in deze periode niet tellen.",
+      "confirm_one": "{{count}} meting verwijderen",
+      "confirm_other": "{{count}} metingen verwijderen",
+      "deleting": "Bezig met verwijderen…",
+      "success_one": "{{count}} meting verwijderd.",
+      "success_other": "{{count}} metingen verwijderd.",
+      "noPermission": "Alleen de eigenaar van het apparaat kan metingen verwijderen. Je rol is „{{role}}”.",
+      "errors": {
+        "missingRange": "Kies een begin en een einde.",
+        "invalidRange": "Het einde moet gelijk aan of na het begin liggen.",
+        "missingClaimCode": "Voer de claimcode van de hub in."
+      }
+    }
+  },
+  "alertSettings": {
+    "title": "HiveHub-e-mailmeldingen",
+    "description": "Ontvang een e-mail wanneer HiveHub iets opmerkt bij je kasten — zwermen, roverij, een moerloos volk en meer.",
+    "enable": "Mail me over HiveHub-meldingen",
+    "minSeverity": "Minimale ernst",
+    "minSeverityHelp": "Meldingen onder dit niveau worden nooit gemaild.",
+    "severity": {
+      "watch": "Observeren en hoger",
+      "warning": "Waarschuwing en hoger",
+      "critical": "Alleen kritiek"
+    },
+    "help": {
+      "schedule": "HivePal controleert elke 15 minuten op nieuwe meldingen.",
+      "once": "Elke melding wordt één keer gemaild wanneer die verschijnt, en alleen opnieuw als die ernstiger wordt.",
+      "scope": "Geldt voor alle HiveHub-apparaten waartoe je toegang hebt.",
+      "email": "Vereist dat e-mail op de HivePal-server is geconfigureerd."
+    },
+    "saved": "Meldingsinstellingen opgeslagen",
+    "saveFailed": "Kon de meldingsinstellingen niet opslaan",
+    "loadFailed": "Kon je voorkeuren niet laden."
+  },
+  "health": {
+    "title": "Sensorstatus",
+    "description": "Status per sensor zoals gemeld door {{name}}.",
+    "descriptionAt": "Sensorstatus van de laatste melding · {{ago}}.",
+    "noData": "Nog geen sensorstatus gemeld — die verschijnt zodra het apparaat zijn eerste meting verstuurt.",
+    "hubHeading": "Hub",
+    "hiveIndex": "Kast {{n}}",
+    "noHiveSensors": "Geen sensoren gemeld voor deze kast.",
+    "faultNote": "De hub meldt zijn eigen subsystemen alleen als goed/fout — hij stuurt er geen foutcode voor, dus elke storing hierboven vermeldt wat er misging. De vlieggatteller meldt wel een statuscode, en die wordt bij de storing getoond waar er een is uitgelezen.",
+    "summary": {
+      "noData": "Geen sensorgegevens",
+      "allOk": "Alles OK",
+      "faults_one": "{{count}} storing",
+      "faults_other": "{{count}} storingen"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Storing",
+      "notFitted": "Niet geplaatst",
+      "notHeard": "Niet ontvangen"
+    },
+    "hub": {
+      "sht_ok": "Omgevingstemperatuur/-vochtigheid (SHT40)",
+      "rtc_ok": "Realtimeklok",
+      "sd_ok": "SD-kaart",
+      "mic_ok": "Microfoon",
+      "mic_left_ok": "Microfoon · links",
+      "mic_right_ok": "Microfoon · rechts",
+      "battery_monitor_ok": "Batterijmonitor",
+      "solar_monitor_ok": "Zonnepaneelmonitor"
+    },
+    "hubReason": {
+      "sht_ok": "De omgevingssensor gaf deze cyclus geen geldige meting, dus deze melding bevat geen omgevingstemperatuur of -vochtigheid. Meestal een fout in de I²C-bus of bedrading; een sensor die bij het opstarten nooit is gedetecteerd, ziet er hetzelfde uit.",
+      "rtc_ok": "De realtimeklok antwoordde niet op de I²C-bus. Tijdstempels vallen terug op netwerktijd, dus een meting die offline is gedaan kan een verkeerde datum hebben.",
+      "sd_ok": "De SD-kaart is deze cyclus niet gekoppeld — ontbrekend, onleesbaar, of een SPI-/bedradingsfout. Zolang dit aanhoudt, worden metingen niet op de kaart gebufferd.",
+      "mic_ok": "De microfoonopname leverde geen bruikbare samples op, dus deze melding bevat geen akoestische banden.",
+      "mic_left_ok": "De linkermicrofoon leverde geen bruikbare samples op.",
+      "mic_right_ok": "De rechtermicrofoon leverde geen bruikbare samples op.",
+      "battery_monitor_ok": "De batterijmeter antwoordde niet op de I²C-bus — batterijspanning en laadtoestand ontbreken in deze melding.",
+      "solar_monitor_ok": "De zonnepaneelmonitor antwoordde niet op de I²C-bus — zonnespanning, -stroom en -vermogen ontbreken in deze melding."
+    },
+    "sensor": {
+      "scale": "Weegschaal",
+      "inHive": "Kastsensor",
+      "counter": "HiveTraffic-teller",
+      "hiveheart": "HiveHeart"
+    },
+    "reason": {
+      "scale": "Voor deze kast is een weegschaal geconfigureerd, maar die gaf deze cyclus geen bruikbare meting, dus deze melding bevat geen gewicht ervoor.",
+      "inHive": "Geen advertentie van de gekoppelde {{kind}} tijdens de BLE-scan van deze cyclus — buiten bereik, lege batterij of uitgeschakeld.",
+      "inHiveKindFallback": "kastsensor",
+      "node": "Node {{node}}.",
+      "lastHeard": "Laatst ontvangen {{ago}}.",
+      "notHeardInRange": "Niet ontvangen in de geladen periode.",
+      "counter": "De vlieggatteller beantwoordde zijn GATT-uitlezing deze cyclus niet — buiten bereik, uitgeschakeld of bezet toen HiveHub verbinding zocht.",
+      "counterNode": "Teller {{node}}.",
+      "lastAnswered": "Laatst geantwoord {{ago}}.",
+      "notAnsweredInRange": "Hij heeft niet geantwoord in de geladen periode.",
+      "statusThen": "Status toen: {{status}}.",
+      "expandersThen_one": "{{count}} van 3 port-expanders antwoordde toen.",
+      "expandersThen_other": "{{count}} van 3 port-expanders antwoordden toen.",
+      "hiveheart": "De HiveHeart is deze cyclus niet ontvangen — buiten bereik, lege batterij of uitgeschakeld."
+    },
+    "counter": {
+      "nightIdle": "nachtmodus-rust",
+      "nightIdleBadge": "Nachtrust",
+      "otherBits": "tellerspecifieke bits {{hex}}",
+      "noFlags": "geen vlaggen gezet",
+      "statusCode": "status {{hex}}",
+      "expanders_one": "{{count}}/3 poortje-expanders",
+      "expanders_other": "{{count}}/3 poortje-expanders",
+      "glitches_one": "{{count}} storing",
+      "glitches_other": "{{count}} storingen",
+      "banks": "Banken {{list}}",
+      "noBanks": "Geen emitterbanken"
+    },
+    "meta": {
+      "firmware": "v{{version}}",
+      "batteryPercent": "Batterij {{value}} %",
+      "batteryMv": "Batterij {{value}} mV",
+      "batteryV": "Batterij {{value}} V",
+      "rssi": "{{value}} dBm"
+    }
+  },
+  "hubStatus": {
+    "title": "Hubstatus",
+    "description": "Verbinding, klok en voeding van de HiveHub zelf.",
+    "noData": "Nog geen meting ontvangen van deze hub.",
+    "staleWarning": "Al {{ago}} geen meting — de hub heeft meerdere meldingen gemist.",
+    "badge": {
+      "live": "Live",
+      "stale": "Verouderd",
+      "inspection": "Inspectie bezig",
+      "calibration": "Kalibratiemodus"
+    },
+    "section": {
+      "connectivity": "Verbinding",
+      "battery": "Batterij",
+      "solar": "Zonne-energie"
+    },
+    "row": {
+      "signal": "Signaal",
+      "transport": "Transport",
+      "timeSource": "Tijdbron",
+      "lastSeen": "Laatst gezien",
+      "lastReading": "Laatste meting",
+      "firmware": "Firmware",
+      "bootCount": "Aantal opstarts",
+      "stateOfCharge": "Laadtoestand",
+      "batteryVoltage": "Spanning",
+      "batteryAlert": "Batterijwaarschuwing",
+      "solarPower": "Zonnevermogen",
+      "solarCurrent": "Zonnestroom",
+      "solarBus": "Paneelspanning (bus)",
+      "solarLoad": "Belastingsspanning"
+    },
+    "signalQuality": {
+      "excellent": "Uitstekend",
+      "good": "Goed",
+      "fair": "Redelijk",
+      "poor": "Zwak"
+    },
+    "transport": {
+      "wifi": "Wifi",
+      "cellular": "Mobiel netwerk"
+    },
+    "rtc": {
+      "ok": "RTC OK",
+      "fault": "RTC-storing"
+    },
+    "batteryAlertActive": "Batterij bijna leeg"
+  },
+  "hiveCards": {
+    "empty": "Dit apparaat heeft nog geen kasten gemeld.",
+    "hiveIndex": "Kast {{n}}",
+    "weight": "Gewicht",
+    "temperature": "Temperatuur",
+    "humidity": "Luchtvochtigheid",
+    "delta24h": "24 u {{value}} kg",
+    "lastReported": "Laatst gemeld {{ago}}",
+    "inspection": "Inspectie",
+    "insightsLoading": "Inzichten laden",
+    "insightsUnavailable": "Inzichten niet beschikbaar",
+    "noSensors": "Geen sensoren gemeld",
+    "traffic": "In {{in}} · Uit {{out}}",
+    "trafficTitle": "Bijen in/uit tijdens het laatste interval",
+    "alerts_one": "{{count}} actieve melding",
+    "alerts_other": "{{count}} actieve meldingen",
+    "sensor": {
+      "scale": "Weegschaal",
+      "inHive": "Kastsensor",
+      "counter": "HiveTraffic-teller",
+      "hiveheart": "HiveHeart"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Niet ontvangen / storing"
+    }
+  },
+  "audio": {
+    "title": "Kastaudio",
+    "description": "Vraag de HiveInside-node van een kast om op te nemen en luister hier naar de opname. De hub haalt het verzoek op bij het volgende ontwaken, dus een opname verschijnt binnen één meldinterval en niet meteen.",
+    "noNodes": "Er is geen HiveInside-node gekoppeld aan deze hub. Alleen HiveInside heeft een microfoon — een HolyIot- of RuuviTag-beacon kan niet opnemen.",
+    "hive": "Kast",
+    "hiveFallback": "Kast {{slot}}",
+    "length": "Lengte",
+    "durationOption_one": "{{count}} seconde",
+    "durationOption_other": "{{count}} seconden",
+    "gain": "Versterking",
+    "gainValue": "{{gain}} dB",
+    "record": "Opnemen",
+    "nextWake": "Bereikt de hub bij het volgende ontwaken.",
+    "viewerNote": "Een eigenaar of beheerder kan een opname aanvragen.",
+    "lengthHint": "Korter is meestal beter: 10–20 seconden is genoeg om te horen wat een inzicht signaleerde, en kost minder batterij en minder tijd dat de kast uit de lucht is — een verbonden node adverteert niet en meet niet.",
+    "requestSuccess": "Opname aangevraagd. Die bereikt de hub bij het volgende ontwaken.",
+    "requestError": "Het verzoek kon niet in de wachtrij worden gezet: {{message}}",
+    "listTitle": "Opnames",
+    "onlySelectedHive": "Alleen {{name}}",
+    "loadError": "Kon opnames niet ophalen: {{message}}",
+    "empty": "Nog geen opnames. Vraag een kast om op te nemen en de opname verschijnt hier. Een sessie is 10–60 seconden 16 kHz-audio die via BLE van de node wordt gehaald.",
+    "requestedLength_one": "{{count}} s aangevraagd",
+    "requestedLength_other": "{{count}} s aangevraagd",
+    "requestedBy": "Aangevraagd door {{name}}",
+    "status": {
+      "requested": "Wacht op hub",
+      "streaming": "Bezig met opnemen…",
+      "ready": "Klaar",
+      "readyIncomplete": "Klaar, niet compleet",
+      "failed": "Mislukt"
+    },
+    "waitingNote": "Wacht tot de hub ontwaakt en dit ophaalt — nog niets opgenomen. Een verzoek dat de hub niet binnen 45 minuten heeft opgehaald, wordt als mislukt gemarkeerd.",
+    "streamingNote": "Bezig met opnemen — de audio verschijnt hier zodra die binnenkomt.",
+    "streamingPartial": "Nog bezig met opnemen — dit is wat er tot nu toe binnen is. Speel het opnieuw af wanneer de sessie klaar is om alles te horen.",
+    "failedFallback": "Deze opname is mislukt.",
+    "seconds": "{{value}} s",
+    "bytes": "{{value}} B",
+    "percent": "{{value}} %",
+    "download": "WAV downloaden",
+    "delete": "Verwijderen",
+    "deleteConfirm": "Deze opname verwijderen? Niets anders zal dat ooit doen — er is geen automatische opschoning.",
+    "deleteSuccess": "Opname verwijderd.",
+    "deleteError": "Kon de opname niet verwijderen: {{message}}",
+    "confirmation": {
+      "verified": "geverifieerd",
+      "reported": "niet geverifieerd",
+      "confirmed": "bevestigd door hub",
+      "unknown": "niet bevestigd"
+    },
+    "quality": {
+      "length": "Lengte",
+      "dropped": "Weggevallen",
+      "gaps": "Onderbrekingen",
+      "hubBuffer": "Hubbuffer",
+      "clipping": "Clipping",
+      "checksum": "Controlesom",
+      "cause": {
+        "dropped": "de node kon de audio niet snel genoeg versturen",
+        "gaps": "er gingen pakketten verloren in de lucht",
+        "hubBuffer": "de upload van de hub liep achter op zijn buffer"
+      },
+      "gapNote": "De audio aan weerszijden van een onderbreking is echt, maar de overgang niet. Oorzaak: {{causes}}.",
+      "clippingNote": "Verlaag de versterking voor een schonere opname.",
+      "unknownNote": "De hub heeft nooit over deze sessie gerapporteerd, dus niets heeft gecontroleerd of de audio compleet is. Wat er is, kan worden afgespeeld."
+    }
+  },
+  "dashboard": {
+    "hiveFallback": "Kast {{index}}",
+    "units": {
+      "bees": "bijen"
+    },
+    "range": {
+      "24h": "24 u",
+      "7d": "7 d",
+      "30d": "30 d",
+      "365d": "365 d",
+      "custom": "Aangepast",
+      "invalid": "De begindatum mag niet na de einddatum liggen."
+    },
+    "header": {
+      "title": "Mijn dashboard",
+      "description": "Door de gebruiker instelbare widgets. De hierboven geselecteerde kasten bepalen de kastgebonden grafieken.",
+      "editDescription": "Bewerkmodus: sleep aan de greep om widgets te verplaatsen en aan de hoek om hun grootte aan te passen op een raster van 4 kolommen.",
+      "edit": "Dashboard bewerken",
+      "done": "Klaar",
+      "addWidget": "Widget toevoegen",
+      "reset": "Herstellen",
+      "editBanner": "De bewerkmodus van het dashboard is actief. Gebruik de greep in de kop van elke widget om hem te verplaatsen, en sleep de rechterbenedenhoek om breedte of hoogte aan te passen. Lay-outwijzigingen worden automatisch opgeslagen voor dit HiveHub-apparaat.",
+      "dropEnd": "Zet hier neer om een widget naar het einde van het dashboard te verplaatsen.",
+      "noWidgets": "Nog geen widgets. Voeg een sjabloon toe om je dashboard op te bouwen.",
+      "restoreDefaults": "Standaardinstellingen herstellen"
+    },
+    "overview": {
+      "title": "Kastoverzicht",
+      "description": "Compacte status van gekoppelde kasten. Selecteer tegels om de dashboardwidgets hieronder aan te sturen.",
+      "lastData": "Laatste gegevens",
+      "hivesOnline": "Kasten online",
+      "hubFirmware": "HiveHub-FW",
+      "hiveInsideFirmware": "HiveInside-FW",
+      "selected_one": "{{count}} geselecteerd",
+      "selected_other": "{{count}} geselecteerd",
+      "hide": "Overzicht verbergen",
+      "show": "Overzicht tonen",
+      "slot": "Plaats {{index}}",
+      "ok": "OK",
+      "noData": "Geen gegevens",
+      "weight": "Gewicht",
+      "temperature": "Temp",
+      "humidity": "RV",
+      "empty": "Koppel HiveHub-plaatsen aan HivePal-kasten in het instellingenpaneel van het apparaat om hier overzichtstegels te tonen."
+    },
+    "sensors": {
+      "scale": "weegschaal",
+      "inHive": "in kast",
+      "accel": "versnelling",
+      "counter": "teller",
+      "none": "geen sensoren"
+    },
+    "widgetShell": {
+      "move": "{{title}} verplaatsen",
+      "moveHint": "Sleep om deze widget te verplaatsen",
+      "remove": "{{title}} verwijderen",
+      "resize": "Grootte van {{title}} wijzigen",
+      "resizeHint": "Sleep om de grootte van deze widget te wijzigen"
+    },
+    "addWidget": {
+      "title": "Widget toevoegen",
+      "description": "Begin met een sjabloon. De widget gebruikt waar van toepassing de geselecteerde kasten uit het overzichtsraster.",
+      "defaultSize": "Standaardgrootte {{w}} x {{h}}"
+    },
+    "widgets": {
+      "weightComparison": {
+        "title": "Gewichtsvergelijking",
+        "description": "Vergelijk geselecteerde kasten over de huidige periode."
+      },
+      "dailyMaxWeight": {
+        "title": "Dagelijks maximumgewicht",
+        "description": "Hoogste gecompenseerde gewicht per dag voor de geselecteerde kasten."
+      },
+      "climate": {
+        "title": "Kastklimaat",
+        "description": "Temperatuur en luchtvochtigheid voor geselecteerde kasten."
+      },
+      "power": {
+        "title": "Voedingsstatus",
+        "description": "Batterijlading, batterijspanning en zonne-invoer."
+      },
+      "beeTraffic": {
+        "title": "Vliegverkeer",
+        "description": "Totaal in-/uitvliegen en netto stroom."
+      },
+      "soundRms": {
+        "title": "Geluid / akoestische banden",
+        "description": "Akoestische RMS per kast en FFT-/HiveHeart-banden indien beschikbaar."
+      },
+      "hiveHeartSpectrum": {
+        "title": "HiveHeart-spectrum",
+        "description": "Nieuwste HiveHeart-FFT-niveaus (0–15) over 16 frequentiebereiken voor de geselecteerde kasten."
+      },
+      "vibration": {
+        "title": "Trillingsbanden",
+        "description": "RMS-trilling en zwerm-, waaier- en activiteitsbanden."
+      },
+      "configurableDiagram": {
+        "title": "Instelbaar diagram",
+        "description": "Kies de kast-, geluids-, vliegverkeers-, klimaat- en apparaatwaarden om weer te geven."
+      },
+      "temperatureHeatmap": {
+        "title": "Temperatuur-heatmap",
+        "description": "Compact temperatuuroverzicht van alle kasten."
+      },
+      "insights": {
+        "title": "Inzichtenfeed",
+        "description": "Actieve meldingen en onderbouwing."
+      },
+      "dataQuality": {
+        "title": "Gegevenskwaliteit",
+        "description": "Beschikbaarheid van sensoren en ontbrekende metingen."
+      }
+    },
+    "metricGroups": {
+      "scale": "Weegschaal",
+      "climate": "Klimaat",
+      "beeTraffic": "Vliegverkeer",
+      "vibration": "Trilling",
+      "sound": "Geluid",
+      "device": "Apparaat"
+    },
+    "metrics": {
+      "weight": "Gewicht",
+      "temperature": "Temperatuur",
+      "humidity": "Luchtvochtigheid",
+      "pressure": "Luchtdruk",
+      "beeIn": "Bijen in",
+      "beeOut": "Bijen uit",
+      "beeNet": "Netto stroom",
+      "vibration": "Trilling RMS",
+      "swarmBand": "Zwermband",
+      "fanningBand": "Waaierband",
+      "activityBand": "Activiteitsband",
+      "soundRms": "Geluid RMS",
+      "soundHum": "Zoemband",
+      "soundPiping": "Tuutband",
+      "soundStress": "Stressband",
+      "hiveHeartFrequency": "HiveHeart-frequentie",
+      "hiveHeartEnergy": "HiveHeart-energie",
+      "batterySoc": "Batterijlading",
+      "batteryVoltage": "Batterijspanning",
+      "solarPower": "Zonnevermogen"
+    },
+    "axes": {
+      "weight": "Gewicht",
+      "temperature": "Temperatuur",
+      "humidity": "Luchtvochtigheid",
+      "pressure": "Luchtdruk",
+      "beecount": "Aantal bijen",
+      "vibration": "Trilling",
+      "dbfs": "Geluidsniveau",
+      "frequency": "Frequentie",
+      "energy": "Energie",
+      "percent": "Lading",
+      "voltage": "Spanning",
+      "power": "Vermogen"
+    },
+    "soundMetrics": {
+      "rms": "RMS",
+      "hiveHeartFrequency": "HiveHeart-frequentie",
+      "hiveHeartEnergy": "HiveHeart-energie",
+      "hiveHeartPeak": "HiveHeart-piek"
+    },
+    "vibrationMetrics": {
+      "rms": "RMS",
+      "swarmBand": "Zwermband",
+      "fanningBand": "Waaierband",
+      "activityBand": "Activiteitsband"
+    },
+    "series": {
+      "temperature": "{{name}} temp",
+      "humidity": "{{name}} RV",
+      "beeIn": "In",
+      "beeOut": "Uit",
+      "beeNet": "Netto"
+    },
+    "axisScale": {
+      "auto": "auto",
+      "setBound": "{{axis}} {{bound}} instellen",
+      "clearHint": "Laat leeg en druk op Enter voor automatisch",
+      "tickTitle": "Klik om {{bound}} in te stellen; leegmaken voor automatisch",
+      "reset": "herstellen",
+      "help": "Klik op het laagste of hoogste label van de y-as om het te bewerken. Maak de waarde leeg voor automatisch."
+    },
+    "chart": {
+      "downloadCsv": "CSV downloaden"
+    },
+    "inspection": {
+      "legendHint_one": "{{count}} inspectievenster gearceerd; metingen kunnen verstoord zijn",
+      "legendHint_other": "{{count}} inspectievensters gearceerd; metingen kunnen verstoord zijn"
+    },
+    "empty": {
+      "noData": "Geen gegevens voor de geselecteerde kasten en periode.",
+      "climate": "Geen klimaatgegevens voor de geselecteerde periode.",
+      "power": "Geen voedingsgegevens voor de geselecteerde periode.",
+      "beeTraffic": "Geen bijentellergegevens voor de geselecteerde kasten.",
+      "sound": "Geen akoestische gegevens per kast voor de geselecteerde kasten.",
+      "vibration": "Geen trillings- of versnellingsbandgegevens voor de geselecteerde kasten.",
+      "configurable": "Selecteer minstens één waarde met gegevens voor de geselecteerde kasten en periode.",
+      "dailyMaxWeight": "Geen gewichtsgegevens voor de geselecteerde kasten en periode.",
+      "hiveHeart": "Geen HiveHeart-FFT-gegevens voor de geselecteerde kasten en periode.",
+      "unknownWidget": "Onbekend widgettype."
+    },
+    "soundFootnote": "Toont eerst akoestische metingen per kast. Oudere microfoongegevens links/rechts worden gekoppeld aan de ingestelde kastnamen voor plaatsen 1 en 2 wanneer er geen akoestisch blok per kast aanwezig is.",
+    "heatmap": {
+      "low": "laag <33 °C",
+      "optimal": "optimaal broed 33–36 °C",
+      "high": "hoog >36 °C"
+    },
+    "insights": {
+      "loading": "Inzichten laden…",
+      "unavailable": "Inzichten zijn niet beschikbaar.",
+      "noAlerts": "Geen actieve meldingen voor de geselecteerde kasten.",
+      "showing_one": "{{count}} actieve melding voor de geselecteerde kasten.",
+      "showing_other": "{{count}} actieve meldingen voor de geselecteerde kasten.",
+      "confidence": "betrouwbaarheid {{percent}}%"
+    },
+    "dataQuality": {
+      "activeSlots": "Actieve plaatsen",
+      "noScale": "Geen weegschaal",
+      "noClimate": "Geen klimaat",
+      "noRecentData": "geen recente gegevens"
+    },
+    "hiveHeart": {
+      "level": "niveau",
+      "dominant": "dominante frequentie {{hz}} Hz",
+      "noDominant": "geen dominante frequentie gemeld",
+      "footnote": "Relatieve niveaus 0–15 (geen dBFS) van de nieuwste meting in de periode. Stippellijnen markeren de dominante frequentie die HiveHeart meldt; de kopjes Sub-bas/Zoem/Tuten/Stress zijn bij benadering en beslaan meerdere bereiken."
     }
   }
 }

@@ -22,7 +22,8 @@
     "harvests": "Raccolti",
     "allHarvests": "Tutti i raccolti",
     "reports": "Report",
-    "metrics": "Metriche"
+    "metrics": "Metriche",
+    "hivehub": "HiveHub"
   },
   "actions": {
     "save": "Salva",
