@@ -42,7 +42,7 @@ Your administrator or self-hosting setup must provide:
 
 If HiveHub is not configured, the page shows a backend configuration error.
 
-Some features need a recent HiveHub backend: linking hive slots to Hive-Pal hives, the remote setup access point, data export and range delete, and the per-node relay status in the firmware card. Against an older HiveHub these actions fail with a "Not Found" error (hive links are not saved); everything else works.
+Some features need HiveHub server 0.6.0 or newer: linking hive slots to Hive-Pal hives, the remote setup access point, data export and range delete, and the per-node relay status in the firmware card. Against an older HiveHub these actions fail with a "Not Found" error (hive links are not saved); everything else works.
 
 ---
 
@@ -239,7 +239,7 @@ Check that the device has a recent last-seen time on **Health** and that the Hiv
 
 ### A feature says it needs a newer HiveHub
 
-Hive links, the remote setup access point, export and delete, and relay status need the updated HiveHub backend. Ask your administrator to upgrade it.
+Hive links, the remote setup access point, export and delete, and relay status need HiveHub server 0.6.0 or newer. Ask your administrator to upgrade it.
 
 ### I get no alert emails
 

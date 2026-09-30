@@ -82,7 +82,7 @@ openssl rand -hex 32
 
 ### HiveHub version
 
-Most routes work with current HiveHub `main`. These need the HiveHub server update from `MacNite/HiveHub` branch `ccr-bbc590f9-7g6yed`:
+Most routes work with current HiveHub `main`. These need HiveHub server 0.6.0 or newer (`GET /health` reports the version):
 
 - `POST /devices/:id/provisioning/start` (remote setup access point),
 - `GET /devices/:id/export/measurements` and `/export/measurements/summary`,
