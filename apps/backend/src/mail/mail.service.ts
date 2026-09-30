@@ -1,21 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { passwordResetTemplate } from './templates/password-reset.template';
-import { swarmAlertTemplate } from './templates/swarm-alert.template';
+import {
+  hiveHubAlertTemplate,
+  HiveHubAlertTemplateItem,
+} from './templates/hivehub-alert.template';
 import { magicLinkTemplate } from './templates/magic-link.template';
 import { MailConfigService } from './mail-config.service';
 
-export interface SwarmAlertEmailOptions {
+export interface HiveHubAlertEmailItem extends HiveHubAlertTemplateItem {
+  deviceId: string;
+}
+
+export interface HiveHubAlertEmailOptions {
   email: string;
   userName: string | null;
-  deviceId: string;
-  deviceName: string;
-  scaleChannel: 'scale_1' | 'scale_2';
-  scaleDisplayName: string;
-  previousWeightKg: number;
-  latestWeightKg: number;
-  dropKg: number;
-  measurementWindow: number;
-  detectedAt: string;
+  items: HiveHubAlertEmailItem[];
 }
 
 @Injectable()
@@ -69,22 +68,25 @@ export class MailService {
     }
   }
 
-  async sendSwarmAlertEmail(options: SwarmAlertEmailOptions): Promise<boolean> {
+  async sendHiveHubAlertEmail(
+    options: HiveHubAlertEmailOptions,
+  ): Promise<boolean> {
     const provider = this.mailConfig.getProvider();
 
     if (!provider) {
       this.logger.log(
-        `Email sending disabled - would have sent swarm alert email to ${options.email} for device ${options.deviceId}`,
+        `Email sending disabled - would have sent ${options.items.length} HiveHub alert(s) to ${options.email}`,
       );
-      // Return true so the cooldown timestamp is still written even in dev
+      // Return true so the alerts are still marked as notified in dev
       return true;
     }
 
     try {
       const appUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-      const { subject, html } = swarmAlertTemplate({
-        ...options,
+      const { subject, html } = hiveHubAlertTemplate({
+        userName: options.userName,
+        items: options.items,
         appName: 'Hive Pal',
         appUrl,
       });
@@ -98,18 +100,18 @@ export class MailService {
 
       if (!result.success) {
         this.logger.error(
-          `Failed to send swarm alert email via ${provider.getName()}:`,
+          `Failed to send HiveHub alert email via ${provider.getName()}:`,
           result.error,
         );
         return false;
       }
 
       this.logger.log(
-        `Swarm alert email sent to ${options.email} for device ${options.deviceId} (${options.scaleChannel}) via ${provider.getName()} with ID: ${result.id}`,
+        `HiveHub alert email (${options.items.length} alert(s)) sent to ${options.email} via ${provider.getName()} with ID: ${result.id}`,
       );
       return true;
     } catch (error) {
-      this.logger.error('Error sending swarm alert email:', error);
+      this.logger.error('Error sending HiveHub alert email:', error);
       return false;
     }
   }

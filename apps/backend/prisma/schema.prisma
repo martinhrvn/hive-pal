@@ -33,6 +33,7 @@ model User {
   createdActions         Action[]               @relation("ActionCreator")
   createdQuickChecks     QuickCheck[]           @relation("QuickCheckCreator")
   createdWorkerTokens    WorkerToken[]          @relation("WorkerTokenCreator")
+  hiveHubAlertNotifications HiveHubAlertNotification[]
 
   // Better Auth relations
   sessions               Session[]
@@ -1136,4 +1137,21 @@ enum AccountTransferJobStatus {
   RUNNING
   COMPLETED
   FAILED
+}
+
+// Which HiveHub insight alerts a user has already been emailed about, so the
+// alert job only mails an alert when it is new or has escalated. `alertId` is
+// the id of the alert occurrence in HiveHub's insight history (a recurrence of
+// the same detector gets a fresh id).
+model HiveHubAlertNotification {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceId   String
+  alertId    Int
+  severity   String
+  notifiedAt DateTime @default(now())
+
+  @@unique([userId, deviceId, alertId])
+  @@index([userId, deviceId])
 }

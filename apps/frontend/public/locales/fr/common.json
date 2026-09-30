@@ -30,7 +30,8 @@
     "allQueens": "Toutes les reines",
     "tools": "Outils",
     "syrupCalculator": "Calculateur de sirop",
-    "broodTimeline": "Cycle du couvain"
+    "broodTimeline": "Cycle du couvain",
+    "hivehub": "HiveHub"
   },
   "actions": {
     "save": "Enregistrer",

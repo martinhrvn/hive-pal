@@ -35,7 +35,7 @@
   },
   "page": {
     "title": "HiveHub",
-    "subtitle": "Live weight and temperature visualisation from your separate HiveHub backend.",
+    "subtitle": "Hmotnosť, mikroklíma, zvuk, prelet a upozornenia z vašich zariadení HiveHub.",
     "refresh": "Refresh",
     "refreshing": "Refreshing…",
     "refreshError": "Could not refresh HiveHub data.",
@@ -43,16 +43,26 @@
     "removeSuccess": "HiveHub device removed from your account.",
     "removeSuccessShared": "K tomuto zariadeniu HiveHub už nemáte prístup. Ostatní používatelia ho stále majú, takže jeho kód nároku zostáva používaný.",
     "releaseConfirm": "Úplne uvoľniť {{name}}? Všetci používatelia stratia prístup a zariadenie si možno znova nárokovať jeho kódom. Merania sa zachovajú.",
-    "releaseSuccess": "Zariadenie HiveHub uvoľnené. Možno si ho znova nárokovať jeho kódom nároku."
+    "releaseSuccess": "Zariadenie HiveHub uvoľnené. Možno si ho znova nárokovať jeho kódom nároku.",
+    "unavailableTitle": "HiveHub nie je dostupný",
+    "inspectionActiveTitle": "Režim prehliadky je zapnutý",
+    "inspectionActiveBody": "Kým sú úle otvorené, merania sa skryjú, aby vyberanie rámikov nevyvolalo falošné upozornenia.",
+    "openInspections": "Otvoriť prehliadky",
+    "tabs": {
+      "overview": "Prehľad",
+      "inspections": "Prehliadky",
+      "audio": "Zvuk",
+      "health": "Stav",
+      "setup": "Nastavenie"
+    }
   },
   "setup": {
     "title": "Devices",
-    "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
     "releaseScale": "Uvoľniť zariadenie",
     "noDevices": "No devices claimed yet — open the setup to add one.",
-    "hide": "Hide setup",
-    "show": "Show setup"
+    "selectDevice": "Zariadenie HiveHub",
+    "noDevicesYet": "Zatiaľ nie je nárokované žiadne zariadenie HiveHub. Nárokujte si ho kódom, ktorý hub zobrazuje vo svojom portáli nastavenia."
   },
   "claim": {
     "title": "Claim HiveHub device",
@@ -65,16 +75,30 @@
     "success": "HiveHub device claimed.",
     "errors": {
       "missingCode": "Enter the claim code printed/configured for the device."
-    }
+    },
+    "hive1Name": "Názov úľa 1",
+    "hive2Name": "Názov úľa 2",
+    "optional": "Voliteľné"
   },
   "mapping": {
-    "title": "Scale mapping",
-    "description": "These labels stay in HiveHub. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
-    "scale1Label": "Display name for Scale 1",
-    "scale2Label": "Display name for Scale 2",
+    "title": "Úle",
     "hiveNamePlaceholder": "Select or type a hive name",
-    "save": "Save mapping",
-    "success": "Scale mapping updated."
+    "save": "Uložiť úle",
+    "success": "Sloty úľov uložené do HiveHub.",
+    "slotsDescription": "Pomenujte každý slot úľa a prepojte ho s úľom v HivePal. Vďaka prepojeniu prehliadky, stránka úľa a e-maily s upozorneniami vedia, ktorému včelstvu slot patrí. Zelená bodka označuje sloty, ktoré hub práve hlási.",
+    "mapSlot": "Priradiť slot {{slot}}",
+    "add": "Pridať",
+    "reporting": "Hlásené hubom",
+    "unknownHive": "Úľ sa nenašiel",
+    "mappedCount": "Priradené sloty: {{count}}/{{total}}",
+    "dialogTitle": "Slot úľa {{slot}}",
+    "dialogDescription": "Prepojte slot s jedným z vašich úľov v HivePal a zvoľte názov, ktorý preň HiveHub zobrazí.",
+    "linkedHive": "Úľ v HivePal",
+    "notLinked": "Neprepojené",
+    "linkHint": "Prepojenie zostane zachované aj po premenovaní úľa. Výber úľa doplní jeho názov, ak je názov prázdny.",
+    "displayName": "Zobrazovaný názov",
+    "clearSlot": "Vymazať slot",
+    "applySlot": "Použiť"
   },
   "status": {
     "title": "Device status",
@@ -94,6 +118,13 @@
     "revokeAccess": "Revoke access",
     "errors": {
       "missingEmail": "Enter the email address of an existing HivePal user."
+    },
+    "lastSeen": "Posledné hlásenie",
+    "claimedAt": "Nárokované",
+    "roles": {
+      "owner": "Vlastník",
+      "admin": "Administrátor",
+      "viewer": "Pozorovateľ"
     }
   },
   "calibration": {
@@ -203,11 +234,9 @@
       },
       "sourceHint": "Okolitá teplota v ustálenom stave úzko sleduje telo snímača a je odporúčaným predvoleným nastavením.",
       "refLabel": "Referenčná teplota / °C",
-      "refHint": "Teplota, pri ktorej je korekcia nulová.",
       "coeffLabel": "Koeficient {{scaleName}} / kg na °C",
       "autoFit": "Automaticky prispôsobiť z histórie",
       "fitting": "Prispôsobuje sa…",
-      "autoFitHint": "Automatické prispôsobenie regresne porovná surovú hmotnosť za posledné 3 dni so zvolenou teplotou vyhladenou pomocou EMA a potom výsledok použije a zapne. Pre čisté prispôsobenie zachyťte okno, v ktorom je fyzické zaťaženie konštantné a teplota kolíše.",
       "save": "Uložiť teplotnú kompenzáciu",
       "errors": {
         "refTemp": "Referenčná teplota musí byť číslo (°C).",
@@ -219,11 +248,33 @@
         "noSignal": "nedostatočný teplotný/hmotnostný signál.",
         "fitApplied": "{{scaleName}}: {{coeff}} kg/°C pri {{refTemp}}°C (R²={{r2}}, n={{n}}). Použité a zapnuté."
       }
+    },
+    "perHive": {
+      "hive": "Úľ {{index}}",
+      "hiveNamed": "Úľ {{index}} · {{name}}",
+      "hiveLabel": "Úľ",
+      "knownWeightPlaceholder": "napr. 10",
+      "manualSaveHint": "Prepnite úľ, ak chcete upraviť inú váhu; všetky úpravy sa pri uložení odošlú naraz. Úle od 3 vyššie sa zapisujú, len ak sa zmenili.",
+      "tempco": {
+        "refHint": "Teplota, pri ktorej váhy vážia presne, t. j. pri ktorej boli tárované a kalibrované. Korekcia je pri nej nulová; prispôsobenie ju nemení, pokiaľ o to nepožiadate.",
+        "lookbackLabel": "Obdobie prispôsobenia / dni",
+        "setRefTemp": "Nastaviť aj referenčnú teplotu",
+        "setRefTempHint": "Nahradí referenčnú teplotu priemernou teplotou prispôsobeného obdobia. Nechajte vypnuté, ak bola váha kalibrovaná pri známej teplote.",
+        "fitOnly": "Len prispôsobiť (náhľad)",
+        "fitAndApply": "Prispôsobiť a použiť",
+        "fitSummary": "{{scaleName}}: {{coeff}} kg/°C, R² {{r2}} z {{n}} meraní v rozsahu {{min}}–{{max}} °C (priemer obdobia {{mean}} °C).",
+        "lowRSquared": "R² pod 0,5: teplota vysvetľuje len málo z tohto posunu. Prispôsobte na úseku s konštantnou záťažou a veľkým rozdielom teplôt medzi dňom a nocou.",
+        "autoFitHint": "Automatické prispôsobenie vypočíta regresiu uloženej hmotnosti vybraného úľa za zvolené obdobie voči vybranej teplote vyhladenej EMA. „Len prispôsobiť“ vyplní koeficient na kontrolu pred uložením; „Prispôsobiť a použiť“ ho uloží a zapne kompenzáciu. Pre čisté prispôsobenie zvoľte obdobie, keď je fyzická záťaž konštantná a teplota kolíše.",
+        "errors": {
+          "lookback": "Obdobie musí byť celý počet dní od 1 do 90."
+        },
+        "toasts": {
+          "fitFilled": "{{scaleName}}: {{coeff}} kg/°C (R²={{r2}}, n={{n}}). Vyplnené — skontrolujte a uložte."
+        }
+      }
     }
   },
   "firmware": {
-    "title": "Firmware upload",
-    "description": "Upload a firmware binary and register it as a release. New devices of the matching type pick it up on their next update check.",
     "type": "Firmware type",
     "selectType": "Select firmware type",
     "version": "Version",
@@ -238,6 +289,102 @@
     "errors": {
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
+    },
+    "update": {
+      "title": "Aktualizácia firmvéru",
+      "description": "Váhy sa nikdy neaktualizujú samy — každé nové zostavenie tu schválite skôr, ako ho táto váha nainštaluje.",
+      "unavailable": "Stav firmvéru momentálne nie je k dispozícii.",
+      "availableTitle": "K dispozícii je firmvér {{version}}",
+      "availableBody": "Táto váha beží na {{current}}. Použite aktualizáciu na {{version}}.",
+      "officialSuffix": "Toto je oficiálne zostavenie.",
+      "apply": "Použiť aktualizáciu",
+      "applying": "Používa sa…",
+      "applied": "Firmvér {{version}} schválený — váha sa aktualizuje pri ďalšom hlásení.",
+      "queued": "Aktualizácia {{version}} schválená. Váha ju nainštaluje pri ďalšom hlásení.",
+      "upToDate": "Firmvér je aktuálny ({{version}}).",
+      "viewerNotice": "Aktualizácie firmvéru môžu použiť len vlastníci a administrátori zariadenia."
+    },
+    "board": {
+      "cardTitle": "Firmvér",
+      "cardDescription": "Firmvér tohto HiveHub a uzlov HiveInside a počítadiel HiveTraffic, ktoré obsluhuje. Nahratím sa zaregistruje vydanie; nainštaluje sa schválením (hub) alebo prenosom (uzly).",
+      "current": "Aktuálny",
+      "latest": "Najnovší",
+      "approved": "Schválený",
+      "board": "Doska",
+      "badgePending": "Aktualizácia čaká na schválenie",
+      "badgeApproved": "Aktualizácia schválená",
+      "badgeUpToDate": "Aktuálny",
+      "approveFlash": "Schváliť a nahrať {{version}}",
+      "approveConfirm": "Schváliť firmvér {{version}} a nahrať ho bezdrôtovo?\n\nHiveHub ho nainštaluje pri ďalšom hlásení a reštartuje sa. Vzdialené zariadenie, ktorému aktualizácia zlyhá uprostred, môže na obnovu vyžadovať fyzický prístup.",
+      "otherBoards": "Nahraté aj pre inú dosku (nepoužije sa na toto zariadenie {{board}}): {{releases}}. Zostavenie sa dostane len do zariadenia so zhodnou doskou — pri nahrávaní skontrolujte dosku.",
+      "otherBoardsUnknown": "Nahraté aj pre inú dosku (nepoužije sa na toto zariadenie): {{releases}}. Zostavenie sa dostane len do zariadenia so zhodnou doskou — pri nahrávaní skontrolujte dosku."
+    },
+    "relays": {
+      "hiveFallback": "Úľ {{slot}}",
+      "latest": "najnovší {{version}}",
+      "updateAvailable": "dostupná aktualizácia: {{version}}",
+      "status": {
+        "pending": "prenos vo fronte",
+        "running": "prenáša sa…",
+        "completed": "prenos dokončený",
+        "failed": "prenos zlyhal",
+        "expired": "čas prenosu vypršal"
+      },
+      "statusTitle": "Prenos {{version}}: {{status}} ({{date}})",
+      "failedDetail": "Posledný prenos zlyhal — {{message}} ({{date}})",
+      "noReason": "dôvod nebol nahlásený",
+      "alreadyQueued": "Pre tento uzol je už prenos vo fronte",
+      "queueing": "Zaraďuje sa…",
+      "relayAnyway": "Preniesť aj tak",
+      "confirm": "Preniesť {{name}} {{version}} do {{hive}}?\n\nHiveHub to prevezme v ďalšom cykle odosielania — zvyčajne asi do 10 minút, prípadne podľa intervalu odosielania tohto zariadenia. Potom niekoľko minút posiela obraz cez BLE a uzol sa reštartuje do nového firmvéru. Uzol musí byť prebudený a v dosahu, inak prenos zlyhá a treba ho znova zaradiť do frontu.",
+      "queued": "Prenos {{version}} zaradený do frontu pre {{hive}}.",
+      "queuedFrom": "Prenos zaradený do frontu pre {{hive}} ({{current}} → {{version}}).",
+      "hiveinside": {
+        "name": "HiveInside",
+        "title": "Uzly HiveInside",
+        "description": "Firmvér, ktorý hlási každý uzol v úli. Nahratie obrazu HiveInside len zaregistruje vydanie — do uzla sa nič nedostane, kým nestlačíte „Preniesť do uzla“. Tu zobrazená verzia potvrdzuje, že sa aktualizácia uchytila.",
+        "relay": "Preniesť do uzla",
+        "unnamed": "Nehlási vlastný názov (HiveInside pred 0.5.0)",
+        "noRelease": "Zatiaľ nie je nahraté žiadne vydanie HiveInside — nahrajte ho nižšie, aby sa dalo preniesť."
+      },
+      "beecounter": {
+        "name": "HiveTraffic",
+        "title": "Počítadlá HiveTraffic",
+        "description": "Firmvér, ktorý hlási každé počítadlo HiveTraffic. Nahratie obrazu HiveTraffic len zaregistruje vydanie — do počítadla sa nič nedostane, kým nestlačíte „Preniesť do počítadla“. Počítadlá staršie ako približne v0.1.0 nehlásia verziu, ale dajú sa aktualizovať.",
+        "relay": "Preniesť do počítadla",
+        "unnamed": "Nehlási názov ani adresu",
+        "noRelease": "Zatiaľ nie je nahraté žiadne vydanie HiveTraffic — nahrajte ho nižšie, aby sa dalo preniesť.",
+        "countingWarning": "Počas celého prenosu počítadlo nepočíta včely, preto prenášajte, keď je prelet slabý.",
+        "confirmExtra": "Počas celého prenosu počítadlo nepočíta včely — prelet počas týchto niekoľkých minút sa stratí."
+      }
+    },
+    "uploadForm": {
+      "title": "Nahrať firmvér",
+      "description": "Nahratie len zaregistruje vydanie — samo nikdy nič nenainštaluje. Schváľte aktualizáciu hubu vyššie alebo preneste vydanie pre uzol či počítadlo z jeho riadku.",
+      "board": "Doska",
+      "targets": {
+        "hivehub": "Hub HiveHub",
+        "hiveinside": "HiveInside",
+        "beecounter": "Počítadlo HiveTraffic"
+      },
+      "boards": {
+        "auto": "Automaticky (z názvu súboru)",
+        "esp32": "ESP32 (klasická, 30 pinov)",
+        "esp32-c6": "ESP32-C6",
+        "nrf54lm20a": "nRF54LM20A"
+      },
+      "boardHint": {
+        "hivehub": "Firmvér hubu musí uvádzať dosku: vyberte ju, alebo ponechajte automaticky, ak má súbor názov ako hivehub_esp32-c6_0.30.5.bin.",
+        "hiveinside": "HiveInside sa dodáva len pre nRF54LM20A. Nahrajte artefakt zostavenia bez zmeny (napr. hiveinside_nrf54lm20a_1.4.0.bin) a cieľ aj verzia sa doplnia z jeho názvu.",
+        "beecounter": "Počítadlo HiveTraffic je ESP32-C6. Nahrajte obraz aplikácie (napr. beecounter_esp32-c6_0.7.1.bin), nie zlúčený výrobný obraz."
+      },
+      "detected": "{{name}} — doplnené: {{fields}}.",
+      "nothingDetected": "{{name}} — v názve sa nerozpoznal cieľ, doska ani verzia; nastavte ich nižšie.",
+      "detectedTarget": "cieľ „{{target}}“",
+      "detectedBoard": "doska {{board}}",
+      "detectedVersion": "verzia {{version}}",
+      "autoQueued": "Prenos automaticky zaradený do frontu pre {{hives}}.",
+      "autoQueueFailed": "Prenos pre {{hives}} sa nepodarilo automaticky zaradiť do frontu."
     }
   },
   "sdData": {
@@ -262,12 +409,20 @@
       "parsed_other": "Parsed {{count}} records",
       "skipped_one": " · {{count}} unreadable line skipped.",
       "skipped_other": " · {{count}} unreadable lines skipped."
+    },
+    "mismatch": {
+      "title": "Súbor z iného hubu",
+      "description": "Tento súbor zaznamenal iný hub, nie {{device}}.",
+      "fileDevices_one": "ID zariadenia v súbore:",
+      "fileDevices_few": "ID zariadení v súbore:",
+      "fileDevices_many": "ID zariadení v súbore:",
+      "fileDevices_other": "ID zariadení v súbore:",
+      "hint": "Importujte ho aj tak, len ak SD karta naozaj patrí tomuto zariadeniu (napríklad po výmene dosky hubu).",
+      "cancel": "Zrušiť",
+      "force": "Aj tak importovať do tohto zariadenia"
     }
   },
   "panel": {
-    "weight": "Weight",
-    "hiveTemp": "Hive temp",
-    "rmsSound": "RMS sound",
     "ambientTemperature": "Ambient temperature",
     "ambientHumidity": "Ambient humidity",
     "batteryCharge": "Battery charge",
@@ -285,168 +440,36 @@
     }
   },
   "diagram": {
-    "title": "Measurements",
-    "subtitle": "Weight, temperature, and entrance activity over time",
-    "noMeasurements": "No measurements for the selected range.",
-    "noDataForSeries": "No data in the selected range.",
-    "meta": {
-      "device": "Device:",
-      "lastSeen": "Last seen:",
-      "lastData": "Last data:",
-      "firmware": "Firmware:"
-    },
     "range": {
       "all": "All",
       "from": "From",
       "to": "To"
     },
-    "series": {
-      "weight": "{{name}} weight",
-      "temp": "{{name}} temp",
-      "micRms": "{{name}} mic RMS",
-      "beesIn": "{{name}} bees in",
-      "beesOut": "{{name}} bees out",
-      "netFlow": "{{name}} net flow",
-      "ambientTemp": "Ambient temp",
-      "ambientHumidity": "Ambient humidity",
-      "batteryVoltage": "Battery voltage",
-      "batteryCharge": "Battery charge",
-      "solarVoltage": "Solar voltage",
-      "solarCurrent": "Solar current",
-      "solarPower": "Solar power",
-      "humidity": "{{name}} vlhkosť",
-      "pressure": "{{name}} tlak"
-    },
-    "group": {
-      "ambient": "Ambient",
-      "offGrid": "Off-grid"
-    },
-    "axis": {
-      "weight": "Weight",
-      "temperature": "Temperature",
-      "humidity": "Humidity",
-      "voltage": "Voltage",
-      "percent": "Percent",
-      "current": "Current",
-      "power": "Power",
-      "sound": "Sound",
-      "beecount": "Bee count",
-      "pressure": "Tlak"
-    },
     "marker": {
-      "inspection": "Inspection",
-      "boxAdded": "Box added",
-      "action": {
-        "maintenance": "Maintenance",
-        "feeding": "Feeding",
-        "frames": "Frames",
-        "treatment": "Treatment"
-      }
-    },
-    "axisSettings": {
-      "title": "Axis settings",
-      "reset": "Reset",
-      "side": "Side",
-      "left": "Left",
-      "right": "Right",
-      "scale": "Scale",
-      "auto": "Auto",
-      "zeroToMax": "0 to max",
-      "custom": "Custom",
-      "min": "Min",
-      "max": "Max",
-      "autoPlaceholder": "auto"
+      "inspection": "Inspection"
     }
   },
   "sound": {
-    "title": "Hive sound",
-    "description": "INMP441 FFT band energy (dBFS) — {{left}} (left) · {{right}} (right)",
-    "hide": "Hide sound",
-    "show": "Show sound",
-    "micLeftFallback": "Mic left",
-    "micRightFallback": "Mic right",
-    "noDataForChannel": "No data for {{name}} in this range.",
-    "bandReference": "Band reference",
-    "thresholds": "Thresholds used by the Insights engine: piping > −45 dBFS, stress > −38 dBFS, queenless hum > −40 dBFS with quiet piping. Calibrate against your own baseline.",
-    "status": {
-      "noData": "No data",
-      "micError": "Mic error",
-      "bothActive": "{{left}} + {{right}} active",
-      "oneActive": "{{name}} active"
-    },
-    "table": {
-      "band": "Band",
-      "range": "Range",
-      "significance": "Significance"
-    },
     "bands": {
       "subBass": {
-        "label": "Sub-bass",
-        "description": "Structural vibration / low rumble"
+        "label": "Sub-bass"
       },
       "hum": {
-        "label": "Hum",
-        "description": "Normal colony hum (~200 Hz fundamental)"
+        "label": "Hum"
       },
       "piping": {
-        "label": "Piping",
-        "description": "Queen piping / tooting (pre-swarm signal)"
+        "label": "Piping"
       },
       "stress": {
-        "label": "Stress",
-        "description": "Agitated colony / robbing"
+        "label": "Stress"
       },
       "high": {
-        "label": "High",
-        "description": "Harmonic overtones"
+        "label": "High"
       }
     }
   },
-  "beecounter": {
-    "title": "Entrance Counter",
-    "subtitle": "Bees entering and exiting per measurement interval",
-    "noData": "No BeeCounter data found for this device.",
-    "offline": "Offline",
-    "gatesOk": "{{count}} gates OK",
-    "glitches_one": "{{count}} glitch",
-    "glitches_other": "{{count}} glitches",
-    "gatesRatio": "{{healthy}}/{{total}} gates",
-    "inPeriod": "In (period)",
-    "outPeriod": "Out (period)",
-    "netFlow": "Net flow",
-    "netInbound": "net inbound",
-    "netOutbound": "net outbound",
-    "balanced": "balanced",
-    "view": {
-      "inOut": "In / Out",
-      "netFlow": "Net flow",
-      "cumulative": "Cumulative"
-    },
-    "series": {
-      "in": "{{name}} in",
-      "out": "{{name}} out",
-      "net": "{{name}} net",
-      "totalIn": "{{name}} total in",
-      "totalOut": "{{name}} total out"
-    },
-    "diagnostics": {
-      "title": "Hardware diagnostics",
-      "gatesHealthy": "Gates healthy",
-      "glitchCount": "Glitch count",
-      "totalInLifetime": "Total in (lifetime)",
-      "totalOutLifetime": "Total out (lifetime)"
-    }
-  },
   "insights": {
-    "title": "Insights",
-    "description": "Sensor-based alerts derived from weight and temperature trends.",
-    "updated": "Updated {{ago}}.",
-    "refresh": "Refresh insights",
-    "loadError": "Failed to load insights: {{message}}",
     "allClear": "All clear",
-    "noActiveAlerts": "No active alerts in the last {{count}} days.",
-    "activeAlerts_one": "{{count}} active alert:",
-    "activeAlerts_other": "{{count}} active alerts:",
     "confidence": "Confidence {{value}}%",
     "source": "Source: {{source}}",
     "hiveChannel": "Hive {{channel}}",
@@ -530,6 +553,761 @@
       "title": "No history yet",
       "description": "No alerts have been recorded for this device.",
       "descriptionFiltered": "No alerts have been recorded for this device matching this filter."
+    }
+  },
+  "inspectionMode": {
+    "title": "Režim prehliadky",
+    "description": "Kým je zapnutý režim prehliadky, HiveHub ďalej meria, ale merania nezahŕňa do grafov, analýz ani upozornení, aby sa vyberanie rámikov nepovažovalo za rojenie.",
+    "status": {
+      "active": "Aktívny od {{time}}",
+      "pending": "Čaká na prevzatie hubom",
+      "off": "Vypnutý"
+    },
+    "pendingHint": "Vyžiadané — hub to prevezme pri ďalšom hlásení.",
+    "timeoutNote_one": "Automaticky skončí po {{count}} minúte, ak ho nikto nezastaví.",
+    "timeoutNote_few": "Automaticky skončí po {{count}} minútach, ak ho nikto nezastaví.",
+    "timeoutNote_many": "Automaticky skončí po {{count}} minútach, ak ho nikto nezastaví.",
+    "timeoutNote_other": "Automaticky skončí po {{count}} minútach, ak ho nikto nezastaví.",
+    "scope": {
+      "wholeHub": "Celý hub",
+      "label": "Pokrýva: {{hives}}"
+    },
+    "start": "Spustiť režim prehliadky",
+    "stop": "Zastaviť režim prehliadky",
+    "starting": "Spúšťa sa…",
+    "stopping": "Zastavuje sa…",
+    "cancel": "Zrušiť",
+    "noteLabel": "Poznámka (voliteľné)",
+    "notePlaceholder": "napr. Pridaný medník",
+    "viewerHint": "Režim prehliadky môžu spustiť alebo zastaviť len vlastníci a administrátori.",
+    "loadFailed": "Stav prehliadky sa nepodarilo načítať.",
+    "startDialog": {
+      "title": "Spustiť režim prehliadky",
+      "description": "Merania z vybraných úľov sa skryjú, kým režim prehliadky nezastavíte alebo kým nevyprší jeho čas.",
+      "hivesLabel": "Úle",
+      "wholeHub": "Celý hub (všetky úle)",
+      "selectHive": "Vyberte aspoň jeden úľ alebo celý hub.",
+      "confirm": "Spustiť"
+    },
+    "stopDialog": {
+      "title": "Zastaviť režim prehliadky",
+      "description": "HiveHub sa vráti k bežným meraniam a upozorneniam.",
+      "confirm": "Zastaviť"
+    },
+    "toast": {
+      "started": "Režim prehliadky spustený",
+      "stopped": "Režim prehliadky zastavený",
+      "noteSaved": "Poznámka uložená"
+    },
+    "history": {
+      "title": "Nedávne prehliadky",
+      "empty": "Zatiaľ nie sú zaznamenané žiadne prehliadky.",
+      "ongoing": "prebieha",
+      "startedVia": "Spustené cez: {{source}}",
+      "ended": "Ukončené: {{reason}}",
+      "editNote": "Upraviť poznámku",
+      "addNote": "Pridať poznámku",
+      "saveNote": "Uložiť"
+    },
+    "duration": {
+      "minutes_one": "{{count}} min",
+      "minutes_few": "{{count}} min",
+      "minutes_many": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    },
+    "source": {
+      "device": "tlačidlo na hube",
+      "api": "aplikácia",
+      "dashboard": "lokálna nástenka"
+    },
+    "endReason": {
+      "timeout": "vypršal čas",
+      "device": "tlačidlo na hube",
+      "api": "zastavené v aplikácii",
+      "dashboard": "zastavené na lokálnej nástenke"
+    }
+  },
+  "hiveLink": {
+    "prompt": {
+      "message": "Tento úľ monitoruje HiveHub {{device}} ({{hive}}). Spustite režim prehliadky, aby otvorenie úľa nevyvolalo falošné upozornenia.",
+      "active": "Režim prehliadky je zapnutý pre {{hive}} na HiveHub {{device}}.",
+      "pending": "Režim prehliadky vyžiadaný pre {{hive}} na HiveHub {{device}} — hub ho prevezme pri ďalšom hlásení.",
+      "activeOther": "Režim prehliadky je zapnutý pre iné úle na HiveHub {{device}}, nie pre {{hive}}. Najprv ho zastavte, ak ho chcete spustiť pre tento úľ."
+    },
+    "card": {
+      "title": "HiveHub",
+      "description": "Aktuálne merania z prepojených snímačov HiveHub.",
+      "weight": "Hmotnosť",
+      "weightChange24h": "Zmena za 24 h",
+      "temperature": "Teplota v úli",
+      "humidity": "Vlhkosť",
+      "lastReading": "Posledné meranie: {{time}}",
+      "openHiveHub": "Otvoriť HiveHub"
+    }
+  },
+  "traffic": {
+    "title": "Počítadlá včiel HiveTraffic",
+    "description": "Nočný režim a skupiny vysielačov pre každé počítadlo HiveTraffic spárované s týmto hubom. IR vysielače sú zďaleka najväčšou položkou v energetickej bilancii počítadla, takže tieto nastavenia rozhodujú, či vystačí autonómne napájanie.",
+    "readOnly": "Tieto nastavenia môžu meniť len vlastníci a administrátori zariadenia. Vaša rola je „{{role}}“.",
+    "hiveFallback": "Úľ {{slot}}",
+    "noChanges": "Žiadne zmeny na uloženie",
+    "saved": "Nastavenia počítadiel včiel uložené. Počítadlá ich prevezmú pri ďalšom hlásení.",
+    "appliesToAll": "Platí pre každé počítadlo HiveTraffic spárované s týmto zariadením. Počítadlo sa to dozvie v ďalšom cykle odosielania hubu.",
+    "status": {
+      "title": "Počítadlá práve teraz",
+      "none": "V poslednom meraní nie je hlásené žiadne počítadlo HiveTraffic.",
+      "counting": "Počíta",
+      "nightIdle": "Nočný kľud",
+      "nightIdleFor_one": "Nočný kľud · zostáva {{count}} min",
+      "nightIdleFor_few": "Nočný kľud · zostávajú {{count}} min",
+      "nightIdleFor_many": "Nočný kľud · zostáva {{count}} min",
+      "nightIdleFor_other": "Nočný kľud · zostáva {{count}} min",
+      "banksRunning": "Bežiace skupiny vysielačov: {{banks}}",
+      "banksUnknown": "Skupiny vysielačov nie sú hlásené (firmvér počítadla starší ako 0.3.0)",
+      "applied": "Skupiny použité",
+      "pending": "Skupiny čakajú na ďalšie hlásenie"
+    },
+    "night": {
+      "title": "Nočný režim",
+      "description": "Včely medonosné sú denné — let potrebuje svetlo a pod asi 10 °C aj tak ustáva. V tomto okne počítadlo prestane snímať, aby šetrilo energiu. Naďalej vysiela oznámenia, takže merania aj aktualizácie firmvéru fungujú.",
+      "enable": "Zapnúť nočný režim",
+      "start": "Začiatok noci (miestny čas)",
+      "end": "Koniec noci (miestny čas)",
+      "windowHelp": "Okno môže prechádzať cez polnoc (napr. 20:00 → 06:00). Ak nastavíte začiatok a koniec na rovnaký čas, okno bude prázdne — nikdy neplatí — a nepokryje celý deň. Nechajte rezervu okolo súmraku a svitania: aktivita vrcholí tesne pred západom a východom slnka.",
+      "emptyWindow": "Začiatok a koniec sú rovnaké, takže okno je prázdne a nočný režim by sa nikdy nepoužil.",
+      "wrapsMidnight": "Okno prechádza cez polnoc: od {{start}} do {{end}} nasledujúceho rána.",
+      "timezone": "Časové pásmo",
+      "tzCustom": "Reťazec POSIX TZ",
+      "timezoneHelp": "Hodiny hubu bežia v UTC. Bez správneho časového pásma je okno posunuté o váš posun od UTC a pri každej zmene letného času sa posunie o hodinu.",
+      "tzPresets": {
+        "cet": "Stredná Európa (Berlín, Paríž, Madrid, Viedeň)",
+        "uk": "Spojené kráľovstvo / Írsko",
+        "eet": "Východná Európa (Helsinki, Atény)",
+        "usEastern": "USA – východný čas",
+        "usCentral": "USA – centrálny čas",
+        "usMountain": "USA – horský čas",
+        "usPacific": "USA – tichomorský čas",
+        "utc": "UTC (bez miestneho času)",
+        "custom": "Vlastné…"
+      },
+      "maxTraffic": "Odložiť nad (prechodov za cyklus)",
+      "maxTrafficHelp": "Odložiť nočný režim, kým sa v poslednom cykle odosielania napočítalo viac prechodov (dnu + von), aby sa neprerušilo včelstvo, ktoré ešte lieta neskoro v letný večer. 0 znamená len podľa hodín.",
+      "save": "Uložiť nočný režim"
+    },
+    "banks": {
+      "title": "Skupiny vysielačov",
+      "description": "IR vysielače počítadla sa spínajú v troch skupinách po ôsmich priechodoch. Každá skupina odoberá asi 80 mA. Jednu vypnite, ak je česno užšie ako 24 priechodov, jeho časť je zatvorená alebo napájanie neutiahne celú dosku.",
+      "bank": "Skupina {{bank}} — priechody {{gates}}",
+      "current_one": "{{count}} skupina zapnutá · asi {{ma}} mA na 3,3 V vetve počítadla",
+      "current_few": "{{count}} skupiny zapnuté · asi {{ma}} mA na 3,3 V vetve počítadla",
+      "current_many": "{{count}} skupiny zapnutej · asi {{ma}} mA na 3,3 V vetve počítadla",
+      "current_other": "{{count}} skupín zapnutých · asi {{ma}} mA na 3,3 V vetve počítadla",
+      "help": "Vypnutá skupina svoje priechody vôbec nepočíta, takže súčty klesnú zhruba úmerne — neporovnávajte zúžené počítadlo s jeho vlastnou históriou. Aspoň jedna skupina musí zostať zapnutá; počítadlo, ktoré nemá nič počítať, odpárujte.",
+      "firmwareNote": "Vyžaduje firmvér počítadla 0.3.0 alebo novší. Nastavenie sa odošle znova po každom resete počítadla.",
+      "save": "Uložiť skupiny vysielačov"
+    },
+    "errors": {
+      "loadFailed": "Konfiguráciu zariadenia sa nepodarilo načítať.",
+      "saveFailed": "Nastavenia počítadiel včiel sa nepodarilo uložiť",
+      "invalidTime": "Zadajte platný čas začiatku a konca (HH:MM).",
+      "invalidMaxTraffic": "Prah odloženia musí byť celé číslo 0 alebo viac.",
+      "emptyWindow": "Začiatok a koniec nočného režimu sú rovnaké — okno by nikdy neplatilo.",
+      "noBank": "Aspoň jedna skupina vysielačov musí zostať zapnutá — radšej počítadlo odpárujte."
+    }
+  },
+  "hubAccess": {
+    "title": "Prístup k hubu",
+    "description": "Pripojte sa k hubu na mieste bez otvárania krytu a nastavte, ako dlho môže prehliadka trvať.",
+    "readOnly": "Tieto nastavenia môžu meniť len vlastníci a administrátori zariadenia. Vaša rola je „{{role}}“.",
+    "noChanges": "Žiadne zmeny na uloženie",
+    "cancel": "Zrušiť",
+    "ap": {
+      "title": "Prístupový bod nastavenia",
+      "description": "Otvorí Wi-Fi sieť hubu HiveHub-Setup, rovnako ako krátke stlačenie tlačidla nastavenia: zmena Wi-Fi, párovanie snímačov alebo stiahnutie údajov zo SD karty.",
+      "lastCheckIn": "Posledné hlásenie: {{time}}",
+      "open": "Otvoriť prístupový bod nastavenia",
+      "confirmTitle": "Otvoriť prístupový bod nastavenia?",
+      "confirmTiming_one": "Požiadavka je vo fronte. Hub medzi cyklami spí, takže prístupový bod sa otvorí po jeho ďalšom hlásení — najneskôr o {{count}} minútu.",
+      "confirmTiming_few": "Požiadavka je vo fronte. Hub medzi cyklami spí, takže prístupový bod sa otvorí po jeho ďalšom hlásení — najneskôr o {{count}} minúty.",
+      "confirmTiming_many": "Požiadavka je vo fronte. Hub medzi cyklami spí, takže prístupový bod sa otvorí po jeho ďalšom hlásení — najneskôr o {{count}} minúty.",
+      "confirmTiming_other": "Požiadavka je vo fronte. Hub medzi cyklami spí, takže prístupový bod sa otvorí po jeho ďalšom hlásení — najneskôr o {{count}} minút.",
+      "confirmTimingUnknown": "Požiadavka je vo fronte. Hub medzi cyklami spí, takže prístupový bod sa otvorí po jeho ďalšom hlásení — najneskôr o jeden interval odosielania.",
+      "confirmOffline": "Kým je prístupový bod otvorený, hub nie je pripojený k Wi-Fi a neposiela žiadne merania.",
+      "confirmTimeout": "Ak sa nikto nepripojí, zatvorí sa sám po uplynutí časového limitu portálu nastavenia, preto ho spúšťajte, len keď je niekto pri úli.",
+      "confirm": "Zaradiť prístupový bod",
+      "queueing": "Zaraďuje sa…",
+      "queued": "Prístupový bod zaradený do frontu. Otvorí sa po ďalšom hlásení hubu.",
+      "failed": "Prístupový bod sa nepodarilo zaradiť do frontu"
+    },
+    "inspection": {
+      "title": "Časový limit prehliadky",
+      "description": "Poistka: prehliadka sa po tomto počte minút skončí sama, aby zabudnuté stlačenie tlačidla neskrývalo údaje úľa donekonečna. Predvolene 60.",
+      "label": "Časový limit (minúty, 1–1440)",
+      "save": "Uložiť časový limit",
+      "saved": "Časový limit prehliadky uložený",
+      "saveFailed": "Časový limit prehliadky sa nepodarilo uložiť",
+      "invalid": "Zadajte celý počet minút od 1 do 1440."
+    }
+  },
+  "dataTools": {
+    "title": "Export a čistenie údajov",
+    "description": "Zálohujte merania tohto hubu alebo odstráňte chybné.",
+    "hiveFallback": "Úľ {{slot}}",
+    "cancel": "Zrušiť",
+    "export": {
+      "title": "Exportovať merania",
+      "description": "Stiahnite uložené merania ako zálohu NDJSON.",
+      "from": "Od (voliteľné)",
+      "to": "Do (voliteľné)",
+      "rangeHelp": "Nechajte obe polia prázdne, ak chcete exportovať všetko. Dátumy pokrývajú celé dni vo vašom miestnom čase.",
+      "hives": "Úle (voliteľné)",
+      "allHives": "Zahrnuté sú všetky úle.",
+      "someHives_one": "Zahrnutý je len {{count}} vybraný úľ. Počet nižšie zahŕňa všetky merania v rozsahu.",
+      "someHives_few": "Zahrnuté sú len {{count}} vybrané úle. Počet nižšie zahŕňa všetky merania v rozsahu.",
+      "someHives_many": "Zahrnuté je len {{count}} vybraného úľa. Počet nižšie zahŕňa všetky merania v rozsahu.",
+      "someHives_other": "Zahrnutých je len {{count}} vybraných úľov. Počet nižšie zahŕňa všetky merania v rozsahu.",
+      "invalidRange": "Dátum začiatku je po dátume konca.",
+      "summaryFailed": "Merania sa nepodarilo spočítať.",
+      "count_one": "{{count}} meranie",
+      "count_few": "{{count}} merania",
+      "count_many": "{{count}} merania",
+      "count_other": "{{count}} meraní",
+      "span": "Od {{first}} do {{last}}",
+      "download": "Stiahnuť",
+      "formatHelp": "Jedno meranie JSON na riadok. Súbor možno znova importovať cez import SD karty.",
+      "noPermission": "Údaje môžu exportovať len vlastníci a administrátori zariadenia. Vaša rola je „{{role}}“."
+    },
+    "delete": {
+      "title": "Vymazať merania v rozsahu",
+      "description": "Odstráni chybné merania — napríklad skoky hmotnosti, ktoré hub zaznamená pri štarte pred kalibráciou váh a ktoré inak skresľujú grafy a analýzy.",
+      "warningTitle": "Toto sa nedá vrátiť späť",
+      "warning": "Vymazané merania sú nenávratne preč. Ak by ste rozsah mohli potrebovať, najprv ho exportujte.",
+      "start": "Začiatok",
+      "end": "Koniec",
+      "claimCode": "Kód nároku",
+      "claimCodeHelp": "Kód nároku hubu ako druhé potvrdenie.",
+      "review": "Skontrolovať vymazanie",
+      "confirmTitle": "Vymazať tieto merania?",
+      "confirmRange": "Od {{start}} do {{end}}.",
+      "confirmCount_one": "{{count}} meranie bude natrvalo vymazané.",
+      "confirmCount_few": "{{count}} merania budú natrvalo vymazané.",
+      "confirmCount_many": "{{count}} merania budú natrvalo vymazané.",
+      "confirmCount_other": "{{count}} meraní bude natrvalo vymazaných.",
+      "confirmIrreversible": "Toto sa nedá vrátiť späť.",
+      "countFailed": "Merania v tomto rozsahu sa nepodarilo spočítať.",
+      "confirm_one": "Vymazať {{count}} meranie",
+      "confirm_few": "Vymazať {{count}} merania",
+      "confirm_many": "Vymazať {{count}} merania",
+      "confirm_other": "Vymazať {{count}} meraní",
+      "deleting": "Vymazáva sa…",
+      "success_one": "Vymazané {{count}} meranie.",
+      "success_few": "Vymazané {{count}} merania.",
+      "success_many": "Vymazané {{count}} merania.",
+      "success_other": "Vymazaných {{count}} meraní.",
+      "noPermission": "Merania môže vymazať len vlastník zariadenia. Vaša rola je „{{role}}“.",
+      "errors": {
+        "missingRange": "Vyberte začiatok a koniec.",
+        "invalidRange": "Koniec musí byť v čase začiatku alebo neskôr.",
+        "missingClaimCode": "Zadajte kód nároku hubu."
+      }
+    }
+  },
+  "alertSettings": {
+    "title": "E-mailové upozornenia HiveHub",
+    "description": "Dostaňte e-mail, keď HiveHub zistí niečo vo vašich úľoch — rojenie, rabovku, bezmatečné včelstvo a ďalšie.",
+    "enable": "Posielať mi e-mailom upozornenia HiveHub",
+    "minSeverity": "Minimálna závažnosť",
+    "minSeverityHelp": "Upozornenia pod touto úrovňou sa nikdy neposielajú e-mailom.",
+    "severity": {
+      "watch": "Sledovať a vyššie",
+      "warning": "Varovanie a vyššie",
+      "critical": "Len kritické"
+    },
+    "help": {
+      "schedule": "HivePal kontroluje nové upozornenia každých 15 minút.",
+      "once": "Každé upozornenie sa pošle e-mailom raz, keď sa objaví, a znova len vtedy, ak sa zhorší.",
+      "scope": "Pokrýva všetky zariadenia HiveHub, ku ktorým máte prístup.",
+      "email": "Vyžaduje, aby bol na serveri HivePal nakonfigurovaný e-mail."
+    },
+    "saved": "Nastavenia upozornení uložené",
+    "saveFailed": "Nastavenia upozornení sa nepodarilo uložiť",
+    "loadFailed": "Vaše predvoľby sa nepodarilo načítať."
+  },
+  "health": {
+    "title": "Stav snímačov",
+    "description": "Stav jednotlivých snímačov podľa hlásenia {{name}}.",
+    "descriptionAt": "Stav snímačov z posledného hlásenia · {{ago}}.",
+    "noData": "Zatiaľ nie je hlásený žiadny stav snímačov — zobrazí sa, keď zariadenie pošle prvé meranie.",
+    "hubHeading": "Hub",
+    "hiveIndex": "Úľ {{n}}",
+    "noHiveSensors": "Pre tento úľ nie sú hlásené žiadne snímače.",
+    "faultNote": "Hub hlási svoje vlastné subsystémy len ako v poriadku/chyba — neposiela pre ne žiadny chybový kód, preto každá chyba vyššie popisuje, čo zlyhalo. Počítadlo v česne stavový kód hlási a zobrazuje sa pri chybe všade, kde bol načítaný.",
+    "summary": {
+      "noData": "Žiadne údaje snímačov",
+      "allOk": "Všetko v poriadku",
+      "faults_one": "{{count}} chyba",
+      "faults_few": "{{count}} chyby",
+      "faults_many": "{{count}} chyby",
+      "faults_other": "{{count}} chýb"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Chyba",
+      "notFitted": "Nenainštalované",
+      "notHeard": "Bez signálu"
+    },
+    "hub": {
+      "sht_ok": "Vonkajšia teplota/vlhkosť (SHT40)",
+      "rtc_ok": "Hodiny reálneho času",
+      "sd_ok": "SD karta",
+      "mic_ok": "Mikrofón",
+      "mic_left_ok": "Mikrofón · ľavý",
+      "mic_right_ok": "Mikrofón · pravý",
+      "battery_monitor_ok": "Monitor batérie",
+      "solar_monitor_ok": "Monitor solárneho panelu"
+    },
+    "hubReason": {
+      "sht_ok": "Snímač okolia v tomto cykle nevrátil platné meranie, takže toto hlásenie neobsahuje vonkajšiu teplotu ani vlhkosť. Zvyčajne ide o chybu zbernice I²C alebo zapojenia; snímač, ktorý pri štarte nebol vôbec zistený, sa prejavuje rovnako.",
+      "rtc_ok": "Hodiny reálneho času neodpovedali na zbernici I²C. Časové značky sa preberajú zo sieťového času, takže meranie urobené offline môže mať nesprávny dátum.",
+      "sd_ok": "SD karta nebola v tomto cykle pripojená — chýba, je nečitateľná alebo ide o chybu SPI/zapojenia. Kým to trvá, merania sa na kartu neukladajú do vyrovnávacej pamäte.",
+      "mic_ok": "Záznam z mikrofónu nevrátil žiadne použiteľné vzorky, takže toto hlásenie neobsahuje akustické pásma.",
+      "mic_left_ok": "Ľavý mikrofón nevrátil žiadne použiteľné vzorky.",
+      "mic_right_ok": "Pravý mikrofón nevrátil žiadne použiteľné vzorky.",
+      "battery_monitor_ok": "Merač nabitia batérie neodpovedal na zbernici I²C — napätie a stav nabitia batérie v tomto hlásení chýbajú.",
+      "solar_monitor_ok": "Monitor solárneho panelu neodpovedal na zbernici I²C — solárne napätie, prúd a výkon v tomto hlásení chýbajú."
+    },
+    "sensor": {
+      "scale": "Váha",
+      "inHive": "Snímač v úli",
+      "counter": "Počítadlo HiveTraffic",
+      "hiveheart": "HiveHeart"
+    },
+    "reason": {
+      "scale": "Pre tento úľ je nakonfigurovaná váha, ale v tomto cykle neposkytla použiteľné meranie, takže toto hlásenie preň neobsahuje hmotnosť.",
+      "inHive": "Počas BLE skenovania v tomto cykle neprišlo žiadne oznámenie od spárovaného zariadenia {{kind}} — mimo dosahu, vybitá batéria alebo vypnuté.",
+      "inHiveKindFallback": "snímač v úli",
+      "node": "Uzol {{node}}.",
+      "lastHeard": "Naposledy zachytený {{ago}}.",
+      "notHeardInRange": "V načítanom rozsahu nebol zachytený.",
+      "counter": "Počítadlo v česne v tomto cykle neodpovedalo na čítanie GATT — mimo dosahu, vypnuté alebo zaneprázdnené, keď sa HiveHub pripájal.",
+      "counterNode": "Počítadlo {{node}}.",
+      "lastAnswered": "Naposledy odpovedalo {{ago}}.",
+      "notAnsweredInRange": "V načítanom rozsahu neodpovedalo.",
+      "statusThen": "Stav vtedy: {{status}}.",
+      "expandersThen_one": "Vtedy odpovedal {{count}} z 3 rozširovačov portov.",
+      "expandersThen_few": "Vtedy odpovedali {{count}} z 3 rozširovačov portov.",
+      "expandersThen_many": "Vtedy odpovedalo {{count}} z 3 rozširovačov portov.",
+      "expandersThen_other": "Vtedy odpovedalo {{count}} z 3 rozširovačov portov.",
+      "hiveheart": "HiveHeart nebol v tomto cykle zachytený — mimo dosahu, vybitá batéria alebo vypnutý."
+    },
+    "counter": {
+      "nightIdle": "nočný kľud",
+      "nightIdleBadge": "Nočný kľud",
+      "otherBits": "bity špecifické pre počítadlo {{hex}}",
+      "noFlags": "žiadne príznaky",
+      "statusCode": "stav {{hex}}",
+      "expanders_one": "{{count}}/3 rozširovačov priechodov",
+      "expanders_few": "{{count}}/3 rozširovačov priechodov",
+      "expanders_many": "{{count}}/3 rozširovačov priechodov",
+      "expanders_other": "{{count}}/3 rozširovačov priechodov",
+      "glitches_one": "{{count}} výpadok",
+      "glitches_few": "{{count}} výpadky",
+      "glitches_many": "{{count}} výpadku",
+      "glitches_other": "{{count}} výpadkov",
+      "banks": "Skupiny {{list}}",
+      "noBanks": "Žiadne skupiny vysielačov"
+    },
+    "meta": {
+      "firmware": "v{{version}}",
+      "batteryPercent": "Batéria {{value}} %",
+      "batteryMv": "Batéria {{value}} mV",
+      "batteryV": "Batéria {{value}} V",
+      "rssi": "{{value}} dBm"
+    }
+  },
+  "hubStatus": {
+    "title": "Stav hubu",
+    "description": "Pripojenie, hodiny a napájanie samotného HiveHub.",
+    "noData": "Z tohto hubu zatiaľ neprišlo žiadne meranie.",
+    "staleWarning": "Žiadne meranie už {{ago}} — hub vynechal niekoľko hlásení.",
+    "badge": {
+      "live": "Online",
+      "stale": "Neaktuálne",
+      "inspection": "Prebieha prehliadka",
+      "calibration": "Režim kalibrácie"
+    },
+    "section": {
+      "connectivity": "Pripojenie",
+      "battery": "Batéria",
+      "solar": "Solárny panel"
+    },
+    "row": {
+      "signal": "Signál",
+      "transport": "Prenos",
+      "timeSource": "Zdroj času",
+      "lastSeen": "Naposledy videný",
+      "lastReading": "Posledné meranie",
+      "firmware": "Firmvér",
+      "bootCount": "Počet štartov",
+      "stateOfCharge": "Stav nabitia",
+      "batteryVoltage": "Napätie",
+      "batteryAlert": "Upozornenie batérie",
+      "solarPower": "Solárny výkon",
+      "solarCurrent": "Solárny prúd",
+      "solarBus": "Napätie panelu (zbernice)",
+      "solarLoad": "Napätie záťaže"
+    },
+    "signalQuality": {
+      "excellent": "Výborný",
+      "good": "Dobrý",
+      "fair": "Priemerný",
+      "poor": "Slabý"
+    },
+    "transport": {
+      "wifi": "Wi-Fi",
+      "cellular": "Mobilná sieť"
+    },
+    "rtc": {
+      "ok": "RTC v poriadku",
+      "fault": "Chyba RTC"
+    },
+    "batteryAlertActive": "Slabá batéria"
+  },
+  "hiveCards": {
+    "empty": "Toto zariadenie zatiaľ nehlási žiadne úle.",
+    "hiveIndex": "Úľ {{n}}",
+    "weight": "Hmotnosť",
+    "temperature": "Teplota",
+    "humidity": "Vlhkosť",
+    "delta24h": "24 h {{value}} kg",
+    "lastReported": "Naposledy hlásené {{ago}}",
+    "inspection": "Prehliadka",
+    "insightsLoading": "Načítavajú sa analýzy",
+    "insightsUnavailable": "Analýzy nie sú k dispozícii",
+    "noSensors": "Žiadne hlásené snímače",
+    "traffic": "Dnu {{in}} · Von {{out}}",
+    "trafficTitle": "Včely dnu/von za posledný interval",
+    "alerts_one": "{{count}} aktívne upozornenie",
+    "alerts_few": "{{count}} aktívne upozornenia",
+    "alerts_many": "{{count}} aktívneho upozornenia",
+    "alerts_other": "{{count}} aktívnych upozornení",
+    "sensor": {
+      "scale": "Váha",
+      "inHive": "Snímač v úli",
+      "counter": "Počítadlo HiveTraffic",
+      "hiveheart": "HiveHeart"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Bez signálu / chyba"
+    }
+  },
+  "audio": {
+    "title": "Zvuk úľa",
+    "description": "Požiadajte uzol HiveInside v úli o nahrávku a potom si ju tu vypočujte. Hub prevezme požiadavku pri ďalšom prebudení, takže nahrávka sa objaví do jedného intervalu hlásenia, nie okamžite.",
+    "noNodes": "K tomuto hubu nie je spárovaný žiadny uzol HiveInside. Mikrofón má len HiveInside — maják HolyIot ani RuuviTag nahrávať nevie.",
+    "hive": "Úľ",
+    "hiveFallback": "Úľ {{slot}}",
+    "length": "Dĺžka",
+    "durationOption_one": "{{count}} sekunda",
+    "durationOption_few": "{{count}} sekundy",
+    "durationOption_many": "{{count}} sekundy",
+    "durationOption_other": "{{count}} sekúnd",
+    "gain": "Zosilnenie",
+    "gainValue": "{{gain}} dB",
+    "record": "Nahrať",
+    "nextWake": "Dostane sa do hubu pri jeho ďalšom prebudení.",
+    "viewerNote": "Nahrávku môže vyžiadať vlastník alebo administrátor.",
+    "lengthHint": "Kratšie je zvyčajne lepšie: 10–20 sekúnd stačí na to, aby ste počuli, na čo analýza upozornila, a stojí to menej batérie a menej času, keď je úľ mimo éteru — pripojený uzol ani nevysiela oznámenia, ani nesníma.",
+    "requestSuccess": "Nahrávka vyžiadaná. Do hubu sa dostane pri jeho ďalšom prebudení.",
+    "requestError": "Požiadavku sa nepodarilo zaradiť do frontu: {{message}}",
+    "listTitle": "Nahrávky",
+    "onlySelectedHive": "Len {{name}}",
+    "loadError": "Nahrávky sa nepodarilo načítať: {{message}}",
+    "empty": "Zatiaľ žiadne nahrávky. Požiadajte úľ o nahrávku a objaví sa tu. Relácia je 10–60 sekúnd zvuku 16 kHz stiahnutého z uzla cez BLE.",
+    "requestedLength_one": "Vyžiadané {{count}} s",
+    "requestedLength_few": "Vyžiadané {{count}} s",
+    "requestedLength_many": "Vyžiadané {{count}} s",
+    "requestedLength_other": "Vyžiadané {{count}} s",
+    "requestedBy": "Vyžiadal(a): {{name}}",
+    "status": {
+      "requested": "Čaká sa na hub",
+      "streaming": "Nahráva sa…",
+      "ready": "Pripravené",
+      "readyIncomplete": "Pripravené, neúplné",
+      "failed": "Zlyhalo"
+    },
+    "waitingNote": "Čaká sa, kým sa hub prebudí a požiadavku prevezme — zatiaľ nič nenahrané. Požiadavka, ktorú hub neprevezme do 45 minút, sa označí ako neúspešná.",
+    "streamingNote": "Nahráva sa — zvuk sa tu objavuje priebežne, ako prichádza.",
+    "streamingPartial": "Stále sa nahráva — toto je to, čo zatiaľ prišlo. Po skončení relácie si to prehrajte znova a vypočujete si celé.",
+    "failedFallback": "Táto nahrávka zlyhala.",
+    "seconds": "{{value}} s",
+    "bytes": "{{value}} B",
+    "percent": "{{value}} %",
+    "download": "Stiahnuť WAV",
+    "delete": "Vymazať",
+    "deleteConfirm": "Vymazať túto nahrávku? Nič iné ju nevymaže — žiadne automatické čistenie neexistuje.",
+    "deleteSuccess": "Nahrávka vymazaná.",
+    "deleteError": "Nahrávku sa nepodarilo vymazať: {{message}}",
+    "confirmation": {
+      "verified": "overené",
+      "reported": "neoverené",
+      "confirmed": "potvrdené hubom",
+      "unknown": "nepotvrdené"
+    },
+    "quality": {
+      "length": "Dĺžka",
+      "dropped": "Zahodené",
+      "gaps": "Medzery",
+      "hubBuffer": "Vyrovnávacia pamäť hubu",
+      "clipping": "Orezanie",
+      "checksum": "Kontrolný súčet",
+      "cause": {
+        "dropped": "uzol nestíhal odosielať zvuk dostatočne rýchlo",
+        "gaps": "pakety sa stratili vo vzduchu",
+        "hubBuffer": "odosielanie hubu nestíhalo jeho vyrovnávaciu pamäť"
+      },
+      "gapNote": "Zvuk na oboch stranách medzery je skutočný, spoj však nie. Príčina: {{causes}}.",
+      "clippingNote": "Pre čistejšiu nahrávku znížte zosilnenie.",
+      "unknownNote": "Hub o tejto relácii nikdy nepodal hlásenie, takže nikto neoveril, či je zvuk úplný. To, čo tu je, sa dá prehrať."
+    }
+  },
+  "dashboard": {
+    "hiveFallback": "Úľ {{index}}",
+    "units": {
+      "bees": "včiel"
+    },
+    "range": {
+      "24h": "24 h",
+      "7d": "7 d",
+      "30d": "30 d",
+      "365d": "365 d",
+      "custom": "Vlastné",
+      "invalid": "Dátum začiatku nesmie byť po dátume konca."
+    },
+    "header": {
+      "title": "Moja nástenka",
+      "description": "Používateľsky nastaviteľné widgety. Úle vybrané vyššie určujú grafy podľa úľov.",
+      "editDescription": "Režim úprav: potiahnutím úchytu presúvate widgety a potiahnutím rohu meníte ich veľkosť v mriežke so 4 stĺpcami.",
+      "edit": "Upraviť nástenku",
+      "done": "Hotovo",
+      "addWidget": "Pridať widget",
+      "reset": "Obnoviť",
+      "editBanner": "Režim úprav nástenky je aktívny. Úchytom v hlavičke každého widgetu ho presuniete a potiahnutím pravého dolného rohu zmeníte šírku alebo výšku. Zmeny rozloženia sa pre toto zariadenie HiveHub ukladajú automaticky.",
+      "dropEnd": "Pustite sem, ak chcete widget presunúť na koniec nástenky.",
+      "noWidgets": "Zatiaľ žiadne widgety. Pridajte šablónu a zostavte si nástenku.",
+      "restoreDefaults": "Obnoviť predvolené"
+    },
+    "overview": {
+      "title": "Prehľad úľov",
+      "description": "Kompaktný stav priradených úľov. Výberom dlaždíc riadite widgety nástenky nižšie.",
+      "lastData": "Posledné údaje",
+      "hivesOnline": "Úle online",
+      "hubFirmware": "FW HiveHub",
+      "hiveInsideFirmware": "FW HiveInside",
+      "selected_one": "{{count}} vybraný",
+      "selected_few": "{{count}} vybrané",
+      "selected_many": "{{count}} vybraného",
+      "selected_other": "{{count}} vybraných",
+      "hide": "Skryť prehľad",
+      "show": "Zobraziť prehľad",
+      "slot": "Slot {{index}}",
+      "ok": "OK",
+      "noData": "Žiadne údaje",
+      "weight": "Hmotnosť",
+      "temperature": "Tepl.",
+      "humidity": "RV",
+      "empty": "Priraďte sloty HiveHub k úľom HivePal v paneli nastavenia zariadenia, aby sa tu zobrazili dlaždice prehľadu."
+    },
+    "sensors": {
+      "scale": "váha",
+      "inHive": "v úli",
+      "accel": "akcel.",
+      "counter": "počítadlo",
+      "none": "žiadne snímače"
+    },
+    "widgetShell": {
+      "move": "Presunúť {{title}}",
+      "moveHint": "Potiahnutím presuniete tento widget",
+      "remove": "Odstrániť {{title}}",
+      "resize": "Zmeniť veľkosť {{title}}",
+      "resizeHint": "Potiahnutím zmeníte veľkosť tohto widgetu"
+    },
+    "addWidget": {
+      "title": "Pridať widget",
+      "description": "Začnite zo šablóny. Widget použije, kde je to vhodné, úle vybrané v mriežke prehľadu.",
+      "defaultSize": "Predvolená veľkosť {{w}} x {{h}}"
+    },
+    "widgets": {
+      "weightComparison": {
+        "title": "Porovnanie hmotnosti",
+        "description": "Porovnajte vybrané úle za aktuálne obdobie."
+      },
+      "dailyMaxWeight": {
+        "title": "Denná max. hmotnosť",
+        "description": "Najvyššia kompenzovaná hmotnosť za deň pre vybrané úle."
+      },
+      "climate": {
+        "title": "Mikroklíma úľa",
+        "description": "Teplota a vlhkosť vybraných úľov."
+      },
+      "power": {
+        "title": "Stav napájania",
+        "description": "Nabitie batérie, napätie batérie a solárny príkon."
+      },
+      "beeTraffic": {
+        "title": "Prelet včiel",
+        "description": "Súhrnný prelet dnu/von a čistý tok."
+      },
+      "soundRms": {
+        "title": "Zvuk / akustické pásma",
+        "description": "Akustické RMS podľa úľov a pásma FFT/HiveHeart, ak sú k dispozícii."
+      },
+      "hiveHeartSpectrum": {
+        "title": "Spektrum HiveHeart",
+        "description": "Najnovšie úrovne FFT HiveHeart (0–15) v 16 frekvenčných rozsahoch pre vybrané úle."
+      },
+      "vibration": {
+        "title": "Vibračné pásma",
+        "description": "RMS vibrácií, pásma rojenia, ovievania a aktivity."
+      },
+      "configurableDiagram": {
+        "title": "Nastaviteľný graf",
+        "description": "Vyberte metriky úľa, zvuku, preletu, mikroklímy a zariadenia, ktoré sa majú vykresliť."
+      },
+      "temperatureHeatmap": {
+        "title": "Tepelná mapa teploty",
+        "description": "Kompaktný prehľad teploty všetkých úľov."
+      },
+      "insights": {
+        "title": "Kanál analýz",
+        "description": "Aktívne upozornenia a úryvky dôkazov."
+      },
+      "dataQuality": {
+        "title": "Kvalita údajov",
+        "description": "Dostupnosť snímačov a chýbajúce merania."
+      }
+    },
+    "metricGroups": {
+      "scale": "Váha",
+      "climate": "Mikroklíma",
+      "beeTraffic": "Prelet včiel",
+      "vibration": "Vibrácie",
+      "sound": "Zvuk",
+      "device": "Zariadenie"
+    },
+    "metrics": {
+      "weight": "Hmotnosť",
+      "temperature": "Teplota",
+      "humidity": "Vlhkosť",
+      "pressure": "Tlak",
+      "beeIn": "Včely dnu",
+      "beeOut": "Včely von",
+      "beeNet": "Čistý tok",
+      "vibration": "RMS vibrácií",
+      "swarmBand": "Pásmo rojenia",
+      "fanningBand": "Pásmo ovievania",
+      "activityBand": "Pásmo aktivity",
+      "soundRms": "RMS zvuku",
+      "soundHum": "Pásmo bzukotu",
+      "soundPiping": "Pásmo tútania",
+      "soundStress": "Pásmo stresu",
+      "hiveHeartFrequency": "Frekvencia HiveHeart",
+      "hiveHeartEnergy": "Energia HiveHeart",
+      "batterySoc": "Nabitie batérie",
+      "batteryVoltage": "Napätie batérie",
+      "solarPower": "Solárny výkon"
+    },
+    "axes": {
+      "weight": "Hmotnosť",
+      "temperature": "Teplota",
+      "humidity": "Vlhkosť",
+      "pressure": "Tlak",
+      "beecount": "Počet včiel",
+      "vibration": "Vibrácie",
+      "dbfs": "Hladina zvuku",
+      "frequency": "Frekvencia",
+      "energy": "Energia",
+      "percent": "Nabitie",
+      "voltage": "Napätie",
+      "power": "Výkon"
+    },
+    "soundMetrics": {
+      "rms": "RMS",
+      "hiveHeartFrequency": "Frekvencia HiveHeart",
+      "hiveHeartEnergy": "Energia HiveHeart",
+      "hiveHeartPeak": "Špička HiveHeart"
+    },
+    "vibrationMetrics": {
+      "rms": "RMS",
+      "swarmBand": "Pásmo rojenia",
+      "fanningBand": "Pásmo ovievania",
+      "activityBand": "Pásmo aktivity"
+    },
+    "series": {
+      "temperature": "{{name}} tepl.",
+      "humidity": "{{name}} RV",
+      "beeIn": "Dnu",
+      "beeOut": "Von",
+      "beeNet": "Čisté"
+    },
+    "axisScale": {
+      "auto": "auto",
+      "setBound": "Nastaviť {{axis}} {{bound}}",
+      "clearHint": "Nechajte prázdne a stlačte Enter pre auto",
+      "tickTitle": "Kliknutím nastavíte {{bound}}; vymazaním auto",
+      "reset": "obnoviť",
+      "help": "Kliknutím na najnižší alebo najvyšší popis osi Y ho upravíte. Vymazaním hodnoty nastavíte auto."
+    },
+    "chart": {
+      "downloadCsv": "Stiahnuť CSV"
+    },
+    "inspection": {
+      "legendHint_one": "{{count}} okno prehliadky vytieňované; merania môžu byť narušené",
+      "legendHint_few": "{{count}} okná prehliadky vytieňované; merania môžu byť narušené",
+      "legendHint_many": "{{count}} okna prehliadky vytieňovaného; merania môžu byť narušené",
+      "legendHint_other": "{{count}} okien prehliadky vytieňovaných; merania môžu byť narušené"
+    },
+    "empty": {
+      "noData": "Žiadne údaje pre vybrané úle a obdobie.",
+      "climate": "Žiadne údaje o mikroklíme za vybrané obdobie.",
+      "power": "Žiadne údaje o napájaní za vybrané obdobie.",
+      "beeTraffic": "Žiadne údaje počítadla včiel pre vybrané úle.",
+      "sound": "Žiadne akustické údaje podľa úľov pre vybrané úle.",
+      "vibration": "Žiadne údaje o vibráciách ani pásmach akcelerometra pre vybrané úle.",
+      "configurable": "Vyberte aspoň jednu metriku s údajmi pre vybrané úle a obdobie.",
+      "dailyMaxWeight": "Žiadne údaje o hmotnosti pre vybrané úle a obdobie.",
+      "hiveHeart": "Žiadne údaje FFT HiveHeart pre vybrané úle a obdobie.",
+      "unknownWidget": "Neznámy typ widgetu."
+    },
+    "soundFootnote": "Najprv zobrazuje akustické merania podľa úľov. Staršie údaje ľavého/pravého mikrofónu sa priradia k nastaveným názvom úľov pre sloty 1 a 2, ak nie je k dispozícii akustický blok podľa úľov.",
+    "heatmap": {
+      "low": "nízka <33 °C",
+      "optimal": "optimum pre plod 33–36 °C",
+      "high": "vysoká >36 °C"
+    },
+    "insights": {
+      "loading": "Načítavajú sa analýzy…",
+      "unavailable": "Analýzy nie sú k dispozícii.",
+      "noAlerts": "Žiadne aktívne upozornenia pre vybrané úle.",
+      "showing_one": "Zobrazuje sa {{count}} aktívne upozornenie pre vybrané úle.",
+      "showing_few": "Zobrazujú sa {{count}} aktívne upozornenia pre vybrané úle.",
+      "showing_many": "Zobrazuje sa {{count}} aktívneho upozornenia pre vybrané úle.",
+      "showing_other": "Zobrazuje sa {{count}} aktívnych upozornení pre vybrané úle.",
+      "confidence": "spoľahlivosť {{percent}}%"
+    },
+    "dataQuality": {
+      "activeSlots": "Aktívne sloty",
+      "noScale": "Bez váhy",
+      "noClimate": "Bez mikroklímy",
+      "noRecentData": "žiadne nedávne údaje"
+    },
+    "hiveHeart": {
+      "level": "úroveň",
+      "dominant": "dominantná frekvencia {{hz}} Hz",
+      "noDominant": "dominantná frekvencia nie je hlásená",
+      "footnote": "Relatívne úrovne 0–15 (nie dBFS) posledného merania v rozsahu. Prerušované čiary označujú dominantnú frekvenciu, ktorú hlási HiveHeart; nadpisy Sub-bass/Hum/Piping/Stress sú približné a pokrývajú viac rozsahov."
     }
   }
 }

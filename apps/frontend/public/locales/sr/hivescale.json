@@ -35,7 +35,7 @@
   },
   "page": {
     "title": "HiveHub",
-    "subtitle": "Live weight and temperature visualisation from your separate HiveHub backend.",
+    "subtitle": "Тежина, микроклима, звук, лет пчела и упозорења са ваших HiveHub уређаја.",
     "refresh": "Refresh",
     "refreshing": "Refreshing…",
     "refreshError": "Could not refresh HiveHub data.",
@@ -43,16 +43,26 @@
     "removeSuccess": "HiveHub device removed from your account.",
     "removeSuccessShared": "Више немате приступ овом HiveHub уређају. Други корисници га и даље имају, па његов код за преузимање остаје у употреби.",
     "releaseConfirm": "Потпуно ослободити {{name}}? Сви корисници губе приступ, а уређај се поново може преузети својим кодом. Очитавања се задржавају.",
-    "releaseSuccess": "HiveHub уређај је ослобођен. Може се поново преузети својим кодом за преузимање."
+    "releaseSuccess": "HiveHub уређај је ослобођен. Може се поново преузети својим кодом за преузимање.",
+    "unavailableTitle": "HiveHub није доступан",
+    "inspectionActiveTitle": "Режим прегледа је укључен",
+    "inspectionActiveBody": "Док су кошнице отворене, очитавања се скривају, тако да вађење рамова не изазива лажна упозорења.",
+    "openInspections": "Отвори прегледе",
+    "tabs": {
+      "overview": "Преглед стања",
+      "inspections": "Прегледи",
+      "audio": "Звук",
+      "health": "Стање",
+      "setup": "Подешавање"
+    }
   },
   "setup": {
     "title": "Devices",
-    "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
     "releaseScale": "Ослободи уређај",
     "noDevices": "No devices claimed yet — open the setup to add one.",
-    "hide": "Hide setup",
-    "show": "Show setup"
+    "selectDevice": "HiveHub уређај",
+    "noDevicesYet": "Још није преузет ниједан HiveHub уређај. Преузмите га помоћу кода који хаб приказује на свом порталу за подешавање."
   },
   "claim": {
     "title": "Claim HiveHub device",
@@ -65,16 +75,30 @@
     "success": "HiveHub device claimed.",
     "errors": {
       "missingCode": "Enter the claim code printed/configured for the device."
-    }
+    },
+    "hive1Name": "Назив кошнице 1",
+    "hive2Name": "Назив кошнице 2",
+    "optional": "Опционо"
   },
   "mapping": {
-    "title": "Scale mapping",
-    "description": "These labels stay in HiveHub. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
-    "scale1Label": "Display name for Scale 1",
-    "scale2Label": "Display name for Scale 2",
+    "title": "Кошнице",
     "hiveNamePlaceholder": "Select or type a hive name",
-    "save": "Save mapping",
-    "success": "Scale mapping updated."
+    "save": "Сачувај кошнице",
+    "success": "Слотови кошница су сачувани у HiveHub.",
+    "slotsDescription": "Дајте назив сваком слоту кошнице и повежите га са кошницом у HivePal-у. Захваљујући вези, прегледи, страница кошнице и имејлови са упозорењима знају ком друштву слот припада. Зелена тачка означава слотове које хаб тренутно пријављује.",
+    "mapSlot": "Додели слот {{slot}}",
+    "add": "Додај",
+    "reporting": "Пријављује хаб",
+    "unknownHive": "Кошница није пронађена",
+    "mappedCount": "Додељено слотова: {{count}}/{{total}}",
+    "dialogTitle": "Слот кошнице {{slot}}",
+    "dialogDescription": "Повежите слот са једном од ваших кошница у HivePal-у и изаберите назив који ће HiveHub приказивати за њега.",
+    "linkedHive": "Кошница у HivePal-у",
+    "notLinked": "Није повезано",
+    "linkHint": "Веза остаје и након преименовања кошнице. Избор кошнице попуњава њен назив ако је назив празан.",
+    "displayName": "Приказни назив",
+    "clearSlot": "Очисти слот",
+    "applySlot": "Примени"
   },
   "status": {
     "title": "Device status",
@@ -94,6 +118,13 @@
     "revokeAccess": "Revoke access",
     "errors": {
       "missingEmail": "Enter the email address of an existing HivePal user."
+    },
+    "lastSeen": "Последње јављање",
+    "claimedAt": "Преузето",
+    "roles": {
+      "owner": "Власник",
+      "admin": "Администратор",
+      "viewer": "Посматрач"
     }
   },
   "calibration": {
@@ -203,11 +234,9 @@
       },
       "sourceHint": "Ambient tracks the cell body closely in steady state and is the recommended default.",
       "refLabel": "Reference temperature / °C",
-      "refHint": "Temperature at which the correction is zero.",
       "coeffLabel": "{{scaleName}} coefficient / kg per °C",
       "autoFit": "Auto-fit from history",
       "fitting": "Fitting…",
-      "autoFitHint": "Auto-fit regresses the last 3 days of raw weight against the EMA-smoothed selected temperature, then applies and enables the result. For a clean fit, capture a window where the physical load is constant and the temperature swings.",
       "save": "Save temperature compensation",
       "errors": {
         "refTemp": "Reference temperature must be a number (°C).",
@@ -219,11 +248,33 @@
         "noSignal": "not enough temperature/weight signal.",
         "fitApplied": "{{scaleName}}: {{coeff}} kg/°C @ {{refTemp}}°C (R²={{r2}}, n={{n}}). Applied and enabled."
       }
+    },
+    "perHive": {
+      "hive": "Кошница {{index}}",
+      "hiveNamed": "Кошница {{index}} · {{name}}",
+      "hiveLabel": "Кошница",
+      "knownWeightPlaceholder": "нпр. 10",
+      "manualSaveHint": "Промените кошницу да бисте уредили другу вагу; све измене се шаљу заједно када сачувате. Кошнице од 3 навише уписују се само ако су измењене.",
+      "tempco": {
+        "refHint": "Температура на којој ваге мере тачно, тј. на којој су тариране и калибрисане. На њој је корекција нула; прилагођавање је не мења осим ако то не затражите.",
+        "lookbackLabel": "Период прилагођавања / дани",
+        "setRefTemp": "Подеси и референтну температуру",
+        "setRefTempHint": "Замењује референтну температуру средњом температуром прилагођеног периода. Оставите искључено ако је вага калибрисана на познатој температури.",
+        "fitOnly": "Само прилагоди (преглед)",
+        "fitAndApply": "Прилагоди и примени",
+        "fitSummary": "{{scaleName}}: {{coeff}} kg/°C, R² {{r2}} из {{n}} очитавања у распону {{min}}–{{max}} °C (просек периода {{mean}} °C).",
+        "lowRSquared": "R² испод 0,5: температура слабо објашњава ово одступање. Прилагодите на периоду са сталним оптерећењем и великом разликом температура између дана и ноћи.",
+        "autoFitHint": "Аутоматско прилагођавање рачуна регресију сачуване тежине изабране кошнице у изабраном периоду у односу на изабрану температуру изглађену EMA. „Само прилагоди“ попуњава коефицијент ради провере пре чувања; „Прилагоди и примени“ га чува и укључује компензацију. За чисто прилагођавање изаберите период у коме је физичко оптерећење стално, а температура се мења.",
+        "errors": {
+          "lookback": "Период мора бити цео број дана између 1 и 90."
+        },
+        "toasts": {
+          "fitFilled": "{{scaleName}}: {{coeff}} kg/°C (R²={{r2}}, n={{n}}). Попуњено — проверите и сачувајте."
+        }
+      }
     }
   },
   "firmware": {
-    "title": "Firmware upload",
-    "description": "Upload a firmware binary and register it as a release. New devices of the matching type pick it up on their next update check.",
     "type": "Firmware type",
     "selectType": "Select firmware type",
     "version": "Version",
@@ -238,6 +289,102 @@
     "errors": {
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
+    },
+    "update": {
+      "title": "Ажурирање фирмвера",
+      "description": "Ваге се никада не ажурирају саме — сваку нову верзију одобравате овде пре него што је ова вага инсталира.",
+      "unavailable": "Стање фирмвера тренутно није доступно.",
+      "availableTitle": "Доступан је фирмвер {{version}}",
+      "availableBody": "Ова вага користи {{current}}. Примените да бисте је ажурирали на {{version}}.",
+      "officialSuffix": "Ово је званична верзија.",
+      "apply": "Примени ажурирање",
+      "applying": "Примењује се…",
+      "applied": "Фирмвер {{version}} је одобрен — вага ће се ажурирати при следећем јављању.",
+      "queued": "Ажурирање {{version}} је одобрено. Вага ће га инсталирати при следећем јављању.",
+      "upToDate": "Фирмвер је ажуран ({{version}}).",
+      "viewerNotice": "Само власници и администратори уређаја могу да примењују ажурирања фирмвера."
+    },
+    "board": {
+      "cardTitle": "Фирмвер",
+      "cardDescription": "Фирмвер овог HiveHub-а и HiveInside чворова и HiveTraffic бројача које опслужује. Отпремање региструје издање; инсталира се одобравањем (хаб) или преносом (чворови).",
+      "current": "Тренутни",
+      "latest": "Најновији",
+      "approved": "Одобрен",
+      "board": "Плоча",
+      "badgePending": "Ажурирање чека одобрење",
+      "badgeApproved": "Ажурирање одобрено",
+      "badgeUpToDate": "Ажурно",
+      "approveFlash": "Одобри и упиши {{version}}",
+      "approveConfirm": "Одобрити фирмвер {{version}} и упиcати га бежично?\n\nHiveHub ће га инсталирати при следећем јављању и поново се покренути. Удаљеном уређају коме ажурирање не успе усред поступка може бити потребан физички приступ ради опоравка.",
+      "otherBoards": "Отпремљено и за другу плочу (не примењује се на овај {{board}} уређај): {{releases}}. Верзија стиже само до уређаја са одговарајућом плочом — проверите плочу при отпремању.",
+      "otherBoardsUnknown": "Отпремљено и за другу плочу (не примењује се на овај уређај): {{releases}}. Верзија стиже само до уређаја са одговарајућом плочом — проверите плочу при отпремању."
+    },
+    "relays": {
+      "hiveFallback": "Кошница {{slot}}",
+      "latest": "најновији {{version}}",
+      "updateAvailable": "доступно ажурирање: {{version}}",
+      "status": {
+        "pending": "пренос у реду чекања",
+        "running": "пренос у току…",
+        "completed": "пренос завршен",
+        "failed": "пренос није успео",
+        "expired": "време преноса је истекло"
+      },
+      "statusTitle": "Пренос {{version}}: {{status}} ({{date}})",
+      "failedDetail": "Последњи пренос није успео — {{message}} ({{date}})",
+      "noReason": "разлог није пријављен",
+      "alreadyQueued": "Пренос за овај чвор је већ у реду чекања",
+      "queueing": "Ставља се у ред…",
+      "relayAnyway": "Ипак пренеси",
+      "confirm": "Пренети {{name}} {{version}} на {{hive}}?\n\nHiveHub ће ово преузети у следећем циклусу слања — обично у року од око 10 минута, или у интервалу слања који овај уређај користи. Затим неколико минута шаље слику преко BLE, а чвор се поново покреће са њом. Чвор мора бити будан и у домету, иначе пренос не успева и мора се поново ставити у ред.",
+      "queued": "Пренос {{version}} стављен у ред за {{hive}}.",
+      "queuedFrom": "Пренос стављен у ред за {{hive}} ({{current}} → {{version}}).",
+      "hiveinside": {
+        "name": "HiveInside",
+        "title": "HiveInside чворови",
+        "description": "Фирмвер који оглашава сваки чвор у кошници. Отпремање HiveInside слике само региструје издање — ништа не стиже до чвора док не притиснете „Пренеси на чвор“. Верзија приказана овде потврђује да је ажурирање успело.",
+        "relay": "Пренеси на чвор",
+        "unnamed": "Не оглашава сопствени назив (HiveInside пре 0.5.0)",
+        "noRelease": "Још није отпремљено ниједно HiveInside издање — отпремите га испод да бисте га пренели."
+      },
+      "beecounter": {
+        "name": "HiveTraffic",
+        "title": "HiveTraffic бројачи",
+        "description": "Фирмвер који пријављује сваки HiveTraffic бројач. Отпремање HiveTraffic слике само региструје издање — ништа не стиже до бројача док не притиснете „Пренеси на бројач“. Бројачи старији од отприлике v0.1.0 не пријављују верзију, али се и даље могу ажурирати.",
+        "relay": "Пренеси на бројач",
+        "unnamed": "Не пријављује назив ни адресу",
+        "noRelease": "Још није отпремљено ниједно HiveTraffic издање — отпремите га испод да бисте га пренели.",
+        "countingWarning": "Током целог преноса бројач не броји пчеле, зато преносите када је лет слаб.",
+        "confirmExtra": "Током целог преноса бројач не броји пчеле — сав лет током тих неколико минута се губи."
+      }
+    },
+    "uploadForm": {
+      "title": "Отпреми фирмвер",
+      "description": "Отпремање само региструје издање — само по себи никада ништа не инсталира. Одобрите ажурирање хаба изнад или пренесите издање за чвор или бројач из његовог реда.",
+      "board": "Плоча",
+      "targets": {
+        "hivehub": "HiveHub хаб",
+        "hiveinside": "HiveInside",
+        "beecounter": "HiveTraffic бројач"
+      },
+      "boards": {
+        "auto": "Аутоматски (из назива датотеке)",
+        "esp32": "ESP32 (класична, 30 пинова)",
+        "esp32-c6": "ESP32-C6",
+        "nrf54lm20a": "nRF54LM20A"
+      },
+      "boardHint": {
+        "hivehub": "Фирмвер хаба мора навести плочу: изаберите је или оставите аутоматски када је датотека названа нпр. hivehub_esp32-c6_0.30.5.bin.",
+        "hiveinside": "HiveInside постоји само за nRF54LM20A. Отпремите артефакт верзије непромењен (нпр. hiveinside_nrf54lm20a_1.4.0.bin), а циљ и верзија се попуњавају из његовог назива.",
+        "beecounter": "HiveTraffic бројач је ESP32-C6. Отпремите слику апликације (нпр. beecounter_esp32-c6_0.7.1.bin), а не спојену фабричку слику."
+      },
+      "detected": "{{name}} — попуњено: {{fields}}.",
+      "nothingDetected": "{{name}} — у називу није препознат циљ, плоча ни верзија; подесите их испод.",
+      "detectedTarget": "циљ „{{target}}“",
+      "detectedBoard": "плоча {{board}}",
+      "detectedVersion": "верзија {{version}}",
+      "autoQueued": "Пренос је аутоматски стављен у ред за {{hives}}.",
+      "autoQueueFailed": "Није могуће аутоматски ставити пренос у ред за {{hives}}."
     }
   },
   "sdData": {
@@ -262,12 +409,19 @@
       "parsed_other": "Parsed {{count}} records",
       "skipped_one": " · {{count}} unreadable line skipped.",
       "skipped_other": " · {{count}} unreadable lines skipped."
+    },
+    "mismatch": {
+      "title": "Датотека са другог хаба",
+      "description": "Ову датотеку је снимио други хаб, а не {{device}}.",
+      "fileDevices_one": "ID уређаја у датотеци:",
+      "fileDevices_few": "ID-јеви уређаја у датотеци:",
+      "fileDevices_other": "ID-јеви уређаја у датотеци:",
+      "hint": "Ипак је увезите само ако SD картица заиста припада овом уређају (на пример након замене плоче хаба).",
+      "cancel": "Откажи",
+      "force": "Ипак увези у овај уређај"
     }
   },
   "panel": {
-    "weight": "Weight",
-    "hiveTemp": "Hive temp",
-    "rmsSound": "RMS sound",
     "ambientTemperature": "Ambient temperature",
     "ambientHumidity": "Ambient humidity",
     "batteryCharge": "Battery charge",
@@ -277,7 +431,6 @@
       "title": "General",
       "description": "Ambient & power"
     },
-    "humidity": "Hive humidity",
     "wirelessSensorsBattery": "Wireless sensors battery",
     "sensorTypes": {
       "hiveHeart": "HiveHeart",
@@ -286,174 +439,36 @@
     }
   },
   "diagram": {
-    "title": "Measurements",
-    "subtitle": "Weight, temperature, and entrance activity over time",
-    "noMeasurements": "No measurements for the selected range.",
-    "noDataForSeries": "No data in the selected range.",
-    "meta": {
-      "device": "Device:",
-      "lastSeen": "Last seen:",
-      "lastData": "Last data:",
-      "firmware": "Firmware:"
-    },
     "range": {
       "all": "All",
       "from": "From",
       "to": "To"
     },
-    "series": {
-      "weight": "{{name}} weight",
-      "temp": "{{name}} temp",
-      "micRms": "{{name}} mic RMS",
-      "beesIn": "{{name}} bees in",
-      "beesOut": "{{name}} bees out",
-      "netFlow": "{{name}} net flow",
-      "ambientTemp": "Ambient temp",
-      "ambientHumidity": "Ambient humidity",
-      "batteryVoltage": "Battery voltage",
-      "batteryCharge": "Battery charge",
-      "solarVoltage": "Solar voltage",
-      "solarCurrent": "Solar current",
-      "solarPower": "Solar power",
-      "humidity": "{{name}} vlažnost",
-      "pressure": "{{name}} pritisak",
-      "fanningBand": "{{name}} fanning band (30–100 Hz)",
-      "activityBand": "{{name}} activity band (100–200 Hz)"
-    },
-    "group": {
-      "ambient": "Ambient",
-      "offGrid": "Off-grid"
-    },
-    "axis": {
-      "weight": "Weight",
-      "temperature": "Temperature",
-      "humidity": "Humidity",
-      "voltage": "Voltage",
-      "percent": "Percent",
-      "current": "Current",
-      "power": "Power",
-      "sound": "Sound",
-      "beecount": "Bee count",
-      "pressure": "Pritisak"
-    },
     "marker": {
-      "inspection": "Inspection",
-      "boxAdded": "Box added",
-      "action": {
-        "maintenance": "Maintenance",
-        "feeding": "Feeding",
-        "frames": "Frames",
-        "treatment": "Treatment"
-      }
-    },
-    "axisSettings": {
-      "title": "Axis settings",
-      "reset": "Reset",
-      "side": "Side",
-      "left": "Left",
-      "right": "Right",
-      "scale": "Scale",
-      "auto": "Auto",
-      "zeroToMax": "0 to max",
-      "custom": "Custom",
-      "min": "Min",
-      "max": "Max",
-      "autoPlaceholder": "auto"
+      "inspection": "Inspection"
     }
   },
   "sound": {
-    "title": "Hive sound",
-    "description": "INMP441 FFT band energy (dBFS) — {{left}} (left) · {{right}} (right)",
-    "hide": "Hide sound",
-    "show": "Show sound",
-    "micLeftFallback": "Mic left",
-    "micRightFallback": "Mic right",
-    "noDataForChannel": "No data for {{name}} in this range.",
-    "bandReference": "Band reference",
-    "thresholds": "Thresholds used by the Insights engine: piping > −45 dBFS, stress > −38 dBFS, queenless hum > −40 dBFS with quiet piping. Calibrate against your own baseline.",
-    "status": {
-      "noData": "No data",
-      "micError": "Mic error",
-      "bothActive": "{{left}} + {{right}} active",
-      "oneActive": "{{name}} active"
-    },
-    "table": {
-      "band": "Band",
-      "range": "Range",
-      "significance": "Significance"
-    },
     "bands": {
       "subBass": {
-        "label": "Sub-bass",
-        "description": "Structural vibration / low rumble"
+        "label": "Sub-bass"
       },
       "hum": {
-        "label": "Hum",
-        "description": "Normal colony hum (~200 Hz fundamental)"
+        "label": "Hum"
       },
       "piping": {
-        "label": "Piping",
-        "description": "Queen piping / tooting (pre-swarm signal)"
+        "label": "Piping"
       },
       "stress": {
-        "label": "Stress",
-        "description": "Agitated colony / robbing"
+        "label": "Stress"
       },
       "high": {
-        "label": "High",
-        "description": "Harmonic overtones"
+        "label": "High"
       }
-    },
-    "rmsToggleShow": "Show RMS level",
-    "rmsToggleHide": "Hide RMS level",
-    "rmsTitle": "RMS sound level",
-    "rmsSeries": "{{name}} RMS"
-  },
-  "beecounter": {
-    "title": "Entrance Counter",
-    "subtitle": "Bees entering and exiting per measurement interval",
-    "noData": "No BeeCounter data found for this device.",
-    "offline": "Offline",
-    "gatesOk": "{{count}} gates OK",
-    "glitches_one": "{{count}} glitch",
-    "glitches_other": "{{count}} glitches",
-    "gatesRatio": "{{healthy}}/{{total}} gates",
-    "inPeriod": "In (period)",
-    "outPeriod": "Out (period)",
-    "netFlow": "Net flow",
-    "netInbound": "net inbound",
-    "netOutbound": "net outbound",
-    "balanced": "balanced",
-    "view": {
-      "inOut": "In / Out",
-      "netFlow": "Net flow",
-      "cumulative": "Cumulative"
-    },
-    "series": {
-      "in": "{{name}} in",
-      "out": "{{name}} out",
-      "net": "{{name}} net",
-      "totalIn": "{{name}} total in",
-      "totalOut": "{{name}} total out"
-    },
-    "diagnostics": {
-      "title": "Hardware diagnostics",
-      "gatesHealthy": "Gates healthy",
-      "glitchCount": "Glitch count",
-      "totalInLifetime": "Total in (lifetime)",
-      "totalOutLifetime": "Total out (lifetime)"
     }
   },
   "insights": {
-    "title": "Insights",
-    "description": "Sensor-based alerts derived from weight and temperature trends.",
-    "updated": "Updated {{ago}}.",
-    "refresh": "Refresh insights",
-    "loadError": "Failed to load insights: {{message}}",
     "allClear": "All clear",
-    "noActiveAlerts": "No active alerts in the last {{count}} days.",
-    "activeAlerts_one": "{{count}} active alert:",
-    "activeAlerts_other": "{{count}} active alerts:",
     "confidence": "Confidence {{value}}%",
     "source": "Source: {{source}}",
     "hiveChannel": "Hive {{channel}}",
@@ -537,6 +552,741 @@
       "title": "No history yet",
       "description": "No alerts have been recorded for this device.",
       "descriptionFiltered": "No alerts have been recorded for this device matching this filter."
+    }
+  },
+  "inspectionMode": {
+    "title": "Режим прегледа",
+    "description": "Док је режим прегледа укључен, HiveHub наставља да мери, али очитавања не укључује у графиконе, анализе и упозорења, тако да се вађење рамова не сматра ројењем.",
+    "status": {
+      "active": "Активно од {{time}}",
+      "pending": "Чека да га хаб преузме",
+      "off": "Искључено"
+    },
+    "pendingHint": "Затражено — хаб ће га преузети при следећем јављању.",
+    "timeoutNote_one": "Аутоматски се завршава након {{count}} минута ако га нико не заустави.",
+    "timeoutNote_few": "Аутоматски се завршава након {{count}} минута ако га нико не заустави.",
+    "timeoutNote_other": "Аутоматски се завршава након {{count}} минута ако га нико не заустави.",
+    "scope": {
+      "wholeHub": "Цео хаб",
+      "label": "Обухвата: {{hives}}"
+    },
+    "start": "Покрени режим прегледа",
+    "stop": "Заустави режим прегледа",
+    "starting": "Покреће се…",
+    "stopping": "Зауставља се…",
+    "cancel": "Откажи",
+    "noteLabel": "Белешка (опционо)",
+    "notePlaceholder": "нпр. Додат медишни наставак",
+    "viewerHint": "Само власници и администратори могу да покрену или зауставе режим прегледа.",
+    "loadFailed": "Није могуће учитати стање прегледа.",
+    "startDialog": {
+      "title": "Покрени режим прегледа",
+      "description": "Очитавања изабраних кошница се скривају док не зауставите режим прегледа или не истекне његово време.",
+      "hivesLabel": "Кошнице",
+      "wholeHub": "Цео хаб (све кошнице)",
+      "selectHive": "Изаберите бар једну кошницу или цео хаб.",
+      "confirm": "Покрени"
+    },
+    "stopDialog": {
+      "title": "Заустави режим прегледа",
+      "description": "HiveHub се враћа на уобичајена очитавања и упозорења.",
+      "confirm": "Заустави"
+    },
+    "toast": {
+      "started": "Режим прегледа је покренут",
+      "stopped": "Режим прегледа је заустављен",
+      "noteSaved": "Белешка је сачувана"
+    },
+    "history": {
+      "title": "Недавни прегледи",
+      "empty": "Још нема забележених прегледа.",
+      "ongoing": "у току",
+      "startedVia": "Покренуто преко: {{source}}",
+      "ended": "Завршено: {{reason}}",
+      "editNote": "Измени белешку",
+      "addNote": "Додај белешку",
+      "saveNote": "Сачувај"
+    },
+    "duration": {
+      "minutes_one": "{{count}} мин",
+      "minutes_few": "{{count}} мин",
+      "minutes_other": "{{count}} мин",
+      "hoursMinutes": "{{hours}} ч {{minutes}} мин"
+    },
+    "source": {
+      "device": "дугме на хабу",
+      "api": "апликација",
+      "dashboard": "локална контролна табла"
+    },
+    "endReason": {
+      "timeout": "истекло време",
+      "device": "дугме на хабу",
+      "api": "заустављено у апликацији",
+      "dashboard": "заустављено на локалној контролној табли"
+    }
+  },
+  "hiveLink": {
+    "prompt": {
+      "message": "Ову кошницу надгледа HiveHub {{device}} ({{hive}}). Покрените режим прегледа да отварање кошнице не би изазвало лажна упозорења.",
+      "active": "Режим прегледа је укључен за {{hive}} на HiveHub {{device}}.",
+      "pending": "Режим прегледа је затражен за {{hive}} на HiveHub {{device}} — хаб ће га преузети при следећем јављању.",
+      "activeOther": "Режим прегледа је укључен за друге кошнице на HiveHub {{device}}, а не за {{hive}}. Прво га зауставите да бисте га покренули за ову кошницу."
+    },
+    "card": {
+      "title": "HiveHub",
+      "description": "Тренутна очитавања повезаних HiveHub сензора.",
+      "weight": "Тежина",
+      "weightChange24h": "Промена за 24 ч",
+      "temperature": "Температура у кошници",
+      "humidity": "Влажност",
+      "lastReading": "Последње очитавање: {{time}}",
+      "openHiveHub": "Отвори HiveHub"
+    }
+  },
+  "traffic": {
+    "title": "HiveTraffic бројачи пчела",
+    "description": "Ноћни режим и групе емитера за сваки HiveTraffic бројач упарен са овим хабом. IR емитери су убедљиво највећа ставка у потрошњи енергије бројача, па ова подешавања одлучују да ли ће бити довољно самостално напајање.",
+    "readOnly": "Само власници и администратори уређаја могу да мењају ова подешавања. Ваша улога је „{{role}}“.",
+    "hiveFallback": "Кошница {{slot}}",
+    "noChanges": "Нема измена за чување",
+    "saved": "Подешавања бројача пчела су сачувана. Бројачи ће их преузети при следећем јављању.",
+    "appliesToAll": "Важи за сваки HiveTraffic бројач упарен са овим уређајем. Бројач добија подешавање у следећем циклусу слања хаба.",
+    "status": {
+      "title": "Бројачи тренутно",
+      "none": "У последњем очитавању није пријављен ниједан HiveTraffic бројач.",
+      "counting": "Броји",
+      "nightIdle": "Ноћно мировање",
+      "nightIdleFor_one": "Ноћно мировање · још {{count}} мин",
+      "nightIdleFor_few": "Ноћно мировање · још {{count}} мин",
+      "nightIdleFor_other": "Ноћно мировање · још {{count}} мин",
+      "banksRunning": "Активне групе емитера: {{banks}}",
+      "banksUnknown": "Групе емитера нису пријављене (фирмвер бројача старији од 0.3.0)",
+      "applied": "Групе примењене",
+      "pending": "Групе чекају следеће јављање"
+    },
+    "night": {
+      "title": "Ноћни режим",
+      "description": "Медоносне пчеле су дневне — за лет им је потребна светлост, а испод око 10 °C лет ионако престаје. Током овог периода бројач престаје да мери како би штедео енергију. Наставља да се оглашава, тако да очитавања и ажурирања фирмвера и даље раде.",
+      "enable": "Укључи ноћни режим",
+      "start": "Почетак ноћи (локално време)",
+      "end": "Крај ноћи (локално време)",
+      "windowHelp": "Период може прелазити преко поноћи (нпр. 20:00 → 06:00). Ако поставите исто време за почетак и крај, период је празан — никада се не примењује — уместо да обухвата цео дан. Оставите резерву око сумрака и зоре: активност је највећа непосредно пре заласка и изласка сунца.",
+      "emptyWindow": "Почетак и крај су исти, па је период празан и ноћни режим се никада не би применио.",
+      "wrapsMidnight": "Период прелази преко поноћи: од {{start}} до {{end}} следећег јутра.",
+      "timezone": "Временска зона",
+      "tzCustom": "POSIX TZ низ",
+      "timezoneHelp": "Сат хаба ради по UTC. Без исправне временске зоне период је померен за вашу разлику у односу на UTC и помера се за сат при свакој промени летњег рачунања времена.",
+      "tzPresets": {
+        "cet": "Средња Европа (Берлин, Париз, Мадрид, Беч)",
+        "uk": "Уједињено Краљевство / Ирска",
+        "eet": "Источна Европа (Хелсинки, Атина)",
+        "usEastern": "САД – источно време",
+        "usCentral": "САД – централно време",
+        "usMountain": "САД – планинско време",
+        "usPacific": "САД – пацифичко време",
+        "utc": "UTC (без локалног времена)",
+        "custom": "Прилагођено…"
+      },
+      "maxTraffic": "Одложи изнад (пролаза по циклусу)",
+      "maxTrafficHelp": "Одлаже ноћни режим док је у последњем циклусу слања избројано више пролаза од овог броја (унутра + напоље), тако да друштво које још лети касно летње вече не буде прекинуто. 0 значи само по сату.",
+      "save": "Сачувај ноћни режим"
+    },
+    "banks": {
+      "title": "Групе емитера",
+      "description": "IR емитери бројача укључују се у три групе од по осам пролаза. Свака група троши око 80 mA. Искључите једну ако је улаз у кошницу ужи од 24 пролаза, ако је део затворен или ако напајање не може да издржи целу плочу.",
+      "bank": "Група {{bank}} — пролази {{gates}}",
+      "current_one": "{{count}} група укључена · око {{ma}} mA на 3,3 V линији бројача",
+      "current_few": "{{count}} групе укључене · око {{ma}} mA на 3,3 V линији бројача",
+      "current_other": "{{count}} група укључено · око {{ma}} mA на 3,3 V линији бројача",
+      "help": "Искључена група уопште не броји своје пролазе, па укупни збирови падају отприлике сразмерно — не поредите сужени бројач са његовом сопственом историјом. Бар једна група мора остати укључена; бројач који не треба ништа да броји распарите.",
+      "firmwareNote": "Потребан је фирмвер бројача 0.3.0 или новији. Подешавање се поново шаље након сваког ресетовања бројача.",
+      "save": "Сачувај групе емитера"
+    },
+    "errors": {
+      "loadFailed": "Није могуће учитати конфигурацију уређаја.",
+      "saveFailed": "Није могуће сачувати подешавања бројача пчела",
+      "invalidTime": "Унесите исправно време почетка и краја (ЧЧ:ММ).",
+      "invalidMaxTraffic": "Праг одлагања мора бити цео број, 0 или већи.",
+      "emptyWindow": "Почетак и крај ноћног режима су исти — период се никада не би применио.",
+      "noBank": "Бар једна група емитера мора остати укључена — уместо тога распарите бројач."
+    }
+  },
+  "hubAccess": {
+    "title": "Приступ хабу",
+    "description": "Приступите хабу на лицу места без отварања кућишта и подесите колико дуго преглед сме да траје.",
+    "readOnly": "Само власници и администратори уређаја могу да мењају ова подешавања. Ваша улога је „{{role}}“.",
+    "noChanges": "Нема измена за чување",
+    "cancel": "Откажи",
+    "ap": {
+      "title": "Приступна тачка за подешавање",
+      "description": "Отвара Wi-Fi мрежу хаба HiveHub-Setup, исто као кратак притисак на дугме за подешавање: промена Wi-Fi мреже, упаривање сензора или преузимање података са SD картице.",
+      "lastCheckIn": "Последње јављање: {{time}}",
+      "open": "Отвори приступну тачку за подешавање",
+      "confirmTitle": "Отворити приступну тачку за подешавање?",
+      "confirmTiming_one": "Захтев је у реду чекања. Хаб спава између циклуса, па се приступна тачка отвара после његовог следећег јављања — најкасније за {{count}} минут.",
+      "confirmTiming_few": "Захтев је у реду чекања. Хаб спава између циклуса, па се приступна тачка отвара после његовог следећег јављања — најкасније за {{count}} минута.",
+      "confirmTiming_other": "Захтев је у реду чекања. Хаб спава између циклуса, па се приступна тачка отвара после његовог следећег јављања — најкасније за {{count}} минута.",
+      "confirmTimingUnknown": "Захтев је у реду чекања. Хаб спава између циклуса, па се приступна тачка отвара после његовог следећег јављања — најкасније за један интервал слања.",
+      "confirmOffline": "Док је приступна тачка отворена, хаб није на Wi-Fi мрежи и не шаље очитавања.",
+      "confirmTimeout": "Ако се нико не повеже, сама се затвара по истеку времена портала за подешавање, зато је покрените само када је неко код кошнице.",
+      "confirm": "Стави приступну тачку у ред",
+      "queueing": "Ставља се у ред…",
+      "queued": "Приступна тачка је у реду чекања. Отвара се после следећег јављања хаба.",
+      "failed": "Није могуће ставити приступну тачку у ред"
+    },
+    "inspection": {
+      "title": "Временско ограничење прегледа",
+      "description": "Сигурносна мрежа: преглед се сам завршава после овог броја минута, тако да заборављени притисак на дугме не скрива податке кошнице бесконачно. Подразумевано 60.",
+      "label": "Временско ограничење (минути, 1–1440)",
+      "save": "Сачувај временско ограничење",
+      "saved": "Временско ограничење прегледа је сачувано",
+      "saveFailed": "Није могуће сачувати временско ограничење прегледа",
+      "invalid": "Унесите цео број минута између 1 и 1440."
+    }
+  },
+  "dataTools": {
+    "title": "Извоз и чишћење података",
+    "description": "Направите резервну копију очитавања овог хаба или уклоните погрешна.",
+    "hiveFallback": "Кошница {{slot}}",
+    "cancel": "Откажи",
+    "export": {
+      "title": "Извези очитавања",
+      "description": "Преузмите сачувана очитавања као NDJSON резервну копију.",
+      "from": "Од (опционо)",
+      "to": "До (опционо)",
+      "rangeHelp": "Оставите оба поља празна да бисте извезли све. Датуми обухватају целе дане по вашем локалном времену.",
+      "hives": "Кошнице (опционо)",
+      "allHives": "Укључене су све кошнице.",
+      "someHives_one": "Укључена је само {{count}} изабрана кошница. Број испод обухвата сва очитавања у распону.",
+      "someHives_few": "Укључене су само {{count}} изабране кошнице. Број испод обухвата сва очитавања у распону.",
+      "someHives_other": "Укључено је само {{count}} изабраних кошница. Број испод обухвата сва очитавања у распону.",
+      "invalidRange": "Датум почетка је после датума краја.",
+      "summaryFailed": "Није могуће пребројати очитавања.",
+      "count_one": "{{count}} очитавање",
+      "count_few": "{{count}} очитавања",
+      "count_other": "{{count}} очитавања",
+      "span": "Од {{first}} до {{last}}",
+      "download": "Преузми",
+      "formatHelp": "Једно JSON очитавање по реду. Датотека се може поново увести преко увоза са SD картице.",
+      "noPermission": "Само власници и администратори уређаја могу да извозе податке. Ваша улога је „{{role}}“."
+    },
+    "delete": {
+      "title": "Обриши очитавања у распону",
+      "description": "Уклања лажна очитавања — на пример скокове тежине које хаб забележи при покретању пре калибрације вага, а који иначе искривљују графиконе и анализе.",
+      "warningTitle": "Ово се не може опозвати",
+      "warning": "Обрисана очитавања нестају заувек. Ако би вам распон могао затребати, прво га извезите.",
+      "start": "Почетак",
+      "end": "Крај",
+      "claimCode": "Код за преузимање",
+      "claimCodeHelp": "Код за преузимање хаба, као друга потврда.",
+      "review": "Провери брисање",
+      "confirmTitle": "Обрисати ова очитавања?",
+      "confirmRange": "Од {{start}} до {{end}}.",
+      "confirmCount_one": "{{count}} очитавање биће трајно обрисано.",
+      "confirmCount_few": "{{count}} очитавања биће трајно обрисана.",
+      "confirmCount_other": "{{count}} очитавања биће трајно обрисано.",
+      "confirmIrreversible": "Ово се не може опозвати.",
+      "countFailed": "Није могуће пребројати очитавања у овом распону.",
+      "confirm_one": "Обриши {{count}} очитавање",
+      "confirm_few": "Обриши {{count}} очитавања",
+      "confirm_other": "Обриши {{count}} очитавања",
+      "deleting": "Брише се…",
+      "success_one": "Обрисано је {{count}} очитавање.",
+      "success_few": "Обрисана су {{count}} очитавања.",
+      "success_other": "Обрисано је {{count}} очитавања.",
+      "noPermission": "Само власник уређаја може да брише очитавања. Ваша улога је „{{role}}“.",
+      "errors": {
+        "missingRange": "Изаберите почетак и крај.",
+        "invalidRange": "Крај мора бити у исто време као почетак или после њега.",
+        "missingClaimCode": "Унесите код за преузимање хаба."
+      }
+    }
+  },
+  "alertSettings": {
+    "title": "HiveHub упозорења имејлом",
+    "description": "Примите имејл када HiveHub примети нешто у вашим кошницама — ројење, грабеж, друштво без матице и друго.",
+    "enable": "Шаљи ми HiveHub упозорења имејлом",
+    "minSeverity": "Минимална озбиљност",
+    "minSeverityHelp": "Упозорења испод овог нивоа никада се не шаљу имејлом.",
+    "severity": {
+      "watch": "Праћење и више",
+      "warning": "Упозорење и више",
+      "critical": "Само критична"
+    },
+    "help": {
+      "schedule": "HivePal проверава нова упозорења сваких 15 минута.",
+      "once": "Свако упозорење се шаље имејлом једном када се појави, и поново само ако се погорша.",
+      "scope": "Обухвата све HiveHub уређаје којима имате приступ.",
+      "email": "Захтева да имејл буде подешен на HivePal серверу."
+    },
+    "saved": "Подешавања упозорења су сачувана",
+    "saveFailed": "Није могуће сачувати подешавања упозорења",
+    "loadFailed": "Није могуће учитати ваша подешавања."
+  },
+  "health": {
+    "title": "Стање сензора",
+    "description": "Стање сваког сензора према извештају уређаја {{name}}.",
+    "descriptionAt": "Стање сензора из последњег јављања · {{ago}}.",
+    "noData": "Стање сензора још није пријављено — појављује се када уређај пошаље прво очитавање.",
+    "hubHeading": "Хаб",
+    "hiveIndex": "Кошница {{n}}",
+    "noHiveSensors": "За ову кошницу нису пријављени сензори.",
+    "faultNote": "Хаб своје подсистеме пријављује само као исправно/неисправно — за њих не шаље шифру грешке, па сваки квар изнад описује шта није успело. Бројач на улазу у кошницу пријављује шифру стања, која се приказује уз квар свуда где је очитана.",
+    "summary": {
+      "noData": "Нема података сензора",
+      "allOk": "Све у реду",
+      "faults_one": "{{count}} квар",
+      "faults_few": "{{count}} квара",
+      "faults_other": "{{count}} кварова"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Квар",
+      "notFitted": "Није уграђено",
+      "notHeard": "Нема сигнала"
+    },
+    "hub": {
+      "sht_ok": "Спољна температура/влажност (SHT40)",
+      "rtc_ok": "Сат реалног времена",
+      "sd_ok": "SD картица",
+      "mic_ok": "Микрофон",
+      "mic_left_ok": "Микрофон · леви",
+      "mic_right_ok": "Микрофон · десни",
+      "battery_monitor_ok": "Надзор батерије",
+      "solar_monitor_ok": "Надзор соларног панела"
+    },
+    "hubReason": {
+      "sht_ok": "Сензор околине у овом циклусу није вратио исправно очитавање, па ово јављање не садржи спољну температуру ни влажност. Обично је у питању квар I²C магистрале или ожичења; сензор који уопште није откривен при покретању изгледа исто.",
+      "rtc_ok": "Сат реалног времена није одговорио на I²C магистрали. Временске ознаке се узимају из мрежног времена, па очитавање снимљено ван мреже може имати погрешан датум.",
+      "sd_ok": "SD картица у овом циклусу није монтирана — недостаје, не може да се прочита или је квар SPI/ожичења. Док ово траје, очитавања се не баферују на картицу.",
+      "mic_ok": "Снимање микрофоном није вратило употребљиве узорке, па ово јављање не садржи акустичне опсеге.",
+      "mic_left_ok": "Леви микрофон није вратио употребљиве узорке.",
+      "mic_right_ok": "Десни микрофон није вратио употребљиве узорке.",
+      "battery_monitor_ok": "Мерач напуњености батерије није одговорио на I²C магистрали — напон и ниво напуњености батерије недостају у овом јављању.",
+      "solar_monitor_ok": "Надзор соларног панела није одговорио на I²C магистрали — соларни напон, струја и снага недостају у овом јављању."
+    },
+    "sensor": {
+      "scale": "Вага",
+      "inHive": "Сензор у кошници",
+      "counter": "HiveTraffic бројач",
+      "hiveheart": "HiveHeart"
+    },
+    "reason": {
+      "scale": "За ову кошницу је подешена вага, али у овом циклусу није дала употребљиво очитавање, па ово јављање не садржи тежину за њу.",
+      "inHive": "Током BLE скенирања у овом циклусу није примљен оглас од упареног уређаја {{kind}} — ван домета, празна батерија или искључен.",
+      "inHiveKindFallback": "сензор у кошници",
+      "node": "Чвор {{node}}.",
+      "lastHeard": "Последњи пут чут {{ago}}.",
+      "notHeardInRange": "Није чут у учитаном распону.",
+      "counter": "Бројач на улазу у кошницу није одговорио на GATT читање у овом циклусу — ван домета, искључен или заузет када се HiveHub повезивао.",
+      "counterNode": "Бројач {{node}}.",
+      "lastAnswered": "Последњи одговор {{ago}}.",
+      "notAnsweredInRange": "Није одговорио у учитаном распону.",
+      "statusThen": "Стање тада: {{status}}.",
+      "expandersThen_one": "Тада је одговарао {{count}} од 3 проширивача портова.",
+      "expandersThen_few": "Тада су одговарала {{count}} од 3 проширивача портова.",
+      "expandersThen_other": "Тада је одговарало {{count}} од 3 проширивача портова.",
+      "hiveheart": "HiveHeart није чут у овом циклусу — ван домета, празна батерија или искључен."
+    },
+    "counter": {
+      "nightIdle": "ноћно мировање",
+      "nightIdleBadge": "Ноћно мировање",
+      "otherBits": "битови специфични за бројач {{hex}}",
+      "noFlags": "нема постављених заставица",
+      "statusCode": "стање {{hex}}",
+      "expanders_one": "{{count}}/3 проширивача пролаза",
+      "expanders_few": "{{count}}/3 проширивача пролаза",
+      "expanders_other": "{{count}}/3 проширивача пролаза",
+      "glitches_one": "{{count}} сметња",
+      "glitches_few": "{{count}} сметње",
+      "glitches_other": "{{count}} сметњи",
+      "banks": "Групе {{list}}",
+      "noBanks": "Нема група емитера"
+    },
+    "meta": {
+      "firmware": "v{{version}}",
+      "batteryPercent": "Батерија {{value}} %",
+      "batteryMv": "Батерија {{value}} mV",
+      "batteryV": "Батерија {{value}} V",
+      "rssi": "{{value}} dBm"
+    }
+  },
+  "hubStatus": {
+    "title": "Стање хаба",
+    "description": "Веза, сат и напајање самог HiveHub-а.",
+    "noData": "Са овог хаба још није примљено ниједно очитавање.",
+    "staleWarning": "Нема очитавања већ {{ago}} — хаб је пропустио неколико јављања.",
+    "badge": {
+      "live": "Уживо",
+      "stale": "Застарело",
+      "inspection": "Преглед у току",
+      "calibration": "Режим калибрације"
+    },
+    "section": {
+      "connectivity": "Повезаност",
+      "battery": "Батерија",
+      "solar": "Соларни панел"
+    },
+    "row": {
+      "signal": "Сигнал",
+      "transport": "Пренос",
+      "timeSource": "Извор времена",
+      "lastSeen": "Последњи пут виђен",
+      "lastReading": "Последње очитавање",
+      "firmware": "Фирмвер",
+      "bootCount": "Број покретања",
+      "stateOfCharge": "Ниво напуњености",
+      "batteryVoltage": "Напон",
+      "batteryAlert": "Упозорење батерије",
+      "solarPower": "Соларна снага",
+      "solarCurrent": "Соларна струја",
+      "solarBus": "Напон панела (магистрале)",
+      "solarLoad": "Напон оптерећења"
+    },
+    "signalQuality": {
+      "excellent": "Одличан",
+      "good": "Добар",
+      "fair": "Осредњи",
+      "poor": "Слаб"
+    },
+    "transport": {
+      "wifi": "Wi-Fi",
+      "cellular": "Мобилна мрежа"
+    },
+    "rtc": {
+      "ok": "RTC у реду",
+      "fault": "Квар RTC-а"
+    },
+    "batteryAlertActive": "Слаба батерија"
+  },
+  "hiveCards": {
+    "empty": "Овај уређај још није пријавио ниједну кошницу.",
+    "hiveIndex": "Кошница {{n}}",
+    "weight": "Тежина",
+    "temperature": "Температура",
+    "humidity": "Влажност",
+    "delta24h": "24 ч {{value}} kg",
+    "lastReported": "Последње пријављено {{ago}}",
+    "inspection": "Преглед",
+    "insightsLoading": "Учитавање анализа",
+    "insightsUnavailable": "Анализе нису доступне",
+    "noSensors": "Нема пријављених сензора",
+    "traffic": "Унутра {{in}} · Напоље {{out}}",
+    "trafficTitle": "Пчеле унутра/напоље током последњег интервала",
+    "alerts_one": "{{count}} активно упозорење",
+    "alerts_few": "{{count}} активна упозорења",
+    "alerts_other": "{{count}} активних упозорења",
+    "sensor": {
+      "scale": "Вага",
+      "inHive": "Сензор у кошници",
+      "counter": "HiveTraffic бројач",
+      "hiveheart": "HiveHeart"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Нема сигнала / квар"
+    }
+  },
+  "audio": {
+    "title": "Звук кошнице",
+    "description": "Затражите од HiveInside чвора кошнице да сними звук, а затим га преслушајте овде. Хаб преузима захтев при следећем буђењу, па се снимак појављује у року од једног интервала извештавања, а не одмах.",
+    "noNodes": "На овом хабу није упарен ниједан HiveInside чвор. Само HiveInside има микрофон — HolyIot или RuuviTag бикон не може да снима.",
+    "hive": "Кошница",
+    "hiveFallback": "Кошница {{slot}}",
+    "length": "Трајање",
+    "durationOption_one": "{{count}} секунда",
+    "durationOption_few": "{{count}} секунде",
+    "durationOption_other": "{{count}} секунди",
+    "gain": "Појачање",
+    "gainValue": "{{gain}} dB",
+    "record": "Сними",
+    "nextWake": "Стиже до хаба при његовом следећем буђењу.",
+    "viewerNote": "Снимак може да затражи власник или администратор.",
+    "lengthHint": "Краће је обично боље: 10–20 секунди је довољно да чујете оно на шта је анализа указала, а троши мање батерије и мање времена док је кошница ван етра — повезани чвор нити се оглашава нити мери.",
+    "requestSuccess": "Снимак је затражен. Стиже до хаба при његовом следећем буђењу.",
+    "requestError": "Захтев није могуће ставити у ред: {{message}}",
+    "listTitle": "Снимци",
+    "onlySelectedHive": "Само {{name}}",
+    "loadError": "Није могуће учитати снимке: {{message}}",
+    "empty": "Још нема снимака. Затражите од кошнице да сними и снимак ће се појавити овде. Сесија је 10–60 секунди звука од 16 kHz преузетог са чвора преко BLE.",
+    "requestedLength_one": "Затражено {{count}} s",
+    "requestedLength_few": "Затражено {{count}} s",
+    "requestedLength_other": "Затражено {{count}} s",
+    "requestedBy": "Затражио/ла: {{name}}",
+    "status": {
+      "requested": "Чека се хаб",
+      "streaming": "Снимање…",
+      "ready": "Спремно",
+      "readyIncomplete": "Спремно, непотпуно",
+      "failed": "Неуспешно"
+    },
+    "waitingNote": "Чека се да се хаб пробуди и преузме захтев — још ништа није снимљено. Захтев који хаб не преузме у року од 45 минута означава се као неуспешан.",
+    "streamingNote": "Снимање — звук се појављује овде како стиже.",
+    "streamingPartial": "Снимање је још у току — ово је оно што је до сада стигло. Пустите поново када се сесија заврши да бисте чули цео снимак.",
+    "failedFallback": "Овај снимак није успео.",
+    "seconds": "{{value}} s",
+    "bytes": "{{value}} B",
+    "percent": "{{value}} %",
+    "download": "Преузми WAV",
+    "delete": "Обриши",
+    "deleteConfirm": "Обрисати овај снимак? Ништа друго га неће обрисати — нема аутоматског чишћења.",
+    "deleteSuccess": "Снимак је обрисан.",
+    "deleteError": "Није могуће обрисати снимак: {{message}}",
+    "confirmation": {
+      "verified": "проверено",
+      "reported": "непроверено",
+      "confirmed": "хаб потврдио",
+      "unknown": "није потврђено"
+    },
+    "quality": {
+      "length": "Трајање",
+      "dropped": "Одбачено",
+      "gaps": "Прекиди",
+      "hubBuffer": "Бафер хаба",
+      "clipping": "Одсецање",
+      "checksum": "Контролни збир",
+      "cause": {
+        "dropped": "чвор није могао довољно брзо да шаље звук",
+        "gaps": "пакети су изгубљени у етру",
+        "hubBuffer": "слање хаба је заостајало за његовим бафером"
+      },
+      "gapNote": "Звук са обе стране прекида је стваран, али спој није. Узрок: {{causes}}.",
+      "clippingNote": "Смањите појачање за чистији снимак.",
+      "unknownNote": "Хаб никада није пријавио ову сесију, па нико није проверио да ли је звук потпун. Оно што је ту може се пустити."
+    }
+  },
+  "dashboard": {
+    "hiveFallback": "Кошница {{index}}",
+    "units": {
+      "bees": "пчела"
+    },
+    "range": {
+      "24h": "24 ч",
+      "7d": "7 д",
+      "30d": "30 д",
+      "365d": "365 д",
+      "custom": "Прилагођено",
+      "invalid": "Датум почетка не сме бити после датума краја."
+    },
+    "header": {
+      "title": "Моја контролна табла",
+      "description": "Виџети које подешава корисник. Кошнице изабране изнад управљају графиконима по кошницама.",
+      "editDescription": "Режим уређивања: превуците ручку да померите виџете и превуците угао да им промените величину на мрежи од 4 колоне.",
+      "edit": "Уреди контролну таблу",
+      "done": "Готово",
+      "addWidget": "Додај виџет",
+      "reset": "Ресетуј",
+      "editBanner": "Режим уређивања контролне табле је активан. Ручком у заглављу сваког виџета га померате, а превлачењем доњег десног угла мењате ширину или висину. Промене распореда се аутоматски чувају за овај HiveHub уређај.",
+      "dropEnd": "Отпустите овде да бисте преместили виџет на крај контролне табле.",
+      "noWidgets": "Још нема виџета. Додајте шаблон да бисте направили своју контролну таблу.",
+      "restoreDefaults": "Врати подразумевано"
+    },
+    "overview": {
+      "title": "Преглед кошница",
+      "description": "Сажето стање додељених кошница. Изаберите плочице да бисте управљали виџетима контролне табле испод.",
+      "lastData": "Последњи подаци",
+      "hivesOnline": "Кошнице на мрежи",
+      "hubFirmware": "HiveHub FW",
+      "hiveInsideFirmware": "HiveInside FW",
+      "selected_one": "Изабрана: {{count}}",
+      "selected_few": "Изабране: {{count}}",
+      "selected_other": "Изабрано: {{count}}",
+      "hide": "Сакриј преглед",
+      "show": "Прикажи преглед",
+      "slot": "Слот {{index}}",
+      "ok": "OK",
+      "noData": "Нема података",
+      "weight": "Тежина",
+      "temperature": "Темп.",
+      "humidity": "RV",
+      "empty": "Доделите HiveHub слотове HivePal кошницама у панелу за подешавање уређаја да би се овде приказале плочице прегледа."
+    },
+    "sensors": {
+      "scale": "вага",
+      "inHive": "у кошници",
+      "accel": "акцел.",
+      "counter": "бројач",
+      "none": "нема сензора"
+    },
+    "widgetShell": {
+      "move": "Помери {{title}}",
+      "moveHint": "Превуците да померите овај виџет",
+      "remove": "Уклони {{title}}",
+      "resize": "Промени величину {{title}}",
+      "resizeHint": "Превуците да промените величину овог виџета"
+    },
+    "addWidget": {
+      "title": "Додај виџет",
+      "description": "Почните од шаблона. Виџет ће, где је то примењиво, користити кошнице изабране у мрежи прегледа.",
+      "defaultSize": "Подразумевана величина {{w}} x {{h}}"
+    },
+    "widgets": {
+      "weightComparison": {
+        "title": "Поређење тежине",
+        "description": "Упоредите изабране кошнице за тренутни период."
+      },
+      "dailyMaxWeight": {
+        "title": "Дневна максимална тежина",
+        "description": "Највећа компензована тежина по дану за изабране кошнице."
+      },
+      "climate": {
+        "title": "Микроклима кошнице",
+        "description": "Температура и влажност изабраних кошница."
+      },
+      "power": {
+        "title": "Стање напајања",
+        "description": "Напуњеност батерије, напон батерије и соларни улаз."
+      },
+      "beeTraffic": {
+        "title": "Лет пчела",
+        "description": "Укупан лет унутра/напоље и нето ток."
+      },
+      "soundRms": {
+        "title": "Звук / акустични опсези",
+        "description": "Акустични RMS по кошници и FFT/HiveHeart опсези када су доступни."
+      },
+      "hiveHeartSpectrum": {
+        "title": "HiveHeart спектар",
+        "description": "Најновији HiveHeart FFT нивои (0–15) у 16 фреквентних опсега за изабране кошнице."
+      },
+      "vibration": {
+        "title": "Вибрациони опсези",
+        "description": "RMS вибрација, опсези ројења, вентилације и активности."
+      },
+      "configurableDiagram": {
+        "title": "Прилагодљиви дијаграм",
+        "description": "Изаберите метрике кошнице, звука, лета пчела, микроклиме и уређаја за приказ."
+      },
+      "temperatureHeatmap": {
+        "title": "Топлотна мапа температуре",
+        "description": "Сажет преглед температуре свих кошница."
+      },
+      "insights": {
+        "title": "Низ анализа",
+        "description": "Активна упозорења и исечци доказа."
+      },
+      "dataQuality": {
+        "title": "Квалитет података",
+        "description": "Доступност сензора и недостајућа очитавања."
+      }
+    },
+    "metricGroups": {
+      "scale": "Вага",
+      "climate": "Микроклима",
+      "beeTraffic": "Лет пчела",
+      "vibration": "Вибрације",
+      "sound": "Звук",
+      "device": "Уређај"
+    },
+    "metrics": {
+      "weight": "Тежина",
+      "temperature": "Температура",
+      "humidity": "Влажност",
+      "pressure": "Притисак",
+      "beeIn": "Пчеле унутра",
+      "beeOut": "Пчеле напоље",
+      "beeNet": "Нето ток",
+      "vibration": "RMS вибрација",
+      "swarmBand": "Опсег ројења",
+      "fanningBand": "Опсег вентилације",
+      "activityBand": "Опсег активности",
+      "soundRms": "RMS звука",
+      "soundHum": "Опсег зујања",
+      "soundPiping": "Опсег оглашавања матице",
+      "soundStress": "Опсег стреса",
+      "hiveHeartFrequency": "HiveHeart фреквенција",
+      "hiveHeartEnergy": "HiveHeart енергија",
+      "batterySoc": "Напуњеност батерије",
+      "batteryVoltage": "Напон батерије",
+      "solarPower": "Соларна снага"
+    },
+    "axes": {
+      "weight": "Тежина",
+      "temperature": "Температура",
+      "humidity": "Влажност",
+      "pressure": "Притисак",
+      "beecount": "Број пчела",
+      "vibration": "Вибрације",
+      "dbfs": "Ниво звука",
+      "frequency": "Фреквенција",
+      "energy": "Енергија",
+      "percent": "Напуњеност",
+      "voltage": "Напон",
+      "power": "Снага"
+    },
+    "soundMetrics": {
+      "rms": "RMS",
+      "hiveHeartFrequency": "HiveHeart фреквенција",
+      "hiveHeartEnergy": "HiveHeart енергија",
+      "hiveHeartPeak": "HiveHeart врх"
+    },
+    "vibrationMetrics": {
+      "rms": "RMS",
+      "swarmBand": "Опсег ројења",
+      "fanningBand": "Опсег вентилације",
+      "activityBand": "Опсег активности"
+    },
+    "series": {
+      "temperature": "{{name}} темп.",
+      "humidity": "{{name}} RV",
+      "beeIn": "Унутра",
+      "beeOut": "Напоље",
+      "beeNet": "Нето"
+    },
+    "axisScale": {
+      "auto": "аутоматски",
+      "setBound": "Подеси {{axis}} {{bound}}",
+      "clearHint": "Оставите празно и притисните Enter за аутоматски",
+      "tickTitle": "Кликните да подесите {{bound}}; обришите за аутоматски",
+      "reset": "ресетуј",
+      "help": "Кликните на најнижу или највишу ознаку Y осе да бисте је изменили. Обришите вредност за аутоматски."
+    },
+    "chart": {
+      "downloadCsv": "Преузми CSV"
+    },
+    "inspection": {
+      "legendHint_one": "{{count}} период прегледа је осенчен; очитавања могу бити поремећена",
+      "legendHint_few": "{{count}} периода прегледа су осенчена; очитавања могу бити поремећена",
+      "legendHint_other": "{{count}} периода прегледа је осенчено; очитавања могу бити поремећена"
+    },
+    "empty": {
+      "noData": "Нема података за изабране кошнице и период.",
+      "climate": "Нема података о микроклими за изабрани период.",
+      "power": "Нема података о напајању за изабрани период.",
+      "beeTraffic": "Нема података бројача пчела за изабране кошнице.",
+      "sound": "Нема акустичних података по кошници за изабране кошнице.",
+      "vibration": "Нема података о вибрацијама или опсезима акцелерометра за изабране кошнице.",
+      "configurable": "Изаберите бар једну метрику са подацима за изабране кошнице и период.",
+      "dailyMaxWeight": "Нема података о тежини за изабране кошнице и период.",
+      "hiveHeart": "Нема HiveHeart FFT података за изабране кошнице и период.",
+      "unknownWidget": "Непознат тип виџета."
+    },
+    "soundFootnote": "Прво приказује акустична очитавања по кошници. Застарели подаци левог/десног микрофона додељују се подешеним називима кошница за слотове 1 и 2 када не постоји акустични блок по кошници.",
+    "heatmap": {
+      "low": "ниска <33 °C",
+      "optimal": "оптимално за легло 33–36 °C",
+      "high": "висока >36 °C"
+    },
+    "insights": {
+      "loading": "Учитавање анализа…",
+      "unavailable": "Анализе нису доступне.",
+      "noAlerts": "Нема активних упозорења за изабране кошнице.",
+      "showing_one": "Приказано је {{count}} активно упозорење за изабране кошнице.",
+      "showing_few": "Приказана су {{count}} активна упозорења за изабране кошнице.",
+      "showing_other": "Приказано је {{count}} активних упозорења за изабране кошнице.",
+      "confidence": "поузданост {{percent}}%"
+    },
+    "dataQuality": {
+      "activeSlots": "Активни слотови",
+      "noScale": "Нема ваге",
+      "noClimate": "Нема микроклиме",
+      "noRecentData": "нема скорашњих података"
+    },
+    "hiveHeart": {
+      "level": "ниво",
+      "dominant": "доминантна фреквенција {{hz}} Hz",
+      "noDominant": "доминантна фреквенција није пријављена",
+      "footnote": "Релативни нивои 0–15 (не dBFS) последњег очитавања у распону. Испрекидане линије означавају доминантну фреквенцију коју пријављује HiveHeart; наслови Sub-bass/Hum/Piping/Stress су приближни и обухватају више опсега."
     }
   }
 }
