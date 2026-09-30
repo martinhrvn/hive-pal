@@ -524,12 +524,100 @@ export const useHiveScaleMeasurements = (
         `/api/hivescale/devices/${deviceId}/measurements`,
         { params: query },
       );
-      return response.data;
+      return response.data.map(withHiveReadings);
     },
     enabled: !!deviceId,
     refetchInterval: options.refetchInterval ?? 60000,
   });
 };
+
+const NESTED_HIVE_SENSORS = [
+  'accel',
+  'ble',
+  'bee_counter',
+  'mic',
+  'hiveheart',
+  'hivescale',
+] as const;
+
+/**
+ * Make sure a measurement carries `hives[]`.
+ *
+ * Current HiveHub servers always send it, synthesized from the flat columns
+ * for old rows. Older servers (and the HiveHub mock) send only the flat
+ * `scale_N_*` / `hive_N_*` / `ble_N_*` … fields, so rebuild the per-hive
+ * readings from those the way HiveHub's `_synthesize_hives_from_flat` does.
+ * Every component can then read hives[] without its own fallback.
+ */
+export function withHiveReadings(
+  measurement: HiveScaleMeasurement,
+): HiveScaleMeasurement {
+  if (measurement.hives?.length) return measurement;
+  const flat = measurement as unknown as Record<string, unknown>;
+  const byHive = new Map<number, Record<string, unknown>>();
+  const hive = (index: number) => {
+    let entry = byHive.get(index);
+    if (!entry) {
+      entry = { index };
+      byHive.set(index, entry);
+    }
+    return entry;
+  };
+  const nested = (index: number, sensor: string) => {
+    const entry = hive(index);
+    entry[sensor] ??= {};
+    return entry[sensor] as Record<string, unknown>;
+  };
+
+  for (const [key, value] of Object.entries(flat)) {
+    if (value === null || value === undefined) continue;
+    const match = /^([a-z_]+?)_(\d{1,2})_(.+)$/.exec(key);
+    if (!match) continue;
+    const [, prefix, rawIndex, field] = match;
+    const index = Number(rawIndex);
+    if (index < 1 || index > 18) continue;
+    if (prefix === 'scale') {
+      if (field === 'weight_kg') hive(index).weight_kg = value;
+      else if (field === 'raw') hive(index).raw_weight = value;
+    } else if (prefix === 'hive') {
+      if (field === 'temp_c') hive(index).temp_c = value;
+      else if (field === 'humidity_percent')
+        hive(index).humidity_percent = value;
+    } else if ((NESTED_HIVE_SENSORS as readonly string[]).includes(prefix)) {
+      nested(index, prefix)[field] = value;
+    }
+  }
+
+  // The legacy stereo mic belongs to hives 1 (left) and 2 (right).
+  for (const [index, side] of [
+    [1, 'left'],
+    [2, 'right'],
+  ] as const) {
+    for (const [key, value] of Object.entries(flat)) {
+      const prefix = `mic_${side}_`;
+      if (value === null || value === undefined || !key.startsWith(prefix))
+        continue;
+      const mic = nested(index, 'mic');
+      mic[key.slice(prefix.length)] ??= value;
+    }
+  }
+
+  for (const entry of byHive.values()) {
+    entry.weight_kg ??= null;
+    entry.raw_weight ??= null;
+    entry.temp_c ??= null;
+    entry.humidity_percent ??=
+      (entry.ble as { humidity_percent?: number } | undefined)
+        ?.humidity_percent ?? null;
+    const ble = entry.ble as Record<string, unknown> | undefined;
+    if (ble) ble.present ??= true;
+  }
+
+  const hives = [...byHive.values()].sort(
+    (a, b) => (a.index as number) - (b.index as number),
+  ) as unknown as HiveScaleHiveReading[];
+  return hives.length ? { ...measurement, hives } : measurement;
+}
 
 export const useHiveScaleMembers = (
   deviceId: string | undefined,
