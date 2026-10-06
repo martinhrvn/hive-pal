@@ -147,6 +147,14 @@
     "weatherForecast": "Weather Forecast"
   },
   "settings": {
+    "sso": "Single sign-on (SSO)",
+    "ssoDescription": "Sign in with your organization account",
+    "ssoLinked": "Your account is linked to SSO.",
+    "ssoNotLinked": "Your account is not linked to SSO yet.",
+    "ssoLink": "Link SSO account",
+    "ssoUnlink": "Unlink",
+    "ssoLinkFailed": "Could not link your SSO account",
+    "ssoUnlinkFailed": "Could not unlink your SSO account",
     "managePreferences": "Manage your account and application preferences",
     "generalSettings": "General Settings",
     "configureLanguageRegional": "Configure your language and regional preferences",

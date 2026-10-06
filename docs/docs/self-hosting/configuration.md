@@ -39,6 +39,52 @@ Hive-Pal authenticates with [Better Auth](https://www.better-auth.com/). Beyond 
 `JWT_SECRET` is **not** used for user authentication (that's Better Auth). It only signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs. Set it only if you use those features.
 :::
 
+### Single sign-on (OIDC / Authentik)
+
+Hive-Pal can sign users in through any OpenID Connect provider. It has been designed with [Authentik](https://goauthentik.io/) in mind. SSO is enabled as soon as the issuer (or discovery URL), client ID and client secret are set.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OIDC_ISSUER` | Issuer URL of the provider. Authentik: `https://auth.example.com/application/o/<app-slug>/` | — |
+| `OIDC_DISCOVERY_URL` | Full discovery URL; overrides the one derived from `OIDC_ISSUER` | `<OIDC_ISSUER>/.well-known/openid-configuration` |
+| `OIDC_CLIENT_ID` | Client ID of the OAuth2/OpenID provider | — |
+| `OIDC_CLIENT_SECRET` | Client secret of the OAuth2/OpenID provider | — |
+| `OIDC_PROVIDER_ID` | Internal provider ID, used in the redirect URI | `authentik` |
+| `OIDC_SCOPES` | Requested scopes (space- or comma-separated) | `openid profile email` |
+| `OIDC_BUTTON_LABEL` | Text of the login button | `Sign in with SSO` |
+| `OIDC_ALLOW_SIGNUP` | Create a Hive-Pal account on the first SSO login when no account with that email exists. With `false`, only existing users can sign in via SSO | `true` |
+| `DISABLE_LOCAL_LOGIN` | Disable password, magic-link and passkey sign-in as well as email sign-up, so that only SSO remains. Ignored while SSO is not configured | `false` |
+
+**How users are matched:** accounts are matched **by email address** (case-insensitive). The provider's email claim is trusted even when it doesn't send `email_verified=true`, so make sure users can't change their own email address in Authentik.
+
+When SSO is linked implicitly to an existing account whose email was never verified (typically an account registered with a password), the password, passkeys and sessions of that account are removed. This prevents someone from pre-registering an account with another person's email and keeping access after that person's first SSO login. The owner keeps all data and can still set a password again via "Forgot password". Accounts with a verified email (older accounts, magic-link users), and accounts linked by their owner from **Settings → Single sign-on**, keep their password.
+
+Users created through SSO are asked once to accept the privacy policy after their first login.
+
+#### Authentik setup
+
+1. In Authentik, go to **Applications → Providers** and create an **OAuth2/OpenID Provider**:
+   - **Client type:** Confidential
+   - **Redirect URIs (strict):** `<BETTER_AUTH_URL>/api/auth/oauth2/callback/authentik`, e.g. `https://hive.example.com/api/auth/oauth2/callback/authentik`. If you changed `OIDC_PROVIDER_ID`, use that value instead of `authentik`.
+   - **Scopes:** keep the default `openid`, `email` and `profile` mappings.
+2. Create an **Application** that uses this provider and note its **slug**. Bind users or groups to it to control who may sign in.
+3. Configure Hive-Pal:
+
+   ```bash
+   OIDC_ISSUER=https://auth.example.com/application/o/<app-slug>/
+   OIDC_CLIENT_ID=<client id>
+   OIDC_CLIENT_SECRET=<client secret>
+   OIDC_BUTTON_LABEL="Sign in with Authentik"
+   # OIDC_ALLOW_SIGNUP=false     # only allow existing Hive-Pal users
+   # DISABLE_LOCAL_LOGIN=true    # SSO only
+   ```
+
+4. Restart Hive-Pal. The login page now shows the SSO button.
+
+:::tip
+Keep local login enabled until you have confirmed that SSO works. Users with `ADMIN_EMAIL` get the admin role no matter how they sign in.
+:::
+
 ## Email
 
 Email powers magic-link sign-in and password-reset messages. Hive-Pal supports **Resend** or **SMTP** and auto-selects based on what's configured. Without email, password and passkey login still work, but magic links and password resets do not.
@@ -122,5 +168,5 @@ Configure [Sentry](https://sentry.io/) to monitor errors in production.
 
 - Never commit secrets to version control — use an `.env` file or your orchestrator's secret store.
 - Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32` and keep it stable; changing it invalidates existing sessions.
-- Set `BETTER_AUTH_URL`, `FRONTEND_URL`, and `PASSKEY_RP_ID` to your real public domain before going live.
+- Set `BETTER_AUTH_URL`, `FRONTEND_URL`, and `PASSKEY_RP_ID` to your real public domain before going live. `BETTER_AUTH_URL` also determines the SSO redirect URI.
 - Configure email so users can reset passwords and use magic links.

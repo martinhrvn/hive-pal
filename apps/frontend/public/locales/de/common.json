@@ -287,6 +287,14 @@
         "weatherForecast": "Wettervorhersage"
     },
     "settings": {
+        "sso": "Single Sign-On (SSO)",
+        "ssoDescription": "Mit Ihrem Organisationskonto anmelden",
+        "ssoLinked": "Ihr Konto ist mit SSO verknüpft.",
+        "ssoNotLinked": "Ihr Konto ist noch nicht mit SSO verknüpft.",
+        "ssoLink": "SSO-Konto verknüpfen",
+        "ssoUnlink": "Verknüpfung aufheben",
+        "ssoLinkFailed": "Ihr SSO-Konto konnte nicht verknüpft werden",
+        "ssoUnlinkFailed": "Die Verknüpfung Ihres SSO-Kontos konnte nicht aufgehoben werden",
         "managePreferences": "Verwalten Sie Ihre Konto- und Anwendungseinstellungen",
         "generalSettings": "Allgemeine Einstellungen",
         "configureLanguageRegional": "Sprache und regionale Einstellungen konfigurieren",

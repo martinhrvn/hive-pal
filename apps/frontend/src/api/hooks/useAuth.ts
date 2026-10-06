@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authClient, useSession } from '@/lib/auth-client';
 import { logApiError } from '../errorLogger';
 
@@ -74,3 +74,32 @@ export const useAuth = () => ({
   changePassword: useChangePassword(),
   profile: useUserProfile(),
 });
+
+export const LINKED_ACCOUNTS_QUERY_KEY = ['auth', 'linked-accounts'] as const;
+
+/** Sign-in methods linked to the current user ('credential', 'authentik', …). */
+export const useLinkedAccounts = () =>
+  useQuery({
+    queryKey: LINKED_ACCOUNTS_QUERY_KEY,
+    queryFn: async () => {
+      const result = await authClient.listAccounts();
+      if (result.error) throw result.error;
+      return (result.data ?? []).map(account => account.providerId);
+    },
+  });
+
+export const useUnlinkAccount = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (providerId: string) => {
+      const result = await authClient.unlinkAccount({ providerId });
+      if (result.error) throw result.error;
+      return result.data;
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: LINKED_ACCOUNTS_QUERY_KEY }),
+    onError: error => {
+      logApiError(error, '/api/auth/unlink-account', 'POST');
+    },
+  });
+};
