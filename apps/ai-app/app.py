@@ -42,12 +42,31 @@ whisper = WhisperModel(
     compute_type=WHISPER_COMPUTE_TYPE,
 )
 
+# Known treatment products — must stay in sync with TREATMENT_PRODUCTS in
+# packages/shared-schemas/src/actions/details.schema.ts
+TREATMENT_PRODUCT_IDS = [
+    "OXALIC_ACID",
+    "FORMIC_ACID",
+    "THYMOL",
+    "APIVAR",
+    "APISTAN",
+    "CHECKMITE_PLUS",
+    "HOPGUARD",
+    "API_BIOXAL",
+    "APIGUARD",
+    "MAQS",
+    "FUMIGATION",
+    "OTHER",
+]
+
+WEATHER_CONDITIONS = ["sunny", "partly-cloudy", "cloudy", "rainy"]
+
+# The draft mirrors createInspectionSchema / aiInspectionDraftSchema in
+# packages/shared-schemas (canonical API shape). The backend validates the
+# draft against aiInspectionDraftSchema before storing it.
 SCHEMA = {
     "type": "object",
     "properties": {
-        "hiveId": {
-            "type": ["string", "null"]
-        },
         "date": {
             "type": ["string", "null"],
             "description": "ISO 8601 datetime string if the transcript clearly states the inspection date/time; otherwise null"
@@ -56,7 +75,8 @@ SCHEMA = {
             "type": ["number", "null"]
         },
         "weatherConditions": {
-            "type": ["string", "null"]
+            "type": ["string", "null"],
+            "enum": WEATHER_CONDITIONS + [None]
         },
         "notes": {
             "type": ["string", "null"]
@@ -183,7 +203,10 @@ SCHEMA = {
                             "amount": {"type": ["number", "null"]},
                             "unit": {"type": ["string", "null"]},
                             "concentration": {"type": ["string", "null"]},
-                            "product": {"type": ["string", "null"]},
+                            "product": {
+                                "type": ["string", "null"],
+                                "enum": TREATMENT_PRODUCT_IDS + [None]
+                            },
                             "quantity": {"type": ["number", "null"]},
                             "duration": {"type": ["string", "null"]},
                             "component": {
@@ -204,7 +227,6 @@ SCHEMA = {
         }
     },
     "required": [
-        "hiveId",
         "date",
         "temperature",
         "weatherConditions",
@@ -214,8 +236,9 @@ SCHEMA = {
     ]
 }
 
-def empty_form_draft():
+def empty_inspection_draft():
     return {
+        "date": None,
         "temperature": None,
         "weatherConditions": None,
         "notes": None,
@@ -310,17 +333,18 @@ Hard rules:
 - If no observations are mentioned, keep the observations object but set its unknown values to null and arrays to [].
 
 Field mapping rules:
-- hiveId:
-  - only fill this if the transcript explicitly contains a real HivePal hive UUID
-  - otherwise null
 - date:
   - only fill if a clear inspection date/time is spoken
   - return ISO-8601 string if known, otherwise null
+  - include the time of day only if one is spoken
 - temperature:
   - numeric only
   - do not wrap inside a weather object
 - weatherConditions:
-  - short free-text weather description from transcript if stated, otherwise null
+  - must be exactly one of: sunny, partly-cloudy, cloudy, rainy
+  - map spoken weather to the closest option (e.g. "clear sky" -> sunny,
+    "overcast"/"foggy" -> cloudy, "drizzle"/"showers"/"snow" -> rainy)
+  - null if no weather is mentioned
 - notes:
   - concise free-text summary of notable inspection notes from transcript
   - keep it short and factual
@@ -385,11 +409,17 @@ Action details rules:
 - TREATMENT details:
   {{
     "type": "TREATMENT",
-    "product": string or null,
+    "product": one of OXALIC_ACID, FORMIC_ACID, THYMOL, APIVAR, APISTAN,
+      CHECKMITE_PLUS, HOPGUARD, API_BIOXAL, APIGUARD, MAQS, FUMIGATION,
+      OTHER, or null,
     "quantity": number or null,
-    "unit": string or null,
+    "unit": "ml" | "g" | "pcs" or null,
     "duration": string or null
   }}
+  - map spoken product names to the closest id ("oxalic acid" -> OXALIC_ACID,
+    "formic acid" -> FORMIC_ACID, "api bioxal" -> API_BIOXAL, ...)
+  - if the product is stated but matches no id, use OTHER and put the
+    spoken product name in the action's notes
 - FRAME details:
   {{
     "type": "FRAME",
@@ -428,11 +458,62 @@ Transcript:
 
 
 def normalize_recommendation(data: dict) -> dict:
+    """Normalize raw LLM output into the canonical inspection draft shape
+    (createInspectionSchema / aiInspectionDraftSchema in shared-schemas)."""
     if not isinstance(data, dict):
         data = {}
 
     observations = data.get("observations") or {}
     actions = data.get("actions") or []
+
+    weather_map = {
+        "sunny": "sunny",
+        "clear": "sunny",
+        "partly cloudy": "partly-cloudy",
+        "partly-cloudy": "partly-cloudy",
+        "cloudy": "cloudy",
+        "overcast": "cloudy",
+        "fog": "cloudy",
+        "foggy": "cloudy",
+        "rain": "rainy",
+        "rainy": "rainy",
+        "drizzle": "rainy",
+        "showers": "rainy",
+        "snow": "rainy",
+    }
+
+    treatment_product_map = {
+        "oxalic acid": "OXALIC_ACID",
+        "formic acid": "FORMIC_ACID",
+        "thymol": "THYMOL",
+        "apivar": "APIVAR",
+        "apistan": "APISTAN",
+        "checkmite": "CHECKMITE_PLUS",
+        "checkmite+": "CHECKMITE_PLUS",
+        "checkmite plus": "CHECKMITE_PLUS",
+        "hopguard": "HOPGUARD",
+        "api bioxal": "API_BIOXAL",
+        "api-bioxal": "API_BIOXAL",
+        "apiguard": "APIGUARD",
+        "maqs": "MAQS",
+        "fumigation": "FUMIGATION",
+    }
+
+    def normalize_weather(value):
+        if not isinstance(value, str):
+            return None
+        return weather_map.get(value.strip().lower())
+
+    def normalize_treatment_product(value):
+        if not isinstance(value, str) or not value.strip():
+            return None
+        raw = value.strip()
+        if raw in TREATMENT_PRODUCT_IDS:
+            return raw
+        mapped = treatment_product_map.get(raw.lower())
+        # Unknown products stay as spoken — the app treats them as a custom
+        # product name.
+        return mapped or raw
 
     brood_pattern_map = {
         "patch": "patchy",
@@ -493,32 +574,11 @@ def normalize_recommendation(data: dict) -> dict:
     }
 
     normalized = {
-        "hiveId": data.get("hiveId"),
         "date": data.get("date"),
         "temperature": data.get("temperature"),
-        "weatherConditions": data.get("weatherConditions"),
+        "weatherConditions": normalize_weather(data.get("weatherConditions")),
         "notes": data.get("notes"),
-        "observations": {
-            "strength": None,
-            "uncappedBrood": None,
-            "cappedBrood": None,
-            "honeyStores": None,
-            "pollenStores": None,
-            "queenCells": None,
-            "swarmCells": None,
-            "supersedureCells": None,
-            "queenSeen": None,
-            "broodPattern": None,
-            "additionalObservations": [],
-            "reminderObservations": [],
-        },
-        "actions": [],
     }
-    normalized["hiveId"] = data.get("hiveId")
-    normalized["date"] = data.get("date")
-    normalized["temperature"] = data.get("temperature")
-    normalized["weatherConditions"] = data.get("weatherConditions")
-    normalized["notes"] = data.get("notes")
 
     normalized["observations"] = {
         "strength": observations.get("strength"),
@@ -579,7 +639,7 @@ def normalize_recommendation(data: dict) -> dict:
                 "notes": action.get("notes"),
                 "details": {
                     "type": "TREATMENT",
-                    "product": details.get("product"),
+                    "product": normalize_treatment_product(details.get("product")),
                     "quantity": details.get("quantity"),
                     "unit": details.get("unit"),
                     "duration": details.get("duration"),
@@ -624,97 +684,6 @@ def normalize_recommendation(data: dict) -> dict:
 
     normalized["actions"] = normalized_actions
     return normalized
-
-def map_ai_to_form_draft(ai: dict) -> dict:
-    draft = empty_form_draft()
-
-    observations = ai.get("observations") or {}
-
-    draft["temperature"] = ai.get("temperature")
-    draft["weatherConditions"] = ai.get("weatherConditions")
-    draft["notes"] = ai.get("notes")
-
-    draft["observations"] = {
-        "strength": observations.get("strength"),
-        "uncappedBrood": observations.get("uncappedBrood"),
-        "cappedBrood": observations.get("cappedBrood"),
-        "honeyStores": observations.get("honeyStores"),
-        "pollenStores": observations.get("pollenStores"),
-        "totalFrames": observations.get("totalFrames"),
-        "eggsFrames": observations.get("eggsFrames"),
-        "uncappedBroodFrames": observations.get("uncappedBroodFrames"),
-        "cappedBroodFrames": observations.get("cappedBroodFrames"),
-        "droneBroodFrames": observations.get("droneBroodFrames"),
-        "pollenFrames": observations.get("pollenFrames"),
-        "nectarFrames": observations.get("nectarFrames"),
-        "honeyFrames": observations.get("honeyFrames"),
-        "emptyFrames": observations.get("emptyFrames"),
-        "queenCells": observations.get("queenCells"),
-        "swarmCells": observations.get("swarmCells"),
-        "supersedureCells": observations.get("supersedureCells"),
-        "queenSeen": observations.get("queenSeen"),
-        "broodPattern": observations.get("broodPattern"),
-        "additionalObservations": observations.get("additionalObservations", []),
-        "reminderObservations": observations.get("reminderObservations", []),
-    }
-
-    mapped_actions = []
-
-    for action in ai.get("actions", []):
-        if not isinstance(action, dict):
-            continue
-
-        action_type = action.get("type")
-        details = action.get("details") or {}
-
-        if action_type == "FEEDING":
-            mapped_actions.append({
-                "type": "FEEDING",
-                "feedType": details.get("feedType") or "",
-                "quantity": details.get("amount"),
-                "unit": details.get("unit") or "",
-                "concentration": details.get("concentration") or "",
-                "notes": action.get("notes") or "",
-            })
-
-        elif action_type == "TREATMENT":
-            mapped_actions.append({
-                "type": "TREATMENT",
-                "treatmentType": details.get("product") or "",
-                "amount": details.get("quantity"),
-                "unit": details.get("unit") or "",
-                "notes": action.get("notes") or "",
-            })
-
-        elif action_type == "FRAME":
-            mapped_actions.append({
-                "type": "FRAME",
-                "frames": details.get("quantity"),
-                "notes": action.get("notes") or "",
-            })
-
-        elif action_type == "MAINTENANCE":
-            mapped_actions.append({
-                "type": "MAINTENANCE",
-                "component": details.get("component") or "",
-                "status": details.get("status") or "",
-                "notes": action.get("notes") or "",
-            })
-
-        elif action_type == "NOTE":
-            mapped_actions.append({
-                "type": "NOTE",
-                "notes": action.get("notes") or details.get("content") or "",
-            })
-
-        elif action_type == "OTHER":
-            mapped_actions.append({
-                "type": "OTHER",
-                "notes": action.get("notes") or "",
-            })
-
-    draft["actions"] = mapped_actions
-    return draft
 
 def _recommend_ollama(transcript: str) -> dict:
     payload = {
@@ -848,13 +817,12 @@ def process_audio_file(audio_path: str):
     try:
         trimmed_transcript = truncate_transcript(transcription["text"])
 
-        ai_result = recommend_from_transcript(trimmed_transcript)
-        recommendation = map_ai_to_form_draft(ai_result)
+        recommendation = recommend_from_transcript(trimmed_transcript)
 
     except Exception as exc:
         analysis_error = str(exc)
         app.logger.exception("Recommendation generation failed")
-        recommendation = empty_form_draft()
+        recommendation = empty_inspection_draft()
 
     files = save_outputs(base_name, transcription, recommendation)
 
@@ -966,8 +934,7 @@ def recommend_endpoint():
     transcript = data["transcript"]
     trimmed_transcript = truncate_transcript(transcript)
 
-    ai_result = recommend_from_transcript(trimmed_transcript)
-    result = map_ai_to_form_draft(ai_result)
+    result = recommend_from_transcript(trimmed_transcript)
 
     return jsonify(result)
 

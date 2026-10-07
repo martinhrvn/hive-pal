@@ -1,4 +1,4 @@
-# HiveScale Calibration Mode — HivePal User Guide
+# HiveHub Calibration Mode — HivePal User Guide
 
 Calibration mode temporarily switches the scale from its normal battery-saving deep sleep to fast readings every few seconds. This makes it practical to capture an accurate empty-scale baseline and a known-weight reading within the same short session.
 
@@ -12,9 +12,8 @@ The wizard is the recommended way to calibrate a scale. It walks you through the
 
 ### Step 1 — Open the wizard
 
-1. Go to the **HiveScale** page.
-2. Expand the **Scale setup** panel.
-3. In the **Calibration** card, click **Open calibration wizard**.
+1. Go to the **HiveHub** page and open the **Setup** tab.
+2. In the **Calibration** card, click **Open calibration wizard**.
 
 ### Step 2 — Start fast mode
 
@@ -22,9 +21,9 @@ Click **Start fast mode** inside the wizard. The app queues a command for the de
 
 > The device only picks up commands when it wakes for its next normal measurement cycle (default every 10 minutes). The badge shows **Queued** until the device confirms it is active, then switches to **Active**. Once active, new raw readings arrive every few seconds.
 
-### Step 3 — Select the scale to calibrate
+### Step 3 — Select the hive to calibrate
 
-Click **Scale 1** or **Scale 2** (shown with their display names). The wizard resets all captures when you switch scales.
+Click the hive whose scale you are calibrating (shown with its slot name and latest raw value). Hives 1 and 2 are always listed, plus every hive 3–18 the device reports or already has a calibration for. The wizard resets all captures when you switch hives.
 
 ### Step 4 — Capture the empty reading
 
@@ -52,7 +51,7 @@ factor = (loaded raw − empty raw) / known weight in kg
 
 Click **Save and stop fast mode**. The app:
 
-- Saves the new offset and factor to the backend.
+- Saves the new offset and factor for the selected hive to HiveHub.
 - Queues a stop command so the device returns to normal deep sleep on its next cycle.
 - Closes the wizard.
 
@@ -62,7 +61,7 @@ If the calculated factor cannot be computed (e.g. the raw values did not change)
 
 ## Manual calibration (Advanced settings)
 
-For fine-tuning or recovery without a reference weight session, expand **Advanced manual settings** inside the Calibration card.
+For fine-tuning or recovery without a reference weight session, expand **Advanced manual settings** inside the Calibration card and pick the hive to edit.
 
 - **Send interval seconds** — how often the device sends a measurement in normal (non-calibration) mode. Minimum 60 seconds.
 - **Offset / empty raw reading** — the raw HX711 count when the scale is empty. Use the **Use latest** button to fill this field with the most recently received raw value.
@@ -83,23 +82,30 @@ The Calibration card always shows the current state:
 | **Queued** | A start or stop command has been sent; waiting for the device to wake up |
 | **Active** | The device has confirmed calibration mode; fast readings are arriving |
 
-The latest raw counts for both scales are shown below the badge and update automatically while active.
+The latest raw counts are shown below the badge and update every 5 seconds while calibration is active.
 
 ---
 
 ## Stopping calibration mode early
 
-Click **Stop fast mode** inside the wizard at any time. The device returns to normal deep sleep on its next cycle. If you forget, calibration mode stops automatically after its timeout (default 10 minutes, maximum 30 minutes).
+Click **Stop fast mode** inside the wizard at any time. The device returns to normal deep sleep on its next cycle. If you forget, calibration mode stops automatically after 10 minutes.
+
+---
+
+## Temperature compensation
+
+Load cells drift with temperature. The **Temperature compensation** card next to the Calibration card sets a coefficient (kg per °C) per hive, a reference temperature, and the temperature source (ambient, hive 1 probe, or hive 2 probe). **Auto-fit from history** fits the coefficient for the selected hive from recent readings, then applies and enables it. The weights shown on the Overview are compensated when it is enabled.
+
 ---
 
 ## Off-grid devices
 
-Off-grid HiveScale devices may use SIM7080G cellular transport instead of Wi-Fi. Calibration still works the same way, but the command round-trip depends on the device's next wake cycle and cellular attach time.
+Off-grid HiveHub devices may use SIM7080G cellular transport instead of Wi-Fi. Calibration still works the same way, but the command round-trip depends on the device's next wake cycle and cellular attach time.
 
-For off-grid hardware, verify these status cards before starting a calibration session:
+For off-grid hardware, check the **Health** tab before starting a calibration session:
 
 - **Battery state-of-charge** is high enough for repeated wake cycles.
-- **Cellular status** is healthy and `cellular_csq` is reasonable at the installation site.
-- **Solar/current telemetry** is present if you rely on the solar charger during long calibration sessions.
+- **Signal** is reasonable at the installation site.
+- **Solar** input is present if you rely on the solar charger during long calibration sessions.
 
 Keep calibration sessions short. Stop fast mode when finished so the device returns to normal deep sleep and modem shutdown behavior.

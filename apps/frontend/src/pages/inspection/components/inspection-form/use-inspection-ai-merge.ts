@@ -3,8 +3,13 @@ import type { UseFormReturn } from 'react-hook-form';
 import type { InspectionFormData } from './schema';
 import {
   buildAiMergeState,
+  mergeAcceptedAiAction,
   type AiMergeState,
 } from '@/pages/inspection/lib/inspection-ai-merge';
+import {
+  aiDateHasTimeOfDay,
+  isAiActionField,
+} from '@/pages/inspection/lib/inspection-ai-draft';
 
 type UseInspectionAiMergeParams = {
   form: UseFormReturn<InspectionFormData>;
@@ -54,16 +59,41 @@ export const useInspectionAiMerge = ({
     });
   }, [aiDraft, aiSuggestedFields, aiSuggestedFieldSet, form]);
 
+  const applySuggestionValue = useCallback(
+    (field: string, aiValue: unknown) => {
+      const setValueOptions = {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      } as const;
+
+      // Accepted actions are merged into the actions array (replacing an
+      // existing action of the same type) instead of written at their index.
+      if (isAiActionField(field)) {
+        form.setValue(
+          'actions',
+          mergeAcceptedAiAction(form.getValues('actions'), aiValue),
+          setValueOptions,
+        );
+        return;
+      }
+
+      form.setValue(field as never, aiValue as never, setValueOptions);
+
+      // A spoken time of day means the inspection isn't an all-day entry.
+      if (field === 'date' && aiValue instanceof Date && aiDateHasTimeOfDay(aiValue)) {
+        form.setValue('isAllDay', false, setValueOptions);
+      }
+    },
+    [form],
+  );
+
   const acceptAiSuggestion = useCallback(
     (field: string) => {
       const suggestion = aiMergeState?.suggestions[field];
       if (!suggestion) return;
 
-      form.setValue(field as never, suggestion.aiValue as never, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
+      applySuggestionValue(field, suggestion.aiValue);
 
       setAiMergeState(prev => {
         if (!prev) return prev;
@@ -79,7 +109,7 @@ export const useInspectionAiMerge = ({
         };
       });
     },
-    [aiMergeState, form],
+    [aiMergeState, applySuggestionValue],
   );
 
   const dismissAiSuggestion = useCallback((field: string) => {
@@ -105,11 +135,7 @@ export const useInspectionAiMerge = ({
       if (suggestion.status !== 'pending') return;
       if (suggestion.hasConflict) return;
 
-      form.setValue(suggestion.field as never, suggestion.aiValue as never, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
+      applySuggestionValue(suggestion.field, suggestion.aiValue);
     });
 
     setAiMergeState(prev => {
@@ -127,7 +153,7 @@ export const useInspectionAiMerge = ({
         ),
       };
     });
-  }, [aiMergeState, form]);
+  }, [aiMergeState, applySuggestionValue]);
 
   const reviewConflicts = useCallback(() => {
     const firstConflict = aiMergeState

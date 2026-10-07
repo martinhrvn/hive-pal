@@ -35,20 +35,34 @@
   },
   "page": {
     "title": "HiveHub",
-    "subtitle": "Live weight and temperature visualisation from your separate HiveHub backend.",
+    "subtitle": "Peso, clima, sonido, tráfico y alertas de tus dispositivos HiveHub.",
     "refresh": "Refresh",
     "refreshing": "Refreshing…",
     "refreshError": "Could not refresh HiveHub data.",
     "removeConfirm": "Remove {{name}} from your HivePal account? You can add it again with the claim code when no other users still have access.",
-    "removeSuccess": "HiveHub device removed from your account."
+    "removeSuccess": "HiveHub device removed from your account.",
+    "removeSuccessShared": "Ya no tienes acceso a este dispositivo HiveHub. Otros usuarios lo conservan, por lo que su código de reclamación sigue en uso.",
+    "releaseConfirm": "¿Liberar {{name}} por completo? Todos los usuarios pierden el acceso y el dispositivo vuelve a poder reclamarse con su código. Se conservan las lecturas.",
+    "releaseSuccess": "Dispositivo HiveHub liberado. Puede reclamarse de nuevo con su código de reclamación.",
+    "unavailableTitle": "HiveHub no está accesible",
+    "inspectionActiveTitle": "El modo inspección está activado",
+    "inspectionActiveBody": "Las lecturas se ocultan mientras las colmenas están abiertas, para que sacar cuadros no genere falsas alertas.",
+    "openInspections": "Inspecciones en curso",
+    "tabs": {
+      "overview": "Resumen",
+      "inspections": "Inspecciones",
+      "audio": "Audio",
+      "health": "Estado",
+      "setup": "Configuración"
+    }
   },
   "setup": {
     "title": "Devices",
-    "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
+    "releaseScale": "Liberar dispositivo",
     "noDevices": "No devices claimed yet — open the setup to add one.",
-    "hide": "Hide setup",
-    "show": "Show setup"
+    "selectDevice": "Dispositivo HiveHub",
+    "noDevicesYet": "Aún no has reclamado ningún dispositivo HiveHub. Reclama uno con el código que muestra el hub en su portal de configuración."
   },
   "claim": {
     "title": "Claim HiveHub device",
@@ -61,16 +75,30 @@
     "success": "HiveHub device claimed.",
     "errors": {
       "missingCode": "Enter the claim code printed/configured for the device."
-    }
+    },
+    "hive1Name": "Nombre de la colmena 1",
+    "hive2Name": "Nombre de la colmena 2",
+    "optional": "Opcional"
   },
   "mapping": {
-    "title": "Scale mapping",
-    "description": "These labels stay in HiveHub. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
-    "scale1Label": "Display name for Scale 1",
-    "scale2Label": "Display name for Scale 2",
+    "title": "Colmenas",
     "hiveNamePlaceholder": "Select or type a hive name",
-    "save": "Save mapping",
-    "success": "Scale mapping updated."
+    "save": "Guardar colmenas",
+    "success": "Posiciones de colmena guardadas en HiveHub.",
+    "slotsDescription": "Pon nombre a cada posición de colmena y vincúlala a una colmena de HivePal. El vínculo permite que las inspecciones, la página de la colmena y los correos de alerta sepan a qué colonia corresponde una posición. Un punto verde marca las posiciones que el hub notifica actualmente.",
+    "mapSlot": "Asignar posición {{slot}}",
+    "add": "Añadir",
+    "reporting": "Notificada por el hub",
+    "unknownHive": "Colmena no encontrada",
+    "mappedCount": "{{count}}/{{total}} posiciones asignadas",
+    "dialogTitle": "Posición de colmena {{slot}}",
+    "dialogDescription": "Vincula la posición a una de tus colmenas de HivePal y elige el nombre que HiveHub muestra para ella.",
+    "linkedHive": "Colmena de HivePal",
+    "notLinked": "Sin vincular",
+    "linkHint": "El vínculo se mantiene aunque cambies el nombre de la colmena. Al elegir una colmena se rellena su nombre si el campo está vacío.",
+    "displayName": "Nombre visible",
+    "clearSlot": "Vaciar posición",
+    "applySlot": "Aplicar"
   },
   "status": {
     "title": "Device status",
@@ -90,6 +118,13 @@
     "revokeAccess": "Revoke access",
     "errors": {
       "missingEmail": "Enter the email address of an existing HivePal user."
+    },
+    "lastSeen": "Última conexión",
+    "claimedAt": "Reclamado",
+    "roles": {
+      "owner": "Propietario",
+      "admin": "Admin",
+      "viewer": "Lector"
     }
   },
   "calibration": {
@@ -199,11 +234,9 @@
       },
       "sourceHint": "La température ambiante suit de près le corps du capteur en régime stable et constitue la valeur par défaut recommandée.",
       "refLabel": "Température de référence / °C",
-      "refHint": "Température à laquelle la correction est nulle.",
       "coeffLabel": "Coefficient {{scaleName}} / kg par °C",
       "autoFit": "Ajustement automatique depuis l’historique",
       "fitting": "Ajustement…",
-      "autoFitHint": "L’ajustement automatique effectue une régression du poids brut des 3 derniers jours par rapport à la température sélectionnée lissée par EMA, puis applique et active le résultat. Pour un ajustement propre, capturez une fenêtre où la charge physique est constante et la température varie.",
       "save": "Enregistrer la compensation de température",
       "errors": {
         "refTemp": "La température de référence doit être un nombre (°C).",
@@ -215,11 +248,33 @@
         "noSignal": "signal de température/poids insuffisant.",
         "fitApplied": "{{scaleName}} : {{coeff}} kg/°C à {{refTemp}}°C (R²={{r2}}, n={{n}}). Appliqué et activé."
       }
+    },
+    "perHive": {
+      "hive": "Colmena {{index}}",
+      "hiveNamed": "Colmena {{index}} · {{name}}",
+      "hiveLabel": "Colmena",
+      "knownWeightPlaceholder": "p. ej. 10",
+      "manualSaveHint": "Cambia de colmena para editar otra báscula; todos los cambios se envían juntos al guardar. Las colmenas 3 y siguientes solo se escriben si han cambiado.",
+      "tempco": {
+        "refHint": "La temperatura a la que las básculas marcan el peso real, es decir, aquella a la que se taró y calibró su rango. Ahí la corrección es cero; el ajuste no la modifica salvo que lo pidas.",
+        "lookbackLabel": "Periodo de ajuste / días",
+        "setRefTemp": "Establecer también la temperatura de referencia",
+        "setRefTempHint": "Sustituye la referencia por la temperatura media de la ventana ajustada. Déjalo desactivado si la báscula se calibró a una temperatura conocida.",
+        "fitOnly": "Solo ajustar (vista previa)",
+        "fitAndApply": "Ajustar y aplicar",
+        "fitSummary": "{{scaleName}}: {{coeff}} kg/°C, R² {{r2}} en {{n}} lecturas de {{min}}–{{max}} °C (media de la ventana {{mean}} °C).",
+        "lowRSquared": "R² inferior a 0,5: la temperatura explica poco de esta deriva. Ajusta sobre un periodo con carga constante y una amplia oscilación día/noche.",
+        "autoFitHint": "El ajuste automático hace una regresión del peso almacenado de la colmena seleccionada durante el periodo elegido frente a la temperatura seleccionada suavizada con EMA. «Solo ajustar» rellena el coeficiente para que lo revises antes de guardar; «Ajustar y aplicar» lo guarda y activa la compensación. Para un buen ajuste, elige un periodo en el que la carga física sea constante y la temperatura varíe.",
+        "errors": {
+          "lookback": "El periodo debe ser un número entero de días entre 1 y 90."
+        },
+        "toasts": {
+          "fitFilled": "{{scaleName}}: {{coeff}} kg/°C (R²={{r2}}, n={{n}}). Valor rellenado: revísalo y guarda."
+        }
+      }
     }
   },
   "firmware": {
-    "title": "Firmware upload",
-    "description": "Upload a firmware binary and register it as a release. New devices of the matching type pick it up on their next update check.",
     "type": "Firmware type",
     "selectType": "Select firmware type",
     "version": "Version",
@@ -234,6 +289,102 @@
     "errors": {
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
+    },
+    "update": {
+      "title": "Actualización de firmware",
+      "description": "Las básculas nunca se actualizan solas: apruebas aquí cada nueva versión antes de que esta báscula la instale.",
+      "unavailable": "El estado del firmware no está disponible en este momento.",
+      "availableTitle": "Firmware {{version}} disponible",
+      "availableBody": "Esta báscula ejecuta la versión {{current}}. Aplica la actualización para pasar a {{version}}.",
+      "officialSuffix": "Es una versión oficial.",
+      "apply": "Aplicar actualización",
+      "applying": "Aplicando…",
+      "applied": "Firmware {{version}} aprobado: la báscula se actualizará en su próxima conexión.",
+      "queued": "Actualización {{version}} aprobada. La báscula la instalará en su próxima conexión.",
+      "upToDate": "El firmware está actualizado ({{version}}).",
+      "viewerNotice": "Solo los propietarios y administradores del dispositivo pueden aplicar actualizaciones de firmware."
+    },
+    "board": {
+      "cardTitle": "Firmware",
+      "cardDescription": "Firmware de este HiveHub y de los nodos HiveInside y contadores HiveTraffic que gestiona. Subir un archivo registra una versión; aprobarla (hub) o retransmitirla (nodos) la instala.",
+      "current": "Actual",
+      "latest": "Última",
+      "approved": "Aprobada",
+      "board": "Placa",
+      "badgePending": "Actualización pendiente de aprobación",
+      "badgeApproved": "Actualización aprobada",
+      "badgeUpToDate": "Actualizado",
+      "approveFlash": "Aprobar y flashear {{version}}",
+      "approveConfirm": "¿Aprobar el firmware {{version}} y flashearlo de forma inalámbrica (OTA)?\n\nEl HiveHub lo instala en su próxima conexión y se reinicia. Un dispositivo remoto que falle a mitad de la actualización puede requerir acceso físico para recuperarlo.",
+      "otherBoards": "También subido para otra placa (no aplicado a este dispositivo {{board}}): {{releases}}. Una versión solo llega a un dispositivo cuya placa coincide; comprueba la placa al subirla.",
+      "otherBoardsUnknown": "También subido para otra placa (no aplicado a este dispositivo): {{releases}}. Una versión solo llega a un dispositivo cuya placa coincide; comprueba la placa al subirla."
+    },
+    "relays": {
+      "hiveFallback": "Colmena {{slot}}",
+      "latest": "última {{version}}",
+      "updateAvailable": "actualización disponible: {{version}}",
+      "status": {
+        "pending": "retransmisión en cola",
+        "running": "retransmitiendo…",
+        "completed": "retransmisión completada",
+        "failed": "retransmisión fallida",
+        "expired": "retransmisión caducada"
+      },
+      "statusTitle": "Retransmisión de {{version}}: {{status}} ({{date}})",
+      "failedDetail": "La última retransmisión falló: {{message}} ({{date}})",
+      "noReason": "no se indicó ningún motivo",
+      "alreadyQueued": "Ya hay una retransmisión en cola para este nodo",
+      "queueing": "Poniendo en cola…",
+      "relayAnyway": "Retransmitir de todos modos",
+      "confirm": "¿Retransmitir {{name}} {{version}} a {{hive}}?\n\nEl HiveHub lo recoge en su próximo ciclo de envío, normalmente en unos 10 minutos o según el intervalo de envío de este dispositivo. Después transmite la imagen por BLE durante unos minutos y el nodo se reinicia con ella. El nodo debe estar activo y dentro del alcance; si no, la retransmisión falla y hay que volver a ponerla en cola.",
+      "queued": "Retransmisión de {{version}} en cola para {{hive}}.",
+      "queuedFrom": "Retransmisión en cola para {{hive}} ({{current}} → {{version}}).",
+      "hiveinside": {
+        "name": "HiveInside",
+        "title": "Nodos HiveInside",
+        "description": "Firmware que anuncia cada nodo dentro de la colmena. Subir una imagen de HiveInside solo registra la versión: nada llega a un nodo hasta que pulsas «Retransmitir al nodo». La versión mostrada aquí es lo que confirma que la actualización se ha completado.",
+        "relay": "Retransmitir al nodo",
+        "unnamed": "No anuncia un nombre propio (HiveInside anterior a 0.5.0)",
+        "noRelease": "Aún no se ha subido ninguna versión de HiveInside: sube una abajo para retransmitirla."
+      },
+      "beecounter": {
+        "name": "HiveTraffic",
+        "title": "Contadores HiveTraffic",
+        "description": "Firmware que notifica cada contador HiveTraffic. Subir una imagen de HiveTraffic solo registra la versión: nada llega a un contador hasta que pulsas «Retransmitir al contador». Los contadores anteriores a la v0.1.0 aproximadamente no notifican versión, pero se pueden actualizar igualmente.",
+        "relay": "Retransmitir al contador",
+        "unnamed": "No notifica nombre ni dirección",
+        "noRelease": "Aún no se ha subido ninguna versión de HiveTraffic: sube una abajo para retransmitirla.",
+        "countingWarning": "Un contador deja de contar abejas durante toda la transferencia, así que retransmite cuando haya poco tráfico.",
+        "confirmExtra": "El contador deja de contar abejas durante toda la transferencia: se pierde el tráfico de esos pocos minutos."
+      }
+    },
+    "uploadForm": {
+      "title": "Subir firmware",
+      "description": "Subir un archivo solo registra una versión; nunca instala nada por sí solo. Aprueba arriba la actualización del hub o retransmite una versión de nodo o contador desde su fila.",
+      "board": "Placa",
+      "targets": {
+        "hivehub": "Hub HiveHub",
+        "hiveinside": "HiveInside",
+        "beecounter": "Contador HiveTraffic"
+      },
+      "boards": {
+        "auto": "Automático (según el nombre del archivo)",
+        "esp32": "ESP32 (clásico de 30 pines)",
+        "esp32-c6": "ESP32-C6",
+        "nrf54lm20a": "nRF54LM20A"
+      },
+      "boardHint": {
+        "hivehub": "El firmware del hub debe indicar su placa: elige una, o deja automático si el archivo se llama como hivehub_esp32-c6_0.30.5.bin.",
+        "hiveinside": "HiveInside solo existe para el nRF54LM20A. Sube el archivo de compilación tal cual (p. ej. hiveinside_nrf54lm20a_1.4.0.bin) y el destino y la versión se rellenan a partir de su nombre.",
+        "beecounter": "El contador HiveTraffic es un ESP32-C6. Sube la imagen de la aplicación (p. ej. beecounter_esp32-c6_0.7.1.bin), no una imagen de fábrica combinada."
+      },
+      "detected": "{{name}}: se ha rellenado {{fields}}.",
+      "nothingDetected": "{{name}}: no se ha reconocido destino, placa ni versión en el nombre; indícalos abajo.",
+      "detectedTarget": "destino «{{target}}»",
+      "detectedBoard": "placa {{board}}",
+      "detectedVersion": "versión {{version}}",
+      "autoQueued": "Retransmisión puesta en cola automáticamente para {{hives}}.",
+      "autoQueueFailed": "No se pudo poner en cola automáticamente la retransmisión para {{hives}}."
     }
   },
   "sdData": {
@@ -258,12 +409,19 @@
       "parsed_other": "Parsed {{count}} records",
       "skipped_one": " · {{count}} unreadable line skipped.",
       "skipped_other": " · {{count}} unreadable lines skipped."
+    },
+    "mismatch": {
+      "title": "Archivo de otro hub",
+      "description": "Este archivo lo grabó otro hub, no {{device}}.",
+      "fileDevices_one": "ID de dispositivo en el archivo:",
+      "fileDevices_other": "ID de dispositivos en el archivo:",
+      "fileDevices_many": "ID de dispositivos en el archivo:",
+      "hint": "Impórtalo de todos modos solo si la tarjeta SD pertenece realmente a este dispositivo (por ejemplo, tras sustituir la placa del hub).",
+      "cancel": "Cancelar",
+      "force": "Importar en este dispositivo de todos modos"
     }
   },
   "panel": {
-    "weight": "Weight",
-    "hiveTemp": "Hive temp",
-    "rmsSound": "RMS sound",
     "ambientTemperature": "Ambient temperature",
     "ambientHumidity": "Ambient humidity",
     "batteryCharge": "Battery charge",
@@ -273,7 +431,6 @@
       "title": "General",
       "description": "Ambient & power"
     },
-    "humidity": "Hive humidity",
     "wirelessSensorsBattery": "Wireless sensors battery",
     "sensorTypes": {
       "hiveHeart": "HiveHeart",
@@ -282,174 +439,36 @@
     }
   },
   "diagram": {
-    "title": "Measurements",
-    "subtitle": "Weight, temperature, and entrance activity over time",
-    "noMeasurements": "No measurements for the selected range.",
-    "noDataForSeries": "No data in the selected range.",
-    "meta": {
-      "device": "Device:",
-      "lastSeen": "Last seen:",
-      "lastData": "Last data:",
-      "firmware": "Firmware:"
-    },
     "range": {
       "all": "All",
       "from": "From",
       "to": "To"
     },
-    "series": {
-      "weight": "{{name}} weight",
-      "temp": "{{name}} temp",
-      "micRms": "{{name}} mic RMS",
-      "beesIn": "{{name}} bees in",
-      "beesOut": "{{name}} bees out",
-      "netFlow": "{{name}} net flow",
-      "ambientTemp": "Ambient temp",
-      "ambientHumidity": "Ambient humidity",
-      "batteryVoltage": "Battery voltage",
-      "batteryCharge": "Battery charge",
-      "solarVoltage": "Solar voltage",
-      "solarCurrent": "Solar current",
-      "solarPower": "Solar power",
-      "humidity": "{{name}} humedad",
-      "pressure": "{{name}} presión",
-      "fanningBand": "{{name}} fanning band (30–100 Hz)",
-      "activityBand": "{{name}} activity band (100–200 Hz)"
-    },
-    "group": {
-      "ambient": "Ambient",
-      "offGrid": "Off-grid"
-    },
-    "axis": {
-      "weight": "Weight",
-      "temperature": "Temperature",
-      "humidity": "Humidity",
-      "voltage": "Voltage",
-      "percent": "Percent",
-      "current": "Current",
-      "power": "Power",
-      "sound": "Sound",
-      "beecount": "Bee count",
-      "pressure": "Presión"
-    },
     "marker": {
-      "inspection": "Inspection",
-      "boxAdded": "Box added",
-      "action": {
-        "maintenance": "Maintenance",
-        "feeding": "Feeding",
-        "frames": "Frames",
-        "treatment": "Treatment"
-      }
-    },
-    "axisSettings": {
-      "title": "Axis settings",
-      "reset": "Reset",
-      "side": "Side",
-      "left": "Left",
-      "right": "Right",
-      "scale": "Scale",
-      "auto": "Auto",
-      "zeroToMax": "0 to max",
-      "custom": "Custom",
-      "min": "Min",
-      "max": "Max",
-      "autoPlaceholder": "auto"
+      "inspection": "Inspection"
     }
   },
   "sound": {
-    "title": "Hive sound",
-    "description": "INMP441 FFT band energy (dBFS) — {{left}} (left) · {{right}} (right)",
-    "hide": "Hide sound",
-    "show": "Show sound",
-    "micLeftFallback": "Mic left",
-    "micRightFallback": "Mic right",
-    "noDataForChannel": "No data for {{name}} in this range.",
-    "bandReference": "Band reference",
-    "thresholds": "Thresholds used by the Insights engine: piping > −45 dBFS, stress > −38 dBFS, queenless hum > −40 dBFS with quiet piping. Calibrate against your own baseline.",
-    "status": {
-      "noData": "No data",
-      "micError": "Mic error",
-      "bothActive": "{{left}} + {{right}} active",
-      "oneActive": "{{name}} active"
-    },
-    "table": {
-      "band": "Band",
-      "range": "Range",
-      "significance": "Significance"
-    },
     "bands": {
       "subBass": {
-        "label": "Sub-bass",
-        "description": "Structural vibration / low rumble"
+        "label": "Sub-bass"
       },
       "hum": {
-        "label": "Hum",
-        "description": "Normal colony hum (~200 Hz fundamental)"
+        "label": "Hum"
       },
       "piping": {
-        "label": "Piping",
-        "description": "Queen piping / tooting (pre-swarm signal)"
+        "label": "Piping"
       },
       "stress": {
-        "label": "Stress",
-        "description": "Agitated colony / robbing"
+        "label": "Stress"
       },
       "high": {
-        "label": "High",
-        "description": "Harmonic overtones"
+        "label": "High"
       }
-    },
-    "rmsToggleShow": "Show RMS level",
-    "rmsToggleHide": "Hide RMS level",
-    "rmsTitle": "RMS sound level",
-    "rmsSeries": "{{name}} RMS"
-  },
-  "beecounter": {
-    "title": "Entrance Counter",
-    "subtitle": "Bees entering and exiting per measurement interval",
-    "noData": "No BeeCounter data found for this device.",
-    "offline": "Offline",
-    "gatesOk": "{{count}} gates OK",
-    "glitches_one": "{{count}} glitch",
-    "glitches_other": "{{count}} glitches",
-    "gatesRatio": "{{healthy}}/{{total}} gates",
-    "inPeriod": "In (period)",
-    "outPeriod": "Out (period)",
-    "netFlow": "Net flow",
-    "netInbound": "net inbound",
-    "netOutbound": "net outbound",
-    "balanced": "balanced",
-    "view": {
-      "inOut": "In / Out",
-      "netFlow": "Net flow",
-      "cumulative": "Cumulative"
-    },
-    "series": {
-      "in": "{{name}} in",
-      "out": "{{name}} out",
-      "net": "{{name}} net",
-      "totalIn": "{{name}} total in",
-      "totalOut": "{{name}} total out"
-    },
-    "diagnostics": {
-      "title": "Hardware diagnostics",
-      "gatesHealthy": "Gates healthy",
-      "glitchCount": "Glitch count",
-      "totalInLifetime": "Total in (lifetime)",
-      "totalOutLifetime": "Total out (lifetime)"
     }
   },
   "insights": {
-    "title": "Insights",
-    "description": "Sensor-based alerts derived from weight and temperature trends.",
-    "updated": "Updated {{ago}}.",
-    "refresh": "Refresh insights",
-    "loadError": "Failed to load insights: {{message}}",
     "allClear": "All clear",
-    "noActiveAlerts": "No active alerts in the last {{count}} days.",
-    "activeAlerts_one": "{{count}} active alert:",
-    "activeAlerts_other": "{{count}} active alerts:",
     "confidence": "Confidence {{value}}%",
     "source": "Source: {{source}}",
     "hiveChannel": "Hive {{channel}}",
@@ -533,6 +552,741 @@
       "title": "No history yet",
       "description": "No alerts have been recorded for this device.",
       "descriptionFiltered": "No alerts have been recorded for this device matching this filter."
+    }
+  },
+  "inspectionMode": {
+    "title": "Modo inspección",
+    "description": "Mientras el modo inspección está activado, HiveHub sigue midiendo pero excluye las lecturas de los gráficos, análisis y alertas, para que sacar cuadros no se confunda con un enjambre.",
+    "status": {
+      "active": "Activo desde {{time}}",
+      "pending": "Pendiente de que lo recoja el hub",
+      "off": "Desactivado"
+    },
+    "pendingHint": "Solicitado: el hub lo recoge en su próxima conexión.",
+    "timeoutNote_one": "Termina automáticamente tras {{count}} minuto si nadie lo detiene.",
+    "timeoutNote_other": "Termina automáticamente tras {{count}} minutos si nadie lo detiene.",
+    "timeoutNote_many": "Termina automáticamente tras {{count}} minutos si nadie lo detiene.",
+    "scope": {
+      "wholeHub": "Todo el hub",
+      "label": "Abarca: {{hives}}"
+    },
+    "start": "Iniciar modo inspección",
+    "stop": "Detener modo inspección",
+    "starting": "Iniciando…",
+    "stopping": "Deteniendo…",
+    "cancel": "Cancelar",
+    "noteLabel": "Nota (opcional)",
+    "notePlaceholder": "p. ej. Añadido un alza melaria",
+    "viewerHint": "Solo los propietarios y administradores pueden iniciar o detener el modo inspección.",
+    "loadFailed": "No se pudo cargar el estado de la inspección.",
+    "startDialog": {
+      "title": "Iniciar modo inspección",
+      "description": "Las lecturas de las colmenas seleccionadas se ocultan hasta que detengas el modo inspección o se agote el tiempo.",
+      "hivesLabel": "Colmenas",
+      "wholeHub": "Todo el hub (todas las colmenas)",
+      "selectHive": "Elige al menos una colmena o todo el hub.",
+      "confirm": "Iniciar"
+    },
+    "stopDialog": {
+      "title": "Detener modo inspección",
+      "description": "HiveHub vuelve a las lecturas y alertas normales.",
+      "confirm": "Detener"
+    },
+    "toast": {
+      "started": "Modo inspección iniciado",
+      "stopped": "Modo inspección detenido",
+      "noteSaved": "Nota guardada"
+    },
+    "history": {
+      "title": "Inspecciones recientes",
+      "empty": "Aún no hay inspecciones registradas.",
+      "ongoing": "en curso",
+      "startedVia": "Iniciada mediante {{source}}",
+      "ended": "Finalizada: {{reason}}",
+      "editNote": "Editar nota",
+      "addNote": "Añadir nota",
+      "saveNote": "Guardar"
+    },
+    "duration": {
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "minutes_many": "{{count}} min",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    },
+    "source": {
+      "device": "botón del hub",
+      "api": "app",
+      "dashboard": "panel local"
+    },
+    "endReason": {
+      "timeout": "tiempo agotado",
+      "device": "botón del hub",
+      "api": "detenida en la app",
+      "dashboard": "detenida en el panel local"
+    }
+  },
+  "hiveLink": {
+    "prompt": {
+      "message": "Esta colmena está supervisada por el HiveHub {{device}} ({{hive}}). Inicia el modo inspección para que abrir la colmena no genere falsas alertas.",
+      "active": "El modo inspección está activado para {{hive}} en el HiveHub {{device}}.",
+      "pending": "Modo inspección solicitado para {{hive}} en el HiveHub {{device}}: el hub lo recoge en su próxima conexión.",
+      "activeOther": "El modo inspección está activado para otras colmenas en el HiveHub {{device}}, pero no para {{hive}}. Detenlo primero para iniciar uno para esta colmena."
+    },
+    "card": {
+      "title": "HiveHub",
+      "description": "Lecturas en directo de los sensores HiveHub vinculados.",
+      "weight": "Peso",
+      "weightChange24h": "Variación en 24 h",
+      "temperature": "Temperatura de la colmena",
+      "humidity": "Humedad",
+      "lastReading": "Última lectura: {{time}}",
+      "openHiveHub": "Abrir HiveHub"
+    }
+  },
+  "traffic": {
+    "title": "Contadores de abejas HiveTraffic",
+    "description": "Modo nocturno y bancos de emisores de cada contador HiveTraffic emparejado con este hub. Los emisores IR son, con diferencia, la mayor partida del consumo de un contador, así que estos ajustes deciden si puede funcionar con una alimentación autónoma.",
+    "readOnly": "Solo los propietarios y administradores del dispositivo pueden cambiar estos ajustes. Tu rol es «{{role}}».",
+    "hiveFallback": "Colmena {{slot}}",
+    "noChanges": "No hay cambios que guardar",
+    "saved": "Ajustes de los contadores de abejas guardados. Los contadores los recogen en la próxima conexión.",
+    "appliesToAll": "Se aplica a todos los contadores HiveTraffic emparejados con este dispositivo. El contador recibe el cambio en el próximo ciclo de envío del hub.",
+    "status": {
+      "title": "Contadores ahora",
+      "none": "Ningún contador HiveTraffic aparece en la última lectura.",
+      "counting": "Contando",
+      "nightIdle": "Reposo nocturno",
+      "nightIdleFor_one": "Reposo nocturno · quedan {{count}} min",
+      "nightIdleFor_other": "Reposo nocturno · quedan {{count}} min",
+      "nightIdleFor_many": "Reposo nocturno · quedan {{count}} min",
+      "banksRunning": "Bancos de emisores activos: {{banks}}",
+      "banksUnknown": "Bancos de emisores no notificados (firmware del contador anterior a 0.3.0)",
+      "applied": "Bancos aplicados",
+      "pending": "Bancos pendientes de la próxima conexión"
+    },
+    "night": {
+      "title": "Modo nocturno",
+      "description": "Las abejas melíferas son diurnas: el vuelo necesita luz y, de todos modos, se detiene por debajo de unos 10 °C. Durante esta franja el contador deja de detectar para ahorrar energía. Sigue emitiendo anuncios, así que las lecturas y las actualizaciones de firmware siguen funcionando.",
+      "enable": "Activar modo nocturno",
+      "start": "Inicio de la noche (hora local)",
+      "end": "Fin de la noche (hora local)",
+      "windowHelp": "La franja puede pasar la medianoche (p. ej. 20:00 → 06:00). Si pones la misma hora de inicio y fin, la franja queda vacía —nunca se aplica— en lugar de cubrir todo el día. Deja margen alrededor del anochecer y el amanecer: la actividad alcanza su máximo justo antes de la puesta y la salida del sol.",
+      "emptyWindow": "El inicio y el fin son iguales, así que la franja está vacía y el modo nocturno nunca se aplicaría.",
+      "wrapsMidnight": "La franja pasa la medianoche: desde las {{start}} hasta las {{end}} de la mañana siguiente.",
+      "timezone": "Zona horaria",
+      "tzCustom": "Cadena TZ POSIX",
+      "timezoneHelp": "El reloj del hub funciona en UTC. Sin la zona horaria correcta, la franja se desplaza según tu diferencia con UTC y se desvía una hora con cada cambio de horario de verano.",
+      "tzPresets": {
+        "cet": "Europa central (Berlín, París, Madrid, Viena)",
+        "uk": "Reino Unido / Irlanda",
+        "eet": "Europa del Este (Helsinki, Atenas)",
+        "usEastern": "EE. UU. Este",
+        "usCentral": "EE. UU. Centro",
+        "usMountain": "EE. UU. Montaña",
+        "usPacific": "EE. UU. Pacífico",
+        "utc": "UTC (sin hora local)",
+        "custom": "Personalizada…"
+      },
+      "maxTraffic": "Aplazar por encima de (pasos por ciclo)",
+      "maxTrafficHelp": "Aplaza el modo nocturno mientras se hayan contado más pasos que este número (entradas + salidas) en el último ciclo de envío, para no cortar a una colonia que sigue volando tarde en una noche de verano. 0 = solo según el reloj.",
+      "save": "Guardar modo nocturno"
+    },
+    "banks": {
+      "title": "Bancos de emisores",
+      "description": "Los emisores IR del contador se conmutan en tres bancos de ocho canales. Cada banco consume unos 80 mA. Apaga uno si la piquera tiene menos de 24 canales, si una parte está cerrada o si la alimentación no puede con toda la placa.",
+      "bank": "Banco {{bank}}: canales {{gates}}",
+      "current_one": "{{count}} banco encendido · unos {{ma}} mA en la línea de 3,3 V del contador",
+      "current_other": "{{count}} bancos encendidos · unos {{ma}} mA en la línea de 3,3 V del contador",
+      "current_many": "{{count}} bancos encendidos · unos {{ma}} mA en la línea de 3,3 V del contador",
+      "help": "Un banco apagado no cuenta en absoluto sus canales, así que los totales bajan aproximadamente en proporción; no compares un contador reducido con su propio historial. Al menos un banco debe permanecer encendido; desempareja un contador que no deba contar nada.",
+      "firmwareNote": "Requiere firmware del contador 0.3.0 o posterior. El ajuste se vuelve a enviar tras cada reinicio del contador.",
+      "save": "Guardar bancos de emisores"
+    },
+    "errors": {
+      "loadFailed": "No se pudo cargar la configuración del dispositivo.",
+      "saveFailed": "No se pudieron guardar los ajustes de los contadores de abejas",
+      "invalidTime": "Introduce una hora de inicio y de fin válidas (HH:MM).",
+      "invalidMaxTraffic": "El umbral de aplazamiento debe ser un número entero igual o mayor que 0.",
+      "emptyWindow": "El inicio y el fin del modo nocturno son iguales: la franja nunca se aplicaría.",
+      "noBank": "Al menos un banco de emisores debe permanecer encendido; desempareja el contador en su lugar."
+    }
+  },
+  "hubAccess": {
+    "title": "Acceso al hub",
+    "description": "Accede al hub in situ sin abrir la caja y define cuánto puede durar una inspección.",
+    "readOnly": "Solo los propietarios y administradores del dispositivo pueden cambiar estos ajustes. Tu rol es «{{role}}».",
+    "noChanges": "No hay cambios que guardar",
+    "cancel": "Cancelar",
+    "ap": {
+      "title": "Punto de acceso de configuración",
+      "description": "Abre la red Wi-Fi HiveHub-Setup del hub, igual que una pulsación corta del botón de configuración: cambiar la Wi-Fi, emparejar sensores o descargar los datos de la tarjeta SD.",
+      "lastCheckIn": "Última conexión: {{time}}",
+      "open": "Abrir punto de acceso de configuración",
+      "confirmTitle": "¿Abrir el punto de acceso de configuración?",
+      "confirmTiming_one": "La solicitud queda en cola. El hub duerme entre ciclos, así que el punto de acceso se abre tras su próxima conexión, como máximo dentro de {{count}} minuto.",
+      "confirmTiming_other": "La solicitud queda en cola. El hub duerme entre ciclos, así que el punto de acceso se abre tras su próxima conexión, como máximo dentro de {{count}} minutos.",
+      "confirmTiming_many": "La solicitud queda en cola. El hub duerme entre ciclos, así que el punto de acceso se abre tras su próxima conexión, como máximo dentro de {{count}} minutos.",
+      "confirmTimingUnknown": "La solicitud queda en cola. El hub duerme entre ciclos, así que el punto de acceso se abre tras su próxima conexión, como máximo dentro de un intervalo de envío.",
+      "confirmOffline": "Mientras el punto de acceso está abierto, el hub está desconectado de la Wi-Fi y no envía lecturas.",
+      "confirmTimeout": "Se cierra solo al agotarse el tiempo del portal de configuración si nadie se conecta, así que actívalo solo cuando haya alguien junto a la colmena.",
+      "confirm": "Poner punto de acceso en cola",
+      "queueing": "Poniendo en cola…",
+      "queued": "Punto de acceso en cola. Se abre tras la próxima conexión del hub.",
+      "failed": "No se pudo poner en cola el punto de acceso"
+    },
+    "inspection": {
+      "title": "Tiempo máximo de inspección",
+      "description": "Una red de seguridad: una inspección termina sola tras estos minutos, para que una pulsación olvidada del botón no oculte indefinidamente los datos de una colmena. Por defecto 60.",
+      "label": "Tiempo máximo (minutos, 1–1440)",
+      "save": "Guardar tiempo máximo",
+      "saved": "Tiempo máximo de inspección guardado",
+      "saveFailed": "No se pudo guardar el tiempo máximo de inspección",
+      "invalid": "Introduce un número entero de minutos entre 1 y 1440."
+    }
+  },
+  "dataTools": {
+    "title": "Exportación y limpieza de datos",
+    "description": "Haz una copia de seguridad de las lecturas de este hub o elimina las erróneas.",
+    "hiveFallback": "Colmena {{slot}}",
+    "cancel": "Cancelar",
+    "export": {
+      "title": "Exportar lecturas",
+      "description": "Descarga las lecturas almacenadas como copia de seguridad NDJSON.",
+      "from": "Desde (opcional)",
+      "to": "Hasta (opcional)",
+      "rangeHelp": "Deja ambos vacíos para exportarlo todo. Las fechas abarcan días completos en tu hora local.",
+      "hives": "Colmenas (opcional)",
+      "allHives": "Se incluyen todas las colmenas.",
+      "someHives_one": "Solo se incluye {{count}} colmena seleccionada. El recuento de abajo abarca todas las lecturas del periodo.",
+      "someHives_other": "Solo se incluyen {{count}} colmenas seleccionadas. El recuento de abajo abarca todas las lecturas del periodo.",
+      "someHives_many": "Solo se incluyen {{count}} colmenas seleccionadas. El recuento de abajo abarca todas las lecturas del periodo.",
+      "invalidRange": "La fecha de inicio es posterior a la fecha de fin.",
+      "summaryFailed": "No se pudieron contar las lecturas.",
+      "count_one": "{{count}} lectura",
+      "count_other": "{{count}} lecturas",
+      "count_many": "{{count}} lecturas",
+      "span": "Del {{first}} al {{last}}",
+      "download": "Descargar",
+      "formatHelp": "Una lectura JSON por línea. El archivo se puede volver a importar con la importación de tarjeta SD.",
+      "noPermission": "Solo los propietarios y administradores del dispositivo pueden exportar datos. Tu rol es «{{role}}»."
+    },
+    "delete": {
+      "title": "Eliminar lecturas de un periodo",
+      "description": "Elimina lecturas espurias, por ejemplo los picos de peso que un hub registra al arrancar antes de que sus básculas estén calibradas y que, de lo contrario, distorsionan los gráficos y los análisis.",
+      "warningTitle": "No se puede deshacer",
+      "warning": "Las lecturas eliminadas se pierden para siempre. Exporta antes el periodo si puedes necesitarlo.",
+      "start": "Inicio",
+      "end": "Fin",
+      "claimCode": "Código de reclamación",
+      "claimCodeHelp": "El código de reclamación del hub, como segunda confirmación.",
+      "review": "Revisar eliminación",
+      "confirmTitle": "¿Eliminar estas lecturas?",
+      "confirmRange": "Del {{start}} al {{end}}.",
+      "confirmCount_one": "Se eliminará permanentemente {{count}} lectura.",
+      "confirmCount_other": "Se eliminarán permanentemente {{count}} lecturas.",
+      "confirmCount_many": "Se eliminarán permanentemente {{count}} lecturas.",
+      "confirmIrreversible": "No se puede deshacer.",
+      "countFailed": "No se pudieron contar las lecturas de este periodo.",
+      "confirm_one": "Eliminar {{count}} lectura",
+      "confirm_other": "Eliminar {{count}} lecturas",
+      "confirm_many": "Eliminar {{count}} lecturas",
+      "deleting": "Eliminando…",
+      "success_one": "{{count}} lectura eliminada.",
+      "success_other": "{{count}} lecturas eliminadas.",
+      "success_many": "{{count}} lecturas eliminadas.",
+      "noPermission": "Solo el propietario del dispositivo puede eliminar lecturas. Tu rol es «{{role}}».",
+      "errors": {
+        "missingRange": "Elige un inicio y un fin.",
+        "invalidRange": "El fin debe ser igual o posterior al inicio.",
+        "missingClaimCode": "Introduce el código de reclamación del hub."
+      }
+    }
+  },
+  "alertSettings": {
+    "title": "Alertas de HiveHub por correo",
+    "description": "Recibe un correo cuando HiveHub detecte algo en tus colmenas: enjambrazón, pillaje, una colonia huérfana y más.",
+    "enable": "Enviarme correos sobre alertas de HiveHub",
+    "minSeverity": "Gravedad mínima",
+    "minSeverityHelp": "Las alertas por debajo de este nivel nunca se envían por correo.",
+    "severity": {
+      "watch": "Vigilancia y superiores",
+      "warning": "Advertencia y superiores",
+      "critical": "Solo críticas"
+    },
+    "help": {
+      "schedule": "HivePal comprueba si hay alertas nuevas cada 15 minutos.",
+      "once": "Cada alerta se envía una vez cuando aparece y de nuevo solo si empeora.",
+      "scope": "Abarca todos los dispositivos HiveHub a los que tienes acceso.",
+      "email": "Requiere que el correo esté configurado en el servidor de HivePal."
+    },
+    "saved": "Ajustes de alertas guardados",
+    "saveFailed": "No se pudieron guardar los ajustes de alertas",
+    "loadFailed": "No se pudieron cargar tus preferencias."
+  },
+  "health": {
+    "title": "Estado de los sensores",
+    "description": "Estado de cada sensor según lo notifica {{name}}.",
+    "descriptionAt": "Estado de los sensores de la última conexión · {{ago}}.",
+    "noData": "Aún no se ha notificado el estado de los sensores; aparece en cuanto el dispositivo envía su primera lectura.",
+    "hubHeading": "Hub",
+    "hiveIndex": "Colmena {{n}}",
+    "noHiveSensors": "No se han notificado sensores para esta colmena.",
+    "faultNote": "El hub notifica sus propios subsistemas como correcto/fallo; no envía ningún código de error para ellos, así que cada fallo de arriba indica qué ha fallado. El contador de piquera sí notifica un código de estado, que se muestra con el fallo siempre que se haya leído.",
+    "summary": {
+      "noData": "Sin datos de sensores",
+      "allOk": "Todo OK",
+      "faults_one": "{{count}} fallo",
+      "faults_other": "{{count}} fallos",
+      "faults_many": "{{count}} fallos"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Fallo",
+      "notFitted": "No instalado",
+      "notHeard": "Sin señal"
+    },
+    "hub": {
+      "sht_ok": "Temp./humedad ambiente (SHT40)",
+      "rtc_ok": "Reloj de tiempo real",
+      "sd_ok": "Tarjeta SD",
+      "mic_ok": "Micrófono",
+      "mic_left_ok": "Micrófono · izquierdo",
+      "mic_right_ok": "Micrófono · derecho",
+      "battery_monitor_ok": "Monitor de batería",
+      "solar_monitor_ok": "Monitor solar"
+    },
+    "hubReason": {
+      "sht_ok": "El sensor ambiental no devolvió una lectura válida en este ciclo, así que esta conexión no incluye temperatura ni humedad ambiente. Suele deberse a un fallo del bus I²C o del cableado; un sensor que nunca se detectó al arrancar se muestra igual.",
+      "rtc_ok": "El reloj de tiempo real no respondió en el bus I²C. Las marcas de tiempo recurren a la hora de red, así que una lectura tomada sin conexión puede tener una fecha incorrecta.",
+      "sd_ok": "La tarjeta SD no se montó en este ciclo: falta, no se puede leer o hay un fallo de SPI/cableado. Mientras persista, las lecturas no se almacenan en la tarjeta.",
+      "mic_ok": "La captura del micrófono no devolvió muestras utilizables, así que esta conexión no incluye bandas acústicas.",
+      "mic_left_ok": "El micrófono izquierdo no devolvió muestras utilizables.",
+      "mic_right_ok": "El micrófono derecho no devolvió muestras utilizables.",
+      "battery_monitor_ok": "El medidor de batería no respondió en el bus I²C: faltan la tensión y el estado de carga de la batería en esta conexión.",
+      "solar_monitor_ok": "El monitor solar no respondió en el bus I²C: faltan la tensión, la corriente y la potencia solar en esta conexión."
+    },
+    "sensor": {
+      "scale": "Báscula",
+      "inHive": "Sensor interior",
+      "counter": "Contador HiveTraffic",
+      "hiveheart": "HiveHeart"
+    },
+    "reason": {
+      "scale": "Hay una báscula configurada para esta colmena, pero no produjo ninguna lectura utilizable en este ciclo, así que esta conexión no incluye peso para ella.",
+      "inHive": "No se recibió ningún anuncio del {{kind}} emparejado durante el escaneo BLE de este ciclo: fuera de alcance, batería agotada o apagado.",
+      "inHiveKindFallback": "sensor interior",
+      "node": "Nodo {{node}}.",
+      "lastHeard": "Última señal {{ago}}.",
+      "notHeardInRange": "Sin señal en el periodo cargado.",
+      "counter": "El contador de piquera no respondió a su lectura GATT en este ciclo: fuera de alcance, apagado u ocupado cuando HiveHub lo llamó.",
+      "counterNode": "Contador {{node}}.",
+      "lastAnswered": "Última respuesta {{ago}}.",
+      "notAnsweredInRange": "No ha respondido en el periodo cargado.",
+      "statusThen": "Estado entonces: {{status}}.",
+      "expandersThen_one": "{{count}} de 3 expansores de puertos respondía entonces.",
+      "expandersThen_other": "{{count}} de 3 expansores de puertos respondían entonces.",
+      "expandersThen_many": "{{count}} de 3 expansores de puertos respondían entonces.",
+      "hiveheart": "No se recibió señal del HiveHeart en este ciclo: fuera de alcance, batería agotada o apagado."
+    },
+    "counter": {
+      "nightIdle": "reposo del modo nocturno",
+      "nightIdleBadge": "Reposo nocturno",
+      "otherBits": "bits específicos del contador {{hex}}",
+      "noFlags": "ningún indicador activado",
+      "statusCode": "estado {{hex}}",
+      "expanders_one": "{{count}}/3 expansor de canales",
+      "expanders_other": "{{count}}/3 expansores de canales",
+      "expanders_many": "{{count}}/3 expansores de canales",
+      "glitches_one": "{{count}} fallo puntual",
+      "glitches_other": "{{count}} fallos puntuales",
+      "glitches_many": "{{count}} fallos puntuales",
+      "banks": "Bancos {{list}}",
+      "noBanks": "Sin bancos de emisores"
+    },
+    "meta": {
+      "firmware": "v{{version}}",
+      "batteryPercent": "Batería {{value}} %",
+      "batteryMv": "Batería {{value}} mV",
+      "batteryV": "Batería {{value}} V",
+      "rssi": "{{value}} dBm"
+    }
+  },
+  "hubStatus": {
+    "title": "Estado del hub",
+    "description": "Enlace, reloj y alimentación del propio HiveHub.",
+    "noData": "Aún no se ha recibido ninguna lectura de este hub.",
+    "staleWarning": "Sin lecturas desde hace {{ago}}: el hub se ha saltado varias conexiones.",
+    "badge": {
+      "live": "En directo",
+      "stale": "Desactualizado",
+      "inspection": "Inspección en curso",
+      "calibration": "Modo calibración"
+    },
+    "section": {
+      "connectivity": "Conectividad",
+      "battery": "Batería",
+      "solar": "Solar"
+    },
+    "row": {
+      "signal": "Señal",
+      "transport": "Transporte",
+      "timeSource": "Fuente de hora",
+      "lastSeen": "Última conexión",
+      "lastReading": "Última lectura",
+      "firmware": "Firmware",
+      "bootCount": "Número de arranques",
+      "stateOfCharge": "Estado de carga",
+      "batteryVoltage": "Tensión",
+      "batteryAlert": "Alerta de batería",
+      "solarPower": "Potencia solar",
+      "solarCurrent": "Corriente solar",
+      "solarBus": "Tensión del panel (bus)",
+      "solarLoad": "Tensión de carga"
+    },
+    "signalQuality": {
+      "excellent": "Excelente",
+      "good": "Buena",
+      "fair": "Aceptable",
+      "poor": "Débil"
+    },
+    "transport": {
+      "wifi": "Wi-Fi",
+      "cellular": "Móvil"
+    },
+    "rtc": {
+      "ok": "RTC OK",
+      "fault": "Fallo del RTC"
+    },
+    "batteryAlertActive": "Batería baja"
+  },
+  "hiveCards": {
+    "empty": "Este dispositivo aún no ha notificado ninguna colmena.",
+    "hiveIndex": "Colmena {{n}}",
+    "weight": "Peso",
+    "temperature": "Temperatura",
+    "humidity": "Humedad",
+    "delta24h": "24 h {{value}} kg",
+    "lastReported": "Última notificación {{ago}}",
+    "inspection": "Inspección",
+    "insightsLoading": "Cargando análisis",
+    "insightsUnavailable": "Análisis no disponibles",
+    "noSensors": "No se han notificado sensores",
+    "traffic": "Entradas {{in}} · Salidas {{out}}",
+    "trafficTitle": "Abejas que entraron/salieron en el último intervalo",
+    "alerts_one": "{{count}} alerta activa",
+    "alerts_other": "{{count}} alertas activas",
+    "alerts_many": "{{count}} alertas activas",
+    "sensor": {
+      "scale": "Báscula",
+      "inHive": "Sensor interior",
+      "counter": "Contador HiveTraffic",
+      "hiveheart": "HiveHeart"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Sin señal / fallo"
+    }
+  },
+  "audio": {
+    "title": "Audio de la colmena",
+    "description": "Pide al nodo HiveInside de una colmena que grabe y escúchalo aquí. El hub recoge la solicitud en su próximo despertar, así que la grabación aparece dentro de un intervalo de envío y no de inmediato.",
+    "noNodes": "No hay ningún nodo HiveInside emparejado con este hub. Solo HiveInside tiene micrófono: una baliza HolyIot o RuuviTag no puede grabar.",
+    "hive": "Colmena",
+    "hiveFallback": "Colmena {{slot}}",
+    "length": "Duración",
+    "durationOption_one": "{{count}} segundo",
+    "durationOption_other": "{{count}} segundos",
+    "durationOption_many": "{{count}} segundos",
+    "gain": "Ganancia",
+    "gainValue": "{{gain}} dB",
+    "record": "Grabar",
+    "nextWake": "Llega al hub en su próximo despertar.",
+    "viewerNote": "Un propietario o administrador puede solicitar una grabación.",
+    "lengthHint": "Más corto suele ser mejor: 10–20 segundos bastan para oír lo que señaló un análisis, y cuesta menos batería y menos tiempo con la colmena sin señal; un nodo conectado ni emite anuncios ni toma muestras.",
+    "requestSuccess": "Grabación solicitada. Llega al hub en su próximo despertar.",
+    "requestError": "No se pudo poner en cola la solicitud: {{message}}",
+    "listTitle": "Grabaciones",
+    "onlySelectedHive": "Solo {{name}}",
+    "loadError": "No se pudieron listar las grabaciones: {{message}}",
+    "empty": "Aún no hay grabaciones. Pide a una colmena que grabe y aparecerá aquí. Una sesión son 10–60 segundos de audio a 16 kHz descargados del nodo por BLE.",
+    "requestedLength_one": "{{count}} s solicitado",
+    "requestedLength_other": "{{count}} s solicitados",
+    "requestedLength_many": "{{count}} s solicitados",
+    "requestedBy": "Solicitado por {{name}}",
+    "status": {
+      "requested": "Esperando al hub",
+      "streaming": "Grabando…",
+      "ready": "Lista",
+      "readyIncomplete": "Lista, incompleta",
+      "failed": "Fallida"
+    },
+    "waitingNote": "Esperando a que el hub despierte y la recoja; aún no se ha grabado nada. Una solicitud que el hub no haya recogido en 45 minutos se marca como fallida.",
+    "streamingNote": "Grabando: el audio aparece aquí a medida que llega.",
+    "streamingPartial": "Todavía grabando: esto es lo que ha llegado hasta ahora. Vuelve a reproducirlo cuando termine la sesión para oírlo entero.",
+    "failedFallback": "Esta grabación ha fallado.",
+    "seconds": "{{value}} s",
+    "bytes": "{{value}} B",
+    "percent": "{{value}} %",
+    "download": "Descargar WAV",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar esta grabación? Nada más lo hará: no hay limpieza automática.",
+    "deleteSuccess": "Grabación eliminada.",
+    "deleteError": "No se pudo eliminar la grabación: {{message}}",
+    "confirmation": {
+      "verified": "verificada",
+      "reported": "sin verificar",
+      "confirmed": "confirmada por el hub",
+      "unknown": "sin confirmar"
+    },
+    "quality": {
+      "length": "Duración",
+      "dropped": "Perdidas",
+      "gaps": "Huecos",
+      "hubBuffer": "Búfer del hub",
+      "clipping": "Saturación",
+      "checksum": "Suma de comprobación",
+      "cause": {
+        "dropped": "el nodo no pudo enviar el audio con suficiente rapidez",
+        "gaps": "se perdieron paquetes en la transmisión inalámbrica",
+        "hubBuffer": "la subida del hub se quedó atrás respecto a su búfer"
+      },
+      "gapNote": "El audio a ambos lados de un hueco es real, pero la unión no. Causa: {{causes}}.",
+      "clippingNote": "Baja la ganancia para obtener una grabación más limpia.",
+      "unknownNote": "El hub nunca informó sobre esta sesión, así que nada comprobó si el audio está completo. Lo que hay se puede reproducir."
+    }
+  },
+  "dashboard": {
+    "hiveFallback": "Colmena {{index}}",
+    "units": {
+      "bees": "abejas"
+    },
+    "range": {
+      "24h": "24 h",
+      "7d": "7 d",
+      "30d": "30 d",
+      "365d": "365 d",
+      "custom": "Personalizado",
+      "invalid": "La fecha de inicio no debe ser posterior a la fecha de fin."
+    },
+    "header": {
+      "title": "Mi panel",
+      "description": "Widgets configurables. Las colmenas seleccionadas arriba controlan los gráficos por colmena.",
+      "editDescription": "Modo edición: arrastra el asa para mover los widgets y la esquina para cambiar su tamaño en una cuadrícula de 4 columnas.",
+      "edit": "Editar panel",
+      "done": "Listo",
+      "addWidget": "Añadir widget",
+      "reset": "Restablecer",
+      "editBanner": "El modo edición del panel está activo. Usa el asa de la cabecera de cada widget para moverlo y arrastra la esquina inferior derecha para cambiar el ancho o el alto. Los cambios de diseño se guardan automáticamente para este dispositivo HiveHub.",
+      "dropEnd": "Suelta aquí para mover un widget al final del panel.",
+      "noWidgets": "Aún no hay widgets. Añade una plantilla para crear tu panel.",
+      "restoreDefaults": "Restaurar valores predeterminados"
+    },
+    "overview": {
+      "title": "Resumen de colmenas",
+      "description": "Estado compacto de las colmenas asignadas. Selecciona mosaicos para controlar los widgets del panel de abajo.",
+      "lastData": "Últimos datos",
+      "hivesOnline": "Colmenas en línea",
+      "hubFirmware": "FW HiveHub",
+      "hiveInsideFirmware": "FW HiveInside",
+      "selected_one": "{{count}} seleccionada",
+      "selected_other": "{{count}} seleccionadas",
+      "selected_many": "{{count}} seleccionadas",
+      "hide": "Ocultar resumen",
+      "show": "Mostrar resumen",
+      "slot": "Posición {{index}}",
+      "ok": "OK",
+      "noData": "Sin datos",
+      "weight": "Peso",
+      "temperature": "Temp.",
+      "humidity": "HR",
+      "empty": "Asigna las posiciones de HiveHub a colmenas de HivePal en el panel de configuración del dispositivo para ver aquí los mosaicos de resumen."
+    },
+    "sensors": {
+      "scale": "báscula",
+      "inHive": "interior",
+      "accel": "acel.",
+      "counter": "contador",
+      "none": "sin sensores"
+    },
+    "widgetShell": {
+      "move": "Mover {{title}}",
+      "moveHint": "Arrastra para mover este widget",
+      "remove": "Quitar {{title}}",
+      "resize": "Cambiar tamaño de {{title}}",
+      "resizeHint": "Arrastra para cambiar el tamaño de este widget"
+    },
+    "addWidget": {
+      "title": "Añadir widget",
+      "description": "Empieza con una plantilla. El widget usará las colmenas seleccionadas en la cuadrícula de resumen cuando corresponda.",
+      "defaultSize": "Tamaño predeterminado {{w}} x {{h}}"
+    },
+    "widgets": {
+      "weightComparison": {
+        "title": "Comparación de peso",
+        "description": "Compara las colmenas seleccionadas en el periodo actual."
+      },
+      "dailyMaxWeight": {
+        "title": "Peso máximo diario",
+        "description": "Peso compensado más alto por día de las colmenas seleccionadas."
+      },
+      "climate": {
+        "title": "Clima de la colmena",
+        "description": "Temperatura y humedad de las colmenas seleccionadas."
+      },
+      "power": {
+        "title": "Estado de la alimentación",
+        "description": "Carga de la batería, tensión de la batería y aporte solar."
+      },
+      "beeTraffic": {
+        "title": "Tráfico de abejas",
+        "description": "Tráfico total de entrada/salida y flujo neto."
+      },
+      "soundRms": {
+        "title": "Sonido / bandas acústicas",
+        "description": "RMS acústico por colmena y bandas FFT/HiveHeart cuando están disponibles."
+      },
+      "hiveHeartSpectrum": {
+        "title": "Espectro HiveHeart",
+        "description": "Últimos niveles FFT de HiveHeart (0–15) en 16 rangos de frecuencia para las colmenas seleccionadas."
+      },
+      "vibration": {
+        "title": "Bandas de vibración",
+        "description": "Vibración RMS y bandas de enjambrazón, ventilación y actividad."
+      },
+      "configurableDiagram": {
+        "title": "Diagrama configurable",
+        "description": "Elige las métricas de colmena, sonido, tráfico, clima y dispositivo que quieres representar."
+      },
+      "temperatureHeatmap": {
+        "title": "Mapa de calor de temperatura",
+        "description": "Resumen compacto de la temperatura de todas las colmenas."
+      },
+      "insights": {
+        "title": "Feed de análisis",
+        "description": "Alertas activas y fragmentos de evidencias."
+      },
+      "dataQuality": {
+        "title": "Calidad de los datos",
+        "description": "Disponibilidad de sensores y lecturas que faltan."
+      }
+    },
+    "metricGroups": {
+      "scale": "Báscula",
+      "climate": "Clima",
+      "beeTraffic": "Tráfico de abejas",
+      "vibration": "Vibración",
+      "sound": "Sonido",
+      "device": "Dispositivo"
+    },
+    "metrics": {
+      "weight": "Peso",
+      "temperature": "Temperatura",
+      "humidity": "Humedad",
+      "pressure": "Presión",
+      "beeIn": "Abejas que entran",
+      "beeOut": "Abejas que salen",
+      "beeNet": "Flujo neto",
+      "vibration": "Vibración RMS",
+      "swarmBand": "Banda de enjambrazón",
+      "fanningBand": "Banda de ventilación",
+      "activityBand": "Banda de actividad",
+      "soundRms": "Sonido RMS",
+      "soundHum": "Banda de zumbido",
+      "soundPiping": "Banda de canto de reinas",
+      "soundStress": "Banda de estrés",
+      "hiveHeartFrequency": "Frecuencia HiveHeart",
+      "hiveHeartEnergy": "Energía HiveHeart",
+      "batterySoc": "Carga de la batería",
+      "batteryVoltage": "Tensión de la batería",
+      "solarPower": "Potencia solar"
+    },
+    "axes": {
+      "weight": "Peso",
+      "temperature": "Temperatura",
+      "humidity": "Humedad",
+      "pressure": "Presión",
+      "beecount": "Número de abejas",
+      "vibration": "Vibración",
+      "dbfs": "Nivel sonoro",
+      "frequency": "Frecuencia",
+      "energy": "Energía",
+      "percent": "Carga",
+      "voltage": "Tensión",
+      "power": "Potencia"
+    },
+    "soundMetrics": {
+      "rms": "RMS",
+      "hiveHeartFrequency": "Frecuencia HiveHeart",
+      "hiveHeartEnergy": "Energía HiveHeart",
+      "hiveHeartPeak": "Pico HiveHeart"
+    },
+    "vibrationMetrics": {
+      "rms": "RMS",
+      "swarmBand": "Banda de enjambrazón",
+      "fanningBand": "Banda de ventilación",
+      "activityBand": "Banda de actividad"
+    },
+    "series": {
+      "temperature": "{{name}} temp.",
+      "humidity": "{{name}} HR",
+      "beeIn": "Entradas",
+      "beeOut": "Salidas",
+      "beeNet": "Neto"
+    },
+    "axisScale": {
+      "auto": "auto",
+      "setBound": "Establecer {{bound}} de {{axis}}",
+      "clearHint": "Déjalo vacío y pulsa Intro para usar auto",
+      "tickTitle": "Haz clic para establecer {{bound}}; vacíalo para auto",
+      "reset": "restablecer",
+      "help": "Haz clic en la etiqueta más baja o más alta del eje Y para editarla. Vacía el valor para usar auto."
+    },
+    "chart": {
+      "downloadCsv": "Descargar CSV"
+    },
+    "inspection": {
+      "legendHint_one": "{{count}} periodo de inspección sombreado; las lecturas pueden estar alteradas",
+      "legendHint_other": "{{count}} periodos de inspección sombreados; las lecturas pueden estar alteradas",
+      "legendHint_many": "{{count}} periodos de inspección sombreados; las lecturas pueden estar alteradas"
+    },
+    "empty": {
+      "noData": "No hay datos para las colmenas y el periodo seleccionados.",
+      "climate": "No hay datos climáticos para el periodo seleccionado.",
+      "power": "No hay datos de alimentación para el periodo seleccionado.",
+      "beeTraffic": "No hay datos de contador de abejas para las colmenas seleccionadas.",
+      "sound": "No hay datos acústicos por colmena para las colmenas seleccionadas.",
+      "vibration": "No hay datos de vibración ni de bandas del acelerómetro para las colmenas seleccionadas.",
+      "configurable": "Selecciona al menos una métrica con datos para las colmenas y el periodo seleccionados.",
+      "dailyMaxWeight": "No hay datos de peso para las colmenas y el periodo seleccionados.",
+      "hiveHeart": "No hay datos FFT de HiveHeart para las colmenas y el periodo seleccionados.",
+      "unknownWidget": "Tipo de widget desconocido."
+    },
+    "soundFootnote": "Muestra primero las lecturas acústicas por colmena. Los datos antiguos de los micrófonos izquierdo/derecho se asignan a los nombres de colmena configurados para las posiciones 1 y 2 cuando no hay un bloque acústico por colmena.",
+    "heatmap": {
+      "low": "baja <33 °C",
+      "optimal": "cría óptima 33–36 °C",
+      "high": "alta >36 °C"
+    },
+    "insights": {
+      "loading": "Cargando análisis…",
+      "unavailable": "Los análisis no están disponibles.",
+      "noAlerts": "No hay alertas activas para las colmenas seleccionadas.",
+      "showing_one": "Mostrando {{count}} alerta activa para las colmenas seleccionadas.",
+      "showing_other": "Mostrando {{count}} alertas activas para las colmenas seleccionadas.",
+      "showing_many": "Mostrando {{count}} alertas activas para las colmenas seleccionadas.",
+      "confidence": "confianza {{percent}} %"
+    },
+    "dataQuality": {
+      "activeSlots": "Posiciones activas",
+      "noScale": "Sin báscula",
+      "noClimate": "Sin clima",
+      "noRecentData": "sin datos recientes"
+    },
+    "hiveHeart": {
+      "level": "nivel",
+      "dominant": "frecuencia dominante {{hz}} Hz",
+      "noDominant": "no se ha notificado frecuencia dominante",
+      "footnote": "Niveles relativos 0–15 (no dBFS) de la última lectura del periodo. Las líneas discontinuas marcan la frecuencia dominante que notifica HiveHeart; los encabezados Subgraves/Zumbido/Canto de reinas/Estrés son aproximados y abarcan varios rangos."
     }
   }
 }

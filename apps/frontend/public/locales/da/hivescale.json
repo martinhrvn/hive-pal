@@ -35,20 +35,34 @@
   },
   "page": {
     "title": "HiveHub",
-    "subtitle": "Live weight and temperature visualisation from your separate HiveHub backend.",
+    "subtitle": "Vægt, klima, lyd, flyvetrafik og advarsler fra dine HiveHub-enheder.",
     "refresh": "Refresh",
     "refreshing": "Refreshing…",
     "refreshError": "Could not refresh HiveHub data.",
     "removeConfirm": "Remove {{name}} from your HivePal account? You can add it again with the claim code when no other users still have access.",
-    "removeSuccess": "HiveHub device removed from your account."
+    "removeSuccess": "HiveHub device removed from your account.",
+    "removeSuccessShared": "Du har ikke længere adgang til denne HiveHub-enhed. Andre brugere har den stadig, så dens claim-kode forbliver i brug.",
+    "releaseConfirm": "Frigiv {{name}} helt? Alle brugere mister adgang, og enheden kan gøres krav på igen med sin claim-kode. Målinger bevares.",
+    "releaseSuccess": "HiveHub-enhed frigivet. Der kan gøres krav på den igen med dens claim-kode.",
+    "unavailableTitle": "HiveHub kan ikke nås",
+    "inspectionActiveTitle": "Inspektionstilstand er slået til",
+    "inspectionActiveBody": "Målinger skjules, mens staderne er åbne, så det ikke udløser falske advarsler, når du løfter tavler op.",
+    "openInspections": "Åbn inspektioner",
+    "tabs": {
+      "overview": "Oversigt",
+      "inspections": "Inspektioner",
+      "audio": "Lyd",
+      "health": "Tilstand",
+      "setup": "Opsætning"
+    }
   },
   "setup": {
     "title": "Devices",
-    "description": "Select or remove a claimed HiveHub device. Expand the setup to claim devices, check status, map scales, and calibrate the raw readings.",
     "removeScale": "Remove scale",
+    "releaseScale": "Frigiv enhed",
     "noDevices": "No devices claimed yet — open the setup to add one.",
-    "hide": "Hide setup",
-    "show": "Show setup"
+    "selectDevice": "HiveHub-enhed",
+    "noDevicesYet": "Ingen HiveHub-enhed er gjort krav på endnu. Gør krav på en med koden, som hubben viser i sin opsætningsportal."
   },
   "claim": {
     "title": "Claim HiveHub device",
@@ -61,16 +75,30 @@
     "success": "HiveHub device claimed.",
     "errors": {
       "missingCode": "Enter the claim code printed/configured for the device."
-    }
+    },
+    "hive1Name": "Navn på stade 1",
+    "hive2Name": "Navn på stade 2",
+    "optional": "Valgfrit"
   },
   "mapping": {
-    "title": "Scale mapping",
-    "description": "These labels stay in HiveHub. Later, this is the right place to map Scale 1/2 to HivePal hive IDs for inspection markers.",
-    "scale1Label": "Display name for Scale 1",
-    "scale2Label": "Display name for Scale 2",
+    "title": "Stader",
     "hiveNamePlaceholder": "Select or type a hive name",
-    "save": "Save mapping",
-    "success": "Scale mapping updated."
+    "save": "Gem stader",
+    "success": "Stadepladser gemt i HiveHub.",
+    "slotsDescription": "Giv hver stadeplads et navn, og knyt den til et HivePal-stade. Tilknytningen gør, at inspektioner, stadesiden og advarselsmails ved, hvilken bifamilie en plads er. En grøn prik markerer pladser, som hubben rapporterer lige nu.",
+    "mapSlot": "Tilknyt plads {{slot}}",
+    "add": "Tilføj",
+    "reporting": "Rapporteret af hubben",
+    "unknownHive": "Stade ikke fundet",
+    "mappedCount": "{{count}}/{{total}} pladser tilknyttet",
+    "dialogTitle": "Stadeplads {{slot}}",
+    "dialogDescription": "Knyt pladsen til et af dine HivePal-stader, og vælg det navn, HiveHub viser for den.",
+    "linkedHive": "HivePal-stade",
+    "notLinked": "Ikke tilknyttet",
+    "linkHint": "Tilknytningen bevares, hvis du omdøber stadet. Vælger du et stade, udfyldes navnet, hvis navnefeltet er tomt.",
+    "displayName": "Visningsnavn",
+    "clearSlot": "Ryd plads",
+    "applySlot": "Anvend"
   },
   "status": {
     "title": "Device status",
@@ -90,6 +118,13 @@
     "revokeAccess": "Revoke access",
     "errors": {
       "missingEmail": "Enter the email address of an existing HivePal user."
+    },
+    "lastSeen": "Seneste check-in",
+    "claimedAt": "Gjort krav på",
+    "roles": {
+      "owner": "Ejer",
+      "admin": "Administrator",
+      "viewer": "Læser"
     }
   },
   "calibration": {
@@ -199,11 +234,9 @@
       },
       "sourceHint": "Omgivelsestemperaturen følger cellelegemet tæt i stabil tilstand og er den anbefalede standard.",
       "refLabel": "Referencetemperatur / °C",
-      "refHint": "Temperatur hvor korrektionen er nul.",
       "coeffLabel": "{{scaleName}}-koefficient / kg pr. °C",
       "autoFit": "Auto-tilpas fra historik",
       "fitting": "Tilpasser…",
-      "autoFitHint": "Auto-tilpasning udfører en regression af de seneste 3 dages rå vægt mod den EMA-udjævnede valgte temperatur og anvender og aktiverer derefter resultatet. For en ren tilpasning skal du fange et vindue, hvor den fysiske belastning er konstant, og temperaturen svinger.",
       "save": "Gem temperaturkompensation",
       "errors": {
         "refTemp": "Referencetemperaturen skal være et tal (°C).",
@@ -215,11 +248,33 @@
         "noSignal": "ikke nok temperatur-/vægtsignal.",
         "fitApplied": "{{scaleName}}: {{coeff}} kg/°C ved {{refTemp}}°C (R²={{r2}}, n={{n}}). Anvendt og aktiveret."
       }
+    },
+    "perHive": {
+      "hive": "Stade {{index}}",
+      "hiveNamed": "Stade {{index}} · {{name}}",
+      "hiveLabel": "Stade",
+      "knownWeightPlaceholder": "f.eks. 10",
+      "manualSaveHint": "Skift stade for at redigere en anden vægt; alle ændringer sendes samlet, når du gemmer. Stader fra nr. 3 og op skrives kun, hvis de er ændret.",
+      "tempco": {
+        "refHint": "Den temperatur, hvor vægtene viser korrekt, dvs. den, de blev tareret og kalibreret ved. Der er korrektionen nul; tilpasningen lader den være, medmindre du beder om det.",
+        "lookbackLabel": "Tilpasningsperiode / dage",
+        "setRefTemp": "Indstil også referencetemperaturen",
+        "setRefTempHint": "Erstatter referencen med middeltemperaturen i det tilpassede vindue. Lad være slået fra, hvis vægten blev kalibreret ved en kendt temperatur.",
+        "fitOnly": "Kun tilpas (forhåndsvisning)",
+        "fitAndApply": "Tilpas & anvend",
+        "fitSummary": "{{scaleName}}: {{coeff}} kg/°C, R² {{r2}} over {{n}} målinger fra {{min}}–{{max}} °C (vinduesgennemsnit {{mean}} °C).",
+        "lowRSquared": "R² under 0,5: temperaturen forklarer kun lidt af denne drift. Tilpas over en periode med konstant belastning og stor forskel mellem dag og nat.",
+        "autoFitHint": "Auto-tilpasning laver en regression af det valgte stades gemte vægt over tilbageblikvinduet mod den EMA-udjævnede valgte temperatur. \"Kun tilpas\" udfylder koefficienten, så du kan gennemse den, før du gemmer; \"Tilpas & anvend\" gemmer den og slår kompensation til. For en ren tilpasning skal du vælge et vindue, hvor den fysiske belastning er konstant, og temperaturen svinger.",
+        "errors": {
+          "lookback": "Tilbageblikket skal være et helt antal dage mellem 1 og 90."
+        },
+        "toasts": {
+          "fitFilled": "{{scaleName}}: {{coeff}} kg/°C (R²={{r2}}, n={{n}}). Udfyldt — gennemse og gem."
+        }
+      }
     }
   },
   "firmware": {
-    "title": "Firmware upload",
-    "description": "Upload a firmware binary and register it as a release. New devices of the matching type pick it up on their next update check.",
     "type": "Firmware type",
     "selectType": "Select firmware type",
     "version": "Version",
@@ -235,16 +290,101 @@
       "missingFile": "Choose a firmware binary (.bin) to upload.",
       "missingVersion": "Enter a version, e.g. 0.6.3."
     },
-    "hiveinsideOta": {
-      "title": "Udløs HiveInside-OTA",
-      "description": "Upload af en HiveInside-firmware sætter nu automatisk den trådløse opdatering i kø for begge sensor-slots via BLE. Brug denne til at sætte den aktive version i kø igen til et bestemt slot. Hold sensoren tændt og vågen under opdateringen.",
-      "slot": "Sensor-slot",
-      "slotOption": "Slot {{slot}}",
-      "queue": "Sæt HiveInside-OTA i kø",
+    "update": {
+      "title": "Firmwareopdatering",
+      "description": "Vægte opdaterer aldrig af sig selv — du godkender hver ny version her, før denne vægt installerer den.",
+      "unavailable": "Firmwarestatus er ikke tilgængelig lige nu.",
+      "availableTitle": "Firmware {{version}} er tilgængelig",
+      "availableBody": "Denne vægt kører {{current}}. Anvend for at opdatere den til {{version}}.",
+      "officialSuffix": "Dette er en officiel version.",
+      "apply": "Anvend opdatering",
+      "applying": "Anvender…",
+      "applied": "Firmware {{version}} godkendt — vægten opdaterer ved sit næste check-in.",
+      "queued": "Opdatering {{version}} godkendt. Vægten installerer den ved sit næste check-in.",
+      "upToDate": "Firmwaren er opdateret ({{version}}).",
+      "viewerNotice": "Kun enhedsejere og administratorer kan anvende firmwareopdateringer."
+    },
+    "board": {
+      "cardTitle": "Firmware",
+      "cardDescription": "Firmware på denne HiveHub og på de HiveInside-noder og HiveTraffic-tællere, den har tilknyttet. Upload registrerer en version; godkendelse (hub) eller videresendelse (noder) installerer den.",
+      "current": "Nuværende",
+      "latest": "Nyeste",
+      "approved": "Godkendt",
+      "board": "Board",
+      "badgePending": "Opdatering afventer godkendelse",
+      "badgeApproved": "Opdatering godkendt",
+      "badgeUpToDate": "Opdateret",
+      "approveFlash": "Godkend & flash {{version}}",
+      "approveConfirm": "Godkend firmware {{version}} og flash den trådløst?\n\nHiveHub installerer den ved sit næste check-in og genstarter. En fjernplaceret enhed, hvor opdateringen fejler undervejs, kan kræve fysisk adgang for at blive gendannet.",
+      "otherBoards": "Også uploadet til et andet board (ikke anvendt på denne {{board}}-enhed): {{releases}}. En version når kun en enhed med matchende board — tjek boardet ved upload.",
+      "otherBoardsUnknown": "Også uploadet til et andet board (ikke anvendt på denne enhed): {{releases}}. En version når kun en enhed med matchende board — tjek boardet ved upload."
+    },
+    "relays": {
+      "hiveFallback": "Stade {{slot}}",
+      "latest": "nyeste {{version}}",
+      "updateAvailable": "opdatering tilgængelig: {{version}}",
+      "status": {
+        "pending": "videresendelse i kø",
+        "running": "videresender…",
+        "completed": "videresendelse fuldført",
+        "failed": "videresendelse mislykkedes",
+        "expired": "videresendelse fik timeout"
+      },
+      "statusTitle": "Videresendelse af {{version}}: {{status}} ({{date}})",
+      "failedDetail": "Seneste videresendelse mislykkedes — {{message}} ({{date}})",
+      "noReason": "ingen årsag rapporteret",
+      "alreadyQueued": "Der er allerede en videresendelse i kø for denne node",
       "queueing": "Sætter i kø…",
-      "success": "HiveInside-OTA sat i kø for slot {{slot}}.",
-      "autoQueued": "HiveInside-OTA automatisk sat i kø for slots {{slots}}.",
-      "autoQueueFailed": "HiveInside-OTA kunne ikke sættes automatisk i kø for slots {{slots}}."
+      "relayAnyway": "Videresend alligevel",
+      "confirm": "Videresend {{name}} {{version}} til {{hive}}?\n\nHiveHub tager det op ved sin næste uploadcyklus — normalt inden for ca. 10 minutter, eller hvilket sendeinterval denne enhed nu bruger. Derefter streamer den billedet over BLE i nogle minutter, og noden genstarter med det. Noden skal være vågen og inden for rækkevidde, ellers mislykkes videresendelsen og skal sættes i kø igen.",
+      "queued": "Videresendelse af {{version}} sat i kø til {{hive}}.",
+      "queuedFrom": "Videresendelse sat i kø til {{hive}} ({{current}} → {{version}}).",
+      "hiveinside": {
+        "name": "HiveInside",
+        "title": "HiveInside-noder",
+        "description": "Firmware, som hver node i stadet annoncerer. Upload af et HiveInside-billede registrerer kun versionen — intet når en node, før du trykker på “Videresend til node”. Versionen, der vises her, er det, der bekræfter, at opdateringen lykkedes.",
+        "relay": "Videresend til node",
+        "unnamed": "Annoncerer intet eget navn (HiveInside før 0.5.0)",
+        "noRelease": "Ingen HiveInside-version uploadet endnu — upload en nedenfor for at videresende den."
+      },
+      "beecounter": {
+        "name": "HiveTraffic",
+        "title": "HiveTraffic-tællere",
+        "description": "Firmware, som hver HiveTraffic-tæller rapporterer. Upload af et HiveTraffic-billede registrerer kun versionen — intet når en tæller, før du trykker på “Videresend til tæller”. Tællere ældre end ca. v0.1.0 rapporterer ingen version, men kan stadig opdateres.",
+        "relay": "Videresend til tæller",
+        "unnamed": "Rapporterer intet navn eller adresse",
+        "noRelease": "Ingen HiveTraffic-version uploadet endnu — upload en nedenfor for at videresende den.",
+        "countingWarning": "En tæller holder op med at tælle bier under hele overførslen, så videresend, når flyvetrafikken er lav.",
+        "confirmExtra": "Tælleren holder op med at tælle bier under hele overførslen — al trafik i de få minutter går tabt."
+      }
+    },
+    "uploadForm": {
+      "title": "Upload firmware",
+      "description": "Upload registrerer kun en version — den installerer aldrig noget af sig selv. Godkend hub-opdateringen ovenfor, eller videresend en node- eller tællerversion fra dens række.",
+      "board": "Board",
+      "targets": {
+        "hivehub": "HiveHub-hub",
+        "hiveinside": "HiveInside",
+        "beecounter": "HiveTraffic-tæller"
+      },
+      "boards": {
+        "auto": "Automatisk (fra filnavn)",
+        "esp32": "ESP32 (klassisk 30-pin)",
+        "esp32-c6": "ESP32-C6",
+        "nrf54lm20a": "nRF54LM20A"
+      },
+      "boardHint": {
+        "hivehub": "Hub-firmware skal angive sit board: vælg et, eller behold automatisk, når filen hedder noget i stil med hivehub_esp32-c6_0.30.5.bin.",
+        "hiveinside": "HiveInside findes kun til nRF54LM20A. Upload build-artefaktet som det er (f.eks. hiveinside_nrf54lm20a_1.4.0.bin), så udfyldes mål og version ud fra navnet.",
+        "beecounter": "HiveTraffic-tælleren er en ESP32-C6. Upload applikationsbilledet (f.eks. beecounter_esp32-c6_0.7.1.bin), ikke et sammenflettet factory-billede."
+      },
+      "detected": "{{name}} — udfyldte {{fields}}.",
+      "nothingDetected": "{{name}} — intet mål, board eller version genkendt i navnet; angiv dem nedenfor.",
+      "detectedTarget": "mål “{{target}}”",
+      "detectedBoard": "board {{board}}",
+      "detectedVersion": "version {{version}}",
+      "autoQueued": "Videresendelse automatisk sat i kø til {{hives}}.",
+      "autoQueueFailed": "Kunne ikke automatisk sætte videresendelsen i kø til {{hives}}."
     }
   },
   "sdData": {
@@ -269,12 +409,18 @@
       "parsed_other": "Parsed {{count}} records",
       "skipped_one": " · {{count}} unreadable line skipped.",
       "skipped_other": " · {{count}} unreadable lines skipped."
+    },
+    "mismatch": {
+      "title": "Fil fra en anden hub",
+      "description": "Denne fil er optaget af en anden hub, ikke af {{device}}.",
+      "fileDevices_one": "Enheds-id i filen:",
+      "fileDevices_other": "Enheds-id'er i filen:",
+      "hint": "Importér den kun alligevel, hvis SD-kortet virkelig hører til denne enhed (f.eks. efter udskiftning af hubbens printkort).",
+      "cancel": "Annullér",
+      "force": "Importér til denne enhed alligevel"
     }
   },
   "panel": {
-    "weight": "Weight",
-    "hiveTemp": "Hive temp",
-    "rmsSound": "RMS sound",
     "ambientTemperature": "Ambient temperature",
     "ambientHumidity": "Ambient humidity",
     "batteryCharge": "Battery charge",
@@ -284,7 +430,6 @@
       "title": "General",
       "description": "Ambient & power"
     },
-    "humidity": "Hive humidity",
     "wirelessSensorsBattery": "Wireless sensors battery",
     "sensorTypes": {
       "hiveHeart": "HiveHeart",
@@ -293,174 +438,36 @@
     }
   },
   "diagram": {
-    "title": "Measurements",
-    "subtitle": "Weight, temperature, and entrance activity over time",
-    "noMeasurements": "No measurements for the selected range.",
-    "noDataForSeries": "No data in the selected range.",
-    "meta": {
-      "device": "Device:",
-      "lastSeen": "Last seen:",
-      "lastData": "Last data:",
-      "firmware": "Firmware:"
-    },
     "range": {
       "all": "All",
       "from": "From",
       "to": "To"
     },
-    "series": {
-      "weight": "{{name}} weight",
-      "temp": "{{name}} temp",
-      "micRms": "{{name}} mic RMS",
-      "beesIn": "{{name}} bees in",
-      "beesOut": "{{name}} bees out",
-      "netFlow": "{{name}} net flow",
-      "ambientTemp": "Ambient temp",
-      "ambientHumidity": "Ambient humidity",
-      "batteryVoltage": "Battery voltage",
-      "batteryCharge": "Battery charge",
-      "solarVoltage": "Solar voltage",
-      "solarCurrent": "Solar current",
-      "solarPower": "Solar power",
-      "humidity": "{{name}} luftfugtighed",
-      "pressure": "{{name}} lufttryk",
-      "fanningBand": "{{name}} fanning band (30–100 Hz)",
-      "activityBand": "{{name}} activity band (100–200 Hz)"
-    },
-    "group": {
-      "ambient": "Ambient",
-      "offGrid": "Off-grid"
-    },
-    "axis": {
-      "weight": "Weight",
-      "temperature": "Temperature",
-      "humidity": "Humidity",
-      "voltage": "Voltage",
-      "percent": "Percent",
-      "current": "Current",
-      "power": "Power",
-      "sound": "Sound",
-      "beecount": "Bee count",
-      "pressure": "Lufttryk"
-    },
     "marker": {
-      "inspection": "Inspection",
-      "boxAdded": "Box added",
-      "action": {
-        "maintenance": "Maintenance",
-        "feeding": "Feeding",
-        "frames": "Frames",
-        "treatment": "Treatment"
-      }
-    },
-    "axisSettings": {
-      "title": "Axis settings",
-      "reset": "Reset",
-      "side": "Side",
-      "left": "Left",
-      "right": "Right",
-      "scale": "Scale",
-      "auto": "Auto",
-      "zeroToMax": "0 to max",
-      "custom": "Custom",
-      "min": "Min",
-      "max": "Max",
-      "autoPlaceholder": "auto"
+      "inspection": "Inspection"
     }
   },
   "sound": {
-    "title": "Hive sound",
-    "description": "INMP441 FFT band energy (dBFS) — {{left}} (left) · {{right}} (right)",
-    "hide": "Hide sound",
-    "show": "Show sound",
-    "micLeftFallback": "Mic left",
-    "micRightFallback": "Mic right",
-    "noDataForChannel": "No data for {{name}} in this range.",
-    "bandReference": "Band reference",
-    "thresholds": "Thresholds used by the Insights engine: piping > −45 dBFS, stress > −38 dBFS, queenless hum > −40 dBFS with quiet piping. Calibrate against your own baseline.",
-    "status": {
-      "noData": "No data",
-      "micError": "Mic error",
-      "bothActive": "{{left}} + {{right}} active",
-      "oneActive": "{{name}} active"
-    },
-    "table": {
-      "band": "Band",
-      "range": "Range",
-      "significance": "Significance"
-    },
     "bands": {
       "subBass": {
-        "label": "Sub-bass",
-        "description": "Structural vibration / low rumble"
+        "label": "Sub-bass"
       },
       "hum": {
-        "label": "Hum",
-        "description": "Normal colony hum (~200 Hz fundamental)"
+        "label": "Hum"
       },
       "piping": {
-        "label": "Piping",
-        "description": "Queen piping / tooting (pre-swarm signal)"
+        "label": "Piping"
       },
       "stress": {
-        "label": "Stress",
-        "description": "Agitated colony / robbing"
+        "label": "Stress"
       },
       "high": {
-        "label": "High",
-        "description": "Harmonic overtones"
+        "label": "High"
       }
-    },
-    "rmsToggleShow": "Show RMS level",
-    "rmsToggleHide": "Hide RMS level",
-    "rmsTitle": "RMS sound level",
-    "rmsSeries": "{{name}} RMS"
-  },
-  "beecounter": {
-    "title": "Entrance Counter",
-    "subtitle": "Bees entering and exiting per measurement interval",
-    "noData": "No BeeCounter data found for this device.",
-    "offline": "Offline",
-    "gatesOk": "{{count}} gates OK",
-    "glitches_one": "{{count}} glitch",
-    "glitches_other": "{{count}} glitches",
-    "gatesRatio": "{{healthy}}/{{total}} gates",
-    "inPeriod": "In (period)",
-    "outPeriod": "Out (period)",
-    "netFlow": "Net flow",
-    "netInbound": "net inbound",
-    "netOutbound": "net outbound",
-    "balanced": "balanced",
-    "view": {
-      "inOut": "In / Out",
-      "netFlow": "Net flow",
-      "cumulative": "Cumulative"
-    },
-    "series": {
-      "in": "{{name}} in",
-      "out": "{{name}} out",
-      "net": "{{name}} net",
-      "totalIn": "{{name}} total in",
-      "totalOut": "{{name}} total out"
-    },
-    "diagnostics": {
-      "title": "Hardware diagnostics",
-      "gatesHealthy": "Gates healthy",
-      "glitchCount": "Glitch count",
-      "totalInLifetime": "Total in (lifetime)",
-      "totalOutLifetime": "Total out (lifetime)"
     }
   },
   "insights": {
-    "title": "Insights",
-    "description": "Sensor-based alerts derived from weight and temperature trends.",
-    "updated": "Updated {{ago}}.",
-    "refresh": "Refresh insights",
-    "loadError": "Failed to load insights: {{message}}",
     "allClear": "All clear",
-    "noActiveAlerts": "No active alerts in the last {{count}} days.",
-    "activeAlerts_one": "{{count}} active alert:",
-    "activeAlerts_other": "{{count}} active alerts:",
     "confidence": "Confidence {{value}}%",
     "source": "Source: {{source}}",
     "hiveChannel": "Hive {{channel}}",
@@ -544,6 +551,721 @@
       "title": "No history yet",
       "description": "No alerts have been recorded for this device.",
       "descriptionFiltered": "No alerts have been recorded for this device matching this filter."
+    }
+  },
+  "inspectionMode": {
+    "title": "Inspektionstilstand",
+    "description": "Mens inspektionstilstand er slået til, bliver HiveHub ved med at måle, men holder målingerne ude af grafer, indsigter og advarsler, så det ikke forveksles med en sværm, når du løfter tavler op.",
+    "status": {
+      "active": "Aktiv siden {{time}}",
+      "pending": "Afventer, at hubben henter den",
+      "off": "Fra"
+    },
+    "pendingHint": "Anmodet — hubben henter det ved sit næste check-in.",
+    "timeoutNote_one": "Slutter automatisk efter {{count}} minut, hvis ingen stopper den.",
+    "timeoutNote_other": "Slutter automatisk efter {{count}} minutter, hvis ingen stopper den.",
+    "scope": {
+      "wholeHub": "Hele hubben",
+      "label": "Omfatter: {{hives}}"
+    },
+    "start": "Start inspektionstilstand",
+    "stop": "Stop inspektionstilstand",
+    "starting": "Starter…",
+    "stopping": "Stopper…",
+    "cancel": "Annullér",
+    "noteLabel": "Note (valgfri)",
+    "notePlaceholder": "f.eks. Tilføjet et honningmagasin",
+    "viewerHint": "Kun ejere og administratorer kan starte eller stoppe inspektionstilstand.",
+    "loadFailed": "Kunne ikke indlæse inspektionsstatus.",
+    "startDialog": {
+      "title": "Start inspektionstilstand",
+      "description": "Målinger fra de valgte stader skjules, indtil du stopper inspektionstilstand, eller den får timeout.",
+      "hivesLabel": "Stader",
+      "wholeHub": "Hele hubben (alle stader)",
+      "selectHive": "Vælg mindst ét stade eller hele hubben.",
+      "confirm": "Start"
+    },
+    "stopDialog": {
+      "title": "Stop inspektionstilstand",
+      "description": "HiveHub vender tilbage til normale målinger og advarsler.",
+      "confirm": "Stop"
+    },
+    "toast": {
+      "started": "Inspektionstilstand startet",
+      "stopped": "Inspektionstilstand stoppet",
+      "noteSaved": "Note gemt"
+    },
+    "history": {
+      "title": "Seneste inspektioner",
+      "empty": "Ingen inspektioner registreret endnu.",
+      "ongoing": "i gang",
+      "startedVia": "Startet via {{source}}",
+      "ended": "Afsluttet: {{reason}}",
+      "editNote": "Redigér note",
+      "addNote": "Tilføj note",
+      "saveNote": "Gem"
+    },
+    "duration": {
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hoursMinutes": "{{hours}} t {{minutes}} min"
+    },
+    "source": {
+      "device": "hub-knap",
+      "api": "app",
+      "dashboard": "lokalt dashboard"
+    },
+    "endReason": {
+      "timeout": "timeout",
+      "device": "hub-knap",
+      "api": "stoppet i app",
+      "dashboard": "stoppet på lokalt dashboard"
+    }
+  },
+  "hiveLink": {
+    "prompt": {
+      "message": "Dette stade overvåges af HiveHub {{device}} ({{hive}}). Start inspektionstilstand, så det ikke udløser falske advarsler, når du åbner stadet.",
+      "active": "Inspektionstilstand er slået til for {{hive}} på HiveHub {{device}}.",
+      "pending": "Inspektionstilstand anmodet for {{hive}} på HiveHub {{device}} — hubben henter den ved sit næste check-in.",
+      "activeOther": "Inspektionstilstand er slået til for andre stader på HiveHub {{device}}, ikke for {{hive}}. Stop den først for at starte en for dette stade."
+    },
+    "card": {
+      "title": "HiveHub",
+      "description": "Live-målinger fra de tilknyttede HiveHub-sensorer.",
+      "weight": "Vægt",
+      "weightChange24h": "Ændring 24 t",
+      "temperature": "Stadetemperatur",
+      "humidity": "Luftfugtighed",
+      "lastReading": "Seneste måling: {{time}}",
+      "openHiveHub": "Åbn HiveHub"
+    }
+  },
+  "traffic": {
+    "title": "HiveTraffic-bitællere",
+    "description": "Nattilstand og emitterbanker for hver HiveTraffic-tæller, der er parret med denne hub. IR-emitterne er langt den største post i en tællers strømbudget, så disse indstillinger afgør, om den kan klare sig på en off-grid-forsyning.",
+    "readOnly": "Kun enhedsejere og administratorer kan ændre disse indstillinger. Din rolle er “{{role}}”.",
+    "hiveFallback": "Stade {{slot}}",
+    "noChanges": "Ingen ændringer at gemme",
+    "saved": "Bitællerindstillinger gemt. Tællerne henter dem ved næste check-in.",
+    "appliesToAll": "Gælder for alle HiveTraffic-tællere, der er parret med denne enhed. Tælleren får besked ved hubbens næste uploadcyklus.",
+    "status": {
+      "title": "Tællere lige nu",
+      "none": "Ingen HiveTraffic-tæller rapporteret i den seneste måling.",
+      "counting": "Tæller",
+      "nightIdle": "Nattehvile",
+      "nightIdleFor_one": "Nattehvile · {{count}} min tilbage",
+      "nightIdleFor_other": "Nattehvile · {{count}} min tilbage",
+      "banksRunning": "Aktive emitterbanker: {{banks}}",
+      "banksUnknown": "Emitterbanker ikke rapporteret (tællerfirmware ældre end 0.3.0)",
+      "applied": "Banker anvendt",
+      "pending": "Banker afventer næste check-in"
+    },
+    "night": {
+      "title": "Nattilstand",
+      "description": "Honningbier er dagaktive — flyvning kræver lys og stopper alligevel under ca. 10 °C. I dette vindue holder tælleren op med at måle for at spare strøm. Den bliver ved med at annoncere, så målinger og firmwareopdateringer virker stadig.",
+      "enable": "Slå nattilstand til",
+      "start": "Natten starter (lokal tid)",
+      "end": "Natten slutter (lokal tid)",
+      "windowHelp": "Vinduet må gå hen over midnat (f.eks. 20:00 → 06:00). Hvis start og slut er ens, er vinduet tomt — det gælder aldrig — i stedet for at dække hele døgnet. Lad der være en margin omkring skumring og daggry: aktiviteten topper lige før solnedgang og solopgang.",
+      "emptyWindow": "Start og slut er ens, så vinduet er tomt, og nattilstand ville aldrig gælde.",
+      "wrapsMidnight": "Vinduet går hen over midnat: fra {{start}} til {{end}} næste morgen.",
+      "timezone": "Tidszone",
+      "tzCustom": "POSIX TZ-streng",
+      "timezoneHelp": "Hubbens ur kører i UTC. Uden den rigtige tidszone er vinduet forskudt med din UTC-forskel og flytter sig en time ved hvert skift til og fra sommertid.",
+      "tzPresets": {
+        "cet": "Centraleuropa (Berlin, Paris, Madrid, Wien)",
+        "uk": "Storbritannien / Irland",
+        "eet": "Østeuropa (Helsinki, Athen)",
+        "usEastern": "USA Eastern",
+        "usCentral": "USA Central",
+        "usMountain": "USA Mountain",
+        "usPacific": "USA Pacific",
+        "utc": "UTC (ingen lokal tid)",
+        "custom": "Brugerdefineret…"
+      },
+      "maxTraffic": "Udsæt over (passager pr. cyklus)",
+      "maxTrafficHelp": "Udsæt nattilstand, så længe der blev talt flere passager end dette (ind + ud) i den seneste uploadcyklus, så en bifamilie, der stadig flyver sent en sommeraften, ikke bliver afskåret. 0 går kun efter uret.",
+      "save": "Gem nattilstand"
+    },
+    "banks": {
+      "title": "Emitterbanker",
+      "description": "Tællerens IR-emittere tændes i tre banker med otte gennemgange hver. Hver bank bruger ca. 80 mA. Sluk en, hvis flyvehullet er smallere end 24 gennemgange, delvist lukket, eller hvis forsyningen ikke kan bære hele printet.",
+      "bank": "Bank {{bank}} — gennemgange {{gates}}",
+      "current_one": "{{count}} bank tændt · ca. {{ma}} mA på tællerens 3,3 V-skinne",
+      "current_other": "{{count}} banker tændt · ca. {{ma}} mA på tællerens 3,3 V-skinne",
+      "help": "En slukket bank tæller slet ikke sine gennemgange, så totalerne falder nogenlunde forholdsmæssigt — sammenlign ikke en indsnævret tæller med dens egen historik. Mindst én bank skal forblive tændt; fjern parringen af en tæller, der ikke skal tælle noget.",
+      "firmwareNote": "Kræver tællerfirmware 0.3.0 eller nyere. Indstillingen sendes igen efter hver nulstilling af tælleren.",
+      "save": "Gem emitterbanker"
+    },
+    "errors": {
+      "loadFailed": "Kunne ikke indlæse enhedskonfigurationen.",
+      "saveFailed": "Kunne ikke gemme bitællerindstillingerne",
+      "invalidTime": "Angiv et gyldigt start- og sluttidspunkt (TT:MM).",
+      "invalidMaxTraffic": "Udsættelsesgrænsen skal være et helt tal på 0 eller mere.",
+      "emptyWindow": "Start og slut for nattilstand er ens — vinduet ville aldrig gælde.",
+      "noBank": "Mindst én emitterbank skal forblive tændt — fjern i stedet parringen af tælleren."
+    }
+  },
+  "hubAccess": {
+    "title": "Hub-adgang",
+    "description": "Få adgang til hubben på stedet uden at åbne kabinettet, og angiv, hvor længe en inspektion må vare.",
+    "readOnly": "Kun enhedsejere og administratorer kan ændre disse indstillinger. Din rolle er “{{role}}”.",
+    "noChanges": "Ingen ændringer at gemme",
+    "cancel": "Annullér",
+    "ap": {
+      "title": "Opsætnings-access point",
+      "description": "Åbner hubbens HiveHub-Setup Wi-Fi-netværk, ligesom et kort tryk på opsætningsknappen: skift Wi-Fi, par sensorer eller download SD-kortets data.",
+      "lastCheckIn": "Seneste check-in: {{time}}",
+      "open": "Åbn opsætnings-access point",
+      "confirmTitle": "Åbn opsætnings-access point?",
+      "confirmTiming_one": "Anmodningen sættes i kø. Hubben sover mellem cyklusserne, så access pointet åbner efter dens næste check-in — senest om {{count}} minut.",
+      "confirmTiming_other": "Anmodningen sættes i kø. Hubben sover mellem cyklusserne, så access pointet åbner efter dens næste check-in — senest om {{count}} minutter.",
+      "confirmTimingUnknown": "Anmodningen sættes i kø. Hubben sover mellem cyklusserne, så access pointet åbner efter dens næste check-in — senest om ét sendeinterval.",
+      "confirmOffline": "Mens access pointet er åbent, er hubben ikke på Wi-Fi og sender ingen målinger.",
+      "confirmTimeout": "Det lukker af sig selv efter opsætningsportalens timeout, hvis ingen forbinder sig, så start det kun, når der er nogen ved stadet.",
+      "confirm": "Sæt access point i kø",
+      "queueing": "Sætter i kø…",
+      "queued": "Access point sat i kø. Det åbner efter hubbens næste check-in.",
+      "failed": "Kunne ikke sætte access pointet i kø"
+    },
+    "inspection": {
+      "title": "Inspektionstimeout",
+      "description": "Et sikkerhedsnet: en inspektion slutter af sig selv efter dette antal minutter, så et glemt tryk på knappen ikke skjuler et stades data på ubestemt tid. Standard 60.",
+      "label": "Timeout (minutter, 1–1440)",
+      "save": "Gem timeout",
+      "saved": "Inspektionstimeout gemt",
+      "saveFailed": "Kunne ikke gemme inspektionstimeouten",
+      "invalid": "Angiv et helt antal minutter mellem 1 og 1440."
+    }
+  },
+  "dataTools": {
+    "title": "Dataeksport & oprydning",
+    "description": "Tag backup af denne hubs målinger, eller fjern fejlagtige.",
+    "hiveFallback": "Stade {{slot}}",
+    "cancel": "Annullér",
+    "export": {
+      "title": "Eksportér målinger",
+      "description": "Download de gemte målinger som en NDJSON-backup.",
+      "from": "Fra (valgfri)",
+      "to": "Til (valgfri)",
+      "rangeHelp": "Lad begge være tomme for at eksportere alt. Datoer dækker hele dage i din lokale tid.",
+      "hives": "Stader (valgfri)",
+      "allHives": "Alle stader er inkluderet.",
+      "someHives_one": "Kun {{count}} valgt stade er inkluderet. Antallet nedenfor dækker alle målinger i perioden.",
+      "someHives_other": "Kun {{count}} valgte stader er inkluderet. Antallet nedenfor dækker alle målinger i perioden.",
+      "invalidRange": "Startdatoen ligger efter slutdatoen.",
+      "summaryFailed": "Kunne ikke tælle målingerne.",
+      "count_one": "{{count}} måling",
+      "count_other": "{{count}} målinger",
+      "span": "Fra {{first}} til {{last}}",
+      "download": "Download",
+      "formatHelp": "Én JSON-måling pr. linje. Filen kan importeres igen med SD-kortimporten.",
+      "noPermission": "Kun enhedsejere og administratorer kan eksportere data. Din rolle er “{{role}}”."
+    },
+    "delete": {
+      "title": "Slet målinger i en periode",
+      "description": "Fjerner fejlagtige målinger — for eksempel de vægtudsving, en hub registrerer ved opstart, før dens vægte er kalibreret, og som ellers forvrænger grafer og indsigter.",
+      "warningTitle": "Dette kan ikke fortrydes",
+      "warning": "Slettede målinger er væk for altid. Eksportér perioden først, hvis du måske får brug for den.",
+      "start": "Start",
+      "end": "Slut",
+      "claimCode": "Claim-kode",
+      "claimCodeHelp": "Hubbens claim-kode som en ekstra bekræftelse.",
+      "review": "Gennemse sletning",
+      "confirmTitle": "Slet disse målinger?",
+      "confirmRange": "Fra {{start}} til {{end}}.",
+      "confirmCount_one": "{{count}} måling slettes permanent.",
+      "confirmCount_other": "{{count}} målinger slettes permanent.",
+      "confirmIrreversible": "Dette kan ikke fortrydes.",
+      "countFailed": "Kunne ikke tælle målingerne i denne periode.",
+      "confirm_one": "Slet {{count}} måling",
+      "confirm_other": "Slet {{count}} målinger",
+      "deleting": "Sletter…",
+      "success_one": "Slettede {{count}} måling.",
+      "success_other": "Slettede {{count}} målinger.",
+      "noPermission": "Kun enhedens ejer kan slette målinger. Din rolle er “{{role}}”.",
+      "errors": {
+        "missingRange": "Vælg en start og en slutning.",
+        "invalidRange": "Slutningen skal være samtidig med eller efter starten.",
+        "missingClaimCode": "Angiv hubbens claim-kode."
+      }
+    }
+  },
+  "alertSettings": {
+    "title": "HiveHub-mailadvarsler",
+    "description": "Få en mail, når HiveHub opdager noget ved dine stader — sværmning, røveri, en dronningeløs bifamilie og mere.",
+    "enable": "Send mig mails om HiveHub-advarsler",
+    "minSeverity": "Mindste alvorlighed",
+    "minSeverityHelp": "Advarsler under dette niveau sendes aldrig pr. mail.",
+    "severity": {
+      "watch": "Hold øje og højere",
+      "warning": "Advarsel og højere",
+      "critical": "Kun kritiske"
+    },
+    "help": {
+      "schedule": "HivePal tjekker for nye advarsler hvert 15. minut.",
+      "once": "Hver advarsel mailes én gang, når den opstår, og kun igen, hvis den bliver mere alvorlig.",
+      "scope": "Omfatter alle HiveHub-enheder, du har adgang til.",
+      "email": "Kræver, at mail er konfigureret på HivePal-serveren."
+    },
+    "saved": "Advarselsindstillinger gemt",
+    "saveFailed": "Kunne ikke gemme advarselsindstillingerne",
+    "loadFailed": "Kunne ikke indlæse dine præferencer."
+  },
+  "health": {
+    "title": "Sensortilstand",
+    "description": "Tilstand pr. sensor som rapporteret af {{name}}.",
+    "descriptionAt": "Sensortilstand fra seneste check-in · {{ago}}.",
+    "noData": "Ingen sensortilstand rapporteret endnu — den vises, når enheden sender sin første måling.",
+    "hubHeading": "Hub",
+    "hiveIndex": "Stade {{n}}",
+    "noHiveSensors": "Ingen sensorer rapporteret for dette stade.",
+    "faultNote": "Hubben rapporterer sine egne delsystemer som OK/fejl — den sender ingen fejlkode for dem, så hver fejl ovenfor beskriver i stedet, hvad der svigtede. Flyvehulstælleren rapporterer derimod en statuskode, og den vises sammen med fejlen, hvor en er blevet aflæst.",
+    "summary": {
+      "noData": "Ingen sensordata",
+      "allOk": "Alt OK",
+      "faults_one": "{{count}} fejl",
+      "faults_other": "{{count}} fejl"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Fejl",
+      "notFitted": "Ikke monteret",
+      "notHeard": "Ikke modtaget"
+    },
+    "hub": {
+      "sht_ok": "Omgivelsestemp./fugtighed (SHT40)",
+      "rtc_ok": "Realtidsur",
+      "sd_ok": "SD-kort",
+      "mic_ok": "Mikrofon",
+      "mic_left_ok": "Mikrofon · venstre",
+      "mic_right_ok": "Mikrofon · højre",
+      "battery_monitor_ok": "Batteriovervågning",
+      "solar_monitor_ok": "Solovervågning"
+    },
+    "hubReason": {
+      "sht_ok": "Omgivelsessensoren returnerede ikke en gyldig måling i denne cyklus, så dette check-in indeholder ingen omgivelsestemperatur eller -fugtighed. Oftest en fejl på I²C-bussen eller i ledningsføringen; en sensor, der aldrig blev fundet ved opstart, ser ud på samme måde.",
+      "rtc_ok": "Realtidsuret svarede ikke på I²C-bussen. Tidsstempler falder tilbage til netværkstid, så en måling taget offline kan få forkert dato.",
+      "sd_ok": "SD-kortet blev ikke monteret i denne cyklus — mangler, er ulæseligt eller har en SPI-/ledningsfejl. Målinger bufres ikke på kortet, så længe dette varer.",
+      "mic_ok": "Mikrofonoptagelsen gav ingen brugbare samples, så dette check-in indeholder ingen akustiske bånd.",
+      "mic_left_ok": "Den venstre mikrofon gav ingen brugbare samples.",
+      "mic_right_ok": "Den højre mikrofon gav ingen brugbare samples.",
+      "battery_monitor_ok": "Batterimåleren svarede ikke på I²C-bussen — batterispænding og ladetilstand mangler i dette check-in.",
+      "solar_monitor_ok": "Solovervågningen svarede ikke på I²C-bussen — solspænding, -strøm og -effekt mangler i dette check-in."
+    },
+    "sensor": {
+      "scale": "Vægt",
+      "inHive": "Stadesensor",
+      "counter": "HiveTraffic-tæller",
+      "hiveheart": "HiveHeart"
+    },
+    "reason": {
+      "scale": "Der er konfigureret en vægt for dette stade, men den gav ingen brugbar måling i denne cyklus, så dette check-in indeholder ingen vægt for det.",
+      "inHive": "Ingen annoncering fra den parrede {{kind}} under denne cyklus' BLE-scanning — uden for rækkevidde, afladet batteri eller slukket.",
+      "inHiveKindFallback": "stadesensor",
+      "node": "Node {{node}}.",
+      "lastHeard": "Senest modtaget {{ago}}.",
+      "notHeardInRange": "Ikke modtaget i den indlæste periode.",
+      "counter": "Flyvehulstælleren svarede ikke på sin GATT-læsning i denne cyklus — uden for rækkevidde, slukket eller optaget, da HiveHub kaldte op.",
+      "counterNode": "Tæller {{node}}.",
+      "lastAnswered": "Senest svaret {{ago}}.",
+      "notAnsweredInRange": "Den har ikke svaret i den indlæste periode.",
+      "statusThen": "Status dengang: {{status}}.",
+      "expandersThen_one": "{{count}} af 3 port-expandere svarede dengang.",
+      "expandersThen_other": "{{count}} af 3 port-expandere svarede dengang.",
+      "hiveheart": "HiveHeart blev ikke modtaget i denne cyklus — uden for rækkevidde, afladet batteri eller slukket."
+    },
+    "counter": {
+      "nightIdle": "nattilstand i hvile",
+      "nightIdleBadge": "Nattehvile",
+      "otherBits": "tællerspecifikke bits {{hex}}",
+      "noFlags": "ingen flag sat",
+      "statusCode": "status {{hex}}",
+      "expanders_one": "{{count}}/3 gennemgangs-expandere",
+      "expanders_other": "{{count}}/3 gennemgangs-expandere",
+      "glitches_one": "{{count}} forstyrrelse",
+      "glitches_other": "{{count}} forstyrrelser",
+      "banks": "Banker {{list}}",
+      "noBanks": "Ingen emitterbanker"
+    },
+    "meta": {
+      "firmware": "v{{version}}",
+      "batteryPercent": "Batteri {{value}} %",
+      "batteryMv": "Batteri {{value}} mV",
+      "batteryV": "Batteri {{value}} V",
+      "rssi": "{{value}} dBm"
+    }
+  },
+  "hubStatus": {
+    "title": "Hubstatus",
+    "description": "Forbindelse, ur og strøm for selve HiveHub.",
+    "noData": "Ingen måling modtaget fra denne hub endnu.",
+    "staleWarning": "Ingen måling i {{ago}} — hubben har misset flere check-ins.",
+    "badge": {
+      "live": "Live",
+      "stale": "Forældet",
+      "inspection": "Inspektion i gang",
+      "calibration": "Kalibreringstilstand"
+    },
+    "section": {
+      "connectivity": "Forbindelse",
+      "battery": "Batteri",
+      "solar": "Sol"
+    },
+    "row": {
+      "signal": "Signal",
+      "transport": "Transport",
+      "timeSource": "Tidskilde",
+      "lastSeen": "Senest set",
+      "lastReading": "Seneste måling",
+      "firmware": "Firmware",
+      "bootCount": "Antal opstarter",
+      "stateOfCharge": "Ladetilstand",
+      "batteryVoltage": "Spænding",
+      "batteryAlert": "Batteriadvarsel",
+      "solarPower": "Soleffekt",
+      "solarCurrent": "Solstrøm",
+      "solarBus": "Panelspænding (bus)",
+      "solarLoad": "Belastningsspænding"
+    },
+    "signalQuality": {
+      "excellent": "Fremragende",
+      "good": "God",
+      "fair": "Middel",
+      "poor": "Svag"
+    },
+    "transport": {
+      "wifi": "Wi-Fi",
+      "cellular": "Mobilnet"
+    },
+    "rtc": {
+      "ok": "RTC OK",
+      "fault": "RTC-fejl"
+    },
+    "batteryAlertActive": "Lavt batteri"
+  },
+  "hiveCards": {
+    "empty": "Denne enhed har ikke rapporteret nogen stader endnu.",
+    "hiveIndex": "Stade {{n}}",
+    "weight": "Vægt",
+    "temperature": "Temperatur",
+    "humidity": "Luftfugtighed",
+    "delta24h": "24 t {{value}} kg",
+    "lastReported": "Senest rapporteret {{ago}}",
+    "inspection": "Inspektion",
+    "insightsLoading": "Indlæser indsigter",
+    "insightsUnavailable": "Indsigter ikke tilgængelige",
+    "noSensors": "Ingen sensorer rapporteret",
+    "traffic": "Ind {{in}} · Ud {{out}}",
+    "trafficTitle": "Bier ind/ud i det seneste interval",
+    "alerts_one": "{{count}} aktiv advarsel",
+    "alerts_other": "{{count}} aktive advarsler",
+    "sensor": {
+      "scale": "Vægt",
+      "inHive": "Stadesensor",
+      "counter": "HiveTraffic-tæller",
+      "hiveheart": "HiveHeart"
+    },
+    "state": {
+      "ok": "OK",
+      "fault": "Ikke modtaget / fejl"
+    }
+  },
+  "audio": {
+    "title": "Stadelyd",
+    "description": "Bed et stades HiveInside-node om at optage, og lyt til optagelsen her. Hubben henter anmodningen, næste gang den vågner, så en optagelse dukker op inden for ét rapporteringsinterval og ikke med det samme.",
+    "noNodes": "Der er ingen HiveInside-node parret med denne hub. Kun HiveInside har en mikrofon — en HolyIot- eller RuuviTag-beacon kan ikke optage.",
+    "hive": "Stade",
+    "hiveFallback": "Stade {{slot}}",
+    "length": "Længde",
+    "durationOption_one": "{{count}} sekund",
+    "durationOption_other": "{{count}} sekunder",
+    "gain": "Forstærkning",
+    "gainValue": "{{gain}} dB",
+    "record": "Optag",
+    "nextWake": "Når hubben, næste gang den vågner.",
+    "viewerNote": "En ejer eller administrator kan anmode om en optagelse.",
+    "lengthHint": "Kortere er som regel bedre: 10–20 sekunder er nok til at høre, hvad en indsigt markerede, og koster mindre batteri og mindre tid, hvor stadet er ude af luften — en forbundet node hverken annoncerer eller måler.",
+    "requestSuccess": "Optagelse anmodet. Den når hubben, næste gang den vågner.",
+    "requestError": "Anmodningen kunne ikke sættes i kø: {{message}}",
+    "listTitle": "Optagelser",
+    "onlySelectedHive": "Kun {{name}}",
+    "loadError": "Kunne ikke vise optagelser: {{message}}",
+    "empty": "Ingen optagelser endnu. Bed et stade om at optage, så dukker den op her. En session er 10–60 sekunders 16 kHz-lyd, der hentes fra noden over BLE.",
+    "requestedLength_one": "{{count}} s anmodet",
+    "requestedLength_other": "{{count}} s anmodet",
+    "requestedBy": "Anmodet af {{name}}",
+    "status": {
+      "requested": "Venter på hub",
+      "streaming": "Optager…",
+      "ready": "Klar",
+      "readyIncomplete": "Klar, ikke komplet",
+      "failed": "Mislykkedes"
+    },
+    "waitingNote": "Venter på, at hubben vågner og henter dette — intet optaget endnu. En anmodning, som hubben ikke har hentet inden for 45 minutter, markeres som mislykket.",
+    "streamingNote": "Optager — lyden vises her, efterhånden som den kommer ind.",
+    "streamingPartial": "Optager stadig — dette er det, der er kommet ind indtil videre. Afspil den igen, når sessionen er slut, for at høre det hele.",
+    "failedFallback": "Denne optagelse mislykkedes.",
+    "seconds": "{{value}} s",
+    "bytes": "{{value}} B",
+    "percent": "{{value}} %",
+    "download": "Download WAV",
+    "delete": "Slet",
+    "deleteConfirm": "Slet denne optagelse? Intet andet vil nogensinde gøre det — der er ingen automatisk oprydning.",
+    "deleteSuccess": "Optagelse slettet.",
+    "deleteError": "Kunne ikke slette optagelsen: {{message}}",
+    "confirmation": {
+      "verified": "verificeret",
+      "reported": "ikke verificeret",
+      "confirmed": "bekræftet af hub",
+      "unknown": "ikke bekræftet"
+    },
+    "quality": {
+      "length": "Længde",
+      "dropped": "Tabt",
+      "gaps": "Huller",
+      "hubBuffer": "Hub-buffer",
+      "clipping": "Klipning",
+      "checksum": "Kontrolsum",
+      "cause": {
+        "dropped": "noden kunne ikke sende lyden hurtigt nok",
+        "gaps": "pakker gik tabt i luften",
+        "hubBuffer": "hubbens upload kom bagud i forhold til dens buffer"
+      },
+      "gapNote": "Lyden på begge sider af et hul er ægte, men overgangen er ikke. Årsag: {{causes}}.",
+      "clippingNote": "Sænk forstærkningen for en renere optagelse.",
+      "unknownNote": "Hubben rapporterede aldrig om denne session, så intet har tjekket, om lyden er komplet. Det, der er her, kan afspilles."
+    }
+  },
+  "dashboard": {
+    "hiveFallback": "Stade {{index}}",
+    "units": {
+      "bees": "bier"
+    },
+    "range": {
+      "24h": "24 t",
+      "7d": "7 d",
+      "30d": "30 d",
+      "365d": "365 d",
+      "custom": "Brugerdefineret",
+      "invalid": "Startdatoen må ikke ligge efter slutdatoen."
+    },
+    "header": {
+      "title": "Mit dashboard",
+      "description": "Brugerkonfigurerbare widgets. De valgte stader ovenfor styrer de stadebaserede grafer.",
+      "editDescription": "Redigeringstilstand: træk i håndtaget for at flytte widgets, og træk i hjørnet for at ændre deres størrelse i et gitter med 4 kolonner.",
+      "edit": "Redigér dashboard",
+      "done": "Færdig",
+      "addWidget": "Tilføj widget",
+      "reset": "Nulstil",
+      "editBanner": "Dashboardets redigeringstilstand er aktiv. Brug grebet i hver widgets overskrift til at flytte den, og træk i nederste højre hjørne for at ændre bredde eller højde. Layoutændringer gemmes automatisk for denne HiveHub-enhed.",
+      "dropEnd": "Slip her for at flytte en widget til slutningen af dashboardet.",
+      "noWidgets": "Ingen widgets endnu. Tilføj en skabelon for at bygge dit dashboard.",
+      "restoreDefaults": "Gendan standard"
+    },
+    "overview": {
+      "title": "Stadeoversigt",
+      "description": "Kompakt status for tilknyttede stader. Vælg felter for at styre dashboard-widgets nedenfor.",
+      "lastData": "Seneste data",
+      "hivesOnline": "Stader online",
+      "hubFirmware": "HiveHub-FW",
+      "hiveInsideFirmware": "HiveInside-FW",
+      "selected_one": "{{count}} valgt",
+      "selected_other": "{{count}} valgt",
+      "hide": "Skjul oversigt",
+      "show": "Vis oversigt",
+      "slot": "Plads {{index}}",
+      "ok": "OK",
+      "noData": "Ingen data",
+      "weight": "Vægt",
+      "temperature": "Temp.",
+      "humidity": "RF",
+      "empty": "Knyt HiveHub-pladser til HivePal-stader i enhedens opsætningspanel for at vise oversigtsfelter her."
+    },
+    "sensors": {
+      "scale": "vægt",
+      "inHive": "i stadet",
+      "accel": "accel.",
+      "counter": "tæller",
+      "none": "ingen sensorer"
+    },
+    "widgetShell": {
+      "move": "Flyt {{title}}",
+      "moveHint": "Træk for at flytte denne widget",
+      "remove": "Fjern {{title}}",
+      "resize": "Ændr størrelse på {{title}}",
+      "resizeHint": "Træk for at ændre størrelsen på denne widget"
+    },
+    "addWidget": {
+      "title": "Tilføj widget",
+      "description": "Start fra en skabelon. Widgeten bruger de valgte stader fra oversigtsgitteret, hvor det er relevant.",
+      "defaultSize": "Standardstørrelse {{w}} x {{h}}"
+    },
+    "widgets": {
+      "weightComparison": {
+        "title": "Vægtsammenligning",
+        "description": "Sammenlign valgte stader over den aktuelle periode."
+      },
+      "dailyMaxWeight": {
+        "title": "Daglig maksvægt",
+        "description": "Højeste kompenserede vægt pr. dag for de valgte stader."
+      },
+      "climate": {
+        "title": "Stadeklima",
+        "description": "Temperatur og luftfugtighed for valgte stader."
+      },
+      "power": {
+        "title": "Strømforsyning",
+        "description": "Batteriladning, batterispænding og solindgang."
+      },
+      "beeTraffic": {
+        "title": "Flyvetrafik",
+        "description": "Samlet ind-/udtrafik og nettoflow."
+      },
+      "soundRms": {
+        "title": "Lyd / akustiske bånd",
+        "description": "Akustisk RMS pr. stade og FFT-/HiveHeart-bånd, når de er tilgængelige."
+      },
+      "hiveHeartSpectrum": {
+        "title": "HiveHeart-spektrum",
+        "description": "Seneste HiveHeart-FFT-niveauer (0–15) over 16 frekvensområder for de valgte stader."
+      },
+      "vibration": {
+        "title": "Vibrationsbånd",
+        "description": "RMS-vibration samt sværm-, vifte- og aktivitetsbånd."
+      },
+      "configurableDiagram": {
+        "title": "Konfigurerbart diagram",
+        "description": "Vælg de stade-, lyd-, trafik-, klima- og enhedsmålinger, der skal vises."
+      },
+      "temperatureHeatmap": {
+        "title": "Temperatur-heatmap",
+        "description": "Kompakt temperaturoversigt over alle stader."
+      },
+      "insights": {
+        "title": "Indsigtsfeed",
+        "description": "Aktive advarsler og uddrag af belæg."
+      },
+      "dataQuality": {
+        "title": "Datakvalitet",
+        "description": "Sensortilgængelighed og manglende målinger."
+      }
+    },
+    "metricGroups": {
+      "scale": "Vægt",
+      "climate": "Klima",
+      "beeTraffic": "Flyvetrafik",
+      "vibration": "Vibration",
+      "sound": "Lyd",
+      "device": "Enhed"
+    },
+    "metrics": {
+      "weight": "Vægt",
+      "temperature": "Temperatur",
+      "humidity": "Luftfugtighed",
+      "pressure": "Lufttryk",
+      "beeIn": "Bier ind",
+      "beeOut": "Bier ud",
+      "beeNet": "Nettoflow",
+      "vibration": "Vibration RMS",
+      "swarmBand": "Sværmbånd",
+      "fanningBand": "Viftebånd",
+      "activityBand": "Aktivitetsbånd",
+      "soundRms": "Lyd RMS",
+      "soundHum": "Summebånd",
+      "soundPiping": "Tudebånd",
+      "soundStress": "Stressbånd",
+      "hiveHeartFrequency": "HiveHeart-frekvens",
+      "hiveHeartEnergy": "HiveHeart-energi",
+      "batterySoc": "Batteriladning",
+      "batteryVoltage": "Batterispænding",
+      "solarPower": "Soleffekt"
+    },
+    "axes": {
+      "weight": "Vægt",
+      "temperature": "Temperatur",
+      "humidity": "Luftfugtighed",
+      "pressure": "Lufttryk",
+      "beecount": "Antal bier",
+      "vibration": "Vibration",
+      "dbfs": "Lydniveau",
+      "frequency": "Frekvens",
+      "energy": "Energi",
+      "percent": "Ladning",
+      "voltage": "Spænding",
+      "power": "Effekt"
+    },
+    "soundMetrics": {
+      "rms": "RMS",
+      "hiveHeartFrequency": "HiveHeart-frekvens",
+      "hiveHeartEnergy": "HiveHeart-energi",
+      "hiveHeartPeak": "HiveHeart-top"
+    },
+    "vibrationMetrics": {
+      "rms": "RMS",
+      "swarmBand": "Sværmbånd",
+      "fanningBand": "Viftebånd",
+      "activityBand": "Aktivitetsbånd"
+    },
+    "series": {
+      "temperature": "{{name}} temp.",
+      "humidity": "{{name}} RF",
+      "beeIn": "Ind",
+      "beeOut": "Ud",
+      "beeNet": "Netto"
+    },
+    "axisScale": {
+      "auto": "auto",
+      "setBound": "Angiv {{axis}} {{bound}}",
+      "clearHint": "Lad være tom og tryk Enter for automatisk",
+      "tickTitle": "Klik for at angive {{bound}}; ryd for automatisk",
+      "reset": "nulstil",
+      "help": "Klik på den laveste eller højeste etiket på y-aksen for at redigere. Ryd værdien for automatisk."
+    },
+    "chart": {
+      "downloadCsv": "Download CSV"
+    },
+    "inspection": {
+      "legendHint_one": "{{count}} inspektionsvindue skraveret; målinger kan være forstyrrede",
+      "legendHint_other": "{{count}} inspektionsvinduer skraveret; målinger kan være forstyrrede"
+    },
+    "empty": {
+      "noData": "Ingen data for de valgte stader og perioden.",
+      "climate": "Ingen klimadata for den valgte periode.",
+      "power": "Ingen strømdata for den valgte periode.",
+      "beeTraffic": "Ingen bitællerdata for de valgte stader.",
+      "sound": "Ingen akustiske data pr. stade for de valgte stader.",
+      "vibration": "Ingen vibrations- eller accelerometerbånddata for de valgte stader.",
+      "configurable": "Vælg mindst én måling med data for de valgte stader og perioden.",
+      "dailyMaxWeight": "Ingen vægtdata for de valgte stader og perioden.",
+      "hiveHeart": "Ingen HiveHeart-FFT-data for de valgte stader og perioden.",
+      "unknownWidget": "Ukendt widgettype."
+    },
+    "soundFootnote": "Viser akustiske målinger pr. stade først. Ældre venstre/højre mikrofondata knyttes til de konfigurerede stadenavne for plads 1 og 2, når der ikke er nogen akustisk blok pr. stade.",
+    "heatmap": {
+      "low": "lav <33 °C",
+      "optimal": "optimal yngel 33–36 °C",
+      "high": "høj >36 °C"
+    },
+    "insights": {
+      "loading": "Indlæser indsigter…",
+      "unavailable": "Indsigter er ikke tilgængelige.",
+      "noAlerts": "Ingen aktive advarsler for de valgte stader.",
+      "showing_one": "Viser {{count}} aktiv advarsel for de valgte stader.",
+      "showing_other": "Viser {{count}} aktive advarsler for de valgte stader.",
+      "confidence": "sikkerhed {{percent}}%"
+    },
+    "dataQuality": {
+      "activeSlots": "Aktive pladser",
+      "noScale": "Ingen vægt",
+      "noClimate": "Intet klima",
+      "noRecentData": "ingen nye data"
+    },
+    "hiveHeart": {
+      "level": "niveau",
+      "dominant": "dominerende frekvens {{hz}} Hz",
+      "noDominant": "ingen dominerende frekvens rapporteret",
+      "footnote": "Relative niveauer 0–15 (ikke dBFS) for den seneste måling i perioden. Stiplede linjer markerer den dominerende frekvens, som HiveHeart rapporterer; overskrifterne Sub-bas/Summen/Tuden/Stress er omtrentlige og spænder over flere områder."
     }
   }
 }

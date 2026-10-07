@@ -19,7 +19,6 @@ import time
 import requests
 
 from app import (
-    map_ai_to_form_draft,
     recommend_from_transcript,
     transcribe_file,
     truncate_transcript,
@@ -181,8 +180,7 @@ def process_analysis_job() -> bool:
             raise ValueError("Empty transcript in analysis job")
 
         log.info("Running AI analysis for audioId=%s", audio_id)
-        ai_result = recommend_from_transcript(transcript)
-        draft = map_ai_to_form_draft(ai_result)
+        draft = recommend_from_transcript(transcript)
 
         complete = server_post(
             f"/api/worker/jobs/analysis/{audio_id}/complete",

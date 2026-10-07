@@ -28,6 +28,7 @@ export * from './assistant';
 export * from './measurements';
 export * from './account-transfer';
 export * from './todos';
+export * from './hivehub';
 
 // Export utility functions
 export * from './utils/inspection-type';

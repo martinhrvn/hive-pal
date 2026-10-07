@@ -21,7 +21,8 @@
     "allInspections": "Alle inspecites",
     "schedule": "Planning",
     "recent": "Recent",
-    "upcoming": "Aankomende"
+    "upcoming": "Aankomende",
+    "hivehub": "HiveHub"
   },
   "status": {
     "completed": "Afgerond"

@@ -21,6 +21,7 @@ import { QueenStep } from './steps/queen-step';
 import { MediaNotesStep } from './steps/media-notes-step';
 import { ReviewStep } from './steps/review-step';
 import type { PendingPhoto, PendingRecording } from './types';
+import { HiveHubInspectionPrompt } from '@/pages/hivescale/hivehub-inspection-prompt';
 
 export function MobileWizardPage() {
   const { hiveId } = useParams<{ hiveId: string }>();
@@ -45,7 +46,9 @@ export function MobileWizardPage() {
   }, [hive]);
 
   const form = useForm<InspectionFormData>({
-    resolver: zodResolver(isSubjective ? subjectiveInspectionSchema : inspectionSchema),
+    resolver: zodResolver(
+      isSubjective ? subjectiveInspectionSchema : inspectionSchema,
+    ),
     defaultValues: {
       hiveId,
       date: new Date(),
@@ -56,7 +59,9 @@ export function MobileWizardPage() {
   });
 
   const [pendingPhotos, setPendingPhotos] = useState<PendingPhoto[]>([]);
-  const [pendingRecordings, setPendingRecordings] = useState<PendingRecording[]>([]);
+  const [pendingRecordings, setPendingRecordings] = useState<
+    PendingRecording[]
+  >([]);
   const [stepIndex, setStepIndex] = useState(0);
 
   const upsert = useUpsertInspection(undefined, {
@@ -125,13 +130,7 @@ export function MobileWizardPage() {
         ),
       },
     ],
-    [
-      t,
-      isSubjective,
-      broodFrameCapacity,
-      pendingPhotos,
-      pendingRecordings,
-    ],
+    [t, isSubjective, broodFrameCapacity, pendingPhotos, pendingRecordings],
   );
 
   const isLastStep = stepIndex === steps.length - 1;
@@ -197,6 +196,9 @@ export function MobileWizardPage() {
         nextDisabled={isLastStep && form.formState.isSubmitting}
         hideBack={stepIndex === 0}
       >
+        {stepIndex === 0 && (
+          <HiveHubInspectionPrompt hiveId={hiveId} className="mb-3 shrink-0" />
+        )}
         {current.node}
       </WizardShell>
     </FormProvider>

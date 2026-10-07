@@ -8,10 +8,6 @@ import { IconJarLogoIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { InspectionFormData } from './schema';
-import { AiBadge } from './ai-badge';
-import { AiSectionPreview } from './ai-section-preview';
-import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
-import { cn } from '@/lib/utils';
 import { getModeSpecificObservations } from './mode-behavior';
 import { RatingSlider } from '@/components/common/rating-slider';
 
@@ -23,10 +19,6 @@ type ScoreKey =
 
 type ScorePreviewSectionProps = {
   totalFrames?: number | null;
-  isAiSuggested?: (field: keyof InspectionFormData) => boolean;
-  aiMergeState?: AiMergeState | null;
-  onAcceptSuggestion?: (field: keyof InspectionFormData) => void;
-  onDismissSuggestion?: (field: keyof InspectionFormData) => void;
 };
 
 const getScoreColor = (value: number | null | undefined) => {
@@ -34,40 +26,6 @@ const getScoreColor = (value: number | null | undefined) => {
   if (value >= 6) return 'text-green-600';
   if (value >= 3) return 'text-amber-500';
   return 'text-red-500';
-};
-
-const formatScorePreview = (value: unknown) => {
-  if (!value || typeof value !== 'object') {
-    return <span className="italic text-muted-foreground">Empty</span>;
-  }
-
-  const score = value as Partial<Record<ScoreKey, number | null | undefined>>;
-
-  const rows: { key: ScoreKey; label: string }[] = [
-    { key: 'overallScore', label: 'Overall' },
-    { key: 'populationScore', label: 'Population' },
-    { key: 'storesScore', label: 'Stores' },
-    { key: 'queenScore', label: 'Queen' },
-  ];
-
-  const hasAnyValue = rows.some(row => score[row.key] != null);
-
-  if (!hasAnyValue) {
-    return <span className="italic text-muted-foreground">Empty</span>;
-  }
-
-  return (
-    <div className="space-y-1">
-      {rows.map(({ key, label }) => (
-        <div key={key} className="flex items-center justify-between gap-4">
-          <span className="text-sm text-muted-foreground">{label}</span>
-          <span className="text-sm font-medium">
-            {score[key] != null ? `${score[key]?.toFixed?.(1) ?? score[key]}/10` : '—'}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
 };
 
 const ScoreItem: React.FC<{
@@ -165,10 +123,6 @@ const ScoreItem: React.FC<{
 
 export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
   totalFrames,
-  isAiSuggested,
-  aiMergeState,
-  onAcceptSuggestion,
-  onDismissSuggestion,
 }) => {
   const { t } = useTranslation('inspection');
   const { setValue, control } = useFormContext<InspectionFormData>();
@@ -206,10 +160,7 @@ export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
     scoreForm?.storesScore != null ||
     scoreForm?.queenScore != null;
 
-  const scoreSuggestion = aiMergeState?.suggestions.score;
-  const isPending = scoreSuggestion?.status === 'pending';
-
-  if (!hasAnyScore && !scoreSuggestion) return null;
+  if (!hasAnyScore) return null;
 
   const hasOverrides =
     !!scoreForm &&
@@ -258,18 +209,10 @@ export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
   ];
 
   return (
-    <div
-      className={cn(
-        'space-y-3 rounded-md p-3 transition-colors',
-        isPending &&
-          'border border-blue-200 bg-blue-50/40 dark:border-blue-900 dark:bg-blue-950/20',
-      )}
-      data-ai-field="score"
-    >
+    <div className="space-y-3 rounded-md p-3 transition-colors">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-lg font-medium">
           <span>{t('scores.title')}</span>
-          {isAiSuggested?.('score') && <AiBadge />}
         </h3>
 
         {hasOverrides && (
@@ -304,17 +247,6 @@ export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
           ))}
         </div>
       )}
-
-      <AiSectionPreview
-        title="Score"
-        summary="Review AI-suggested score values before applying them."
-        currentValue={formatScorePreview(scoreForm ?? calculated)}
-        suggestedValue={formatScorePreview(scoreSuggestion?.aiValue)}
-        hasConflict={scoreSuggestion?.hasConflict}
-        status={scoreSuggestion?.status}
-        onAccept={() => onAcceptSuggestion?.('score')}
-        onDismiss={() => onDismissSuggestion?.('score')}
-      />
     </div>
   );
 };

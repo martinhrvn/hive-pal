@@ -80,7 +80,8 @@
         "syrupCalculator": "Калкулатор сирупа",
         "broodTimeline": "Временска линија легла",
         "todos": "Задаци",
-        "allTodos": "Сви задаци"
+        "allTodos": "Сви задаци",
+        "hivehub": "HiveHub"
     },
     "messages": {
         "confirmDelete": "Да ли сте сигурни да желите да обришете ову ставку?",

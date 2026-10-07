@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { HiveMinimap } from '@/components/hive-minimap';
+import { HiveHubHiveCard } from './hivehub-hive-card';
 
 export const HiveDetailPage = () => {
   const { id: hiveId } = useParams<{ id: string }>();
@@ -320,8 +321,9 @@ export const HiveDetailPage = () => {
         </div>
 
         {/* Action Sidebar - Hidden on mobile, visible on larger screens */}
-        <div className="lg:col-span-4 xl:col-span-3">
+        <div className="lg:col-span-4 xl:col-span-3 space-y-4">
           <ActionSideBar hiveId={hive?.id} onRefreshData={refetch} />
+          {hiveId && <HiveHubHiveCard hiveId={hiveId} />}
         </div>
       </div>
     </div>

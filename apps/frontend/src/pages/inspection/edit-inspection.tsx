@@ -1,67 +1,18 @@
 import { InspectionForm } from '@/pages/inspection/components/inspection-form';
-import type { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useInspection } from '@/api/hooks/useInspections';
 import { format, parseISO } from 'date-fns';
+import { useMemo } from 'react';
+import { parseAiInspectionDraft } from '@/pages/inspection/lib/inspection-ai-draft';
 
 type EditInspectionLocationState = {
-  aiDraft?: Partial<InspectionFormData>;
-  aiSuggestedFields?: string[];
+  /** Raw AI draft in the canonical shape (validated by aiInspectionDraftSchema). */
+  aiDraft?: unknown;
   aiSourceAudioId?: string;
 };
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isMeaningfulValue(value: unknown): boolean {
-  if (value === null || value === undefined) return false;
-  if (typeof value === 'string') return value.trim() !== '';
-  if (Array.isArray(value)) return value.length > 0;
-
-  // Keep false and 0 as valid suggestions.
-  return true;
-}
-
-function flattenSuggestedFields(
-  value: Record<string, unknown>,
-  prefix = '',
-): string[] {
-  const result: string[] = [];
-
-  for (const [key, nestedValue] of Object.entries(value)) {
-    const path = prefix ? `${prefix}.${key}` : key;
-
-    if (isPlainObject(nestedValue)) {
-      result.push(...flattenSuggestedFields(nestedValue, path));
-      continue;
-    }
-
-    if (isMeaningfulValue(nestedValue)) {
-      result.push(path);
-    }
-  }
-
-  return result;
-}
-
-function getSuggestedFields(
-  aiDraft?: Partial<InspectionFormData>,
-  aiSuggestedFields?: string[],
-): string[] {
-  if (Array.isArray(aiSuggestedFields) && aiSuggestedFields.length > 0) {
-    return aiSuggestedFields;
-  }
-
-  if (!aiDraft || !isPlainObject(aiDraft)) {
-    return [];
-  }
-
-  return flattenSuggestedFields(aiDraft as Record<string, unknown>);
-}
 
 export const EditInspectionPage = () => {
   const { t } = useTranslation('inspection');
@@ -78,11 +29,13 @@ export const EditInspectionPage = () => {
     enabled: !!id && fromScheduled,
   });
 
-  const resolvedAiSuggestedFields = fromAi
-    ? getSuggestedFields(state.aiDraft, state.aiSuggestedFields)
-    : [];
+  const parsedDraft = useMemo(
+    () => (fromAi ? parseAiInspectionDraft(state.aiDraft) : null),
+    [fromAi, state.aiDraft],
+  );
 
-  const aiDraft = fromAi ? state.aiDraft : undefined;
+  const aiDraft = parsedDraft?.formDraft;
+  const resolvedAiSuggestedFields = parsedDraft?.suggestedFields ?? [];
 
   return (
     <div className="space-y-4">

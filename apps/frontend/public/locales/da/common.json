@@ -79,7 +79,8 @@
     "tools": "Værktøjer",
     "syrupCalculator": "Sirups beregner",
     "broodTimeline": "Yngel tidslinie",
-    "swarmManagement": "Sværm styring"
+    "swarmManagement": "Sværm styring",
+    "hivehub": "HiveHub"
   },
   "messages": {
     "confirmDelete": "Er du sikker på at du vil slette denne?",

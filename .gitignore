@@ -82,3 +82,7 @@ openspec
 apps/backend/TEST_REPORT_GROUP_2.md
 .claude
 .vscode/settings.json
+
+# Python bytecode (apps/ai-app)
+__pycache__/
+*.pyc

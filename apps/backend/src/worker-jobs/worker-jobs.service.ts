@@ -8,6 +8,7 @@ import { Prisma } from '@/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
+import { sanitizeAiInspectionDraft } from '../utils/ai-inspection-draft';
 
 const DEFAULT_LEASE_MS = 5 * 60 * 1000; // 5 minutes
 const SIGNED_URL_TTL_SECONDS = 600; // 10 minutes
@@ -273,10 +274,17 @@ export class WorkerJobsService {
       );
     }
 
+    const sanitizedDraft = sanitizeAiInspectionDraft(inspectionDraft);
+    if (!sanitizedDraft) {
+      throw new BadRequestException(
+        'inspectionDraft does not match the AI inspection draft schema',
+      );
+    }
+
     await this.prisma.inspectionAudio.update({
       where: { id: audioId },
       data: {
-        analysisResult: inspectionDraft as Prisma.InputJsonValue,
+        analysisResult: sanitizedDraft as Prisma.InputJsonValue,
         analysisStatus: 'COMPLETED',
         analysisError: null,
         analysisCompletedAt: new Date(),

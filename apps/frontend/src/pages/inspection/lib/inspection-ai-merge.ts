@@ -22,7 +22,12 @@ function isEmptyValue(value: unknown): boolean {
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    !(value instanceof Date)
+  );
 }
 
 function flattenObject(
@@ -62,7 +67,9 @@ export function buildAiMergeState(
 ): AiMergeState {
   const suggestions: Record<string, AiFieldSuggestion> = {};
 
-  const flattened = flattenObject(aiValues as Record<string, unknown>);
+  const { actions: aiActions, ...restAiValues } = aiValues;
+
+  const flattened = flattenObject(restAiValues as Record<string, unknown>);
 
   for (const [field, aiValue] of flattened) {
     if (aiValue === undefined) continue;
@@ -79,7 +86,56 @@ export function buildAiMergeState(
     };
   }
 
+  // Actions become one suggestion each ("actions.<i>") so the user can accept
+  // or dismiss them individually. The form keeps at most one action per type,
+  // so a conflict means an action of the same type already exists.
+  const currentActions = Array.isArray(currentValues.actions)
+    ? currentValues.actions
+    : [];
+
+  (aiActions ?? []).forEach((aiAction, index) => {
+    if (!aiAction || typeof aiAction !== 'object') return;
+
+    const field = `actions.${index}`;
+    const currentValue = currentActions.find(
+      action => action.type === aiAction.type,
+    );
+
+    suggestions[field] = {
+      field,
+      aiValue: aiAction,
+      currentValue,
+      hasConflict: currentValue !== undefined,
+      status: 'pending',
+    };
+  });
+
   return { suggestions };
+}
+
+/**
+ * Merge an accepted AI action suggestion into the form's actions array.
+ * The form keeps at most one action per type, so an existing action of the
+ * same type is replaced.
+ */
+export function mergeAcceptedAiAction(
+  currentActions: InspectionFormData['actions'],
+  aiAction: unknown,
+): InspectionFormData['actions'] {
+  if (!aiAction || typeof aiAction !== 'object') {
+    return currentActions ?? [];
+  }
+
+  const typedAction = aiAction as NonNullable<
+    InspectionFormData['actions']
+  >[number];
+
+  return [
+    ...(currentActions ?? []).filter(
+      action => action.type !== typedAction.type,
+    ),
+    typedAction,
+  ];
 }
 
 export function shouldUseAiPrefill(

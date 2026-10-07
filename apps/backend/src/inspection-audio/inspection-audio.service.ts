@@ -11,6 +11,7 @@ import { apiaryReadScope, apiaryWriteScope } from '../common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { Prisma, TranscriptionStatus } from '@/prisma/client';
+import { sanitizeAiInspectionDraft } from '../utils/ai-inspection-draft';
 
 export interface UploadAudioDto {
   fileName: string;
@@ -28,10 +29,6 @@ interface AiProcessUploadResponse {
     transcript_json?: string;
     recommendation_json?: string;
   };
-}
-
-interface AiRecommendResponse {
-  [key: string]: unknown;
 }
 
 export interface AudioResponse {
@@ -605,13 +602,17 @@ export class InspectionAudioService {
       }
 
       const rawResult: unknown = await response.json();
-      const result = rawResult as AiRecommendResponse;
+
+      const sanitizedDraft = sanitizeAiInspectionDraft(rawResult);
+      if (!sanitizedDraft) {
+        throw new Error('AI service returned an invalid inspection draft');
+      }
 
       await this.prisma.inspectionAudio.update({
         where: { id: audioId },
         data: {
           analysisStatus: 'COMPLETED',
-          analysisResult: result as Prisma.InputJsonValue,
+          analysisResult: sanitizedDraft as Prisma.InputJsonValue,
           analysisError: null,
           analysisCompletedAt: new Date(),
         },
@@ -706,16 +707,22 @@ export class InspectionAudioService {
       const rawResult: unknown = await response.json();
       const result = rawResult as AiProcessUploadResponse;
 
+      const sanitizedDraft = sanitizeAiInspectionDraft(result.inspectionDraft);
+
       await this.prisma.inspectionAudio.update({
         where: { id: audioId },
         data: {
           transcription: result.transcript?.text ?? null,
           transcriptionStatus: 'COMPLETED',
           transcriptionError: null,
-          analysisStatus: 'COMPLETED',
-          analysisResult: result.inspectionDraft ?? Prisma.JsonNull,
-          analysisError: null,
-          analysisCompletedAt: new Date(),
+          analysisStatus: sanitizedDraft ? 'COMPLETED' : 'FAILED',
+          analysisResult: sanitizedDraft
+            ? (sanitizedDraft as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
+          analysisError: sanitizedDraft
+            ? null
+            : 'AI service returned an invalid inspection draft',
+          analysisCompletedAt: sanitizedDraft ? new Date() : null,
         },
       });
     } catch (error) {

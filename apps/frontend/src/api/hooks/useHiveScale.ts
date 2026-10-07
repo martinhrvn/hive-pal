@@ -1,11 +1,31 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
+import type {
+  HiveHubChannelsPatch,
+  HiveHubConfigPatch,
+  HiveHubTempCompensationFit,
+} from 'shared-schemas';
 import { apiClient } from '../client';
 
-export interface HiveScaleChannelMapping {
-  index: number;
-  display_name?: string | null;
-  hive_id?: string | null;
+/**
+ * Pull the backend message out of an Axios error so a toast shows e.g. "No
+ * active hiveinside firmware release" instead of "Request failed with status
+ * code 404".
+ */
+export function hiveHubErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError<{ message?: string | string[] }>(error)) {
+    const data = error.response?.data;
+    const message =
+      typeof data === 'object' && data !== null
+        ? Array.isArray(data.message)
+          ? data.message.join(', ')
+          : data.message
+        : typeof data === 'string'
+          ? data
+          : undefined;
+    return message || error.message || fallback;
+  }
+  return error instanceof Error ? error.message : fallback;
 }
 
 export interface HiveScaleDevice {
@@ -18,7 +38,10 @@ export interface HiveScaleDevice {
   channels: {
     scale_1: string | null;
     scale_2: string | null;
-    hives?: HiveScaleChannelMapping[] | null;
+    /** Hive display names keyed by hive index ("1".."18"). */
+    names?: Record<string, string> | null;
+    /** HivePal hive id each hive index is linked to ("1".."18" -> id). */
+    hive_ids?: Record<string, string> | null;
   };
 }
 
@@ -36,12 +59,16 @@ export interface HiveScaleHiveReading {
   name?: string | null;
   weight_kg: number | null;
   raw_weight: number | null;
-  scale_source?: string | null; // hx711 | nau7802 | ...
+  scale_source?: string | null; // hx711 | nau7802 | hivescale_gatt | ...
+  /** False when a configured scale produced no usable reading this cycle. */
+  scale_ok?: boolean | null;
   temp_c: number | null;
   temp_source?: string | null; // ds18b20 | ble | hiveheart
   humidity_percent: number | null;
   accel?: {
+    /** Set when the paired in-hive BLE node was heard this scan. */
     ok: boolean | null;
+    sample_rate_hz?: number | null;
     sample_count?: number | null;
     range_g?: number | null;
     rms_mg: number | null;
@@ -50,6 +77,8 @@ export interface HiveScaleHiveReading {
     band_fanning_mg: number | null;
     band_activity_mg: number | null;
   } | null;
+  /** HiveInside in-hive audio metrics (the canonical HiveHub key). */
+  mic?: HiveScaleHiveSound | null;
   sound?: {
     ok?: boolean | null;
     rms_dbfs?: number | null;
@@ -64,27 +93,73 @@ export interface HiveScaleHiveReading {
     peak?: number | null;
   } | null;
   hiveheart?: {
+    present?: boolean | null;
+    temp_c?: number | null;
+    humidity_percent?: number | null;
     frequency_hz?: number | null;
     energy?: number | null;
     peak?: number | null;
     battery_v?: number | null;
+    rssi_dbm?: number | null;
+    /** 16 relative spectrum levels (0–15), decoded by HiveHub. */
+    fft_bins?: number[] | null;
+  } | null;
+  hivescale?: {
+    present?: boolean | null;
+    weight_kg?: number | null;
+    battery_v?: number | null;
+    rssi_dbm?: number | null;
   } | null;
   ble?: {
     present?: boolean | null;
-    sensor_type?: string | null;
+    sensor_type?: string | null; // HiveInside | RuuviTag | HolyIot 25015
     firmware_version?: string | null;
+    board?: string | null;
+    /** Advertised node name, e.g. "HiveInside-8A3F". */
+    device_name?: string | null;
+    mac?: string | null;
     humidity_percent: number | null;
     pressure_hpa: number | null;
+    accel_x_mg?: number | null;
+    accel_y_mg?: number | null;
+    accel_z_mg?: number | null;
     battery_percent?: number | null;
+    battery_mv?: number | null;
     rssi_dbm?: number | null;
   } | null;
   bee_counter?: {
     ok: boolean | null;
+    device_name?: string | null;
+    mac?: string | null;
+    version?: string | null;
+    protocol_version?: number | null;
+    /** Bit 0x80 = night idle. */
+    status_flags?: number | null;
+    uptime_s?: number | null;
+    num_gates?: number | null;
+    /** How many of the three gate expanders answer (0..3). */
+    mcps_healthy?: number | null;
+    glitch_count?: number | null;
+    /** Seconds until the night-mode window ends (wire rev 4+). */
+    idle_s?: number | null;
+    /** Emitter-bank bitmask the counter runs with (wire rev 5+). */
+    banks?: number | null;
     total_in: number | null;
     total_out: number | null;
     interval_in: number | null;
     interval_out: number | null;
   } | null;
+}
+
+export interface HiveScaleHiveSound {
+  ok?: boolean | null;
+  rms_dbfs?: number | null;
+  peak_dbfs?: number | null;
+  band_sub_bass_dbfs?: number | null;
+  band_hum_dbfs?: number | null;
+  band_piping_dbfs?: number | null;
+  band_stress_dbfs?: number | null;
+  band_high_dbfs?: number | null;
 }
 
 export interface HiveScaleMeasurement {
@@ -241,9 +316,44 @@ export interface HiveScaleMeasurement {
   // rows, so it is present on every measurement (only `undefined` on the rare
   // row with no data at all).
   hives?: HiveScaleHiveReading[];
+  // ── Hub status ──
+  rssi_dbm?: number | null;
+  network_transport?: string | null; // "wifi" | "cellular"
+  hive_count?: number | null;
+  // ── Inspection mode (readings taken while it is on are masked) ──
+  inspection?: boolean | null;
+  inspection_id?: number | null;
+  inspection_hives?: number[] | null;
+}
+
+/**
+ * Read one of the flat per-hive aliases HiveHub synthesizes for every hive
+ * (`scale_7_weight_kg`, `hiveheart_3_fft_bins`, …), which the fixed interface
+ * above only lists for hives 1–2.
+ */
+export function flatHiveField<T = number>(
+  measurement: HiveScaleMeasurement | null | undefined,
+  prefix: string,
+  index: number,
+  suffix: string,
+): T | null {
+  if (!measurement) return null;
+  const value = (measurement as unknown as Record<string, unknown>)[
+    `${prefix}_${index}_${suffix}`
+  ];
+  return value === undefined ? null : (value as T);
 }
 
 export type HiveScaleTempcoSource = 'ambient' | 'hive_1' | 'hive_2';
+
+/** Calibration for hives 3..18 (hives 1–2 use the scale1/2_* fields). */
+export interface HiveScaleHiveCalibration {
+  index: number;
+  scale?: number;
+  offset: number;
+  factor: number;
+  tempco_kg_per_c: number;
+}
 
 export interface HiveScaleDeviceConfig {
   device_id: string;
@@ -252,13 +362,26 @@ export interface HiveScaleDeviceConfig {
   scale1_factor: number;
   scale2_offset: number;
   scale2_factor: number;
+  hive_scales?: HiveScaleHiveCalibration[];
   config_version: number;
-  // Load-cell temperature compensation (corrected in the HiveScale backend).
+  // Load-cell temperature compensation (corrected in the HiveHub backend).
   tempco_enabled: boolean;
   tempco_source: HiveScaleTempcoSource;
   tempco_ref_temp_c: number;
   scale1_tempco_kg_per_c: number;
   scale2_tempco_kg_per_c: number;
+  // HiveTraffic night mode (local minutes since midnight, POSIX TZ).
+  beecounter_night_mode_enabled?: boolean;
+  beecounter_night_start_minute?: number;
+  beecounter_night_end_minute?: number;
+  beecounter_night_max_traffic?: number;
+  timezone?: string;
+  // HiveTraffic emitter banks (gates 00–07, 10–17, 20–27).
+  beecounter_bank1_enabled?: boolean;
+  beecounter_bank2_enabled?: boolean;
+  beecounter_bank3_enabled?: boolean;
+  /** Safety net: an inspection ends by itself after this many minutes. */
+  inspection_timeout_minutes?: number;
 }
 
 export interface ClaimHiveScaleDeviceInput {
@@ -268,31 +391,14 @@ export interface ClaimHiveScaleDeviceInput {
   scale_2_display_name?: string;
 }
 
-export interface HiveScaleConfigPatch {
-  send_interval_seconds?: number;
-  scale1_offset?: number;
-  scale1_factor?: number;
-  scale2_offset?: number;
-  scale2_factor?: number;
-  tempco_enabled?: boolean;
-  tempco_source?: HiveScaleTempcoSource;
-  tempco_ref_temp_c?: number;
-  scale1_tempco_kg_per_c?: number;
-  scale2_tempco_kg_per_c?: number;
-}
+export type HiveScaleConfigPatch = HiveHubConfigPatch;
 
-export interface HiveScaleTempCompensationFitInput {
-  scale: 1 | 2;
-  lookback_days?: number;
-  temp_source?: HiveScaleTempcoSource;
-  calibration_mode_only?: boolean;
-  apply?: boolean;
-}
+export type HiveScaleTempCompensationFitInput = HiveHubTempCompensationFit;
 
 export interface HiveScaleTempCompensationFitResult {
   ok: boolean;
   reason?: string;
-  scale: 1 | 2;
+  scale: number;
   temp_source: HiveScaleTempcoSource;
   applied: boolean;
   coeff_kg_per_c: number;
@@ -306,11 +412,7 @@ export interface HiveScaleTempCompensationFitResult {
   window_end?: string;
 }
 
-export interface HiveScaleChannelsPatch {
-  scale_1_display_name?: string;
-  scale_2_display_name?: string;
-  hives?: HiveScaleChannelMapping[];
-}
+export type HiveScaleChannelsPatch = HiveHubChannelsPatch;
 
 export interface HiveScaleCalibrationModeStartInput {
   interval_seconds?: number;
@@ -335,6 +437,8 @@ export interface HiveScaleMeasurementQuery {
   limit?: number;
   start_at?: string;
   end_at?: string;
+  /** Server-side down-sampling for wide chart ranges. */
+  max_points?: number;
 }
 
 const DEFAULT_MEASUREMENT_QUERY: HiveScaleMeasurementQuery = { limit: 200 };
@@ -362,9 +466,25 @@ const HIVESCALE_KEYS = {
   ) => [...HIVESCALE_KEYS.all, 'insightsHistory', deviceId, query] as const,
   firmwareStatus: (deviceId: string | undefined) =>
     [...HIVESCALE_KEYS.all, 'firmwareStatus', deviceId] as const,
+  inspectionStatus: (deviceId: string | undefined) =>
+    [...HIVESCALE_KEYS.all, 'inspectionStatus', deviceId] as const,
+  inspections: (
+    deviceId: string | undefined,
+    query: HiveScaleInspectionsQuery | undefined,
+  ) => [...HIVESCALE_KEYS.all, 'inspections', deviceId, query] as const,
+  recordings: (deviceId: string | undefined, hive: number | undefined) =>
+    [...HIVESCALE_KEYS.all, 'recordings', deviceId, hive] as const,
+  exportSummary: (
+    deviceId: string | undefined,
+    query: HiveScaleExportQuery | undefined,
+  ) => [...HIVESCALE_KEYS.all, 'exportSummary', deviceId, query] as const,
 };
 
-export const useHiveScaleDevices = () => {
+export { HIVESCALE_KEYS };
+
+export const useHiveScaleDevices = (
+  options: { enabled?: boolean; retry?: boolean } = {},
+) => {
   return useQuery<HiveScaleDevice[]>({
     queryKey: HIVESCALE_KEYS.devices(),
     queryFn: async () => {
@@ -373,7 +493,9 @@ export const useHiveScaleDevices = () => {
       );
       return response.data;
     },
+    enabled: options.enabled ?? true,
     staleTime: 30000,
+    ...(options.retry === false ? { retry: false } : {}),
   });
 };
 
@@ -402,12 +524,100 @@ export const useHiveScaleMeasurements = (
         `/api/hivescale/devices/${deviceId}/measurements`,
         { params: query },
       );
-      return response.data;
+      return response.data.map(withHiveReadings);
     },
     enabled: !!deviceId,
     refetchInterval: options.refetchInterval ?? 60000,
   });
 };
+
+const NESTED_HIVE_SENSORS = [
+  'accel',
+  'ble',
+  'bee_counter',
+  'mic',
+  'hiveheart',
+  'hivescale',
+] as const;
+
+/**
+ * Make sure a measurement carries `hives[]`.
+ *
+ * Current HiveHub servers always send it, synthesized from the flat columns
+ * for old rows. Older servers (and the HiveHub mock) send only the flat
+ * `scale_N_*` / `hive_N_*` / `ble_N_*` … fields, so rebuild the per-hive
+ * readings from those the way HiveHub's `_synthesize_hives_from_flat` does.
+ * Every component can then read hives[] without its own fallback.
+ */
+export function withHiveReadings(
+  measurement: HiveScaleMeasurement,
+): HiveScaleMeasurement {
+  if (measurement.hives?.length) return measurement;
+  const flat = measurement as unknown as Record<string, unknown>;
+  const byHive = new Map<number, Record<string, unknown>>();
+  const hive = (index: number) => {
+    let entry = byHive.get(index);
+    if (!entry) {
+      entry = { index };
+      byHive.set(index, entry);
+    }
+    return entry;
+  };
+  const nested = (index: number, sensor: string) => {
+    const entry = hive(index);
+    entry[sensor] ??= {};
+    return entry[sensor] as Record<string, unknown>;
+  };
+
+  for (const [key, value] of Object.entries(flat)) {
+    if (value === null || value === undefined) continue;
+    const match = /^([a-z_]+?)_(\d{1,2})_(.+)$/.exec(key);
+    if (!match) continue;
+    const [, prefix, rawIndex, field] = match;
+    const index = Number(rawIndex);
+    if (index < 1 || index > 18) continue;
+    if (prefix === 'scale') {
+      if (field === 'weight_kg') hive(index).weight_kg = value;
+      else if (field === 'raw') hive(index).raw_weight = value;
+    } else if (prefix === 'hive') {
+      if (field === 'temp_c') hive(index).temp_c = value;
+      else if (field === 'humidity_percent')
+        hive(index).humidity_percent = value;
+    } else if ((NESTED_HIVE_SENSORS as readonly string[]).includes(prefix)) {
+      nested(index, prefix)[field] = value;
+    }
+  }
+
+  // The legacy stereo mic belongs to hives 1 (left) and 2 (right).
+  for (const [index, side] of [
+    [1, 'left'],
+    [2, 'right'],
+  ] as const) {
+    for (const [key, value] of Object.entries(flat)) {
+      const prefix = `mic_${side}_`;
+      if (value === null || value === undefined || !key.startsWith(prefix))
+        continue;
+      const mic = nested(index, 'mic');
+      mic[key.slice(prefix.length)] ??= value;
+    }
+  }
+
+  for (const entry of byHive.values()) {
+    entry.weight_kg ??= null;
+    entry.raw_weight ??= null;
+    entry.temp_c ??= null;
+    entry.humidity_percent ??=
+      (entry.ble as { humidity_percent?: number } | undefined)
+        ?.humidity_percent ?? null;
+    const ble = entry.ble as Record<string, unknown> | undefined;
+    if (ble) ble.present ??= true;
+  }
+
+  const hives = [...byHive.values()].sort(
+    (a, b) => (a.index as number) - (b.index as number),
+  ) as unknown as HiveScaleHiveReading[];
+  return hives.length ? { ...measurement, hives } : measurement;
+}
 
 export const useHiveScaleMembers = (
   deviceId: string | undefined,
@@ -506,7 +716,8 @@ export type HiveScaleInsightCategory =
   | 'brood'
   | 'decline'
   | 'winter'
-  | 'harvest';
+  | 'harvest'
+  | 'acoustic';
 
 export interface HiveScaleInsightAlert {
   id: string;
@@ -603,14 +814,48 @@ export const useClaimHiveScaleDevice = () => {
   });
 };
 
+/** What the backend reports after removing a membership. */
+export interface HiveScaleDeviceRemovalResult {
+  status: string;
+  device_id: string;
+  /**
+   * True when that was the last member, so the device was unclaimed and its
+   * claim code pairs it again. False when other members still hold it.
+   */
+  released?: boolean;
+}
+
 export const useRemoveHiveScaleDevice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (deviceId: string) => {
-      const response = await apiClient.delete(
+      const response = await apiClient.delete<HiveScaleDeviceRemovalResult>(
         `/api/hivescale/devices/${deviceId}`,
       );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+    },
+  });
+};
+
+/**
+ * Owner-only "forget this device": removes every member and unclaims it in one
+ * step, so it can be re-paired with its claim code. Removing yourself only
+ * releases the device once you are the last member left.
+ */
+export const useReleaseHiveScaleDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (deviceId: string) => {
+      const response = await apiClient.delete<{
+        status: string;
+        device_id: string;
+        members_removed: number;
+      }>(`/api/hivescale/devices/${deviceId}/claim`);
       return response.data;
     },
     onSuccess: () => {
@@ -772,15 +1017,19 @@ export type HiveScaleFirmwareTarget =
   | 'beecounter'
   | 'hiveinside';
 
+export type HiveScaleFirmwareBoard = 'esp32' | 'esp32-c6' | 'nrf54lm20a';
+
 export interface HiveScaleFirmwareUploadInput {
   file: File;
   version: string;
   target: HiveScaleFirmwareTarget;
+  /** Omit to let HiveHub take the board from the filename. */
+  board?: HiveScaleFirmwareBoard;
   active?: boolean;
 }
 
 export interface HiveScaleAutoQueuedUpdate {
-  slot: 1 | 2;
+  slot: number;
   status: 'queued' | 'failed';
   command_id?: number;
   error?: string;
@@ -795,8 +1044,8 @@ export interface HiveScaleFirmwareUploadResult {
   size_bytes: number;
   crc32: number;
   /**
-   * For HiveInside uploads, the backend also auto-queues the OTA relay to both
-   * sensor slots (1 & 2). One entry per slot; absent for other targets.
+   * For HiveInside uploads, the backend also queues the OTA relay to every hive
+   * that reports a HiveInside node. One entry per slot; absent for other targets.
    */
   auto_queued_updates?: HiveScaleAutoQueuedUpdate[];
 }
@@ -816,15 +1065,36 @@ export interface HiveScaleSdImportResult {
   duplicates: number;
 }
 
+/**
+ * Thrown when the SD file was recorded by a different hub than the selected
+ * one. The caller can ask the user and retry with `force: true`.
+ */
+export class HiveScaleSdDeviceMismatchError extends Error {
+  constructor(
+    message: string,
+    readonly fileDeviceIds: string[],
+  ) {
+    super(message);
+    this.name = 'HiveScaleSdDeviceMismatchError';
+  }
+}
+
+export interface HiveScaleSdImportInput {
+  file: File;
+  /** Import even though the file names a different device. */
+  force?: boolean;
+}
+
 export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
   const queryClient = useQueryClient();
 
-  return useMutation<HiveScaleSdImportResult, Error, File>({
-    mutationFn: async file => {
+  return useMutation<HiveScaleSdImportResult, Error, HiveScaleSdImportInput>({
+    mutationFn: async ({ file, force }) => {
       const formData = new FormData();
       // The apiClient request interceptor strips Content-Type for FormData so
       // the browser sets the multipart boundary itself.
       formData.append('file', file);
+      if (force) formData.append('force', 'true');
 
       try {
         const response = await apiClient.post<HiveScaleSdImportResult>(
@@ -836,17 +1106,17 @@ export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
         // Surface the backend message (e.g. "No measurements found…") instead
         // of Axios' generic "Request failed with status code 400" so callers
         // that toast error.message show actionable feedback.
-        if (isAxiosError<{ message?: string }>(error)) {
-          const data = error.response?.data;
-          const message =
-            (typeof data === 'object' && data !== null
-              ? data.message
-              : typeof data === 'string'
-                ? data
-                : undefined) ?? error.message;
-          throw new Error(message || 'SD import failed');
+        if (
+          isAxiosError<{ code?: string; file_device_ids?: string[] }>(error) &&
+          error.response?.status === 409 &&
+          error.response.data?.code === 'device_mismatch'
+        ) {
+          throw new HiveScaleSdDeviceMismatchError(
+            hiveHubErrorMessage(error, 'SD import failed'),
+            error.response.data.file_device_ids ?? [],
+          );
         }
-        throw error;
+        throw new Error(hiveHubErrorMessage(error, 'SD import failed'));
       }
     },
     onSuccess: () => {
@@ -864,25 +1134,33 @@ export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
     Error,
     HiveScaleFirmwareUploadInput
   >({
-    mutationFn: async ({ file, version, target, active = true }) => {
+    mutationFn: async ({ file, version, target, board, active = true }) => {
       const formData = new FormData();
       // Field order/names must match the FastAPI File()/Form() parameters.
       formData.append('file', file);
       formData.append('version', version);
       formData.append('target', target);
+      if (board) formData.append('board', board);
       formData.append('active', String(active));
 
       // The apiClient request interceptor strips Content-Type for FormData so
       // the browser sets the multipart boundary itself.
-      const response = await apiClient.post<HiveScaleFirmwareUploadResult>(
-        `/api/hivescale/devices/${deviceId}/firmware`,
-        formData,
-      );
-      return response.data;
+      try {
+        const response = await apiClient.post<HiveScaleFirmwareUploadResult>(
+          `/api/hivescale/devices/${deviceId}/firmware`,
+          formData,
+        );
+        return response.data;
+      } catch (error) {
+        throw new Error(hiveHubErrorMessage(error, 'Firmware upload failed'));
+      }
     },
     onSuccess: () => {
       // last_firmware_version is surfaced in the devices list, so refresh it.
       queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.devices() });
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.firmwareStatus(deviceId),
+      });
     },
   });
 };
@@ -898,6 +1176,24 @@ export interface HiveScaleFirmwareStatus {
   update_available: boolean;
   /** Update available but not yet approved — the device will not auto-flash. */
   pending_approval: boolean;
+  /** Board the hub reports (esp32 / esp32-c6). */
+  device_board?: string | null;
+  /** Newer releases uploaded for a different board than this hub's. */
+  other_board_releases?: Array<{ version: string; board: string }>;
+  hiveinside_latest_version?: string | null;
+  /** Last HiveInside relay attempt per hive slot ("1".."18"). */
+  hiveinside_relays?: Record<string, HiveScaleRelayStatus>;
+  beecounter_latest_version?: string | null;
+  /** Last HiveTraffic relay attempt per hive slot ("1".."18"). */
+  beecounter_relays?: Record<string, HiveScaleRelayStatus>;
+}
+
+export interface HiveScaleRelayStatus {
+  status: string; // pending | running | completed | failed | expired
+  message: string | null;
+  version: string | null;
+  created_at: string | null;
+  completed_at: string | null;
 }
 
 export interface HiveScaleFirmwareApproveResult {
@@ -966,40 +1262,428 @@ export interface HiveScaleRelayUpdateResult {
   id: number;
   command_type: string;
   payload: { slot: number };
+  version?: string | null;
+  current_version?: string | null;
 }
 
-/**
- * Queue a HiveInside OTA relay for the paired sensor in the given slot.
- *
- * Uploading a HiveInside binary only *registers* the release; this triggers the
- * HiveScale to actually download it and relay it to the sensor over BLE. The two
- * steps are intentionally separate (upload once, then queue per slot).
- */
-export const useQueueHiveInsideUpdate = (deviceId: string | undefined) => {
-  return useMutation<HiveScaleRelayUpdateResult, Error, { slot: 1 | 2 }>({
-    mutationFn: async ({ slot }) => {
+export interface HiveScaleRelayUpdateInput {
+  slot: number;
+  /** Relay even when the node already runs this version or newer. */
+  force?: boolean;
+}
+
+const useQueueRelayUpdate = (
+  deviceId: string | undefined,
+  command: 'update-hiveinside' | 'update-beecounter',
+  fallback: string,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    HiveScaleRelayUpdateResult,
+    Error,
+    HiveScaleRelayUpdateInput
+  >({
+    mutationFn: async ({ slot, force }) => {
       try {
         const response = await apiClient.post<HiveScaleRelayUpdateResult>(
-          `/api/hivescale/devices/${deviceId}/commands/update-hiveinside`,
+          `/api/hivescale/devices/${deviceId}/commands/${command}`,
           null,
-          { params: { slot } },
+          { params: { slot, ...(force ? { force: true } : {}) } },
         );
         return response.data;
       } catch (error) {
-        // Surface the backend message (e.g. "No active hiveinside firmware
-        // release") instead of Axios' generic status-code text.
-        if (isAxiosError<{ message?: string }>(error)) {
-          const data = error.response?.data;
-          const message =
-            (typeof data === 'object' && data !== null
-              ? data.message
-              : typeof data === 'string'
-                ? data
-                : undefined) ?? error.message;
-          throw new Error(message || 'Failed to queue HiveInside OTA');
-        }
-        throw error;
+        throw new Error(hiveHubErrorMessage(error, fallback));
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.firmwareStatus(deviceId),
+      });
+    },
+  });
+};
+
+/**
+ * Queue a HiveInside OTA relay for the node paired with the given hive.
+ *
+ * Uploading a HiveInside binary only *registers* the release; this makes the
+ * hub download it and relay it to the node over BLE. HiveHub refuses (409) a
+ * relay that is not newer than what the node runs unless `force` is set.
+ */
+export const useQueueHiveInsideUpdate = (deviceId: string | undefined) =>
+  useQueueRelayUpdate(
+    deviceId,
+    'update-hiveinside',
+    'Failed to queue HiveInside OTA',
+  );
+
+/**
+ * Queue a HiveTraffic counter OTA relay for the given hive. The counter stops
+ * counting for the duration of the transfer.
+ */
+export const useQueueBeeCounterUpdate = (deviceId: string | undefined) =>
+  useQueueRelayUpdate(
+    deviceId,
+    'update-beecounter',
+    'Failed to queue HiveTraffic OTA',
+  );
+
+// ── Remote setup access point ──────────────────────────────────────────────
+
+/**
+ * Ask the hub to open its setup access point. Queued: the AP appears after the
+ * hub's next check-in, up to one send interval later.
+ */
+export const useStartHiveScaleProvisioning = (deviceId: string | undefined) =>
+  useMutation<{ status: string; id: number }, Error, void>({
+    mutationFn: async () => {
+      try {
+        const response = await apiClient.post<{ status: string; id: number }>(
+          `/api/hivescale/devices/${deviceId}/provisioning/start`,
+        );
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          hiveHubErrorMessage(error, 'Could not queue AP mode for the hub'),
+        );
+      }
+    },
+  });
+
+// ── Inspection mode ────────────────────────────────────────────────────────
+
+export interface HiveScaleInspection {
+  id: number;
+  device_id: string;
+  /** Hive indexes the inspection covers; null/empty means the whole hub. */
+  hives: number[] | null;
+  started_at: string;
+  ended_at: string | null;
+  active: boolean;
+  source: 'device' | 'api' | 'dashboard' | string;
+  end_reason: string | null;
+  requested_at: string | null;
+  acknowledged_at: string | null;
+  note: string | null;
+  created_by: string | null;
+}
+
+export interface HiveScaleInspectionStatus {
+  device_id: string;
+  active: boolean;
+  /** Requested from the app but not yet picked up by the hub. */
+  pending: boolean;
+  inspection: HiveScaleInspection | null;
+  timeout_minutes: number;
+}
+
+export interface HiveScaleInspectionsQuery {
+  start_at?: string;
+  end_at?: string;
+  limit?: number;
+}
+
+export interface HiveScaleInspectionStartInput {
+  hives?: number[];
+  note?: string;
+}
+
+export const useHiveScaleInspectionStatus = (
+  deviceId: string | undefined,
+  options: { refetchInterval?: number | false; enabled?: boolean } = {},
+) =>
+  useQuery<HiveScaleInspectionStatus>({
+    queryKey: HIVESCALE_KEYS.inspectionStatus(deviceId),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleInspectionStatus>(
+        `/api/hivescale/devices/${deviceId}/inspections/status`,
+      );
+      return response.data;
+    },
+    enabled: !!deviceId && (options.enabled ?? true),
+    refetchInterval: options.refetchInterval ?? 30000,
+  });
+
+export const useHiveScaleInspections = (
+  deviceId: string | undefined,
+  query: HiveScaleInspectionsQuery = {},
+  options: { enabled?: boolean } = {},
+) =>
+  useQuery<HiveScaleInspection[]>({
+    queryKey: HIVESCALE_KEYS.inspections(deviceId, query),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleInspection[]>(
+        `/api/hivescale/devices/${deviceId}/inspections`,
+        { params: query },
+      );
+      return response.data;
+    },
+    enabled: !!deviceId && (options.enabled ?? true),
+    staleTime: 30000,
+  });
+
+const useInspectionMutation = <TInput>(
+  deviceId: string | undefined,
+  request: (input: TInput) => Promise<unknown>,
+  fallback: string,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation<unknown, Error, TInput>({
+    mutationFn: async input => {
+      try {
+        return await request(input);
+      } catch (error) {
+        throw new Error(hiveHubErrorMessage(error, fallback));
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: HIVESCALE_KEYS.inspectionStatus(deviceId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...HIVESCALE_KEYS.all, 'inspections', deviceId],
+      });
+    },
+  });
+};
+
+/** Start inspection mode: the hub masks readings until it is stopped. */
+export const useStartHiveScaleInspection = (deviceId: string | undefined) =>
+  useInspectionMutation<HiveScaleInspectionStartInput>(
+    deviceId,
+    async input =>
+      (
+        await apiClient.post(
+          `/api/hivescale/devices/${deviceId}/inspections/start`,
+          input,
+        )
+      ).data,
+    'Could not start inspection mode',
+  );
+
+export const useStopHiveScaleInspection = (deviceId: string | undefined) =>
+  useInspectionMutation<{ note?: string }>(
+    deviceId,
+    async input =>
+      (
+        await apiClient.post(
+          `/api/hivescale/devices/${deviceId}/inspections/stop`,
+          input,
+        )
+      ).data,
+    'Could not stop inspection mode',
+  );
+
+export const useUpdateHiveScaleInspection = (deviceId: string | undefined) =>
+  useInspectionMutation<{ id: number; note: string | null }>(
+    deviceId,
+    async ({ id, note }) =>
+      (
+        await apiClient.patch(
+          `/api/hivescale/devices/${deviceId}/inspections/${id}`,
+          { note },
+        )
+      ).data,
+    'Could not save the inspection note',
+  );
+
+// ── Hive audio recordings ──────────────────────────────────────────────────
+
+export type HiveScaleRecordingStatus =
+  | 'requested'
+  | 'streaming'
+  | 'ready'
+  | 'failed';
+
+export interface HiveScaleRecording {
+  id: number;
+  device_id: string;
+  hive_index: number;
+  status: HiveScaleRecordingStatus;
+  requested_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  requested_duration_s: number | null;
+  gain_db: number | null;
+  sample_rate: number | null;
+  bytes: number | null;
+  seconds: number | null;
+  /** Audio the node itself lost. */
+  dropped_bytes: number | null;
+  /** Sequence gaps on the air. */
+  gaps: number | null;
+  /** Notifications the hub's staging buffer could not take. */
+  ring_overruns: number | null;
+  ring_dropped_bytes: number | null;
+  clipped_pct: number | null;
+  complete: boolean | null;
+  crc_ok: boolean | null;
+  confirmation: 'verified' | 'reported' | 'confirmed' | 'unknown' | string;
+  hub_message: string | null;
+  error: string | null;
+  requested_by: string | null;
+}
+
+export interface HiveScaleRecordingRequestInput {
+  hive: number;
+  /** Seconds, 1–60. */
+  duration: number;
+  gain_db?: number;
+}
+
+/** Same-origin URL of a recording's WAV; the session cookie authorizes it. */
+export const hiveScaleRecordingWavUrl = (recordingId: number) =>
+  `/api/hivescale/recordings/${recordingId}/audio.wav`;
+
+export const useHiveScaleRecordings = (
+  deviceId: string | undefined,
+  hive?: number,
+  options: { refetchInterval?: number | false; enabled?: boolean } = {},
+) =>
+  useQuery<HiveScaleRecording[]>({
+    queryKey: HIVESCALE_KEYS.recordings(deviceId, hive),
+    queryFn: async () => {
+      const response = await apiClient.get<{
+        recordings: HiveScaleRecording[];
+      }>(`/api/hivescale/devices/${deviceId}/recordings`, {
+        params: hive ? { hive, limit: 50 } : { limit: 50 },
+      });
+      return response.data.recordings ?? [];
+    },
+    enabled: !!deviceId && (options.enabled ?? true),
+    refetchInterval: options.refetchInterval,
+  });
+
+export const useRequestHiveScaleRecording = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+  return useMutation<HiveScaleRecording, Error, HiveScaleRecordingRequestInput>(
+    {
+      mutationFn: async input => {
+        try {
+          const response = await apiClient.post<HiveScaleRecording>(
+            `/api/hivescale/devices/${deviceId}/recordings`,
+            null,
+            { params: input },
+          );
+          return response.data;
+        } catch (error) {
+          throw new Error(
+            hiveHubErrorMessage(error, 'Could not request a recording'),
+          );
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [...HIVESCALE_KEYS.all, 'recordings', deviceId],
+        });
+      },
+    },
+  );
+};
+
+export const useDeleteHiveScaleRecording = (deviceId: string | undefined) => {
+  const queryClient = useQueryClient();
+  return useMutation<unknown, Error, number>({
+    mutationFn: async recordingId => {
+      try {
+        return (
+          await apiClient.delete(`/api/hivescale/recordings/${recordingId}`)
+        ).data;
+      } catch (error) {
+        throw new Error(
+          hiveHubErrorMessage(error, 'Could not delete the recording'),
+        );
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...HIVESCALE_KEYS.all, 'recordings', deviceId],
+      });
+    },
+  });
+};
+
+// ── Data export / range delete ─────────────────────────────────────────────
+
+export interface HiveScaleExportQuery {
+  start_at?: string;
+  end_at?: string;
+}
+
+export interface HiveScaleExportSummary {
+  devices: Array<{
+    device_id: string;
+    measurements: number;
+    first_measured_at: string | null;
+    last_measured_at: string | null;
+  }>;
+  total_measurements: number;
+  filename: string;
+}
+
+export const useHiveScaleExportSummary = (
+  deviceId: string | undefined,
+  query: HiveScaleExportQuery = {},
+  options: { enabled?: boolean } = {},
+) =>
+  useQuery<HiveScaleExportSummary>({
+    queryKey: HIVESCALE_KEYS.exportSummary(deviceId, query),
+    queryFn: async () => {
+      const response = await apiClient.get<HiveScaleExportSummary>(
+        `/api/hivescale/devices/${deviceId}/export/measurements/summary`,
+        { params: query },
+      );
+      return response.data;
+    },
+    enabled: !!deviceId && (options.enabled ?? true),
+  });
+
+/**
+ * Same-origin download URL for the NDJSON backup. A plain navigation, so the
+ * browser streams it to disk instead of buffering it in memory.
+ */
+export const hiveScaleExportUrl = (
+  deviceId: string,
+  query: HiveScaleExportQuery & { hive?: number[] } = {},
+) => {
+  const params = new URLSearchParams();
+  if (query.start_at) params.set('start_at', query.start_at);
+  if (query.end_at) params.set('end_at', query.end_at);
+  for (const hive of query.hive ?? []) params.append('hive', String(hive));
+  const qs = params.toString();
+  return `/api/hivescale/devices/${encodeURIComponent(deviceId)}/export/measurements${qs ? `?${qs}` : ''}`;
+};
+
+export interface HiveScaleMeasurementDeleteInput {
+  start_at: string;
+  end_at: string;
+  claim_code: string;
+}
+
+export const useDeleteHiveScaleMeasurements = (
+  deviceId: string | undefined,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { status: string; deleted: number },
+    Error,
+    HiveScaleMeasurementDeleteInput
+  >({
+    mutationFn: async input => {
+      try {
+        const response = await apiClient.post<{
+          status: string;
+          deleted: number;
+        }>(`/api/hivescale/devices/${deviceId}/measurements/delete`, input);
+        return response.data;
+      } catch (error) {
+        throw new Error(
+          hiveHubErrorMessage(error, 'Could not delete the readings'),
+        );
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HIVESCALE_KEYS.all });
     },
   });
 };

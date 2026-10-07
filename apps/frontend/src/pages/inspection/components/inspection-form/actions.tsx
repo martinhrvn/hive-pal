@@ -51,10 +51,12 @@ import {
   HiveStatus as HiveStatusEnum,
 } from 'shared-schemas';
 import { AiBadge } from './ai-badge';
-import { AiSectionPreview } from './ai-section-preview';
-import type { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
+import type {
+  AiFieldSuggestion,
+  AiMergeState,
+} from '@/pages/inspection/lib/inspection-ai-merge';
 import { cn } from '@/lib/utils';
-import { shouldUseAiPrefill } from '@/pages/inspection/lib/inspection-ai-merge';
+import { isAiActionField } from '@/pages/inspection/lib/inspection-ai-draft';
 import type { Box } from 'shared-schemas';
 
 const actionTypes = [
@@ -82,10 +84,10 @@ export type ActionType =
 
 interface ActionsSectionProps {
   editMode?: boolean;
-  isAiSuggested?: (field: keyof InspectionFormData) => boolean;
+  isAiSuggested?: (field: string) => boolean;
   aiMergeState?: AiMergeState | null;
-  onAcceptSuggestion?: (field: keyof InspectionFormData) => void;
-  onDismissSuggestion?: (field: keyof InspectionFormData) => void;
+  onAcceptSuggestion?: (field: string) => void;
+  onDismissSuggestion?: (field: string) => void;
   /** Current hive boxes — needed to seed the box configurator */
   hiveBoxes?: Box[];
   /** The hive's id — passed through to the box configurator */
@@ -141,74 +143,87 @@ const getActionType = (action: unknown): string => {
   return typeof record?.type === 'string' ? record.type : 'UNKNOWN';
 };
 
-const getActionKey = (action: unknown, index: number): string => {
-  return `${getActionType(action)}-${index}`;
-};
-
-const formatActionsPreview = (
-  value: unknown,
-  t: ReturnType<typeof useTranslation>['t'],
-): ReactNode => {
-  if (!Array.isArray(value) || value.length === 0) {
-    return <span className="italic text-muted-foreground">No actions</span>;
-  }
-
-  return (
-    <div className="space-y-2">
-      {value.map((action, index) => {
-        const typedAction = getActionRecord(action);
-
-        if (!typedAction) {
-          return (
-            <div
-              key={`invalid-${index}`}
-              className="rounded border bg-muted/20 p-2 text-xs text-muted-foreground"
-            >
-              Invalid action
-            </div>
-          );
-        }
-
-        const actionType = getActionType(action);
-
-        return (
-          <div
-            key={getActionKey(action, index)}
-            className="rounded border bg-muted/20 p-2 text-sm"
-          >
-            <div className="font-medium">
-              {formatActionTypeLabel(actionType, t)}
-            </div>
-            <pre className="mt-1 whitespace-pre-wrap break-words text-xs text-muted-foreground">
-              {JSON.stringify(action, null, 2)}
-            </pre>
-          </div>
-        );
-      })}
-    </div>
+const formatActionDetails = (action: Record<string, unknown>): string => {
+  const entries = Object.entries(action).filter(
+    ([key, value]) =>
+      key !== 'type' &&
+      value !== undefined &&
+      value !== null &&
+      !(typeof value === 'string' && value.trim() === ''),
   );
+
+  return entries
+    .map(([key, value]) => `${key}: ${String(value)}`)
+    .join('\n');
 };
 
-const PendingAiActionCard = ({
-  action,
+const AiActionSuggestionCard = ({
+  suggestion,
   t,
+  onAccept,
+  onDismiss,
 }: {
-  action: Record<string, unknown>;
+  suggestion: AiFieldSuggestion;
   t: ReturnType<typeof useTranslation>['t'];
+  onAccept?: (field: string) => void;
+  onDismiss?: (field: string) => void;
 }) => {
+  const { t: tAi } = useTranslation('ai');
+  const action = getActionRecord(suggestion.aiValue);
+
+  if (!action) return null;
+
   const actionType = getActionType(action);
+  const details = formatActionDetails(action);
 
   return (
-    <div className="rounded-md border border-blue-200 bg-blue-50/40 p-3 dark:border-blue-900 dark:bg-blue-950/20">
+    <div
+      data-ai-field={suggestion.field}
+      className="rounded-md border border-blue-200 bg-blue-50/40 p-3 dark:border-blue-900 dark:bg-blue-950/20"
+    >
       <div className="mb-2 flex items-center gap-2">
         <span className="font-medium">
           {formatActionTypeLabel(actionType, t)}
         </span>
         <AiBadge />
       </div>
-      <pre className="whitespace-pre-wrap break-words text-xs text-muted-foreground">
-        {JSON.stringify(action, null, 2)}
-      </pre>
+
+      {details && (
+        <pre className="whitespace-pre-wrap break-words text-xs text-muted-foreground">
+          {details}
+        </pre>
+      )}
+
+      <div className="mt-3 flex items-center gap-2">
+        <span
+          className={
+            suggestion.hasConflict
+              ? 'text-xs text-amber-600'
+              : 'text-xs text-blue-600'
+          }
+        >
+          {suggestion.hasConflict
+            ? tAi('suggestion.conflict')
+            : tAi('suggestion.willFill')}
+        </span>
+
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={() => onAccept?.(suggestion.field)}
+        >
+          {tAi('preview.accept')}
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          onClick={() => onDismiss?.(suggestion.field)}
+        >
+          {tAi('preview.dismiss')}
+        </Button>
+      </div>
     </div>
   );
 };
@@ -255,25 +270,28 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
   const formActions = watch('actions') || [];
-  const actionsSuggestion = isAiSuggested?.('actions')
-    ? aiMergeState?.suggestions.actions
-    : undefined;
-  const isPending = actionsSuggestion?.status === 'pending';
-  const isDirty = Boolean(formState.dirtyFields.actions);
 
-  const previewActions =
-    actionsSuggestion &&
-    shouldUseAiPrefill(formActions, isDirty, actionsSuggestion) &&
-    Array.isArray(actionsSuggestion.aiValue)
-      ? (actionsSuggestion.aiValue as Record<string, unknown>[])
-      : [];
+  // Each AI-suggested action is its own suggestion ("actions.<i>") so the
+  // user can accept or dismiss them individually.
+  const actionSuggestions = Object.values(
+    aiMergeState?.suggestions ?? {},
+  ).filter(
+    suggestion =>
+      isAiActionField(suggestion.field) &&
+      (isAiSuggested?.(suggestion.field) ?? true),
+  );
+
+  const pendingActionSuggestions = actionSuggestions.filter(
+    suggestion => suggestion.status === 'pending',
+  );
+  const isPending = pendingActionSuggestions.length > 0;
 
   const visibleActionTypes = new Set([
     ...formActions
       .map(action => action.type)
       .filter(type => typeof type === 'string'),
-    ...previewActions
-      .map(action => getActionType(action))
+    ...pendingActionSuggestions
+      .map(suggestion => getActionType(suggestion.aiValue))
       .filter(type => type !== 'UNKNOWN'),
   ]);
 
@@ -440,12 +458,8 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
     }
   };
 
-  const actionsSummary = actionsSuggestion?.aiValue;
-  const suggestedCount = Array.isArray(actionsSummary) ? actionsSummary.length : 0;
-
   return (
     <div
-      data-ai-field="actions"
       className={cn(
         'rounded-md p-3 transition-colors',
         isPending &&
@@ -458,24 +472,21 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             ? t('inspection:form.actions.titleSingular')
             : t('inspection:form.actions.title')}
         </span>
-        {actionsSuggestion && <AiBadge />}
+        {actionSuggestions.length > 0 && <AiBadge />}
       </h3>
 
-      {actionsSuggestion && (
-        <AiSectionPreview
-          title={t('inspection:form.actions.title')}
-          summary={
-            suggestedCount > 0
-              ? `${suggestedCount} AI-suggested action${suggestedCount === 1 ? '' : 's'}`
-              : 'Review AI-suggested actions before applying them.'
-          }
-          currentValue={formatActionsPreview(formActions, t)}
-          suggestedValue={formatActionsPreview(actionsSuggestion.aiValue, t)}
-          hasConflict={actionsSuggestion.hasConflict}
-          status={actionsSuggestion.status}
-          onAccept={() => onAcceptSuggestion?.('actions')}
-          onDismiss={() => onDismissSuggestion?.('actions')}
-        />
+      {pendingActionSuggestions.length > 0 && (
+        <div className="mb-4 space-y-3">
+          {pendingActionSuggestions.map(suggestion => (
+            <AiActionSuggestionCard
+              key={suggestion.field}
+              suggestion={suggestion}
+              t={t}
+              onAccept={onAcceptSuggestion}
+              onDismiss={onDismissSuggestion}
+            />
+          ))}
+        </div>
       )}
 
       {!editMode && (
@@ -518,18 +529,6 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
 
       {formState.errors.actions && (
         <div className="text-red-500">{formState.errors.actions.message}</div>
-      )}
-
-      {previewActions.length > 0 && (
-        <div className="mt-4 space-y-3">
-          {previewActions.map((action, index) => (
-            <PendingAiActionCard
-              key={`ai-preview-${getActionKey(action, index)}`}
-              action={action}
-              t={t}
-            />
-          ))}
-        </div>
       )}
 
       <div

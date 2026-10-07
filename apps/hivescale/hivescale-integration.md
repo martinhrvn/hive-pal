@@ -1,122 +1,185 @@
-# HiveScale integration in HivePal
+# HiveHub integration in HivePal
 
-This document explains how HivePal connects to a self-hosted HiveScale backend to display live weight, temperature, power, and connectivity data from ESP32-based beehive scales.
+This document explains how HivePal connects to a self-hosted HiveHub backend (formerly HiveScale) to display weight, in-hive climate, traffic, sound, power, and connectivity data from ESP32-based hubs with up to 18 hives each.
+
+Code and route names still use `hivescale` (`apps/backend/src/hivescale/`, `/api/hivescale/*`, `apps/frontend/src/pages/hivescale/`); the UI says HiveHub.
 
 ---
 
 ## Overview
 
-HiveScale is a separate self-hosted service. HivePal does not store scale measurements in its own database. Instead, HivePal acts as an authenticated proxy between the HivePal frontend and the HiveScale backend.
+HiveHub is a separate self-hosted service. HivePal does not store measurements in its own database. The HivePal backend is an authenticated proxy between the HivePal frontend and the HiveHub app API.
 
 ```text
 HivePal frontend
-  | JWT auth
+  | HivePal session
   v
 HivePal backend (NestJS)
-  | X-HivePal-Service-Key + Authorization: Bearer <user JWT>
+  | X-HivePal-Service-Key + Authorization: Bearer <JWT signed by HivePal>
   v
-HiveScale backend (FastAPI)
-  | stores measurements, devices, roles, config, commands
+HiveHub backend (FastAPI)
+  | stores measurements, devices, roles, config, commands, inspections, recordings
   v
-HiveScale PostgreSQL database
+HiveHub PostgreSQL database
 ```
 
-The HivePal backend authenticates outbound requests to HiveScale with `HIVESCALE_SERVICE_API_KEY` and forwards the logged-in user's JWT access token in the `Authorization: Bearer <token>` header. HiveScale validates the JWT to identify the user and enforces device ownership and roles; HivePal does not bypass those checks.
+For every proxied call the HivePal backend:
 
-> **Migration note:** Earlier versions forwarded the HivePal user ID in an `X-User-Id` header. The backend now forwards the user's JWT access token in `Authorization: Bearer <token>` instead. The HiveScale backend must be able to validate HivePal-issued JWTs (it must share/trust the same `JWT_SECRET`) for the integration to work.
+- sends `HIVEHUB_SERVICE_API_KEY` in `X-HivePal-Service-Key`, and
+- signs a JWT for the current user (`sub` = HivePal user id, plus `email`, `role`, `name`; 7-day expiry) with HivePal's `JWT_SECRET` and sends it as `Authorization: Bearer <token>`. The browser's session cookie is never forwarded (`HiveScaleService.tokenFor()`).
+
+HiveHub verifies the JWT with `HIVEPAL_JWT_SECRET`, takes the user from `sub`, and enforces device membership and roles. HivePal does not bypass those checks.
+
+The only HivePal-side state is the alert-email bookkeeping (`HiveHubAlertNotification` table) and the user's alert preferences. Hive names and HivePal hive links live in HiveHub.
 
 ---
 
 ## Self-hosting requirements
 
-To enable the integration, run a HiveScale backend and configure the HivePal backend with:
+HivePal backend:
 
 | Variable | Description |
 |---|---|
-| `HIVESCALE_API_BASE_URL` | Base URL of the HiveScale API, for example `https://hivescale.example.com` |
-| `HIVESCALE_SERVICE_API_KEY` | Shared secret used by HivePal to call HiveScale |
+| `HIVEHUB_API_BASE_URL` | Base URL of the HiveHub API, e.g. `https://hivehub.example.com` |
+| `HIVEHUB_SERVICE_API_KEY` | Shared secret HivePal sends to HiveHub |
+| `JWT_SECRET` | Signs the per-user token forwarded to HiveHub |
+| `FRONTEND_URL` | Public HivePal URL, used for links in alert emails |
+| `HIVESCALE_SD_IMPORT_MAX_FILE_SIZE` | Optional. Max SD-import upload in bytes (default 250 MB) |
+| `HIVEHUB_FIRMWARE_MAX_FILE_SIZE` | Optional. Max firmware upload in bytes (default 16 MB, matching HiveHub's own limit) |
 
-The HivePal `HIVESCALE_SERVICE_API_KEY` must match `HIVEPAL_SERVICE_API_KEY` on the HiveScale side.
+The legacy names `HIVESCALE_API_BASE_URL` and `HIVESCALE_SERVICE_API_KEY` are still accepted; an empty `HIVEHUB_*` value falls back to them. Alert emails also need a working mail provider (see the main README).
+
+HiveHub backend:
+
+| Variable | Must equal |
+|---|---|
+| `HIVEPAL_SERVICE_API_KEY` | HivePal's `HIVEHUB_SERVICE_API_KEY` |
+| `HIVEPAL_JWT_SECRET` | HivePal's `JWT_SECRET` |
 
 Example HivePal `.env`:
 
 ```env
-HIVESCALE_API_BASE_URL=https://hivescale.example.com
-HIVESCALE_SERVICE_API_KEY=a-long-random-shared-secret
+HIVEHUB_API_BASE_URL=https://hivehub.example.com
+HIVEHUB_SERVICE_API_KEY=a-long-random-shared-secret
+JWT_SECRET=another-long-random-secret
+FRONTEND_URL=https://hivepal.example.com
 ```
 
-Example HiveScale `.env`:
+Example HiveHub `.env`:
 
 ```env
 HIVEPAL_SERVICE_API_KEY=a-long-random-shared-secret
+HIVEPAL_JWT_SECRET=another-long-random-secret
 ```
 
-Generate a strong shared key with:
+Generate keys with:
 
 ```bash
 openssl rand -hex 32
 ```
 
-`apps/hivescale/docker-compose.hivescale.yaml` shows how to run HiveScale alongside HivePal for local or single-host deployments.
+`apps/hivescale/docker-compose.hivescale.yaml` runs the HivePal backend and its PostgreSQL with the HiveHub variables passed through. It does **not** run HiveHub; deploy HiveHub separately (see the HiveHub repository) and point `HIVEHUB_API_BASE_URL` at it.
+
+### HiveHub version
+
+Most routes work with current HiveHub `main`. These need HiveHub server 0.6.0 or newer (`GET /health` reports the version):
+
+- `POST /devices/:id/provisioning/start` (remote setup access point),
+- `GET /devices/:id/export/measurements` and `/export/measurements/summary`,
+- `POST /devices/:id/measurements/delete`,
+- `hive_ids` in `PATCH /devices/:id/channels` (linking slots to HivePal hives),
+- per-node relay status fields in `GET /devices/:id/firmware/status`.
+
+An older HiveHub answers `404` for the new routes, so those features fail with an error and the rest keeps working; links sent in `hive_ids` are not stored.
 
 ---
 
-## HiveScale backend capabilities used by HivePal
+## Proxy routes
 
-HivePal uses the HiveScale app API under `/api/v1/app/...`.
+All routes are under `/api/hivescale`, require a HivePal session, and map to HiveHub's `/api/v1/app/...`. Request bodies are validated with the Zod schemas in `packages/shared-schemas/src/hivehub/hivehub.schema.ts`, which mirror HiveHub's pydantic models. Hive indexes are 1–18 (`HIVEHUB_MAX_HIVES`).
 
-| HivePal backend route | HiveScale route | Purpose |
+### Devices, sharing, config
+
+| HivePal route | HiveHub route | Purpose |
 |---|---|---|
-| `POST /hivescale/devices/claim` | `POST /api/v1/app/devices/claim` | Claim an unclaimed scale by claim code |
-| `GET /hivescale/devices` | `GET /api/v1/app/devices` | List the user's devices |
-| `DELETE /hivescale/devices/:deviceId` | `DELETE /api/v1/app/devices/:id` | Remove current user's membership |
-| `GET /hivescale/devices/:deviceId/config` | `GET /api/v1/app/devices/:id/config` | Read send interval and calibration config |
-| `PATCH /hivescale/devices/:deviceId/config` | `PATCH /api/v1/app/devices/:id/config` | Update send interval and calibration config |
-| `PATCH /hivescale/devices/:deviceId/channels` | `PATCH /api/v1/app/devices/:id/channels` | Rename scale 1 and scale 2 |
-| `GET /hivescale/devices/:deviceId/measurements` | `GET /api/v1/app/devices/:id/measurements` | Read measurements for charts and history |
-| `GET /hivescale/devices/:deviceId/measurements/latest` | `GET /api/v1/app/devices/:id/measurements/latest` | Read latest measurement/status cards |
-| `POST /hivescale/devices/:deviceId/measurements/import` | `POST /api/v1/app/devices/:id/measurements/import` | Import an SD-card backup (`.ndjson`/`.tar`) the beekeeper downloaded in AP mode |
-| `GET /hivescale/devices/:deviceId/members` | `GET /api/v1/app/devices/:id/members` | Read device members, then enrich with HivePal user data |
-| `POST /hivescale/devices/:deviceId/members` | `POST /api/v1/app/devices/:id/members` | Share by email after HivePal resolves the target user ID |
-| `DELETE /hivescale/devices/:deviceId/members/:memberUserId` | `DELETE /api/v1/app/devices/:id/members/:user_id` | Revoke member access |
+| `POST /devices/claim` | `POST /devices/claim` | Claim by claim code (optional display name, hive 1/2 names) |
+| `GET /devices` | `GET /devices` | List the user's devices, incl. `channels.names` / `channels.hive_ids` |
+| `DELETE /devices/:deviceId` | `DELETE /devices/:id` | Remove own membership (releases the device when it was the last) |
+| `DELETE /devices/:deviceId/claim` | `DELETE /devices/:id/claim` | Owner: drop every member and unclaim |
+| `GET /devices/:deviceId/members` | `GET /devices/:id/members` | Members, enriched with HivePal user data |
+| `POST /devices/:deviceId/members` | `POST /devices/:id/members` | Share by email (HivePal resolves email → user id) as admin/viewer |
+| `DELETE /devices/:deviceId/members/:memberUserId` | `DELETE /devices/:id/members/:user_id` | Revoke access |
+| `GET /devices/:deviceId/config` | `GET /devices/:id/config` | Device config |
+| `PATCH /devices/:deviceId/config` | `PATCH /devices/:id/config` | Send interval, per-hive calibration (`hive_scales`), temperature compensation, HiveTraffic night mode / time zone / emitter banks, inspection timeout |
+| `POST /devices/:deviceId/temp-compensation/fit` | `POST /devices/:id/temp-compensation/fit` | Fit (and optionally apply) a temperature coefficient for one hive |
+| `GET /devices/:deviceId/channels` | `GET /devices/:id/channels` | Hive names and links |
+| `PATCH /devices/:deviceId/channels` | `PATCH /devices/:id/channels` | Set `names` and `hive_ids` per slot (`"1"`..`"18"`) |
+| `POST /devices/:deviceId/calibration/start` | `POST /devices/:id/calibration/start` | Queue fast calibration sampling |
+| `POST /devices/:deviceId/calibration/stop` | `POST /devices/:id/calibration/stop` | Queue stop of calibration mode |
+| `POST /devices/:deviceId/provisioning/start` | `POST /devices/:id/provisioning/start` | Queue the hub's setup access point *(new HiveHub)* |
 
-HivePal also contains calibration-mode start/stop hooks and controller routes. These are intended for HiveScale deployments that expose app-level calibration endpoints; otherwise calibration can still be driven through HiveScale's command queue.
+### Measurements and data
+
+| HivePal route | HiveHub route | Purpose |
+|---|---|---|
+| `GET /devices/:deviceId/measurements` | `GET /devices/:id/measurements` | History; `limit` (≤ 20000), `start_at`, `end_at`, `max_points` (server-side down-sampling) |
+| `GET /devices/:deviceId/measurements/latest` | `GET /devices/:id/measurements/latest` | Latest measurement(s), optional `limit` |
+| `POST /devices/:deviceId/measurements/import` | `POST /devices/:id/measurements/import` | SD-card import (parsed and chunked by HivePal, see below) |
+| `POST /devices/:deviceId/measurements/delete` | `POST /devices/:id/measurements/delete` | Owner: delete a range; body `start_at`, `end_at`, `claim_code` *(new HiveHub)* |
+| `GET /devices/:deviceId/export/measurements/summary` | `GET /devices/:id/export/measurements/summary` | Count and first/last timestamp for a range *(new HiveHub)* |
+| `GET /devices/:deviceId/export/measurements` | `GET /devices/:id/export/measurements` | Streamed NDJSON backup; `start_at`, `end_at`, repeated `hive` *(new HiveHub)* |
+
+### Insights
+
+| HivePal route | HiveHub route | Purpose |
+|---|---|---|
+| `GET /devices/:deviceId/insights` | `GET /devices/:id/insights` | Current alerts, optional `lookback_days` |
+| `GET /devices/:deviceId/insights/summary` | `GET /devices/:id/insights/summary` | Summary |
+| `GET /devices/:deviceId/insights/history` | `GET /devices/:id/insights/history` | Alert history; `status`, `category`, `since`, `limit` |
+
+### Inspection mode
+
+| HivePal route | HiveHub route | Purpose |
+|---|---|---|
+| `GET /devices/:deviceId/inspections/status` | `GET /devices/:id/inspections/status` | Pending/active state |
+| `GET /devices/:deviceId/inspections` | `GET /devices/:id/inspections` | History; `start_at`, `end_at`, `limit` |
+| `POST /devices/:deviceId/inspections/start` | `POST /devices/:id/inspections/start` | Start; optional `hives`, `note`, `started_at` |
+| `POST /devices/:deviceId/inspections/stop` | `POST /devices/:id/inspections/stop` | Stop; optional `note`, `ended_at` |
+| `PATCH /devices/:deviceId/inspections/:inspectionId` | `PATCH /devices/:id/inspections/:inspectionId` | Edit the note |
+
+### Audio recordings
+
+| HivePal route | HiveHub route | Purpose |
+|---|---|---|
+| `GET /devices/:deviceId/recordings` | `GET /devices/:id/recordings` | List; optional `hive`, `limit` |
+| `POST /devices/:deviceId/recordings` | `POST /devices/:id/recordings` | Request a clip; query `hive`, `duration` (1–60 s), optional `gain_db` |
+| `GET /recordings/:recordingId` | `GET /recordings/:id` | Recording metadata and quality figures |
+| `GET /recordings/:recordingId/audio.wav` | `GET /recordings/:id/audio.wav` | Streamed WAV |
+| `DELETE /recordings/:recordingId` | `DELETE /recordings/:id` | Delete |
+
+### Firmware
+
+| HivePal route | HiveHub route | Purpose |
+|---|---|---|
+| `POST /devices/:deviceId/firmware` | `POST /devices/:id/firmware` | Upload a release (multipart `file`, `version`, `target`, `board`, `active`) |
+| `GET /devices/:deviceId/firmware/status` | `GET /devices/:id/firmware/status` | Hub update state; per-node relay status *(new HiveHub)* |
+| `POST /devices/:deviceId/firmware/approve` | `POST /devices/:id/firmware/approve` | Approve the pending hub update |
+| `POST /devices/:deviceId/commands/update-hiveinside` | `POST /devices/:id/commands/update-hiveinside` | Relay the active HiveInside release to one slot; `slot`, `force` |
+| `POST /devices/:deviceId/commands/update-beecounter` | `POST /devices/:id/commands/update-beecounter` | Relay the active HiveTraffic release to one slot; `slot`, `force` |
+
+Firmware upload details:
+
+- `target` is `hivehub` (legacy `hivescale`), `hiveinside`, or `beecounter` (HiveTraffic); default `hivehub`. `board` is `esp32`, `esp32-c6`, `nrf54lm20a`, or empty to let HiveHub derive it from the filename. The frontend pre-selects both from the filename.
+- After an **active** `hiveinside` upload, the backend queues the HiveInside relay for every slot that reports a HiveInside node and returns the per-slot result as `auto_queued_updates`.
+- HiveHub refuses a relay that is not newer than the node's version with `409`; `force=true` ("Relay anyway" in the UI) overrides that.
 
 ---
 
-## Measurement fields displayed by HivePal
+## Measurement data
 
-HivePal's `HiveScaleMeasurement` type includes both the original scale fields and the off-grid telemetry fields.
+HiveHub returns a `hives` array on every measurement (`HiveScaleHiveReading`, indexes 1–18) with weight, raw weight, temperature, humidity, accelerometer bands, HiveInside audio metrics, HiveHeart data (incl. 16 spectrum bins), HiveScale node data, BLE node identity, and bee-counter values. For older rows HiveHub synthesizes hives 1–2 from the flat columns. The flat `scale_1_*`/`hive_1_*`/… fields remain as a 1–2 mirror; new UI code reads `hives`.
 
-### Core readings
-
-| Field | UI use |
-|---|---|
-| `scale_1_weight_kg`, `scale_2_weight_kg` | Latest readings and weight charts |
-| `hive_1_temp_c`, `hive_2_temp_c` | Hive temperature cards and charts |
-| `ambient_temp_c`, `ambient_humidity_percent` | Ambient status cards and charts |
-| `scale_1_raw`, `scale_2_raw` | Calibration/debug context |
-| `firmware_version`, `config_version` | Device status/debug context |
-| `sd_ok`, `rtc_ok`, `sht_ok` | Sensor/module health |
-| `calibration_mode` | Shows whether fast calibration sampling is active |
-| `boot_count`, `time_source` | Device diagnostics |
-
-### Off-grid readings
-
-| Field | UI use |
-|---|---|
-| `battery_voltage` / `battery_voltage_v` | Battery voltage card and chart |
-| `battery_soc_percent` | Battery state-of-charge card and chart |
-| `battery_alert` | Battery alert status |
-| `battery_monitor_ok` | MAX17048 health |
-| `solar_monitor_ok` | INA219 health |
-| `solar_load_voltage_v` | Solar/load voltage card and chart |
-| `solar_current_ma` | Solar/load current card and chart |
-| `solar_power_mw` | Solar/load power card and chart |
-| `network_transport` | Displays Wi-Fi vs SIM7080G transport |
-| `cellular_ok` | Cellular connection status |
-| `cellular_csq` | Cellular signal quality chart/status |
-| `rssi_dbm` | Wi-Fi RSSI or CSQ-derived approximate RSSI |
+Hub-level fields include ambient temperature/humidity, battery (`battery_voltage_v`, `battery_soc_percent`, …), solar (`solar_load_voltage_v`, `solar_current_ma`, `solar_power_mw`), `network_transport`, `rssi_dbm`, `cellular_csq`, `time_source`, `boot_count`, `firmware_version`, and the inspection flags (`inspection`, `inspection_id`, `inspection_hives`).
 
 ---
 
@@ -124,214 +187,194 @@ HivePal's `HiveScaleMeasurement` type includes both the original scale fields an
 
 ### API hooks
 
-`apps/frontend/src/api/hooks/useHiveScale.ts` is the frontend API layer. It calls only HivePal backend paths under `/api/hivescale/...`.
+`apps/frontend/src/api/hooks/useHiveScale.ts` calls only HivePal routes under `/api/hivescale/...`. Main hooks:
 
-Read hooks:
-
-| Hook | Auto-refresh | Description |
-|---|---:|---|
-| `useHiveScaleDevices()` | 30 s | List claimed/shared devices |
-| `useHiveScaleMeasurements(deviceId, query)` | 60 s | Measurements with `limit`, `start_at`, and `end_at` |
-| `useHiveScaleDeviceConfig(deviceId)` | - | Device config |
-| `useHiveScaleMembers(deviceId)` | - | Device members enriched with HivePal user info |
-
-Write hooks:
-
-| Hook | Description |
+| Area | Hooks |
 |---|---|
-| `useClaimHiveScaleDevice()` | Claim by claim code |
-| `useRemoveHiveScaleDevice()` | Remove current user's membership |
-| `useUpdateHiveScaleConfig(deviceId)` | Update interval and calibration config |
-| `useUpdateHiveScaleChannels(deviceId)` | Rename scale channels |
-| `useImportHiveScaleSdData(deviceId)` | Upload an SD-card backup file (`.ndjson`/`.tar`) and bulk-import its readings |
-| `useShareHiveScaleDevice(deviceId)` | Share with another HivePal user by email |
-| `useRevokeHiveScaleMember(deviceId)` | Revoke member access |
-| `useStartHiveScaleCalibrationMode(deviceId)` | Start fast calibration sampling where supported |
-| `useStopHiveScaleCalibrationMode(deviceId)` | Stop calibration mode where supported |
+| Devices | `useHiveScaleDevices`, `useClaimHiveScaleDevice`, `useRemoveHiveScaleDevice`, `useReleaseHiveScaleDevice`, `useHiveScaleMembers`, `useShareHiveScaleDevice`, `useRevokeHiveScaleMember` |
+| Config | `useHiveScaleDeviceConfig`, `useUpdateHiveScaleConfig`, `useFitHiveScaleTempCompensation`, `useUpdateHiveScaleChannels`, `useStartHiveScaleCalibrationMode`, `useStopHiveScaleCalibrationMode`, `useStartHiveScaleProvisioning` |
+| Measurements | `useHiveScaleMeasurements` (refetch 60 s, 5 s while calibrating), `useImportHiveScaleSdData`, `useHiveScaleExportSummary`, `hiveScaleExportUrl`, `useDeleteHiveScaleMeasurements` |
+| Insights | `useHiveScaleInsights`, `useHiveScaleInsightsSummary` (refetch 5 min), `useHiveScaleInsightsHistory` |
+| Inspections | `useHiveScaleInspectionStatus` (refetch 30 s), `useHiveScaleInspections`, `useStartHiveScaleInspection`, `useStopHiveScaleInspection`, `useUpdateHiveScaleInspection` |
+| Audio | `useHiveScaleRecordings`, `useRequestHiveScaleRecording`, `useDeleteHiveScaleRecording` |
+| Firmware | `useUploadHiveScaleFirmware`, `useHiveScaleFirmwareStatus`, `useApproveHiveScaleFirmware`, `useQueueHiveInsideUpdate`, `useQueueBeeCounterUpdate` |
 
-### HiveScale page
+`hiveHubErrorMessage()` surfaces HiveHub's error message in toasts.
 
-`apps/frontend/src/pages/hivescale/hivescale-page.tsx` is the main UI.
+### HiveHub page
 
-It includes:
+`apps/frontend/src/pages/hivescale/hivescale-page.tsx` (route `/hivescale`, sidebar "HiveHub") has five tabs:
 
-- **Device selector** for switching between claimed or shared HiveScale devices.
-- **Claim device card** for pairing by claim code and assigning display names.
-- **Live readings panel** for latest scale weights, hive temperatures, ambient readings, and module status.
-- **Off-grid status cards** for battery voltage, battery state-of-charge, battery alert, solar voltage/current/power, network transport, cellular connection state, and CSQ.
-- **Chart panel** with preset and custom date ranges for weight, temperature, battery, solar, and cellular signal data.
-- **Calibration controls** for entering fast sampling mode during tare/known-weight calibration.
-- **Import SD card data card** for uploading a `measurements.ndjson` or `hivescale-sd-data.tar` backup pulled from the device in AP mode (owners/admins only).
-- **Device config card** for send interval and calibration values.
-- **Scale mapping card** for matching scale channels to hive names.
-- **Device status and sharing card** for role, last seen time, firmware, and members.
+| Tab | Components |
+|---|---|
+| Overview | `hivehub-hive-cards.tsx` (a card per reported hive: compensated weight, 24 h change, temperature, humidity, traffic, alerts, inspection badge), General card (ambient, power, wireless sensor batteries), `hivescale-modular-dashboard.tsx` |
+| Inspections | `hivehub-inspection-card.tsx` |
+| Audio | `hivehub-audio-panel.tsx` |
+| Health | `hivehub-hub-status-card.tsx`, `hivehub-health-card.tsx` |
+| Setup | claim, device status & sharing, `hivehub-alert-settings-card.tsx`, hive slots, `hivehub-calibration-card.tsx` (calibration wizard + temperature compensation), `hivehub-traffic-card.tsx`, `hivehub-hub-access-card.tsx` (remote setup AP, inspection timeout), `hivehub-firmware-card.tsx`, `hivehub-sd-import-card.tsx`, `hivehub-data-card.tsx` (export, range delete) |
+
+Dashboard notes:
+
+- Widgets include weight comparison, daily max weight, climate, power, bee traffic, sound RMS, vibration, HiveHeart spectrum, temperature heatmap, insights, data quality, and a configurable diagram. The layout is stored in `localStorage` per device (`hivepal:hivescale-dashboard:<deviceId>:v<n>`).
+- Date ranges: presets (24 h, 7 d, 30 d, 365 d, current year, all) and a custom day range (`hivescale-date-range.ts`). When a range needs more than 2000 points (anything beyond about 7 days at the 5-minute cadence), the query adds `max_points=2000` so HiveHub down-samples server-side.
+- HiveHub inspection windows are shaded on the charts; each chart has a CSV download.
+
+### Hive slots and links
+
+`hivehub-links.ts` reads `channels.names` and `channels.hive_ids` (slots 1–18) from the device list. Saving writes both to HiveHub via `PATCH /channels`. Names that older HivePal versions kept in `localStorage` (`hivepal:hivescale-hive-mapping:<deviceId>:v1`) are read as a fallback and removed after the next save.
+
+A linked hive gets:
+
+- a HiveHub card on the hive detail page (`pages/hive/hive-detail-page/hivehub-hive-card.tsx`) with weight, 24 h change, temperature, humidity, and a link to the HiveHub page;
+- a prompt on the create/edit inspection pages and the mobile wizard (`hivehub-inspection-prompt.tsx`) offering to start or stop HiveHub inspection mode for that slot. It never starts inspection mode automatically.
+
+---
+
+## Alert emails
+
+`hivehub-alert.scheduler.ts` runs every 15 minutes (HiveHub's insight reconciler refreshes on the same default interval). For each user with alerts enabled, `hivehub-alert.service.ts`:
+
+1. signs a token for the user and lists their devices,
+2. reads active alerts from `insights/history?status=active`,
+3. selects alerts at or above the user's minimum severity that are new or have escalated past the severity last mailed (`hivehub-alert.rules.ts`),
+4. sends one digest email per run (`MailService.sendHiveHubAlertEmail`, links built from `FRONTEND_URL`),
+5. records what was mailed in `HiveHubAlertNotification` and deletes rows for alerts that are no longer active.
+
+Alerts are HiveHub insight alerts (swarm, queenless, robbing, foraging, brood, decline/absconding, winter, harvest, acoustic). A recurrence gets a new HiveHub alert id and is mailed again.
+
+Preferences are stored in the user's preferences as `hiveHubAlerts: { enabled, minSeverity }` (`watch` | `warning` | `critical`, default `warning`) and set in **Setup → HiveHub email alerts**. Users who had the retired `swarmAlert.enabled` preference keep alerts enabled.
+
+The former HivePal weight-drop swarm alert job has been removed.
 
 ---
 
 ## SD card data import
 
-HiveScale devices keep an append-only backup of every reading on their SD card
-(`measurements.ndjson`), plus a `cache.ndjson` retry queue. When a device has
-been offline or off-grid, those readings never reached the backend over the
-network. The beekeeper can download the card contents in AP mode as
-`hivescale-sd-data.tar` and upload them into HivePal to backfill the history.
+HiveHub devices keep an append-only backup of every reading on their SD card (`measurements.ndjson`), plus a `cache.ndjson` retry queue. The beekeeper can download the card in AP mode as `hivescale-sd-data.tar` and upload it into HivePal to backfill offline periods.
 
 ### Data flow
 
 ```text
-Scale SD card (measurements.ndjson + cache.ndjson)
-  | AP-mode download (HiveScale firmware, GET /sd/download-all)
+Hub SD card (measurements.ndjson + cache.ndjson)
+  | AP-mode download (GET /sd/download-all)
   v
 hivescale-sd-data.tar  (or an extracted .ndjson)
-  | multipart upload, field name "file"
+  | multipart upload, field "file" (+ optional "force")
   v
-HivePal frontend  (SdDataUploadCard / useImportHiveScaleSdData)
-  | POST /api/hivescale/devices/:deviceId/measurements/import
-  v
-HivePal backend  (parse + chunk + forward)
+HivePal backend  (parse + device check + chunk + forward)
   | POST /api/v1/app/devices/:id/measurements/import
   v
-HiveScale backend (idempotent bulk insert)
+HiveHub backend (idempotent bulk insert)
 ```
 
-### Backend proxy
-
-The import is handled by `apps/backend/src/hivescale/` and, unlike the other
-proxy routes, does **not** stream the request straight through — it parses the
-upload in the HivePal backend first:
+### Backend handling
 
 | Concern | Location | Notes |
 |---|---|---|
-| HTTP endpoint | `hivescale.controller.ts` → `importSdMeasurements()` | `POST devices/:deviceId/measurements/import`, multipart `file` via `FileInterceptor`; rejects an empty upload with `400 No SD data file provided`. |
-| File parsing | `sd-import.parser.ts` → `parseSdMeasurements()` | Pure, dependency-free. Detects `.tar` from the filename or the USTAR magic at offset 257, extracts every `*.ndjson` member, and parses NDJSON line-by-line. Blank/corrupt lines are counted as `skipped`, not fatal. |
-| Forwarding | `hivescale.service.ts` → `importSdMeasurements()` | Pins every record's `device_id` to the path device, then forwards in chunks of `SD_IMPORT_CHUNK_SIZE` (5000) so a multi-month backup stays under the backend's 20000-row-per-request cap. Aggregates the per-chunk counts. |
+| HTTP endpoint | `hivescale.controller.ts` → `importSdMeasurements()` | Multipart `file` via `FileInterceptor`, capped by `HIVESCALE_SD_IMPORT_MAX_FILE_SIZE`; `400` for an empty upload. |
+| File parsing | `sd-import.parser.ts` → `parseSdMeasurements()` | Detects `.tar` from the filename or the USTAR magic, extracts every `*.ndjson` member, parses line by line. Corrupt lines are counted as `skipped`. |
+| Device check | `hivescale.service.ts` → `importSdMeasurements()` | If records carry a `device_id` other than the selected device, answers `409` with `code: "device_mismatch"` and `file_device_ids`; the frontend asks the user and retries with `force=true`. |
+| Forwarding | `hivescale.service.ts` → `importSdMeasurements()` | Pins every record's `device_id` to the path device, forwards in chunks of 5000 (HiveHub caps a request at 20000), and sums the counts. |
 
-The HiveScale backend caps each request at 20000 measurements
-(`MEASUREMENT_IMPORT_MAX`), which is why HivePal chunks at 5000.
+Re-uploading is safe: HiveHub treats `(device_id, measured_at)` as the natural key and reports existing rows as duplicates.
 
-### Accepted files
+The result (`HiveScaleSdImportResult`) has `parsed`, `skipped`, `received`, `inserted`, and `duplicates`.
 
-| Upload | Handling |
-|---|---|
-| `hivescale-sd-data.tar` | Every `*.ndjson` member is extracted and concatenated (`measurements.ndjson` + `cache.ndjson`). |
-| `measurements.ndjson` (or any `.ndjson`) | Parsed directly as one JSON object per line. |
-| Mislabelled file | Falls back to sniffing the USTAR magic, so a `.tar` without the extension still parses. |
+Importing requires `owner` or `admin`. HiveHub re-checks the role and never auto-creates devices from uploaded data.
 
-### Idempotency
+---
 
-Re-uploading is always safe. The HiveScale backend treats
-`(device_id, measured_at)` as the natural key, so rows that already exist —
-whether they arrived earlier over the network, are repeated inside the file, or
-were uploaded before — are skipped rather than duplicated. Duplicate detection
-is in HiveScale's `sd_import.split_new_and_duplicate`.
+## Data export and range delete
 
-### Import result
-
-`useImportHiveScaleSdData` returns a `HiveScaleSdImportResult` that the
-`SdDataUploadCard` surfaces to the user:
-
-| Field | Meaning |
-|---|---|
-| `parsed` | Records successfully parsed out of the uploaded file |
-| `skipped` | Non-empty lines that could not be parsed as JSON |
-| `received` | Records the HiveScale backend accepted across all chunks |
-| `inserted` | New readings stored |
-| `duplicates` | Readings skipped because they already existed |
-
-### Access control
-
-Importing requires `owner` or `admin` on the device. HiveScale re-checks the
-role server-side and never auto-creates devices from uploaded data — the
-`device_id` inside the file is ignored in favour of the claimed device the user
-selected, so an upload cannot smuggle readings into a device the user does not
-own.
+- **Export** (`owner`/`admin`): the frontend fetches `export/measurements/summary` for the chosen range, then navigates to `hiveScaleExportUrl()` so the browser streams the NDJSON to disk. The backend passes HiveHub's stream and `Content-Disposition` through. Optional `hive` parameters limit it to selected slots. The file can be imported again.
+- **Delete** (`owner` only): the frontend shows the export summary for the range as a preview, then sends `POST measurements/delete` with `start_at`, `end_at`, and the device's `claim_code`, which HiveHub checks before deleting.
 
 ---
 
 ## Device pairing flow
 
-1. Flash the ESP32 firmware with a `CLAIM_CODE` in `secrets.h`.
+1. Flash the hub firmware with a `CLAIM_CODE` in `secrets.h`.
 2. The device sends at least one measurement containing that claim code.
-3. In HivePal, open **HiveScale** and submit the same claim code.
-4. HivePal calls its backend `POST /hivescale/devices/claim` route.
-5. The HivePal backend forwards to HiveScale with the service key and the current user's JWT access token (`Authorization: Bearer <token>`).
-6. HiveScale hashes the claim code, matches the unclaimed device, and assigns the user as owner.
-7. The device appears in HivePal and the latest measurements populate the dashboard and charts.
+3. In HivePal, open **HiveHub → Setup** and submit the claim code.
+4. The HivePal backend forwards `POST /devices/claim` with the service key and the user's token.
+5. HiveHub hashes the claim code, matches the unclaimed device, and makes the user its owner.
 
 ---
 
 ## Roles
 
-HiveScale enforces roles on the backend.
-
-| Role | Claim | View data | Edit config/channels | Share/revoke members |
+| Role | Claim | View data | Inspections, audio, config, names/links, firmware, import, export | Range delete, share/revoke |
 |---|---:|---:|---:|---:|
 | `owner` | Yes | Yes | Yes | Yes |
 | `admin` | No | Yes | Yes | No |
 | `viewer` | No | Yes | No | No |
 
-Removing a device from HivePal removes the current user's membership. If no members remain, HiveScale marks the device unclaimed again so it can be re-paired.
+HiveHub enforces these; the UI hides or disables controls to match.
 
 ---
 
-## Off-grid mode notes
+## Un-pairing and re-pairing
 
-HivePal does not need special configuration to display off-grid telemetry beyond enabling the HiveScale integration. If the firmware sends the extra fields and the HiveScale backend stores/returns them, HivePal displays them automatically.
+| Step | What happens |
+|---|---|
+| Remove (or release) the device in HivePal | HiveHub clears `claimed_at` once no members remain, so the claim code works again. The response's `released` flag says whether that happened. |
+| The device's next upload | HiveHub answers `"claimed": false`; firmware 0.24.9+ drops its local "claim registered" latch and sends its claim code again. Older firmware needs the setup-portal or factory-reset route below. |
+| Claim the code in HivePal again | The device re-appears with its history, config, names, and links. |
 
-For off-grid devices:
+On removal HivePal clears the browser-local state keyed by `device_id`: the dashboard layout and any legacy hive-name mapping.
 
-- `network_transport` should be `sim7080g` when cellular is used.
-- Battery cards are populated from `battery_voltage_v`, `battery_soc_percent`, `battery_alert`, and `battery_monitor_ok`.
-- Solar cards are populated from the INA219 fields.
-- Cellular cards are populated from `cellular_ok`, `cellular_csq`, and `rssi_dbm`.
-- The chart panel can plot battery, solar, and cellular history alongside weight and temperature history.
+**Older HiveHub backends** do not clear `claimed_at` on removal, leaving the device claimed with no members (`404` on the claim code). Upgrade HiveHub and run its `022_release_orphaned_devices.sql` migration once to release devices already stuck.
 
 ---
 
 ## Troubleshooting
 
-### `500 HIVESCALE_API_BASE_URL is not configured`
+### `500 HIVEHUB_API_BASE_URL (or legacy HIVESCALE_API_BASE_URL) is not configured`
 
-Set `HIVESCALE_API_BASE_URL` in the HivePal backend environment and restart the backend.
+Set `HIVEHUB_API_BASE_URL` in the HivePal backend environment and restart.
 
-### `500 HIVESCALE_SERVICE_API_KEY is not configured`
+### `500 HIVEHUB_SERVICE_API_KEY (or legacy HIVESCALE_SERVICE_API_KEY) is not configured`
 
-Set `HIVESCALE_SERVICE_API_KEY` in the HivePal backend environment and restart the backend.
+Set `HIVEHUB_SERVICE_API_KEY` and restart.
 
 ### `401 Invalid HivePal service key`
 
-The HivePal `HIVESCALE_SERVICE_API_KEY` does not match HiveScale's `HIVEPAL_SERVICE_API_KEY`.
+HivePal's `HIVEHUB_SERVICE_API_KEY` does not match HiveHub's `HIVEPAL_SERVICE_API_KEY`.
 
 ### `401 Invalid or expired token`
 
-The user's JWT access token was rejected by HiveScale. This usually means the HiveScale backend cannot validate HivePal-issued JWTs (mismatched `JWT_SECRET`), or the token has expired. Confirm both backends share the same `JWT_SECRET` and that the user is signed in with a valid session.
+HiveHub could not verify the token HivePal signed. Check that HiveHub's `HIVEPAL_JWT_SECRET` equals HivePal's `JWT_SECRET`.
+
+### `404` on export, delete, setup access point, or relay status
+
+HiveHub is older than the version listed under [HiveHub version](#hivehub-version). Hive links saved against such a backend are silently dropped.
+
+### `409` — the code belongs to an already-claimed device
+
+The claim code is right, but the device is still paired. Its owner has to release it first. Older HiveHub backends report this as `404`.
 
 ### `404 No unclaimed device found for this claim code`
 
-The device has not sent its first measurement, the code is wrong, or the device is already claimed.
+No device has sent that claim code: it has not uploaded yet, or the code is wrong.
+
+If HiveHub was rebuilt from scratch and the device was claimed against a previous install, older firmware stops sending its claim code after the first successful claim. Fixes: (1) update to firmware that keeps sending the code until the server confirms the claim, (2) re-submit the claim code in the device's setup portal (join `HiveHub-Setup-XXXX`, save) — firmware 0.24.9+ then sends it again, (3) on old firmware, bump `CLAIM_CODE_REVISION` in `secrets.h` (or set `FORCE_RESEED true`) and re-flash, or (4) factory-reset. A plain re-flash with an unchanged `secrets.h` does not help, because the flag lives in NVS.
 
 ### No measurements in HivePal
 
-Check the device's `last_seen_at`, HiveScale logs, ESP32 serial output, and whether HivePal can reach `HIVESCALE_API_BASE_URL` from the backend container.
+Check the device's `last_seen_at`, HiveHub logs, ESP32 serial output, and whether the HivePal backend can reach `HIVEHUB_API_BASE_URL`.
 
-### Off-grid cards are empty
+### No alert emails
 
-Confirm the firmware was built with the relevant flags enabled, the modules are wired correctly, and HiveScale returns the off-grid fields through `/api/v1/app/devices/:id/measurements/latest`.
+Check that the user enabled **HiveHub email alerts**, that the HivePal mail provider works, and the backend log for `HiveHub alert check failed` / `Could not read insights` warnings.
 
 ### Sharing by email fails
 
-The email must belong to an existing HivePal user. HivePal resolves email to user ID before calling HiveScale.
+The email must belong to an existing HivePal user.
 
-### SD import says "No measurements found in the uploaded file"
+### SD import: "No measurements found in the uploaded file"
 
-The parser could not find any valid NDJSON records. Confirm the file is a
-HiveScale `measurements.ndjson` backup or the `hivescale-sd-data.tar` download
-(not an unrelated archive), and that it is not empty or truncated. The import
-also reports a `skipped` count for individual lines that were corrupt or
-truncated while the rest imported normally.
+The parser found no valid NDJSON records. Confirm the file is `measurements.ndjson` or `hivescale-sd-data.tar` and not empty or truncated.
 
 ### SD import reports many duplicates
 
-This is expected when the device was online: those readings already reached the
-backend over the network, so the SD backup overlaps with stored data. Only the
-genuinely new (offline/off-grid) readings count toward `inserted`.
+Expected when the device was online: those readings already reached HiveHub. Only offline readings count toward `inserted`.
