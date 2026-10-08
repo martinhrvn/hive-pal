@@ -1,13 +1,21 @@
 import { FormEvent, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/context/auth-context';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import {
+  useNavigate,
+  Link,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PublicFooter } from '@/components/layout/public-footer';
+import { getAuthConfig } from '@/lib/auth-config';
+import { SsoButton, SsoDivider } from '@/components/auth/sso-button';
+import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -24,6 +32,9 @@ const RegisterPage = () => {
   const { register, isLoggedIn } = useAuth();
   const redirectTo = (location.state as { from?: { pathname?: string } })?.from
     ?.pathname;
+  const [searchParams] = useSearchParams();
+  const ssoError = useSsoErrorMessage(searchParams.get('error'));
+  const { oidcAllowSignup, localLoginEnabled } = getAuthConfig();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -92,138 +103,158 @@ const RegisterPage = () => {
           <h2 className="text-lg text-green-200">{t('register.title')}</h2>
         </div>
 
-        {error && (
+        {(error || ssoError) && (
           <div className="text-red-300 text-sm bg-red-900/30 rounded p-2 mb-4 text-center">
-            {error}
+            {error || ssoError}
           </div>
         )}
 
         <div className="backdrop-blur-md bg-white/10 py-8 px-4 shadow-2xl rounded-xl sm:px-10 border border-white/20">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <Label htmlFor="email" className="text-white/90">
-                {t('register.email')}
-              </Label>
-              <div className="mt-1">
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder={t('register.emailPlaceholder')}
-                  className="bg-white/90 border-white/30 placeholder:text-gray-500"
-                />
-              </div>
+          {oidcAllowSignup && (
+            <div className={localLoginEnabled ? 'mb-6 space-y-6' : ''}>
+              <SsoButton
+                mode="signUp"
+                redirectTo={redirectTo}
+                errorPath="/register"
+                className="bg-green-600 hover:bg-green-700 text-white"
+              />
+              {localLoginEnabled && <SsoDivider label={t('sso.or')} />}
             </div>
+          )}
 
-            <div>
-              <Label htmlFor="name" className="text-white/90">
-                {t('register.displayName')}
-              </Label>
-              <div className="mt-1">
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder={t('register.displayNamePlaceholder')}
-                  className="bg-white/90 border-white/30 placeholder:text-gray-500"
-                />
+          {!localLoginEnabled && !oidcAllowSignup && (
+            <p className="text-white/80 text-center">
+              {t('sso.registrationClosed')}
+            </p>
+          )}
+
+          {localLoginEnabled && (
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <Label htmlFor="email" className="text-white/90">
+                  {t('register.email')}
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder={t('register.emailPlaceholder')}
+                    className="bg-white/90 border-white/30 placeholder:text-gray-500"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="password" className="text-white/90">
-                {t('register.password')}
-              </Label>
-              <div className="mt-1">
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="bg-white/90 border-white/30 placeholder:text-gray-500"
-                />
+              <div>
+                <Label htmlFor="name" className="text-white/90">
+                  {t('register.displayName')}
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder={t('register.displayNamePlaceholder')}
+                    className="bg-white/90 border-white/30 placeholder:text-gray-500"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="confirmPassword" className="text-white/90">
-                {t('register.confirmPassword')}
-              </Label>
-              <div className="mt-1">
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  className="bg-white/90 border-white/30 placeholder:text-gray-500"
-                />
+              <div>
+                <Label htmlFor="password" className="text-white/90">
+                  {t('register.password')}
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="bg-white/90 border-white/30 placeholder:text-gray-500"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* GDPR Consent Checkboxes */}
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <Checkbox
-                  id="privacy-consent"
-                  checked={privacyPolicyConsent}
-                  onCheckedChange={checked =>
-                    setPrivacyPolicyConsent(checked as boolean)
-                  }
-                  className="mt-1"
-                />
-                <Label
-                  htmlFor="privacy-consent"
-                  className="text-white/90 text-sm leading-relaxed cursor-pointer"
-                >
-                  {t('register.consent.privacyPolicy')}{' '}
-                  <Link
-                    to="/privacy-policy"
-                    target="_blank"
-                    className="text-green-300 hover:text-green-200 underline"
+              <div>
+                <Label htmlFor="confirmPassword" className="text-white/90">
+                  {t('register.confirmPassword')}
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    className="bg-white/90 border-white/30 placeholder:text-gray-500"
+                  />
+                </div>
+              </div>
+
+              {/* GDPR Consent Checkboxes */}
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="privacy-consent"
+                    checked={privacyPolicyConsent}
+                    onCheckedChange={checked =>
+                      setPrivacyPolicyConsent(checked as boolean)
+                    }
+                    className="mt-1"
+                  />
+                  <Label
+                    htmlFor="privacy-consent"
+                    className="text-white/90 text-sm leading-relaxed cursor-pointer"
                   >
-                    {t('register.consent.privacyPolicyLink')}
-                  </Link>
-                  {' *'}
-                </Label>
+                    {t('register.consent.privacyPolicy')}{' '}
+                    <Link
+                      to="/privacy-policy"
+                      target="_blank"
+                      className="text-green-300 hover:text-green-200 underline"
+                    >
+                      {t('register.consent.privacyPolicyLink')}
+                    </Link>
+                    {' *'}
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="newsletter-consent"
+                    checked={newsletterConsent}
+                    onCheckedChange={checked =>
+                      setNewsletterConsent(checked as boolean)
+                    }
+                    className="mt-1"
+                  />
+                  <Label
+                    htmlFor="newsletter-consent"
+                    className="text-white/90 text-sm leading-relaxed cursor-pointer"
+                  >
+                    {t('register.consent.newsletter')}
+                  </Label>
+                </div>
               </div>
 
-              <div className="flex items-start space-x-3">
-                <Checkbox
-                  id="newsletter-consent"
-                  checked={newsletterConsent}
-                  onCheckedChange={checked =>
-                    setNewsletterConsent(checked as boolean)
-                  }
-                  className="mt-1"
-                />
-                <Label
-                  htmlFor="newsletter-consent"
-                  className="text-white/90 text-sm leading-relaxed cursor-pointer"
+              <div>
+                <Button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                  data-umami-event="Register"
                 >
-                  {t('register.consent.newsletter')}
-                </Label>
+                  {t('register.submit')}
+                </Button>
               </div>
-            </div>
-
-            <div>
-              <Button
-                type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg"
-                data-umami-event="Register"
-              >
-                {t('register.submit')}
-              </Button>
-            </div>
-          </form>
+            </form>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-white/80">

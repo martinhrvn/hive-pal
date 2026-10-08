@@ -6,6 +6,7 @@ export interface AuthUser {
   name?: string | null;
   role?: string | null;
   passwordChangeRequired?: boolean;
+  consentRequired?: boolean;
 }
 
 interface AuthContextType {
