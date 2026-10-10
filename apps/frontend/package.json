@@ -75,7 +75,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.5",
+    "@eslint/js": "^10.0.1",
     "@playwright/experimental-ct-react": "catalog:playwright",
     "@playwright/test": "catalog:playwright",
     "@tanstack/eslint-plugin-query": "^5.104.1",
@@ -87,9 +87,9 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^5.2.0",
     "autoprefixer": "^10.6.1",
-    "eslint": "^9.39.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.26",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
     "jsdom": "^24.1.3",
     "postcss": "^8.5.29",

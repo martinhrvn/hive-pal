@@ -24,6 +24,17 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // eslint-plugin-react-hooks 6+ ships the React Compiler rules in its
+      // recommended preset. The codebase predates them and is not compiled, so
+      // the ones that fire at volume are off for now; revisit when adopting the
+      // compiler. rules-of-hooks / exhaustive-deps stay on.
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/static-components': 'off',
+      'react-hooks/purity': 'off',
+      'react-hooks/refs': 'off',
+      'react-hooks/immutability': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+      'react-hooks/incompatible-library': 'off',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

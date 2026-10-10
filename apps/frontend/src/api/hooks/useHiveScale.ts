@@ -1110,7 +1110,9 @@ export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
             error.response.data.file_device_ids ?? [],
           );
         }
-        throw new Error(hiveHubErrorMessage(error, 'SD import failed'));
+        throw new Error(hiveHubErrorMessage(error, 'SD import failed'), {
+          cause: error,
+        });
       }
     },
     onSuccess: () => {
@@ -1146,7 +1148,9 @@ export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
         );
         return response.data;
       } catch (error) {
-        throw new Error(hiveHubErrorMessage(error, 'Firmware upload failed'));
+        throw new Error(hiveHubErrorMessage(error, 'Firmware upload failed'), {
+          cause: error,
+        });
       }
     },
     onSuccess: () => {
@@ -1235,7 +1239,9 @@ export const useApproveHiveScaleFirmware = (deviceId: string | undefined) => {
               : typeof data === 'string'
                 ? data
                 : undefined) ?? error.message;
-          throw new Error(message || 'Firmware approval failed');
+          throw new Error(message || 'Firmware approval failed', {
+            cause: error,
+          });
         }
         throw error;
       }
@@ -1286,7 +1292,7 @@ const useQueueRelayUpdate = (
         );
         return response.data;
       } catch (error) {
-        throw new Error(hiveHubErrorMessage(error, fallback));
+        throw new Error(hiveHubErrorMessage(error, fallback), { cause: error });
       }
     },
     onSuccess: () => {
@@ -1339,6 +1345,7 @@ export const useStartHiveScaleProvisioning = (deviceId: string | undefined) =>
       } catch (error) {
         throw new Error(
           hiveHubErrorMessage(error, 'Could not queue AP mode for the hub'),
+          { cause: error },
         );
       }
     },
@@ -1427,7 +1434,7 @@ const useInspectionMutation = <TInput>(
       try {
         return await request(input);
       } catch (error) {
-        throw new Error(hiveHubErrorMessage(error, fallback));
+        throw new Error(hiveHubErrorMessage(error, fallback), { cause: error });
       }
     },
     onSuccess: () => {
@@ -1560,6 +1567,7 @@ export const useRequestHiveScaleRecording = (deviceId: string | undefined) => {
         } catch (error) {
           throw new Error(
             hiveHubErrorMessage(error, 'Could not request a recording'),
+            { cause: error },
           );
         }
       },
@@ -1583,6 +1591,7 @@ export const useDeleteHiveScaleRecording = (deviceId: string | undefined) => {
       } catch (error) {
         throw new Error(
           hiveHubErrorMessage(error, 'Could not delete the recording'),
+          { cause: error },
         );
       }
     },
@@ -1670,6 +1679,7 @@ export const useDeleteHiveScaleMeasurements = (
       } catch (error) {
         throw new Error(
           hiveHubErrorMessage(error, 'Could not delete the readings'),
+          { cause: error },
         );
       }
     },

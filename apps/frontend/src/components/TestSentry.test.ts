@@ -200,7 +200,7 @@ describe('TestSentry integration with safeJsonParse', () => {
   describe('Comparison with old unsafe behavior', () => {
     it('should be safer than JSON.parse with try-catch', () => {
       // Old way: JSON.parse in try-catch
-      let oldResult = null;
+      let oldResult: unknown;
       try {
         oldResult = JSON.parse('invalid json');
       } catch {
