@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Workbox } from 'workbox-window';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -13,38 +13,63 @@ const TOAST_ID = 'pwa-update-available';
 
 /**
  * Registers the service worker and offers the user a new version once one has
- * been deployed. This is the app's single registration point — see main.tsx.
+ * been deployed. This is the app's single registration point — see
+ * entry.client.tsx.
  *
- * The worker is built in 'prompt' mode, so a new version installs and then
- * waits: nothing changes under the user's feet until they accept here.
+ * The worker is built without `skipWaiting` (scripts/finalize-client-build.ts),
+ * so a new version installs and then waits: nothing changes under the user's
+ * feet until they accept here, which sends SKIP_WAITING and reloads once the
+ * new worker is in control.
  */
 export function PWAUpdatePrompt() {
   const { t } = useTranslation();
-  const {
-    needRefresh: [needRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    immediate: true,
-    onRegisteredSW(swUrl, registration) {
-      if (!registration) return;
+  const workboxRef = useRef<Workbox | null>(null);
+  const [needRefresh, setNeedRefresh] = useState(false);
 
-      if (import.meta.env.PROD) {
-        window.setInterval(() => {
-          registration.update().catch(() => {
-            // Offline or a transient network error — retry on the next tick.
-          });
-        }, UPDATE_CHECK_INTERVAL_MS);
-      }
+  useEffect(() => {
+    if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
 
-      console.debug('[PWA] service worker registered:', swUrl);
-    },
-    onRegisterError(error) {
-      console.error('[PWA] service worker registration error', error);
-    },
-    onOfflineReady() {
-      console.debug('[PWA] app ready to work offline');
-    },
-  });
+    let cancelled = false;
+    // Loaded on demand: workbox-window is browser-only and must stay out of
+    // the server render of the public pages.
+    void import('workbox-window').then(({ Workbox }) => {
+      if (cancelled) return;
+      const wb = new Workbox('/sw.js');
+      workboxRef.current = wb;
+
+      // A new worker is installed and waiting for the user's go-ahead.
+      wb.addEventListener('waiting', () => setNeedRefresh(true));
+      wb.addEventListener('activated', event => {
+        if (!event.isUpdate) console.debug('[PWA] app ready to work offline');
+      });
+
+      wb.register()
+        .then(registration => {
+          if (!registration) return;
+          window.setInterval(() => {
+            registration.update().catch(() => {
+              // Offline or a transient network error — retry on the next tick.
+            });
+          }, UPDATE_CHECK_INTERVAL_MS);
+          console.debug('[PWA] service worker registered:', '/sw.js');
+        })
+        .catch(error => {
+          console.error('[PWA] service worker registration error', error);
+        });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const updateServiceWorker = useCallback(() => {
+    const wb = workboxRef.current;
+    if (!wb) return;
+    // Reload once the waiting worker has taken control of the page.
+    wb.addEventListener('controlling', () => window.location.reload());
+    wb.messageSkipWaiting();
+  }, []);
 
   useEffect(() => {
     if (!needRefresh) return;
@@ -54,8 +79,7 @@ export function PWAUpdatePrompt() {
       duration: Infinity,
       action: {
         label: t('pwa.reload', 'Reload'),
-        // `true` activates the waiting worker and reloads the page.
-        onClick: () => updateServiceWorker(true),
+        onClick: updateServiceWorker,
       },
     });
   }, [needRefresh, updateServiceWorker, t]);

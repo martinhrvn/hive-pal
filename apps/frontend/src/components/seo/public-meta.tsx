@@ -1,6 +1,6 @@
-import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { usePrerender } from '@/context/prerender-context';
 import {
   DEFAULT_LANGUAGE,
   getAlternates,
@@ -8,6 +8,7 @@ import {
   isPublicPathTranslated,
   isSupportedLanguage,
   normalizeLanguageCode,
+  stripLanguagePrefix,
 } from '@/utils/language-utils';
 
 interface PublicMetaProps {
@@ -24,8 +25,12 @@ interface PublicMetaProps {
 
 /**
  * SEO head for public, multilingual pages. Emits title/description, a
- * language-aware canonical URL, a full set of `hreflang` alternates (plus
- * x-default), `<html lang>`, and Open Graph / Twitter tags.
+ * language-aware canonical URL, `hreflang` alternates (plus x-default), and
+ * Open Graph / Twitter tags. React 19 hoists `<title>`, `<meta>` and `<link>`
+ * into `<head>` wherever they are rendered, on the server and the client alike,
+ * so no head-management library is needed. `<html lang>` is set by the root
+ * layout from the URL. The route module of every page using this component
+ * exports `meta = () => []` so the site-wide defaults do not duplicate these.
  *
  * The canonical for English is the unprefixed URL; other languages canonicalize
  * to their `/<lang>` URL. This is what makes the prerendered, language-prefixed
@@ -43,6 +48,7 @@ export function PublicMeta({
 }: PublicMetaProps) {
   const { lang } = useParams<{ lang: string }>();
   const { i18n } = useTranslation();
+  const prerender = usePrerender();
   const currentLang =
     lang && isSupportedLanguage(lang)
       ? lang
@@ -55,13 +61,23 @@ export function PublicMeta({
     ? currentLang
     : DEFAULT_LANGUAGE;
   const canonical = getCanonicalUrl(path, canonicalLang);
-  const alternates = getAlternates(path);
+
+  // Only advertise alternates that are real, indexable documents (reciprocal
+  // with the sitemap). The prerender knows which languages this page is emitted
+  // in; after a client-side navigation to another page the full set is used.
+  const neutralPath = stripLanguagePrefix(path);
+  const availableLangs =
+    prerender && prerender.path === neutralPath
+      ? new Set([...prerender.availableLangs, 'x-default'])
+      : null;
+  const alternates = getAlternates(path).filter(
+    alt => availableLangs === null || availableLangs.has(alt.hreflang),
+  );
   const og = ogTitle ?? title;
   const ogDesc = ogDescription ?? description;
 
   return (
-    <Helmet>
-      <html lang={currentLang} />
+    <>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
@@ -84,10 +100,15 @@ export function PublicMeta({
       <meta property="twitter:description" content={ogDesc} />
       {ogImage && <meta property="twitter:image" content={ogImage} />}
       {structuredData && (
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
+        // JSON-LD is valid anywhere in the document; React does not hoist
+        // inline scripts, so it stays where the page renders it.
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
+          }}
+        />
       )}
-    </Helmet>
+    </>
   );
 }

@@ -12,7 +12,11 @@ interface ImageDisplayState {
 }
 
 export const useImageDisplayStore = create<ImageDisplayState>(set => {
-  const stored = localStorage.getItem(STORAGE_KEY) as ImageDisplayMode | null;
+  // No storage while prerendering on the server.
+  const stored =
+    typeof localStorage === 'undefined'
+      ? null
+      : (localStorage.getItem(STORAGE_KEY) as ImageDisplayMode | null);
   const initial: ImageDisplayMode =
     stored && MODES.includes(stored) ? stored : 'side';
 

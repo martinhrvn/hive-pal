@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default tseslint.config(
-  { ignores: ['dist', 'dist-ssr', 'src/components/ui/**', 'playwright/**'] },
+  {
+    ignores: ['dist', '.react-router', 'src/components/ui/**', 'playwright/**'],
+  },
   {
     extends: [
       js.configs.recommended,
@@ -28,6 +30,14 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+    },
+  },
+  {
+    // React Router route modules export `meta`, `ErrorBoundary` etc. next to
+    // the component by design; Fast Refresh handles them.
+    files: ['src/root.tsx', 'src/route-modules/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
     },
   },
 );

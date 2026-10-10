@@ -21,6 +21,24 @@ pnpm dev
 
 The frontend talks to the HivePal backend API. In local development, configure the backend URL through the existing frontend environment settings used by the app.
 
+## Routing, build and the prerendered public pages
+
+The app runs in [React Router framework mode](https://reactrouter.com/start/framework/installation) as a single-page app (`ssr: false` in `react-router.config.ts`). `src/routes.ts` is the route table; every entry points at a thin module in `src/route-modules/` that re-exports the page component from `src/pages/`. `src/root.tsx` is the HTML document (what used to be `index.html`), `src/entry.client.tsx` boots the browser app.
+
+The public marketing/tool pages are additionally prerendered to static HTML at build time, once per language they are translated in, so search engines get real, localized documents:
+
+- `src/routes/public-routes.ts` lists the public paths and the per-page translation markers (single source of truth, shared with the route table and the page metadata).
+- `src/routes/public-routes.server.ts` turns that plus `public/locales/` into the prerender plan and the sitemap.
+- `src/entry.server.tsx` renders each page with that language's translations and embeds the bundles it used, so the browser hydrates the page with identical markup.
+- `scripts/finalize-client-build.ts` (run from `buildEnd`) lays the output out for the backend: `dist/client/index.html` is the SPA shell, `dist/client/__prerender/<path>/index.html` are the prerendered pages, plus `sitemap.xml` and the service worker (`sw.js`, built with workbox-build).
+
+The backend serves `dist/client`: logged-out visitors get the prerendered page when one exists, everything else (and every logged-in visitor) gets the shell. See `apps/backend/src/prerender-fallback.middleware.ts`.
+
+```bash
+pnpm build       # react-router build: client build, prerender, finalize
+pnpm typecheck   # react-router typegen && tsc -b
+```
+
 ## HiveScale frontend integration
 
 HiveScale UI lives under `apps/frontend/src/pages/hivescale/` and is reachable from the `/hivescale` route.
@@ -32,7 +50,7 @@ Important files:
 | `src/api/hooks/useHiveScale.ts` | TanStack Query hooks and TypeScript types for HiveScale proxy APIs |
 | `src/pages/hivescale/hivescale-page.tsx` | Main device list, claim form, latest readings, config, calibration, sharing, and off-grid status UI |
 | `src/pages/hivescale/hivescale-diagram-panel.tsx` | Historical charts for weight, temperature, battery, solar, and cellular telemetry |
-| `src/routes/index.tsx` | Route registration for `/hivescale` |
+| `src/routes.ts` | Route registration for `/hivescale` |
 
 The frontend never calls the HiveScale FastAPI service directly. All calls go through the HivePal backend under `/api/hivescale/...`, where the backend attaches `X-HivePal-Service-Key` and `X-User-Id`.
 
