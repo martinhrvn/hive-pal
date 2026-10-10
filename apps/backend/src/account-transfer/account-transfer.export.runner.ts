@@ -4,7 +4,7 @@ import * as fs from 'node:fs/promises';
 import { createReadStream, createWriteStream } from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import { CURRENT_EXPORT_VERSION } from 'shared-schemas';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -113,7 +113,7 @@ export class AccountTransferExportRunner {
     userEmail: string,
     outputPath: string,
   ): Promise<ExportStats> {
-    const archive = archiver('zip', { zlib: { level: 6 } });
+    const archive = new ZipArchive({ zlib: { level: 6 } });
     const output = createWriteStream(outputPath);
     const finished = new Promise<void>((resolve, reject) => {
       output.on('close', () => resolve());
@@ -176,7 +176,7 @@ export class AccountTransferExportRunner {
 
   private async exportApiary(
     apiaryId: string,
-    archive: archiver.Archiver,
+    archive: ZipArchive,
     stats: ExportStats,
   ): Promise<unknown> {
     const apiary = await this.prisma.apiary.findUniqueOrThrow({
@@ -597,7 +597,7 @@ export class AccountTransferExportRunner {
   }
 
   private async appendFromStorage(
-    archive: archiver.Archiver,
+    archive: ZipArchive,
     storageKey: string,
     name: string,
   ): Promise<boolean> {
