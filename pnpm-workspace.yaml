@@ -8,10 +8,10 @@ catalogs:
   zod:
     zod: ^3.25.76
   prisma:
-    prisma: latest
-    '@prisma/client': latest
+    prisma: 7.10.0
+    '@prisma/client': 7.10.0
   typescript:
-    typescript: 5.9.X
+    typescript: 5.9.x
   playwright:
     '@playwright/test': 1.58.2
     '@playwright/experimental-ct-react': 1.58.2
