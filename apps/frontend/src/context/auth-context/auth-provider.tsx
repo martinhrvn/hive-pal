@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/context/auth-context/auth-context.ts';
 import { authClient, useSession } from '@/lib/auth-client';
+import { usePrerender } from '@/context/prerender-context';
 
 export const APIARY_SELECTION = 'hive_pal_apiary_selection';
 // When set to 'true', the app shows data across ALL of the user's apiaries
@@ -23,6 +24,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { data: session, isPending } = useSession();
   const user = session?.user ?? null;
   const isLoggedIn = !!user;
+
+  // A prerendered public page is a logged-out render by construction (the
+  // backend only serves it to visitors without a session cookie). Treat the
+  // very first session check as already resolved there, so the hydrating
+  // client render matches the server markup instead of flashing a spinner.
+  const prerendered = usePrerender() !== null;
+  const [settledOnce, setSettledOnce] = useState(false);
+  useEffect(() => {
+    if (!isPending) setSettledOnce(true);
+  }, [isPending]);
+  const isLoading = isPending && (settledOnce || !prerendered);
 
   // One-time cleanup of the legacy JWT token left over by the pre-Better-Auth client
   useEffect(() => {
@@ -102,12 +114,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     () => ({
       user,
       isLoggedIn,
-      isLoading: isPending,
+      isLoading,
       login,
       register,
       logout,
     }),
-    [user, isLoggedIn, isPending, login, register, logout],
+    [user, isLoggedIn, isLoading, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

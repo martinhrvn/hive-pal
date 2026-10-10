@@ -18,9 +18,13 @@ interface ApiaryState {
 
 export const useApiaryStore = create<ApiaryState>(set => {
   // Initialize from localStorage
-  const apiaryFromLocalStorage = localStorage.getItem(APIARY_SELECTION);
+  // No storage while prerendering on the server.
+  const hasStorage = typeof localStorage !== 'undefined';
+  const apiaryFromLocalStorage = hasStorage
+    ? localStorage.getItem(APIARY_SELECTION)
+    : null;
   const viewAllFromLocalStorage =
-    localStorage.getItem(VIEW_ALL_APIARIES) === 'true';
+    hasStorage && localStorage.getItem(VIEW_ALL_APIARIES) === 'true';
 
   return {
     activeApiaryId: apiaryFromLocalStorage || null,
@@ -79,7 +83,10 @@ export const useApiary = () => {
       if (viewAllApiaries) {
         setViewAllApiaries(false);
       }
-    } else if (!activeApiaryId || !apiaries.some(a => a.id === activeApiaryId)) {
+    } else if (
+      !activeApiaryId ||
+      !apiaries.some(a => a.id === activeApiaryId)
+    ) {
       // No selection or stale selection — set to first available. This keeps a
       // valid write target even while viewing all apiaries.
       setActiveApiaryId(apiaries[0].id);

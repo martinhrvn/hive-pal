@@ -28,12 +28,12 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    /* React Router's generated route types live next to the sources. */
+    "rootDirs": [".", "./.react-router/types"]
   },
   "include": [
-    "src"
-  ],
-  "types": [
-    "vite-plugin-pwa/client"
+    "src",
+    ".react-router/types/**/*"
   ]
 }

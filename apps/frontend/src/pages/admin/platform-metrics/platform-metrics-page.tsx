@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { Suspense, lazy, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import {
@@ -32,7 +32,14 @@ import {
 } from 'lucide-react';
 import { format, subDays, subMonths } from 'date-fns';
 import { PlatformMetricsTrendChart } from './components/platform-metrics-trend-chart';
-import { AllApiariesMap } from './components/all-apiaries-map';
+// Lazy: Leaflet touches `window` when imported, which would break the
+// server-side prerender of the public pages (every route module is part of
+// the server bundle), and the map is only needed on this admin page anyway.
+const AllApiariesMap = lazy(() =>
+  import('./components/all-apiaries-map').then(m => ({
+    default: m.AllApiariesMap,
+  })),
+);
 
 type DateRange = '7d' | '30d' | '90d' | '6m' | '1y' | 'all';
 
@@ -311,7 +318,9 @@ const PlatformMetricsPage: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AllApiariesMap />
+          <Suspense fallback={null}>
+            <AllApiariesMap />
+          </Suspense>
         </CardContent>
       </Card>
     </div>

@@ -1,16 +1,11 @@
 import * as Sentry from '@sentry/react';
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { HelmetProvider } from 'react-helmet-async';
-import './index.css';
+import { startTransition, StrictMode } from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { HydratedRouter } from 'react-router/dom';
+import { PrerenderContext } from '@/context/prerender-context';
+import { readPrerenderPayload } from '@/lib/i18n-client';
 import './lib/i18n';
 import { initFaro } from './lib/faro';
-import App from './App.tsx';
-
-// The service worker is registered exactly once, from PWAUpdatePrompt (rendered
-// by App), because that component also needs the registration's update state.
-// Registering here as well would create a second Workbox instance with its own
-// listeners, which made update detection unreliable.
 
 // Handle chunk load errors from version skew (new deploy with old chunks cached)
 window.addEventListener('vite:preloadError', () => {
@@ -40,10 +35,22 @@ Sentry.init({
 // No-op unless VITE_FARO_URL is configured.
 initFaro();
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <HelmetProvider>
-      <App />
-    </HelmetProvider>
-  </StrictMode>,
-);
+// The service worker is registered exactly once, from PWAUpdatePrompt (rendered
+// by the root route), because that component also needs the registration's
+// update state.
+
+// A prerendered public page ships the data its server render used (language,
+// translation bundles, available languages) so the first client render matches
+// the markup byte for byte; see entry.server.tsx.
+const prerender = readPrerenderPayload();
+
+startTransition(() => {
+  hydrateRoot(
+    document,
+    <StrictMode>
+      <PrerenderContext.Provider value={prerender}>
+        <HydratedRouter />
+      </PrerenderContext.Provider>
+    </StrictMode>,
+  );
+});
