@@ -1,12 +1,6 @@
 import { Link, Outlet } from 'react-router-dom';
-import {
-  Github,
-  BookOpen,
-  Beaker,
-  Bug,
-  Waypoints,
-  Microscope,
-} from 'lucide-react';
+import { BookOpen, Beaker, Bug, Waypoints, Microscope } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 
@@ -143,7 +137,7 @@ export const PublicLayout = () => {
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white text-sm inline-flex items-center gap-1"
                   >
-                    <Github className="h-4 w-4" />
+                    <GithubIcon className="h-4 w-4" />
                     GitHub
                   </a>
                 </li>

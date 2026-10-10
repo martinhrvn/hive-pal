@@ -56,7 +56,11 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
   const { t } = useTranslation(['hive', 'common']);
   const { mutate: updateHive, isPending } = useUpdateHive();
 
-  const form = useForm<HiveSettingsFormData>({
+  const form = useForm<
+    z.input<typeof hiveSettingsSchema>,
+    unknown,
+    HiveSettingsFormData
+  >({
     resolver: zodResolver(hiveSettingsSchema),
     defaultValues: {
       settings: hive?.settings || defaultHiveSettings,

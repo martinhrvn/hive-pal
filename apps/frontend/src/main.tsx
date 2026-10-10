@@ -32,7 +32,14 @@ const sentryEnv =
 Sentry.init({
   dsn: sentryDsn,
   environment: sentryEnv,
-  sendDefaultPii: true,
+  // Sentry 11 replaced sendDefaultPii with per-category switches that default
+  // to "collect". userInfo keeps the previous IP/user capture; the GenAI
+  // category is new in v11 and stays off so assistant prompts never leave the
+  // browser with an error report.
+  dataCollection: {
+    userInfo: true,
+    genAI: { inputs: false, outputs: false },
+  },
   sendClientReports: true,
 });
 

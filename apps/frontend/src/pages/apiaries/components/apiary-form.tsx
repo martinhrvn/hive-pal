@@ -70,14 +70,16 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
   const createPhoto = useCreatePhoto();
   const [featurePhotoUrl, setFeaturePhotoUrl] = useState<string | null>(null);
 
-  const form = useForm<ApiaryFormData>({
-    resolver: zodResolver(apiariesSchema),
-    defaultValues: {
-      name: '',
-      location: '',
-      settings: { inspectionType: 'data_driven' },
+  const form = useForm<z.input<typeof apiariesSchema>, unknown, ApiaryFormData>(
+    {
+      resolver: zodResolver(apiariesSchema),
+      defaultValues: {
+        name: '',
+        location: '',
+        settings: { inspectionType: 'data_driven' },
+      },
     },
-  });
+  );
 
   useEffect(() => {
     if (existingApiary) {

@@ -12,8 +12,8 @@ import {
   Beaker,
   ArrowUpRight,
   Rocket,
-  Github,
 } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { PublicMeta } from '@/components/seo/public-meta';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
@@ -216,7 +216,7 @@ export function FeaturesPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.features.hero.ctaSelfHost')}
               </a>
             </Button>
@@ -451,7 +451,7 @@ export function FeaturesPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.features.cta.github')}
               </a>
             </Button>

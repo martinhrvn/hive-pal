@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Github, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 import { sans } from './marketing-styles';
@@ -99,7 +100,7 @@ export function MarketingHeader() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 transition-colors hover:text-stone-900"
           >
-            <Github className="h-4 w-4" />
+            <GithubIcon className="h-4 w-4" />
             {t('marketing.nav.github')}
           </a>
         </nav>
@@ -246,7 +247,7 @@ export function MarketingFooter() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-amber-50/75 hover:text-amber-50"
                 >
-                  <Github className="h-4 w-4" />
+                  <GithubIcon className="h-4 w-4" />
                   {t('marketing.footer.github')}
                 </a>
               </li>

@@ -118,7 +118,11 @@ export const ScheduleInspectionPage = () => {
       enabled: !!primaryApiaryId,
     });
 
-  const form = useForm<ScheduleFormData>({
+  const form = useForm<
+    z.input<typeof scheduleSchema>,
+    unknown,
+    ScheduleFormData
+  >({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
       hiveIds: [],

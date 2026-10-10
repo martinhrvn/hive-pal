@@ -11,7 +11,6 @@ import {
   MarketingFooter,
 } from '@/components/marketing/marketing-chrome';
 import {
-  Github,
   BookOpen,
   Rocket,
   Mic,
@@ -24,6 +23,7 @@ import {
   ShieldCheck,
   ArrowUpRight,
 } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 
 // Structure (ids/icons) lives in code; copy comes from i18n under `marketing.*`.
 const PILLAR_KEYS = ['apiary', 'inspections', 'queen', 'harvest'] as const;
@@ -178,7 +178,7 @@ export function LandingPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.landing.hero.ctaSelfHost')}
               </a>
             </Button>
@@ -606,7 +606,7 @@ export function LandingPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.landing.cta.github')}
               </a>
             </Button>
