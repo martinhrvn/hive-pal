@@ -11,8 +11,8 @@
     "dev": "tsup --watch"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "tsup": "^8.0.0"
+    "tsup": "^8.5.1",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "@playwright/test": "catalog:playwright"
