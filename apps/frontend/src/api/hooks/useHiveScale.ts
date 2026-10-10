@@ -703,10 +703,7 @@ export const useHiveScaleInsightsHistory = (
 };
 
 export type HiveScaleInsightSeverity =
-  | 'info'
-  | 'watch'
-  | 'warning'
-  | 'critical';
+  'info' | 'watch' | 'warning' | 'critical';
 
 export type HiveScaleInsightCategory =
   | 'swarm'
@@ -1012,10 +1009,7 @@ export const useStopHiveScaleCalibrationMode = (
 // 'hivescale'). The HiveHub backend accepts the 'hivehub' alias; the legacy
 // 'hivescale' value stays valid for older clients.
 export type HiveScaleFirmwareTarget =
-  | 'hivehub'
-  | 'hivescale'
-  | 'beecounter'
-  | 'hiveinside';
+  'hivehub' | 'hivescale' | 'beecounter' | 'hiveinside';
 
 export type HiveScaleFirmwareBoard = 'esp32' | 'esp32-c6' | 'nrf54lm20a';
 
@@ -1490,10 +1484,7 @@ export const useUpdateHiveScaleInspection = (deviceId: string | undefined) =>
 // ── Hive audio recordings ──────────────────────────────────────────────────
 
 export type HiveScaleRecordingStatus =
-  | 'requested'
-  | 'streaming'
-  | 'ready'
-  | 'failed';
+  'requested' | 'streaming' | 'ready' | 'failed';
 
 export interface HiveScaleRecording {
   id: number;

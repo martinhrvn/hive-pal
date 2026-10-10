@@ -1,10 +1,7 @@
 import { addDays, differenceInCalendarDays } from 'date-fns';
 
 export type DemareeCheckpointId =
-  | 'setup'
-  | 'queenCellCheck'
-  | 'secondQueenCellCheck'
-  | 'colonyReview';
+  'setup' | 'queenCellCheck' | 'secondQueenCellCheck' | 'colonyReview';
 
 export interface DemareeCheckpointTemplate {
   id: DemareeCheckpointId;
@@ -19,9 +16,7 @@ export interface DemareeCheckpointPlan extends DemareeCheckpointTemplate {
 }
 
 export type DemareeWarningCode =
-  | 'lateQueenCellCheck'
-  | 'unsafeCheckpointSpacing'
-  | 'illogicalScheduleOrder';
+  'lateQueenCellCheck' | 'unsafeCheckpointSpacing' | 'illogicalScheduleOrder';
 
 export interface DemareeWarning {
   code: DemareeWarningCode;

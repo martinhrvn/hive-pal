@@ -20,10 +20,13 @@ export const HivesLayout = ({
   inspectionType = 'data_driven',
 }: HivesLayoutProps) => {
   const { t } = useTranslation('hive');
-  const { data: rawHives = [], refetch } = useHivesWithBoxes({ apiaryId, includeInactive: true });
+  const { data: rawHives = [], refetch } = useHivesWithBoxes({
+    apiaryId,
+    includeInactive: true,
+  });
   const isSubjective = inspectionType === 'subjective';
   // Only ARCHIVED hives are hidden from the grid — all other statuses remain placeable
-  const allHives = rawHives.filter((h) => h.status !== 'ARCHIVED');
+  const allHives = rawHives.filter(h => h.status !== 'ARCHIVED');
   const updateHiveMutation = useUpdateHive();
   const [draggedHive, setDraggedHive] = useState<HiveWithBoxesResponse | null>(
     null,

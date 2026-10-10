@@ -44,7 +44,9 @@ const QueenTableRow: React.FC<{
       </TableCell>
     )}
     <TableCell>
-      <Badge variant={QUEEN_STATUS_VARIANTS[queen.status ?? 'UNKNOWN'] ?? 'outline'}>
+      <Badge
+        variant={QUEEN_STATUS_VARIANTS[queen.status ?? 'UNKNOWN'] ?? 'outline'}
+      >
         {queen.status}
       </Badge>
     </TableCell>
@@ -78,7 +80,7 @@ export const QueenTable: React.FC<QueenTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {queens.map((queen) => (
+        {queens.map(queen => (
           <QueenTableRow
             key={queen.id}
             queen={queen}

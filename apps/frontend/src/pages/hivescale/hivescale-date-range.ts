@@ -4,13 +4,7 @@
 // removed) diagram panel component.
 
 export type HiveScaleDateRangePreset =
-  | '24h'
-  | '7d'
-  | '30d'
-  | '365d'
-  | 'currentYear'
-  | 'all'
-  | 'custom';
+  '24h' | '7d' | '30d' | '365d' | 'currentYear' | 'all' | 'custom';
 
 export interface HiveScaleDateRange {
   preset: HiveScaleDateRangePreset;

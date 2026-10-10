@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, ArrowRight, Crown, History, Pencil, ArrowLeftRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ArrowRight,
+  Crown,
+  History,
+  Pencil,
+  ArrowLeftRight,
+} from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +23,11 @@ import {
 import { useQueenHistory } from '@/api/hooks';
 import { QueenTransferDialog } from './components/queen-transfer-dialog';
 import { QueenResponse } from 'shared-schemas';
-import { QUEEN_STATUS_VARIANTS, getQueenColorClass, getQueenDisplayName } from '@/lib/queen-utils';
+import {
+  QUEEN_STATUS_VARIANTS,
+  getQueenColorClass,
+  getQueenDisplayName,
+} from '@/lib/queen-utils';
 
 export const QueenDetailPage = () => {
   const { queenId } = useParams<{ queenId: string }>();
@@ -56,7 +67,9 @@ export const QueenDetailPage = () => {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className={`h-8 w-8 rounded-full border border-gray-400 ${colorClass}`} />
+              <div
+                className={`h-8 w-8 rounded-full border border-gray-400 ${colorClass}`}
+              />
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Crown className="h-5 w-5 text-amber-500" />
@@ -64,13 +77,18 @@ export const QueenDetailPage = () => {
                 </CardTitle>
                 {queen.hiveName && (
                   <p className="text-sm text-muted-foreground mt-1">
-                    Currently in: <span className="font-medium">{queen.hiveName}</span>
+                    Currently in:{' '}
+                    <span className="font-medium">{queen.hiveName}</span>
                   </p>
                 )}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant={QUEEN_STATUS_VARIANTS[queen.status ?? 'UNKNOWN'] ?? 'outline'}>
+              <Badge
+                variant={
+                  QUEEN_STATUS_VARIANTS[queen.status ?? 'UNKNOWN'] ?? 'outline'
+                }
+              >
                 {queen.status}
               </Badge>
             </div>
@@ -99,13 +117,19 @@ export const QueenDetailPage = () => {
             {queen.installedAt && (
               <div>
                 <p className="text-muted-foreground">Installed</p>
-                <p className="font-medium">{format(parseISO(queen.installedAt), 'PP')}</p>
+                <p className="font-medium">
+                  {format(parseISO(queen.installedAt), 'PP')}
+                </p>
               </div>
             )}
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Button variant="outline" size="sm" onClick={() => setTransferOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setTransferOpen(true)}
+            >
               <ArrowLeftRight className="mr-2 h-4 w-4" />
               Transfer Queen
             </Button>
@@ -143,14 +167,16 @@ export const QueenDetailPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {queen.movements.map((movement) => (
+                {queen.movements.map(movement => (
                   <TableRow key={movement.id}>
                     <TableCell className="text-sm">
                       {format(parseISO(movement.movedAt), 'PP')}
                     </TableCell>
                     <TableCell className="text-sm">
                       {movement.fromHiveName ?? (
-                        <span className="text-muted-foreground italic">None</span>
+                        <span className="text-muted-foreground italic">
+                          None
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -158,7 +184,9 @@ export const QueenDetailPage = () => {
                     </TableCell>
                     <TableCell className="text-sm">
                       {movement.toHiveName ?? (
-                        <span className="text-muted-foreground italic">Removed</span>
+                        <span className="text-muted-foreground italic">
+                          Removed
+                        </span>
                       )}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">

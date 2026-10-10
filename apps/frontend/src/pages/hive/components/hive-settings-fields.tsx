@@ -76,10 +76,7 @@ export function MonthSelectField<T extends FieldValues>({
               </SelectTrigger>
               <SelectContent>
                 {MONTHS.map(month => (
-                  <SelectItem
-                    key={month.value}
-                    value={month.value.toString()}
-                  >
+                  <SelectItem key={month.value} value={month.value.toString()}>
                     {t(`months.${month.key}`)}
                   </SelectItem>
                 ))}

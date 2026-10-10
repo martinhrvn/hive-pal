@@ -100,7 +100,7 @@ const getWeatherIcon = (condition: string) => {
 const formatWeatherCondition = (c: string) =>
   c
     .split('-')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
 
 export const InspectionHeader = ({
@@ -131,7 +131,10 @@ export const InspectionHeader = ({
       )}
     >
       {/* faint amber wash */}
-      <div className="absolute inset-0 pointer-events-none bg-amber-500/[0.03]" aria-hidden />
+      <div
+        className="absolute inset-0 pointer-events-none bg-amber-500/[0.03]"
+        aria-hidden
+      />
 
       {/* Top stripe — overline + status */}
       <div className="relative px-5 @sm/insp:px-6 @lg/insp:px-8 pt-5 flex items-start justify-between gap-4">

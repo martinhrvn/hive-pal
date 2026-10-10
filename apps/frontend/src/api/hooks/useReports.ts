@@ -27,10 +27,9 @@ export const useApiaryTrends = (
   return useQuery({
     queryKey: ['reports', 'trends', apiaryId, period],
     queryFn: async () => {
-      const response = await apiClient.get<TrendData>(
-        `/api/reports/trends`,
-        { params: { period } },
-      );
+      const response = await apiClient.get<TrendData>(`/api/reports/trends`, {
+        params: { period },
+      });
       return response.data;
     },
     enabled: !!apiaryId,

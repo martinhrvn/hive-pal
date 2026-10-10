@@ -192,9 +192,7 @@ export function HiveHubSensorHealthCard({
     ): string | null => {
       for (const m of history) {
         const block = hiveOf(m, n)?.[group] as
-          | Record<string, unknown>
-          | null
-          | undefined;
+          Record<string, unknown> | null | undefined;
         const value = block?.[key];
         if (value != null && value !== '') return String(value);
       }

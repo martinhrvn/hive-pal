@@ -37,7 +37,8 @@ export const HiveSelect: React.FC<HiveSelectProps> = ({
   if (hives.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        {emptyMessage || t('noHivesAvailable', { defaultValue: 'No hives available' })}
+        {emptyMessage ||
+          t('noHivesAvailable', { defaultValue: 'No hives available' })}
       </p>
     );
   }
@@ -52,7 +53,7 @@ export const HiveSelect: React.FC<HiveSelectProps> = ({
         />
       </SelectTrigger>
       <SelectContent>
-        {hives.map((hive) => (
+        {hives.map(hive => (
           <SelectItem key={hive.id} value={hive.id}>
             {hive.name}
           </SelectItem>

@@ -160,7 +160,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                     max={365}
                     placeholder="7"
                     fallback={7}
-                    description={t('hive:settings.inspectionFrequencyDescription')}
+                    description={t(
+                      'hive:settings.inspectionFrequencyDescription',
+                    )}
                   />
 
                   <FormField

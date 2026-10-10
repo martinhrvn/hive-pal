@@ -38,7 +38,9 @@ export function MediaPreviewDialog({ item, onClose }: Props) {
         </DialogHeader>
 
         <div className="min-h-[200px] flex items-center justify-center bg-muted/30 rounded-md overflow-hidden">
-          {isLoading && <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />}
+          {isLoading && (
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          )}
           {!isLoading && url && isImage && (
             <img
               src={url}

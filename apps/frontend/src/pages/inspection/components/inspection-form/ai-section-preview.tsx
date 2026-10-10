@@ -34,7 +34,13 @@ export function AiSectionPreview({
         <div>
           <div className="text-sm font-medium">{title}</div>
           <div className="text-xs text-muted-foreground">{summary}</div>
-          <div className={hasConflict ? 'mt-1 text-xs text-amber-600' : 'mt-1 text-xs text-blue-600'}>
+          <div
+            className={
+              hasConflict
+                ? 'mt-1 text-xs text-amber-600'
+                : 'mt-1 text-xs text-blue-600'
+            }
+          >
             {hasConflict ? t('preview.conflictNote') : t('preview.contentNote')}
           </div>
         </div>
@@ -52,16 +58,28 @@ export function AiSectionPreview({
       {open && (
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           <div>
-            <div className="mb-1 text-xs text-muted-foreground">{t('preview.current')}</div>
+            <div className="mb-1 text-xs text-muted-foreground">
+              {t('preview.current')}
+            </div>
             <div className="min-h-20 rounded border bg-background p-2 text-sm">
-              {currentValue || <span className="italic text-muted-foreground">{t('preview.empty')}</span>}
+              {currentValue || (
+                <span className="italic text-muted-foreground">
+                  {t('preview.empty')}
+                </span>
+              )}
             </div>
           </div>
 
           <div>
-            <div className="mb-1 text-xs text-muted-foreground">{t('preview.ai')}</div>
+            <div className="mb-1 text-xs text-muted-foreground">
+              {t('preview.ai')}
+            </div>
             <div className="min-h-20 rounded border bg-background p-2 text-sm">
-              {suggestedValue || <span className="italic text-muted-foreground">{t('preview.empty')}</span>}
+              {suggestedValue || (
+                <span className="italic text-muted-foreground">
+                  {t('preview.empty')}
+                </span>
+              )}
             </div>
           </div>
         </div>

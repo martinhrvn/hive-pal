@@ -29,8 +29,7 @@ export const NoteForm: React.FC<NoteFormProps> = ({ onSave, onRemove }) => {
   const { getValues } = useFormContext<InspectionFormData>();
   const existingActions = getValues('actions') || [];
   const existingNote = existingActions.find(a => a.type === 'NOTE') as
-    | NoteActionType
-    | undefined;
+    NoteActionType | undefined;
 
   const [content, setContent] = useState(existingNote?.notes || '');
 
@@ -62,7 +61,9 @@ export const NoteForm: React.FC<NoteFormProps> = ({ onSave, onRemove }) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="note-content">{t('inspection:form.actions.note_section.noteContent')}</Label>
+          <Label htmlFor="note-content">
+            {t('inspection:form.actions.note_section.noteContent')}
+          </Label>
           <Textarea
             id="note-content"
             value={content}
@@ -72,7 +73,9 @@ export const NoteForm: React.FC<NoteFormProps> = ({ onSave, onRemove }) => {
             maxLength={500}
           />
           <p className="text-xs text-muted-foreground text-right">
-            {t('inspection:form.actions.note_section.characters', { count: content.length })}
+            {t('inspection:form.actions.note_section.characters', {
+              count: content.length,
+            })}
           </p>
         </div>
 

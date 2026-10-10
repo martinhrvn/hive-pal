@@ -137,7 +137,11 @@ export function MarketingFooter() {
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
             <Link to={localize('/')} className="flex items-center gap-3">
-              <img src="/hive-pal-logo.png" alt="Hive Pal" className="h-9 w-9" />
+              <img
+                src="/hive-pal-logo.png"
+                alt="Hive Pal"
+                className="h-9 w-9"
+              />
               <span
                 className="text-lg font-semibold text-amber-50"
                 style={sans}

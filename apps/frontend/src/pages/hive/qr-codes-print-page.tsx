@@ -270,7 +270,9 @@ export function QRCodesPrintPage() {
     }));
 
     const bytes = generateQR3MF(hiveEntries, physicalSizeMm);
-    const blob = new Blob([bytes], { type: 'application/vnd.ms-package.3dmanufacturing-3dmodel+xml' });
+    const blob = new Blob([bytes], {
+      type: 'application/vnd.ms-package.3dmanufacturing-3dmodel+xml',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -548,8 +550,8 @@ export function QRCodesPrintPage() {
               {outputMode === '3d' && (
                 <p className="mt-3 text-xs text-muted-foreground">
                   Each QR code will be {physicalSizeMm}mm × {physicalSizeMm}mm
-                  with a 1.2mm base and 0.8mm raised modules. Open the .3mf
-                  file in your slicer (Bambu Studio, PrusaSlicer, etc.).
+                  with a 1.2mm base and 0.8mm raised modules. Open the .3mf file
+                  in your slicer (Bambu Studio, PrusaSlicer, etc.).
                 </p>
               )}
             </div>

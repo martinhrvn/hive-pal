@@ -61,9 +61,15 @@ export function QuickAddMenu({
             <ClipboardCheck className="mr-2 h-4 w-4" />
             {t('quickAdd.quickCheck', { defaultValue: 'Quick Check' })}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => {
-            navigate(hiveId ? `/hives/${hiveId}/inspections/create` : '/inspections/create');
-          }}>
+          <DropdownMenuItem
+            onClick={() => {
+              navigate(
+                hiveId
+                  ? `/hives/${hiveId}/inspections/create`
+                  : '/inspections/create',
+              );
+            }}
+          >
             <ClipboardPlus className="mr-2 h-4 w-4" />
             {t('quickAdd.inspection', { defaultValue: 'Inspection' })}
           </DropdownMenuItem>

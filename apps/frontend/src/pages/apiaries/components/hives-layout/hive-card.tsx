@@ -71,9 +71,9 @@ export const HiveCard = ({
       {sortedBoxes.length > 0 ? (
         <div className="px-2 ">
           <div className="flex flex-col items-center space-y-0.5">
-             {sortedBoxes.map((box, index) => {
-               const height = getBoxHeight(box.variant, 'hive-card', box.type);
-               const defaultColor = '#CD853F';
+            {sortedBoxes.map((box, index) => {
+              const height = getBoxHeight(box.variant, 'hive-card', box.type);
+              const defaultColor = '#CD853F';
 
               return (
                 <div

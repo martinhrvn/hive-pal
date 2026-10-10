@@ -110,15 +110,11 @@ function TimelineBar({
   scaleToMax?: boolean;
 }) {
   const totalStages = beeData.totalDays + 1;
-  const barWidthPercent = scaleToMax
-    ? (totalStages / MAX_DAYS) * 100
-    : 100;
+  const barWidthPercent = scaleToMax ? (totalStages / MAX_DAYS) * 100 : 100;
 
   return (
     <div className={compact ? 'mb-3' : 'mb-2'}>
-      {label && (
-        <div className="text-sm font-medium mb-1.5">{label}</div>
-      )}
+      {label && <div className="text-sm font-medium mb-1.5">{label}</div>}
       <div
         className="flex h-3 rounded-full overflow-hidden"
         style={{ width: `${barWidthPercent}%` }}

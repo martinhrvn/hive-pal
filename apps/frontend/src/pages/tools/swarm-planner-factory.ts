@@ -1,11 +1,12 @@
 import { addDays, differenceInCalendarDays } from 'date-fns';
-import type { CheckpointPlan, CheckpointWarning, WarningCode } from './swarm-method-page-layout';
+import type {
+  CheckpointPlan,
+  CheckpointWarning,
+  WarningCode,
+} from './swarm-method-page-layout';
 
 export type SwarmCheckpointId =
-  | 'setup'
-  | 'queenCellCheck'
-  | 'secondQueenCellCheck'
-  | 'colonyReview';
+  'setup' | 'queenCellCheck' | 'secondQueenCellCheck' | 'colonyReview';
 
 export interface SwarmCheckpointTemplate {
   id: SwarmCheckpointId;

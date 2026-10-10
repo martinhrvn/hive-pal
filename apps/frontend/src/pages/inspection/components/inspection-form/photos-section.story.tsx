@@ -26,7 +26,10 @@ export const PhotosForNewInspection = () => {
   const [pending, setPending] = useState<PendingPhoto[]>([]);
   return (
     <div style={{ width: 640, padding: 16 }}>
-      <PhotosSection pendingPhotos={pending} onPendingPhotosChange={setPending} />
+      <PhotosSection
+        pendingPhotos={pending}
+        onPendingPhotosChange={setPending}
+      />
       <Toaster />
     </div>
   );

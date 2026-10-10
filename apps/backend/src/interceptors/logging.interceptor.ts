@@ -20,8 +20,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const controller = context.getClass().name;
     const handler = context.getHandler().name;
     const requestId: string | undefined = req['requestId'] as
-      | string
-      | undefined;
+      string | undefined;
 
     const start = Date.now();
 

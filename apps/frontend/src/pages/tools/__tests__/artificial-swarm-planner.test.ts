@@ -43,11 +43,17 @@ describe('Artificial Swarm Planner', () => {
       const plan = generateArtificialSwarmPlan(startDate);
 
       plan.forEach(checkpoint => {
-        expect(checkpoint.titleKey).toContain('swarmManagement.artificialSwarm.planner.checkpoints');
-        expect(checkpoint.summaryKey).toContain('swarmManagement.artificialSwarm.planner.checkpoints');
+        expect(checkpoint.titleKey).toContain(
+          'swarmManagement.artificialSwarm.planner.checkpoints',
+        );
+        expect(checkpoint.summaryKey).toContain(
+          'swarmManagement.artificialSwarm.planner.checkpoints',
+        );
         expect(checkpoint.checklistKeys.length).toBeGreaterThan(0);
         checkpoint.checklistKeys.forEach(key => {
-          expect(key).toContain('swarmManagement.artificialSwarm.planner.checkpoints');
+          expect(key).toContain(
+            'swarmManagement.artificialSwarm.planner.checkpoints',
+          );
         });
       });
     });
@@ -55,12 +61,13 @@ describe('Artificial Swarm Planner', () => {
 
   describe('getArtificialSwarmWarnings', () => {
     it('emits lateQueenCellCheck warning when gap exceeds 8 days', () => {
-      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] = [
-        { id: 'setup', date: new Date('2025-06-01') },
-        { id: 'queenCellCheck', date: new Date('2025-06-10') }, // 9 days gap
-        { id: 'secondQueenCellCheck', date: new Date('2025-06-17') },
-        { id: 'colonyReview', date: new Date('2025-06-24') },
-      ];
+      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] =
+        [
+          { id: 'setup', date: new Date('2025-06-01') },
+          { id: 'queenCellCheck', date: new Date('2025-06-10') }, // 9 days gap
+          { id: 'secondQueenCellCheck', date: new Date('2025-06-17') },
+          { id: 'colonyReview', date: new Date('2025-06-24') },
+        ];
 
       const warnings = getArtificialSwarmWarnings(checkpoints);
 
@@ -71,25 +78,29 @@ describe('Artificial Swarm Planner', () => {
     });
 
     it('does not emit lateQueenCellCheck warning when gap is 8 days or less', () => {
-      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] = [
-        { id: 'setup', date: new Date('2025-06-01') },
-        { id: 'queenCellCheck', date: new Date('2025-06-09') }, // 8 days gap
-        { id: 'secondQueenCellCheck', date: new Date('2025-06-16') },
-        { id: 'colonyReview', date: new Date('2025-06-23') },
-      ];
+      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] =
+        [
+          { id: 'setup', date: new Date('2025-06-01') },
+          { id: 'queenCellCheck', date: new Date('2025-06-09') }, // 8 days gap
+          { id: 'secondQueenCellCheck', date: new Date('2025-06-16') },
+          { id: 'colonyReview', date: new Date('2025-06-23') },
+        ];
 
       const warnings = getArtificialSwarmWarnings(checkpoints);
 
-      expect(warnings.find(w => w.code === 'lateQueenCellCheck')).toBeUndefined();
+      expect(
+        warnings.find(w => w.code === 'lateQueenCellCheck'),
+      ).toBeUndefined();
     });
 
     it('emits unsafeCheckpointSpacing warning when gap is less than 5 days', () => {
-      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] = [
-        { id: 'setup', date: new Date('2025-06-01') },
-        { id: 'queenCellCheck', date: new Date('2025-06-05') }, // 4 days gap
-        { id: 'secondQueenCellCheck', date: new Date('2025-06-12') },
-        { id: 'colonyReview', date: new Date('2025-06-19') },
-      ];
+      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] =
+        [
+          { id: 'setup', date: new Date('2025-06-01') },
+          { id: 'queenCellCheck', date: new Date('2025-06-05') }, // 4 days gap
+          { id: 'secondQueenCellCheck', date: new Date('2025-06-12') },
+          { id: 'colonyReview', date: new Date('2025-06-19') },
+        ];
 
       const warnings = getArtificialSwarmWarnings(checkpoints);
 
@@ -100,12 +111,13 @@ describe('Artificial Swarm Planner', () => {
     });
 
     it('emits unsafeCheckpointSpacing warning when gap is more than 10 days', () => {
-      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] = [
-        { id: 'setup', date: new Date('2025-06-01') },
-        { id: 'queenCellCheck', date: new Date('2025-06-08') },
-        { id: 'secondQueenCellCheck', date: new Date('2025-06-20') }, // 12 days gap
-        { id: 'colonyReview', date: new Date('2025-06-27') },
-      ];
+      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] =
+        [
+          { id: 'setup', date: new Date('2025-06-01') },
+          { id: 'queenCellCheck', date: new Date('2025-06-08') },
+          { id: 'secondQueenCellCheck', date: new Date('2025-06-20') }, // 12 days gap
+          { id: 'colonyReview', date: new Date('2025-06-27') },
+        ];
 
       const warnings = getArtificialSwarmWarnings(checkpoints);
 
@@ -116,12 +128,13 @@ describe('Artificial Swarm Planner', () => {
     });
 
     it('emits illogicalScheduleOrder warning when dates are out of order', () => {
-      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] = [
-        { id: 'setup', date: new Date('2025-06-01') },
-        { id: 'queenCellCheck', date: new Date('2025-06-08') },
-        { id: 'secondQueenCellCheck', date: new Date('2025-06-07') }, // Before previous
-        { id: 'colonyReview', date: new Date('2025-06-22') },
-      ];
+      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] =
+        [
+          { id: 'setup', date: new Date('2025-06-01') },
+          { id: 'queenCellCheck', date: new Date('2025-06-08') },
+          { id: 'secondQueenCellCheck', date: new Date('2025-06-07') }, // Before previous
+          { id: 'colonyReview', date: new Date('2025-06-22') },
+        ];
 
       const warnings = getArtificialSwarmWarnings(checkpoints);
 
@@ -132,12 +145,13 @@ describe('Artificial Swarm Planner', () => {
     });
 
     it('returns empty array when no warnings are triggered', () => {
-      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] = [
-        { id: 'setup', date: new Date('2025-06-01') },
-        { id: 'queenCellCheck', date: new Date('2025-06-08') }, // 7 days
-        { id: 'secondQueenCellCheck', date: new Date('2025-06-15') }, // 7 days
-        { id: 'colonyReview', date: new Date('2025-06-22') }, // 7 days
-      ];
+      const checkpoints: Pick<ArtificialSwarmCheckpointPlan, 'id' | 'date'>[] =
+        [
+          { id: 'setup', date: new Date('2025-06-01') },
+          { id: 'queenCellCheck', date: new Date('2025-06-08') }, // 7 days
+          { id: 'secondQueenCellCheck', date: new Date('2025-06-15') }, // 7 days
+          { id: 'colonyReview', date: new Date('2025-06-22') }, // 7 days
+        ];
 
       const warnings = getArtificialSwarmWarnings(checkpoints);
 

@@ -1,7 +1,5 @@
 import React, { ReactNode } from 'react';
-import {
-  ChartContainer,
-} from '@/components/ui/chart';
+import { ChartContainer } from '@/components/ui/chart';
 import { ChartCard } from './chart-card';
 import { ChartPeriod } from './index';
 import { useInspectionChartData } from './useChartData';

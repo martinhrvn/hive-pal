@@ -37,10 +37,10 @@ export const BroodNestChart: React.FC<BroodNestChartProps> = ({
       title="Brood Nest Trend"
       description="Frame counts over time"
       config={{
-        eggs:    { label: 'Eggs',           color: '#facc15' },
-        uncapped:{ label: 'Uncapped Brood', color: '#fb923c' },
-        capped:  { label: 'Capped Brood',   color: '#b45309' },
-        drone:   { label: 'Drone Brood',    color: '#92400e' },
+        eggs: { label: 'Eggs', color: '#facc15' },
+        uncapped: { label: 'Uncapped Brood', color: '#fb923c' },
+        capped: { label: 'Capped Brood', color: '#b45309' },
+        drone: { label: 'Drone Brood', color: '#92400e' },
       }}
       dataTransformer={inspection => ({
         date: format(parseISO(inspection.date), 'MMM dd'),
@@ -51,17 +51,41 @@ export const BroodNestChart: React.FC<BroodNestChartProps> = ({
       })}
       filterFn={hasBroodData}
     >
-      {(chartData) => (
+      {chartData => (
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis allowDecimals={false} />
           <ChartTooltip content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
-          <Line type="monotone" dataKey="eggs"     stroke="var(--color-eggs)"     strokeWidth={2} connectNulls />
-          <Line type="monotone" dataKey="uncapped" stroke="var(--color-uncapped)" strokeWidth={2} connectNulls />
-          <Line type="monotone" dataKey="capped"   stroke="var(--color-capped)"   strokeWidth={2} connectNulls />
-          <Line type="monotone" dataKey="drone"    stroke="var(--color-drone)"    strokeWidth={2} connectNulls />
+          <Line
+            type="monotone"
+            dataKey="eggs"
+            stroke="var(--color-eggs)"
+            strokeWidth={2}
+            connectNulls
+          />
+          <Line
+            type="monotone"
+            dataKey="uncapped"
+            stroke="var(--color-uncapped)"
+            strokeWidth={2}
+            connectNulls
+          />
+          <Line
+            type="monotone"
+            dataKey="capped"
+            stroke="var(--color-capped)"
+            strokeWidth={2}
+            connectNulls
+          />
+          <Line
+            type="monotone"
+            dataKey="drone"
+            stroke="var(--color-drone)"
+            strokeWidth={2}
+            connectNulls
+          />
         </LineChart>
       )}
     </BaseInspectionChart>

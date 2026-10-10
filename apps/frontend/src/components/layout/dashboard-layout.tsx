@@ -7,11 +7,7 @@ import { Breadcrumbs } from '../breadcrumbs';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar.tsx';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { FloatingActionButton } from '../common/floating-action-button';
 import {
   useImageDisplayStore,
@@ -59,17 +55,11 @@ const DashboardLayout = () => {
             <div className="flex items-center gap-4 grow justify-end">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={cycleMode}
-                  >
+                  <Button variant="ghost" size="icon" onClick={cycleMode}>
                     <ModeIcon className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  Images: {modeLabels[mode]}
-                </TooltipContent>
+                <TooltipContent>Images: {modeLabels[mode]}</TooltipContent>
               </Tooltip>
               <Button variant={'outline'} onClick={handleLogout}>
                 Logout

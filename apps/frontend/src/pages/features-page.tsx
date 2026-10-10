@@ -31,12 +31,26 @@ const GROUPS = [
   {
     id: 'inspections',
     icon: <ClipboardList className="h-5 w-5" />,
-    items: ['structured', 'quickChecks', 'batch', 'scheduled', 'photos', 'actions'],
+    items: [
+      'structured',
+      'quickChecks',
+      'batch',
+      'scheduled',
+      'photos',
+      'actions',
+    ],
   },
   {
     id: 'colony',
     icon: <Layers className="h-5 w-5" />,
-    items: ['apiaries', 'hiveConfig', 'queens', 'equipment', 'qrCodes', 'hiveScale'],
+    items: [
+      'apiaries',
+      'hiveConfig',
+      'queens',
+      'equipment',
+      'qrCodes',
+      'hiveScale',
+    ],
   },
   {
     id: 'planning',
@@ -51,7 +65,14 @@ const GROUPS = [
   {
     id: 'data',
     icon: <ShieldCheck className="h-5 w-5" />,
-    items: ['openSource', 'selfHostable', 'importExport', 'privacyAI', 'multilingual', 'pwa'],
+    items: [
+      'openSource',
+      'selfHostable',
+      'importExport',
+      'privacyAI',
+      'multilingual',
+      'pwa',
+    ],
   },
 ] as const;
 
@@ -334,10 +355,14 @@ export function FeaturesPage() {
                     className="mt-3 text-lg font-semibold text-stone-900"
                     style={sans}
                   >
-                    {t(`marketing.features.groups.${group.id}.items.${key}.title`)}
+                    {t(
+                      `marketing.features.groups.${group.id}.items.${key}.title`,
+                    )}
                   </dt>
                   <dd className="mt-2 text-sm leading-relaxed text-stone-600">
-                    {t(`marketing.features.groups.${group.id}.items.${key}.body`)}
+                    {t(
+                      `marketing.features.groups.${group.id}.items.${key}.body`,
+                    )}
                   </dd>
                 </div>
               ))}

@@ -81,7 +81,11 @@ export const useInspectionAiMerge = ({
       form.setValue(field as never, aiValue as never, setValueOptions);
 
       // A spoken time of day means the inspection isn't an all-day entry.
-      if (field === 'date' && aiValue instanceof Date && aiDateHasTimeOfDay(aiValue)) {
+      if (
+        field === 'date' &&
+        aiValue instanceof Date &&
+        aiDateHasTimeOfDay(aiValue)
+      ) {
         form.setValue('isAllDay', false, setValueOptions);
       }
     },

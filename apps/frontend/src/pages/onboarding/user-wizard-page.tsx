@@ -41,7 +41,11 @@ export const UserWizardPage = () => {
   ];
 
   // Fetch existing data to determine starting step
-  const { data: apiaries, isLoading: apiariesLoading, pendingMemberships } = useApiaries();
+  const {
+    data: apiaries,
+    isLoading: apiariesLoading,
+    pendingMemberships,
+  } = useApiaries();
   const hasApiaries = !!apiaries && apiaries.length > 0;
   const { data: hives, isLoading: hivesLoading } = useHives(undefined, {
     enabled: hasApiaries,

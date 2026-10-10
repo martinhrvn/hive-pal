@@ -1,6 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Beaker, Droplets, Ruler, Scale, Lightbulb, CookingPot } from 'lucide-react';
+import {
+  Beaker,
+  Droplets,
+  Ruler,
+  Scale,
+  Lightbulb,
+  CookingPot,
+} from 'lucide-react';
 import {
   PageGrid,
   MainContent,
@@ -281,22 +288,13 @@ export function SyrupCalculatorPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              <Pill
-                active={ratio === '1:1'}
-                onClick={() => setRatio('1:1')}
-              >
+              <Pill active={ratio === '1:1'} onClick={() => setRatio('1:1')}>
                 {t('syrupCalculator.thin')}
               </Pill>
-              <Pill
-                active={ratio === '3:2'}
-                onClick={() => setRatio('3:2')}
-              >
+              <Pill active={ratio === '3:2'} onClick={() => setRatio('3:2')}>
                 {t('syrupCalculator.medium')}
               </Pill>
-              <Pill
-                active={ratio === '2:1'}
-                onClick={() => setRatio('2:1')}
-              >
+              <Pill active={ratio === '2:1'} onClick={() => setRatio('2:1')}>
                 {t('syrupCalculator.thick')}
               </Pill>
             </div>
@@ -320,18 +318,14 @@ export function SyrupCalculatorPage() {
                 <Pill
                   key={c.label}
                   active={
-                    !isCustomContainer &&
-                    selectedContainer === c.valueLiters
+                    !isCustomContainer && selectedContainer === c.valueLiters
                   }
                   onClick={() => handleContainerSelect(c.valueLiters)}
                 >
                   {c.label}
                 </Pill>
               ))}
-              <Pill
-                active={isCustomContainer}
-                onClick={handleCustomContainer}
-              >
+              <Pill active={isCustomContainer} onClick={handleCustomContainer}>
                 {t('syrupCalculator.customSize')}
               </Pill>
             </div>

@@ -11,7 +11,7 @@ const dismissedReleaseSchema = z.array(
   z.object({
     version: z.string(),
     dismissedAt: z.string(),
-  })
+  }),
 );
 
 interface ReleaseNotesState {
@@ -28,7 +28,9 @@ interface ReleaseNotesState {
 const loadDismissedReleases = (): DismissedRelease[] => {
   const stored = localStorage.getItem(RELEASE_NOTES_STORAGE_KEY);
   if (stored) {
-    return safeJsonParse(stored, dismissedReleaseSchema, 'dismissed releases') ?? [];
+    return (
+      safeJsonParse(stored, dismissedReleaseSchema, 'dismissed releases') ?? []
+    );
   }
   return [];
 };

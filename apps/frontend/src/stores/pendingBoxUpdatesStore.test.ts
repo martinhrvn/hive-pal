@@ -1,7 +1,7 @@
 /**
  * Unit tests for PendingBoxUpdatesStore
  * Tests the Zustand store logic for managing pending box update operations
- * 
+ *
  * Note: These tests use vitest API but can be run with any compatible test runner.
  * If vitest is not available, use Jest with npm install vitest
  */
@@ -33,7 +33,9 @@ describe('PendingBoxUpdatesStore', () => {
         { type: 'box', frameCount: 10 },
         { type: 'super', frameCount: 5 },
       ];
-      const hiveLastModifiedAt = new Date('2026-05-01T10:00:00.000Z').toISOString();
+      const hiveLastModifiedAt = new Date(
+        '2026-05-01T10:00:00.000Z',
+      ).toISOString();
 
       getState().addPendingUpdate({
         inspectionId,
@@ -104,7 +106,7 @@ describe('PendingBoxUpdatesStore', () => {
 
       // Wait slightly to ensure different timestamp
       // Small delay to ensure timestamp difference (if system is fast)
-      await new Promise((resolve) => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
 
       // Add second update with same inspectionId
       getState().addPendingUpdate({
@@ -316,7 +318,7 @@ describe('PendingBoxUpdatesStore', () => {
       for (let i = 0; i < 5; i++) {
         getState().incrementRetryCount(inspectionId);
         expect(getState().getPendingUpdate(inspectionId)?.retryCount).toBe(
-          i + 1
+          i + 1,
         );
       }
     });
@@ -346,7 +348,7 @@ describe('PendingBoxUpdatesStore', () => {
       expect(updateAfter.error).toBe(updateBefore.error);
       expect(updateAfter.attemptedAt).toBe(updateBefore.attemptedAt);
       expect(updateAfter.hiveLastModifiedAt).toBe(
-        updateBefore.hiveLastModifiedAt
+        updateBefore.hiveLastModifiedAt,
       );
     });
   });

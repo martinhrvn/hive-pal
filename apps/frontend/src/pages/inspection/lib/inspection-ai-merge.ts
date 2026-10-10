@@ -141,14 +141,18 @@ export function mergeAcceptedAiAction(
 export function shouldUseAiPrefill(
   currentValue: unknown,
   isDirty: boolean,
-  suggestion?: { aiValue: unknown; status: 'pending' | 'accepted' | 'dismissed' } | null,
+  suggestion?: {
+    aiValue: unknown;
+    status: 'pending' | 'accepted' | 'dismissed';
+  } | null,
 ): boolean {
   if (!suggestion) return false;
   if (suggestion.status !== 'pending') return false;
   if (isDirty) return false;
 
   if (currentValue === undefined || currentValue === null) return true;
-  if (typeof currentValue === 'string' && currentValue.trim() === '') return true;
+  if (typeof currentValue === 'string' && currentValue.trim() === '')
+    return true;
   if (Array.isArray(currentValue) && currentValue.length === 0) return true;
 
   return false;

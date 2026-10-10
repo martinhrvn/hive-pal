@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { SlidersHorizontal } from 'lucide-react';
 import {
@@ -75,7 +69,12 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
     return entry;
   };
 
-  const chartData = useInspectionChartData(hiveId, period, transform, hasFrameData);
+  const chartData = useInspectionChartData(
+    hiveId,
+    period,
+    transform,
+    hasFrameData,
+  );
 
   const toggleField = (key: FrameKey) => {
     setSelected(prev => {
@@ -99,20 +98,26 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
         <div className="flex items-start justify-between gap-2">
           <div>
             <CardTitle>Frame Composition</CardTitle>
-            <CardDescription>Raw frame counts by content over time</CardDescription>
+            <CardDescription>
+              Raw frame counts by content over time
+            </CardDescription>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {/* Field selector */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1.5 text-xs"
+                >
                   <SlidersHorizontal className="h-3.5 w-3.5" />
                   Fields
                 </Button>
               </PopoverTrigger>
-               <PopoverContent className="w-48 p-2" align="end">
-                 <div className="space-y-1">
-                   {FRAME_FIELDS.map(ft => (
+              <PopoverContent className="w-48 p-2" align="end">
+                <div className="space-y-1">
+                  {FRAME_FIELDS.map(ft => (
                     <label
                       key={ft.key}
                       className="flex items-center gap-2 rounded px-2 py-1 cursor-pointer hover:bg-muted text-sm"

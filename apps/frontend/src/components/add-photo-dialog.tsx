@@ -37,8 +37,7 @@ export function AddPhotoDialog({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createPhoto = useCreatePhoto();
 
-  const sanitizeFileName = (name: string) =>
-    name.replace(/[<>&"'/]/g, '_');
+  const sanitizeFileName = (name: string) => name.replace(/[<>&"'/]/g, '_');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -80,11 +79,15 @@ export function AddPhotoDialog({
 
       await createPhoto.mutateAsync(formData);
 
-      toast.success(t('photo.uploadSuccess', { defaultValue: 'Photo uploaded' }));
+      toast.success(
+        t('photo.uploadSuccess', { defaultValue: 'Photo uploaded' }),
+      );
       resetForm();
       onOpenChange(false);
     } catch {
-      toast.error(t('photo.uploadFailed', { defaultValue: 'Failed to upload photo' }));
+      toast.error(
+        t('photo.uploadFailed', { defaultValue: 'Failed to upload photo' }),
+      );
     }
   };
 
@@ -98,9 +101,13 @@ export function AddPhotoDialog({
     >
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('photo.title', { defaultValue: 'Add Photo' })}</DialogTitle>
+          <DialogTitle>
+            {t('photo.title', { defaultValue: 'Add Photo' })}
+          </DialogTitle>
           <DialogDescription>
-            {t('photo.description', { defaultValue: 'Upload a photo with an optional caption.' })}
+            {t('photo.description', {
+              defaultValue: 'Upload a photo with an optional caption.',
+            })}
           </DialogDescription>
         </DialogHeader>
 
@@ -125,7 +132,8 @@ export function AddPhotoDialog({
                   <X className="h-4 w-4" />
                 </button>
                 <div className="text-xs text-muted-foreground mt-1">
-                  {selectedFile.displayName} ({(selectedFile.file.size / 1024 / 1024).toFixed(1)} MB)
+                  {selectedFile.displayName} (
+                  {(selectedFile.file.size / 1024 / 1024).toFixed(1)} MB)
                 </div>
               </div>
             ) : (
@@ -146,7 +154,9 @@ export function AddPhotoDialog({
                   <div className="flex flex-col items-center gap-2">
                     <ImagePlus className="h-8 w-8 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
-                      {t('photo.selectPhoto', { defaultValue: 'Select a photo' })}
+                      {t('photo.selectPhoto', {
+                        defaultValue: 'Select a photo',
+                      })}
                     </span>
                   </div>
                 </Button>
@@ -165,7 +175,9 @@ export function AddPhotoDialog({
             <Textarea
               value={caption}
               onChange={e => setCaption(e.target.value)}
-              placeholder={t('photo.captionPlaceholder', { defaultValue: 'Describe the photo...' })}
+              placeholder={t('photo.captionPlaceholder', {
+                defaultValue: 'Describe the photo...',
+              })}
               className="min-h-[60px] resize-none"
               maxLength={500}
             />

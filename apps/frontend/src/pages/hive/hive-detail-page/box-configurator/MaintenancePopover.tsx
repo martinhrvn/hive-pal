@@ -11,7 +11,11 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useCreateAction } from '@/api/hooks/useActions';
-import { ActionResponse, ActionType, CreateStandaloneAction } from 'shared-schemas';
+import {
+  ActionResponse,
+  ActionType,
+  CreateStandaloneAction,
+} from 'shared-schemas';
 import { toast } from 'sonner';
 
 type MaintenanceComponent = 'BOX' | 'BOTTOM_BOARD' | 'COVER';
@@ -24,13 +28,19 @@ interface MaintenanceProps {
 }
 
 /** Shared hook for maintenance action creation */
-const useMaintenanceAction = (hiveId: string, component: MaintenanceComponent) => {
+const useMaintenanceAction = (
+  hiveId: string,
+  component: MaintenanceComponent,
+) => {
   const { t } = useTranslation('inspection');
   const [date, setDate] = useState<Date>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
   const createAction = useCreateAction();
 
-  const handleMaintenance = async (status: MaintenanceStatus, onSuccess?: () => void) => {
+  const handleMaintenance = async (
+    status: MaintenanceStatus,
+    onSuccess?: () => void,
+  ) => {
     const data: CreateStandaloneAction = {
       hiveId,
       type: ActionType.MAINTENANCE,
@@ -53,7 +63,14 @@ const useMaintenanceAction = (hiveId: string, component: MaintenanceComponent) =
     }
   };
 
-  return { date, setDate, showCalendar, setShowCalendar, handleMaintenance, isPending: createAction.isPending };
+  return {
+    date,
+    setDate,
+    showCalendar,
+    setShowCalendar,
+    handleMaintenance,
+    isPending: createAction.isPending,
+  };
 };
 
 const getLastMaintenanceLabel = (
@@ -62,14 +79,16 @@ const getLastMaintenanceLabel = (
 ) => {
   if (!lastMaintenance) return null;
   const lastDate = format(new Date(lastMaintenance.date), 'PP');
-  const lastStatus = lastMaintenance.details?.type === 'MAINTENANCE'
-    ? lastMaintenance.details.status
-    : null;
-  const statusLabel = lastStatus === 'CLEANED'
-    ? t('inspection:form.actions.maintenance_section.cleaned')
-    : lastStatus === 'REPLACED'
-      ? t('inspection:form.actions.maintenance_section.replaced')
-      : t('inspection:form.actions.maintenance_section.title');
+  const lastStatus =
+    lastMaintenance.details?.type === 'MAINTENANCE'
+      ? lastMaintenance.details.status
+      : null;
+  const statusLabel =
+    lastStatus === 'CLEANED'
+      ? t('inspection:form.actions.maintenance_section.cleaned')
+      : lastStatus === 'REPLACED'
+        ? t('inspection:form.actions.maintenance_section.replaced')
+        : t('inspection:form.actions.maintenance_section.title');
   return `${statusLabel} ${lastDate}`;
 };
 
@@ -81,13 +100,25 @@ export const MaintenancePopover = ({
 }: MaintenanceProps) => {
   const { t } = useTranslation('inspection');
   const [open, setOpen] = useState(false);
-  const { date, setDate, showCalendar, setShowCalendar, handleMaintenance, isPending } =
-    useMaintenanceAction(hiveId, component);
+  const {
+    date,
+    setDate,
+    showCalendar,
+    setShowCalendar,
+    handleMaintenance,
+    isPending,
+  } = useMaintenanceAction(hiveId, component);
 
   const label = getLastMaintenanceLabel(lastMaintenance, t);
 
   return (
-    <Popover open={open} onOpenChange={(v) => { setOpen(v); if (!v) setShowCalendar(false); }}>
+    <Popover
+      open={open}
+      onOpenChange={v => {
+        setOpen(v);
+        if (!v) setShowCalendar(false);
+      }}
+    >
       <PopoverTrigger asChild>
         <button
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -133,7 +164,12 @@ export const MaintenancePopover = ({
               size="sm"
               variant="outline"
               disabled={isPending}
-              onClick={() => handleMaintenance('CLEANED', () => { setOpen(false); setShowCalendar(false); })}
+              onClick={() =>
+                handleMaintenance('CLEANED', () => {
+                  setOpen(false);
+                  setShowCalendar(false);
+                })
+              }
             >
               {t('inspection:form.actions.maintenance_section.cleaned')}
             </Button>
@@ -141,7 +177,12 @@ export const MaintenancePopover = ({
               size="sm"
               variant="outline"
               disabled={isPending}
-              onClick={() => handleMaintenance('REPLACED', () => { setOpen(false); setShowCalendar(false); })}
+              onClick={() =>
+                handleMaintenance('REPLACED', () => {
+                  setOpen(false);
+                  setShowCalendar(false);
+                })
+              }
             >
               {t('inspection:form.actions.maintenance_section.replaced')}
             </Button>
@@ -159,16 +200,20 @@ export const MaintenanceInline = ({
   lastMaintenance,
 }: MaintenanceProps) => {
   const { t } = useTranslation('inspection');
-  const { date, setDate, showCalendar, setShowCalendar, handleMaintenance, isPending } =
-    useMaintenanceAction(hiveId, component);
+  const {
+    date,
+    setDate,
+    showCalendar,
+    setShowCalendar,
+    handleMaintenance,
+    isPending,
+  } = useMaintenanceAction(hiveId, component);
 
   const label = getLastMaintenanceLabel(lastMaintenance, t);
 
   return (
     <div className="space-y-3">
-      {label && (
-        <p className="text-xs text-muted-foreground">{label}</p>
-      )}
+      {label && <p className="text-xs text-muted-foreground">{label}</p>}
 
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <button

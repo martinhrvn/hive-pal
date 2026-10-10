@@ -143,7 +143,11 @@ export function AudioSection({
         <h3 className="font-medium">{t('inspection:form.audio.title')}</h3>
         {pendingRecordings.length > 0 && (
           <span className="text-xs text-muted-foreground">
-            ({t('inspection:form.audio.pendingUpload', { count: pendingRecordings.length })})
+            (
+            {t('inspection:form.audio.pendingUpload', {
+              count: pendingRecordings.length,
+            })}
+            )
           </span>
         )}
       </div>
@@ -166,9 +170,7 @@ export function AudioSection({
       {isNewInspection && pendingRecordings.length > 0 && (
         <div className="flex items-start gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
           <Info className="mt-0.5 size-4 shrink-0" />
-          <span>
-            {t('inspection:form.audio.uploadWarning')}
-          </span>
+          <span>{t('inspection:form.audio.uploadWarning')}</span>
         </div>
       )}
 

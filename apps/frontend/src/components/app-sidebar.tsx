@@ -50,7 +50,9 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
           url: '/apiaries',
         },
         {
-          title: t('navigation.createApiary', { defaultValue: 'Create Apiary' }),
+          title: t('navigation.createApiary', {
+            defaultValue: 'Create Apiary',
+          }),
           url: '/apiaries/create',
         },
       ],

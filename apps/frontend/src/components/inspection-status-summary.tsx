@@ -33,10 +33,13 @@ export const InspectionStatusSummary: React.FC = () => {
 
   const getHiveName = (hiveId: string) => hiveNameMap.get(hiveId) || hiveId;
 
-  const { setReschedulingInspection, handleDoInspection, rescheduleDialogElement } =
-    useScheduledInspectionActions(getHiveName);
+  const {
+    setReschedulingInspection,
+    handleDoInspection,
+    rescheduleDialogElement,
+  } = useScheduledInspectionActions(getHiveName);
 
-  const isLoading= overdueLoading || dueTodayLoading || upcomingLoading;
+  const isLoading = overdueLoading || dueTodayLoading || upcomingLoading;
   const overdueCount = overdueInspections?.length ?? 0;
   const dueTodayCount = dueTodayInspections?.length ?? 0;
   const upcomingCount = upcomingInspections?.length ?? 0;
@@ -72,83 +75,84 @@ export const InspectionStatusSummary: React.FC = () => {
 
   return (
     <>
-    <Card className="h-full flex flex-col overflow-hidden gap-0 py-0 border-none shadow-none">
-      <div className="flex items-center justify-between px-4 pt-3 pb-1">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <CalendarDays className="h-5 w-5" />
-          {t('inspection:dashboard.title', 'Upcoming Inspections')}
-        </CardTitle>
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/calendar">
-            <CalendarDays className="h-4 w-4" />
-            {t('inspection:dashboard.viewCalendar', 'View calendar')}
-          </Link>
-        </Button>
-      </div>
-      <div className="px-4 pb-3 space-y-3">
-        {/* Alerts Section */}
-        {(overdueCount > 0 || dueTodayCount > 0) && (
-          <div className="space-y-2">
-            {overdueCount > 0 && (
-              <div
-                className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 cursor-pointer"
-                onClick={handleViewOverdue}
-              >
-                <AlertTriangle className="h-4 w-4" />
-                <span>
-                  {overdueCount} {t('inspection:dashboard.overdue', 'overdue')}
-                </span>
-              </div>
-            )}
-
-            {dueTodayCount > 0 && (
-              <div
-                className="flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700 cursor-pointer"
-                onClick={handleViewDueToday}
-              >
-                <Clock className="h-4 w-4" />
-                <span>
-                  {dueTodayCount}{' '}
-                  {t('inspection:dashboard.dueToday', 'due today')}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Upcoming Inspections Section */}
-        {upcomingCount > 0 && (
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-muted-foreground">
-              {t('inspection:dashboard.upcoming', 'Upcoming')}
-            </h4>
+      <Card className="h-full flex flex-col overflow-hidden gap-0 py-0 border-none shadow-none">
+        <div className="flex items-center justify-between px-4 pt-3 pb-1">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <CalendarDays className="h-5 w-5" />
+            {t('inspection:dashboard.title', 'Upcoming Inspections')}
+          </CardTitle>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/calendar">
+              <CalendarDays className="h-4 w-4" />
+              {t('inspection:dashboard.viewCalendar', 'View calendar')}
+            </Link>
+          </Button>
+        </div>
+        <div className="px-4 pb-3 space-y-3">
+          {/* Alerts Section */}
+          {(overdueCount > 0 || dueTodayCount > 0) && (
             <div className="space-y-2">
-              {upcomingInspections?.map(inspection => (
-                <UpcomingInspectionListItem
-                  key={inspection.id}
-                  inspection={inspection}
-                  hiveName={getHiveName(inspection.hiveId)}
-                  onDoInspection={handleDoInspection}
-                  onReschedule={setReschedulingInspection}
-                />
-              ))}
+              {overdueCount > 0 && (
+                <div
+                  className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 cursor-pointer"
+                  onClick={handleViewOverdue}
+                >
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>
+                    {overdueCount}{' '}
+                    {t('inspection:dashboard.overdue', 'overdue')}
+                  </span>
+                </div>
+              )}
+
+              {dueTodayCount > 0 && (
+                <div
+                  className="flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700 cursor-pointer"
+                  onClick={handleViewDueToday}
+                >
+                  <Clock className="h-4 w-4" />
+                  <span>
+                    {dueTodayCount}{' '}
+                    {t('inspection:dashboard.dueToday', 'due today')}
+                  </span>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Empty state when no alerts but component is shown due to upcoming */}
-        {overdueCount === 0 && dueTodayCount === 0 && upcomingCount === 0 && (
-          <p className="text-sm text-muted-foreground">
-            {t(
-              'inspection:dashboard.noInspections',
-              'No scheduled inspections',
-            )}
-          </p>
-        )}
-      </div>
-    </Card>
+          {/* Upcoming Inspections Section */}
+          {upcomingCount > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-muted-foreground">
+                {t('inspection:dashboard.upcoming', 'Upcoming')}
+              </h4>
+              <div className="space-y-2">
+                {upcomingInspections?.map(inspection => (
+                  <UpcomingInspectionListItem
+                    key={inspection.id}
+                    inspection={inspection}
+                    hiveName={getHiveName(inspection.hiveId)}
+                    onDoInspection={handleDoInspection}
+                    onReschedule={setReschedulingInspection}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
-    {rescheduleDialogElement}
-  </>
+          {/* Empty state when no alerts but component is shown due to upcoming */}
+          {overdueCount === 0 && dueTodayCount === 0 && upcomingCount === 0 && (
+            <p className="text-sm text-muted-foreground">
+              {t(
+                'inspection:dashboard.noInspections',
+                'No scheduled inspections',
+              )}
+            </p>
+          )}
+        </div>
+      </Card>
+
+      {rescheduleDialogElement}
+    </>
   );
 };

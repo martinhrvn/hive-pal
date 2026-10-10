@@ -1,9 +1,6 @@
 import { addDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
-import {
-  generateDemareePlan,
-  getDemareeWarnings,
-} from './demaree-planner';
+import { generateDemareePlan, getDemareeWarnings } from './demaree-planner';
 
 describe('demaree planner utilities', () => {
   it('generates the standard checkpoint offsets', () => {
@@ -13,9 +10,7 @@ describe('demaree planner utilities', () => {
     expect(checkpoints.map(checkpoint => checkpoint.dayOffset)).toEqual([
       0, 7, 14, 21,
     ]);
-    expect(checkpoints[1].date.toISOString()).toBe(
-      '2026-05-08T00:00:00.000Z',
-    );
+    expect(checkpoints[1].date.toISOString()).toBe('2026-05-08T00:00:00.000Z');
   });
 
   it('warns when the first queen-cell check is delayed past day 8', () => {

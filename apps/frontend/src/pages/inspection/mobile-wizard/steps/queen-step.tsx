@@ -13,7 +13,11 @@ const QUEEN_SEEN_OPTIONS: Array<{
 }> = [
   { value: true, labelKey: 'inspection:mobile.queen.yes', icon: Check },
   { value: false, labelKey: 'inspection:mobile.queen.no', icon: X },
-  { value: null, labelKey: 'inspection:mobile.queen.notLooked', icon: HelpCircle },
+  {
+    value: null,
+    labelKey: 'inspection:mobile.queen.notLooked',
+    icon: HelpCircle,
+  },
 ];
 
 interface CellTogglePillProps {
@@ -91,7 +95,8 @@ export function QueenStep() {
                     <Icon
                       className={cn(
                         'size-4 transition-colors',
-                        isSelected && 'text-[oklch(0.55_0.12_70)] dark:text-[oklch(0.82_0.16_82)]',
+                        isSelected &&
+                          'text-[oklch(0.55_0.12_70)] dark:text-[oklch(0.82_0.16_82)]',
                       )}
                     />
                     <span>{t(opt.labelKey)}</span>

@@ -43,8 +43,12 @@ describe('Pagden Planner', () => {
       const plan = generatePagdenPlan(startDate);
 
       plan.forEach(checkpoint => {
-        expect(checkpoint.titleKey).toContain('swarmManagement.pagden.planner.checkpoints');
-        expect(checkpoint.summaryKey).toContain('swarmManagement.pagden.planner.checkpoints');
+        expect(checkpoint.titleKey).toContain(
+          'swarmManagement.pagden.planner.checkpoints',
+        );
+        expect(checkpoint.summaryKey).toContain(
+          'swarmManagement.pagden.planner.checkpoints',
+        );
         expect(checkpoint.checklistKeys.length).toBeGreaterThan(0);
         checkpoint.checklistKeys.forEach(key => {
           expect(key).toContain('swarmManagement.pagden.planner.checkpoints');
@@ -80,7 +84,9 @@ describe('Pagden Planner', () => {
 
       const warnings = getPagdenWarnings(checkpoints);
 
-      expect(warnings.find(w => w.code === 'lateQueenCellCheck')).toBeUndefined();
+      expect(
+        warnings.find(w => w.code === 'lateQueenCellCheck'),
+      ).toBeUndefined();
     });
 
     it('emits unsafeCheckpointSpacing warning when gap is less than 5 days', () => {

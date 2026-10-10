@@ -58,21 +58,20 @@ export const DataTransferPage = () => {
 
   const jobs = jobsQuery.data ?? [];
   const hasActiveExport = jobs.some(
-    (j) =>
-      j.type === 'EXPORT' &&
-      (j.status === 'PENDING' || j.status === 'RUNNING'),
+    j =>
+      j.type === 'EXPORT' && (j.status === 'PENDING' || j.status === 'RUNNING'),
   );
   const hasActiveImport = jobs.some(
-    (j) =>
-      j.type === 'IMPORT' &&
-      (j.status === 'PENDING' || j.status === 'RUNNING'),
+    j =>
+      j.type === 'IMPORT' && (j.status === 'PENDING' || j.status === 'RUNNING'),
   );
 
   const handleStartExport = async () => {
     try {
       await startExport.mutateAsync();
       toast.success('Export started', {
-        description: 'Your export is being prepared. This may take a few minutes.',
+        description:
+          'Your export is being prepared. This may take a few minutes.',
       });
     } catch (err) {
       toast.error('Failed to start export', {
@@ -94,7 +93,8 @@ export const DataTransferPage = () => {
     try {
       await startImport.mutateAsync(file);
       toast.success('Import started', {
-        description: 'Your data is being imported. This may take a few minutes.',
+        description:
+          'Your data is being imported. This may take a few minutes.',
       });
     } catch (err) {
       toast.error('Failed to start import', {
@@ -107,7 +107,7 @@ export const DataTransferPage = () => {
     fetch(`/api/account-transfer/jobs/${job.id}/download`, {
       credentials: 'include',
     })
-      .then(async (res) => {
+      .then(async res => {
         if (!res.ok) throw new Error(`Download failed: ${res.statusText}`);
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
@@ -119,7 +119,7 @@ export const DataTransferPage = () => {
         a.remove();
         URL.revokeObjectURL(url);
       })
-      .catch((err) => {
+      .catch(err => {
         toast.error('Download failed', { description: (err as Error).message });
       });
   };
@@ -130,7 +130,9 @@ export const DataTransferPage = () => {
       await deleteJob.mutateAsync(job.id);
       toast.success('Job deleted');
     } catch (err) {
-      toast.error('Failed to delete job', { description: (err as Error).message });
+      toast.error('Failed to delete job', {
+        description: (err as Error).message,
+      });
     }
   };
 
@@ -234,7 +236,7 @@ export const DataTransferPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {jobs.map((job) => {
+                  {jobs.map(job => {
                     const isExpired =
                       job.type === 'EXPORT' &&
                       job.status === 'COMPLETED' &&
@@ -313,7 +315,7 @@ export const DataTransferPage = () => {
 
       <Dialog
         open={confirmImport !== null}
-        onOpenChange={(open) => !open && setConfirmImport(null)}
+        onOpenChange={open => !open && setConfirmImport(null)}
       >
         <DialogContent>
           <DialogHeader>
@@ -338,12 +340,14 @@ export const DataTransferPage = () => {
 
       <Dialog
         open={selectedJob !== null}
-        onOpenChange={(open) => !open && setSelectedJob(null)}
+        onOpenChange={open => !open && setSelectedJob(null)}
       >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {selectedJob?.status === 'FAILED' ? 'Job error' : 'Import summary'}
+              {selectedJob?.status === 'FAILED'
+                ? 'Job error'
+                : 'Import summary'}
             </DialogTitle>
           </DialogHeader>
           {selectedJob?.status === 'FAILED' ? (

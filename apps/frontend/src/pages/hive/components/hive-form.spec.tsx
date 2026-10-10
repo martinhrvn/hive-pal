@@ -11,7 +11,7 @@ const HIVE_ID = '22222222-2222-4222-8222-222222222222';
 // unrendered form fields (e.g. a hive status outside ACTIVE/INACTIVE) used to
 // abort the submit with no request and no visible error.
 async function mockApi(page: Page, requests: string[], settings: unknown) {
-  await page.route('**/api/**', async (route) => {
+  await page.route('**/api/**', async route => {
     const url = new URL(route.request().url());
     requests.push(`${route.request().method()} ${url.pathname}`);
     if (url.pathname === '/api/apiaries') {
@@ -78,9 +78,7 @@ test('saving a hive with a non-ACTIVE status sends the update', async ({
 
   // The update request actually goes out (used to be silently swallowed).
   await expect
-    .poll(() =>
-      requests.filter((r) => r === `PATCH /api/hives/${HIVE_ID}`),
-    )
+    .poll(() => requests.filter(r => r === `PATCH /api/hives/${HIVE_ID}`))
     .toHaveLength(1);
 });
 
@@ -111,6 +109,6 @@ test('a validation failure on a hidden field shows a named error', async ({
   await expect(page.getByText('Cannot save — please check')).toBeVisible();
   // …and no update was sent.
   expect(
-    requests.filter((r) => r === `PATCH /api/hives/${HIVE_ID}`),
+    requests.filter(r => r === `PATCH /api/hives/${HIVE_ID}`),
   ).toHaveLength(0);
 });

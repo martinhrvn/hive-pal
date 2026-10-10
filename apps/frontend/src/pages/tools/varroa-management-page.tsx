@@ -43,7 +43,8 @@ const TREATMENT_BADGE_CLASSES: Record<Treatment, string> = {
   biotech:
     'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300',
   lactic: 'bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300',
-  formic: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
+  formic:
+    'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
   oxalic:
     'bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300',
 };
@@ -267,13 +268,18 @@ function DivideAndTreatGuide() {
               {t(`varroaManagement.divideAndTreat.concepts.${concept}.title`)}
             </p>
             <p className="mt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {t(`varroaManagement.divideAndTreat.concepts.${concept}.subtitle`)}
+              {t(
+                `varroaManagement.divideAndTreat.concepts.${concept}.subtitle`,
+              )}
             </p>
             <ul className="mt-3 space-y-2">
               {(
-                t(`varroaManagement.divideAndTreat.concepts.${concept}.points`, {
-                  returnObjects: true,
-                }) as string[]
+                t(
+                  `varroaManagement.divideAndTreat.concepts.${concept}.points`,
+                  {
+                    returnObjects: true,
+                  },
+                ) as string[]
               ).map(point => (
                 <li key={point} className="flex gap-2">
                   <span
@@ -342,7 +348,9 @@ function DivideAndTreatGuide() {
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
           {t('varroaManagement.divideAndTreat.caution.title')}
         </p>
-        <p className="mt-2">{t('varroaManagement.divideAndTreat.caution.body')}</p>
+        <p className="mt-2">
+          {t('varroaManagement.divideAndTreat.caution.body')}
+        </p>
         <p className="mt-2">
           {t('varroaManagement.divideAndTreat.caution.robbing')}
         </p>
@@ -600,7 +608,11 @@ export function VarroaManagementPage() {
                 {(
                   t('varroaManagement.aside.thresholdRows', {
                     returnObjects: true,
-                  }) as { period: string; production: string; nucleus: string }[]
+                  }) as {
+                    period: string;
+                    production: string;
+                    nucleus: string;
+                  }[]
                 ).map(row => (
                   <div
                     key={row.period}

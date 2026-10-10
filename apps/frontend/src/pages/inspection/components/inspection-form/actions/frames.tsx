@@ -61,9 +61,13 @@ export const FramesForm: React.FC<FramesActionProps> = ({
       className={'grid lg:grid-cols-2 grid-cols-1 gap-4 mt-5'}
       data-test={TEST_SELECTORS.FRAMES_FORM}
     >
-      <h3 className="lg:col-span-2 text-lg font-bold">{t('inspection:form.actions.frames_section.title')}</h3>
+      <h3 className="lg:col-span-2 text-lg font-bold">
+        {t('inspection:form.actions.frames_section.title')}
+      </h3>
       <div className={'flex flex-col gap-4 col-span-2'}>
-        <label htmlFor={'frames'}>{t('inspection:form.actions.frames_section.framesLabel')}</label>
+        <label htmlFor={'frames'}>
+          {t('inspection:form.actions.frames_section.framesLabel')}
+        </label>
         <NumericInputField
           id={'frames'}
           step={1}
@@ -88,10 +92,14 @@ export const FramesForm: React.FC<FramesActionProps> = ({
       </div>
 
       <div className="lg:col-span-2 flex flex-col gap-4">
-        <label htmlFor="notes">{t('inspection:form.actions.frames_section.notesOptional')}</label>
+        <label htmlFor="notes">
+          {t('inspection:form.actions.frames_section.notesOptional')}
+        </label>
         <Textarea
           id="notes"
-          placeholder={t('inspection:form.actions.frames_section.notesPlaceholder')}
+          placeholder={t(
+            'inspection:form.actions.frames_section.notesPlaceholder',
+          )}
           value={notes}
           onChange={e => setNotes(e.target.value)}
           data-test={TEST_SELECTORS.FRAMES_NOTES}

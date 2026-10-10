@@ -13,7 +13,7 @@ export const LANGUAGES = [
 
 export type SupportedLanguage = (typeof LANGUAGES)[number]['code'];
 
-const supportedCodes = new Set<string>(LANGUAGES.map((l) => l.code));
+const supportedCodes = new Set<string>(LANGUAGES.map(l => l.code));
 
 /**
  * Normalizes a language/locale code to one of the supported language codes.
@@ -44,7 +44,7 @@ export function normalizeLanguageCode(languageCode: string): SupportedLanguage {
  * Gets the list of supported language codes
  */
 export function getSupportedLanguages(): SupportedLanguage[] {
-  return LANGUAGES.map((l) => l.code);
+  return LANGUAGES.map(l => l.code);
 }
 
 /**
@@ -88,10 +88,7 @@ export function stripLanguagePrefix(pathname: string): string {
  * @param neutralPath - A language-neutral path beginning with '/' (e.g. '/tools')
  * @param lang - Target language code
  */
-export function buildLocalizedPath(
-  neutralPath: string,
-  lang: string,
-): string {
+export function buildLocalizedPath(neutralPath: string, lang: string): string {
   const normalized = normalizeLanguageCode(lang);
   const neutral = stripLanguagePrefix(neutralPath);
   if (normalized === DEFAULT_LANGUAGE) {
@@ -137,7 +134,8 @@ export function isPublicPathTranslated(
   lang: string,
 ): boolean {
   if (normalizeLanguageCode(lang) === DEFAULT_LANGUAGE) return true;
-  const marker = PUBLIC_PAGE_TRANSLATION_MARKERS[stripLanguagePrefix(neutralPath)];
+  const marker =
+    PUBLIC_PAGE_TRANSLATION_MARKERS[stripLanguagePrefix(neutralPath)];
   if (!marker) return true;
   const value = i18n.getResource(lang, marker.ns, marker.key);
   if (value == null || value === '') return false;

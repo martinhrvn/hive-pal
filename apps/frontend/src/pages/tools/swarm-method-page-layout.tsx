@@ -64,9 +64,7 @@ export interface CheckpointPlan extends CheckpointTemplate {
 }
 
 export type WarningCode =
-  | 'lateQueenCellCheck'
-  | 'unsafeCheckpointSpacing'
-  | 'illogicalScheduleOrder';
+  'lateQueenCellCheck' | 'unsafeCheckpointSpacing' | 'illogicalScheduleOrder';
 
 export interface CheckpointWarning {
   code: WarningCode;
@@ -118,7 +116,8 @@ export interface SwarmMethodPageProps {
 
 const warningVariantClasses: Record<WarningCode, string> = {
   lateQueenCellCheck: 'border-amber-300 bg-amber-50 dark:bg-amber-950/30',
-  unsafeCheckpointSpacing: 'border-orange-300 bg-orange-50 dark:bg-orange-950/30',
+  unsafeCheckpointSpacing:
+    'border-orange-300 bg-orange-50 dark:bg-orange-950/30',
   illogicalScheduleOrder: 'border-red-300 bg-red-50 dark:bg-red-950/30',
 };
 
@@ -126,9 +125,7 @@ const warningVariantClasses: Record<WarningCode, string> = {
 // Small internal components
 // ---------------------------------------------------------------------------
 
-function WarningSummary({
-  warning,
-}: Readonly<{ warning: CheckpointWarning }>) {
+function WarningSummary({ warning }: Readonly<{ warning: CheckpointWarning }>) {
   const { t } = useTranslation('common');
   return (
     <div
@@ -212,9 +209,7 @@ export function SwarmMethodPageLayout({
     updates: Partial<EditableCheckpoint>,
   ) => {
     setCheckpoints(current =>
-      current.map(cp =>
-        cp.id === checkpointId ? { ...cp, ...updates } : cp,
-      ),
+      current.map(cp => (cp.id === checkpointId ? { ...cp, ...updates } : cp)),
     );
   };
 
@@ -304,9 +299,7 @@ export function SwarmMethodPageLayout({
       <MainContent>
         <ToolPageHeader
           title={t(`${ns}.title`)}
-          badge={
-            <Badge variant="outline">{t(`${ns}.badge`)}</Badge>
-          }
+          badge={<Badge variant="outline">{t(`${ns}.badge`)}</Badge>}
           description={t(`${ns}.description`)}
           intro={t(`${ns}.intro`)}
           backLink={{
@@ -353,9 +346,7 @@ export function SwarmMethodPageLayout({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <DotList
-                items={[0, 1, 2].map(i => t(`${ns}.advantages.${i}`))}
-              />
+              <DotList items={[0, 1, 2].map(i => t(`${ns}.advantages.${i}`))} />
             </CardContent>
           </Card>
 
@@ -492,9 +483,7 @@ export function SwarmMethodPageLayout({
                   </p>
                   <div className="mt-4 flex flex-col items-center justify-center gap-2 sm:flex-row">
                     <Button asChild>
-                      <Link to="/login">
-                        {t(`${plannerNs}.signInCta`)}
-                      </Link>
+                      <Link to="/login">{t(`${plannerNs}.signInCta`)}</Link>
                     </Button>
                     <Button variant="outline" asChild>
                       <Link to="/register">
@@ -520,7 +509,9 @@ export function SwarmMethodPageLayout({
                       <DatePickerPopover
                         date={startDate}
                         onDateChange={setStartDate}
-                        placeholder={t(`${methodPlannerNs}.startDatePlaceholder`)}
+                        placeholder={t(
+                          `${methodPlannerNs}.startDatePlaceholder`,
+                        )}
                       />
                     </div>
                   </div>
@@ -536,9 +527,7 @@ export function SwarmMethodPageLayout({
                   {selectedHive && (
                     <Alert>
                       <Waypoints className="h-4 w-4" />
-                      <AlertTitle>
-                        {t(`${plannerNs}.selectedHive`)}
-                      </AlertTitle>
+                      <AlertTitle>{t(`${plannerNs}.selectedHive`)}</AlertTitle>
                       <AlertDescription>{selectedHive.name}</AlertDescription>
                     </Alert>
                   )}
@@ -596,7 +585,9 @@ export function SwarmMethodPageLayout({
                               {cpWarnings.map(warning => (
                                 <Alert
                                   key={`${checkpoint.id}-${warning.code}`}
-                                  className={warningVariantClasses[warning.code]}
+                                  className={
+                                    warningVariantClasses[warning.code]
+                                  }
                                 >
                                   <ShieldAlert className="h-4 w-4" />
                                   <AlertTitle>

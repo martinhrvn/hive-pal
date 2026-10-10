@@ -30,10 +30,10 @@ function formatInstalledDate(installedAt: string | Date): string {
   );
 }
 
-const QueenColorDot: React.FC<{ color?: string | null; size?: 'sm' | 'md' }> = ({
-  color,
-  size = 'sm',
-}) => {
+const QueenColorDot: React.FC<{
+  color?: string | null;
+  size?: 'sm' | 'md';
+}> = ({ color, size = 'sm' }) => {
   const sizeClass = size === 'md' ? 'h-5 w-5' : 'h-4 w-4';
   return (
     <div
@@ -70,7 +70,9 @@ const QueenActionsMenu: React.FC<{
           variant="ghost"
           size="icon"
           className="h-7 w-7 -my-1 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 hover:bg-stone-200/60 dark:hover:bg-stone-800/60"
-          aria-label={t('actions.queenActions', { defaultValue: 'Queen actions' })}
+          aria-label={t('actions.queenActions', {
+            defaultValue: 'Queen actions',
+          })}
         >
           <MoreHorizontal className="h-4 w-4" />
         </Button>
@@ -85,7 +87,9 @@ const QueenActionsMenu: React.FC<{
         <DropdownMenuItem onClick={() => navigate(`/queens/${queen.id}/edit`)}>
           {t('actions.editQueen')}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate(`/hives/${hiveId}/queens/create`)}>
+        <DropdownMenuItem
+          onClick={() => navigate(`/hives/${hiveId}/queens/create`)}
+        >
           {t('actions.replaceQueen')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleMarkQueenState('DEAD')}>
@@ -147,7 +151,13 @@ const QueenMobileView: React.FC<{
   asLink?: boolean;
   onTransferClick: () => void;
   onQueenUpdated?: () => void;
-}> = ({ activeQueen, hiveId, asLink = false, onTransferClick, onQueenUpdated }) => (
+}> = ({
+  activeQueen,
+  hiveId,
+  asLink = false,
+  onTransferClick,
+  onQueenUpdated,
+}) => (
   <div className="sm:hidden">
     {activeQueen ? (
       <div className="flex items-center justify-between">
@@ -155,7 +165,10 @@ const QueenMobileView: React.FC<{
           <span className="text-xs text-muted-foreground">Queen:</span>
           <QueenColorDot color={activeQueen.color} />
           {asLink ? (
-            <Link to={`/queens/${activeQueen.id}`} className="text-sm font-medium hover:underline">
+            <Link
+              to={`/queens/${activeQueen.id}`}
+              className="text-sm font-medium hover:underline"
+            >
               {activeQueen.marking} • {activeQueen.year}
             </Link>
           ) : (
@@ -221,10 +234,15 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
             <>
               <span className="text-xs text-muted-foreground">Queen:</span>
               <QueenColorDot color={activeQueen.color} />
-              <Link to={`/queens/${activeQueen.id}`} className="text-sm font-medium hover:underline">
+              <Link
+                to={`/queens/${activeQueen.id}`}
+                className="text-sm font-medium hover:underline"
+              >
                 {activeQueen.marking}
               </Link>
-              <span className="text-xs text-muted-foreground">{activeQueen.year}</span>
+              <span className="text-xs text-muted-foreground">
+                {activeQueen.year}
+              </span>
               {activeQueen.installedAt && (
                 <>
                   <span className="text-xs text-muted-foreground">•</span>

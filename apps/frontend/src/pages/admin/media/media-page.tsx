@@ -55,7 +55,10 @@ const TYPE_LABEL: Record<AdminMediaType, string> = {
   'quick-check-photo': 'Quick check photo',
 };
 
-const TYPE_ICON: Record<AdminMediaType, React.ComponentType<{ className?: string }>> = {
+const TYPE_ICON: Record<
+  AdminMediaType,
+  React.ComponentType<{ className?: string }>
+> = {
   photo: Camera,
   document: FileText,
   'inspection-audio': Mic,
@@ -152,7 +155,9 @@ const MediaPage: React.FC = () => {
             <div>
               <CardTitle>Files</CardTitle>
               <CardDescription>
-                {list ? `${list.total} total · page ${page} of ${totalPages}` : ' '}
+                {list
+                  ? `${list.total} total · page ${page} of ${totalPages}`
+                  : ' '}
               </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
@@ -178,8 +183,12 @@ const MediaPage: React.FC = () => {
                   <SelectItem value="all">All types</SelectItem>
                   <SelectItem value="photo">Photos</SelectItem>
                   <SelectItem value="document">Documents</SelectItem>
-                  <SelectItem value="inspection-audio">Inspection audio</SelectItem>
-                  <SelectItem value="quick-check-photo">Quick check photos</SelectItem>
+                  <SelectItem value="inspection-audio">
+                    Inspection audio
+                  </SelectItem>
+                  <SelectItem value="quick-check-photo">
+                    Quick check photos
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -201,14 +210,20 @@ const MediaPage: React.FC = () => {
             <TableBody>
               {isLoading && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-muted-foreground py-8"
+                  >
                     Loading...
                   </TableCell>
                 </TableRow>
               )}
               {!isLoading && list?.items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-muted-foreground py-8"
+                  >
                     No files found.
                   </TableCell>
                 </TableRow>
@@ -224,19 +239,27 @@ const MediaPage: React.FC = () => {
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-[280px]">
-                      <div className="truncate font-medium">{item.fileName}</div>
+                      <div className="truncate font-medium">
+                        {item.fileName}
+                      </div>
                       {item.caption && (
                         <div className="truncate text-xs text-muted-foreground">
                           {item.caption}
                         </div>
                       )}
-                      <div className="text-xs text-muted-foreground">{item.mimeType}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {item.mimeType}
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      {item.ownerEmail ?? <span className="text-muted-foreground">—</span>}
+                      {item.ownerEmail ?? (
+                        <span className="text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {item.apiaryName ?? <span className="text-muted-foreground">—</span>}
+                      {item.apiaryName ?? (
+                        <span className="text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-right tabular-nums">
                       {formatBytes(item.fileSize)}
@@ -281,7 +304,10 @@ const MediaPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      <MediaPreviewDialog item={previewItem} onClose={() => setPreviewItem(null)} />
+      <MediaPreviewDialog
+        item={previewItem}
+        onClose={() => setPreviewItem(null)}
+      />
     </div>
   );
 };

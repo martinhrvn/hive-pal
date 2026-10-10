@@ -45,7 +45,10 @@ export const EditInspectionPage = () => {
           <AlertDescription>
             <div>
               {t('inspection:edit.completingFrom', {
-                date: format(parseISO(inspection.date as string), 'EEEE, MMMM d, yyyy'),
+                date: format(
+                  parseISO(inspection.date as string),
+                  'EEEE, MMMM d, yyyy',
+                ),
               })}
             </div>
             <div className="mt-1 flex items-center gap-2 text-green-600">

@@ -51,7 +51,7 @@ export const useJoinApiary = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['apiaries'] });
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/join', 'POST');
     },
   });
@@ -92,7 +92,7 @@ export const useCreateApiaryInvite = () => {
         queryKey: SHARING_KEYS.invites(apiaryId),
       });
     },
-    onError: (error) => {
+    onError: error => {
       logApiError(error, '/api/apiaries/invites', 'POST');
     },
   });
@@ -104,9 +104,7 @@ export const useRevokeApiaryInvite = () => {
 
   return useMutation<void, Error, { apiaryId: string; inviteId: string }>({
     mutationFn: async ({ apiaryId, inviteId }) => {
-      await apiClient.delete(
-        `/api/apiaries/${apiaryId}/invites/${inviteId}`,
-      );
+      await apiClient.delete(`/api/apiaries/${apiaryId}/invites/${inviteId}`);
     },
     onSuccess: async (_data, { apiaryId }) => {
       await queryClient.invalidateQueries({
@@ -160,9 +158,7 @@ export const useRemoveApiaryMember = () => {
 
   return useMutation<void, Error, { apiaryId: string; memberId: string }>({
     mutationFn: async ({ apiaryId, memberId }) => {
-      await apiClient.delete(
-        `/api/apiaries/${apiaryId}/members/${memberId}`,
-      );
+      await apiClient.delete(`/api/apiaries/${apiaryId}/members/${memberId}`);
     },
     onSuccess: async (_data, { apiaryId }) => {
       await queryClient.invalidateQueries({

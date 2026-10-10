@@ -10,7 +10,10 @@ interface StoresStepProps {
   broodFrameCapacity?: number | null;
 }
 
-export function StoresStep({ isSubjective, broodFrameCapacity }: StoresStepProps) {
+export function StoresStep({
+  isSubjective,
+  broodFrameCapacity,
+}: StoresStepProps) {
   const { t } = useTranslation('inspection');
   const { control } = useFormContext<InspectionFormData>();
 
@@ -25,7 +28,9 @@ export function StoresStep({ isSubjective, broodFrameCapacity }: StoresStepProps
         <Controller
           control={control}
           name={
-            isSubjective ? 'observations.honeyStores' : 'observations.honeyFrames'
+            isSubjective
+              ? 'observations.honeyStores'
+              : 'observations.honeyFrames'
           }
           render={({ field }) =>
             isSubjective ? (
@@ -48,7 +53,9 @@ export function StoresStep({ isSubjective, broodFrameCapacity }: StoresStepProps
         <Controller
           control={control}
           name={
-            isSubjective ? 'observations.pollenStores' : 'observations.pollenFrames'
+            isSubjective
+              ? 'observations.pollenStores'
+              : 'observations.pollenFrames'
           }
           render={({ field }) =>
             isSubjective ? (

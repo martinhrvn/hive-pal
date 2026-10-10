@@ -767,14 +767,12 @@ export class HiveService {
                   : ((box.id
                       ? (
                           oldBoxesById.get(box.id) as
-                            | { addedAt?: Date }
-                            | undefined
+                            { addedAt?: Date } | undefined
                         )?.addedAt
                       : undefined) ??
                     (
                       oldBoxesByPosition.get(box.position) as
-                        | { addedAt?: Date }
-                        | undefined
+                        { addedAt?: Date } | undefined
                     )?.addedAt ??
                     new Date()),
             winterized: box.winterized ?? false,

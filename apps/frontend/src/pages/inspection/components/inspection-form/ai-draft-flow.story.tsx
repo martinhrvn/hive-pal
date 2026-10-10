@@ -131,7 +131,9 @@ const AiDraftFlowHarness = ({
           disableBoxConfig
         />
         <div data-test="pending-count">pending:{pendingSuggestionCount}</div>
-        <div data-test="conflict-count">conflicts:{conflictSuggestionCount}</div>
+        <div data-test="conflict-count">
+          conflicts:{conflictSuggestionCount}
+        </div>
         <pre data-test="form-values">
           {JSON.stringify(
             {

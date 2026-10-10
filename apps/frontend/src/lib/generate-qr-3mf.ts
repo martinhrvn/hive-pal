@@ -185,7 +185,12 @@ const DOS_DATE = (1 << 5) | 1;
 function createZip(files: ZipEntry[]): ArrayBuffer {
   const enc = new TextEncoder();
   const localParts: Uint8Array[] = [];
-  type CDE = { nameBytes: Uint8Array; crc: number; size: number; offset: number };
+  type CDE = {
+    nameBytes: Uint8Array;
+    crc: number;
+    size: number;
+    offset: number;
+  };
   const cdEntries: CDE[] = [];
   let offset = 0;
 

@@ -123,7 +123,10 @@ export function LlmPromptDialog({ hiveId, hiveName }: LlmPromptDialogProps) {
           />
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs text-muted-foreground">
-              {t('llmPrompt.charactersLength', { length: promptText.length, defaultValue: '{{length}} characters' })}
+              {t('llmPrompt.charactersLength', {
+                length: promptText.length,
+                defaultValue: '{{length}} characters',
+              })}
             </span>
             <div className="flex items-center gap-2">
               {features?.aiEnabled && hive?.apiaryId && (

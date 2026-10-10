@@ -5,7 +5,10 @@ import axios from 'axios';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
-import { validatePayloadFreshness, StalePayloadError } from '@/utils/boxUpdateValidation';
+import {
+  validatePayloadFreshness,
+  StalePayloadError,
+} from '@/utils/boxUpdateValidation';
 import { useUpdateHiveBoxes } from '@/api/hooks/useHives';
 import type { UpdateHiveBoxes } from 'shared-schemas';
 import { toast } from 'sonner';
@@ -27,23 +30,23 @@ interface PendingBoxUpdateBannerProps {
  * - Disabling retry if payload is stale or max retries reached
  * - Dismissing the banner
  */
-export const PendingBoxUpdateBanner: React.FC<
-  PendingBoxUpdateBannerProps
-> = ({ inspectionId }) => {
+export const PendingBoxUpdateBanner: React.FC<PendingBoxUpdateBannerProps> = ({
+  inspectionId,
+}) => {
   const { t } = useTranslation('inspection');
   const retryTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isRetrying, setIsRetrying] = useState(false);
 
   // Store mutations
   const getPendingUpdate = usePendingBoxUpdatesStore(
-    (state) => state.getPendingUpdate
+    state => state.getPendingUpdate,
   );
-  const updateStatus = usePendingBoxUpdatesStore((state) => state.updateStatus);
+  const updateStatus = usePendingBoxUpdatesStore(state => state.updateStatus);
   const incrementRetryCount = usePendingBoxUpdatesStore(
-    (state) => state.incrementRetryCount
+    state => state.incrementRetryCount,
   );
   const removePendingUpdate = usePendingBoxUpdatesStore(
-    (state) => state.removePendingUpdate
+    state => state.removePendingUpdate,
   );
 
   // API mutation for box update
@@ -177,9 +180,7 @@ export const PendingBoxUpdateBanner: React.FC<
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle>
-          {t('inspection:pendingBoxUpdate.failedTitle')}
-        </AlertTitle>
+        <AlertTitle>{t('inspection:pendingBoxUpdate.failedTitle')}</AlertTitle>
         <AlertDescription className="space-y-3">
           <div className="text-sm">
             {pendingUpdate.error ||
@@ -192,18 +193,12 @@ export const PendingBoxUpdateBanner: React.FC<
               onClick={handleRetry}
               disabled={isRetryDisabled || isStalenessError || isRetrying}
             >
-              {isRetrying && (
-                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-              )}
+              {isRetrying && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
               {isRetryDisabled || isStalenessError
                 ? t('inspection:pendingBoxUpdate.retryDisabled')
                 : t('inspection:pendingBoxUpdate.retry')}
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleDismiss}
-            >
+            <Button size="sm" variant="outline" onClick={handleDismiss}>
               <X className="mr-2 h-3 w-3" />
               {t('inspection:pendingBoxUpdate.dismiss')}
             </Button>

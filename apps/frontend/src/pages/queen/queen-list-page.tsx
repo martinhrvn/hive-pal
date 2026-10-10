@@ -93,7 +93,7 @@ export const QueenListPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Hives</SelectItem>
-                  {hives?.map((hive) => (
+                  {hives?.map(hive => (
                     <SelectItem key={hive.id} value={hive.id}>
                       {hive.name}
                     </SelectItem>

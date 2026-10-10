@@ -15,9 +15,7 @@ export function DocumentDownloadLink({
 
   useEffect(() => {
     apiClient
-      .get<{ downloadUrl: string }>(
-        `/api/documents/${documentId}/download-url`,
-      )
+      .get<{ downloadUrl: string }>(`/api/documents/${documentId}/download-url`)
       .then(res => setUrl(res.data.downloadUrl))
       .catch(() => {});
   }, [documentId]);

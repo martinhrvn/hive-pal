@@ -3,7 +3,7 @@
  * method so the rounded integers always sum to exactly 100.
  */
 export function largestRemainder(counts: number[], total: number): number[] {
-  const raw     = counts.map(c => (c / total) * 100);
+  const raw = counts.map(c => (c / total) * 100);
   const floored = raw.map(v => Math.floor(v));
   const deficit = 100 - floored.reduce((a, b) => a + b, 0);
 

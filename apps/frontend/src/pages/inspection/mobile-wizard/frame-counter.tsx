@@ -8,7 +8,12 @@ interface FrameCounterProps {
   label?: string;
 }
 
-export function FrameCounter({ value, onChange, max, label }: FrameCounterProps) {
+export function FrameCounter({
+  value,
+  onChange,
+  max,
+  label,
+}: FrameCounterProps) {
   const current = value ?? 0;
   const ceiling = max ?? 99;
   const dec = () => onChange(Math.max(0, current - 1));

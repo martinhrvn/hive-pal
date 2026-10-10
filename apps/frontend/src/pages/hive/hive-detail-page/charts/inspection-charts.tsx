@@ -1,10 +1,4 @@
-import {
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
+import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import {
   ChartContainer,

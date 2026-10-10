@@ -116,7 +116,8 @@ const formatQueenSummary = (q: BulkQueenPayload): string => {
 
 const renderItemSummary = (item: StagedItem): string => {
   if (item.kind === 'action') return formatActionDetails(item.action);
-  if (item.kind === 'inspection') return formatInspectionSummary(item.inspection);
+  if (item.kind === 'inspection')
+    return formatInspectionSummary(item.inspection);
   return formatQueenSummary(item.queen);
 };
 
@@ -186,7 +187,11 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
           ]);
         };
         return (
-          <FeedingForm action={initial} onSave={handleSave} onRemove={noOpRemove} />
+          <FeedingForm
+            action={initial}
+            onSave={handleSave}
+            onRemove={noOpRemove}
+          />
         );
       }
       case 'TREATMENT': {
@@ -234,7 +239,11 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
           ]);
         };
         return (
-          <FramesForm action={initial} onSave={handleSave} onRemove={noOpRemove} />
+          <FramesForm
+            action={initial}
+            onSave={handleSave}
+            onRemove={noOpRemove}
+          />
         );
       }
       case 'NOTE': {

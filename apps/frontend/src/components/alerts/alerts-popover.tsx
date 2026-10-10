@@ -51,7 +51,8 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
   const config = severityConfig[highestSeverity];
   const Icon = config.icon;
   const alertCount = alerts.length;
-  const pluralLabel = alertCount === 1 ? t('common:alerts.alert') : t('common:alerts.alerts');
+  const pluralLabel =
+    alertCount === 1 ? t('common:alerts.alert') : t('common:alerts.alerts');
 
   return (
     <Popover>
@@ -74,7 +75,10 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
           <div className="flex items-center gap-2 mb-3">
             <Icon className={cn('h-4 w-4', config.color)} />
             <h4 className="font-medium text-sm">
-              {alertCount} {alertCount === 1 ? t('common:alerts.activeAlert') : t('common:alerts.activeAlerts')}
+              {alertCount}{' '}
+              {alertCount === 1
+                ? t('common:alerts.activeAlert')
+                : t('common:alerts.activeAlerts')}
             </h4>
           </div>
 

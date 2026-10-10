@@ -8,7 +8,10 @@ import { initReactI18next } from 'react-i18next';
  * `initImmediate: false` makes init synchronous so the caller can render
  * immediately. `useSuspense: false` avoids Suspense on the server.
  */
-export function createServerI18n(lang: string, resources: Resource): I18nInstance {
+export function createServerI18n(
+  lang: string,
+  resources: Resource,
+): I18nInstance {
   const instance = i18next.createInstance();
   const namespaces = Object.keys(
     (resources[lang] as Record<string, unknown> | undefined) ??

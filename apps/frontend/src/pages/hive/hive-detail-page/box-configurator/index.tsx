@@ -101,10 +101,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
             }
 
             // Check if other boxes need variant update
-            if (
-              box.variant &&
-              !isVariantCompatible(mainVariant, box.variant)
-            ) {
+            if (box.variant && !isVariantCompatible(mainVariant, box.variant)) {
               // Auto-convert to equivalent in new system
               const newVariant = getEquivalentVariant(box.variant, newSystem);
               const newFs = findFrameSizeForVariant(frameSizes, newVariant);
@@ -264,7 +261,9 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
             frameSizes={frameSizes}
             hiveId={hive?.id}
             lastBoxMaintenance={maintenanceActions.find(
-              a => a.details?.type === 'MAINTENANCE' && a.details.component === 'BOX',
+              a =>
+                a.details?.type === 'MAINTENANCE' &&
+                a.details.component === 'BOX',
             )}
           />
         </div>

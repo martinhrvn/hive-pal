@@ -35,7 +35,7 @@ export const StoresChart: React.FC<StoresChartProps> = ({ hiveId, period }) => {
       config={{
         pollen: { label: 'Pollen', color: '#22c55e' },
         nectar: { label: 'Nectar', color: '#f97316' },
-        honey:  { label: 'Honey',  color: '#eab308' },
+        honey: { label: 'Honey', color: '#eab308' },
       }}
       dataTransformer={inspection => ({
         date: format(parseISO(inspection.date), 'MMM dd'),
@@ -45,16 +45,34 @@ export const StoresChart: React.FC<StoresChartProps> = ({ hiveId, period }) => {
       })}
       filterFn={hasStoresData}
     >
-      {(chartData) => (
+      {chartData => (
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis allowDecimals={false} />
           <ChartTooltip content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
-          <Line type="monotone" dataKey="pollen" stroke="var(--color-pollen)" strokeWidth={2} connectNulls />
-          <Line type="monotone" dataKey="nectar" stroke="var(--color-nectar)" strokeWidth={2} connectNulls />
-          <Line type="monotone" dataKey="honey"  stroke="var(--color-honey)"  strokeWidth={2} connectNulls />
+          <Line
+            type="monotone"
+            dataKey="pollen"
+            stroke="var(--color-pollen)"
+            strokeWidth={2}
+            connectNulls
+          />
+          <Line
+            type="monotone"
+            dataKey="nectar"
+            stroke="var(--color-nectar)"
+            strokeWidth={2}
+            connectNulls
+          />
+          <Line
+            type="monotone"
+            dataKey="honey"
+            stroke="var(--color-honey)"
+            strokeWidth={2}
+            connectNulls
+          />
         </LineChart>
       )}
     </BaseInspectionChart>

@@ -45,7 +45,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { useFormContext } from 'react-hook-form';
-import { ActionData, BoxConfigurationActionData, InspectionFormData } from './schema.ts';
+import {
+  ActionData,
+  BoxConfigurationActionData,
+  InspectionFormData,
+} from './schema.ts';
 import {
   ActionType as ActionTypeEnum,
   HiveStatus as HiveStatusEnum,
@@ -152,9 +156,7 @@ const formatActionDetails = (action: Record<string, unknown>): string => {
       !(typeof value === 'string' && value.trim() === ''),
   );
 
-  return entries
-    .map(([key, value]) => `${key}: ${String(value)}`)
-    .join('\n');
+  return entries.map(([key, value]) => `${key}: ${String(value)}`).join('\n');
 };
 
 const AiActionSuggestionCard = ({

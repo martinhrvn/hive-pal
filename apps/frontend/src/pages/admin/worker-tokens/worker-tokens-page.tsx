@@ -230,7 +230,7 @@ const WorkerTokensPage: React.FC = () => {
 
       <Dialog
         open={createOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           if (!open) handleCloseCreated();
           setCreateOpen(open);
         }}
@@ -276,8 +276,8 @@ const WorkerTokensPage: React.FC = () => {
               <Input
                 placeholder="e.g. home-desktop"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setName(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === 'Enter' && name.trim()) handleCreate();
                 }}
                 autoFocus

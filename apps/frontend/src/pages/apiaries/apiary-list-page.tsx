@@ -85,7 +85,9 @@ export const ApiaryListPage = () => {
                       {apiary.name}
                       {apiary.isShared && (
                         <Badge variant="secondary" className="text-xs">
-                          {apiary.role === 'EDITOR' ? 'Shared · Edit' : 'Shared · View'}
+                          {apiary.role === 'EDITOR'
+                            ? 'Shared · Edit'
+                            : 'Shared · View'}
                         </Badge>
                       )}
                     </span>

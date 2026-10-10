@@ -219,8 +219,7 @@ export const transformActionsForApi = (
                 type: b.type,
                 frameCount: b.frameCount,
               })) ?? action.boxesSummary) as
-                | { type: BoxTypeEnum; frameCount: number }[]
-                | undefined,
+                { type: BoxTypeEnum; frameCount: number }[] | undefined,
             },
           };
         default:

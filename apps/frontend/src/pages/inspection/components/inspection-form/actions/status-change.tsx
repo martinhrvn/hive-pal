@@ -54,13 +54,20 @@ export const StatusChangeForm: React.FC<StatusChangeActionProps> = ({
   return (
     <div className={'grid grid-cols-1 gap-4 mt-5'}>
       <h3 className="text-lg font-bold">
-        {t('inspection:form.actions.statusChange_section.title', 'Status Change')}
+        {t(
+          'inspection:form.actions.statusChange_section.title',
+          'Status Change',
+        )}
       </h3>
 
       {currentStatus && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>
-            {t('inspection:form.actions.statusChange_section.current', 'Current')}:
+            {t(
+              'inspection:form.actions.statusChange_section.current',
+              'Current',
+            )}
+            :
           </span>
           <HiveStatus status={currentStatus} />
         </div>
@@ -68,7 +75,10 @@ export const StatusChangeForm: React.FC<StatusChangeActionProps> = ({
 
       <div className="flex flex-col gap-4">
         <label>
-          {t('inspection:form.actions.statusChange_section.newStatus', 'New status')}
+          {t(
+            'inspection:form.actions.statusChange_section.newStatus',
+            'New status',
+          )}
         </label>
         <div className="flex flex-wrap gap-4">
           {options.map(({ id, label }) => (
@@ -146,7 +156,10 @@ export const StatusChangeView: React.FC<StatusChangeActionProps> = ({
     />
   ) : (
     <ActionViewRenderer
-      title={t('inspection:form.actions.statusChange_section.title', 'Status Change')}
+      title={t(
+        'inspection:form.actions.statusChange_section.title',
+        'Status Change',
+      )}
       badges={<Badge>{getHiveStatusLabel(action.toStatus)}</Badge>}
       notes={action.notes}
       onEdit={() => setIsEditing(true)}

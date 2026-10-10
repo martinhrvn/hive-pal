@@ -79,7 +79,10 @@ export const useApiary = () => {
       if (viewAllApiaries) {
         setViewAllApiaries(false);
       }
-    } else if (!activeApiaryId || !apiaries.some(a => a.id === activeApiaryId)) {
+    } else if (
+      !activeApiaryId ||
+      !apiaries.some(a => a.id === activeApiaryId)
+    ) {
       // No selection or stale selection — set to first available. This keeps a
       // valid write target even while viewing all apiaries.
       setActiveApiaryId(apiaries[0].id);

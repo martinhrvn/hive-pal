@@ -44,12 +44,22 @@ export function AiMergeBanner({
           </Button>
 
           {conflictCount > 0 && (
-            <Button type="button" size="sm" variant="outline" onClick={onReviewConflicts}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={onReviewConflicts}
+            >
               {t('banner.reviewConflicts')}
             </Button>
           )}
 
-          <Button type="button" size="sm" variant="ghost" onClick={onDismissAll}>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={onDismissAll}
+          >
             {t('banner.dismissAll')}
           </Button>
         </div>

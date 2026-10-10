@@ -5,7 +5,9 @@ const SUBJECTIVE_ONLY_OBSERVATION_FIELDS = [
   'uncappedBrood',
   'honeyStores',
   'pollenStores',
-] as const satisfies readonly (keyof NonNullable<InspectionFormData['observations']>)[];
+] as const satisfies readonly (keyof NonNullable<
+  InspectionFormData['observations']
+>)[];
 
 const DATA_DRIVEN_ONLY_OBSERVATION_FIELDS = [
   'totalFrames',
@@ -17,7 +19,9 @@ const DATA_DRIVEN_ONLY_OBSERVATION_FIELDS = [
   'nectarFrames',
   'honeyFrames',
   'emptyFrames',
-] as const satisfies readonly (keyof NonNullable<InspectionFormData['observations']>)[];
+] as const satisfies readonly (keyof NonNullable<
+  InspectionFormData['observations']
+>)[];
 
 const omitObservationFields = (
   observations: InspectionFormData['observations'] | undefined,

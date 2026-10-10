@@ -136,7 +136,8 @@ const convertFormDataToUpdate = (
     const maintenanceAction = formAction as MaintenanceActionData;
     details = {
       type: ActionType.MAINTENANCE,
-      component: maintenanceAction.component as 'BOX' | 'BOTTOM_BOARD' | 'COVER',
+      component: maintenanceAction.component as
+        'BOX' | 'BOTTOM_BOARD' | 'COVER',
       status: maintenanceAction.status as 'REPLACED' | 'CLEANED',
     };
   } else if (formAction.type === ActionType.NOTE) {

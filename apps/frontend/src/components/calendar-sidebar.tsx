@@ -6,11 +6,7 @@ import { useOverdueInspections } from '@/api/hooks/useInspections';
 import { useHives } from '@/api/hooks/useHives';
 import { InspectionResponse } from 'shared-schemas';
 import { format, isBefore, isSameDay, startOfDay } from 'date-fns';
-import {
-  Clock,
-  AlertTriangle,
-  ExternalLink,
-} from 'lucide-react';
+import { Clock, AlertTriangle, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getDateLocale } from '@/utils/locale-utils.ts';
 import {
