@@ -3,22 +3,28 @@ import path from 'path';
 import type { Request, Response, NextFunction } from 'express';
 
 /**
- * Serves prerendered, language-prefixed public pages.
+ * Directory inside the static root that holds the prerendered public pages.
+ * Written by the frontend build (`apps/frontend/scripts/finalize-client-build.ts`);
+ * keep the two in sync.
+ */
+export const PRERENDER_DIR = '__prerender';
+
+/**
+ * Serves the prerendered, multilingual public pages.
  *
- * The frontend build writes flat `.html` files for every public route × language
- * (e.g. `da/tools/syrup-calculator.html`, `da.html`). For a navigation request
- * this middleware serves the matching `<path>.html` when it exists; everything
- * else (assets, locale JSON, the SPA shell fallback) is left to ServeStaticModule.
+ * The frontend build writes `<PRERENDER_DIR>/<path>/index.html` for every public
+ * route × language (e.g. `__prerender/index.html` for `/`,
+ * `__prerender/da/tools/syrup-calculator/index.html`). For a navigation request
+ * this middleware serves the matching file when it exists; everything else
+ * (assets, locale JSON, the SPA shell `index.html` served by ServeStaticModule
+ * for every other route) is left to ServeStaticModule.
  *
- * It runs before ServeStaticModule (registered here in main.ts, before
- * `app.listen()` triggers the module's onModuleInit), which is what lets it
- * serve a route like `/da` that would otherwise be shadowed by the `da/`
- * directory holding its child routes.
+ * Registered in main.ts before ServeStaticModule (which registers in
+ * onModuleInit, i.e. during listen()), so it sees navigation requests first.
  */
 export function createPrerenderFallback(staticRoot: string) {
-  const rootWithSep = staticRoot.endsWith(path.sep)
-    ? staticRoot
-    : staticRoot + path.sep;
+  const prerenderRoot = path.resolve(staticRoot, PRERENDER_DIR);
+  const rootWithSep = prerenderRoot + path.sep;
 
   return (req: Request, res: Response, next: NextFunction): void => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();
@@ -32,11 +38,7 @@ export function createPrerenderFallback(staticRoot: string) {
     }
 
     const pathname = req.path;
-    if (
-      pathname === '/' ||
-      pathname.startsWith('/api') ||
-      pathname.startsWith('/assets/')
-    ) {
+    if (pathname.startsWith('/api') || pathname.startsWith('/assets/')) {
       return next();
     }
 
@@ -47,8 +49,10 @@ export function createPrerenderFallback(staticRoot: string) {
       return next();
     }
 
-    const candidate = path.resolve(staticRoot, '.' + decoded + '.html');
-    // Guard against path traversal escaping the static root.
+    // '/' -> <root>/index.html, '/da/tools' and '/da/tools/' -> <root>/da/tools/index.html
+    const relative = decoded.replace(/^\/+/, '').replace(/\/+$/, '');
+    const candidate = path.resolve(prerenderRoot, relative, 'index.html');
+    // Guard against path traversal escaping the prerender root.
     if (!candidate.startsWith(rootWithSep)) return next();
 
     if (existsSync(candidate) && statSync(candidate).isFile()) {

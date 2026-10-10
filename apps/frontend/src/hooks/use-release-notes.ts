@@ -26,6 +26,8 @@ interface ReleaseNotesState {
 }
 
 const loadDismissedReleases = (): DismissedRelease[] => {
+  // No storage while prerendering on the server.
+  if (typeof localStorage === 'undefined') return [];
   const stored = localStorage.getItem(RELEASE_NOTES_STORAGE_KEY);
   if (stored) {
     return (

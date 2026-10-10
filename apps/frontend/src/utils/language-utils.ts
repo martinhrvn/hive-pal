@@ -1,3 +1,8 @@
+import {
+  PUBLIC_PAGE_TRANSLATION_MARKERS,
+  type PublicRoute,
+} from '../routes/public-routes';
+
 export const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'da', name: 'Dansk', flag: '🇩🇰' },
@@ -128,34 +133,12 @@ export function buildLocalizedPath(neutralPath: string, lang: string): string {
 }
 
 /**
- * Per-page marker key proving a public page has real (non-fallback) content in a
- * given language. Mirrors `ROUTE_TRANSLATION_MARKERS` in
- * `scripts/prerender-ssr.mjs`. Used to keep localized pages that only render the
- * English fallback from competing with the canonical English page in search.
- * Pages absent from this map are always treated as translated (existing behavior).
- */
-const PUBLIC_PAGE_TRANSLATION_MARKERS: Record<
-  string,
-  { readonly ns: string; readonly key: string }
-> = {
-  '/': { ns: 'common', key: 'marketing.landing.hero.lede' },
-  '/features': { ns: 'common', key: 'marketing.features.hero.lede' },
-  '/tools': { ns: 'common', key: 'marketing.toolsIndex.intro' },
-  '/tools/syrup-calculator': { ns: 'common', key: 'syrupCalculator.intro' },
-  '/tools/brood-timeline': { ns: 'common', key: 'broodTimeline.intro' },
-  '/tools/swarm-management': { ns: 'common', key: 'swarmManagement.intro' },
-  '/tools/swarm-management/demaree': {
-    ns: 'common',
-    key: 'swarmManagement.demaree.description',
-  },
-  '/tools/liebefelder': { ns: 'common', key: 'liebefelder.intro' },
-  '/tools/varroa-management': { ns: 'common', key: 'varroaManagement.intro' },
-};
-
-/**
  * Whether a public page has a genuine translation (not the English fallback or an
- * untranslated placeholder) in the given language. English is always considered
- * translated; unknown paths default to `true`. A marker value identical to the
+ * untranslated placeholder) in the given language, judged by the page's marker
+ * key in `PUBLIC_PAGE_TRANSLATION_MARKERS` (the same rule the build uses to
+ * decide which localized pages to prerender). English is always considered
+ * translated; paths that are not public pages default to `true`; pages marked
+ * English-only (`null`) are never translated. A marker value identical to the
  * English source counts as untranslated.
  */
 export function isPublicPathTranslated(
@@ -165,8 +148,11 @@ export function isPublicPathTranslated(
 ): boolean {
   if (normalizeLanguageCode(lang) === DEFAULT_LANGUAGE) return true;
   const marker =
-    PUBLIC_PAGE_TRANSLATION_MARKERS[stripLanguagePrefix(neutralPath)];
-  if (!marker) return true;
+    PUBLIC_PAGE_TRANSLATION_MARKERS[
+      stripLanguagePrefix(neutralPath) as PublicRoute
+    ];
+  if (marker === undefined) return true;
+  if (marker === null) return false;
   const value = i18n.getResource(lang, marker.ns, marker.key);
   if (value == null || value === '') return false;
   return value !== i18n.getResource(DEFAULT_LANGUAGE, marker.ns, marker.key);

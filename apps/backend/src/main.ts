@@ -11,9 +11,10 @@ import { startMetricsServer } from './health/prometheus/metrics-server';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Serve prerendered language-prefixed public pages before ServeStaticModule
-  // (which registers in onModuleInit, i.e. during listen()). Must precede it so
-  // a route like `/da` isn't shadowed by the `da/` directory.
+  // Serve the prerendered public pages (static/__prerender/<path>/index.html)
+  // to logged-out visitors before ServeStaticModule (which registers in
+  // onModuleInit, i.e. during listen()) answers everything else with the SPA
+  // shell (static/index.html).
   app.use(createPrerenderFallback(join(__dirname, '..', 'static')));
   if (process.env.NODE_ENV !== 'production') {
     app.enableCors({

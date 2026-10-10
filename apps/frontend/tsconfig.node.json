@@ -18,7 +18,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "react-router.config.ts",
+    "scripts/finalize-client-build.ts"
+  ]
 }

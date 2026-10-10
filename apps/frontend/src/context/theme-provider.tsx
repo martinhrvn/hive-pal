@@ -17,8 +17,10 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const { preferences, updatePreferences } = usePreferences();
   const { isLoggedIn, isLoading } = useAuth();
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+  const [theme, setTheme] = useState<Theme>(() =>
+    typeof localStorage === 'undefined'
+      ? defaultTheme
+      : (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
 
   // Update theme when user preferences are loaded

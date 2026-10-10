@@ -18,9 +18,13 @@ interface ApiaryState {
 
 export const useApiaryStore = create<ApiaryState>(set => {
   // Initialize from localStorage
-  const apiaryFromLocalStorage = localStorage.getItem(APIARY_SELECTION);
+  // No storage while prerendering on the server.
+  const hasStorage = typeof localStorage !== 'undefined';
+  const apiaryFromLocalStorage = hasStorage
+    ? localStorage.getItem(APIARY_SELECTION)
+    : null;
   const viewAllFromLocalStorage =
-    localStorage.getItem(VIEW_ALL_APIARIES) === 'true';
+    hasStorage && localStorage.getItem(VIEW_ALL_APIARIES) === 'true';
 
   return {
     activeApiaryId: apiaryFromLocalStorage || null,

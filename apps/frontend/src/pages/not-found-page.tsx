@@ -1,3 +1,8 @@
 export const NotFoundPage = () => {
-  return <div>Not Found</div>;
+  return (
+    <>
+      <title>Page not found - Hive Pal</title>
+      <div>Not Found</div>
+    </>
+  );
 };
