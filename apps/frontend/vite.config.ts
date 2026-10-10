@@ -4,6 +4,21 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const VENDOR_CHUNKS: Record<string, string[]> = {
+  'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+  'vendor-ui': [
+    '@radix-ui/react-dialog',
+    '@radix-ui/react-dropdown-menu',
+    '@radix-ui/react-select',
+    '@radix-ui/react-tabs',
+    '@radix-ui/react-tooltip',
+  ],
+  'vendor-charts': ['recharts'],
+  'vendor-maps': ['leaflet', 'react-leaflet'],
+  'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+  'vendor-query': ['@tanstack/react-query'],
+};
+
 // https://vite.dev/config/
 export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
@@ -76,12 +91,12 @@ export default defineConfig(({ isSsrBuild }) => ({
       ...(isSsrBuild
         ? {
             '@/lib/auth-client': path.resolve(
-              __dirname,
+              import.meta.dirname,
               './src/lib/auth-client.ssr.ts',
             ),
           }
         : {}),
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   server: {
@@ -97,23 +112,39 @@ export default defineConfig(({ isSsrBuild }) => ({
     noExternal: true,
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: isSsrBuild
         ? {}
         : {
-            manualChunks: {
-              'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-              'vendor-ui': [
-                '@radix-ui/react-dialog',
-                '@radix-ui/react-dropdown-menu',
-                '@radix-ui/react-select',
-                '@radix-ui/react-tabs',
-                '@radix-ui/react-tooltip',
+            // Vite 8 bundles with Rolldown, which replaced manualChunks with
+            // codeSplitting groups. Besides the named vendor chunks this also
+            // folds modules shared by several lazy routes (icons, UI primitives,
+            // date-fns helpers) into one 'vendor' / 'shared' chunk each, where
+            // Rolldown would otherwise emit a tiny chunk per module.
+            codeSplitting: {
+              groups: [
+                ...Object.entries(VENDOR_CHUNKS).map(([name, pkgs]) => ({
+                  name,
+                  test: new RegExp(
+                    `/node_modules/(${pkgs
+                      .map(pkg => pkg.replace(/[./]/g, '\\$&'))
+                      .join('|')})/`,
+                  ),
+                  priority: 20,
+                })),
+                {
+                  name: 'vendor',
+                  test: /\/node_modules\//,
+                  minShareCount: 2,
+                  priority: 10,
+                },
+                {
+                  name: 'shared',
+                  test: (id: string) => !id.includes('/node_modules/'),
+                  minShareCount: 2,
+                  priority: 1,
+                },
               ],
-              'vendor-charts': ['recharts'],
-              'vendor-maps': ['leaflet', 'react-leaflet'],
-              'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
-              'vendor-query': ['@tanstack/react-query'],
             },
           },
     },
