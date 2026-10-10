@@ -1,29 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import {
-  HealthIndicator,
   HealthIndicatorResult,
-  HealthCheckError,
+  HealthIndicatorService,
 } from '@nestjs/terminus';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CustomLoggerService } from '../../logger/logger.service';
 
 @Injectable()
-export class PrismaHealthIndicator extends HealthIndicator {
+export class PrismaHealthIndicator {
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly healthIndicatorService: HealthIndicatorService,
     private readonly logger: CustomLoggerService,
   ) {
-    super();
     this.logger.setContext('PrismaHealthIndicator');
   }
 
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
+    const indicator = this.healthIndicatorService.check(key);
     try {
       // Execute a simple query to check the database connection
       await this.prismaService.$queryRaw`SELECT 1`;
       this.logger.debug('Database health check passed');
 
-      return this.getStatus(key, true);
+      return indicator.up();
     } catch (error: unknown) {
       const errorMessage =
         typeof (error as { message?: string })?.message === 'string'
@@ -40,10 +40,7 @@ export class PrismaHealthIndicator extends HealthIndicator {
         errorStack,
       );
 
-      throw new HealthCheckError(
-        'Prisma health check failed',
-        this.getStatus(key, false, { message: errorMessage }),
-      );
+      return indicator.down({ message: errorMessage });
     }
   }
 }
