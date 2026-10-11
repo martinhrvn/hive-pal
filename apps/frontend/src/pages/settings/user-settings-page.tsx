@@ -38,6 +38,9 @@ import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { PasskeysCard } from '@/components/passkeys-card';
+import { SsoAccountCard } from '@/components/auth/sso-account-card';
+import { useLinkedAccounts } from '@/api/hooks/useAuth';
+import { getAuthConfig } from '@/lib/auth-config';
 import { DeleteAccountDialog } from '@/components/common/delete-account-dialog';
 
 export const UserSettingsPage = () => {
@@ -48,6 +51,10 @@ export const UserSettingsPage = () => {
   const { user, logout } = useAuth();
   const deleteAccount = useDeleteAccount();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const { oidcEnabled, localLoginEnabled } = getAuthConfig();
+  const { data: linkedProviders } = useLinkedAccounts();
+  // SSO-only accounts have no password to change.
+  const hasPassword = linkedProviders?.includes('credential') ?? true;
 
   const handleDeleteAccount = async () => {
     try {
@@ -394,34 +401,41 @@ export const UserSettingsPage = () => {
         </Card>
 
         {/* Account Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              {t('settings.accountSettings')}
-            </CardTitle>
-            <CardDescription>{t('settings.manageAccountInfo')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-medium">{t('settings.password')}</p>
-                <p className="text-sm text-muted-foreground">
+        {localLoginEnabled && hasPassword && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                {t('settings.accountSettings')}
+              </CardTitle>
+              <CardDescription>
+                {t('settings.manageAccountInfo')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-medium">{t('settings.password')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t('settings.changePassword')}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/account/change-password')}
+                >
                   {t('settings.changePassword')}
-                </p>
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => navigate('/account/change-password')}
-              >
-                {t('settings.changePassword')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Single sign-on */}
+        {oidcEnabled && <SsoAccountCard />}
 
         {/* Passkeys */}
-        <PasskeysCard />
+        {localLoginEnabled && <PasskeysCard />}
 
         {/* Data */}
         <Card>

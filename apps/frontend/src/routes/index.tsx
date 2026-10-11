@@ -25,7 +25,7 @@ import {
   QueenListPage,
 } from '@/pages/queen';
 import { TodoListPage } from '@/pages/todo';
-import { ChangePasswordPage } from '@/pages/account';
+import { ChangePasswordPage, PrivacyConsentPage } from '@/pages/account';
 import GenericErrorPage from '@/pages/error-page.tsx';
 import {
   CreateApiaryPage,
@@ -702,6 +702,10 @@ const router = createBrowserRouter([
   {
     path: '/account/change-password',
     element: <ChangePasswordPage />,
+  },
+  {
+    path: '/account/consent',
+    element: <PrivacyConsentPage />,
   },
   {
     path: '/onboarding',

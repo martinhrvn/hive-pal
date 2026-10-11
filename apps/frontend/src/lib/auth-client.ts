@@ -4,6 +4,7 @@ import {
   adminClient,
   customSessionClient,
   inferAdditionalFields,
+  genericOAuthClient,
 } from 'better-auth/client/plugins';
 import { passkeyClient } from '@better-auth/passkey/client';
 
@@ -12,12 +13,14 @@ export const authClient = createAuthClient({
     magicLinkClient(),
     passkeyClient(),
     adminClient(),
+    genericOAuthClient(),
     inferAdditionalFields({
       user: {
         role: { type: 'string' },
         passwordChangeRequired: { type: 'boolean' },
         privacyPolicyConsent: { type: 'boolean' },
         newsletterConsent: { type: 'boolean' },
+        consentRequired: { type: 'boolean' },
       },
     }),
     customSessionClient(),
