@@ -1,8 +1,17 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { magicLink, admin, customSession } from 'better-auth/plugins';
+import {
+  magicLink,
+  admin,
+  customSession,
+  genericOAuth,
+} from 'better-auth/plugins';
 import { passkey } from '@better-auth/passkey';
-import { createAuthMiddleware } from 'better-auth/api';
+import {
+  APIError,
+  createAuthMiddleware,
+  getSessionFromCtx,
+} from 'better-auth/api';
 import {
   hashPassword as scryptHash,
   verifyPassword as scryptVerify,
@@ -12,6 +21,12 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client.js';
 import { authDeps } from './auth-deps';
 import { UserLoginEvent } from '../events/auth.events';
+import {
+  LOCAL_LOGIN_PATHS,
+  isLocalLoginDisabled,
+  loadOidcConfig,
+} from './oidc-config';
+import { secureOidcAccountLink } from './oidc-linking';
 
 const prismaForAuth = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
@@ -37,6 +52,17 @@ const useSecureCookies =
   process.env.BETTER_AUTH_SECURE_COOKIES !== undefined
     ? process.env.BETTER_AUTH_SECURE_COOKIES.toLowerCase() === 'true'
     : (process.env.BETTER_AUTH_URL ?? '').startsWith('https://');
+
+const oidc = loadOidcConfig();
+const localLoginDisabled = isLocalLoginDisabled(process.env, oidc);
+if (
+  !oidc.enabled &&
+  process.env.DISABLE_LOCAL_LOGIN?.toLowerCase() === 'true'
+) {
+  console.warn(
+    '[auth] DISABLE_LOCAL_LOGIN is ignored because OIDC is not fully configured (OIDC_ISSUER/OIDC_DISCOVERY_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET).',
+  );
+}
 
 export const auth = betterAuth({
   database: prismaAdapter(prismaForAuth, { provider: 'postgresql' }),
@@ -82,6 +108,19 @@ export const auth = betterAuth({
     },
   },
 
+  account: {
+    accountLinking: {
+      enabled: true,
+      // The IdP is self-hosted and admin-controlled, so its email claim is
+      // trusted for matching even when it doesn't send email_verified=true.
+      trustedProviders: oidc.enabled ? [oidc.providerId] : [],
+      // Hive Pal has no email-verification step, so most local accounts are
+      // unverified. Linking them is allowed; secureOidcAccountLink() strips
+      // the local credentials of such accounts on an implicit link.
+      requireLocalEmailVerified: false,
+    },
+  },
+
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     cookieCache: { enabled: true, maxAge: 60 * 5 },
@@ -108,6 +147,17 @@ export const auth = betterAuth({
   },
 
   hooks: {
+    // Must stay async: Better Auth only honours errors from a rejected promise.
+    // eslint-disable-next-line @typescript-eslint/require-await
+    before: createAuthMiddleware(async (ctx) => {
+      if (localLoginDisabled && LOCAL_LOGIN_PATHS.has(ctx.path)) {
+        // Better Auth's APIError is how hooks reject a request.
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
+        throw new APIError('FORBIDDEN', {
+          message: 'Local login is disabled. Please sign in with SSO.',
+        });
+      }
+    }),
     after: createAuthMiddleware(async (ctx) => {
       // Lazy bcrypt → scrypt rehash on successful email sign-in
       if (
@@ -158,6 +208,30 @@ export const auth = betterAuth({
   },
 
   databaseHooks: {
+    account: {
+      create: {
+        after: async (account, ctx) => {
+          if (!oidc.enabled) return;
+          await secureOidcAccountLink({
+            prisma: authDeps.prisma,
+            providerId: oidc.providerId,
+            account,
+            isLinkedBySignedInOwner: async () => {
+              // Manual linking (settings page) runs the OAuth callback with
+              // the owner's session cookie; an implicit link at sign-in
+              // has no session for this user.
+              if (!ctx) return false;
+              try {
+                const session = await getSessionFromCtx(ctx);
+                return session?.user.id === account.userId;
+              } catch {
+                return false;
+              }
+            },
+          });
+        },
+      },
+    },
     user: {
       create: {
         after: async (user) => {
@@ -220,6 +294,27 @@ export const auth = betterAuth({
       rpName: 'Hive Pal',
       origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',
     }),
+    ...(oidc.enabled
+      ? [
+          genericOAuth({
+            config: [
+              {
+                providerId: oidc.providerId,
+                discoveryUrl: oidc.discoveryUrl,
+                clientId: oidc.clientId,
+                clientSecret: oidc.clientSecret,
+                scopes: oidc.scopes,
+                pkce: true,
+                disableSignUp: !oidc.allowSignup,
+                mapProfileToUser: (profile) => ({
+                  name:
+                    profile.name || profile.preferred_username || profile.email,
+                }),
+              },
+            ],
+          }),
+        ]
+      : []),
     admin({
       defaultRole: 'USER',
       adminRoles: ['ADMIN'],
@@ -227,13 +322,28 @@ export const auth = betterAuth({
     customSession(async ({ user, session }) => {
       const dbUser = await authDeps.prisma.user.findUnique({
         where: { id: user.id },
-        select: { passwordChangeRequired: true, role: true },
+        select: {
+          passwordChangeRequired: true,
+          role: true,
+          privacyPolicyConsent: true,
+          accounts: { select: { providerId: true } },
+        },
       });
+      const providers = new Set(dbUser?.accounts.map((a) => a.providerId));
+      // Accounts created through SSO never went through the signup form, so
+      // they're asked for privacy-policy consent once after the first login.
+      const consentRequired =
+        oidc.enabled &&
+        !!dbUser &&
+        !dbUser.privacyPolicyConsent &&
+        providers.has(oidc.providerId) &&
+        !providers.has('credential');
       return {
         user: {
           ...user,
           role: dbUser?.role ?? 'USER',
           passwordChangeRequired: dbUser?.passwordChangeRequired ?? false,
+          consentRequired,
         },
         session,
       };
