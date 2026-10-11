@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
-import type {
-  AccountTransferJob,
-  CreateJobResponse,
-} from 'shared-schemas';
+import type { AccountTransferJob, CreateJobResponse } from 'shared-schemas';
 
 export const ACCOUNT_TRANSFER_KEYS = {
   all: ['account-transfer'] as const,
@@ -21,11 +18,11 @@ export const useAccountTransferJobs = () => {
       );
       return res.data;
     },
-    refetchInterval: (query) => {
+    refetchInterval: query => {
       const data = query.state.data;
       if (!data) return false;
       const hasActive = data.some(
-        (j) => j.status === 'PENDING' || j.status === 'RUNNING',
+        j => j.status === 'PENDING' || j.status === 'RUNNING',
       );
       return hasActive ? POLL_INTERVAL_MS : false;
     },
@@ -51,7 +48,7 @@ export const useStartExport = () => {
 export const useStartImport = () => {
   const queryClient = useQueryClient();
   return useMutation<CreateJobResponse, Error, File>({
-    mutationFn: async (file) => {
+    mutationFn: async file => {
       const formData = new FormData();
       formData.append('file', file);
       const res = await apiClient.post<CreateJobResponse>(
@@ -69,7 +66,7 @@ export const useStartImport = () => {
 export const useDeleteAccountTransferJob = () => {
   const queryClient = useQueryClient();
   return useMutation<void, Error, string>({
-    mutationFn: async (id) => {
+    mutationFn: async id => {
       await apiClient.delete(`/api/account-transfer/jobs/${id}`);
     },
     onSuccess: () => {

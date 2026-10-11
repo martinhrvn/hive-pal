@@ -93,7 +93,9 @@ export const WeatherSection = ({
     ? aiMergeState?.suggestions.weatherConditions
     : undefined;
 
-  const suggestedTemperature = getNumericTemperature(temperatureSuggestion?.aiValue);
+  const suggestedTemperature = getNumericTemperature(
+    temperatureSuggestion?.aiValue,
+  );
   const suggestedWeatherCondition = getWeatherConditionValue(
     weatherConditionSuggestion?.aiValue,
   );
@@ -103,7 +105,9 @@ export const WeatherSection = ({
 
   return (
     <div>
-      <h3 className="text-lg font-medium">{t('inspection:form.weather.title')}</h3>
+      <h3 className="text-lg font-medium">
+        {t('inspection:form.weather.title')}
+      </h3>
       <p className="text-sm text-gray-400">
         {t('inspection:form.weather.description')}
       </p>
@@ -187,7 +191,8 @@ export const WeatherSection = ({
                       const Icon = condition.icon;
                       const isSelected = field.value === condition.id;
                       const isAiRecommended =
-                        isWeatherPending && suggestedWeatherCondition === condition.id;
+                        isWeatherPending &&
+                        suggestedWeatherCondition === condition.id;
 
                       return (
                         <button
@@ -197,7 +202,9 @@ export const WeatherSection = ({
                           onKeyDown={() => {}}
                           className={cn(
                             'flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 transition-all',
-                            isSelected ? condition.styleActive : condition.style,
+                            isSelected
+                              ? condition.styleActive
+                              : condition.style,
                             isAiRecommended &&
                               'ring-2 ring-blue-300 dark:ring-blue-700',
                           )}

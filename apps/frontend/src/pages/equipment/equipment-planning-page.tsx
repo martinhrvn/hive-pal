@@ -14,7 +14,15 @@ import {
   UpdateEquipmentItem,
   CreateEquipmentItem,
 } from 'shared-schemas';
-import { Loader2, Package, Target, ShoppingCart, Wrench, AlertCircle, Plus } from 'lucide-react';
+import {
+  Loader2,
+  Package,
+  Target,
+  ShoppingCart,
+  Wrench,
+  AlertCircle,
+  Plus,
+} from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { EquipmentTable } from './components/equipment-table';
 import { ShoppingList } from './components/shopping-list';
@@ -121,9 +129,7 @@ const EquipmentActionSidebar = ({
             <Input
               type="number"
               value={targetHives === 0 ? '' : targetHives}
-              onChange={e =>
-                onTargetHivesChange(parseInt(e.target.value) || 0)
-              }
+              onChange={e => onTargetHivesChange(parseInt(e.target.value) || 0)}
               min="0"
               step="1"
               placeholder={`${currentHives} (current)`}
@@ -203,11 +209,11 @@ export const EquipmentPlanningPage = () => {
   const displayItems =
     localItems.length > 0
       ? plan.data?.items.map(planItem => {
-        const localItem = localItems.find(
-          local => local.itemId === planItem.itemId,
-        );
-        return localItem ? { ...planItem, ...localItem } : planItem;
-      }) || []
+          const localItem = localItems.find(
+            local => local.itemId === planItem.itemId,
+          );
+          return localItem ? { ...planItem, ...localItem } : planItem;
+        }) || []
       : plan.data?.items || [];
 
   if (plan.isLoading || items.isLoading || multiplier.isLoading) {
@@ -358,14 +364,17 @@ export const EquipmentPlanningPage = () => {
                 className="gap-2 shrink-0"
               >
                 <Plus className="h-4 w-4" />
-                {t('hive:equipment.table.addEquipment', { defaultValue: 'Add Equipment' })}
+                {t('hive:equipment.table.addEquipment', {
+                  defaultValue: 'Add Equipment',
+                })}
               </Button>
             </CardHeader>
             <CardContent className="min-w-0">
               {localTargetHives === 0 && (
                 <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2 mb-4">
                   <AlertCircle className="h-4 w-4 shrink-0" />
-                  Set a target hive count in the sidebar to see how much equipment you'll need.
+                  Set a target hive count in the sidebar to see how much
+                  equipment you'll need.
                 </div>
               )}
               <div className="overflow-x-auto">

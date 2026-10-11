@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useReleaseNotes } from '@/hooks/use-release-notes';
-import { Github, ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 import { PublicMeta } from '@/components/seo/public-meta';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 
@@ -70,7 +71,7 @@ export function ReleasesPage() {
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-gray-900 flex items-center gap-1 text-sm font-medium"
               >
-                <Github className="h-4 w-4" />
+                <GithubIcon className="h-4 w-4" />
                 GitHub
               </a>
             </nav>
@@ -192,7 +193,7 @@ export function ReleasesPage() {
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white text-sm flex items-center gap-1"
               >
-                <Github className="h-4 w-4" />
+                <GithubIcon className="h-4 w-4" />
                 GitHub
               </a>
               <a

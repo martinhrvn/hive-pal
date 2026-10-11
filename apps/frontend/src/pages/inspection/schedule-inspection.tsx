@@ -118,7 +118,11 @@ export const ScheduleInspectionPage = () => {
       enabled: !!primaryApiaryId,
     });
 
-  const form = useForm<ScheduleFormData>({
+  const form = useForm<
+    z.input<typeof scheduleSchema>,
+    unknown,
+    ScheduleFormData
+  >({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
       hiveIds: [],
@@ -154,7 +158,9 @@ export const ScheduleInspectionPage = () => {
         },
         {
           onSuccess: batch => {
-            toast.success(t('inspection:schedule.batchCreated', { name: batchName }));
+            toast.success(
+              t('inspection:schedule.batchCreated', { name: batchName }),
+            );
             navigate(`/batch-inspections/${batch.id}`);
           },
           onError: error => {
@@ -207,12 +213,26 @@ export const ScheduleInspectionPage = () => {
       }
 
       if (successCount > 0) {
-        toast.success(t(successCount > 1 ? 'inspection:schedule.scheduledSuccessPlural' : 'inspection:schedule.scheduledSuccess', { count: successCount }));
+        toast.success(
+          t(
+            successCount > 1
+              ? 'inspection:schedule.scheduledSuccessPlural'
+              : 'inspection:schedule.scheduledSuccess',
+            { count: successCount },
+          ),
+        );
         navigate('/inspections/list/upcoming');
       }
 
       if (errorCount > 0) {
-        toast.error(t(errorCount > 1 ? 'inspection:schedule.scheduledFailedPlural' : 'inspection:schedule.scheduledFailed', { count: errorCount }));
+        toast.error(
+          t(
+            errorCount > 1
+              ? 'inspection:schedule.scheduledFailedPlural'
+              : 'inspection:schedule.scheduledFailed',
+            { count: errorCount },
+          ),
+        );
       }
     }
   });
@@ -285,7 +305,9 @@ export const ScheduleInspectionPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">{t('inspection:schedule.title')}</h1>
+        <h1 className="text-2xl font-bold mb-2">
+          {t('inspection:schedule.title')}
+        </h1>
         <p className="text-muted-foreground">
           {t('inspection:schedule.description')}
         </p>
@@ -302,7 +324,12 @@ export const ScheduleInspectionPage = () => {
               {selectedHiveIds.length > 0 && (
                 <div className="flex items-center gap-2 mt-2">
                   <Badge variant="secondary">
-                    {t(selectedHiveIds.length !== 1 ? 'inspection:schedule.hivesSelectedPlural' : 'inspection:schedule.hivesSelected', { count: selectedHiveIds.length })}
+                    {t(
+                      selectedHiveIds.length !== 1
+                        ? 'inspection:schedule.hivesSelectedPlural'
+                        : 'inspection:schedule.hivesSelected',
+                      { count: selectedHiveIds.length },
+                    )}
                   </Badge>
                   <Button
                     type="button"
@@ -382,7 +409,9 @@ export const ScheduleInspectionPage = () => {
             <CardHeader>
               <CardTitle>{t('inspection:schedule.scheduleCalendar')}</CardTitle>
               <CardDescription>
-                {t('inspection:schedule.calendarDescription', { days: daysToShow })}
+                {t('inspection:schedule.calendarDescription', {
+                  days: daysToShow,
+                })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -436,7 +465,9 @@ export const ScheduleInspectionPage = () => {
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between mb-2">
                               <div className="font-semibold text-sm">
-                                {isToday ? t('inspection:schedule.today') : format(day, 'EEE')}
+                                {isToday
+                                  ? t('inspection:schedule.today')
+                                  : format(day, 'EEE')}
                               </div>
                               {isSelected && (
                                 <CalendarPlus className="h-4 w-4 text-primary" />
@@ -507,14 +538,26 @@ export const ScheduleInspectionPage = () => {
           {selectedDate && selectedHiveIds.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>{t('inspection:schedule.inspectionDetails')}</CardTitle>
+                <CardTitle>
+                  {t('inspection:schedule.inspectionDetails')}
+                </CardTitle>
                 <CardDescription>
-                  {t(selectedHiveIds.length !== 1 ? 'inspection:schedule.schedulingCountPlural' : 'inspection:schedule.schedulingCount', { count: selectedHiveIds.length, date: format(selectedDate, 'EEEE, MMMM d, yyyy') })}
+                  {t(
+                    selectedHiveIds.length !== 1
+                      ? 'inspection:schedule.schedulingCountPlural'
+                      : 'inspection:schedule.schedulingCount',
+                    {
+                      count: selectedHiveIds.length,
+                      date: format(selectedDate, 'EEEE, MMMM d, yyyy'),
+                    },
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="mb-4">
-                  <label className="text-sm font-medium">{t('inspection:schedule.selectedHives')}</label>
+                  <label className="text-sm font-medium">
+                    {t('inspection:schedule.selectedHives')}
+                  </label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {selectedHiveIds.map(hiveId => {
                       const hive = hives?.find(h => h.id === hiveId);
@@ -536,7 +579,9 @@ export const ScheduleInspectionPage = () => {
                       setSelectedDate(d);
                       form.setValue('date', d);
                     }}
-                    onIsAllDayChange={checked => form.setValue('isAllDay', checked)}
+                    onIsAllDayChange={checked =>
+                      form.setValue('isAllDay', checked)
+                    }
                     switchId="scheduleIsAllDay"
                   />
                 </div>
@@ -554,7 +599,9 @@ export const ScheduleInspectionPage = () => {
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>{t('inspection:schedule.createAsBatch')}</FormLabel>
+                          <FormLabel>
+                            {t('inspection:schedule.createAsBatch')}
+                          </FormLabel>
                           <p className="text-sm text-muted-foreground">
                             {t('inspection:schedule.batchDescription')}
                           </p>
@@ -570,10 +617,14 @@ export const ScheduleInspectionPage = () => {
                     name="batchName"
                     render={({ field }) => (
                       <FormItem className="mb-4">
-                        <FormLabel>{t('inspection:schedule.batchName')}</FormLabel>
+                        <FormLabel>
+                          {t('inspection:schedule.batchName')}
+                        </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder={t('inspection:schedule.batchNamePlaceholder')}
+                            placeholder={t(
+                              'inspection:schedule.batchNamePlaceholder',
+                            )}
                             {...field}
                           />
                         </FormControl>
@@ -589,10 +640,14 @@ export const ScheduleInspectionPage = () => {
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('inspection:schedule.notesOptional')}</FormLabel>
+                        <FormLabel>
+                          {t('inspection:schedule.notesOptional')}
+                        </FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder={t('inspection:schedule.notesPlaceholder')}
+                            placeholder={t(
+                              'inspection:schedule.notesPlaceholder',
+                            )}
                             className="min-h-[100px]"
                             {...field}
                           />
@@ -622,7 +677,12 @@ export const ScheduleInspectionPage = () => {
                 <Button type="submit" className="w-full mt-6">
                   {createAsBatch
                     ? t('inspection:schedule.createBatchInspection')
-                    : t(selectedHiveIds.length !== 1 ? 'inspection:schedule.scheduleCountPlural' : 'inspection:schedule.scheduleCount', { count: selectedHiveIds.length })}
+                    : t(
+                        selectedHiveIds.length !== 1
+                          ? 'inspection:schedule.scheduleCountPlural'
+                          : 'inspection:schedule.scheduleCount',
+                        { count: selectedHiveIds.length },
+                      )}
                 </Button>
               </CardContent>
             </Card>

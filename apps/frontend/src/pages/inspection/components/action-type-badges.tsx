@@ -68,27 +68,30 @@ const ACTION_TYPE_VISUAL: Partial<Record<ActionType, ActionVisual>> = {
 const ACTION_TYPE_I18N: Partial<
   Record<ActionType, { key: string; fallback: string }>
 > = {
-    [ActionType.FEEDING]: { key: 'common:actionTypes.feeding', fallback: 'Feeding' },
-    [ActionType.TREATMENT]: {
-      key: 'common:actionTypes.treatment',
-      fallback: 'Treatment',
-    },
-    [ActionType.FRAME]: { key: 'common:actionTypes.frame', fallback: 'Frames' },
-    [ActionType.HARVEST]: {
-      key: 'common:actionTypes.harvest',
-      fallback: 'Harvest',
-    },
-    [ActionType.BOX_CONFIGURATION]: {
-      key: 'common:actionTypes.boxConfiguration',
-      fallback: 'Box config',
-    },
-    [ActionType.MAINTENANCE]: {
-      key: 'common:actionTypes.maintenance',
-      fallback: 'Maintenance',
-    },
-    [ActionType.NOTE]: { key: 'common:actionTypes.note', fallback: 'Note' },
-    [ActionType.OTHER]: { key: 'common:actionTypes.other', fallback: 'Other' },
-  };
+  [ActionType.FEEDING]: {
+    key: 'common:actionTypes.feeding',
+    fallback: 'Feeding',
+  },
+  [ActionType.TREATMENT]: {
+    key: 'common:actionTypes.treatment',
+    fallback: 'Treatment',
+  },
+  [ActionType.FRAME]: { key: 'common:actionTypes.frame', fallback: 'Frames' },
+  [ActionType.HARVEST]: {
+    key: 'common:actionTypes.harvest',
+    fallback: 'Harvest',
+  },
+  [ActionType.BOX_CONFIGURATION]: {
+    key: 'common:actionTypes.boxConfiguration',
+    fallback: 'Box config',
+  },
+  [ActionType.MAINTENANCE]: {
+    key: 'common:actionTypes.maintenance',
+    fallback: 'Maintenance',
+  },
+  [ActionType.NOTE]: { key: 'common:actionTypes.note', fallback: 'Note' },
+  [ActionType.OTHER]: { key: 'common:actionTypes.other', fallback: 'Other' },
+};
 
 // Weighings are captured as measurements (not actions), but are shown in the
 // same column so a recorded weighing is visible at a glance next to the actions.

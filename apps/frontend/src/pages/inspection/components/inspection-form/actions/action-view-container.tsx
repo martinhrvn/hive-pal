@@ -102,18 +102,10 @@ export function ActionViewRenderer({
         )}
       </div>
       <div>
-        <Button
-          variant={'ghost'}
-          aria-label={'Edit'}
-          onClick={onEdit}
-        >
+        <Button variant={'ghost'} aria-label={'Edit'} onClick={onEdit}>
           <EditIcon />
         </Button>
-        <Button
-          variant={'ghost'}
-          aria-label={'Delete'}
-          onClick={onRemove}
-        >
+        <Button variant={'ghost'} aria-label={'Delete'} onClick={onRemove}>
           <TrashIcon />
         </Button>
       </div>

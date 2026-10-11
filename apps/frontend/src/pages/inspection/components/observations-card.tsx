@@ -65,11 +65,17 @@ const RatingRow = ({ label, value }: RatingRowProps) => {
       </span>
       <div className="relative h-1.5 rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
         <div
-          className={cn('h-full rounded-full transition-[width]', ratingColor(value))}
+          className={cn(
+            'h-full rounded-full transition-[width]',
+            ratingColor(value),
+          )}
           style={{ width: `${pct}%` }}
         />
         {/* mid tick */}
-        <div className="absolute inset-y-0 left-1/2 w-px bg-stone-300/70 dark:bg-stone-700/70" aria-hidden />
+        <div
+          className="absolute inset-y-0 left-1/2 w-px bg-stone-300/70 dark:bg-stone-700/70"
+          aria-hidden
+        />
       </div>
       <span
         className={cn(
@@ -78,7 +84,10 @@ const RatingRow = ({ label, value }: RatingRowProps) => {
         )}
       >
         {value}
-        <span className="text-stone-400 dark:text-stone-500 font-normal text-sm"> / 10</span>
+        <span className="text-stone-400 dark:text-stone-500 font-normal text-sm">
+          {' '}
+          / 10
+        </span>
       </span>
     </div>
   );
@@ -137,7 +146,12 @@ type FlagChipProps = {
   icon?: React.ReactNode;
 };
 
-const FlagChip = ({ label, value, positiveIsGood = true, icon }: FlagChipProps) => {
+const FlagChip = ({
+  label,
+  value,
+  positiveIsGood = true,
+  icon,
+}: FlagChipProps) => {
   // Visual color: "good" = green/stone; "concern" = amber/red
   const good = positiveIsGood ? value : !value;
   return (
@@ -174,7 +188,7 @@ export const ObservationsCard = ({
   const { t } = useTranslation('inspection');
   const isSubjective = inspectionType === 'subjective';
 
-  const frameEntries = FRAME_FIELDS.map((ff) => ({
+  const frameEntries = FRAME_FIELDS.map(ff => ({
     key: ff.obsKey as keyof typeof observations,
     label: t(`observations.${ff.obsKey}`),
     color: ff.tailwindColor,
@@ -194,16 +208,28 @@ export const ObservationsCard = ({
       : { label: t('observations.strength'), value: observations.strength },
     observations.uncappedBrood == null
       ? null
-      : { label: t('observations.uncappedBrood'), value: observations.uncappedBrood },
+      : {
+          label: t('observations.uncappedBrood'),
+          value: observations.uncappedBrood,
+        },
     observations.cappedBrood == null
       ? null
-      : { label: t('observations.cappedBrood'), value: observations.cappedBrood },
+      : {
+          label: t('observations.cappedBrood'),
+          value: observations.cappedBrood,
+        },
     observations.honeyStores == null
       ? null
-      : { label: t('observations.honeyStores'), value: observations.honeyStores },
+      : {
+          label: t('observations.honeyStores'),
+          value: observations.honeyStores,
+        },
     observations.pollenStores == null
       ? null
-      : { label: t('observations.pollenStores'), value: observations.pollenStores },
+      : {
+          label: t('observations.pollenStores'),
+          value: observations.pollenStores,
+        },
     observations.queenCells == null
       ? null
       : { label: t('observations.queenCells'), value: observations.queenCells },
@@ -289,15 +315,17 @@ export const ObservationsCard = ({
               {t('observationsCard.signals', { defaultValue: 'Signals' })}
             </SubHeading>
             <div className="flex flex-wrap gap-2">
-              {booleanFlags.map(({ key, label, value, positiveIsGood, icon }) => (
-                <FlagChip
-                  key={key}
-                  label={label}
-                  value={value}
-                  positiveIsGood={positiveIsGood}
-                  icon={icon}
-                />
-              ))}
+              {booleanFlags.map(
+                ({ key, label, value, positiveIsGood, icon }) => (
+                  <FlagChip
+                    key={key}
+                    label={label}
+                    value={value}
+                    positiveIsGood={positiveIsGood}
+                    icon={icon}
+                  />
+                ),
+              )}
             </div>
           </div>
         )}
@@ -359,7 +387,7 @@ export const ObservationsCard = ({
               {t('observationsCard.additionalObservations')}
             </SubHeading>
             <div className="flex flex-wrap gap-2">
-              {observations.additionalObservations!.map((obs) => (
+              {observations.additionalObservations!.map(obs => (
                 <Badge
                   key={obs}
                   variant="secondary"
@@ -379,7 +407,7 @@ export const ObservationsCard = ({
           <div>
             <SubHeading>{t('observationsCard.reminders')}</SubHeading>
             <div className="flex flex-wrap gap-2">
-              {observations.reminderObservations!.map((obs) => (
+              {observations.reminderObservations!.map(obs => (
                 <Badge
                   key={obs}
                   variant="outline"

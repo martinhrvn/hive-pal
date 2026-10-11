@@ -18,7 +18,8 @@ import { useUnitFormat } from '@/hooks/use-unit-format';
 import { parseVolume } from '@/utils/unit-conversion';
 import { ActionViewRenderer } from './action-view-container';
 
-export type FeedType = 'SYRUP' | 'HONEY' | 'CANDY' | 'PROTEIN_CANDY' | 'POLLEN_PATTY' | 'OTHER';
+export type FeedType =
+  'SYRUP' | 'HONEY' | 'CANDY' | 'PROTEIN_CANDY' | 'POLLEN_PATTY' | 'OTHER';
 
 export type FeedingActionType = {
   type: 'FEEDING';
@@ -72,7 +73,7 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
     action?.concentration ?? '1:1',
   );
   const [feedType, setFeedType] = useState<FeedType | null>(
-    isKnownType ? (action?.feedType as FeedType ?? 'SYRUP') : 'OTHER',
+    isKnownType ? ((action?.feedType as FeedType) ?? 'SYRUP') : 'OTHER',
   );
   const [customFeedName, setCustomFeedName] = useState<string>(
     isKnownType ? '' : (action?.feedType ?? ''),
@@ -96,7 +97,9 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
       className={'grid grid-cols-1 md:grid-cols-2 gap-4 mt-5'}
       data-test={TEST_SELECTORS.FEEDING_FORM}
     >
-      <h3 className="md:col-span-2 col-span-1 text-lg font-bold">{t('inspection:form.actions.feeding_section.title')}</h3>
+      <h3 className="md:col-span-2 col-span-1 text-lg font-bold">
+        {t('inspection:form.actions.feeding_section.title')}
+      </h3>
       <div className="lg:col-span-2 flex flex-col gap-4">
         <label>{t('inspection:form.actions.feeding_section.feedType')}</label>
         <div className="flex flex-wrap gap-4">
@@ -124,10 +127,14 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
       </div>
       {feedType === 'OTHER' && (
         <div className="lg:col-span-2 flex flex-col gap-4">
-          <label htmlFor="customFeedName">{t('inspection:form.actions.feeding_section.customFeedName')}</label>
+          <label htmlFor="customFeedName">
+            {t('inspection:form.actions.feeding_section.customFeedName')}
+          </label>
           <Input
             id="customFeedName"
-            placeholder={t('inspection:form.actions.feeding_section.customFeedNamePlaceholder')}
+            placeholder={t(
+              'inspection:form.actions.feeding_section.customFeedNamePlaceholder',
+            )}
             value={customFeedName}
             onChange={e => setCustomFeedName(e.target.value)}
           />
@@ -135,7 +142,9 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
       )}
       {feedType && (
         <div className={'flex flex-col gap-4'}>
-          <label htmlFor={'quantity'}>{t('inspection:form.actions.feeding_section.quantity')}</label>
+          <label htmlFor={'quantity'}>
+            {t('inspection:form.actions.feeding_section.quantity')}
+          </label>
           <NumericInputField
             id={'quantity'}
             step={100}
@@ -150,7 +159,9 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
       <div className={'flex flex-col gap-4'}>
         {showConcentration && (
           <>
-            <label htmlFor={'concentration'}>{t('inspection:form.actions.feeding_section.concentration')}</label>
+            <label htmlFor={'concentration'}>
+              {t('inspection:form.actions.feeding_section.concentration')}
+            </label>
             <Select
               value={concentration}
               onValueChange={val => setConcentration(val)}
@@ -158,7 +169,9 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
               <SelectTrigger className={'w-full'}>
                 <SelectValue
                   id={'concentration'}
-                  placeholder={t('inspection:form.actions.feeding_section.selectConcentration')}
+                  placeholder={t(
+                    'inspection:form.actions.feeding_section.selectConcentration',
+                  )}
                 >
                   {concentration}
                 </SelectValue>
@@ -180,10 +193,14 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
       </div>
 
       <div className="lg:col-span-2 flex flex-col gap-4">
-        <label htmlFor="notes">{t('inspection:form.actions.feeding_section.notesOptional')}</label>
+        <label htmlFor="notes">
+          {t('inspection:form.actions.feeding_section.notesOptional')}
+        </label>
         <Textarea
           id="notes"
-          placeholder={t('inspection:form.actions.feeding_section.notesPlaceholder')}
+          placeholder={t(
+            'inspection:form.actions.feeding_section.notesPlaceholder',
+          )}
           value={notes}
           onChange={e => setNotes(e.target.value)}
           data-test={TEST_SELECTORS.FEEDING_NOTES}
@@ -191,11 +208,13 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
       </div>
 
       <div className="lg:col-span-2 flex justify-end">
-        {feedType && quantity && (feedType !== 'OTHER' || customFeedName.trim()) && (
-          <Button onClick={handleSave}>
-            {t('inspection:form.actions.save')}
-          </Button>
-        )}
+        {feedType &&
+          quantity &&
+          (feedType !== 'OTHER' || customFeedName.trim()) && (
+            <Button onClick={handleSave}>
+              {t('inspection:form.actions.save')}
+            </Button>
+          )}
       </div>
     </div>
   );
@@ -272,11 +291,7 @@ export const FeedingView: React.FC<FeedingActionProps> = ({
   };
 
   return isEditing ? (
-    <FeedingForm
-      action={action}
-      onSave={handleSave}
-      onRemove={onRemove}
-    />
+    <FeedingForm action={action} onSave={handleSave} onRemove={onRemove} />
   ) : (
     <ActionViewRenderer
       title={t('inspection:form.actions.feeding_section.title')}

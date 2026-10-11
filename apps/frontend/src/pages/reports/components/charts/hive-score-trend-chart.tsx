@@ -19,10 +19,7 @@ import type { TrendData } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
 
 type ScoreType =
-  | 'overallScore'
-  | 'populationScore'
-  | 'storesScore'
-  | 'queenScore';
+  'overallScore' | 'populationScore' | 'storesScore' | 'queenScore';
 
 interface HiveScoreTrendChartProps {
   data: TrendData['hiveHealthTrends'] | undefined;

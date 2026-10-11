@@ -109,9 +109,7 @@ export const PasskeysCard: React.FC = () => {
             ) : (
               <KeyRound className="h-4 w-4" />
             )}
-            {enrolling
-              ? t('settings.passkeyAdding')
-              : t('settings.passkeyAdd')}
+            {enrolling ? t('settings.passkeyAdding') : t('settings.passkeyAdd')}
           </Button>
         </div>
 

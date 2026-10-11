@@ -3,10 +3,6 @@
 let
   pkgs-playwright =
     import inputs.nixpkgs-playwright { system = pkgs.stdenv.system; };
-  browsers = (builtins.fromJSON (builtins.readFile
-    "${pkgs-playwright.playwright-driver}/browsers.json")).browsers;
-  chromium-rev = (builtins.head
-    (builtins.filter (x: x.name == "chromium") browsers)).revision;
 in {
   packages = with pkgs; [
     nodejs_22
@@ -21,12 +17,11 @@ in {
   ];
 
   env = {
+    # Keep nixpkgs-playwright pinned to the same Playwright version as the
+    # `playwright` catalog in pnpm-workspace.yaml, otherwise the browsers here
+    # do not match the revision @playwright/test expects.
     PLAYWRIGHT_BROWSERS_PATH = "${pkgs-playwright.playwright.browsers}";
     PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
-    PLAYWRIGHT_LAUNCH_OPTIONS_EXECUTABLE_PATH =
-      "${pkgs-playwright.playwright.browsers}/chromium-${chromium-rev}/chrome-linux/chrome";
-    PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH =
-      "${pkgs-playwright.playwright.browsers}/chromium-${chromium-rev}/chrome-linux/chrome";
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
     PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
     PRISMA_QUERY_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/query-engine";

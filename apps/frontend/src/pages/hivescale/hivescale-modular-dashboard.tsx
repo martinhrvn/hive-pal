@@ -881,12 +881,7 @@ type ConfigurableMetricAxis =
   | 'power';
 
 type ConfigurableMetricGroup =
-  | 'scale'
-  | 'climate'
-  | 'beeTraffic'
-  | 'vibration'
-  | 'sound'
-  | 'device';
+  'scale' | 'climate' | 'beeTraffic' | 'vibration' | 'sound' | 'device';
 
 // The label is looked up as `dashboard.metrics.<key>`.
 type ConfigurableMetricDefinition = {

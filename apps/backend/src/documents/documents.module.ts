@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { parseByteLimit } from '../utils/byte-limit';
 import { DocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,8 +14,10 @@ import { LoggerModule } from '../logger/logger.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         limits: {
-          fileSize:
-            configService.get<number>('DOCUMENT_MAX_FILE_SIZE') || 20971520, // 20MB default
+          fileSize: parseByteLimit(
+            configService.get('DOCUMENT_MAX_FILE_SIZE'),
+            20971520, // 20MB default
+          ),
         },
       }),
       inject: [ConfigService],

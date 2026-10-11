@@ -19,7 +19,7 @@ export const TrendIndicator: React.FC<TrendIndicatorProps> = ({
   iconSize = 'h-3 w-3',
   showDelta = true,
 }) => {
-  const isUp   = delta != null && delta > 0;
+  const isUp = delta != null && delta > 0;
   const isDown = delta != null && delta < 0;
   let Icon: typeof TrendingUp | typeof TrendingDown | typeof Minus;
   if (isUp) {

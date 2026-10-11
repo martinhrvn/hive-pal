@@ -26,7 +26,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pill } from '@/components/common/pill';
-import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
+import {
+  ToolMeta,
+  ToolPageHeader,
+  TipsCard,
+  buildStructuredData,
+  buildWebApplicationJsonLd,
+} from '@/components/tool-page';
 
 type PerEighth = {
   bees: number;
@@ -72,9 +78,7 @@ function calculateFromZanderArea(dimensions: FrameDimensions): PerEighth {
   return {
     bees: Math.round(ZANDER_PER_EIGHTH.bees * scale),
     drones: Math.round(ZANDER_PER_EIGHTH.drones * scale),
-    workerBroodCells: Math.round(
-      ZANDER_PER_EIGHTH.workerBroodCells * scale,
-    ),
+    workerBroodCells: Math.round(ZANDER_PER_EIGHTH.workerBroodCells * scale),
     droneBroodCells: Math.round(ZANDER_PER_EIGHTH.droneBroodCells * scale),
     pollenG: Math.round(ZANDER_PER_EIGHTH.pollenG * scale),
     feedG: Math.round(ZANDER_PER_EIGHTH.feedG * scale),
@@ -225,7 +229,9 @@ function CheckRow({ ok, label }: { ok: boolean; label: string }) {
       ) : (
         <XCircle className="h-4 w-4 shrink-0 text-red-500" />
       )}
-      <span className={ok ? '' : 'text-red-700 dark:text-red-400'}>{label}</span>
+      <span className={ok ? '' : 'text-red-700 dark:text-red-400'}>
+        {label}
+      </span>
     </div>
   );
 }
@@ -278,7 +284,13 @@ function ResultStatGrid({
   );
 }
 
-function ReferenceRow({ label, value }: { label: string; value: React.ReactNode }) {
+function ReferenceRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="flex justify-between">
       <span className="text-muted-foreground">{label}</span>
@@ -347,32 +359,20 @@ const buildTipItems = (t: TFunction, itemKeys: readonly string[]) =>
   }));
 
 function formatGrams(grams: number): string {
-  return grams >= 1000 ? `${(grams / 1000).toFixed(1)} kg` : `${Math.round(grams)} g`;
+  return grams >= 1000
+    ? `${(grams / 1000).toFixed(1)} kg`
+    : `${Math.round(grams)} g`;
 }
 
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebApplication',
-      name: 'Liebefelder Colony Strength Calculator',
-      url: 'https://hivepal.app/tools/liebefelder',
-      applicationCategory: 'UtilitiesApplication',
-      applicationSubCategory: 'Beekeeping Calculator',
-      operatingSystem: 'Web',
-      browserRequirements: 'Requires JavaScript',
-      description:
-        'Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths, with seasonal evaluation guidelines by Dr. Pia Aumeier.',
-      isAccessibleForFree: true,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Hive Pal',
-        url: 'https://hivepal.app',
-      },
-    },
-  ],
-};
+const structuredData = buildStructuredData(
+  buildWebApplicationJsonLd({
+    name: 'Liebefelder Colony Strength Calculator',
+    path: '/tools/liebefelder',
+    kind: 'calculator',
+    description:
+      'Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths, with seasonal evaluation guidelines by Dr. Pia Aumeier.',
+  }),
+);
 
 export function LiebefelderPage() {
   const { t } = useTranslation('common');
@@ -397,9 +397,15 @@ export function LiebefelderPage() {
 
   const results = useMemo(() => {
     const bees = Math.round(content.bees * per.bees);
-    const cappedBroodCells = Math.round(content.cappedWorkerBrood * per.workerBroodCells);
-    const openBroodCells = Math.round(content.openWorkerBrood * per.workerBroodCells);
-    const droneBroodCells = Math.round(content.droneBrood * per.droneBroodCells);
+    const cappedBroodCells = Math.round(
+      content.cappedWorkerBrood * per.workerBroodCells,
+    );
+    const openBroodCells = Math.round(
+      content.openWorkerBrood * per.workerBroodCells,
+    );
+    const droneBroodCells = Math.round(
+      content.droneBrood * per.droneBroodCells,
+    );
     return {
       beeEighths: content.bees,
       bees,
@@ -421,7 +427,8 @@ export function LiebefelderPage() {
   const hasStores = results.pollenGrams > 0 || results.feedGrams > 0;
   const hasAnyResult = hasBees || hasBrood || hasStores;
 
-  const evaluation = EVALUATION_CONTEXTS.find(e => e.id === evaluationId) ?? null;
+  const evaluation =
+    EVALUATION_CONTEXTS.find(e => e.id === evaluationId) ?? null;
 
   const setContentCount = (field: ContentFieldId) => (value: number) =>
     setContent(prev => ({ ...prev, [field]: value }));
@@ -645,7 +652,9 @@ export function LiebefelderPage() {
                   onClick={() => setFrameType(f.id)}
                 >
                   {f.label}
-                  <span className="ml-1 text-xs opacity-60">({f.dimensions})</span>
+                  <span className="ml-1 text-xs opacity-60">
+                    ({f.dimensions})
+                  </span>
                 </Pill>
               ))}
               <Pill
@@ -687,7 +696,8 @@ export function LiebefelderPage() {
                 </div>
                 <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
                   <p>
-                    Derived from Zander ({formatFrameDimensions(ZANDER_DIMENSIONS)}) at{' '}
+                    Derived from Zander (
+                    {formatFrameDimensions(ZANDER_DIMENSIONS)}) at{' '}
                     {customAreaRatio.toFixed(2)}× area. The calculated per-1/8
                     values are shown in the reference card.
                   </p>
@@ -867,7 +877,6 @@ export function LiebefelderPage() {
             items={buildTipItems(t, section.itemKeys)}
           />
         ))}
-
       </PageAside>
     </PageGrid>
   );

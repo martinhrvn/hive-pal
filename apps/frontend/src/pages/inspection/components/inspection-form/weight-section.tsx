@@ -119,9 +119,7 @@ export function WeightSection({ hiveBoxes = [] }: WeightSectionProps) {
               name={`weights.${index}.boxId`}
               render={({ field: boxField }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t('inspection:form.weights.position')}
-                  </FormLabel>
+                  <FormLabel>{t('inspection:form.weights.position')}</FormLabel>
                   <Select
                     value={boxField.value ?? WHOLE_HIVE}
                     onValueChange={v =>

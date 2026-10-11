@@ -20,18 +20,21 @@ import { useSsoErrorMessage } from './use-sso-error-message';
 export const SsoAccountCard: React.FC = () => {
   const { t } = useTranslation('common');
   const { oidcProviderId, localLoginEnabled } = getAuthConfig();
-  const { data: providers, isLoading } = useLinkedAccounts();
+  const { data: accounts, isLoading } = useLinkedAccounts();
   const unlink = useUnlinkAccount();
   const [searchParams] = useSearchParams();
   const linkError = useSsoErrorMessage(searchParams.get('error'));
   const [linking, setLinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isLinked = !!providers?.includes(oidcProviderId);
+  const ssoAccount = accounts?.find(
+    account => account.providerId === oidcProviderId,
+  );
+  const isLinked = !!ssoAccount;
   // Unlinking the only sign-in method (or SSO while local login is disabled)
   // would lock the user out.
   const canUnlink =
-    isLinked && localLoginEnabled && (providers?.length ?? 0) > 1;
+    isLinked && localLoginEnabled && (accounts?.length ?? 0) > 1;
 
   const handleLink = async () => {
     setError(null);
@@ -39,8 +42,8 @@ export const SsoAccountCard: React.FC = () => {
     const settingsUrl = new URL('/settings', window.location.origin).href;
     try {
       // On success the browser is redirected to the identity provider.
-      const result = await authClient.oauth2.link({
-        providerId: oidcProviderId,
+      const result = await authClient.linkSocial({
+        provider: oidcProviderId,
         callbackURL: settingsUrl,
         errorCallbackURL: settingsUrl,
       });
@@ -56,9 +59,10 @@ export const SsoAccountCard: React.FC = () => {
   };
 
   const handleUnlink = async () => {
+    if (!ssoAccount) return;
     setError(null);
     try {
-      await unlink.mutateAsync(oidcProviderId);
+      await unlink.mutateAsync(ssoAccount.id);
     } catch (err) {
       console.error(err);
       setError(t('settings.ssoUnlinkFailed'));

@@ -67,11 +67,17 @@ export function AddDocumentDialog({
 
       await createDocument.mutateAsync(formData);
 
-      toast.success(t('document.uploadSuccess', { defaultValue: 'Document uploaded' }));
+      toast.success(
+        t('document.uploadSuccess', { defaultValue: 'Document uploaded' }),
+      );
       resetForm();
       onOpenChange(false);
     } catch {
-      toast.error(t('document.uploadFailed', { defaultValue: 'Failed to upload document' }));
+      toast.error(
+        t('document.uploadFailed', {
+          defaultValue: 'Failed to upload document',
+        }),
+      );
     }
   };
 
@@ -85,9 +91,13 @@ export function AddDocumentDialog({
     >
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('document.title', { defaultValue: 'Add Document' })}</DialogTitle>
+          <DialogTitle>
+            {t('document.title', { defaultValue: 'Add Document' })}
+          </DialogTitle>
           <DialogDescription>
-            {t('document.description', { defaultValue: 'Upload a PDF or scanned document.' })}
+            {t('document.description', {
+              defaultValue: 'Upload a PDF or scanned document.',
+            })}
           </DialogDescription>
         </DialogHeader>
 
@@ -133,7 +143,9 @@ export function AddDocumentDialog({
                   <div className="flex flex-col items-center gap-2">
                     <FileUp className="h-8 w-8 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
-                      {t('document.selectFile', { defaultValue: 'Select a file (PDF, JPEG, PNG)' })}
+                      {t('document.selectFile', {
+                        defaultValue: 'Select a file (PDF, JPEG, PNG)',
+                      })}
                     </span>
                   </div>
                 </Button>
@@ -149,7 +161,9 @@ export function AddDocumentDialog({
             <Input
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder={t('document.titlePlaceholder', { defaultValue: 'Document title' })}
+              placeholder={t('document.titlePlaceholder', {
+                defaultValue: 'Document title',
+              })}
               maxLength={200}
             />
           </div>
@@ -165,7 +179,9 @@ export function AddDocumentDialog({
             <Textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
-              placeholder={t('document.notesPlaceholder', { defaultValue: 'Add notes about this document...' })}
+              placeholder={t('document.notesPlaceholder', {
+                defaultValue: 'Add notes about this document...',
+              })}
               className="min-h-[60px] resize-none"
               maxLength={2000}
             />
@@ -178,7 +194,9 @@ export function AddDocumentDialog({
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            disabled={!selectedFile || !title.trim() || createDocument.isPending}
+            disabled={
+              !selectedFile || !title.trim() || createDocument.isPending
+            }
           >
             {createDocument.isPending ? (
               <>

@@ -23,11 +23,7 @@ interface AudioCardProps {
 }
 
 type RecordingAiStatus =
-  | 'NONE'
-  | 'PENDING'
-  | 'PROCESSING'
-  | 'COMPLETED'
-  | 'FAILED';
+  'NONE' | 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 
 type CopyState = 'idle' | 'copied' | 'error';
 
@@ -137,9 +133,7 @@ function AiPanel({
   const shouldShowLoading =
     showAiOutput && effectiveStatus === 'COMPLETED' && isLoadingResult;
 
-  const structuredJson = getSafeJson(
-    aiResult?.inspectionDraft ?? aiResult,
-  );
+  const structuredJson = getSafeJson(aiResult?.inspectionDraft ?? aiResult);
 
   return (
     <div className="space-y-4 rounded-md border p-4">
@@ -149,15 +143,13 @@ function AiPanel({
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => setShowAiOutput((prev) => !prev)}
+          onClick={() => setShowAiOutput(prev => !prev)}
         >
           {showAiOutput ? 'Hide' : 'Show'}
         </Button>
       </div>
 
-      <div className="text-sm text-muted-foreground">
-        Status: {stageLabel}
-      </div>
+      <div className="text-sm text-muted-foreground">Status: {stageLabel}</div>
 
       {showWaitingForWorker && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -266,8 +258,8 @@ function AiPanel({
                 {copyJsonState === 'copied'
                   ? 'Copied'
                   : copyJsonState === 'error'
-                  ? 'Copy failed'
-                  : 'Copy JSON'}
+                    ? 'Copy failed'
+                    : 'Copy JSON'}
               </Button>
             </div>
 
@@ -312,18 +304,13 @@ function RecordingRow({
   );
   const [copyTranscriptState, setCopyTranscriptState] =
     useState<CopyState>('idle');
-  const [copyJsonState, setCopyJsonState] =
-    useState<CopyState>('idle');
-  const [prefillMessage, setPrefillMessage] =
-    useState<string | null>(null);
+  const [copyJsonState, setCopyJsonState] = useState<CopyState>('idle');
+  const [prefillMessage, setPrefillMessage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const startAiMutation = useStartInspectionAudioAi(
-    inspectionId,
-    recording.id,
-  );
+  const startAiMutation = useStartInspectionAudioAi(inspectionId, recording.id);
 
   const updateTranscriptionMutation = useUpdateInspectionAudioTranscription(
     inspectionId,
@@ -341,9 +328,7 @@ function RecordingRow({
     recording.transcriptionStatus ??
     'NONE';
   const analysisStatus: RecordingAiStatus =
-    statusQuery.data?.analysisStatus ??
-    recording.analysisStatus ??
-    'NONE';
+    statusQuery.data?.analysisStatus ?? recording.analysisStatus ?? 'NONE';
 
   // Combined status — what the rest of the UI cares about. COMPLETED only when
   // both stages are done.
@@ -453,9 +438,7 @@ function RecordingRow({
   };
 
   const handleCopyJson = async () => {
-    const json = getSafeJson(
-      aiResult?.inspectionDraft ?? aiResult,
-    );
+    const json = getSafeJson(aiResult?.inspectionDraft ?? aiResult);
 
     try {
       await navigator.clipboard.writeText(json);
@@ -540,10 +523,7 @@ function RecordingRow({
               effectiveStatus === 'PENDING'
             }
           >
-            {getAnalyzeButtonLabel(
-              startAiMutation.isPending,
-              effectiveStatus,
-            )}
+            {getAnalyzeButtonLabel(startAiMutation.isPending, effectiveStatus)}
           </Button>
 
           <Button
@@ -556,9 +536,7 @@ function RecordingRow({
         </div>
 
         {prefillMessage && (
-          <div className="text-sm text-muted-foreground">
-            {prefillMessage}
-          </div>
+          <div className="text-sm text-muted-foreground">{prefillMessage}</div>
         )}
       </div>
 
@@ -592,8 +570,7 @@ function RecordingRow({
 }
 
 export function AudioCard({ inspectionId }: AudioCardProps) {
-  const { data: recordings = [], isLoading } =
-    useInspectionAudio(inspectionId);
+  const { data: recordings = [], isLoading } = useInspectionAudio(inspectionId);
   const deleteAudio = useDeleteInspectionAudio(inspectionId);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -610,8 +587,7 @@ export function AudioCard({ inspectionId }: AudioCardProps) {
   );
 
   const getDownloadUrl = useCallback(
-    async (audioId: string) =>
-      getAudioDownloadUrl(inspectionId, audioId),
+    async (audioId: string) => getAudioDownloadUrl(inspectionId, audioId),
     [inspectionId],
   );
 
@@ -638,7 +614,7 @@ export function AudioCard({ inspectionId }: AudioCardProps) {
         </div>
       ) : (
         <div className="space-y-3">
-          {recordings.map((recording) => (
+          {recordings.map(recording => (
             <RecordingRow
               key={recording.id}
               inspectionId={inspectionId}

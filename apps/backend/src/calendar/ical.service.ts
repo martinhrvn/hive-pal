@@ -131,7 +131,7 @@ export class ICalService {
       const frequencyDays = hive.settings?.inspection?.frequencyDays ?? 7;
 
       let nextDue: Date;
-      let isOverdue = false;
+      let isOverdue: boolean;
 
       if (!hive.lastInspectionDate) {
         // No inspections yet - due today

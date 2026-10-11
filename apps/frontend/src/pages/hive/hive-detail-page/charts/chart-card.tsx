@@ -14,7 +14,12 @@ interface ChartCardProps {
   children: ReactNode;
 }
 
-export function ChartCard({ title, description, className, children }: Readonly<ChartCardProps>) {
+export function ChartCard({
+  title,
+  description,
+  className,
+  children,
+}: Readonly<ChartCardProps>) {
   return (
     <Card className={className}>
       <CardHeader>

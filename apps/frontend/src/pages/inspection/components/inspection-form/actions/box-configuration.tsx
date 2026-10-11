@@ -23,9 +23,7 @@ import { useFrameSizes } from '@/api/hooks';
 import type { BoxConfigurationActionData } from '../schema';
 
 const normalizeBoxSummary = (
-  boxesSummary:
-    | Array<{ type: string; frameCount: number }>
-    | undefined,
+  boxesSummary: Array<{ type: string; frameCount: number }> | undefined,
   fallbackBoxes: Box[],
 ): Box[] | undefined => {
   if (!boxesSummary?.length) return undefined;
@@ -70,7 +68,12 @@ function diffBoxes(
   after: Box[],
 ): Pick<
   BoxConfigurationActionData,
-  'boxesAdded' | 'boxesRemoved' | 'framesAdded' | 'framesRemoved' | 'totalBoxes' | 'totalFrames'
+  | 'boxesAdded'
+  | 'boxesRemoved'
+  | 'framesAdded'
+  | 'framesRemoved'
+  | 'totalBoxes'
+  | 'totalFrames'
 > {
   const beforeCount = before.length;
   const afterCount = after.length;
@@ -107,7 +110,10 @@ export const BoxConfigurationForm = ({
   const mainBox = useMemo(() => boxes.find(b => b.position === 0), [boxes]);
 
   const handleAddBox = useCallback(() => {
-    const defaultFs = findFrameSizeForVariant(frameSizes, BoxVariantEnum.LANGSTROTH_DEEP);
+    const defaultFs = findFrameSizeForVariant(
+      frameSizes,
+      BoxVariantEnum.LANGSTROTH_DEEP,
+    );
     const newBox: Box = {
       id: `temp-${Date.now()}`,
       position: boxes.length,
@@ -147,7 +153,11 @@ export const BoxConfigurationForm = ({
             if (box.variant && !isVariantCompatible(mainVariant, box.variant)) {
               const newVariant = getEquivalentVariant(box.variant, newSystem);
               const newFs = findFrameSizeForVariant(frameSizes, newVariant);
-              return { ...box, variant: newVariant, frameSizeId: newFs?.id ?? box.frameSizeId };
+              return {
+                ...box,
+                variant: newVariant,
+                frameSizeId: newFs?.id ?? box.frameSizeId,
+              };
             }
             return box;
           });
@@ -178,7 +188,8 @@ export const BoxConfigurationForm = ({
     <div className="flex flex-col gap-4 h-full">
       {/* Instruction */}
       <p className="text-sm text-muted-foreground">
-        Configure the hive's box stack. Changes will be recorded as an action on this inspection and applied to the hive when the inspection is saved.
+        Configure the hive's box stack. Changes will be recorded as an action on
+        this inspection and applied to the hive when the inspection is saved.
       </p>
 
       <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0 overflow-auto">
@@ -225,7 +236,12 @@ export const BoxConfigurationForm = ({
 
       {/* Footer actions */}
       <div className="flex gap-3 pt-2 border-t">
-        <Button variant="outline" className="flex-1" type="button" onClick={onCancel}>
+        <Button
+          variant="outline"
+          className="flex-1"
+          type="button"
+          onClick={onCancel}
+        >
           Cancel
         </Button>
         <Button className="flex-1" type="button" onClick={handleConfirm}>
@@ -324,20 +340,33 @@ export const BoxConfigurationView = ({
           <div className="font-medium text-sm">Box Configuration</div>
           <div className="text-xs text-muted-foreground space-y-0.5">
             {action.boxesAdded > 0 && (
-              <div>+{action.boxesAdded} box{action.boxesAdded === 1 ? '' : 'es'} added</div>
+              <div>
+                +{action.boxesAdded} box{action.boxesAdded === 1 ? '' : 'es'}{' '}
+                added
+              </div>
             )}
             {action.boxesRemoved > 0 && (
-              <div>−{action.boxesRemoved} box{action.boxesRemoved === 1 ? '' : 'es'} removed</div>
+              <div>
+                −{action.boxesRemoved} box
+                {action.boxesRemoved === 1 ? '' : 'es'} removed
+              </div>
             )}
             {action.framesAdded > 0 && (
-              <div>+{action.framesAdded} frame{action.framesAdded === 1 ? '' : 's'} added</div>
+              <div>
+                +{action.framesAdded} frame{action.framesAdded === 1 ? '' : 's'}{' '}
+                added
+              </div>
             )}
             {action.framesRemoved > 0 && (
-              <div>−{action.framesRemoved} frame{action.framesRemoved === 1 ? '' : 's'} removed</div>
+              <div>
+                −{action.framesRemoved} frame
+                {action.framesRemoved === 1 ? '' : 's'} removed
+              </div>
             )}
             <div>
-              Total: {action.totalBoxes} box{action.totalBoxes === 1 ? '' : 'es'},{' '}
-              {action.totalFrames} frame{action.totalFrames === 1 ? '' : 's'}
+              Total: {action.totalBoxes} box
+              {action.totalBoxes === 1 ? '' : 'es'}, {action.totalFrames} frame
+              {action.totalFrames === 1 ? '' : 's'}
             </div>
           </div>
         </div>

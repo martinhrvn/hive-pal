@@ -39,9 +39,7 @@ export function JoinApiaryPage() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
-              Invite not found
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Invite not found</h2>
             <p className="text-muted-foreground mb-4">
               This invite link may have been revoked or is invalid.
             </p>
@@ -60,9 +58,7 @@ export function JoinApiaryPage() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
-              Invite expired
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Invite expired</h2>
             <p className="text-muted-foreground mb-4">
               This invite link has expired. Ask the apiary owner for a new one.
             </p>
@@ -79,9 +75,7 @@ export function JoinApiaryPage() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="pt-6 text-center">
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
-              Already a member
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Already a member</h2>
             <p className="text-muted-foreground mb-4">
               You already have access to <strong>{data.apiaryName}</strong>.
             </p>
@@ -99,9 +93,7 @@ export function JoinApiaryPage() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="pt-6 text-center">
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
-              Request sent!
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Request sent!</h2>
             <p className="text-muted-foreground mb-4">
               Your request to join <strong>{data.apiaryName}</strong> has been
               submitted. The owner will review it shortly.
@@ -126,9 +118,7 @@ export function JoinApiaryPage() {
                 <Users className="h-8 w-8 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-xl">
-              Join {data.apiaryName}
-            </CardTitle>
+            <CardTitle className="text-xl">Join {data.apiaryName}</CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-muted-foreground">
@@ -170,9 +160,7 @@ export function JoinApiaryPage() {
               <Users className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-xl">
-            Join {data.apiaryName}
-          </CardTitle>
+          <CardTitle className="text-xl">Join {data.apiaryName}</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">

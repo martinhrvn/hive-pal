@@ -57,8 +57,7 @@ export const MaintenanceForm: React.FC<MaintenanceActionProps> = ({
   const { getValues } = useFormContext<InspectionFormData>();
   const existingActions = getValues('actions') || [];
   const existing = existingActions.find(a => a.type === 'MAINTENANCE') as
-    | MaintenanceActionType
-    | undefined;
+    MaintenanceActionType | undefined;
 
   const initial = action || existing;
 
@@ -88,7 +87,9 @@ export const MaintenanceForm: React.FC<MaintenanceActionProps> = ({
       </h3>
 
       <div className="lg:col-span-2 flex flex-col gap-4">
-        <label>{t('inspection:form.actions.maintenance_section.component')}</label>
+        <label>
+          {t('inspection:form.actions.maintenance_section.component')}
+        </label>
         <div className="flex flex-wrap gap-4">
           {COMPONENTS.map(({ id, fallbackLabel }) => (
             <Pill
@@ -131,7 +132,9 @@ export const MaintenanceForm: React.FC<MaintenanceActionProps> = ({
         </label>
         <Textarea
           id="maintenance-notes"
-          placeholder={t('inspection:form.actions.maintenance_section.notesPlaceholder')}
+          placeholder={t(
+            'inspection:form.actions.maintenance_section.notesPlaceholder',
+          )}
           value={notes}
           onChange={e => setNotes(e.target.value)}
         />
@@ -169,12 +172,14 @@ export const MaintenanceView: React.FC<MaintenanceActionProps> = ({
   if (!action) return null;
 
   const componentLabel =
-    t(`inspection:form.actions.maintenance_section.${action.component === 'BOTTOM_BOARD' ? 'bottomBoard' : action.component === 'COVER' ? 'cover' : 'box'}`) ||
-    getMaintenanceComponentLabel(action.component);
+    t(
+      `inspection:form.actions.maintenance_section.${action.component === 'BOTTOM_BOARD' ? 'bottomBoard' : action.component === 'COVER' ? 'cover' : 'box'}`,
+    ) || getMaintenanceComponentLabel(action.component);
 
   const statusLabel =
-    t(`inspection:form.actions.maintenance_section.${action.status === 'CLEANED' ? 'cleaned' : 'replaced'}`) ||
-    getMaintenanceStatusLabel(action.status);
+    t(
+      `inspection:form.actions.maintenance_section.${action.status === 'CLEANED' ? 'cleaned' : 'replaced'}`,
+    ) || getMaintenanceStatusLabel(action.status);
 
   const handleSave = (updatedAction: MaintenanceActionType) => {
     onSave(updatedAction);
@@ -182,11 +187,7 @@ export const MaintenanceView: React.FC<MaintenanceActionProps> = ({
   };
 
   return isEditing ? (
-    <MaintenanceForm
-      action={action}
-      onSave={handleSave}
-      onRemove={onRemove}
-    />
+    <MaintenanceForm action={action} onSave={handleSave} onRemove={onRemove} />
   ) : (
     <ActionViewRenderer
       title={t('inspection:form.actions.maintenance_section.title')}

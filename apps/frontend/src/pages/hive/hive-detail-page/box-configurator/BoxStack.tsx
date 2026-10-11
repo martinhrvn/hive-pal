@@ -95,8 +95,10 @@ export const BoxStack = ({
   return (
     <div className="flex flex-col items-center space-y-1 py-4">
       {/* Cover */}
-      <div className="w-64 h-6 rounded-t-lg border-2 bg-muted flex items-center justify-between px-3"
-        style={{ borderColor: 'rgba(0, 0, 0, 0.2)' }}>
+      <div
+        className="w-64 h-6 rounded-t-lg border-2 bg-muted flex items-center justify-between px-3"
+        style={{ borderColor: 'rgba(0, 0, 0, 0.2)' }}
+      >
         <span className="text-xs font-medium text-muted-foreground">
           {t('inspection:form.actions.maintenance_section.cover')}
         </span>
@@ -132,8 +134,10 @@ export const BoxStack = ({
       ))}
 
       {/* Bottom Board */}
-      <div className="w-64 h-6 rounded-b-lg border-2 bg-muted flex items-center justify-between px-3"
-        style={{ borderColor: 'rgba(0, 0, 0, 0.2)' }}>
+      <div
+        className="w-64 h-6 rounded-b-lg border-2 bg-muted flex items-center justify-between px-3"
+        style={{ borderColor: 'rgba(0, 0, 0, 0.2)' }}
+      >
         <span className="text-xs font-medium text-muted-foreground">
           {t('inspection:form.actions.maintenance_section.bottomBoard')}
         </span>

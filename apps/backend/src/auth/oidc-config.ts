@@ -5,7 +5,7 @@
 //     Authentik: OIDC_ISSUER=https://auth.example.com/application/o/<app-slug>/
 //   OIDC_CLIENT_ID, OIDC_CLIENT_SECRET required
 //   OIDC_PROVIDER_ID     provider id used in the callback URL (default: authentik)
-//                        → redirect URI: <BETTER_AUTH_URL>/api/auth/oauth2/callback/<id>
+//                        → redirect URI: <BETTER_AUTH_URL>/api/auth/callback/<id>
 //   OIDC_SCOPES          space/comma separated (default: "openid profile email")
 //   OIDC_BUTTON_LABEL    login button text (default: "Sign in with SSO")
 //   OIDC_ALLOW_SIGNUP    create unknown users on first SSO login (default: true)

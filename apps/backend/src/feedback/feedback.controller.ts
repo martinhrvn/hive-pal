@@ -34,7 +34,6 @@ import {
   FeedbackFilters,
 } from 'shared-schemas';
 import { ZodValidation } from '../common';
-import { FeedbackStatus, FeedbackType } from '@/prisma/client';
 
 @ApiTags('feedback')
 @Controller('feedback')
@@ -69,8 +68,8 @@ export class FeedbackController {
   @ZodValidation(feedbackFiltersSchema)
   async getAllFeedback(@Query() query: FeedbackFilters) {
     return this.feedbackService.findAll({
-      type: query.type as FeedbackType,
-      status: query.status as FeedbackStatus,
+      type: query.type,
+      status: query.status,
       limit: query.limit ?? 50,
       offset: query.offset ?? 0,
     });

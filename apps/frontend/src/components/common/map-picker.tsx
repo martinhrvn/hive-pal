@@ -69,7 +69,11 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({
 
   return position === null ? null : (
     <Marker position={position} icon={defaultIcon}>
-      <Popup>{readOnly ? t('apiary:map.apiaryLocation') : t('apiary:map.selectedLocation')}</Popup>
+      <Popup>
+        {readOnly
+          ? t('apiary:map.apiaryLocation')
+          : t('apiary:map.selectedLocation')}
+      </Popup>
     </Marker>
   );
 };
@@ -99,7 +103,9 @@ const MapPicker: React.FC<MapPickerProps> = ({
     <Card className="w-full max-w-4xl">
       <CardHeader>
         <CardTitle>
-          {readOnly ? t('apiary:map.apiaryLocation') : t('apiary:map.selectLocation')}
+          {readOnly
+            ? t('apiary:map.apiaryLocation')
+            : t('apiary:map.selectLocation')}
         </CardTitle>
       </CardHeader>
       <CardContent>

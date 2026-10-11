@@ -47,7 +47,12 @@ export const InspectionDateTimePicker: React.FC<
     } else {
       const d = new Date(date);
       if (savedTimeRef.current) {
-        d.setHours(savedTimeRef.current.hours, savedTimeRef.current.minutes, 0, 0);
+        d.setHours(
+          savedTimeRef.current.hours,
+          savedTimeRef.current.minutes,
+          0,
+          0,
+        );
         savedTimeRef.current = null;
       }
       onDateChange(d);
@@ -57,7 +62,11 @@ export const InspectionDateTimePicker: React.FC<
   return (
     <>
       <div className="flex items-center gap-2">
-        <Switch id={switchId} checked={isAllDay} onCheckedChange={handleAllDayChange} />
+        <Switch
+          id={switchId}
+          checked={isAllDay}
+          onCheckedChange={handleAllDayChange}
+        />
         <label htmlFor={switchId} className={labelClassName}>
           {t('form.allDay')}
         </label>

@@ -132,8 +132,10 @@ export class PrometheusService {
       'Current number of registered users',
       () => this.prisma.user.count(),
     );
-    this.registerCountGauge('hivepal_apiaries', 'Current number of apiaries', () =>
-      this.prisma.apiary.count(),
+    this.registerCountGauge(
+      'hivepal_apiaries',
+      'Current number of apiaries',
+      () => this.prisma.apiary.count(),
     );
 
     this.registerStatusGauge(

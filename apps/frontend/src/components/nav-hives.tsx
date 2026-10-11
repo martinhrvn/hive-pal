@@ -44,7 +44,9 @@ export function NavHives() {
             <SidebarMenuButton asChild>
               <Link
                 to={`/hives/${item.id}`}
-                onClick={() => { if (isMobile) setOpenMobile(false); }}
+                onClick={() => {
+                  if (isMobile) setOpenMobile(false);
+                }}
                 className="flex items-center"
               >
                 <HomeIcon />

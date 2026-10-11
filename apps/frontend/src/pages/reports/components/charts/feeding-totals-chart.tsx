@@ -16,8 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 interface FeedingTotalsChartProps {
   data:
-    | Array<{ hiveId: string; hiveName: string; sugarKg: number }>
-    | undefined;
+    Array<{ hiveId: string; hiveName: string; sugarKg: number }> | undefined;
   isLoading: boolean;
 }
 

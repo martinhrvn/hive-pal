@@ -39,6 +39,9 @@ export default defineConfig({
     setupFiles: ['reflect-metadata'],
     reporters: ['default', ['junit', {}]],
     outputFile: { junit: './test-results/junit.xml' },
+    // Vitest 4 removed `coverage.all`; name the sources explicitly so
+    // `test:cov` keeps reporting untested files.
+    coverage: { include: ['src/**'] },
     projects: [
       {
         extends: true,

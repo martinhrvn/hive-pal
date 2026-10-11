@@ -251,7 +251,9 @@ export const CalendarPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={handlePreviousWeek}
-                aria-label={t('common:calendar.previousWeek', { defaultValue: 'Previous Week' })}
+                aria-label={t('common:calendar.previousWeek', {
+                  defaultValue: 'Previous Week',
+                })}
                 className="flex items-center gap-1"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -265,7 +267,9 @@ export const CalendarPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={handlePreviousDay}
-                aria-label={t('common:calendar.previousDay', { defaultValue: 'Previous Day' })}
+                aria-label={t('common:calendar.previousDay', {
+                  defaultValue: 'Previous Day',
+                })}
                 className="flex items-center gap-1"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -288,7 +292,9 @@ export const CalendarPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleNextDay}
-                aria-label={t('common:calendar.nextDay', { defaultValue: 'Next Day' })}
+                aria-label={t('common:calendar.nextDay', {
+                  defaultValue: 'Next Day',
+                })}
                 className="flex items-center gap-1"
               >
                 <span className="hidden sm:inline">
@@ -302,7 +308,9 @@ export const CalendarPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleNextWeek}
-                aria-label={t('common:calendar.nextWeek', { defaultValue: 'Next Week' })}
+                aria-label={t('common:calendar.nextWeek', {
+                  defaultValue: 'Next Week',
+                })}
                 className="flex items-center gap-1"
               >
                 <span className="hidden sm:inline">

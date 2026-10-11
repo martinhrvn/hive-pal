@@ -596,7 +596,7 @@ export class BatchInspectionsService {
     await this.checkAndCompleteIfDone(id);
 
     // Get next hive if available
-    let next: CurrentHiveToInspect | null = null;
+    let next: CurrentHiveToInspect | null;
     try {
       next = await this.getCurrentHive(id, apiaryId, userId);
     } catch {
@@ -706,7 +706,7 @@ export class BatchInspectionsService {
         skippedCount: h.skippedCount,
         hive: {
           ...h.hive,
-          status: h.hive.status as string,
+          status: h.hive.status,
         },
       })),
       progress: {

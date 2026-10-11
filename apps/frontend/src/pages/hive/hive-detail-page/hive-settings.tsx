@@ -56,7 +56,11 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
   const { t } = useTranslation(['hive', 'common']);
   const { mutate: updateHive, isPending } = useUpdateHive();
 
-  const form = useForm<HiveSettingsFormData>({
+  const form = useForm<
+    z.input<typeof hiveSettingsSchema>,
+    unknown,
+    HiveSettingsFormData
+  >({
     resolver: zodResolver(hiveSettingsSchema),
     defaultValues: {
       settings: hive?.settings || defaultHiveSettings,
@@ -160,7 +164,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                     max={365}
                     placeholder="7"
                     fallback={7}
-                    description={t('hive:settings.inspectionFrequencyDescription')}
+                    description={t(
+                      'hive:settings.inspectionFrequencyDescription',
+                    )}
                   />
 
                   <FormField

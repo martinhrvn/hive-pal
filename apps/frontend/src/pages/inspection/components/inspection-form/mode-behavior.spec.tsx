@@ -22,8 +22,12 @@ test.describe('Inspection mode behavior', () => {
     await expect(
       page.getByRole('button', { name: 'Increase Queen Cells' }),
     ).toBeVisible();
-    await expect(page.getByText('Capped Brood', { exact: true })).toHaveCount(0);
-    await expect(page.getByText('Honey Stores', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('Capped Brood', { exact: true })).toHaveCount(
+      0,
+    );
+    await expect(page.getByText('Honey Stores', { exact: true })).toHaveCount(
+      0,
+    );
   });
 
   test('subjective mode keeps rating interactions and AI suggestions together', async ({
@@ -62,7 +66,9 @@ test.describe('Inspection mode behavior', () => {
       score: undefined,
     });
 
-    expect(getModeSpecificObservations(formData.observations, false, 18)).toEqual({
+    expect(
+      getModeSpecificObservations(formData.observations, false, 18),
+    ).toEqual({
       strength: 8,
       totalFrames: 18,
       eggsFrames: 4,

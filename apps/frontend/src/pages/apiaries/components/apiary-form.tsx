@@ -70,14 +70,16 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
   const createPhoto = useCreatePhoto();
   const [featurePhotoUrl, setFeaturePhotoUrl] = useState<string | null>(null);
 
-  const form = useForm<ApiaryFormData>({
-    resolver: zodResolver(apiariesSchema),
-    defaultValues: {
-      name: '',
-      location: '',
-      settings: { inspectionType: 'data_driven' },
+  const form = useForm<z.input<typeof apiariesSchema>, unknown, ApiaryFormData>(
+    {
+      resolver: zodResolver(apiariesSchema),
+      defaultValues: {
+        name: '',
+        location: '',
+        settings: { inspectionType: 'data_driven' },
+      },
     },
-  });
+  );
 
   useEffect(() => {
     if (existingApiary) {
@@ -87,7 +89,10 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
         latitude: existingApiary.latitude ?? undefined,
         longitude: existingApiary.longitude ?? undefined,
         featurePhotoId: existingApiary.featurePhotoId ?? null,
-        settings: { inspectionType: existingApiary.settings?.inspectionType ?? 'data_driven' },
+        settings: {
+          inspectionType:
+            existingApiary.settings?.inspectionType ?? 'data_driven',
+        },
       });
       if (existingApiary.featurePhotoUrl) {
         setFeaturePhotoUrl(existingApiary.featurePhotoUrl);
@@ -193,7 +198,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           apiaryId={apiaryId}
           currentPhotoUrl={featurePhotoUrl}
           currentPhotoId={form.watch('featurePhotoId') ?? undefined}
-          onPhotoUploaded={(photoId) =>
+          onPhotoUploaded={photoId =>
             form.setValue('featurePhotoId', photoId, { shouldDirty: true })
           }
           onPhotoRemoved={() => {
@@ -225,15 +230,25 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('apiary:form.inspectionType.label')}</FormLabel>
-              <Select key={field.value} onValueChange={field.onChange} value={field.value ?? 'data_driven'}>
+              <Select
+                key={field.value}
+                onValueChange={field.onChange}
+                value={field.value ?? 'data_driven'}
+              >
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('apiary:form.inspectionType.placeholder')} />
+                    <SelectValue
+                      placeholder={t('apiary:form.inspectionType.placeholder')}
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="data_driven">{t('apiary:form.inspectionType.dataDriven')}</SelectItem>
-                  <SelectItem value="subjective">{t('apiary:form.inspectionType.subjective')}</SelectItem>
+                  <SelectItem value="data_driven">
+                    {t('apiary:form.inspectionType.dataDriven')}
+                  </SelectItem>
+                  <SelectItem value="subjective">
+                    {t('apiary:form.inspectionType.subjective')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>
@@ -258,7 +273,9 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
             type={'submit'}
             data-umami-event={isEditMode ? 'Apiary Edit' : 'Apiary Create'}
           >
-            {isEditMode ? t('apiary:edit.title', { defaultValue: 'Edit Apiary' }) : t('apiary:create.title')}
+            {isEditMode
+              ? t('apiary:edit.title', { defaultValue: 'Edit Apiary' })
+              : t('apiary:create.title')}
           </Button>
         </div>
       </form>

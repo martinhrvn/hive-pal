@@ -77,22 +77,32 @@ export const useAuth = () => ({
 
 export const LINKED_ACCOUNTS_QUERY_KEY = ['auth', 'linked-accounts'] as const;
 
-/** Sign-in methods linked to the current user ('credential', 'authentik', …). */
+export interface LinkedAccount {
+  /** Account row id, which is what `unlinkAccount` expects. */
+  id: string;
+  /** Sign-in method: 'credential', the OIDC provider id, … */
+  providerId: string;
+}
+
+/** Sign-in methods linked to the current user. */
 export const useLinkedAccounts = () =>
   useQuery({
     queryKey: LINKED_ACCOUNTS_QUERY_KEY,
-    queryFn: async () => {
+    queryFn: async (): Promise<LinkedAccount[]> => {
       const result = await authClient.listAccounts();
       if (result.error) throw result.error;
-      return (result.data ?? []).map(account => account.providerId);
+      return (result.data ?? []).map(({ id, providerId }) => ({
+        id,
+        providerId,
+      }));
     },
   });
 
 export const useUnlinkAccount = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (providerId: string) => {
-      const result = await authClient.unlinkAccount({ providerId });
+    mutationFn: async (accountId: string) => {
+      const result = await authClient.unlinkAccount({ accountId });
       if (result.error) throw result.error;
       return result.data;
     },

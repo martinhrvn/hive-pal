@@ -140,10 +140,11 @@ export function ReviewStep({
       icon: Camera,
       label: `${pendingPhotos.length}`,
     },
-    notes && notes.trim().length > 0 && {
-      icon: FileText,
-      label: t('inspection:mobile.review.hasNotes'),
-    },
+    notes &&
+      notes.trim().length > 0 && {
+        icon: FileText,
+        label: t('inspection:mobile.review.hasNotes'),
+      },
   ].filter(Boolean) as Array<{ icon: typeof Mic; label: string }>;
 
   return (

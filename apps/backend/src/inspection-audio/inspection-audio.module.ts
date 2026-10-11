@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { parseByteLimit } from '../utils/byte-limit';
 import { InspectionAudioController } from './inspection-audio.controller';
 import { ApiaryAudioController } from './apiary-audio.controller';
 import { InspectionAudioService } from './inspection-audio.service';
@@ -17,8 +18,10 @@ import { InspectionsModule } from '../inspections/inspections.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         limits: {
-          fileSize:
-            configService.get<number>('AUDIO_MAX_FILE_SIZE') || 52428800, // 50MB default
+          fileSize: parseByteLimit(
+            configService.get('AUDIO_MAX_FILE_SIZE'),
+            52428800, // 50MB default
+          ),
         },
       }),
       inject: [ConfigService],

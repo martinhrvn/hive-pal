@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import {
   AssistantMessageResponse,
@@ -15,7 +11,12 @@ import { APIARY_SELECTION } from '@/context/auth-context';
 export const ASSISTANT_KEYS = {
   all: ['assistant'] as const,
   threads: (apiaryId?: string, hiveId?: string | null) =>
-    [...ASSISTANT_KEYS.all, 'threads', apiaryId ?? null, hiveId ?? null] as const,
+    [
+      ...ASSISTANT_KEYS.all,
+      'threads',
+      apiaryId ?? null,
+      hiveId ?? null,
+    ] as const,
   thread: (id: string) => [...ASSISTANT_KEYS.all, 'thread', id] as const,
 };
 
@@ -46,10 +47,9 @@ export const useAssistantThread = (threadId?: string) => {
   return useQuery<AssistantThreadWithMessagesResponse>({
     queryKey: ASSISTANT_KEYS.thread(threadId ?? ''),
     queryFn: async () => {
-      const response =
-        await apiClient.get<AssistantThreadWithMessagesResponse>(
-          `/api/assistant/threads/${threadId}`,
-        );
+      const response = await apiClient.get<AssistantThreadWithMessagesResponse>(
+        `/api/assistant/threads/${threadId}`,
+      );
       return response.data;
     },
     enabled: !!threadId,
@@ -110,19 +110,16 @@ export async function streamAssistantMessage(
   callbacks: AssistantStreamCallbacks,
   signal?: AbortSignal,
 ): Promise<void> {
-  const response = await fetch(
-    `/api/assistant/threads/${threadId}/messages`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-apiary-id': apiaryId || localStorage.getItem(APIARY_SELECTION) || '',
-      },
-      body: JSON.stringify({ content }),
-      signal,
+  const response = await fetch(`/api/assistant/threads/${threadId}/messages`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-apiary-id': apiaryId || localStorage.getItem(APIARY_SELECTION) || '',
     },
-  );
+    body: JSON.stringify({ content }),
+    signal,
+  });
 
   if (!response.ok || !response.body) {
     callbacks.onError(`Assistant request failed (${response.status})`);
@@ -156,7 +153,6 @@ export async function streamAssistantMessage(
     }
   };
 
-   
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;

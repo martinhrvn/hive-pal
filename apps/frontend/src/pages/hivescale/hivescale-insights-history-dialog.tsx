@@ -103,7 +103,9 @@ function HistoryEntryRow({
           <p className="text-sm text-muted-foreground">{entry.description}</p>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <span>
-              {t('history.firstSeen', { time: formatStamp(entry.first_seen_at) })}
+              {t('history.firstSeen', {
+                time: formatStamp(entry.first_seen_at),
+              })}
               {entry.first_seen_at && (
                 <>
                   {' '}
@@ -178,9 +180,7 @@ export function HiveScaleInsightsHistoryDialog({
   // The backend response counts are device-wide, so derive the displayed
   // totals from the (possibly channel-filtered) entries instead.
   const shownCount = entries.length;
-  const activeCount = entries.filter(
-    entry => entry.status === 'active',
-  ).length;
+  const activeCount = entries.filter(entry => entry.status === 'active').length;
 
   const hiveName = channel
     ? channelLabel(channel, scale1Name, scale2Name, t)
@@ -259,15 +259,16 @@ export function HiveScaleInsightsHistoryDialog({
             <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
               {t('history.loadError', {
                 message:
-                  (history.error as Error)?.message ??
-                  t('common.unknownError'),
+                  (history.error as Error)?.message ?? t('common.unknownError'),
               })}
             </div>
           ) : entries.length === 0 ? (
             <div className="flex items-center gap-3 rounded-md border bg-muted/30 p-4">
               <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div className="space-y-0.5">
-                <p className="text-sm font-medium">{t('history.empty.title')}</p>
+                <p className="text-sm font-medium">
+                  {t('history.empty.title')}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {status !== 'all'
                     ? t('history.empty.descriptionFiltered')

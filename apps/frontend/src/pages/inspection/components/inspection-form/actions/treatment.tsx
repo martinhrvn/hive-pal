@@ -132,16 +132,22 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
       className={'grid grid-cols-2 gap-4 mt-5'}
       data-test={TEST_SELECTORS.TREATMENT_FORM}
     >
-      <h3 className="col-span-2 text-lg font-bold">{t('inspection:form.actions.treatment_section.title')}</h3>
+      <h3 className="col-span-2 text-lg font-bold">
+        {t('inspection:form.actions.treatment_section.title')}
+      </h3>
 
       {/* Treatment Type Selector */}
       <div className={'col-span-2 lg:col-span-1 flex flex-col gap-4'}>
-        <label htmlFor={'treatment-type'}>{t('inspection:form.actions.treatment_section.treatmentType')}</label>
+        <label htmlFor={'treatment-type'}>
+          {t('inspection:form.actions.treatment_section.treatmentType')}
+        </label>
         <Select value={treatmentType} onValueChange={handleTreatmentTypeChange}>
           <SelectTrigger className={'w-full'}>
             <SelectValue
               id={'treatment-type'}
-              placeholder={t('inspection:form.actions.treatment_section.selectTreatmentType')}
+              placeholder={t(
+                'inspection:form.actions.treatment_section.selectTreatmentType',
+              )}
             >
               {TREATMENT_PRODUCTS[treatmentType as TreatmentProductId]?.label ??
                 treatmentType}
@@ -160,10 +166,14 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
       {/* Custom Product Name (shown only for OTHER) */}
       {isOther && (
         <div className={'col-span-2 lg:col-span-1 flex flex-col gap-4'}>
-          <label htmlFor={'custom-product'}>{t('inspection:form.actions.treatment_section.productName')}</label>
+          <label htmlFor={'custom-product'}>
+            {t('inspection:form.actions.treatment_section.productName')}
+          </label>
           <Input
             id={'custom-product'}
-            placeholder={t('inspection:form.actions.treatment_section.productNamePlaceholder')}
+            placeholder={t(
+              'inspection:form.actions.treatment_section.productNamePlaceholder',
+            )}
             value={customProductName}
             onChange={e => setCustomProductName(e.target.value)}
           />
@@ -172,10 +182,17 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
 
       {/* Unit Selector */}
       <div className={`col-span-2 lg:col-span-1 flex flex-col gap-4`}>
-        <label htmlFor={'unit'}>{t('inspection:form.actions.treatment_section.unit')}</label>
+        <label htmlFor={'unit'}>
+          {t('inspection:form.actions.treatment_section.unit')}
+        </label>
         <Select value={unit} onValueChange={setUnit}>
           <SelectTrigger className={'w-full'}>
-            <SelectValue id={'unit'} placeholder={t('inspection:form.actions.treatment_section.selectUnit')}>
+            <SelectValue
+              id={'unit'}
+              placeholder={t(
+                'inspection:form.actions.treatment_section.selectUnit',
+              )}
+            >
               {displayUnit}
             </SelectValue>
           </SelectTrigger>
@@ -192,7 +209,9 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
       {/* Amount (conditionally shown based on requiresQuantity) */}
       {requiresQuantity && (
         <div className={'col-span-2 lg:col-span-1 flex flex-col gap-4'}>
-          <label htmlFor={'amount'}>{t('inspection:form.actions.treatment_section.amount')}</label>
+          <label htmlFor={'amount'}>
+            {t('inspection:form.actions.treatment_section.amount')}
+          </label>
           <NumericInputField
             id={'amount'}
             step={unit === 'pcs' ? 1 : 5}
@@ -206,10 +225,14 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
 
       {/* Notes */}
       <div className="col-span-2 flex flex-col gap-4">
-        <label htmlFor="notes">{t('inspection:form.actions.treatment_section.notesOptional')}</label>
+        <label htmlFor="notes">
+          {t('inspection:form.actions.treatment_section.notesOptional')}
+        </label>
         <Textarea
           id="notes"
-          placeholder={t('inspection:form.actions.treatment_section.notesPlaceholder')}
+          placeholder={t(
+            'inspection:form.actions.treatment_section.notesPlaceholder',
+          )}
           value={notes}
           onChange={e => setNotes(e.target.value)}
           data-test={TEST_SELECTORS.TREATMENT_NOTES}
@@ -218,7 +241,11 @@ export const TreatmentForm: React.FC<TreatmentActionProps> = ({
 
       {/* Save Button */}
       <div className="col-span-2 flex justify-end">
-        {isValid && <Button onClick={handleSave}>{t('inspection:form.actions.save')}</Button>}
+        {isValid && (
+          <Button onClick={handleSave}>
+            {t('inspection:form.actions.save')}
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -259,11 +286,7 @@ export const TreatmentView: React.FC<TreatmentActionProps> = ({
   };
 
   return isEditing ? (
-    <TreatmentForm
-      action={action}
-      onSave={handleSave}
-      onRemove={onRemove}
-    />
+    <TreatmentForm action={action} onSave={handleSave} onRemove={onRemove} />
   ) : (
     <ActionViewRenderer
       title={t('inspection:form.actions.treatment_section.title')}

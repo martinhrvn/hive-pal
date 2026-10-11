@@ -22,9 +22,7 @@ export const isAiActionField = (field: string): boolean =>
 
 /** True when the suggested date carries a spoken time of day (not midnight). */
 export const aiDateHasTimeOfDay = (date: Date): boolean =>
-  date.getHours() !== 0 ||
-  date.getMinutes() !== 0 ||
-  date.getSeconds() !== 0;
+  date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0;
 
 const joinNotes = (...parts: Array<string | null | undefined>): string =>
   parts.filter(part => part && part.trim() !== '').join(' — ');

@@ -68,7 +68,9 @@ export function ColumnVisibilityMenu<T>({
               disabled={isLastVisible}
               // Keep the menu open so several columns can be toggled at once.
               onSelect={event => event.preventDefault()}
-              onCheckedChange={checked => setColumnVisible(column.id, !!checked)}
+              onCheckedChange={checked =>
+                setColumnVisible(column.id, !!checked)
+              }
             >
               {columnMenuLabel(column)}
             </DropdownMenuCheckboxItem>

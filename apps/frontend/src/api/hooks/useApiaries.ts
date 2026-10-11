@@ -20,7 +20,10 @@ const APIARIES_KEYS = {
 
 // Get all apiaries
 export const useApiaries = (
-  queryOptions?: Omit<UseQueryOptions<ApiaryListResponse>, 'queryKey' | 'queryFn'>,
+  queryOptions?: Omit<
+    UseQueryOptions<ApiaryListResponse>,
+    'queryKey' | 'queryFn'
+  >,
 ) => {
   const query = useQuery<ApiaryListResponse>({
     queryKey: APIARIES_KEYS.list(),

@@ -67,7 +67,12 @@ export type TimelineEvent = {
   id: string;
   date: string;
   type: 'inspection' | 'action' | 'note' | 'quick-check' | 'photo' | 'document';
-  data: InspectionResponse | ActionResponse | QuickCheckResponse | PhotoResponse | DocumentResponse;
+  data:
+    | InspectionResponse
+    | ActionResponse
+    | QuickCheckResponse
+    | PhotoResponse
+    | DocumentResponse;
 };
 
 export type EventTypeFilter =
@@ -110,15 +115,15 @@ const formatTime = (date: string) => {
   return format(new Date(date), 'h:mm a');
 };
 
-const formatEntryDate = (
-  date: string,
-  t: (key: string) => string,
-): string => {
+const formatEntryDate = (date: string, t: (key: string) => string): string => {
   const d = new Date(date);
   if (isToday(d)) return t('common:timeline.today');
   if (isYesterday(d)) return t('common:timeline.yesterday');
   const now = new Date();
-  return format(d, d.getFullYear() === now.getFullYear() ? 'MMM d' : 'MMM d, yyyy');
+  return format(
+    d,
+    d.getFullYear() === now.getFullYear() ? 'MMM d' : 'MMM d, yyyy',
+  );
 };
 
 type DayHeaderParts = {
@@ -239,10 +244,7 @@ const Hexagon: React.FC<{ tone: MarkerTone; pulse?: boolean }> = ({
         aria-hidden
       />
       <span
-        className={cn(
-          'absolute w-1 h-1 rounded-full',
-          cls.dot,
-        )}
+        className={cn('absolute w-1 h-1 rounded-full', cls.dot)}
         aria-hidden
       />
     </span>
@@ -419,12 +421,15 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
     useState<DateRangeFilter>('all');
   const [hiveFilter, setHiveFilter] = useState<string>('all');
 
-  const { setReschedulingInspection, handleDoInspection, rescheduleDialogElement } =
-    useScheduledInspectionActions(
-      hiveId => (getHiveName ? (getHiveName(hiveId) ?? hiveId) : hiveId),
-    );
+  const {
+    setReschedulingInspection,
+    handleDoInspection,
+    rescheduleDialogElement,
+  } = useScheduledInspectionActions(hiveId =>
+    getHiveName ? (getHiveName(hiveId) ?? hiveId) : hiveId,
+  );
 
-  const timelineEvents= useMemo(() => {
+  const timelineEvents = useMemo(() => {
     const events: TimelineEvent[] = [];
     const now = new Date();
 
@@ -464,50 +469,49 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
     }
 
     if (actions) {
-      actions
-        .forEach(action => {
-          const eventDate = new Date(action.date);
-          if (!startDate || eventDate >= startDate) {
-            let includeAction = false;
-            if (eventTypeFilter === 'all') {
-              includeAction = true;
-            } else if (
-              eventTypeFilter === 'feeding' &&
-              action.type === 'FEEDING'
-            ) {
-              includeAction = true;
-            } else if (
-              eventTypeFilter === 'treatment' &&
-              action.type === 'TREATMENT'
-            ) {
-              includeAction = true;
-            } else if (
-              eventTypeFilter === 'harvest' &&
-              action.type === 'HARVEST'
-            ) {
-              includeAction = true;
-            } else if (eventTypeFilter === 'notes' && action.type === 'NOTE') {
-              includeAction = true;
-            } else if (
-              eventTypeFilter === 'other' &&
-              (action.type === 'FRAME' ||
-                action.type === 'OTHER' ||
-                action.type === 'BOX_CONFIGURATION' ||
-                action.type === 'MAINTENANCE')
-            ) {
-              includeAction = true;
-            }
-
-            if (includeAction) {
-              events.push({
-                id: `action-${action.id}`,
-                date: action.date,
-                type: 'action',
-                data: action,
-              });
-            }
+      actions.forEach(action => {
+        const eventDate = new Date(action.date);
+        if (!startDate || eventDate >= startDate) {
+          let includeAction = false;
+          if (eventTypeFilter === 'all') {
+            includeAction = true;
+          } else if (
+            eventTypeFilter === 'feeding' &&
+            action.type === 'FEEDING'
+          ) {
+            includeAction = true;
+          } else if (
+            eventTypeFilter === 'treatment' &&
+            action.type === 'TREATMENT'
+          ) {
+            includeAction = true;
+          } else if (
+            eventTypeFilter === 'harvest' &&
+            action.type === 'HARVEST'
+          ) {
+            includeAction = true;
+          } else if (eventTypeFilter === 'notes' && action.type === 'NOTE') {
+            includeAction = true;
+          } else if (
+            eventTypeFilter === 'other' &&
+            (action.type === 'FRAME' ||
+              action.type === 'OTHER' ||
+              action.type === 'BOX_CONFIGURATION' ||
+              action.type === 'MAINTENANCE')
+          ) {
+            includeAction = true;
           }
-        });
+
+          if (includeAction) {
+            events.push({
+              id: `action-${action.id}`,
+              date: action.date,
+              type: 'action',
+              data: action,
+            });
+          }
+        }
+      });
     }
 
     if (
@@ -527,10 +531,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
       });
     }
 
-    if (
-      photos &&
-      (eventTypeFilter === 'all' || eventTypeFilter === 'photos')
-    ) {
+    if (photos && (eventTypeFilter === 'all' || eventTypeFilter === 'photos')) {
       photos.forEach(photo => {
         const eventDate = new Date(photo.date);
         if (!startDate || eventDate >= startDate) {
@@ -562,13 +563,14 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
     }
 
     // Apply hive filter
-    const filtered = hiveFilter === 'all'
-      ? events
-      : events.filter(event => {
-          const data = event.data;
-          const eventHiveId = 'hiveId' in data ? data.hiveId : undefined;
-          return eventHiveId === hiveFilter;
-        });
+    const filtered =
+      hiveFilter === 'all'
+        ? events
+        : events.filter(event => {
+            const data = event.data;
+            const eventHiveId = 'hiveId' in data ? data.hiveId : undefined;
+            return eventHiveId === hiveFilter;
+          });
 
     return filtered.sort((a, b) => {
       const aIsOverdue =
@@ -585,14 +587,25 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
 
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }, [inspections, actions, quickChecks, photos, documents, eventTypeFilter, dateRangeFilter, hiveFilter]);
+  }, [
+    inspections,
+    actions,
+    quickChecks,
+    photos,
+    documents,
+    eventTypeFilter,
+    dateRangeFilter,
+    hiveFilter,
+  ]);
 
   const displayedEvents = showAll
     ? timelineEvents
     : timelineEvents.slice(0, maxDisplayed);
 
   const hasActiveFilters =
-    eventTypeFilter !== 'all' || dateRangeFilter !== 'all' || hiveFilter !== 'all';
+    eventTypeFilter !== 'all' ||
+    dateRangeFilter !== 'all' ||
+    hiveFilter !== 'all';
 
   const renderHiveName = (event: TimelineEvent) => {
     if (!getHiveName) return null;
@@ -614,9 +627,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
     const isPhoto = event.type === 'photo';
     const isDocument = event.type === 'document';
     const inspection = isInspection ? (event.data as InspectionResponse) : null;
-    const quickCheck = isQuickCheck
-      ? (event.data as QuickCheckResponse)
-      : null;
+    const quickCheck = isQuickCheck ? (event.data as QuickCheckResponse) : null;
     const photo = isPhoto ? (event.data as PhotoResponse) : null;
     const document = isDocument ? (event.data as DocumentResponse) : null;
     const action =
@@ -712,8 +723,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                     <span className="font-medium text-sm text-stone-900 dark:text-stone-100">
                       {isScheduled
                         ? t('common:timeline.inspectHive', {
-                            hiveName:
-                              getHiveName?.(inspection.hiveId) ?? '',
+                            hiveName: getHiveName?.(inspection.hiveId) ?? '',
                           })
                         : t('common:timeline.inspection')}
                     </span>
@@ -744,41 +754,39 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                     )}
                   </div>
 
-                  {!isScheduled &&
-                    !isCancelled &&
-                    inspection.observations && (
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        {inspection.observations.strength !== null && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-stone-100/80 dark:bg-stone-800/50 ring-1 ring-inset ring-stone-200/70 dark:ring-stone-700/60 px-2 py-0.5 text-[11px] text-stone-700 dark:text-stone-300 tabular-nums">
-                            <ActivityIcon className="h-3 w-3 text-stone-500" />
-                            {t('common:timeline.strength')}:{' '}
-                            {inspection.observations.strength}
-                          </span>
-                        )}
-                        {inspection.observations.honeyStores !== null && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50/80 dark:bg-amber-950/30 ring-1 ring-inset ring-amber-200/60 dark:ring-amber-900/40 px-2 py-0.5 text-[11px] text-amber-800 dark:text-amber-300 tabular-nums">
-                            <DropletsIcon className="h-3 w-3" />
-                            {t('common:timeline.honey')}:{' '}
-                            {inspection.observations.honeyStores}
-                          </span>
-                        )}
-                        {inspection.observations.queenSeen !== null && (
-                          <span
-                            className={cn(
-                              'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] ring-1 ring-inset',
-                              inspection.observations.queenSeen
-                                ? 'bg-amber-50/80 dark:bg-amber-950/30 ring-amber-200/60 dark:ring-amber-900/40 text-amber-800 dark:text-amber-300'
-                                : 'bg-stone-100/80 dark:bg-stone-800/50 ring-stone-200/70 dark:ring-stone-700/60 text-stone-600 dark:text-stone-400',
-                            )}
-                          >
-                            <Crown className="h-3 w-3" />
-                            {inspection.observations.queenSeen
-                              ? t('common:timeline.queenSeen')
-                              : t('common:timeline.queenNotSeen')}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                  {!isScheduled && !isCancelled && inspection.observations && (
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      {inspection.observations.strength !== null && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-stone-100/80 dark:bg-stone-800/50 ring-1 ring-inset ring-stone-200/70 dark:ring-stone-700/60 px-2 py-0.5 text-[11px] text-stone-700 dark:text-stone-300 tabular-nums">
+                          <ActivityIcon className="h-3 w-3 text-stone-500" />
+                          {t('common:timeline.strength')}:{' '}
+                          {inspection.observations.strength}
+                        </span>
+                      )}
+                      {inspection.observations.honeyStores !== null && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50/80 dark:bg-amber-950/30 ring-1 ring-inset ring-amber-200/60 dark:ring-amber-900/40 px-2 py-0.5 text-[11px] text-amber-800 dark:text-amber-300 tabular-nums">
+                          <DropletsIcon className="h-3 w-3" />
+                          {t('common:timeline.honey')}:{' '}
+                          {inspection.observations.honeyStores}
+                        </span>
+                      )}
+                      {inspection.observations.queenSeen !== null && (
+                        <span
+                          className={cn(
+                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] ring-1 ring-inset',
+                            inspection.observations.queenSeen
+                              ? 'bg-amber-50/80 dark:bg-amber-950/30 ring-amber-200/60 dark:ring-amber-900/40 text-amber-800 dark:text-amber-300'
+                              : 'bg-stone-100/80 dark:bg-stone-800/50 ring-stone-200/70 dark:ring-stone-700/60 text-stone-600 dark:text-stone-400',
+                          )}
+                        >
+                          <Crown className="h-3 w-3" />
+                          {inspection.observations.queenSeen
+                            ? t('common:timeline.queenSeen')
+                            : t('common:timeline.queenNotSeen')}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   {inspection.notes && (
                     <div className="flex items-center gap-1 mt-1 text-[11px] text-stone-500 dark:text-stone-400">
@@ -958,20 +966,15 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                 (action.harvestId || onActionClick) &&
                   'cursor-pointer rounded-md -mx-2 px-2 py-1 -mt-1 hover:bg-stone-100/70 dark:hover:bg-stone-800/40 transition-colors',
               )}
-              onClick={
-                onActionClick ? () => onActionClick(action) : undefined
-              }
+              onClick={onActionClick ? () => onActionClick(action) : undefined}
             >
               <span
                 className={cn(
                   'mt-0.5 shrink-0',
-                  tone === 'orange' &&
-                    'text-orange-600 dark:text-orange-400',
+                  tone === 'orange' && 'text-orange-600 dark:text-orange-400',
                   tone === 'rose' && 'text-rose-600 dark:text-rose-400',
-                  tone === 'yellow' &&
-                    'text-yellow-700 dark:text-yellow-400',
-                  tone === 'stone' &&
-                    'text-stone-500 dark:text-stone-400',
+                  tone === 'yellow' && 'text-yellow-700 dark:text-yellow-400',
+                  tone === 'stone' && 'text-stone-500 dark:text-stone-400',
                 )}
               >
                 {getActionIcon(action)}
@@ -1050,9 +1053,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="font-overline text-stone-500 dark:text-stone-400 shrink-0 tabular-nums">
             {parts.context}
-            <span className="text-stone-300 dark:text-stone-700 mx-1.5">
-              ·
-            </span>
+            <span className="text-stone-300 dark:text-stone-700 mx-1.5">·</span>
             {parts.month} {parts.day}
           </span>
           <div
@@ -1099,9 +1100,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
       <div className="flex gap-2 mb-5 flex-wrap items-center">
         <Select
           value={eventTypeFilter}
-          onValueChange={value =>
-            setEventTypeFilter(value as EventTypeFilter)
-          }
+          onValueChange={value => setEventTypeFilter(value as EventTypeFilter)}
         >
           <SelectTrigger
             className={pillTriggerClass(eventTypeFilter !== 'all')}
@@ -1141,20 +1140,14 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
                 defaultValue: 'Documents',
               })}
             </SelectItem>
-            <SelectItem value="notes">
-              {t('common:timeline.notes')}
-            </SelectItem>
-            <SelectItem value="other">
-              {t('common:timeline.other')}
-            </SelectItem>
+            <SelectItem value="notes">{t('common:timeline.notes')}</SelectItem>
+            <SelectItem value="other">{t('common:timeline.other')}</SelectItem>
           </SelectContent>
         </Select>
 
         <Select
           value={dateRangeFilter}
-          onValueChange={value =>
-            setDateRangeFilter(value as DateRangeFilter)
-          }
+          onValueChange={value => setDateRangeFilter(value as DateRangeFilter)}
         >
           <SelectTrigger
             className={pillTriggerClass(dateRangeFilter !== 'all')}
@@ -1168,9 +1161,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">
-              {t('common:timeline.allTime')}
-            </SelectItem>
+            <SelectItem value="all">{t('common:timeline.allTime')}</SelectItem>
             <SelectItem value="1month">
               {t('common:timeline.lastMonth')}
             </SelectItem>
@@ -1188,9 +1179,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
 
         {hives && hives.length > 0 && (
           <Select value={hiveFilter} onValueChange={setHiveFilter}>
-            <SelectTrigger
-              className={pillTriggerClass(hiveFilter !== 'all')}
-            >
+            <SelectTrigger className={pillTriggerClass(hiveFilter !== 'all')}>
               <Hexagon tone="amber" />
               <SelectValue />
             </SelectTrigger>
@@ -1223,9 +1212,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
           </Button>
         )}
 
-        {headerSlot && (
-          <div className="flex gap-2 ml-auto">{headerSlot}</div>
-        )}
+        {headerSlot && <div className="flex gap-2 ml-auto">{headerSlot}</div>}
       </div>
 
       <div className="relative">

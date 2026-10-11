@@ -129,8 +129,7 @@ export class InspectionAudioService {
     const mode = (
       this.configService.get<string>('AI_PROCESSING_MODE') ?? 'push'
     ).toLowerCase();
-    this.aiProcessingMode =
-      mode === 'pull' || mode === 'auto' ? (mode as AiProcessingMode) : 'push';
+    this.aiProcessingMode = mode === 'pull' || mode === 'auto' ? mode : 'push';
 
     this.pullFallbackMinutes = Number(
       this.configService.get('AI_PULL_FALLBACK_MINUTES') ?? 10,
@@ -612,7 +611,7 @@ export class InspectionAudioService {
         where: { id: audioId },
         data: {
           analysisStatus: 'COMPLETED',
-          analysisResult: sanitizedDraft as Prisma.InputJsonValue,
+          analysisResult: sanitizedDraft,
           analysisError: null,
           analysisCompletedAt: new Date(),
         },

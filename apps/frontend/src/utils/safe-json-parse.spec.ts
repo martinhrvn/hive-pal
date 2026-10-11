@@ -425,7 +425,11 @@ describe('safeJsonParse (Frontend)', () => {
         email: 'user@example.com',
       };
 
-      const result = safeJsonParse(JSON.stringify(jwtPayload), schema, 'JWT payload');
+      const result = safeJsonParse(
+        JSON.stringify(jwtPayload),
+        schema,
+        'JWT payload',
+      );
       expect(result).toEqual(jwtPayload);
     });
 
@@ -442,7 +446,11 @@ describe('safeJsonParse (Frontend)', () => {
         { version: '2.0.0', dismissedAt: '2024-02-01T00:00:00Z' },
       ];
 
-      const result = safeJsonParse(JSON.stringify(releases), schema, 'dismissed releases');
+      const result = safeJsonParse(
+        JSON.stringify(releases),
+        schema,
+        'dismissed releases',
+      );
       expect(result).toEqual(releases);
     });
 

@@ -297,7 +297,10 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center" data-ai-field={totalFramesPath}>
+      <div
+        className="flex justify-between items-center"
+        data-ai-field={totalFramesPath}
+      >
         <h3 className="text-lg font-medium">
           {t('observations.frameCounts.title')}
         </h3>

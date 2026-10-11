@@ -19,7 +19,10 @@ interface FeedingSectionProps {
   variant?: 'card' | 'inline';
 }
 
-export const FeedingSection: React.FC<FeedingSectionProps> = ({ hiveId, variant = 'card' }) => {
+export const FeedingSection: React.FC<FeedingSectionProps> = ({
+  hiveId,
+  variant = 'card',
+}) => {
   const { data: actions, isLoading } = useActions(
     hiveId ? { hiveId, type: ActionType.FEEDING } : undefined,
     {

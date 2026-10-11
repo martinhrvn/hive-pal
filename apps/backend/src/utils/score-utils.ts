@@ -27,19 +27,13 @@ export function getStoredOrCalculatedScore(
   // falling back to calculated values for any that are null
   const overallScore = inspection['overallScore'] as number | null | undefined;
   const populationScore = inspection['populationScore'] as
-    | number
-    | null
-    | undefined;
+    number | null | undefined;
   const storesScore = inspection['storesScore'] as number | null | undefined;
   const queenScore = inspection['queenScore'] as number | null | undefined;
   const scoreWarnings = inspection['scoreWarnings'] as
-    | string
-    | null
-    | undefined;
+    string | null | undefined;
   const scoreConfidence = inspection['scoreConfidence'] as
-    | number
-    | null
-    | undefined;
+    number | null | undefined;
 
   if (
     overallScore != null ||

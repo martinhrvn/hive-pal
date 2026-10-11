@@ -263,14 +263,14 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
                 </span>
               </div>
               <InspectionDateTimePicker
-                  date={selectedDate}
-                  isAllDay={isAllDay}
-                  onDateChange={setSelectedDate}
-                  onIsAllDayChange={setIsAllDay}
-                  switchId="rescheduleIsAllDay"
-                  labelClassName="text-sm cursor-pointer select-none text-blue-600 dark:text-blue-400"
-                  iconClassName="h-4 w-4 text-blue-600 dark:text-blue-400"
-                />
+                date={selectedDate}
+                isAllDay={isAllDay}
+                onDateChange={setSelectedDate}
+                onIsAllDayChange={setIsAllDay}
+                switchId="rescheduleIsAllDay"
+                labelClassName="text-sm cursor-pointer select-none text-blue-600 dark:text-blue-400"
+                iconClassName="h-4 w-4 text-blue-600 dark:text-blue-400"
+              />
             </div>
           )}
         </div>

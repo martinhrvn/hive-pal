@@ -94,8 +94,14 @@ export const StatisticCards = ({
 
   const mobileView = (
     <div className="sm:hidden flex items-center justify-between flex-wrap gap-2">
-      <MobileScoreItem label={t('hive:scores.overall')} value={score.overallScore} />
-      <MobileScoreItem label={t('hive:scores.populationShort')} value={strength} />
+      <MobileScoreItem
+        label={t('hive:scores.overall')}
+        value={score.overallScore}
+      />
+      <MobileScoreItem
+        label={t('hive:scores.populationShort')}
+        value={strength}
+      />
       <MobileScoreItem label={t('hive:scores.stores')} value={honeyStores} />
       <MobileScoreItem label={t('hive:scores.queen')} value={queenScore} />
     </div>

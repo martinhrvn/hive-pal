@@ -2,7 +2,11 @@ import { Scale } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { InspectionSection } from './inspection-section';
 import { useUnitFormat } from '@/hooks/use-unit-format';
-import type { WeightReadingResponse, Box, MeasurementSide } from 'shared-schemas';
+import type {
+  WeightReadingResponse,
+  Box,
+  MeasurementSide,
+} from 'shared-schemas';
 
 type WeightsCardProps = {
   weights?: WeightReadingResponse[] | null;

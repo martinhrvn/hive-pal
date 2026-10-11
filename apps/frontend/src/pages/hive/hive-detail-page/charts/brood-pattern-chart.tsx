@@ -1,5 +1,12 @@
 import { format, parseISO } from 'date-fns';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell } from 'recharts';
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
@@ -23,11 +30,11 @@ interface BroodPatternChartProps {
 
 const PATTERN_ROWS = [
   { key: 'excellent', label: 'Excellent', y: 6, color: '#10b981' },
-  { key: 'solid',     label: 'Solid',     y: 5, color: '#22c55e' },
-  { key: 'patchy',    label: 'Patchy',    y: 4, color: '#eab308' },
-  { key: 'spotty',    label: 'Spotty',    y: 3, color: '#f97316' },
+  { key: 'solid', label: 'Solid', y: 5, color: '#22c55e' },
+  { key: 'patchy', label: 'Patchy', y: 4, color: '#eab308' },
+  { key: 'spotty', label: 'Spotty', y: 3, color: '#f97316' },
   { key: 'scattered', label: 'Scattered', y: 2, color: '#ef4444' },
-  { key: 'poor',      label: 'Poor',      y: 1, color: '#991b1b' },
+  { key: 'poor', label: 'Poor', y: 1, color: '#991b1b' },
 ] as const;
 
 type PatternKey = (typeof PATTERN_ROWS)[number]['key'];
@@ -57,9 +64,21 @@ export const BroodPatternChart: React.FC<BroodPatternChartProps> = ({
     .filter(d => d.pattern != null)
     .map(d => {
       const row = PATTERN_ROWS.find(r => r.key === (d.pattern as PatternKey));
-      return row ? { date: d.date as string, y: row.y, color: row.color, label: row.label } : null;
+      return row
+        ? {
+            date: d.date as string,
+            y: row.y,
+            color: row.color,
+            label: row.label,
+          }
+        : null;
     })
-    .filter(Boolean) as { date: string; y: number; color: string; label: string }[];
+    .filter(Boolean) as {
+    date: string;
+    y: number;
+    color: string;
+    label: string;
+  }[];
 
   if (points.length === 0) return null;
 
@@ -76,10 +95,16 @@ export const BroodPatternChart: React.FC<BroodPatternChartProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={{ pattern: { label: 'Brood Pattern', color: '#6366f1' } }}>
+        <ChartContainer
+          config={{ pattern: { label: 'Brood Pattern', color: '#6366f1' } }}
+        >
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" type="category" allowDuplicatedCategory={false} />
+            <XAxis
+              dataKey="date"
+              type="category"
+              allowDuplicatedCategory={false}
+            />
             <YAxis
               dataKey="y"
               type="number"

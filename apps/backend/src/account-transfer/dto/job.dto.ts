@@ -17,8 +17,8 @@ export interface JobResponseDto {
 export function toJobResponse(job: PrismaJob): JobResponseDto {
   return {
     id: job.id,
-    type: job.type as 'EXPORT' | 'IMPORT',
-    status: job.status as 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED',
+    type: job.type,
+    status: job.status,
     createdAt: job.createdAt,
     startedAt: job.startedAt,
     finishedAt: job.finishedAt,

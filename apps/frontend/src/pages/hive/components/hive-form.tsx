@@ -119,7 +119,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     label: `${apiary.name}${apiary.location ? ` (${apiary.location})` : ''}`,
   }));
 
-  const form = useForm<HiveFormData>({
+  const form = useForm<z.input<typeof hiveSchema>, unknown, HiveFormData>({
     resolver: zodResolver(hiveSchema),
     defaultValues: {
       apiaryId: activeApiaryId ?? undefined,
@@ -223,7 +223,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
 
   // Validation failures on fields that aren't rendered (e.g. status, settings)
   // would otherwise be invisible — the submit would just silently do nothing.
-  const onInvalid = (errors: FieldErrors<HiveFormData>) => {
+  const onInvalid = (errors: FieldErrors<z.input<typeof hiveSchema>>) => {
     const fields = Object.keys(errors).join(', ');
     toast.error(
       t('hive:form.validationError', {
@@ -309,7 +309,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           hiveId={hiveId}
           currentPhotoUrl={featurePhotoUrl}
           currentPhotoId={form.watch('featurePhotoId') ?? undefined}
-          onPhotoUploaded={(photoId) =>
+          onPhotoUploaded={photoId =>
             form.setValue('featurePhotoId', photoId, { shouldDirty: true })
           }
           onPhotoRemoved={() => {

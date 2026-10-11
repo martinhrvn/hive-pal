@@ -97,7 +97,9 @@ export function MediaNotesStep({
                 <span className="flex items-center gap-2">
                   <span className="size-1.5 rounded-full bg-[oklch(0.78_0.16_82)]" />
                   <span className="font-medium">
-                    {t('inspection:mobile.mediaNotes.recordingNumber', { n: i + 1 })}
+                    {t('inspection:mobile.mediaNotes.recordingNumber', {
+                      n: i + 1,
+                    })}
                   </span>
                   <span className="tabular-nums text-muted-foreground">
                     {Math.floor(r.duration / 60)}:
@@ -124,7 +126,9 @@ export function MediaNotesStep({
         <div className="flex items-center gap-1.5">
           <Camera className="size-3.5 text-muted-foreground" />
           <span className="font-overline text-muted-foreground">
-            Photos {pendingPhotos.length > 0 && `· ${pendingPhotos.length}/${MAX_PHOTOS}`}
+            Photos{' '}
+            {pendingPhotos.length > 0 &&
+              `· ${pendingPhotos.length}/${MAX_PHOTOS}`}
           </span>
         </div>
         <input

@@ -65,7 +65,7 @@ Users created through SSO are asked once to accept the privacy policy after thei
 
 1. In Authentik, go to **Applications → Providers** and create an **OAuth2/OpenID Provider**:
    - **Client type:** Confidential
-   - **Redirect URIs (strict):** `<BETTER_AUTH_URL>/api/auth/oauth2/callback/authentik`, e.g. `https://hive.example.com/api/auth/oauth2/callback/authentik`. If you changed `OIDC_PROVIDER_ID`, use that value instead of `authentik`.
+   - **Redirect URIs (strict):** `<BETTER_AUTH_URL>/api/auth/callback/authentik`, e.g. `https://hive.example.com/api/auth/callback/authentik`. If you changed `OIDC_PROVIDER_ID`, use that value instead of `authentik`.
    - **Scopes:** keep the default `openid`, `email` and `profile` mappings.
 2. Create an **Application** that uses this provider and note its **slug**. Bind users or groups to it to control who may sign in.
 3. Configure Hive-Pal:

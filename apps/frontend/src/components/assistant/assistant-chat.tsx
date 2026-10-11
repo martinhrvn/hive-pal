@@ -97,33 +97,28 @@ export function AssistantChat({
     setIsStreaming(true);
 
     try {
-      await streamAssistantMessage(
-        targetThreadId,
-        content,
-        apiaryId,
-        {
-          onToken: token => setStreamingText(prev => prev + token),
-          onDone: () => {
-            queryClient
-              .invalidateQueries({
-                queryKey: ASSISTANT_KEYS.thread(targetThreadId),
-              })
-              .catch(() => {});
-            queryClient
-              .invalidateQueries({
-                queryKey: ASSISTANT_KEYS.threads(apiaryId, hiveId),
-              })
-              .catch(() => {});
-            setPending([]);
-            setStreamingText('');
-            setIsStreaming(false);
-          },
-          onError: message => {
-            toast.error(message);
-            setIsStreaming(false);
-          },
+      await streamAssistantMessage(targetThreadId, content, apiaryId, {
+        onToken: token => setStreamingText(prev => prev + token),
+        onDone: () => {
+          queryClient
+            .invalidateQueries({
+              queryKey: ASSISTANT_KEYS.thread(targetThreadId),
+            })
+            .catch(() => {});
+          queryClient
+            .invalidateQueries({
+              queryKey: ASSISTANT_KEYS.threads(apiaryId, hiveId),
+            })
+            .catch(() => {});
+          setPending([]);
+          setStreamingText('');
+          setIsStreaming(false);
         },
-      );
+        onError: message => {
+          toast.error(message);
+          setIsStreaming(false);
+        },
+      });
     } catch {
       toast.error('The assistant is unavailable right now');
       setIsStreaming(false);
@@ -218,8 +213,8 @@ export function AssistantChat({
       >
         {messages.length === 0 && pending.length === 0 && !streamingText && (
           <p className="text-sm text-muted-foreground m-auto text-center">
-            Ask about this {hiveId ? 'hive' : 'apiary'} — health, feeding,
-            swarm risk, seasonal next steps.
+            Ask about this {hiveId ? 'hive' : 'apiary'} — health, feeding, swarm
+            risk, seasonal next steps.
           </p>
         )}
 

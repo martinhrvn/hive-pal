@@ -55,7 +55,11 @@ export const UpcomingInspectionListItem: React.FC<
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 -mr-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 shrink-0 -mr-1"
+          >
             <MoreVertical className="h-3 w-3" />
             <span className="sr-only">Open menu</span>
           </Button>

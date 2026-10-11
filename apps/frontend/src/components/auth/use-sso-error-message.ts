@@ -10,11 +10,12 @@ export const useSsoErrorMessage = (code: string | null): string => {
     case 'account_not_linked':
     case 'unable_to_link_account':
       return t('sso.errors.notLinked');
-    case "email_doesn't_match":
+    case 'email_does_not_match':
       return t('sso.errors.emailMismatch');
     case 'account_already_linked_to_different_user':
+    case 'account_ownership_conflict':
       return t('sso.errors.alreadyLinked');
-    case 'email_is_missing':
+    case 'email_not_found':
       return t('sso.errors.emailMissing');
     default:
       return t('sso.errors.generic');

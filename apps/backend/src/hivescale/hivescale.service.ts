@@ -411,9 +411,7 @@ export class HiveScaleService {
   private handleAxiosError(error: AxiosError): never {
     if (error.response) {
       const responseData = error.response.data as
-        | { detail?: unknown; message?: string }
-        | string
-        | undefined;
+        { detail?: unknown; message?: string } | string | undefined;
       const detail =
         typeof responseData === 'string'
           ? responseData
@@ -802,7 +800,7 @@ export class HiveScaleService {
       accessToken,
       'GET',
       this.devicePath(deviceId, '/measurements'),
-      { params: query as Record<string, unknown> },
+      { params: query },
     );
   }
 

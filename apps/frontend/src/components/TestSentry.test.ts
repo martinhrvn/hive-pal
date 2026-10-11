@@ -46,20 +46,26 @@ describe('TestSentry integration with safeJsonParse', () => {
     it('should call safeJsonParse with invalid JSON', () => {
       // Simulate the captureException function from TestSentry
       try {
-        const result = safeJsonParse('invalid json', z.unknown(), 'Sentry test');
+        const result = safeJsonParse(
+          'invalid json',
+          z.unknown(),
+          'Sentry test',
+        );
         if (result === null) {
           throw new Error('JSON parsing intentionally failed for Sentry test');
         }
       } catch (error) {
         // This should be called
         expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toContain('JSON parsing intentionally failed');
+        expect((error as Error).message).toContain(
+          'JSON parsing intentionally failed',
+        );
       }
 
       // safeJsonParse should have logged the error
       expect(consoleSpy.error).toHaveBeenCalledWith(
         expect.stringContaining('Failed to parse JSON for "Sentry test"'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -74,7 +80,11 @@ describe('TestSentry integration with safeJsonParse', () => {
       let errorCaught = false;
 
       try {
-        const result = safeJsonParse('invalid json', z.unknown(), 'Sentry test');
+        const result = safeJsonParse(
+          'invalid json',
+          z.unknown(),
+          'Sentry test',
+        );
         if (result === null) {
           throw new Error('JSON parsing intentionally failed for Sentry test');
         }
@@ -89,7 +99,11 @@ describe('TestSentry integration with safeJsonParse', () => {
     });
 
     it('should handle valid JSON (should not throw)', () => {
-      const result = safeJsonParse('{"valid": "json"}', z.unknown(), 'Sentry test');
+      const result = safeJsonParse(
+        '{"valid": "json"}',
+        z.unknown(),
+        'Sentry test',
+      );
 
       expect(result).toEqual({ valid: 'json' });
       expect(consoleSpy.error).not.toHaveBeenCalled();
@@ -145,7 +159,7 @@ describe('TestSentry integration with safeJsonParse', () => {
         "{'single': 'quotes'}",
       ];
 
-      malformedInputs.forEach((input) => {
+      malformedInputs.forEach(input => {
         const result = safeJsonParse(input, z.unknown(), 'Sentry test');
         expect(result).toBeNull();
       });
@@ -165,7 +179,7 @@ describe('TestSentry integration with safeJsonParse', () => {
       expect(result).toBeNull();
       expect(consoleSpy.warn).toHaveBeenCalledWith(
         expect.stringContaining('Schema validation failed for "Sentry test"'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -176,7 +190,9 @@ describe('TestSentry integration with safeJsonParse', () => {
           throw new Error('JSON parsing intentionally failed for Sentry test');
         }
       } catch (error) {
-        expect((error as Error).message).toBe('JSON parsing intentionally failed for Sentry test');
+        expect((error as Error).message).toBe(
+          'JSON parsing intentionally failed for Sentry test',
+        );
       }
     });
   });
@@ -184,7 +200,7 @@ describe('TestSentry integration with safeJsonParse', () => {
   describe('Comparison with old unsafe behavior', () => {
     it('should be safer than JSON.parse with try-catch', () => {
       // Old way: JSON.parse in try-catch
-      let oldResult = null;
+      let oldResult: unknown;
       try {
         oldResult = JSON.parse('invalid json');
       } catch {

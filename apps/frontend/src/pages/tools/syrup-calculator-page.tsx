@@ -1,6 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Beaker, Droplets, Ruler, Scale, Lightbulb, CookingPot } from 'lucide-react';
+import {
+  Beaker,
+  Droplets,
+  Ruler,
+  Scale,
+  Lightbulb,
+  CookingPot,
+} from 'lucide-react';
 import {
   PageGrid,
   MainContent,
@@ -21,6 +28,9 @@ import {
   TipsCard,
   ToolFaq,
   buildFaqJsonLd,
+  buildHowToJsonLd,
+  buildStructuredData,
+  buildWebApplicationJsonLd,
   type FaqItem,
 } from '@/components/tool-page';
 import { useUnitFormat } from '@/hooks/use-unit-format';
@@ -161,67 +171,43 @@ export function SyrupCalculatorPage() {
     }
   };
 
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebApplication',
-        name: 'Sugar Syrup Calculator',
-        url: 'https://hivepal.app/tools/syrup-calculator',
-        applicationCategory: 'UtilitiesApplication',
-        applicationSubCategory: 'Beekeeping Calculator',
-        operatingSystem: 'Web',
-        browserRequirements: 'Requires JavaScript',
-        description:
-          'Free calculator for bee feeding syrup. Computes exact sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size, in metric or imperial units.',
-        isAccessibleForFree: true,
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
+  const structuredData = buildStructuredData(
+    buildWebApplicationJsonLd({
+      name: 'Sugar Syrup Calculator',
+      path: '/tools/syrup-calculator',
+      kind: 'calculator',
+      description:
+        'Free calculator for bee feeding syrup. Computes exact sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size, in metric or imperial units.',
+    }),
+    buildHowToJsonLd({
+      name: 'How to make sugar syrup for bees',
+      description:
+        'Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.',
+      steps: [
+        {
+          name: 'Measure the water',
+          text: `Measure ${waterDisplay} (${waterWeightDisplay}) of water.`,
         },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Hive Pal',
-          url: 'https://hivepal.app',
+        {
+          name: 'Warm the water',
+          text: 'Heat the water until warm (not boiling).',
         },
-      },
-      {
-        '@type': 'HowTo',
-        name: 'How to make sugar syrup for bees',
-        description:
-          'Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.',
-        step: [
-          {
-            '@type': 'HowToStep',
-            name: 'Measure the water',
-            text: `Measure ${waterDisplay} (${waterWeightDisplay}) of water.`,
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'Warm the water',
-            text: 'Heat the water until warm (not boiling).',
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'Add the sugar',
-            text: `Add ${sugarDisplay} of white granulated sugar.`,
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'Stir to dissolve',
-            text: 'Stir until the sugar is completely dissolved.',
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'Cool before feeding',
-            text: 'Let the syrup cool to room temperature before feeding.',
-          },
-        ],
-      },
-      buildFaqJsonLd(faqItems),
-    ],
-  };
+        {
+          name: 'Add the sugar',
+          text: `Add ${sugarDisplay} of white granulated sugar.`,
+        },
+        {
+          name: 'Stir to dissolve',
+          text: 'Stir until the sugar is completely dissolved.',
+        },
+        {
+          name: 'Cool before feeding',
+          text: 'Let the syrup cool to room temperature before feeding.',
+        },
+      ],
+    }),
+    buildFaqJsonLd(faqItems),
+  );
 
   return (
     <PageGrid>
@@ -281,22 +267,13 @@ export function SyrupCalculatorPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              <Pill
-                active={ratio === '1:1'}
-                onClick={() => setRatio('1:1')}
-              >
+              <Pill active={ratio === '1:1'} onClick={() => setRatio('1:1')}>
                 {t('syrupCalculator.thin')}
               </Pill>
-              <Pill
-                active={ratio === '3:2'}
-                onClick={() => setRatio('3:2')}
-              >
+              <Pill active={ratio === '3:2'} onClick={() => setRatio('3:2')}>
                 {t('syrupCalculator.medium')}
               </Pill>
-              <Pill
-                active={ratio === '2:1'}
-                onClick={() => setRatio('2:1')}
-              >
+              <Pill active={ratio === '2:1'} onClick={() => setRatio('2:1')}>
                 {t('syrupCalculator.thick')}
               </Pill>
             </div>
@@ -320,18 +297,14 @@ export function SyrupCalculatorPage() {
                 <Pill
                   key={c.label}
                   active={
-                    !isCustomContainer &&
-                    selectedContainer === c.valueLiters
+                    !isCustomContainer && selectedContainer === c.valueLiters
                   }
                   onClick={() => handleContainerSelect(c.valueLiters)}
                 >
                   {c.label}
                 </Pill>
               ))}
-              <Pill
-                active={isCustomContainer}
-                onClick={handleCustomContainer}
-              >
+              <Pill active={isCustomContainer} onClick={handleCustomContainer}>
                 {t('syrupCalculator.customSize')}
               </Pill>
             </div>

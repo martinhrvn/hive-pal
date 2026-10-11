@@ -16,7 +16,10 @@ export const PublicFooter = () => {
           <span>|</span>
           <span>© {currentYear} HRVN s.r.o.</span>
         </div>
-        <LanguageSwitcher variant="buttons" className="opacity-80 hover:opacity-100 transition-opacity" />
+        <LanguageSwitcher
+          variant="buttons"
+          className="opacity-80 hover:opacity-100 transition-opacity"
+        />
       </div>
     </footer>
   );

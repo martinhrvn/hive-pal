@@ -143,7 +143,10 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
               </div>
             )}
             <div className="flex flex-col gap-2">
-              <label htmlFor="status-change-date" className="text-sm font-medium">
+              <label
+                htmlFor="status-change-date"
+                className="text-sm font-medium"
+              >
                 Change date
               </label>
               <Input

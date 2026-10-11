@@ -14,10 +14,7 @@ import { isCloudMode } from '@/utils/feature-flags';
 import { useCreateShareLink } from '@/api/hooks/useShares';
 import { ShareDialog } from './share-dialog';
 import { setSharePromptDismissed } from './share-prompt-utils';
-import {
-  ShareResourceType,
-  ShareLinkResponse,
-} from 'shared-schemas';
+import { ShareResourceType, ShareLinkResponse } from 'shared-schemas';
 
 interface SharePromptDialogProps {
   open: boolean;
@@ -71,7 +68,8 @@ export function SharePromptDialog({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {title || `${resourceLabel.charAt(0).toUpperCase() + resourceLabel.slice(1)} saved!`}
+              {title ||
+                `${resourceLabel.charAt(0).toUpperCase() + resourceLabel.slice(1)} saved!`}
             </DialogTitle>
             <DialogDescription>
               Share your {resourceLabel} results with friends and fellow
@@ -84,9 +82,7 @@ export function SharePromptDialog({
               <Checkbox
                 id="dont-show-again"
                 checked={dontShowAgain}
-                onCheckedChange={(checked) =>
-                  setDontShowAgain(checked === true)
-                }
+                onCheckedChange={checked => setDontShowAgain(checked === true)}
               />
               <Label
                 htmlFor="dont-show-again"
@@ -96,10 +92,7 @@ export function SharePromptDialog({
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                onClick={handleSkip}
-              >
+              <Button variant="ghost" onClick={handleSkip}>
                 Skip
               </Button>
               <Button

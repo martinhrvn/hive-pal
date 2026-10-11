@@ -48,7 +48,8 @@ const formatPreviewValue = (value: unknown): string => {
           );
         })
         .map(item => {
-          const displayValue = typeof item === 'boolean' ? (item ? 'Yes' : 'No') : String(item);
+          const displayValue =
+            typeof item === 'boolean' ? (item ? 'Yes' : 'No') : String(item);
           return displayValue;
         })
         .join(', ') || '—'
@@ -177,7 +178,9 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                           onClick={e => {
                             e.preventDefault();
                             e.stopPropagation();
-                            field.onChange(Math.max(0, (displayValue ?? 0) - 1));
+                            field.onChange(
+                              Math.max(0, (displayValue ?? 0) - 1),
+                            );
                           }}
                           aria-label={`Decrease ${label}`}
                         >
@@ -207,7 +210,9 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
 
                             const nextValue = (displayValue ?? 0) + 1;
                             field.onChange(
-                              max == null ? nextValue : Math.min(max, nextValue),
+                              max == null
+                                ? nextValue
+                                : Math.min(max, nextValue),
                             );
                           }}
                           aria-label={`Increase ${label}`}
@@ -231,13 +236,13 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                         </Button>
                       </div>
                     ) : (
-                       <RatingSlider
-                         value={displayValue}
-                         onChange={field.onChange}
-                         showZeroButton={true}
-                         onClear={() => field.onChange(undefined)}
-                       />
-                     )}
+                      <RatingSlider
+                        value={displayValue}
+                        onChange={field.onChange}
+                        showZeroButton={true}
+                        onClear={() => field.onChange(undefined)}
+                      />
+                    )}
 
                     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                       <AiValuePreview
@@ -252,10 +257,12 @@ const ObservationItem = <TName extends FieldPath<InspectionFormData>>({
                         hasConflict={suggestionConflict}
                         status={suggestionStatus}
                         onAccept={() =>
-                          suggestionField && onAcceptSuggestion?.(suggestionField)
+                          suggestionField &&
+                          onAcceptSuggestion?.(suggestionField)
                         }
                         onDismiss={() =>
-                          suggestionField && onDismissSuggestion?.(suggestionField)
+                          suggestionField &&
+                          onDismissSuggestion?.(suggestionField)
                         }
                       />
                     </div>
@@ -321,8 +328,11 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
   const pollenStoresSuggestion = getObservationSuggestion('pollenStores');
   const queenCellsSuggestion = getObservationSuggestion('queenCells');
   const swarmCellsSuggestion = getObservationSuggestion('swarmCells');
-  const supersedureCellsSuggestion = getObservationSuggestion('supersedureCells');
-  const additionalSuggestion = getObservationSuggestion('additionalObservations');
+  const supersedureCellsSuggestion =
+    getObservationSuggestion('supersedureCells');
+  const additionalSuggestion = getObservationSuggestion(
+    'additionalObservations',
+  );
   const reminderSuggestion = getObservationSuggestion('reminderObservations');
 
   const dirtyObservationFields = (formState.dirtyFields.observations ??
@@ -434,7 +444,9 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                     isVisible={Boolean(queenSeenSuggestion)}
                     hasConflict={queenSeenSuggestion?.hasConflict}
                     status={queenSeenSuggestion?.status}
-                    onAccept={() => onAcceptSuggestion?.('observations.queenSeen')}
+                    onAccept={() =>
+                      onAcceptSuggestion?.('observations.queenSeen')
+                    }
                     onDismiss={() =>
                       onDismissSuggestion?.('observations.queenSeen')
                     }
@@ -503,7 +515,9 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                   currentObservations?.uncappedBrood,
                 )}
                 suggestionField={
-                  uncappedBroodSuggestion ? 'observations.uncappedBrood' : undefined
+                  uncappedBroodSuggestion
+                    ? 'observations.uncappedBrood'
+                    : undefined
                 }
                 suggestionStatus={uncappedBroodSuggestion?.status}
                 suggestionConflict={uncappedBroodSuggestion?.hasConflict}
@@ -597,7 +611,11 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                             onClick={() => selectPattern(option)}
                           >
                             <div className="flex items-center justify-center gap-2">
-                              <span>{t(`observations.broodPatternOptions.${option}`)}</span>
+                              <span>
+                                {t(
+                                  `observations.broodPatternOptions.${option}`,
+                                )}
+                              </span>
                               {broodPatternSuggestion && isAiRecommended && (
                                 <AiBadge />
                               )}
@@ -643,7 +661,9 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                   currentObservations?.pollenStores,
                 )}
                 suggestionField={
-                  pollenStoresSuggestion ? 'observations.pollenStores' : undefined
+                  pollenStoresSuggestion
+                    ? 'observations.pollenStores'
+                    : undefined
                 }
                 suggestionStatus={pollenStoresSuggestion?.status}
                 suggestionConflict={pollenStoresSuggestion?.hasConflict}
@@ -702,19 +722,19 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                         />
                       </FormControl>
 
-                       <div className="min-w-0 flex-1 space-y-2">
-                         <FormLabel className="flex items-center gap-2">
-                           <span>{t('observations.swarmCells')}</span>
-                           {swarmCellsSuggestion && <AiBadge />}
-                         </FormLabel>
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <FormLabel className="flex items-center gap-2">
+                          <span>{t('observations.swarmCells')}</span>
+                          {swarmCellsSuggestion && <AiBadge />}
+                        </FormLabel>
 
-                         <p className="text-xs text-muted-foreground">
-                           {t('observations.swarmCellsDescription')}
-                         </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('observations.swarmCellsDescription')}
+                        </p>
 
-                         <AiValuePreview
-                           isVisible={Boolean(swarmCellsSuggestion)}
-                           hasConflict={swarmCellsSuggestion?.hasConflict}
+                        <AiValuePreview
+                          isVisible={Boolean(swarmCellsSuggestion)}
+                          hasConflict={swarmCellsSuggestion?.hasConflict}
                           currentValue={currentValue}
                           aiValue={aiValue}
                         />
@@ -766,19 +786,19 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                         />
                       </FormControl>
 
-                       <div className="min-w-0 flex-1 space-y-2">
-                         <FormLabel className="flex items-center gap-2">
-                           <span>{t('observations.supersedureCells')}</span>
-                           {supersedureCellsSuggestion && <AiBadge />}
-                         </FormLabel>
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <FormLabel className="flex items-center gap-2">
+                          <span>{t('observations.supersedureCells')}</span>
+                          {supersedureCellsSuggestion && <AiBadge />}
+                        </FormLabel>
 
-                         <p className="text-xs text-muted-foreground">
-                           {t('observations.supersedureCellsDescription')}
-                         </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('observations.supersedureCellsDescription')}
+                        </p>
 
-                         <AiValuePreview
-                           isVisible={Boolean(supersedureCellsSuggestion)}
-                           hasConflict={supersedureCellsSuggestion?.hasConflict}
+                        <AiValuePreview
+                          isVisible={Boolean(supersedureCellsSuggestion)}
+                          hasConflict={supersedureCellsSuggestion?.hasConflict}
                           currentValue={currentValue}
                           aiValue={aiValue}
                         />
@@ -788,10 +808,14 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                           hasConflict={supersedureCellsSuggestion?.hasConflict}
                           status={supersedureCellsSuggestion?.status}
                           onAccept={() =>
-                            onAcceptSuggestion?.('observations.supersedureCells')
+                            onAcceptSuggestion?.(
+                              'observations.supersedureCells',
+                            )
                           }
                           onDismiss={() =>
-                            onDismissSuggestion?.('observations.supersedureCells')
+                            onDismissSuggestion?.(
+                              'observations.supersedureCells',
+                            )
                           }
                         />
                       </div>
@@ -903,7 +927,9 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                             onClick={() => toggleObservation(option)}
                           >
                             <div className="flex items-center justify-center gap-2">
-                              <span>{t(`observations.additional.${option}`)}</span>
+                              <span>
+                                {t(`observations.additional.${option}`)}
+                              </span>
                               {isAiRecommended && <AiBadge />}
                             </div>
                           </div>
@@ -1011,7 +1037,9 @@ export const ObservationsSection: React.FC<ObservationsSectionProps> = ({
                             onClick={() => toggleObservation(option)}
                           >
                             <div className="flex items-center justify-center gap-2">
-                              <span>{t(`observations.reminder.${option}`)}</span>
+                              <span>
+                                {t(`observations.reminder.${option}`)}
+                              </span>
                               {isAiRecommended && <AiBadge />}
                             </div>
                           </div>

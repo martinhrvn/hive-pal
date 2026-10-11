@@ -91,7 +91,7 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
                 </label>
                 <Select
                   value={role}
-                  onValueChange={(v) => setRole(v as 'EDITOR' | 'VIEWER')}
+                  onValueChange={v => setRole(v as 'EDITOR' | 'VIEWER')}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -132,7 +132,7 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
           </p>
         ) : (
           <div className="space-y-3">
-            {invites.map((invite) => (
+            {invites.map(invite => (
               <div
                 key={invite.id}
                 className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
@@ -189,8 +189,8 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
   const updateMember = useUpdateApiaryMember();
   const removeMember = useRemoveApiaryMember();
 
-  const pendingMembers = members.filter((m) => m.status === 'PENDING');
-  const activeMembers = members.filter((m) => m.status === 'ACTIVE');
+  const pendingMembers = members.filter(m => m.status === 'PENDING');
+  const activeMembers = members.filter(m => m.status === 'ACTIVE');
 
   return (
     <Card>
@@ -214,7 +214,7 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
                   Pending Requests ({pendingMembers.length})
                 </h4>
                 <div className="space-y-2">
-                  {pendingMembers.map((member) => (
+                  {pendingMembers.map(member => (
                     <div
                       key={member.id}
                       className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800"
@@ -276,7 +276,7 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
                   Active Members ({activeMembers.length})
                 </h4>
                 <div className="space-y-2">
-                  {activeMembers.map((member) => (
+                  {activeMembers.map(member => (
                     <div
                       key={member.id}
                       className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
@@ -294,7 +294,7 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
                           <RoleBadge role={member.role} />
                           <Select
                             value={member.role}
-                            onValueChange={(v) =>
+                            onValueChange={v =>
                               updateMember.mutate({
                                 apiaryId,
                                 memberId: member.id,
@@ -307,7 +307,9 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="VIEWER">View only</SelectItem>
-                              <SelectItem value="EDITOR">Full access</SelectItem>
+                              <SelectItem value="EDITOR">
+                                Full access
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

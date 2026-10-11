@@ -18,7 +18,9 @@ import type { StagedItem } from './types';
 
 interface Mutations {
   createAction: (data: CreateStandaloneAction) => Promise<ActionResponse>;
-  createInspection: (data: CreateInspection) => Promise<CreateInspectionResponse>;
+  createInspection: (
+    data: CreateInspection,
+  ) => Promise<CreateInspectionResponse>;
   createQueen: (data: CreateQueen) => Promise<QueenResponse>;
 }
 

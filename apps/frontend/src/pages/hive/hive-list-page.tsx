@@ -36,12 +36,17 @@ import {
 
 export const HiveListPage = () => {
   const { t } = useTranslation(['hive', 'common']);
-  const { data: hivesResponse, isLoading, refetch } = useHives({ includeInactive: true });
+  const {
+    data: hivesResponse,
+    isLoading,
+    refetch,
+  } = useHives({ includeInactive: true });
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const { data: userPreferences } = useUserPreferences();
-  const dateFormat = (userPreferences?.dateFormat ?? 'MM/DD/YYYY') as DateFormatPreference;
+  const dateFormat = (userPreferences?.dateFormat ??
+    'MM/DD/YYYY') as DateFormatPreference;
 
   const formatDate = (date: string | null | undefined) =>
     date ? formatDateWithPreference(date, dateFormat) : null;
@@ -122,14 +127,14 @@ export const HiveListPage = () => {
               {statusFilter === 'ALL'
                 ? t('hive:list.caption')
                 : t(
-                  hives.length === 1
-                    ? 'hive:list.captionFiltered'
-                    : 'hive:list.captionFilteredPlural',
-                  {
-                    count: hives.length,
-                    status: statusFilter.toLowerCase(),
-                  },
-                )}
+                    hives.length === 1
+                      ? 'hive:list.captionFiltered'
+                      : 'hive:list.captionFilteredPlural',
+                    {
+                      count: hives.length,
+                      status: statusFilter.toLowerCase(),
+                    },
+                  )}
             </TableCaption>
             <TableHeader>
               <TableRow>
@@ -155,7 +160,8 @@ export const HiveListPage = () => {
                     <HiveStatus status={hive.status} />
                   </TableCell>
                   <TableCell>
-                    {formatDate(hive.installationDate) ?? t('hive:fields.notSpecified')}
+                    {formatDate(hive.installationDate) ??
+                      t('hive:fields.notSpecified')}
                   </TableCell>
                   <TableCell>
                     {formatDate(hive.lastInspectionDate) ??
@@ -179,15 +185,15 @@ export const HiveListPage = () => {
             <p className="text-muted-foreground mb-4">
               {searchTerm && statusFilter !== 'ALL'
                 ? t('hive:list.noHivesMatchingBoth', {
-                  status: statusFilter.toLowerCase(),
-                  searchTerm,
-                })
+                    status: statusFilter.toLowerCase(),
+                    searchTerm,
+                  })
                 : searchTerm
                   ? t('hive:list.noHivesMatchingSearch', { searchTerm })
                   : statusFilter !== 'ALL'
                     ? t('hive:list.noHivesWithStatus', {
-                      status: statusFilter.toLowerCase(),
-                    })
+                        status: statusFilter.toLowerCase(),
+                      })
                     : t('hive:list.noHives')}
             </p>
             <Button

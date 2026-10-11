@@ -5,10 +5,13 @@ import { initReactI18next } from 'react-i18next';
  * Creates a fresh, fully-synchronous i18next instance for server-side rendering
  * during prerendering. Translations are passed in as already-loaded resources
  * (read from disk by the prerender driver) rather than fetched over HTTP, and
- * `initImmediate: false` makes init synchronous so the caller can render
+ * `initAsync: false` (formerly `initImmediate`) makes init synchronous so the caller can render
  * immediately. `useSuspense: false` avoids Suspense on the server.
  */
-export function createServerI18n(lang: string, resources: Resource): I18nInstance {
+export function createServerI18n(
+  lang: string,
+  resources: Resource,
+): I18nInstance {
   const instance = i18next.createInstance();
   const namespaces = Object.keys(
     (resources[lang] as Record<string, unknown> | undefined) ??
@@ -23,7 +26,7 @@ export function createServerI18n(lang: string, resources: Resource): I18nInstanc
     defaultNS: 'common',
     resources,
     interpolation: { escapeValue: false },
-    initImmediate: false,
+    initAsync: false,
     react: { useSuspense: false },
   });
 

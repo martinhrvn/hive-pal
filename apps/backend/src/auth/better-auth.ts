@@ -306,10 +306,19 @@ export const auth = betterAuth({
                 scopes: oidc.scopes,
                 pkce: true,
                 disableSignUp: !oidc.allowSignup,
-                mapProfileToUser: (profile) => ({
-                  name:
-                    profile.name || profile.preferred_username || profile.email,
-                }),
+                mapProfileToUser: (profile) => {
+                  const preferredUsername =
+                    typeof profile.preferred_username === 'string'
+                      ? profile.preferred_username
+                      : undefined;
+                  return {
+                    name:
+                      profile.name ||
+                      preferredUsername ||
+                      profile.email ||
+                      undefined,
+                  };
+                },
               },
             ],
           }),

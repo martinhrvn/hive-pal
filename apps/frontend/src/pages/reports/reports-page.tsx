@@ -42,10 +42,10 @@ export const ReportsPage = () => {
 
     setIsExporting(true);
     try {
-      const response = await apiClient.get(
-        `/api/reports/export/csv`,
-        { params: { period }, responseType: 'blob' },
-      );
+      const response = await apiClient.get(`/api/reports/export/csv`, {
+        params: { period },
+        responseType: 'blob',
+      });
 
       const blob = new Blob([response.data], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
@@ -71,10 +71,10 @@ export const ReportsPage = () => {
 
     setIsExporting(true);
     try {
-      const response = await apiClient.get(
-        `/api/reports/export/pdf`,
-        { params: { period }, responseType: 'blob' },
-      );
+      const response = await apiClient.get(`/api/reports/export/pdf`, {
+        params: { period },
+        responseType: 'blob',
+      });
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);

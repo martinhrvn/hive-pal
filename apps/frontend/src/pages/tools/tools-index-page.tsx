@@ -7,11 +7,11 @@ import { useLocalizedPath } from '@/hooks/use-language-navigation';
 // Tool structure (route + icon + i18n key) lives in code; copy comes from i18n
 // under `marketing.toolsIndex.*`.
 const TOOLS = [
-  { to: '/tools/syrup-calculator', key: 'syrup',       icon: Beaker },
-  { to: '/tools/brood-timeline',   key: 'brood',       icon: Bug },
-  { to: '/tools/swarm-management', key: 'swarm',       icon: Waypoints },
-  { to: '/tools/liebefelder',      key: 'liebefelder', icon: Microscope },
-  { to: '/tools/varroa-management', key: 'varroa',      icon: ShieldCheck },
+  { to: '/tools/syrup-calculator', key: 'syrup', icon: Beaker },
+  { to: '/tools/brood-timeline', key: 'brood', icon: Bug },
+  { to: '/tools/swarm-management', key: 'swarm', icon: Waypoints },
+  { to: '/tools/liebefelder', key: 'liebefelder', icon: Microscope },
+  { to: '/tools/varroa-management', key: 'varroa', icon: ShieldCheck },
 ] as const;
 
 export function ToolsIndexPage() {

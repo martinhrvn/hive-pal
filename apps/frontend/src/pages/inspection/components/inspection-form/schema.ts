@@ -157,6 +157,8 @@ export type FramesActionData = z.infer<typeof framesActionSchema>;
 export type MaintenanceActionData = z.infer<typeof maintenanceActionSchema>;
 export type NoteActionData = z.infer<typeof noteActionSchema>;
 export type StatusChangeActionData = z.infer<typeof statusChangeActionSchema>;
-export type BoxConfigurationActionData = z.infer<typeof boxConfigurationActionSchema>;
+export type BoxConfigurationActionData = z.infer<
+  typeof boxConfigurationActionSchema
+>;
 export type ActionData = z.infer<typeof actionSchema>;
 export type InspectionFormData = z.infer<typeof inspectionSchema>;

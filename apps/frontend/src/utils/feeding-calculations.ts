@@ -112,7 +112,7 @@ export function calculateFeedingTotals(
     // Calculate based on feed type
     if (details.feedType === 'SYRUP' || details.feedType === 'Syrup') {
       // Convert amount to ml (normalize all volume units)
-      let amountMl = 0;
+      let amountMl: number;
       switch (details.unit) {
         case 'ml':
           amountMl = details.amount;
@@ -140,7 +140,7 @@ export function calculateFeedingTotals(
       );
     } else if (details.feedType === 'CANDY' || details.feedType === 'Candy') {
       // Convert candy weight to grams
-      let amountGrams = 0;
+      let amountGrams: number;
       switch (details.unit) {
         case 'g':
           amountGrams = details.amount;
@@ -158,7 +158,7 @@ export function calculateFeedingTotals(
       sugarGrams = amountGrams; // Candy is pure sugar
     } else if (details.feedType === 'HONEY' || details.feedType === 'Honey') {
       // Convert honey weight to grams and calculate sugar content
-      let amountGrams = 0;
+      let amountGrams: number;
       switch (details.unit) {
         case 'g':
           amountGrams = details.amount;

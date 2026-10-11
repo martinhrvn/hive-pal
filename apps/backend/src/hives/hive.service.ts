@@ -33,8 +33,6 @@ import {
   CreateHiveResponse,
   BoxVariantEnum,
   HiveSettings,
-  AlertSeverity,
-  AlertStatus,
   isVariantCompatible,
   parseApiaryInspectionType,
 } from 'shared-schemas';
@@ -332,8 +330,8 @@ export class HiveService {
               hiveId: alert.hiveId || undefined,
               type: alert.type,
               message: alert.message,
-              severity: alert.severity as AlertSeverity,
-              status: alert.status as AlertStatus,
+              severity: alert.severity,
+              status: alert.status,
               metadata: alert.metadata as Record<string, string> | undefined,
               createdAt: alert.createdAt.toISOString(),
               updatedAt: alert.updatedAt.toISOString(),
@@ -513,8 +511,8 @@ export class HiveService {
           hiveId: alert.hiveId || undefined,
           type: alert.type,
           message: alert.message,
-          severity: alert.severity as AlertSeverity,
-          status: alert.status as AlertStatus,
+          severity: alert.severity,
+          status: alert.status,
           metadata: alert.metadata as Record<string, string> | undefined,
           createdAt: alert.createdAt.toISOString(),
           updatedAt: alert.updatedAt.toISOString(),
@@ -767,14 +765,12 @@ export class HiveService {
                   : ((box.id
                       ? (
                           oldBoxesById.get(box.id) as
-                            | { addedAt?: Date }
-                            | undefined
+                            { addedAt?: Date } | undefined
                         )?.addedAt
                       : undefined) ??
                     (
                       oldBoxesByPosition.get(box.position) as
-                        | { addedAt?: Date }
-                        | undefined
+                        { addedAt?: Date } | undefined
                     )?.addedAt ??
                     new Date()),
             winterized: box.winterized ?? false,

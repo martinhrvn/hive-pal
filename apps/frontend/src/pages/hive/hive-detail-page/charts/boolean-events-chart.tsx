@@ -24,9 +24,14 @@ interface BooleanEventsChartProps {
 
 // Y-axis categories — numeric position for each event type
 const EVENT_ROWS = [
-  { key: 'queenSeen',        label: 'Queen Seen',         y: 3, color: '#a855f7' },
-  { key: 'swarmCells',       label: 'Swarm Cells',        y: 2, color: '#f43f5e' },
-  { key: 'supersedureCells', label: 'Supersedure Cells',  y: 1, color: '#f97316' },
+  { key: 'queenSeen', label: 'Queen Seen', y: 3, color: '#a855f7' },
+  { key: 'swarmCells', label: 'Swarm Cells', y: 2, color: '#f43f5e' },
+  {
+    key: 'supersedureCells',
+    label: 'Supersedure Cells',
+    y: 1,
+    color: '#f97316',
+  },
 ] as const;
 
 type EventKey = (typeof EVENT_ROWS)[number]['key'];
@@ -35,7 +40,9 @@ function hasEventData(inspection: InspectionResponse): boolean {
   const obs = inspection.observations;
   return (
     obs != null &&
-    (obs.queenSeen != null || obs.swarmCells != null || obs.supersedureCells != null)
+    (obs.queenSeen != null ||
+      obs.swarmCells != null ||
+      obs.supersedureCells != null)
   );
 }
 
@@ -60,18 +67,22 @@ export const BooleanEventsChart: React.FC<BooleanEventsChartProps> = ({
       })}
       filterFn={hasEventData}
     >
-      {(rawData) => {
+      {rawData => {
         // Build one scatter point per (date, event) where the event is true
-        const scatterByEvent: Record<EventKey, { date: string; y: number }[]> = {
-          queenSeen: [],
-          swarmCells: [],
-          supersedureCells: [],
-        };
+        const scatterByEvent: Record<EventKey, { date: string; y: number }[]> =
+          {
+            queenSeen: [],
+            swarmCells: [],
+            supersedureCells: [],
+          };
 
         for (const row of rawData) {
           for (const ev of EVENT_ROWS) {
             if (row[ev.key] === true) {
-              scatterByEvent[ev.key].push({ date: row.date as string, y: ev.y });
+              scatterByEvent[ev.key].push({
+                date: row.date as string,
+                y: ev.y,
+              });
             }
           }
         }
@@ -83,7 +94,11 @@ export const BooleanEventsChart: React.FC<BooleanEventsChartProps> = ({
         return (
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" type="category" allowDuplicatedCategory={false} />
+            <XAxis
+              dataKey="date"
+              type="category"
+              allowDuplicatedCategory={false}
+            />
             <YAxis
               dataKey="y"
               type="number"

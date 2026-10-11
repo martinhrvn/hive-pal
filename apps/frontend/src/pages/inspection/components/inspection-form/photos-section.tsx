@@ -51,8 +51,9 @@ function uploadErrorMessage(
         max: MAX_FILE_SIZE_MB,
       });
     }
-    const apiMessage = (error.response?.data as { message?: unknown } | undefined)
-      ?.message;
+    const apiMessage = (
+      error.response?.data as { message?: unknown } | undefined
+    )?.message;
     if (typeof apiMessage === 'string' && apiMessage.length > 0) {
       return apiMessage;
     }
@@ -112,7 +113,9 @@ export function PhotosSection({
 
       const remaining = MAX_PHOTOS - totalCount;
       if (remaining <= 0) {
-        toast.error(t('inspection:form.photos.maxReached', { max: MAX_PHOTOS }));
+        toast.error(
+          t('inspection:form.photos.maxReached', { max: MAX_PHOTOS }),
+        );
         return;
       }
 
@@ -129,7 +132,9 @@ export function PhotosSection({
 
       const filesToAdd = accepted.slice(0, remaining);
       if (filesToAdd.length < accepted.length) {
-        toast.error(t('inspection:form.photos.maxReached', { max: MAX_PHOTOS }));
+        toast.error(
+          t('inspection:form.photos.maxReached', { max: MAX_PHOTOS }),
+        );
       }
 
       if (isNewInspection) {
@@ -204,7 +209,11 @@ export function PhotosSection({
         <h3 className="font-medium">{t('inspection:form.photos.title')}</h3>
         {pendingPhotos.length > 0 && (
           <span className="text-xs text-muted-foreground">
-            ({t('inspection:form.photos.pendingUpload', { count: pendingPhotos.length })})
+            (
+            {t('inspection:form.photos.pendingUpload', {
+              count: pendingPhotos.length,
+            })}
+            )
           </span>
         )}
       </div>

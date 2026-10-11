@@ -1,9 +1,6 @@
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format, parseISO } from 'date-fns';
-import {
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
+import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
 import { InspectionResponse } from 'shared-schemas';
@@ -36,7 +33,7 @@ export const QueenCellsChart: React.FC<QueenCellsChartProps> = ({
       })}
       filterFn={hasQueenCellsData}
     >
-      {(chartData) => (
+      {chartData => (
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />

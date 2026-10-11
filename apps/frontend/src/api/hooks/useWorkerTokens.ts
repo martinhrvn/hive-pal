@@ -30,8 +30,12 @@ export const useWorkerTokens = () => {
 
 export const useCreateWorkerToken = () => {
   const queryClient = useQueryClient();
-  return useMutation<WorkerTokenCreated, AxiosError<{ message: string }>, CreateWorkerTokenDto>({
-    mutationFn: async (dto) => {
+  return useMutation<
+    WorkerTokenCreated,
+    AxiosError<{ message: string }>,
+    CreateWorkerTokenDto
+  >({
+    mutationFn: async dto => {
       const response = await apiClient.post<WorkerTokenCreated>(
         '/api/admin/worker-tokens',
         dto,
@@ -44,7 +48,7 @@ export const useCreateWorkerToken = () => {
         queryKey: WORKER_TOKENS_KEYS.list(),
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(
         error.response?.data?.message || 'Failed to create worker token',
       );
@@ -56,9 +60,7 @@ export const useRevokeWorkerToken = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiClient.delete(
-        `/api/admin/worker-tokens/${id}`,
-      );
+      const response = await apiClient.delete(`/api/admin/worker-tokens/${id}`);
       return response.data;
     },
     onSuccess: async () => {

@@ -9,7 +9,9 @@ export const QueenColorBadge: React.FC<QueenColorBadgeProps> = ({ color }) => {
   const colorClass = getQueenColorClass(color);
   return (
     <div className="flex items-center gap-2">
-      <div className={`h-4 w-4 rounded-full border border-gray-400 ${colorClass}`} />
+      <div
+        className={`h-4 w-4 rounded-full border border-gray-400 ${colorClass}`}
+      />
       <span className="capitalize text-sm">{color}</span>
     </div>
   );

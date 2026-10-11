@@ -178,16 +178,15 @@ describe('AssistantService', () => {
         ],
       });
       contextBuilder.buildSystemMessage.mockResolvedValue('SYSTEM CONTEXT');
-      repository.addMessage.mockImplementation(
-        (data) =>
-          Promise.resolve({
-            id: 'saved',
-            threadId: data.threadId,
-            role: data.role,
-            content: data.content,
-            suggestions: null,
-            createdAt: new Date('2026-05-01T00:00:00.000Z'),
-          }) as never,
+      repository.addMessage.mockImplementation((data) =>
+        Promise.resolve({
+          id: 'saved',
+          threadId: data.threadId,
+          role: data.role,
+          content: data.content,
+          suggestions: null,
+          createdAt: new Date('2026-05-01T00:00:00.000Z'),
+        }),
       );
 
       // Two NDJSON chunks, the second split across a buffer boundary.

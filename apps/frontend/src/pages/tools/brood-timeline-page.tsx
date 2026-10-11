@@ -28,6 +28,8 @@ import {
   TipsCard,
   ToolFaq,
   buildFaqJsonLd,
+  buildStructuredData,
+  buildWebApplicationJsonLd,
   type FaqItem,
 } from '@/components/tool-page';
 import { cn } from '@/lib/utils';
@@ -110,15 +112,11 @@ function TimelineBar({
   scaleToMax?: boolean;
 }) {
   const totalStages = beeData.totalDays + 1;
-  const barWidthPercent = scaleToMax
-    ? (totalStages / MAX_DAYS) * 100
-    : 100;
+  const barWidthPercent = scaleToMax ? (totalStages / MAX_DAYS) * 100 : 100;
 
   return (
     <div className={compact ? 'mb-3' : 'mb-2'}>
-      {label && (
-        <div className="text-sm font-medium mb-1.5">{label}</div>
-      )}
+      {label && <div className="text-sm font-medium mb-1.5">{label}</div>}
       <div
         className="flex h-3 rounded-full overflow-hidden"
         style={{ width: `${barWidthPercent}%` }}
@@ -204,34 +202,16 @@ export function BroodTimelinePage() {
     return `${from} – ${to}`;
   };
 
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebApplication',
-        name: 'Honey Bee Brood Development Timeline',
-        url: 'https://hivepal.app/tools/brood-timeline',
-        applicationCategory: 'EducationalApplication',
-        applicationSubCategory: 'Beekeeping Reference',
-        operatingSystem: 'Web',
-        browserRequirements: 'Requires JavaScript',
-        description:
-          'Visualize honey bee brood development stages (egg, larva, pupa, adult) for queens, workers, and drones. Project capping and emergence dates from any start date.',
-        isAccessibleForFree: true,
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Hive Pal',
-          url: 'https://hivepal.app',
-        },
-      },
-      buildFaqJsonLd(faqItems),
-    ],
-  };
+  const structuredData = buildStructuredData(
+    buildWebApplicationJsonLd({
+      name: 'Honey Bee Brood Development Timeline',
+      path: '/tools/brood-timeline',
+      kind: 'reference',
+      description:
+        'Visualize honey bee brood development stages (egg, larva, pupa, adult) for queens, workers, and drones. Project capping and emergence dates from any start date.',
+    }),
+    buildFaqJsonLd(faqItems),
+  );
 
   return (
     <PageGrid>

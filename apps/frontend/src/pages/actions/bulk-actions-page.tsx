@@ -2,13 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import {
-  CalendarIcon,
-  ChevronRight,
-  Inbox,
-  Search,
-  Send,
-} from 'lucide-react';
+import { CalendarIcon, ChevronRight, Inbox, Search, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,12 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useHives } from '@/api/hooks/useHives';
 import { useCreateAction } from '@/api/hooks/useActions';
@@ -59,8 +48,8 @@ export const BulkActionsPage = () => {
     activeTab === 'action'
       ? actionRef
       : activeTab === 'inspection'
-      ? inspectionRef
-      : queenRef;
+        ? inspectionRef
+        : queenRef;
 
   const filteredHives = useMemo(() => {
     const q = hiveFilter.trim().toLowerCase();
@@ -106,17 +95,22 @@ export const BulkActionsPage = () => {
         activeTab === 'action'
           ? t('bulkAdd.errors.emptyAction')
           : activeTab === 'inspection'
-          ? t('bulkAdd.errors.emptyInspection')
-          : t('bulkAdd.errors.emptyQueen'),
+            ? t('bulkAdd.errors.emptyInspection')
+            : t('bulkAdd.errors.emptyQueen'),
       );
       return;
     }
     setStagedItems(prev => [...prev, ...built]);
     activeRef.current?.reset();
     toast.success(
-      t(built.length === 1 ? 'bulkAdd.toast.addedOne' : 'bulkAdd.toast.addedMany', {
-        count: built.length,
-      }),
+      t(
+        built.length === 1
+          ? 'bulkAdd.toast.addedOne'
+          : 'bulkAdd.toast.addedMany',
+        {
+          count: built.length,
+        },
+      ),
     );
   };
 
@@ -445,13 +439,13 @@ export const BulkActionsPage = () => {
                 {isSubmitting
                   ? t('bulkAdd.queue.submitting')
                   : stagedItems.length === 0
-                  ? t('bulkAdd.queue.submit')
-                  : t(
-                      stagedItems.length === 1
-                        ? 'bulkAdd.queue.submitOne'
-                        : 'bulkAdd.queue.submitMany',
-                      { count: stagedItems.length },
-                    )}
+                    ? t('bulkAdd.queue.submit')
+                    : t(
+                        stagedItems.length === 1
+                          ? 'bulkAdd.queue.submitOne'
+                          : 'bulkAdd.queue.submitMany',
+                        { count: stagedItems.length },
+                      )}
               </Button>
             </div>
           </div>

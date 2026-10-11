@@ -23,7 +23,9 @@ type NumericObsKey = keyof Pick<
 >;
 
 // Keys used to compute the brood nest total (denominator for percentages)
-const FRAME_COUNT_KEYS = FRAME_FIELDS.map(f => f.obsKey) as (typeof FRAME_FIELDS)[number]['obsKey'][];
+const FRAME_COUNT_KEYS = FRAME_FIELDS.map(
+  f => f.obsKey,
+) as (typeof FRAME_FIELDS)[number]['obsKey'][];
 
 const TREND_FIELDS: {
   key: NumericObsKey;
@@ -31,14 +33,24 @@ const TREND_FIELDS: {
   color: string;
   isFrameCount: boolean;
 }[] = [
-  { key: 'strength',            shortLabel: 'Strength', color: '#6366f1', isFrameCount: false },
+  {
+    key: 'strength',
+    shortLabel: 'Strength',
+    color: '#6366f1',
+    isFrameCount: false,
+  },
   ...FRAME_FIELDS.map(ff => ({
     key: ff.obsKey as NumericObsKey,
     shortLabel: ff.shortLabel,
     color: ff.color,
     isFrameCount: true as const,
   })),
-  { key: 'queenCells',          shortLabel: 'Q. Cells', color: '#f43f5e', isFrameCount: false },
+  {
+    key: 'queenCells',
+    shortLabel: 'Q. Cells',
+    color: '#f43f5e',
+    isFrameCount: false,
+  },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -68,25 +80,54 @@ interface ChipDataWithKey extends ChipData {
 
 // ─── Stat items ───────────────────────────────────────────────────────────────
 
-const CompactStatItem = ({ shortLabel, color, current, delta, unit }: ChipData) => (
+const CompactStatItem = ({
+  shortLabel,
+  color,
+  current,
+  delta,
+  unit,
+}: ChipData) => (
   <div className="min-w-[80px]">
     <div className="flex items-center gap-1">
-      <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+      <span
+        className="h-2 w-2 rounded-full shrink-0"
+        style={{ backgroundColor: color }}
+      />
       <span className="text-xs text-muted-foreground">{shortLabel}</span>
     </div>
     <div className="flex items-baseline gap-1 mt-0.5">
-      <span className="text-xl font-bold tabular-nums">{current}{unit}</span>
+      <span className="text-xl font-bold tabular-nums">
+        {current}
+        {unit}
+      </span>
       <TrendIndicator delta={delta} unit={unit} iconSize="h-3 w-3" />
     </div>
   </div>
 );
 
-const MobileStatItem = ({ shortLabel, color, current, delta, unit }: ChipData) => (
+const MobileStatItem = ({
+  shortLabel,
+  color,
+  current,
+  delta,
+  unit,
+}: ChipData) => (
   <div className="flex items-baseline gap-0.5">
-    <span className="h-1.5 w-1.5 rounded-full self-center shrink-0" style={{ backgroundColor: color }} />
+    <span
+      className="h-1.5 w-1.5 rounded-full self-center shrink-0"
+      style={{ backgroundColor: color }}
+    />
     <span className="text-xs text-muted-foreground">{shortLabel}:</span>
-    <span className="text-sm font-semibold tabular-nums">{current}{unit}</span>
-    <TrendIndicator delta={delta} unit={unit} iconSize="h-3 w-3" showDelta={false} />
+    <span className="text-sm font-semibold tabular-nums">
+      {current}
+      {unit}
+    </span>
+    <TrendIndicator
+      delta={delta}
+      unit={unit}
+      iconSize="h-3 w-3"
+      showDelta={false}
+    />
   </div>
 );
 
@@ -117,21 +158,27 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
     );
 
     if (withFrameData.length >= 1) {
-      const latest   = withFrameData[0];
+      const latest = withFrameData[0];
       const previous = withFrameData[1];
 
       const frameFields = TREND_FIELDS.filter(f => f.isFrameCount);
 
-      const currentCounts  = frameFields.map(f => (latest.observations?.[f.key]   as number | null | undefined) ?? 0);
+      const currentCounts = frameFields.map(
+        f => (latest.observations?.[f.key] as number | null | undefined) ?? 0,
+      );
       const previousCounts = previous
         ? frameFields.map(
             f =>
-              (previous.observations?.[f.key] as number | null | undefined) ?? 0,
+              (previous.observations?.[f.key] as number | null | undefined) ??
+              0,
           )
         : null;
 
       // Round all fields together so their percentages always sum to exactly 100
-      const currentPcts  = largestRemainder(currentCounts,  frameSum(latest.observations!));
+      const currentPcts = largestRemainder(
+        currentCounts,
+        frameSum(latest.observations!),
+      );
       const previousPcts =
         previousCounts && previous?.observations
           ? largestRemainder(previousCounts, frameSum(previous.observations))
@@ -154,7 +201,9 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
 
     // ── Raw fields: find the two most recent inspections per field ──
     for (const field of TREND_FIELDS.filter(f => !f.isFrameCount)) {
-      const withData = eligible.filter(i => i.observations?.[field.key] != null);
+      const withData = eligible.filter(
+        i => i.observations?.[field.key] != null,
+      );
       if (withData.length < 1) continue;
 
       const current = withData[0].observations![field.key];
@@ -185,7 +234,9 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
 
   return (
     <div>
-      <p className="text-xs font-medium text-muted-foreground mb-2">Brood Nest Stats</p>
+      <p className="text-xs font-medium text-muted-foreground mb-2">
+        Brood Nest Stats
+      </p>
       {/* Mobile: compact inline list — shown below md (768px) */}
       <div className="md:hidden flex items-center gap-x-3 gap-y-1 flex-wrap">
         {chips.map(chip => (

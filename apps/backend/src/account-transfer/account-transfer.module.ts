@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { parseByteLimit } from '../utils/byte-limit';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { AccountTransferController } from './account-transfer.controller';
@@ -18,9 +19,10 @@ const DEFAULT_MAX_IMPORT_SIZE = 2 * 1024 * 1024 * 1024; // 2 GB
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         limits: {
-          fileSize:
-            configService.get<number>('MAX_IMPORT_SIZE_BYTES') ??
+          fileSize: parseByteLimit(
+            configService.get('MAX_IMPORT_SIZE_BYTES'),
             DEFAULT_MAX_IMPORT_SIZE,
+          ),
         },
       }),
       inject: [ConfigService],

@@ -12,8 +12,8 @@ import {
   Beaker,
   ArrowUpRight,
   Rocket,
-  Github,
 } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { PublicMeta } from '@/components/seo/public-meta';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
@@ -31,12 +31,26 @@ const GROUPS = [
   {
     id: 'inspections',
     icon: <ClipboardList className="h-5 w-5" />,
-    items: ['structured', 'quickChecks', 'batch', 'scheduled', 'photos', 'actions'],
+    items: [
+      'structured',
+      'quickChecks',
+      'batch',
+      'scheduled',
+      'photos',
+      'actions',
+    ],
   },
   {
     id: 'colony',
     icon: <Layers className="h-5 w-5" />,
-    items: ['apiaries', 'hiveConfig', 'queens', 'equipment', 'qrCodes', 'hiveScale'],
+    items: [
+      'apiaries',
+      'hiveConfig',
+      'queens',
+      'equipment',
+      'qrCodes',
+      'hiveScale',
+    ],
   },
   {
     id: 'planning',
@@ -51,7 +65,14 @@ const GROUPS = [
   {
     id: 'data',
     icon: <ShieldCheck className="h-5 w-5" />,
-    items: ['openSource', 'selfHostable', 'importExport', 'privacyAI', 'multilingual', 'pwa'],
+    items: [
+      'openSource',
+      'selfHostable',
+      'importExport',
+      'privacyAI',
+      'multilingual',
+      'pwa',
+    ],
   },
 ] as const;
 
@@ -195,7 +216,7 @@ export function FeaturesPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.features.hero.ctaSelfHost')}
               </a>
             </Button>
@@ -334,10 +355,14 @@ export function FeaturesPage() {
                     className="mt-3 text-lg font-semibold text-stone-900"
                     style={sans}
                   >
-                    {t(`marketing.features.groups.${group.id}.items.${key}.title`)}
+                    {t(
+                      `marketing.features.groups.${group.id}.items.${key}.title`,
+                    )}
                   </dt>
                   <dd className="mt-2 text-sm leading-relaxed text-stone-600">
-                    {t(`marketing.features.groups.${group.id}.items.${key}.body`)}
+                    {t(
+                      `marketing.features.groups.${group.id}.items.${key}.body`,
+                    )}
                   </dd>
                 </div>
               ))}
@@ -426,7 +451,7 @@ export function FeaturesPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.features.cta.github')}
               </a>
             </Button>

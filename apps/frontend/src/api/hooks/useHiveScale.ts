@@ -703,10 +703,7 @@ export const useHiveScaleInsightsHistory = (
 };
 
 export type HiveScaleInsightSeverity =
-  | 'info'
-  | 'watch'
-  | 'warning'
-  | 'critical';
+  'info' | 'watch' | 'warning' | 'critical';
 
 export type HiveScaleInsightCategory =
   | 'swarm'
@@ -1012,10 +1009,7 @@ export const useStopHiveScaleCalibrationMode = (
 // 'hivescale'). The HiveHub backend accepts the 'hivehub' alias; the legacy
 // 'hivescale' value stays valid for older clients.
 export type HiveScaleFirmwareTarget =
-  | 'hivehub'
-  | 'hivescale'
-  | 'beecounter'
-  | 'hiveinside';
+  'hivehub' | 'hivescale' | 'beecounter' | 'hiveinside';
 
 export type HiveScaleFirmwareBoard = 'esp32' | 'esp32-c6' | 'nrf54lm20a';
 
@@ -1116,7 +1110,9 @@ export const useImportHiveScaleSdData = (deviceId: string | undefined) => {
             error.response.data.file_device_ids ?? [],
           );
         }
-        throw new Error(hiveHubErrorMessage(error, 'SD import failed'));
+        throw new Error(hiveHubErrorMessage(error, 'SD import failed'), {
+          cause: error,
+        });
       }
     },
     onSuccess: () => {
@@ -1152,7 +1148,9 @@ export const useUploadHiveScaleFirmware = (deviceId: string | undefined) => {
         );
         return response.data;
       } catch (error) {
-        throw new Error(hiveHubErrorMessage(error, 'Firmware upload failed'));
+        throw new Error(hiveHubErrorMessage(error, 'Firmware upload failed'), {
+          cause: error,
+        });
       }
     },
     onSuccess: () => {
@@ -1241,7 +1239,9 @@ export const useApproveHiveScaleFirmware = (deviceId: string | undefined) => {
               : typeof data === 'string'
                 ? data
                 : undefined) ?? error.message;
-          throw new Error(message || 'Firmware approval failed');
+          throw new Error(message || 'Firmware approval failed', {
+            cause: error,
+          });
         }
         throw error;
       }
@@ -1292,7 +1292,7 @@ const useQueueRelayUpdate = (
         );
         return response.data;
       } catch (error) {
-        throw new Error(hiveHubErrorMessage(error, fallback));
+        throw new Error(hiveHubErrorMessage(error, fallback), { cause: error });
       }
     },
     onSuccess: () => {
@@ -1345,6 +1345,7 @@ export const useStartHiveScaleProvisioning = (deviceId: string | undefined) =>
       } catch (error) {
         throw new Error(
           hiveHubErrorMessage(error, 'Could not queue AP mode for the hub'),
+          { cause: error },
         );
       }
     },
@@ -1433,7 +1434,7 @@ const useInspectionMutation = <TInput>(
       try {
         return await request(input);
       } catch (error) {
-        throw new Error(hiveHubErrorMessage(error, fallback));
+        throw new Error(hiveHubErrorMessage(error, fallback), { cause: error });
       }
     },
     onSuccess: () => {
@@ -1490,10 +1491,7 @@ export const useUpdateHiveScaleInspection = (deviceId: string | undefined) =>
 // ── Hive audio recordings ──────────────────────────────────────────────────
 
 export type HiveScaleRecordingStatus =
-  | 'requested'
-  | 'streaming'
-  | 'ready'
-  | 'failed';
+  'requested' | 'streaming' | 'ready' | 'failed';
 
 export interface HiveScaleRecording {
   id: number;
@@ -1569,6 +1567,7 @@ export const useRequestHiveScaleRecording = (deviceId: string | undefined) => {
         } catch (error) {
           throw new Error(
             hiveHubErrorMessage(error, 'Could not request a recording'),
+            { cause: error },
           );
         }
       },
@@ -1592,6 +1591,7 @@ export const useDeleteHiveScaleRecording = (deviceId: string | undefined) => {
       } catch (error) {
         throw new Error(
           hiveHubErrorMessage(error, 'Could not delete the recording'),
+          { cause: error },
         );
       }
     },
@@ -1679,6 +1679,7 @@ export const useDeleteHiveScaleMeasurements = (
       } catch (error) {
         throw new Error(
           hiveHubErrorMessage(error, 'Could not delete the readings'),
+          { cause: error },
         );
       }
     },

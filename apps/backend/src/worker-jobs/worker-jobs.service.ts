@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -284,7 +283,7 @@ export class WorkerJobsService {
     await this.prisma.inspectionAudio.update({
       where: { id: audioId },
       data: {
-        analysisResult: sanitizedDraft as Prisma.InputJsonValue,
+        analysisResult: sanitizedDraft,
         analysisStatus: 'COMPLETED',
         analysisError: null,
         analysisCompletedAt: new Date(),

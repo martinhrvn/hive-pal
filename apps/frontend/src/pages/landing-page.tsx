@@ -11,7 +11,6 @@ import {
   MarketingFooter,
 } from '@/components/marketing/marketing-chrome';
 import {
-  Github,
   BookOpen,
   Rocket,
   Mic,
@@ -24,6 +23,7 @@ import {
   ShieldCheck,
   ArrowUpRight,
 } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 
 // Structure (ids/icons) lives in code; copy comes from i18n under `marketing.*`.
 const PILLAR_KEYS = ['apiary', 'inspections', 'queen', 'harvest'] as const;
@@ -35,11 +35,31 @@ const AI_ITEMS = [
 ] as const;
 
 const TOOL_CARDS = [
-  { to: '/tools/syrup-calculator', key: 'syrup', icon: <Beaker className="h-5 w-5" /> },
-  { to: '/tools/brood-timeline', key: 'brood', icon: <Bug className="h-5 w-5" /> },
-  { to: '/tools/swarm-management', key: 'swarm', icon: <Waypoints className="h-5 w-5" /> },
-  { to: '/tools/liebefelder', key: 'liebefelder', icon: <Microscope className="h-5 w-5" /> },
-  { to: '/tools/varroa-management', key: 'varroa', icon: <ShieldCheck className="h-5 w-5" /> },
+  {
+    to: '/tools/syrup-calculator',
+    key: 'syrup',
+    icon: <Beaker className="h-5 w-5" />,
+  },
+  {
+    to: '/tools/brood-timeline',
+    key: 'brood',
+    icon: <Bug className="h-5 w-5" />,
+  },
+  {
+    to: '/tools/swarm-management',
+    key: 'swarm',
+    icon: <Waypoints className="h-5 w-5" />,
+  },
+  {
+    to: '/tools/liebefelder',
+    key: 'liebefelder',
+    icon: <Microscope className="h-5 w-5" />,
+  },
+  {
+    to: '/tools/varroa-management',
+    key: 'varroa',
+    icon: <ShieldCheck className="h-5 w-5" />,
+  },
 ] as const;
 
 export function LandingPage() {
@@ -105,7 +125,10 @@ export function LandingPage() {
 
           <h1
             className="mt-8 text-[clamp(2.75rem,6vw,5rem)] font-medium leading-[1.02] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)]"
-            style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
+            style={{
+              ...display,
+              fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500",
+            }}
           >
             <Trans
               t={t}
@@ -155,7 +178,7 @@ export function LandingPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.landing.hero.ctaSelfHost')}
               </a>
             </Button>
@@ -177,10 +200,15 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <SectionLabel>{t('marketing.landing.features.label')}</SectionLabel>
+              <SectionLabel>
+                {t('marketing.landing.features.label')}
+              </SectionLabel>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
-                style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
+                style={{
+                  ...display,
+                  fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500",
+                }}
               >
                 <Trans
                   t={t}
@@ -267,7 +295,10 @@ export function LandingPage() {
               </div>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight sm:text-5xl"
-                style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
+                style={{
+                  ...display,
+                  fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500",
+                }}
               >
                 <Trans
                   t={t}
@@ -338,7 +369,10 @@ export function LandingPage() {
             </div>
             <h2
               className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
-              style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
+              style={{
+                ...display,
+                fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500",
+              }}
             >
               <Trans
                 t={t}
@@ -466,7 +500,10 @@ export function LandingPage() {
               <SectionLabel>{t('marketing.landing.tools.label')}</SectionLabel>
               <h2
                 className="mt-6 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-5xl"
-                style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
+                style={{
+                  ...display,
+                  fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500",
+                }}
               >
                 {t('marketing.landing.tools.title')}
               </h2>
@@ -531,7 +568,10 @@ export function LandingPage() {
           />
           <h2
             className="mt-8 text-4xl leading-[1.05] tracking-tight text-stone-900 sm:text-6xl"
-            style={{ ...display, fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500" }}
+            style={{
+              ...display,
+              fontVariationSettings: "'opsz' 96, 'wdth' 100, 'wght' 500",
+            }}
           >
             <Trans
               t={t}
@@ -566,7 +606,7 @@ export function LandingPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <GithubIcon className="mr-2 h-4 w-4" />
                 {t('marketing.landing.cta.github')}
               </a>
             </Button>

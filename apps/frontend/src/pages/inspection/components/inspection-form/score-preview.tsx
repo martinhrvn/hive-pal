@@ -12,10 +12,7 @@ import { getModeSpecificObservations } from './mode-behavior';
 import { RatingSlider } from '@/components/common/rating-slider';
 
 type ScoreKey =
-  | 'overallScore'
-  | 'populationScore'
-  | 'storesScore'
-  | 'queenScore';
+  'overallScore' | 'populationScore' | 'storesScore' | 'queenScore';
 
 type ScorePreviewSectionProps = {
   totalFrames?: number | null;
@@ -51,7 +48,9 @@ const ScoreItem: React.FC<{
       <div className="flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
           {icon}
-          <span className="truncate text-sm text-muted-foreground">{label}</span>
+          <span className="truncate text-sm text-muted-foreground">
+            {label}
+          </span>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -93,30 +92,30 @@ const ScoreItem: React.FC<{
       </div>
 
       {editing && (
-         <div className="flex items-center gap-2">
-           <RatingSlider
-             value={ratingValue}
-             onChange={onOverride}
-             showZeroButton={true}
-             onClear={() => onOverride(null)}
-           />
+        <div className="flex items-center gap-2">
+          <RatingSlider
+            value={ratingValue}
+            onChange={onOverride}
+            showZeroButton={true}
+            onClear={() => onOverride(null)}
+          />
 
-           <Input
-             type="number"
-             min={0}
-             max={10}
-             step={0.1}
-             className="h-8 w-16 text-center text-sm"
-             value={ratingValue ?? ''}
-             onChange={e => {
-               const val =
-                 e.target.value === '' ? null : parseFloat(e.target.value);
-               if (val !== null && (val < 0 || val > 10)) return;
-               onOverride(val !== null ? Math.round(val * 100) / 100 : null);
-             }}
-           />
-         </div>
-       )}
+          <Input
+            type="number"
+            min={0}
+            max={10}
+            step={0.1}
+            className="h-8 w-16 text-center text-sm"
+            value={ratingValue ?? ''}
+            onChange={e => {
+              const val =
+                e.target.value === '' ? null : parseFloat(e.target.value);
+              if (val !== null && (val < 0 || val > 10)) return;
+              onOverride(val !== null ? Math.round(val * 100) / 100 : null);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

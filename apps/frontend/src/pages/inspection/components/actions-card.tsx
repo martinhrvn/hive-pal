@@ -159,7 +159,7 @@ const BoxConfigurationDetails = ({
     <div className="space-y-2">
       {changes.length > 0 && (
         <div className="flex gap-2 flex-wrap">
-          {changes.map((c) => (
+          {changes.map(c => (
             <Badge
               key={c}
               className="bg-stone-100 text-stone-800 hover:bg-stone-200 font-normal tabular-nums"
@@ -181,7 +181,7 @@ const BoxConfigurationDetails = ({
             let frameSummary: string | null;
             if (!isFramed) {
               frameSummary = null;
-            } else if (frames.every((f) => f === frames[0])) {
+            } else if (frames.every(f => f === frames[0])) {
               frameSummary = `${frames[0]} frames`;
             } else {
               frameSummary = `${frames.join(', ')} frames`;

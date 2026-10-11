@@ -24,9 +24,7 @@ export function SharedPage() {
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <Card className="max-w-md w-full mx-4">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">
-              Share link not found
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Share link not found</h2>
             <p className="text-muted-foreground mb-4">
               This link may have expired or been revoked.
             </p>
@@ -69,7 +67,11 @@ export function SharedPage() {
         <header className="bg-background border-b px-4 py-3">
           <div className="max-w-2xl mx-auto flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 text-xl font-bold">
-              <img src="/hive-pal-logo.png" alt="Hive Pal" className="w-8 h-8" />
+              <img
+                src="/hive-pal-logo.png"
+                alt="Hive Pal"
+                className="w-8 h-8"
+              />
               Hive Pal
             </Link>
             <Link to="/register">
@@ -259,12 +261,15 @@ function InspectionView({
             <div className="grid grid-cols-4 gap-3">
               {[
                 { label: 'Overall', value: inspection.scores.overallScore },
-                { label: 'Population', value: inspection.scores.populationScore },
+                {
+                  label: 'Population',
+                  value: inspection.scores.populationScore,
+                },
                 { label: 'Stores', value: inspection.scores.storesScore },
                 { label: 'Queen', value: inspection.scores.queenScore },
               ]
-                .filter((s) => s.value !== null)
-                .map((s) => (
+                .filter(s => s.value !== null)
+                .map(s => (
                   <div
                     key={s.label}
                     className="text-center p-3 rounded-lg bg-muted/50"

@@ -21,9 +21,7 @@ export const useApiaryAudio = (
   return useQuery<ApiaryAudioResponse[]>({
     queryKey: APIARY_AUDIO_KEYS.list(apiaryId),
     queryFn: async () => {
-      const response = await apiClient.get<ApiaryAudioResponse[]>(
-        '/api/audio',
-      );
+      const response = await apiClient.get<ApiaryAudioResponse[]>('/api/audio');
       return response.data;
     },
     enabled: options?.enabled !== false && !!apiaryId,
@@ -42,11 +40,7 @@ export const useApiaryAudio = (
 
 export const useDeleteApiaryAudio = (apiaryId: string | null | undefined) => {
   const queryClient = useQueryClient();
-  return useMutation<
-    void,
-    Error,
-    { inspectionId: string; audioId: string }
-  >({
+  return useMutation<void, Error, { inspectionId: string; audioId: string }>({
     mutationFn: async ({ inspectionId, audioId }) => {
       await apiClient.delete(
         `/api/inspections/${inspectionId}/audio/${audioId}`,
@@ -63,7 +57,9 @@ export const useDeleteApiaryAudio = (apiaryId: string | null | undefined) => {
   });
 };
 
-export const useStartPendingAnalysis = (apiaryId: string | null | undefined) => {
+export const useStartPendingAnalysis = (
+  apiaryId: string | null | undefined,
+) => {
   const queryClient = useQueryClient();
   return useMutation<StartPendingAnalysisResponse, Error, void>({
     mutationFn: async () => {

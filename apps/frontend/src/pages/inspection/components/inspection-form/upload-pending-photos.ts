@@ -20,8 +20,9 @@ export interface PendingPhotoUploadResult {
 
 function failureMessage(error: unknown): string {
   if (isAxiosError(error)) {
-    const apiMessage = (error.response?.data as { message?: unknown } | undefined)
-      ?.message;
+    const apiMessage = (
+      error.response?.data as { message?: unknown } | undefined
+    )?.message;
     if (typeof apiMessage === 'string' && apiMessage.length > 0) {
       return apiMessage;
     }

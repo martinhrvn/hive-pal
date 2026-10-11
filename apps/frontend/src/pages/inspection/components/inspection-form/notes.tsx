@@ -68,7 +68,7 @@ export function NotesSection({
             shouldUseAiPrefill(field.value, isDirty, notesSuggestion);
 
           const displayValue = shouldPrefill
-            ? suggestedNotesValue ?? ''
+            ? (suggestedNotesValue ?? '')
             : (field.value ?? '');
 
           return (

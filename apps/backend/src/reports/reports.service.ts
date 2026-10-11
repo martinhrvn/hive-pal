@@ -757,7 +757,7 @@ export class ReportsService {
 
     if (feedType === 'SYRUP') {
       // Convert to ml
-      let amountMl = 0;
+      let amountMl: number;
       switch (feedingAction.unit.toLowerCase()) {
         case 'ml':
           amountMl = feedingAction.amount;
@@ -789,7 +789,7 @@ export class ReportsService {
       }
     } else if (feedType === 'CANDY') {
       // Convert to grams
-      let amountGrams = 0;
+      let amountGrams: number;
       switch (feedingAction.unit.toLowerCase()) {
         case 'g':
           amountGrams = feedingAction.amount;
@@ -806,7 +806,7 @@ export class ReportsService {
       sugarGrams = amountGrams; // Candy is pure sugar
     } else if (feedType === 'HONEY') {
       // Convert to grams
-      let amountGrams = 0;
+      let amountGrams: number;
       switch (feedingAction.unit.toLowerCase()) {
         case 'g':
           amountGrams = feedingAction.amount;

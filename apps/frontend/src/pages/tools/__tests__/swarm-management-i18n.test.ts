@@ -64,8 +64,12 @@ describe('Swarm Management i18n Keys', () => {
     it('has Pagden planner metadata keys in English locale', () => {
       expect(enCommon.swarmManagement.pagden.planner.title).toBeTruthy();
       expect(enCommon.swarmManagement.pagden.planner.description).toBeTruthy();
-      expect(enCommon.swarmManagement.pagden.planner.checkpointPrefix).toBeTruthy();
-      expect(enCommon.swarmManagement.pagden.planner.notesChecklistLabel).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.pagden.planner.checkpointPrefix,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.pagden.planner.notesChecklistLabel,
+      ).toBeTruthy();
       expect(enCommon.swarmManagement.pagden.planner.savedSuccess).toBeTruthy();
       expect(enCommon.swarmManagement.pagden.planner.savedPartial).toBeTruthy();
       expect(enCommon.swarmManagement.pagden.planner.savedError).toBeTruthy();
@@ -78,7 +82,13 @@ describe('Swarm Management i18n Keys', () => {
         expect(pagden['title']).toBe('');
         expect(pagden['description']).toBe('');
         expect(
-          get(locale.data, 'swarmManagement', 'pagden', 'planner', 'checkpointPrefix'),
+          get(
+            locale.data,
+            'swarmManagement',
+            'pagden',
+            'planner',
+            'checkpointPrefix',
+          ),
         ).toBe('');
       });
     });
@@ -90,13 +100,23 @@ describe('Swarm Management i18n Keys', () => {
       expect(enCommon.swarmManagement.artificialSwarm.title).toBeTruthy();
       expect(enCommon.swarmManagement.artificialSwarm.description).toBeTruthy();
       expect(enCommon.swarmManagement.artificialSwarm.intro).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.overviewTitle).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.prerequisitesTitle).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.overviewTitle,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.prerequisitesTitle,
+      ).toBeTruthy();
       expect(enCommon.swarmManagement.artificialSwarm.stepsTitle).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.followUpTitle).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.prosConsTitle).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.followUpTitle,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.prosConsTitle,
+      ).toBeTruthy();
       expect(enCommon.swarmManagement.artificialSwarm.faq).toBeDefined();
-      expect(enCommon.swarmManagement.artificialSwarm.faq.items).toHaveLength(4);
+      expect(enCommon.swarmManagement.artificialSwarm.faq.items).toHaveLength(
+        4,
+      );
     });
 
     it('has all Artificial Swarm planner checkpoint keys in English locale', () => {
@@ -113,13 +133,27 @@ describe('Swarm Management i18n Keys', () => {
     });
 
     it('has Artificial Swarm planner metadata keys in English locale', () => {
-      expect(enCommon.swarmManagement.artificialSwarm.planner.title).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.planner.description).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.planner.checkpointPrefix).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.planner.notesChecklistLabel).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.planner.savedSuccess).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.planner.savedPartial).toBeTruthy();
-      expect(enCommon.swarmManagement.artificialSwarm.planner.savedError).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.planner.title,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.planner.description,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.planner.checkpointPrefix,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.planner.notesChecklistLabel,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.planner.savedSuccess,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.planner.savedPartial,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.artificialSwarm.planner.savedError,
+      ).toBeTruthy();
     });
 
     it('has Artificial Swarm keys as empty strings in non-English locales', () => {
@@ -153,8 +187,12 @@ describe('Swarm Management i18n Keys', () => {
 
     it('has Artificial Swarm card keys in English locale', () => {
       expect(enCommon.swarmManagement.cards.artificialSwarm.title).toBeTruthy();
-      expect(enCommon.swarmManagement.cards.artificialSwarm.description).toBeTruthy();
-      expect(enCommon.swarmManagement.cards.artificialSwarm.detail).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.cards.artificialSwarm.description,
+      ).toBeTruthy();
+      expect(
+        enCommon.swarmManagement.cards.artificialSwarm.detail,
+      ).toBeTruthy();
       expect(enCommon.swarmManagement.cards.artificialSwarm.cta).toBeTruthy();
     });
 

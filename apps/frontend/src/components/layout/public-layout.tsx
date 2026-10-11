@@ -1,13 +1,18 @@
 import { Link, Outlet } from 'react-router-dom';
-import { Github, BookOpen, Beaker, Bug, Waypoints, Microscope } from 'lucide-react';
+import { BookOpen, Beaker, Bug, Waypoints, Microscope } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 
 const TOOL_LINKS = [
-  { to: '/tools/syrup-calculator', label: 'Syrup Calculator',           icon: Beaker },
-  { to: '/tools/brood-timeline',   label: 'Brood Timeline',             icon: Bug },
-  { to: '/tools/swarm-management', label: 'Swarm Management',           icon: Waypoints },
-  { to: '/tools/liebefelder',      label: 'Liebefelder Schätzmethode',  icon: Microscope },
+  { to: '/tools/syrup-calculator', label: 'Syrup Calculator', icon: Beaker },
+  { to: '/tools/brood-timeline', label: 'Brood Timeline', icon: Bug },
+  { to: '/tools/swarm-management', label: 'Swarm Management', icon: Waypoints },
+  {
+    to: '/tools/liebefelder',
+    label: 'Liebefelder Schätzmethode',
+    icon: Microscope,
+  },
 ];
 
 export const PublicLayout = () => {
@@ -18,7 +23,11 @@ export const PublicLayout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <Link to={localize('/')} className="flex items-center">
-              <img className="w-10" src="/hive-pal-logo.png" alt="Hive Pal logo" />
+              <img
+                className="w-10"
+                src="/hive-pal-logo.png"
+                alt="Hive Pal logo"
+              />
               <h1 className="ml-2 text-xl font-semibold text-gray-900">
                 Hive Pal
               </h1>
@@ -51,7 +60,11 @@ export const PublicLayout = () => {
               <Button variant="outline" size="sm" asChild>
                 <Link to="/login">Sign In</Link>
               </Button>
-              <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600">
+              <Button
+                asChild
+                size="sm"
+                className="bg-amber-500 hover:bg-amber-600"
+              >
                 <Link to="/register">Start Free</Link>
               </Button>
             </div>
@@ -70,7 +83,11 @@ export const PublicLayout = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center mb-3">
-                <img className="w-10" src="/hive-pal-logo.png" alt="Hive Pal logo" />
+                <img
+                  className="w-10"
+                  src="/hive-pal-logo.png"
+                  alt="Hive Pal logo"
+                />
                 <span className="ml-2 text-lg font-semibold">Hive Pal</span>
               </div>
               <p className="text-gray-400 text-sm leading-6">
@@ -120,7 +137,7 @@ export const PublicLayout = () => {
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white text-sm inline-flex items-center gap-1"
                   >
-                    <Github className="h-4 w-4" />
+                    <GithubIcon className="h-4 w-4" />
                     GitHub
                   </a>
                 </li>

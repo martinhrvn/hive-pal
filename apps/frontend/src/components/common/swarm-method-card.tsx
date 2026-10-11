@@ -44,9 +44,7 @@ export function SwarmMethodCard({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className={detail ? 'space-y-4' : undefined}>
-        {detail && (
-          <p className="text-sm text-muted-foreground">{detail}</p>
-        )}
+        {detail && <p className="text-sm text-muted-foreground">{detail}</p>}
         <Button
           variant={disabled ? 'outline' : 'default'}
           disabled={disabled}
