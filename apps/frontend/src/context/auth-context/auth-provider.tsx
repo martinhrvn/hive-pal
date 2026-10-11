@@ -39,6 +39,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user?.passwordChangeRequired]);
 
+  // SSO-created accounts must accept the privacy policy once before using the app
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (
+      user?.consentRequired &&
+      !user.passwordChangeRequired &&
+      path !== '/account/consent' &&
+      !path.endsWith('/privacy-policy')
+    ) {
+      window.location.href = '/account/consent';
+    }
+  }, [user?.consentRequired, user?.passwordChangeRequired]);
+
   const login = useCallback(
     async (username: string, password: string, from = '/') => {
       const result = await authClient.signIn.email({
