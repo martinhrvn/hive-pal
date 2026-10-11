@@ -37,14 +37,20 @@ pnpm test:preview                # .env.preview
 
 ## CI
 
-`.github/workflows/e2e-smoke.yml` runs the smoke suite on demand:
+`.github/workflows/e2e-smoke.yml` runs the smoke suite on demand only
+(`workflow_dispatch`). Inside `devenv shell`:
 
 ```bash
-gh workflow run e2e-smoke.yml -f base_url=https://<PR>.preview.hivepal.app
+smoke-run 243 --watch     # https://243.preview.hivepal.app
+smoke-run main            # https://preview.hivepal.app
+smoke-report [run-id]     # download the HTML report with traces and open it
 ```
 
+or directly: `gh workflow run e2e-smoke.yml -f base_url=https://<PR>.preview.hivepal.app`.
+
 It waits for `/api/health`, runs `@journey|@core` by default, uploads the
-HTML report and posts one comment on the PR (or on the commit for the main
+HTML report plus `test-results/` (traces and screenshots of failed tests,
+7 days) and posts one comment on the PR (or on the commit for the main
 preview).
 
 ## Environment variables
