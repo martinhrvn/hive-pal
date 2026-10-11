@@ -26,7 +26,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pill } from '@/components/common/pill';
-import { ToolMeta, ToolPageHeader, TipsCard } from '@/components/tool-page';
+import {
+  ToolMeta,
+  ToolPageHeader,
+  TipsCard,
+  buildStructuredData,
+  buildWebApplicationJsonLd,
+} from '@/components/tool-page';
 
 type PerEighth = {
   bees: number;
@@ -358,29 +364,15 @@ function formatGrams(grams: number): string {
     : `${Math.round(grams)} g`;
 }
 
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebApplication',
-      name: 'Liebefelder Colony Strength Calculator',
-      url: 'https://hivepal.app/tools/liebefelder',
-      applicationCategory: 'UtilitiesApplication',
-      applicationSubCategory: 'Beekeeping Calculator',
-      operatingSystem: 'Web',
-      browserRequirements: 'Requires JavaScript',
-      description:
-        'Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths, with seasonal evaluation guidelines by Dr. Pia Aumeier.',
-      isAccessibleForFree: true,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Hive Pal',
-        url: 'https://hivepal.app',
-      },
-    },
-  ],
-};
+const structuredData = buildStructuredData(
+  buildWebApplicationJsonLd({
+    name: 'Liebefelder Colony Strength Calculator',
+    path: '/tools/liebefelder',
+    kind: 'calculator',
+    description:
+      'Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths, with seasonal evaluation guidelines by Dr. Pia Aumeier.',
+  }),
+);
 
 export function LiebefelderPage() {
   const { t } = useTranslation('common');

@@ -112,7 +112,7 @@ export class EquipmentService {
         damaged: data.damaged ?? 0,
         neededOverride: data.neededOverride ?? null,
         category: data.category,
-        scope: (data.scope ?? defaultScope) as 'PER_HIVE' | 'SHARED',
+        scope: data.scope ?? defaultScope,
         unit: data.unit ?? 'pieces',
         isCustom: true,
         displayOrder: data.displayOrder ?? 999,

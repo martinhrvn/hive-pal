@@ -800,7 +800,7 @@ export class HiveScaleService {
       accessToken,
       'GET',
       this.devicePath(deviceId, '/measurements'),
-      { params: query as Record<string, unknown> },
+      { params: query },
     );
   }
 

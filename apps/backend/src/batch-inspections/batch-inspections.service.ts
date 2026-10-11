@@ -706,7 +706,7 @@ export class BatchInspectionsService {
         skippedCount: h.skippedCount,
         hive: {
           ...h.hive,
-          status: h.hive.status as string,
+          status: h.hive.status,
         },
       })),
       progress: {

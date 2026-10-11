@@ -9,8 +9,6 @@ import {
   UpdateAlert,
   AlertResponse,
   AlertFilter,
-  AlertStatus,
-  AlertSeverity,
 } from 'shared-schemas';
 import { AlertIssue } from './interfaces';
 
@@ -259,8 +257,8 @@ export class AlertsService {
       hiveId: alert.hiveId ?? undefined,
       type: alert.type,
       message: alert.message,
-      severity: alert.severity as AlertSeverity,
-      status: alert.status as AlertStatus,
+      severity: alert.severity,
+      status: alert.status,
       metadata: alert.metadata as Record<string, string>,
       createdAt: alert.createdAt.toISOString(),
       updatedAt: alert.updatedAt.toISOString(),

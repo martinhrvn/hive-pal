@@ -491,7 +491,7 @@ export class AccountTransferExportRunner {
         id: string;
         actionId: string;
       };
-      return { kind: 'FEEDING', data: rest as Record<string, unknown> };
+      return { kind: 'FEEDING', data: rest };
     }
     if (a.treatmentAction) {
       const {
@@ -502,7 +502,7 @@ export class AccountTransferExportRunner {
         id: string;
         actionId: string;
       };
-      return { kind: 'TREATMENT', data: rest as Record<string, unknown> };
+      return { kind: 'TREATMENT', data: rest };
     }
     if (a.frameAction) {
       const {
@@ -513,7 +513,7 @@ export class AccountTransferExportRunner {
         id: string;
         actionId: string;
       };
-      return { kind: 'FRAME', data: rest as Record<string, unknown> };
+      return { kind: 'FRAME', data: rest };
     }
     if (a.harvestAction) {
       const {
@@ -524,7 +524,7 @@ export class AccountTransferExportRunner {
         id: string;
         actionId: string;
       };
-      return { kind: 'HARVEST', data: rest as Record<string, unknown> };
+      return { kind: 'HARVEST', data: rest };
     }
     if (a.boxConfigurationAction) {
       const {
@@ -537,7 +537,7 @@ export class AccountTransferExportRunner {
       };
       return {
         kind: 'BOX_CONFIGURATION',
-        data: rest as Record<string, unknown>,
+        data: rest,
       };
     }
     if (a.maintenanceAction) {
@@ -549,7 +549,7 @@ export class AccountTransferExportRunner {
         id: string;
         actionId: string;
       };
-      return { kind: 'MAINTENANCE', data: rest as Record<string, unknown> };
+      return { kind: 'MAINTENANCE', data: rest };
     }
     return null;
   }

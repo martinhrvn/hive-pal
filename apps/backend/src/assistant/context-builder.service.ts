@@ -369,7 +369,7 @@ export class ContextBuilderService {
     if (!actions || actions.length === 0) return [];
     const lines: string[] = ['- Actions taken:'];
     for (const action of actions) {
-      const label = this.getActionLabel(action as ActionResponse);
+      const label = this.getActionLabel(action);
       lines.push(`  - ${label}${action.notes ? ` — ${action.notes}` : ''}`);
     }
     return lines;
@@ -404,7 +404,7 @@ export class ContextBuilderService {
     if (insp.actions && insp.actions.length > 0)
       parts.push(
         `actions: ${insp.actions
-          .map((a) => this.getActionLabel(a as ActionResponse))
+          .map((a) => this.getActionLabel(a))
           .join(', ')}`,
       );
     return parts.join(' — ');

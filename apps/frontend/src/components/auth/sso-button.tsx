@@ -35,8 +35,10 @@ export const SsoButton = ({
     setError('');
     try {
       // On success the browser is redirected to the identity provider.
-      const result = await authClient.signIn.oauth2({
-        providerId: oidcProviderId,
+      // Generic OAuth providers are registered as social providers in
+      // better-auth 1.7, so the standard social sign-in is used.
+      const result = await authClient.signIn.social({
+        provider: oidcProviderId,
         callbackURL: toFrontendUrl(redirectTo),
         errorCallbackURL: toFrontendUrl(errorPath),
       });

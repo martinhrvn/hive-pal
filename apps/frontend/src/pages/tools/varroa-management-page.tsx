@@ -32,6 +32,9 @@ import {
   DotList,
   ToolMeta,
   ToolPageHeader,
+  buildHowToJsonLd,
+  buildStructuredData,
+  buildWebApplicationJsonLd,
 } from '@/components/tool-page';
 import { cn } from '@/lib/utils';
 
@@ -396,62 +399,42 @@ function MonitoringGuide() {
 export function VarroaManagementPage() {
   const { t } = useTranslation('common');
 
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebApplication',
-        name: 'Varroa Management Plan for Production Colonies and Nuclei',
-        url: 'https://hivepal.app/tools/varroa-management',
-        applicationCategory: 'EducationalApplication',
-        applicationSubCategory: 'Beekeeping Reference',
-        operatingSystem: 'Web',
-        browserRequirements: 'Requires JavaScript',
-        description:
-          'Season-long varroa treatment schedule for production colonies and nucleus colonies, based on natural mite-fall thresholds, with a step-by-step divide-and-treat guide.',
-        isAccessibleForFree: true,
-        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Hive Pal',
-          url: 'https://hivepal.app',
+  const structuredData = buildStructuredData(
+    buildWebApplicationJsonLd({
+      name: 'Varroa Management Plan for Production Colonies and Nuclei',
+      path: '/tools/varroa-management',
+      kind: 'reference',
+      description:
+        'Season-long varroa treatment schedule for production colonies and nucleus colonies, based on natural mite-fall thresholds, with a step-by-step divide-and-treat guide.',
+    }),
+    buildHowToJsonLd({
+      name: 'How to keep varroa under control through the season',
+      description:
+        'Five-step varroa management plan combining drone brood removal, nucleus formation, mite-fall monitoring, formic acid, and oxalic acid in broodless periods.',
+      steps: [
+        {
+          name: 'April to July: cut drone brood',
+          text: 'Remove capped drone brood from production colonies 3-4 times between April and July.',
         },
-      },
-      {
-        '@type': 'HowTo',
-        name: 'How to keep varroa under control through the season',
-        description:
-          'Five-step varroa management plan combining drone brood removal, nucleus formation, mite-fall monitoring, formic acid, and oxalic acid in broodless periods.',
-        step: [
-          {
-            '@type': 'HowToStep',
-            name: 'April to July: cut drone brood',
-            text: 'Remove capped drone brood from production colonies 3-4 times between April and July.',
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'April to July: treat new nuclei with lactic acid',
-            text: 'Spray nucleus colonies once with 15% lactic acid in the broodless phase after they are made up.',
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'End of July: monitor mite fall after the harvest',
-            text: 'Count natural mite fall for exactly 3 days. Treat with formic acid only above 10 mites/day (production colony) or 5 mites/day (nucleus).',
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'August/September: late-summer care',
-            text: 'Condense the production colony, treat once with formic acid, feed, and re-check mite fall — or make the colony broodless with divide-and-treat and use oxalic acid instead.',
-          },
-          {
-            '@type': 'HowToStep',
-            name: 'Late November to mid December: oxalic acid',
-            text: 'In the broodless winter period, trickle oxalic acid once if natural mite fall exceeds 1 mite/day.',
-          },
-        ],
-      },
-    ],
-  };
+        {
+          name: 'April to July: treat new nuclei with lactic acid',
+          text: 'Spray nucleus colonies once with 15% lactic acid in the broodless phase after they are made up.',
+        },
+        {
+          name: 'End of July: monitor mite fall after the harvest',
+          text: 'Count natural mite fall for exactly 3 days. Treat with formic acid only above 10 mites/day (production colony) or 5 mites/day (nucleus).',
+        },
+        {
+          name: 'August/September: late-summer care',
+          text: 'Condense the production colony, treat once with formic acid, feed, and re-check mite fall — or make the colony broodless with divide-and-treat and use oxalic acid instead.',
+        },
+        {
+          name: 'Late November to mid December: oxalic acid',
+          text: 'In the broodless winter period, trickle oxalic acid once if natural mite fall exceeds 1 mite/day.',
+        },
+      ],
+    }),
+  );
 
   return (
     <PageGrid>

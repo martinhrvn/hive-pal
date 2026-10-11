@@ -52,9 +52,11 @@ export const UserSettingsPage = () => {
   const deleteAccount = useDeleteAccount();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { oidcEnabled, localLoginEnabled } = getAuthConfig();
-  const { data: linkedProviders } = useLinkedAccounts();
+  const { data: linkedAccounts } = useLinkedAccounts();
   // SSO-only accounts have no password to change.
-  const hasPassword = linkedProviders?.includes('credential') ?? true;
+  const hasPassword =
+    linkedAccounts?.some(account => account.providerId === 'credential') ??
+    true;
 
   const handleDeleteAccount = async () => {
     try {

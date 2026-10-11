@@ -19,6 +19,10 @@ const VENDOR_CHUNKS: Record<string, string[]> = {
   'vendor-query': ['@tanstack/react-query'],
 };
 
+/** Escapes every RegExp metacharacter (including the backslash itself). */
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+
 // https://vite.dev/config/
 export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
@@ -126,9 +130,7 @@ export default defineConfig(({ isSsrBuild }) => ({
                 ...Object.entries(VENDOR_CHUNKS).map(([name, pkgs]) => ({
                   name,
                   test: new RegExp(
-                    `/node_modules/(${pkgs
-                      .map(pkg => pkg.replace(/[./]/g, '\\$&'))
-                      .join('|')})/`,
+                    `/node_modules/(${pkgs.map(escapeRegExp).join('|')})/`,
                   ),
                   priority: 20,
                 })),

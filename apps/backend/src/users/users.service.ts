@@ -76,7 +76,7 @@ export class UsersService {
 
     const updatedUser = await this.prismaService.user.update({
       where: { id: userId },
-      data: { preferences: preferences as object },
+      data: { preferences: preferences },
     });
 
     return updatedUser.preferences as UserPreferences;
