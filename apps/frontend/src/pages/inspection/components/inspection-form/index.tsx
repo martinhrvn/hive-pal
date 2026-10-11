@@ -718,6 +718,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                 type="submit"
                 className="flex-1"
                 data-umami-event="Batch Inspection Save and Next"
+                data-testid="inspection-save"
               >
                 {submitButtonText || t('inspection:form.saveAndNext')}
               </Button>
@@ -732,6 +733,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   variant="default"
                   disabled={isSubmitting}
                   data-umami-event="Inspection Complete"
+                  data-testid="inspection-save"
                 >
                   {isSubmitting
                     ? t('inspection:form.saving')
@@ -746,6 +748,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     className="w-full"
                     disabled={isSubmitting}
                     data-umami-event="Inspection Save"
+                    data-testid="inspection-save"
                   >
                     {isSubmitting
                       ? t('inspection:form.saving')
@@ -758,6 +761,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     variant="default"
                     disabled={isSubmitting}
                     data-umami-event="Inspection Complete"
+                    data-testid="inspection-save-complete"
                   >
                     {isSubmitting
                       ? t('inspection:form.saving')
@@ -773,6 +777,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               className="w-full"
               disabled={isSubmitting}
               data-umami-event="Inspection Create"
+              data-testid="inspection-save"
             >
               {isSubmitting
                 ? t('inspection:form.saving')
