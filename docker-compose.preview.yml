@@ -5,14 +5,16 @@ services:
       dockerfile: Dockerfile
       tags:
         - hive-pal
-    ports:
-      - '3000:3000'
+    expose:
+      - '3000'
     environment:
       NODE_ENV: production
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/beekeeper}
+      # Coolify suffixes compose service names with -pr-<id> for PR previews and
+      # exposes the real name as SERVICE_NAME_<SERVICE>, so the host is not always "postgres".
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@${SERVICE_NAME_POSTGRES:-postgres}:5432/beekeeper
       PROMETHEUS_API_KEY: ${PROMETHEUS_API_KEY:-prometheus-secret-token}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PASS: ${SMTP_PASS}
