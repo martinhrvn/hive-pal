@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { TEST_SELECTORS } from '../utils';
 
 export class ApiaryFormPage {
   private readonly page: Page;
@@ -7,6 +6,7 @@ export class ApiaryFormPage {
   readonly locationInput: Locator;
   readonly mapContainer: Locator;
   readonly cancelButton: Locator;
+  /** "Create Apiary" on the create page, "Edit Apiary" on the edit page. */
   readonly submitButton: Locator;
 
   constructor(page: Page) {
@@ -15,12 +15,11 @@ export class ApiaryFormPage {
     this.locationInput = page.getByLabel('Location');
     this.mapContainer = page.locator('.leaflet-container');
     this.cancelButton = page.getByRole('button', { name: 'Cancel' });
-    this.submitButton = page.getByRole('button', { name: 'Create Apiary' });
+    this.submitButton = page.getByRole('button', {
+      name: /^(Create|Edit) Apiary$/,
+    });
   }
 
-  /**
-   * Fill the apiary form with the provided data
-   */
   async fillApiaryForm({
     name,
     location,
@@ -31,44 +30,31 @@ export class ApiaryFormPage {
     setMapLocation?: boolean;
   }) {
     await this.nameInput.fill(name);
-    
+
     if (location) {
       await this.locationInput.fill(location);
     }
 
     if (setMapLocation) {
-      // Click on the map to set a location
+      // Click on the map to set a location (needs map tiles; avoid in smoke tests)
       await this.mapContainer.click({ position: { x: 100, y: 100 } });
     }
   }
 
-  /**
-   * Submit the apiary form
-   */
   async submitForm() {
     await this.submitButton.click();
   }
 
-  /**
-   * Cancel form submission
-   */
   async cancelForm() {
     await this.cancelButton.click();
   }
 
-  /**
-   * Fill and submit the apiary form
-   */
-  async createApiary({
-    name,
-    location,
-    setMapLocation = false,
-  }: {
+  async createApiary(data: {
     name: string;
     location?: string;
     setMapLocation?: boolean;
   }) {
-    await this.fillApiaryForm({ name, location, setMapLocation });
+    await this.fillApiaryForm(data);
     await this.submitForm();
   }
 }

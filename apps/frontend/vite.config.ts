@@ -86,7 +86,8 @@ export default defineConfig(({ isSsrBuild }) => ({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
+      // Anchored: a bare '/api' prefix would also catch SPA routes like /apiaries.
+      '^/api/': 'http://localhost:3000',
       '/env.js': 'http://localhost:3000',
     },
   },

@@ -2,3 +2,7 @@ export * from './actions-section.page';
 export * from './feeding-section.page';
 export * from './treatment-section.page';
 export * from './frames-section.page';
+export * from './inspection-form.page';
+export * from './inspection-list.page';
+export * from './inspection-detail.page';
+export * from './schedule.page';

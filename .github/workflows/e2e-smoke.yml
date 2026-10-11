@@ -1,0 +1,150 @@
+name: E2E Smoke
+
+# Runs the Playwright smoke suite (apps/e2e/tests/smoke) against a deployed
+# Hive Pal instance. Trigger it by hand once a preview is up:
+#
+#   gh workflow run e2e-smoke.yml -f base_url=https://243.preview.hivepal.app
+#
+# The repository_dispatch trigger is kept for the main preview webhook.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Origin to test (frontend and /api on the same host)'
+        required: true
+        default: 'https://preview.hivepal.app'
+      grep:
+        description: 'Regex over test titles/tags, e.g. @journey|@core (empty = all)'
+        required: false
+        default: '@journey|@core'
+      workers:
+        description: 'Parallel workers'
+        required: false
+        default: '2'
+  repository_dispatch:
+    types: [preview-deployed]
+
+concurrency:
+  group: e2e-smoke-${{ inputs.base_url || github.event.client_payload.base_url || 'main-preview' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  smoke:
+    name: Smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      BASE_URL: ${{ inputs.base_url || github.event.client_payload.base_url || 'https://preview.hivepal.app' }}
+      SMOKE_GREP: ${{ inputs.grep }}
+      SMOKE_WORKERS: ${{ inputs.workers || '2' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build page objects
+        run: pnpm --filter page-objects build
+
+      - name: Install Playwright browsers
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
+
+      - name: Wait for the deployment to answer
+        run: |
+          for i in $(seq 1 10); do
+            if curl -fsS --max-time 10 "$BASE_URL/api/health" >/dev/null; then
+              echo "$BASE_URL is healthy"
+              exit 0
+            fi
+            echo "attempt $i: $BASE_URL/api/health not ready, retrying in 15s"
+            sleep 15
+          done
+          echo "::error::$BASE_URL/api/health did not become healthy"
+          exit 1
+
+      - name: Run smoke tests
+        env:
+          CI: true
+          ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+        run: pnpm --filter e2e test:smoke
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-smoke-test-results-${{ github.run_id }}
+          path: apps/e2e/test-results/
+          retention-days: 7
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-smoke-playwright-report-${{ github.run_id }}
+          path: apps/e2e/playwright-report/
+          retention-days: 7
+
+      - name: Report result
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          JOB_STATUS: ${{ job.status }}
+        with:
+          script: |
+            const fs = require('fs');
+            const baseUrl = process.env.BASE_URL;
+            const status = process.env.JOB_STATUS;
+            const emoji = status === 'success' ? '✅' : '❌';
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            let counts = '';
+            try {
+              const xml = fs.readFileSync('apps/e2e/test-results/junit.xml', 'utf8');
+              const m = xml.match(/<testsuites[^>]*tests="(\d+)"[^>]*failures="(\d+)"[^>]*skipped="(\d+)"/);
+              if (m) counts = ` — ${m[1]} tests, ${m[2]} failed, ${m[3]} skipped`;
+            } catch {}
+
+            const marker = '<!-- e2e-smoke -->';
+            const body = `${marker}\n${emoji} **E2E smoke** on ${baseUrl} **${status}**${counts}\n\nGrep: \`${process.env.SMOKE_GREP || 'all'}\` · [Run and artifacts](${runUrl})`;
+
+            // PR previews live at https://<PR>.preview.hivepal.app
+            const pr = baseUrl.match(/^https:\/\/(\d+)\.preview\.hivepal\.app/);
+            if (pr) {
+              const issue_number = Number(pr[1]);
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number, per_page: 100,
+              });
+              const existing = comments.find(c => c.body && c.body.includes(marker));
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo, issue_number, body,
+                });
+              }
+            } else {
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner, repo: context.repo.repo, commit_sha: context.sha, body,
+              });
+            }
