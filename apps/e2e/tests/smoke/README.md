@@ -29,7 +29,23 @@ pnpm --filter e2e exec playwright show-report          # HTML report of the last
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Only for `@admin` specs (skipped when unset)             | –                       |
 
 In CI the suite runs from `.github/workflows/e2e-smoke.yml` via
-`workflow_dispatch` (`gh workflow run e2e-smoke.yml -f base_url=https://<PR>.preview.hivepal.app`).
+`workflow_dispatch` only; nothing deploys or runs on push. `devenv shell`
+provides three wrappers:
+
+```bash
+smoke-run 243 --watch        # dispatch against https://243.preview.hivepal.app and follow it
+smoke-run main               # the main preview; --grep '@core' and --workers N are accepted
+smoke-report                 # download the latest run's HTML report (traces included) and open it
+smoke-local --grep @core     # run locally against pnpm dev; extra args go to playwright
+```
+
+`smoke-run` dispatches on the current branch, so the workflow file must exist
+there (it does once this branch is merged or checked out).
+
+Traces: `trace: 'retain-on-failure'` and `screenshot: 'only-on-failure'`. Each
+failed test keeps a `trace.zip` and screenshot under `test-results/`, and the
+HTML report embeds them, so `smoke-report` is enough to open the trace viewer
+for a CI failure. Both directories are uploaded as artifacts for 7 days.
 
 Troubleshooting: if Chromium dies on launch inside devenv with a
 `GLIBC_x.y not found` error, your host shell is leaking an `LD_LIBRARY_PATH`
