@@ -11,7 +11,10 @@
     "test:ui": "dotenv  -e .env.local -- playwright test --ui",
     "test:local": "dotenv  -e .env.local -- playwright test",
     "test:preview": "dotenv -e .env.preview -- playwright test",
-    "test:preview:ui": "dotenv -e .env.preview -- playwright test --ui"
+    "test:preview:ui": "dotenv -e .env.preview -- playwright test --ui",
+    "test:smoke": "playwright test -c playwright.smoke.config.ts",
+    "test:smoke:local": "dotenv -e .env.local -- playwright test -c playwright.smoke.config.ts",
+    "test:smoke:ui": "dotenv -e .env.local -- playwright test -c playwright.smoke.config.ts --ui"
   },
   "devDependencies": {
     "@playwright/test": "catalog:playwright",

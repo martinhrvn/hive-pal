@@ -2,54 +2,53 @@
 
 End-to-end tests for Hive Pal using Playwright.
 
+Two suites live here:
+
+- **Smoke suite** (`tests/smoke/`, config `playwright.smoke.config.ts`): one
+  happy path per page, every spec signs up its own user, runs against a
+  deployed preview or a local stack. This is what CI runs. See
+  [`tests/smoke/README.md`](tests/smoke/README.md) and
+  [`tests/smoke/TODO.md`](tests/smoke/TODO.md).
+- **Legacy suite** (`tests/*.spec.ts`, `tests/**/`, config
+  `playwright.config.ts`): older multi-browser tests that depend on a shared
+  admin login. Several are out of date; they are not run in CI.
+
 ## Prerequisites
 
 - Install dependencies: `pnpm install`
-- Build packages: `pnpm turbo build` (required for page-objects package)
-- Install Playwright browsers: `pnpm --filter e2e exec playwright install --with-deps`
+- Build the page objects: `pnpm --filter page-objects build`
+- Browsers: run inside `devenv shell` (Nix-provided browsers matching the
+  repo's Playwright version), or `pnpm --filter e2e exec playwright install --with-deps chromium`.
 
-## Running Tests
-
-### Against Local Development Server
-
-```bash
-# Make sure local frontend and backend are running first
-cd apps/e2e
-pnpm test:local          # Run tests
-pnpm test:ui             # Run tests with UI mode
-```
-
-Configuration: `.env.local`
-
-### Against Preview Environment
+## Running
 
 ```bash
-# First, set up your preview environment credentials
-cp .env.preview.example .env.preview
-# Edit .env.preview with actual credentials
-
 cd apps/e2e
-pnpm test:preview        # Run tests
-pnpm test:preview:ui     # Run tests with UI mode
+
+# Smoke suite
+BASE_URL=https://243.preview.hivepal.app pnpm test:smoke
+pnpm test:smoke:local            # against pnpm dev, reads .env.local
+pnpm test:smoke:ui               # Playwright UI mode
+
+# Legacy suite
+pnpm test:local                  # .env.local
+pnpm test:preview                # .env.preview
 ```
 
-Configuration: `.env.preview`
+## CI
 
-### CI/CD
+`.github/workflows/e2e-smoke.yml` runs the smoke suite on demand:
 
-Tests are triggered via webhook after successful Coolify deployments to the preview environment.
+```bash
+gh workflow run e2e-smoke.yml -f base_url=https://<PR>.preview.hivepal.app
+```
 
-See [Coolify Webhook Setup](../../.github/COOLIFY_WEBHOOK_SETUP.md) for configuration details.
+It waits for `/api/health`, runs `@journey|@core` by default, uploads the
+HTML report and posts one comment on the PR (or on the commit for the main
+preview).
 
-## Environment Variables
+## Environment variables
 
-- `BASE_URL`: The base URL of the application to test
-- `ADMIN_EMAIL`: Admin user email for authentication tests
-- `ADMIN_PASSWORD`: Admin user password (plaintext) for authentication tests
-
-## File Structure
-
-- `tests/` - Test files
-  - `auth.setup.ts` - Authentication setup (runs before tests)
-  - `auth/` - Authentication tests
-- `playwright.config.ts` - Playwright configuration
+- `BASE_URL`: origin of the application under test
+- `SMOKE_WORKERS`, `SMOKE_GREP`: smoke suite parallelism and tag filter
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD`: admin credentials (legacy suite and `@admin` smoke specs)

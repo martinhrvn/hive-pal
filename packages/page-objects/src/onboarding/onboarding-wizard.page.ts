@@ -13,6 +13,8 @@ export class OnboardingWizardPage {
   readonly stepIndicator: Locator;
   readonly successIcon: Locator;
   readonly congratulationsHeading: Locator;
+  /** Shown when the wizard skips straight to the hive step (user already has an apiary). */
+  readonly hiveStepHeading: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -24,7 +26,12 @@ export class OnboardingWizardPage {
     this.finishButton = page.getByRole('button', { name: 'Go to Dashboard' });
     this.stepIndicator = page.locator('.stepper');
     this.successIcon = page.locator('.CheckIcon');
-    this.congratulationsHeading = page.getByRole('heading', { name: 'Congratulations!' });
+    this.congratulationsHeading = page.getByRole('heading', {
+      name: 'Congratulations!',
+    });
+    this.hiveStepHeading = page.getByRole('heading', {
+      name: 'Add Your First Hive',
+    });
   }
 
   /**

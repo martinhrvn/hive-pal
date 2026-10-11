@@ -1,13 +1,14 @@
 import { Locator, Page } from '@playwright/test';
-import { TEST_SELECTORS } from '../utils';
 
 export class HiveFormPage {
   private readonly page: Page;
   readonly nameInput: Locator;
   readonly apiarySelect: Locator;
   readonly notesTextarea: Locator;
+  /** Date popover trigger, labelled by the "Installation Date" form label. */
   readonly installationDateButton: Locator;
   readonly calendar: Locator;
+  /** "Submit" on create, "Save" on edit. */
   readonly submitButton: Locator;
 
   constructor(page: Page) {
@@ -15,46 +16,49 @@ export class HiveFormPage {
     this.nameInput = page.getByLabel('Label');
     this.apiarySelect = page.getByRole('combobox', { name: 'Apiary' });
     this.notesTextarea = page.getByLabel('notes');
-    this.installationDateButton = page.getByRole('button', { name: 'Installation date' });
+    this.installationDateButton = page.getByRole('button', {
+      name: 'Installation Date',
+    });
     this.calendar = page.locator('.rdp-month');
-    this.submitButton = page.getByRole('button', { name: 'Submit' });
+    this.submitButton = page.getByRole('button', { name: /^(Submit|Save)$/ });
   }
 
-  /**
-   * Open the apiary dropdown
-   */
   async openApiaryDropdown() {
     await this.apiarySelect.click();
   }
 
-  /**
-   * Select an apiary by name
-   */
   async selectApiary(apiaryName: string) {
     await this.openApiaryDropdown();
-    await this.page.getByRole('option', { name: new RegExp(apiaryName) }).click();
+    await this.page
+      .getByRole('option', { name: new RegExp(apiaryName) })
+      .click();
   }
 
-  /**
-   * Open the calendar picker
-   */
   async openCalendar() {
     await this.installationDateButton.click();
   }
 
-  /**
-   * Select a date from the calendar
-   */
+  /** Select a day of the currently shown month in the date picker (react-day-picker v8). */
   async selectDate(date: Date) {
     await this.openCalendar();
-    // Format date to match the expected format in the calendar
-    const day = date.getDate();
-    await this.page.getByRole('gridcell', { name: day.toString(), exact: true }).first().click();
+    const day = String(date.getDate());
+    await this.page
+      .locator('button[name="day"]:not(.day-outside)', {
+        hasText: new RegExp('^' + day + '$'),
+      })
+      .first()
+      .click();
   }
 
-  /**
-   * Fill the hive form with the provided data
-   */
+  /** Pick today unless the form already has a date. */
+  async ensureInstallationDate() {
+    const label = (await this.installationDateButton.textContent()) ?? '';
+    if (/Pick a date/i.test(label)) {
+      await this.selectDate(new Date());
+    }
+  }
+
+  /** Fill the form. Picks today as installation date unless one is given or already set. */
   async fillHiveForm({
     name,
     apiaryName,
@@ -79,33 +83,21 @@ export class HiveFormPage {
     if (installationDate) {
       await this.selectDate(installationDate);
     } else {
-      // Use today's date as default if not provided
-      await this.selectDate(new Date());
+      await this.ensureInstallationDate();
     }
   }
 
-  /**
-   * Submit the hive form
-   */
   async submitForm() {
     await this.submitButton.click();
   }
 
-  /**
-   * Fill and submit the hive form
-   */
-  async createHive({
-    name,
-    apiaryName,
-    notes,
-    installationDate,
-  }: {
+  async createHive(data: {
     name: string;
     apiaryName?: string;
     notes?: string;
     installationDate?: Date;
   }) {
-    await this.fillHiveForm({ name, apiaryName, notes, installationDate });
+    await this.fillHiveForm(data);
     await this.submitForm();
   }
 }
