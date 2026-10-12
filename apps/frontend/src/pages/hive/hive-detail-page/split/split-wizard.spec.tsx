@@ -1,34 +1,10 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-import { SplitWizard } from './split-wizard';
-import type { HiveDetailResponse } from 'shared-schemas';
-
-// Minimal mock — the wizard only reads id, name, apiaryId, boxes, activeQueen.
-const hive = {
-  id: 'hive-1',
-  name: 'Volk 7',
-  apiaryId: 'apiary-1',
-  status: 'ACTIVE',
-  boxes: [
-    {
-      id: 'box-1',
-      position: 0,
-      frameCount: 10,
-      maxFrameCount: 12,
-      hasExcluder: false,
-      type: 'BROOD',
-      winterized: false,
-    },
-  ],
-  activeQueen: { id: 'queen-1' },
-} as unknown as HiveDetailResponse;
-
-const noop = () => {};
+import { test, expect } from '@playwright/test';
 
 test('walks through the split wizard and summarises the choices', async ({
   mount,
   page,
 }) => {
-  await mount(<SplitWizard hive={hive} open onOpenChange={noop} />);
+  await mount('pages/hive/hive-detail-page/split/split-wizard/Default');
 
   // Step 1 — frames. Default is 3 of 10; the preview shows the mother at 7.
   await expect(page.getByText('How many brood frames to move?')).toBeVisible();
@@ -63,7 +39,7 @@ test('increasing the frame count updates the preview', async ({
   mount,
   page,
 }) => {
-  await mount(<SplitWizard hive={hive} open onOpenChange={noop} />);
+  await mount('pages/hive/hive-detail-page/split/split-wizard/Default');
 
   // + once: 3 -> 4, so the mother goes 10 -> 6.
   await page.getByRole('button', { name: 'More frames' }).click();
