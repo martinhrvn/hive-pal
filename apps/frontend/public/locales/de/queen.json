@@ -53,7 +53,8 @@
         "addQueen": "Königin hinzufügen",
         "editQueen": "Königin bearbeiten",
         "viewDetails": "Details anzeigen",
-        "manageQueen": "Königin verwalten"
+        "manageQueen": "Königin verwalten",
+        "transferQueen": "Königin umsetzen"
     },
     "form": {
         "selectHive": "Bienenstock auswählen",
