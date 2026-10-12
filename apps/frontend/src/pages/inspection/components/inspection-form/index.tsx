@@ -184,7 +184,12 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
             notes: action.notes ?? '',
             amount: details.quantity,
             treatmentType: details.product,
+            productId: details.productId ?? null,
             unit: details.unit,
+            miteCountMethod: details.miteCountMethod ?? null,
+            miteCountBefore: details.miteCountBefore ?? null,
+            miteCountAfter: details.miteCountAfter ?? null,
+            miteSampleSize: details.miteSampleSize ?? null,
           };
         }
 

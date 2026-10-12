@@ -50,9 +50,14 @@ export const feedingActionSchema = z.object({
 export const treatmentActionSchema = z.object({
   type: z.literal(ActionType.TREATMENT),
   treatmentType: z.string(),
-  amount: z.number(),
+  productId: z.string().nullish(),
+  amount: z.number().nullable(),
   unit: z.string(),
   notes: z.string().optional(),
+  miteCountMethod: z.string().nullish(),
+  miteCountBefore: z.number().nullish(),
+  miteCountAfter: z.number().nullish(),
+  miteSampleSize: z.number().nullish(),
 });
 
 // Frames action

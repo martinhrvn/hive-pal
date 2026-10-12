@@ -170,8 +170,20 @@ export const transformActionsForApi = (
             details: {
               type: action.type,
               product: action.treatmentType,
+              productId: action.productId ?? null,
               quantity: action.amount,
               unit: action.unit,
+              miteCountMethod:
+                (action.miteCountMethod as
+                  | 'NATURAL_DROP'
+                  | 'SUGAR_ROLL'
+                  | 'ALCOHOL_WASH'
+                  | 'CO2'
+                  | 'OTHER'
+                  | null) ?? null,
+              miteCountBefore: action.miteCountBefore ?? null,
+              miteCountAfter: action.miteCountAfter ?? null,
+              miteSampleSize: action.miteSampleSize ?? null,
             },
           };
         case 'FRAME':

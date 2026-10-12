@@ -328,7 +328,15 @@
         "selectUnit": "Select unit",
         "amount": "Amount",
         "notesOptional": "Notes (optional)",
-        "notesPlaceholder": "Add any additional notes about this treatment"
+        "notesPlaceholder": "Add any additional notes about this treatment",
+        "other": "Other (free text)",
+        "manageProducts": "Manage products",
+        "addEfficacy": "+ Add mite counts (efficacy)",
+        "miteMethod": "Mite count method",
+        "miteBefore": "Mites before",
+        "miteAfter": "Mites after",
+        "sampleSize": "Sample size (bees)",
+        "efficacy": "{{p}}% efficacy"
       },
       "frames_section": {
         "title": "Frames",

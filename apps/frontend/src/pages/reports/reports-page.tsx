@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { ReportPeriod } from 'shared-schemas';
 import { toast } from 'sonner';
 import { FeedingTotalsChart } from './components/charts/feeding-totals-chart';
+import { TreatmentTotalsCard } from './components/treatment-totals-card';
 import { FeedingTrendChart } from './components/charts/feeding-trend-chart';
 import { HealthTrendChart } from './components/charts/health-trend-chart';
 import { HiveScoreTrendChart } from './components/charts/hive-score-trend-chart';
@@ -151,6 +152,10 @@ export const ReportsPage = () => {
               <FeedingTotalsChart
                 data={statistics?.feedingTotals.byHive}
                 isLoading={isLoading}
+              />
+              <TreatmentTotalsCard
+                apiaryId={activeApiaryId || undefined}
+                period={period}
               />
             </TabsContent>
             <TabsContent value="trends" className="space-y-6 pt-4">
