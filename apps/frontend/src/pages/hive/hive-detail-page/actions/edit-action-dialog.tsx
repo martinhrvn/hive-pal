@@ -53,6 +53,14 @@ const convertResponseToFormData = (action: ActionResponse): ActionData => {
         unit: action.details.unit,
         concentration: action.details.concentration,
         notes: action.notes,
+        feedTypeId: action.details.feedTypeId,
+        enteredAmount: action.details.enteredAmount,
+        enteredUnit: action.details.enteredUnit,
+        amountG: action.details.amountG,
+        density: action.details.density,
+        sugarContent: action.details.sugarContent,
+        sugarG: action.details.sugarG,
+        waterAddedMl: action.details.waterAddedMl,
       } as FeedingActionData;
 
     case ActionType.TREATMENT:
@@ -117,6 +125,14 @@ const convertFormDataToUpdate = (
       amount: feedingAction.quantity,
       unit: feedingAction.unit,
       concentration: feedingAction.concentration,
+      feedTypeId: feedingAction.feedTypeId,
+      enteredAmount: feedingAction.enteredAmount,
+      enteredUnit: feedingAction.enteredUnit,
+      amountG: feedingAction.amountG,
+      density: feedingAction.density,
+      sugarContent: feedingAction.sugarContent,
+      sugarG: feedingAction.sugarG,
+      waterAddedMl: feedingAction.waterAddedMl,
     };
   } else if (formAction.type === ActionType.TREATMENT) {
     const treatmentAction = formAction as TreatmentActionData;

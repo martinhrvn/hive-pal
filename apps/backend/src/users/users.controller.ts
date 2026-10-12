@@ -19,6 +19,7 @@ import {
 } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
+import { FeedTypesService } from './feed-types.service';
 import { UsersStatsService } from './users-stats.service';
 import {
   UserResponse,
@@ -33,6 +34,11 @@ import {
   updateUserInfoSchema,
   UserWithStatsResponse,
   UserDetailedStats,
+  UserFeedTypeResponse,
+  CreateUserFeedType,
+  UpdateUserFeedType,
+  createUserFeedTypeSchema,
+  updateUserFeedTypeSchema,
 } from 'shared-schemas';
 import {
   ApiTags,
@@ -50,6 +56,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly equipmentService: EquipmentService,
+    private readonly feedTypesService: FeedTypesService,
     private readonly usersStatsService: UsersStatsService,
     private readonly logger: CustomLoggerService,
   ) {
@@ -176,6 +183,62 @@ export class UsersController {
   ): Promise<void> {
     this.logger.log(`User ${req.user.id} deleting equipment item ${itemId}`);
     return this.equipmentService.deleteEquipmentItem(req.user.id, itemId);
+  }
+
+  // Custom feed types (per user) — reference data for the FEEDING action.
+  @Get('feed-types')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all custom feed types for user' })
+  @ApiResponse({ status: 200, description: 'Feed types retrieved' })
+  async getFeedTypes(
+    @Req() req: RequestWithUser,
+  ): Promise<UserFeedTypeResponse[]> {
+    this.logger.log(`User ${req.user.id} requesting feed types`);
+    return this.feedTypesService.getFeedTypes(req.user.id);
+  }
+
+  @Post('feed-types')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create custom feed type' })
+  @ApiResponse({ status: 201, description: 'Feed type created' })
+  async createFeedType(
+    @Req() req: RequestWithUser,
+    @Body(new ZodValidationPipe(createUserFeedTypeSchema))
+    data: CreateUserFeedType,
+  ): Promise<UserFeedTypeResponse> {
+    this.logger.log(`User ${req.user.id} creating feed type`);
+    return this.feedTypesService.createFeedType(req.user.id, data);
+  }
+
+  @Put('feed-types/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update custom feed type' })
+  @ApiResponse({ status: 200, description: 'Feed type updated' })
+  async updateFeedType(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateUserFeedTypeSchema))
+    data: UpdateUserFeedType,
+  ): Promise<UserFeedTypeResponse> {
+    this.logger.log(`User ${req.user.id} updating feed type ${id}`);
+    return this.feedTypesService.updateFeedType(req.user.id, id, data);
+  }
+
+  @Delete('feed-types/:id')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete custom feed type' })
+  @ApiResponse({ status: 204, description: 'Feed type deleted' })
+  async deleteFeedType(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+  ): Promise<void> {
+    this.logger.log(`User ${req.user.id} deleting feed type ${id}`);
+    return this.feedTypesService.deleteFeedType(req.user.id, id);
   }
 
   @Get('equipment/multiplier')

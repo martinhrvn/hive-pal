@@ -386,6 +386,17 @@ const equipmentMultiplierExportSchema = z
   })
   .passthrough();
 
+const userFeedTypeExportSchema = z
+  .object({
+    id: idStringSchema,
+    label: z.string(),
+    form: z.string(),
+    density: z.number().nullable().optional(),
+    sugarContent: z.number(),
+    archived: z.boolean().optional(),
+  })
+  .passthrough();
+
 const frameSizeExportSchema = z
   .object({
     id: idStringSchema,
@@ -418,6 +429,7 @@ export const exportEnvelopeSchema = z
         equipmentItems: z.array(equipmentItemExportSchema).default([]),
         equipmentMultiplier: equipmentMultiplierExportSchema.nullable().optional(),
         frameSizes: z.array(frameSizeExportSchema).default([]),
+        feedTypes: z.array(userFeedTypeExportSchema).default([]),
       })
       .passthrough(),
   })

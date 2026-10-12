@@ -20,6 +20,45 @@ interface FeedingChartProps {
   period: ChartPeriod;
 }
 
+// Approximate density used to interpret LEGACY volume records (old syrup
+// feedings were stored in ml without a density). v2 records carry amountG.
+const LEGACY_SYRUP_DENSITY = 1.23;
+
+/**
+ * Total feed mass in kg for one feeding. Prefers the canonical v2 `amountG`;
+ * legacy records are converted unit-aware (the old code treated ml as if they
+ * were grams, mixing units in the chart).
+ */
+const feedingAmountKg = (details: {
+  amount: number;
+  unit: string;
+  amountG?: number;
+}): number => {
+  if (details.amountG != null) return details.amountG / 1000;
+  switch (details.unit.toLowerCase()) {
+    case 'kg':
+      return details.amount;
+    case 'g':
+      return details.amount / 1000;
+    case 'l':
+      return (details.amount * 1000 * LEGACY_SYRUP_DENSITY) / 1000;
+    case 'ml':
+      return (details.amount * LEGACY_SYRUP_DENSITY) / 1000;
+    case 'lb':
+      return details.amount * 0.453592;
+    case 'oz':
+      return details.amount * 0.0283495;
+    case 'fl oz':
+      return (details.amount * 29.5735 * LEGACY_SYRUP_DENSITY) / 1000;
+    case 'qt':
+      return (details.amount * 946.353 * LEGACY_SYRUP_DENSITY) / 1000;
+    case 'gal':
+      return (details.amount * 3785.41 * LEGACY_SYRUP_DENSITY) / 1000;
+    default:
+      return details.amount / 1000;
+  }
+};
+
 export const FeedingChart: React.FC<FeedingChartProps> = ({
   hiveId,
   period,
@@ -43,11 +82,7 @@ export const FeedingChart: React.FC<FeedingChartProps> = ({
         let currentAmount = current?.amount || 0;
 
         if (action.details?.type === 'FEEDING' && action.details.amount) {
-          const amount =
-            action.details.unit === 'kg'
-              ? action.details.amount
-              : action.details.amount / 1000;
-          currentAmount += amount;
+          currentAmount += feedingAmountKg(action.details);
         }
 
         weeklyFeeding.set(weekKey, {

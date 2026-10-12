@@ -41,6 +41,7 @@ import { PasskeysCard } from '@/components/passkeys-card';
 import { SsoAccountCard } from '@/components/auth/sso-account-card';
 import { useLinkedAccounts } from '@/api/hooks/useAuth';
 import { getAuthConfig } from '@/lib/auth-config';
+import { FeedTypesCard } from '@/components/feed-types-card';
 import { DeleteAccountDialog } from '@/components/common/delete-account-dialog';
 
 export const UserSettingsPage = () => {
@@ -437,6 +438,8 @@ export const UserSettingsPage = () => {
         {oidcEnabled && <SsoAccountCard />}
 
         {/* Passkeys */}
+        <FeedTypesCard />
+
         {localLoginEnabled && <PasskeysCard />}
 
         {/* Data */}

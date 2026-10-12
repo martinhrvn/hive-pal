@@ -702,6 +702,8 @@ export class AccountTransferImportRunner {
       typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : fallback;
     const strOrNull = (v: unknown): string | null =>
       typeof v === 'string' && v.length > 0 ? v : null;
+    const numOrNull = (v: unknown): number | null =>
+      typeof v === 'number' && Number.isFinite(v) ? v : null;
 
     switch (details.kind) {
       case 'FEEDING':
@@ -712,6 +714,16 @@ export class AccountTransferImportRunner {
             amount: num(d.amount),
             unit: str(d.unit),
             concentration: strOrNull(d.concentration),
+            // v2 fields (nullable) — carried through so an export/import
+            // round-trip keeps density-aware records intact.
+            feedTypeId: strOrNull(d.feedTypeId),
+            enteredAmount: numOrNull(d.enteredAmount),
+            enteredUnit: strOrNull(d.enteredUnit),
+            amountG: numOrNull(d.amountG),
+            density: numOrNull(d.density),
+            sugarContent: numOrNull(d.sugarContent),
+            sugarG: numOrNull(d.sugarG),
+            waterAddedMl: numOrNull(d.waterAddedMl),
           },
         });
         break;
@@ -774,6 +786,27 @@ export class AccountTransferImportRunner {
     cfg: ExportEnvelope['userConfig'],
     summary: ImportSummary,
   ): Promise<void> {
+    for (const f of cfg.feedTypes ?? []) {
+      try {
+        await this.prisma.userFeedType.upsert({
+          where: { userId_label: { userId, label: f.label } },
+          create: {
+            userId,
+            label: f.label,
+            form: f.form,
+            density: f.density ?? null,
+            sugarContent: f.sugarContent,
+            archived: f.archived ?? false,
+          },
+          update: {},
+        });
+      } catch (err) {
+        summary.warnings.push(
+          `Feed type "${f.label}" failed to import: ${(err as Error).message}`,
+        );
+      }
+    }
+
     for (const e of cfg.equipmentItems ?? []) {
       try {
         await this.prisma.equipmentItem.upsert({

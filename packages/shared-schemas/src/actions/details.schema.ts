@@ -2,20 +2,37 @@ import { z } from 'zod';
 import { ActionType } from './types';
 import { boxTypeSchema } from '../hives/box.schema';
 import { hiveStatusSchema } from '../hives/status';
+import { feedEntryUnitSchema } from './feeding';
 
 // Treatment product configuration with default units and quantity requirements
 export const TREATMENT_PRODUCTS = {
-  OXALIC_ACID: { label: 'Oxalic Acid', defaultUnit: 'ml', requiresQuantity: true },
-  FORMIC_ACID: { label: 'Formic Acid', defaultUnit: 'ml', requiresQuantity: true },
+  OXALIC_ACID: {
+    label: 'Oxalic Acid',
+    defaultUnit: 'ml',
+    requiresQuantity: true,
+  },
+  FORMIC_ACID: {
+    label: 'Formic Acid',
+    defaultUnit: 'ml',
+    requiresQuantity: true,
+  },
   THYMOL: { label: 'Thymol', defaultUnit: 'g', requiresQuantity: true },
   APIVAR: { label: 'Apivar', defaultUnit: 'pcs', requiresQuantity: true },
   APISTAN: { label: 'Apistan', defaultUnit: 'pcs', requiresQuantity: true },
-  CHECKMITE_PLUS: { label: 'CheckMite+', defaultUnit: 'pcs', requiresQuantity: true },
+  CHECKMITE_PLUS: {
+    label: 'CheckMite+',
+    defaultUnit: 'pcs',
+    requiresQuantity: true,
+  },
   HOPGUARD: { label: 'HopGuard', defaultUnit: 'pcs', requiresQuantity: true },
   API_BIOXAL: { label: 'Api-Bioxal', defaultUnit: 'g', requiresQuantity: true },
   APIGUARD: { label: 'Apiguard', defaultUnit: 'g', requiresQuantity: true },
   MAQS: { label: 'MAQS', defaultUnit: 'pcs', requiresQuantity: true },
-  FUMIGATION: { label: 'Fumigation', defaultUnit: 'pcs', requiresQuantity: false },
+  FUMIGATION: {
+    label: 'Fumigation',
+    defaultUnit: 'pcs',
+    requiresQuantity: false,
+  },
   OTHER: { label: 'Other', defaultUnit: 'pcs', requiresQuantity: true },
 } as const;
 
@@ -25,12 +42,34 @@ export const TREATMENT_UNITS = ['ml', 'g', 'pcs'] as const;
 export type TreatmentUnit = (typeof TREATMENT_UNITS)[number];
 
 // Base details schemas for specific action types
+//
+// Feeding carries two generations of fields:
+// - legacy: feedType/amount/unit/concentration (kept required so old clients
+//   and old records keep validating unchanged)
+// - v2 (all optional): a feed-type reference plus density-aware amounts and
+//   the derived sugar mass — see ./feeding.ts for the registry and the math.
 export const feedingActionDetailsSchema = z.object({
   type: z.literal(ActionType.FEEDING),
   feedType: z.string(),
   amount: z.number().positive(),
   unit: z.string(),
   concentration: z.string().optional(),
+  // v2 fields
+  /** Built-in registry id or a UserFeedType id. */
+  feedTypeId: z.string().optional(),
+  /** What the user typed, preserved for display. */
+  enteredAmount: z.number().positive().optional(),
+  enteredUnit: feedEntryUnitSchema.optional(),
+  /** Canonical mass of the feed in grams (pre-dilution). */
+  amountG: z.number().positive().optional(),
+  /** g/ml used for the volume→mass conversion. */
+  density: z.number().positive().optional(),
+  /** % sugar by weight used for the sugar computation. */
+  sugarContent: z.number().min(0).max(100).optional(),
+  /** Derived sugar mass in grams, stored for stable reporting. */
+  sugarG: z.number().min(0).optional(),
+  /** Extra water the feed was diluted with, in ml. */
+  waterAddedMl: z.number().min(0).optional(),
 });
 
 export const treatmentActionDetailsSchema = z.object({
@@ -72,13 +111,21 @@ export const boxConfigurationActionDetailsSchema = z.object({
   totalBoxes: z.number().min(0),
   totalFrames: z.number().min(0),
   /** Per-box summary of the resulting hive configuration */
-  boxes: z.array(z.object({
-    type: boxTypeSchema,
-    frameCount: z.number().int().min(0),
-  })).optional(),
+  boxes: z
+    .array(
+      z.object({
+        type: boxTypeSchema,
+        frameCount: z.number().int().min(0),
+      }),
+    )
+    .optional(),
 });
 
-export const maintenanceComponentSchema = z.enum(['BOX', 'BOTTOM_BOARD', 'COVER']);
+export const maintenanceComponentSchema = z.enum([
+  'BOX',
+  'BOTTOM_BOARD',
+  'COVER',
+]);
 export const maintenanceStatusSchema = z.enum(['CLEANED', 'REPLACED']);
 
 export const maintenanceActionDetailsSchema = z.object({
@@ -118,11 +165,17 @@ export const actionDetailsSchema = z.discriminatedUnion('type', [
 ]);
 
 export type FeedingActionDetails = z.infer<typeof feedingActionDetailsSchema>;
-export type TreatmentActionDetails = z.infer<typeof treatmentActionDetailsSchema>;
+export type TreatmentActionDetails = z.infer<
+  typeof treatmentActionDetailsSchema
+>;
 export type FrameActionDetails = z.infer<typeof frameActionDetailsSchema>;
 export type HarvestActionDetails = z.infer<typeof harvestActionDetailsSchema>;
-export type BoxConfigurationActionDetails = z.infer<typeof boxConfigurationActionDetailsSchema>;
-export type MaintenanceActionDetails = z.infer<typeof maintenanceActionDetailsSchema>;
+export type BoxConfigurationActionDetails = z.infer<
+  typeof boxConfigurationActionDetailsSchema
+>;
+export type MaintenanceActionDetails = z.infer<
+  typeof maintenanceActionDetailsSchema
+>;
 export type MaintenanceComponent = z.infer<typeof maintenanceComponentSchema>;
 export type MaintenanceStatus = z.infer<typeof maintenanceStatusSchema>;
 export type NoteActionDetails = z.infer<typeof noteActionDetailsSchema>;

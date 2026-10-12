@@ -3,6 +3,7 @@ import {
   createInspectionSchema,
   ActionType,
   HiveStatus,
+  feedEntryUnitSchema,
   observationBaseSchema,
   measurementSideSchema,
 } from 'shared-schemas';
@@ -36,7 +37,7 @@ const inspectionFormSchema = createInspectionSchema
   });
 
 // Action schema modifications for the frontend
-// Feeding action
+// Feeding action (v2 fields optional — see shared-schemas actions/feeding.ts)
 export const feedingActionSchema = z.object({
   type: z.literal(ActionType.FEEDING),
   feedType: z.string().min(1),
@@ -44,6 +45,14 @@ export const feedingActionSchema = z.object({
   unit: z.string(),
   concentration: z.string().optional(),
   notes: z.string().optional(),
+  feedTypeId: z.string().optional(),
+  enteredAmount: z.number().optional(),
+  enteredUnit: feedEntryUnitSchema.optional(),
+  amountG: z.number().optional(),
+  density: z.number().optional(),
+  sugarContent: z.number().optional(),
+  sugarG: z.number().optional(),
+  waterAddedMl: z.number().optional(),
 });
 
 // Treatment action

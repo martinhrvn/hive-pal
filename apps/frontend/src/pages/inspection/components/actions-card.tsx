@@ -71,15 +71,33 @@ const ACTION_VISUAL: Record<
 
 // ─── Detail renderers ─────────────────────────────────────────────────────────
 
+const formatSugar = (grams: number): string =>
+  grams >= 1000
+    ? `${Math.round(grams / 10) / 100} kg`
+    : `${Math.round(grams)} g`;
+
 const FeedingDetails = ({ details }: { details: FeedingActionDetails }) => (
   <div className="flex gap-2 flex-wrap items-center">
     <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 font-normal">
       {details.feedType}
     </Badge>
     <span className="font-medium tabular-nums">
-      {details.amount} {details.unit}
+      {/* v2 records show what was entered; legacy records the stored value */}
+      {details.enteredAmount != null && details.enteredUnit
+        ? `${details.enteredAmount} ${details.enteredUnit === 'l' ? 'L' : details.enteredUnit}`
+        : `${details.amount} ${details.unit}`}
     </span>
-    {details.concentration && (
+    {details.sugarG != null && (
+      <span className="text-stone-500 dark:text-stone-400">
+        · ≈ {formatSugar(details.sugarG)} sugar
+      </span>
+    )}
+    {details.waterAddedMl != null && details.waterAddedMl > 0 && (
+      <span className="text-stone-500 dark:text-stone-400">
+        · + {details.waterAddedMl} ml water
+      </span>
+    )}
+    {details.sugarG == null && details.concentration && (
       <span className="text-stone-500 dark:text-stone-400">
         · {details.concentration}
       </span>
