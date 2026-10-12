@@ -17,6 +17,7 @@ import { AssistantChat } from '@/components/assistant/assistant-chat';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
 import { QueenHistoryTab } from './queen-history-tab';
 import { HiveStatusButton } from './hive-status-button';
+import { HiveProvenance } from './split/hive-provenance';
 import { HiveTodos } from './hive-todos';
 import { TreatmentSummary } from './treatment-summary';
 import { buildBoxGradient } from '@/utils/box-gradient';
@@ -196,6 +197,7 @@ export const HiveDetailPage = () => {
                       {hive.notes}
                     </p>
                   )}
+                  {hive && <HiveProvenance hive={hive} />}
                 </div>
 
                 {/* Brood stats — hairline-separated */}

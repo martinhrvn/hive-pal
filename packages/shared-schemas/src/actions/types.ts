@@ -9,6 +9,7 @@ export enum ActionType {
   MAINTENANCE = 'MAINTENANCE',
   NOTE = 'NOTE',
   STATUS_CHANGE = 'STATUS_CHANGE',
+  SPLIT = 'SPLIT',
   OTHER = 'OTHER',
 }
 

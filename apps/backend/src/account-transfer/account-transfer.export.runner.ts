@@ -204,6 +204,7 @@ export class AccountTransferExportRunner {
             boxConfigurationAction: true,
             maintenanceAction: true,
             statusChangeAction: true,
+            splitAction: true,
           },
         },
         measurements: true,

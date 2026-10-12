@@ -147,6 +147,26 @@ export const statusChangeActionDetailsSchema = z.object({
   toStatus: hiveStatusSchema,
 });
 
+export const splitRoleSchema = z.enum(['SOURCE', 'NEW']);
+export const queenDispositionSchema = z.enum([
+  'STAYED_WITH_SOURCE', // old queen remains in the mother; daughter is queenless
+  'MOVED_TO_NEW', // old queen goes to the daughter; mother is queenless
+  'NEW_IS_QUEENLESS', // daughter starts queenless (mother keeps its queen)
+]);
+
+// Colony split (Ableger) details. A split is written as a matched PAIR of SPLIT
+// actions sharing a `splitId` (one on the source hive, one on the new hive).
+// `splitId`/`role`/`counterpartHiveId` are set by the backend and present on
+// responses; they are optional on input.
+export const splitActionDetailsSchema = z.object({
+  type: z.literal(ActionType.SPLIT),
+  splitId: z.string().uuid().optional(),
+  role: splitRoleSchema.optional(),
+  counterpartHiveId: z.string().uuid().nullish(),
+  framesMoved: z.number().int().min(0),
+  queenDisposition: queenDispositionSchema,
+});
+
 export const otherActionDetailsSchema = z.object({
   type: z.literal(ActionType.OTHER),
 });
@@ -161,6 +181,7 @@ export const actionDetailsSchema = z.discriminatedUnion('type', [
   maintenanceActionDetailsSchema,
   noteActionDetailsSchema,
   statusChangeActionDetailsSchema,
+  splitActionDetailsSchema,
   otherActionDetailsSchema,
 ]);
 
@@ -182,5 +203,8 @@ export type NoteActionDetails = z.infer<typeof noteActionDetailsSchema>;
 export type StatusChangeActionDetails = z.infer<
   typeof statusChangeActionDetailsSchema
 >;
+export type SplitRole = z.infer<typeof splitRoleSchema>;
+export type QueenDisposition = z.infer<typeof queenDispositionSchema>;
+export type SplitActionDetails = z.infer<typeof splitActionDetailsSchema>;
 export type OtherActionDetails = z.infer<typeof otherActionDetailsSchema>;
 export type ActionDetails = z.infer<typeof actionDetailsSchema>;

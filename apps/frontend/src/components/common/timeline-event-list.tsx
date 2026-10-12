@@ -31,6 +31,8 @@ import {
   MoreVertical,
   CheckCircle,
   ArrowLeftRight,
+  Undo2,
+  Split,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +47,7 @@ import {
   InspectionResponse,
   InspectionStatus,
   ActionResponse,
+  ActionType,
   QuickCheckResponse,
   PhotoResponse,
   DocumentResponse,
@@ -100,6 +103,8 @@ export interface TimelineEventListProps {
   emptyMessage?: string;
   onEditAction?: (action: ActionResponse) => void;
   onDeleteAction?: (action: ActionResponse) => void;
+  /** Shown on SPLIT actions only: fully revert the split (undo endpoint). */
+  onUndoSplit?: (action: ActionResponse) => void;
   onDeleteQuickCheck?: (quickCheck: QuickCheckResponse) => void;
   onDeletePhoto?: (photo: PhotoResponse) => void;
   onDeleteDocument?: (document: DocumentResponse) => void;
@@ -283,6 +288,8 @@ const getActionIcon = (action: ActionResponse) => {
       return <Wrench className="h-4 w-4" />;
     case 'STATUS_CHANGE':
       return <ArrowLeftRight className="h-4 w-4" />;
+    case 'SPLIT':
+      return <Split className="h-4 w-4" />;
     default:
       return <ActivityIcon className="h-4 w-4" />;
   }
@@ -332,6 +339,14 @@ const getActionLabel = (action: ActionResponse, t: (key: string) => string) => {
           : `Status changed to ${to}`;
       }
       return 'Status change';
+    case 'SPLIT':
+      if (action.details?.type === 'SPLIT') {
+        const n = action.details.framesMoved;
+        return action.details.role === 'SOURCE'
+          ? `Colony split — gave ${n} brood frame${n !== 1 ? 's' : ''} to a new colony`
+          : `Colony split — created with ${n} brood frame${n !== 1 ? 's' : ''}`;
+      }
+      return 'Colony split';
     case 'BOX_CONFIGURATION':
       return t('common:timeline.boxConfiguration');
     case 'MAINTENANCE':
@@ -410,6 +425,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   emptyMessage,
   onEditAction,
   onDeleteAction,
+  onUndoSplit,
   onDeleteQuickCheck,
   onDeletePhoto,
   onDeleteDocument,
@@ -1011,6 +1027,20 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               </div>
               {!action.harvestId && (onEditAction || onDeleteAction) && (
                 <div className="flex items-center gap-0.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                  {onUndoSplit && action.type === ActionType.SPLIT && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-stone-500"
+                      title="Undo split"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onUndoSplit(action);
+                      }}
+                    >
+                      <Undo2 className="h-3 w-3" />
+                    </Button>
+                  )}
                   {onEditAction && (
                     <Button
                       variant="ghost"

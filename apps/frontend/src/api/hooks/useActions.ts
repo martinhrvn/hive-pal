@@ -104,8 +104,8 @@ export const useUpdateAction = () => {
 export const useDeleteAction = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, string>({
-    mutationFn: async (actionId: string) => {
+  return useMutation<void, Error, { actionId: string }>({
+    mutationFn: async ({ actionId }) => {
       await apiClient.delete(`/api/actions/${actionId}`);
     },
     onSuccess: () => {

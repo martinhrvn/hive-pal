@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   EditIcon,
@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   Smartphone,
   Mic,
+  Split,
 } from 'lucide-react';
 import { bee } from '@lucide/lab';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,7 @@ import { RefreshButton } from '@/components/sidebar/refresh-button';
 import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
 import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
+import { SplitWizard } from './split/split-wizard';
 
 type ActionSideBarProps = {
   hiveId?: string;
@@ -44,6 +46,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
   // Permissions follow the hive's own apiary, not the selected one.
   const { canEdit } = useApiaryPermission(hive?.apiaryId);
   const deleteHive = useDeleteHive();
+  const [splitOpen, setSplitOpen] = useState(false);
 
   const deleteDialog = useDeleteDialog(
     () => {
@@ -162,6 +165,19 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               disabled={!hiveId}
             />
           )}
+          {canEdit && (
+            <MenuItemButton
+              icon={<Split className="h-4 w-4" />}
+              label={t('hive:actions.splitColony', {
+                defaultValue: 'Split colony',
+              })}
+              onClick={() => setSplitOpen(true)}
+              tooltip={t('hive:actions.splitColony', {
+                defaultValue: 'Split colony',
+              })}
+              disabled={!hive}
+            />
+          )}
           <RefreshButton
             onRefresh={onRefreshData}
             i18nNamespace="hive"
@@ -238,6 +254,10 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
           })}
         />
       </ActionSidebarContainer>
+
+      {hive && (
+        <SplitWizard hive={hive} open={splitOpen} onOpenChange={setSplitOpen} />
+      )}
     </div>
   );
 };
