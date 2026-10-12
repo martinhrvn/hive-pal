@@ -438,7 +438,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({
                             mode="single"
                             selected={field.value || undefined}
                             onSelect={field.onChange}
-                            initialFocus
+                            autoFocus
                           />
                         </PopoverContent>
                       </Popover>
@@ -477,7 +477,7 @@ export const QueenForm: React.FC<QueenFormProps> = ({
                             mode="single"
                             selected={field.value || undefined}
                             onSelect={field.onChange}
-                            initialFocus
+                            autoFocus
                           />
                         </PopoverContent>
                       </Popover>

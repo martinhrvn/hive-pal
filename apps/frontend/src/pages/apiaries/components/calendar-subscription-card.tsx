@@ -168,7 +168,7 @@ export function CalendarSubscriptionCard({
           <Checkbox
             id={`inspections-enabled-${apiaryId}`}
             checked={inspectionsEnabled}
-            onCheckedChange={handleToggleInspections}
+            onCheckedChange={checked => handleToggleInspections(checked === true)}
             disabled={toggleInspections.isPending}
           />
           <Label

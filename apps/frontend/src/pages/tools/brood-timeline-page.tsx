@@ -302,7 +302,7 @@ export function BroodTimelinePage() {
                     mode="single"
                     selected={startDate}
                     onSelect={setStartDate}
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>

@@ -337,7 +337,7 @@ export const EditActionDialog = ({
                     mode="single"
                     selected={methods.watch('date')}
                     onSelect={date => date && methods.setValue('date', date)}
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>

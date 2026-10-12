@@ -200,8 +200,8 @@ export const EquipmentRow = ({
           )}
           <Select
             value={editData.scope ?? EquipmentScope.PER_HIVE}
-            onValueChange={(v: EquipmentScope) =>
-              setEditData(prev => ({ ...prev, scope: v }))
+            onValueChange={v =>
+              setEditData(prev => ({ ...prev, scope: v as EquipmentScope }))
             }
           >
             <SelectTrigger className="h-7 text-xs">
@@ -829,8 +829,11 @@ export const EquipmentTable = ({
               <label className="text-xs font-medium">Category</label>
               <Select
                 value={newItemData.category}
-                onValueChange={(value: EquipmentCategory) =>
-                  setNewItemData(prev => ({ ...prev, category: value }))
+                onValueChange={value =>
+                  setNewItemData(prev => ({
+                    ...prev,
+                    category: value as EquipmentCategory,
+                  }))
                 }
               >
                 <SelectTrigger className="text-xs">
