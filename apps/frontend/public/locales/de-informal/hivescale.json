@@ -1,0 +1,91 @@
+{
+  "loading": {
+    "messages": [
+      "Daten werden bee-arbeitet...",
+      "Frische Erkenntnisse aus dem Stock werden gesammelt...",
+      "Die Arbeiterinnen sortieren noch die Waben...",
+      "Das süße Gold wird geschleudert...",
+      "Wir summen uns durch deine Daten...",
+      "Auf Sammelflug nach Informationen...",
+      "Es fließt wie Honig – deine Anfrage wird bearbeitet...",
+      "Das Schwarmgehirn denkt nach...",
+      "Die neuesten Daten werden entdeckelt...",
+      "Bee-tte um etwas Geduld, die Ergebnisse sind unterwegs...",
+      "Dein Dashboard wird bestäubt...",
+      "Schwänzeltanz läuft...",
+      "Die Aufzeichnungen der Königin werden geprüft...",
+      "Wir schwärmen durch die Datenbank...",
+      "Wabe um Wabe, Zelle für Zelle...",
+      "Wir haben deine Daten schon im Stock...",
+      "Hinter den Bee-ulissen passiert die Magie...",
+      "Datensätze werden kreuzbestäubt...",
+      "Eine frische Ladung Stock-Kennzahlen wird vorbereitet..."
+    ]
+  },
+  "page": {
+    "subtitle": "Live-Visualisierung von Gewicht und Temperatur aus deinem separaten HiveHub-Backend.",
+    "removeConfirm": "{{name}} aus deinem HivePal-Konto entfernen? Du kannst das Gerät mit dem Claim-Code wieder hinzufügen, sofern kein anderer Benutzer mehr Zugriff hat.",
+    "removeSuccess": "HiveHub-Gerät aus deinem Konto entfernt."
+  },
+  "setup": {
+    "description": "Wähle oder entferne ein beanspruchtes HiveHub-Gerät. Öffne die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren."
+  },
+  "claim": {
+    "errors": {
+      "missingCode": "Gib den auf dem Gerät aufgedruckten/konfigurierten Claim-Code ein."
+    }
+  },
+  "status": {
+    "errors": {
+      "missingEmail": "Gib die E-Mail-Adresse eines bestehenden HivePal-Benutzers ein."
+    }
+  },
+  "calibration": {
+    "wizard": {
+      "description": "Folge den Schritten der Reihe nach. Die App verwendet nur frische Rohwerte aus dem Kalibrierungsmodus, speichert dann und beendet den Schnellmodus automatisch.",
+      "alertStartTitle": "Starte zuerst den Kalibrierungsmodus",
+      "whichScale": "Welche Waage kalibrierst du?",
+      "emptyScaleHint": "Entferne das Gewicht von {{scaleName}} und warte dann auf einen schnellen Messwert.",
+      "knownWeightHint": "Leg das Gewicht auf und gib seinen Wert in kg ein.",
+      "noChangeDescription": "Prüfe, ob das bekannte Gewicht auf der richtigen Waage liegt, und warte auf einen weiteren schnellen Messwert."
+    },
+    "toasts": {
+      "startModeFirst": "Starte den Kalibrierungsmodus und warte, bis schnelle Messwerte aktiv sind.",
+      "captureEmptyFirst": "Erfasse zuerst die leere Waage.",
+      "enterKnownWeightFirst": "Gib zuerst das bekannte Gewicht in kg ein.",
+      "waitForNewReading": "Warte nach dem Auflegen des bekannten Gewichts auf einen neuen schnellen Messwert und erfasse dann erneut."
+    },
+    "errors": {
+      "sendInterval": "Verwende ein ganzzahliges Intervall von mindestens 60 Sekunden.",
+      "validOffset": "Gib zuerst einen gültigen Offset für {{scaleName}} ein.",
+      "knownWeight": "Gib für {{scaleName}} ein bekanntes Gewicht größer als 0 kg ein."
+    }
+  },
+  "firmware": {
+    "description": "Lade eine Firmware-Binärdatei hoch und registriere sie als Release. Neue Geräte des passenden Typs übernehmen sie bei ihrer nächsten Update-Prüfung.",
+    "update": {
+      "description": "Waagen aktualisieren sich nie von selbst – du gibst hier jede neue Version frei, bevor diese Waage sie installiert."
+    },
+    "notice": {
+      "noPermission": "Nur Gerätebesitzer und Admins können Firmware hochladen. Deine Rolle ist „{{role}}“.",
+      "selectDevice": "Wähle ein beanspruchtes Gerät aus, um Firmware hochzuladen."
+    },
+    "errors": {
+      "missingFile": "Wähle eine Firmware-Binärdatei (.bin) zum Hochladen aus.",
+      "missingVersion": "Gib eine Version ein, z. B. 0.6.3."
+    }
+  },
+  "sdData": {
+    "description": "Lade die Daten hoch, die du im AP-Modus von der Waage heruntergeladen hast. Das erneute Hochladen derselben Datei ist unbedenklich – vorhandene Messwerte werden automatisch übersprungen.",
+    "notice": {
+      "noPermission": "Nur Gerätebesitzer und Admins können SD-Daten importieren. Deine Rolle ist „{{role}}“.",
+      "selectDevice": "Wähle ein beanspruchtes Gerät aus, um dessen SD-Karten-Daten zu importieren."
+    },
+    "errors": {
+      "missingFile": "Wähle die .ndjson-Sicherung oder den .tar-SD-Download zum Hochladen aus."
+    }
+  },
+  "sound": {
+    "thresholds": "Von der Insights-Engine verwendete Schwellenwerte: Tüten > −45 dBFS, Stress > −38 dBFS, weiselloses Summen > −40 dBFS bei leisem Tüten. Kalibriere anhand deines eigenen Ausgangswerts."
+  }
+}

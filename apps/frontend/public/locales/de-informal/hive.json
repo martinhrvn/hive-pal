@@ -1,0 +1,35 @@
+{
+  "list": {
+    "createFirst": "Erstelle deinen ersten Bienenstock"
+  },
+  "delete": {
+    "confirm": "Möchtest du diesen Bienenstock wirklich löschen?"
+  },
+  "boxConfigurator": {
+    "description": "Visualisiere und konfiguriere den Aufbau deines Bienenstocks. Die Zargen werden von unten nach oben angezeigt.",
+    "clickToAdd": "Klicke auf „Zarge hinzufügen“, um deinen Bienenstock aufzubauen"
+  },
+  "layout": {
+    "dragToOrganize": "Füge Bienenstöcke hinzu und ziehe sie in das Raster oben, um deinen Bienenstand zu organisieren."
+  },
+  "equipment": {
+    "trackCurrentEquipment": "Behalte den Überblick über deinen aktuellen Bestand und plane deine saisonalen Erweiterungen",
+    "table": {
+      "deleteConfirm": "Möchtest du „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "hideConfirm": "Dadurch wird „{{name}}“ aus deiner Ausstattungsliste ausgeblendet. Du kannst sie später wiederherstellen."
+    }
+  },
+  "llmPrompt": {
+    "description": "Kopiere diese Eingabeaufforderung und füge sie in deinen bevorzugten KI-Assistenten ein, um\n eine Bewertung des Bienenstockzustands zu erhalten. Du kannst den Text vor dem Kopieren bearbeiten.",
+    "textArea": {
+      "description": "Du bist ein erfahrener Imkereiberater. Bitte analysiere die folgenden Daten zum Bienenstock und gib deine Einschätzung ab.",
+      "closingPromptSecond": "Alle Probleme oder Fragen, die dir auffallen"
+    }
+  },
+  "settings": {
+    "description": "Lege Fütterungszeiträume und Durchsichtsintervalle speziell für diesen Bienenstock fest.",
+    "advancedDescription": "Lege Fütterungs- und Durchsichtseinstellungen für diesen Bienenstock fest",
+    "autumnFeedingDescription": "Lege Zeitraum und Zielmenge der Herbstauffütterung für diesen Bienenstock fest.",
+    "inspectionScheduleDescription": "Lege das bevorzugte Durchsichtsintervall für diesen Bienenstock fest."
+  }
+}

@@ -3,6 +3,7 @@ import { de, enGB, da, it, sk, sr, type Locale } from 'date-fns/locale';
 
 export const localeMap: Record<string, Locale> = {
   de: de,
+  'de-informal': de,
   en: enGB,
   da: da,
   it: it,

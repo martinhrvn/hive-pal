@@ -43,7 +43,7 @@ import { ToolRoute } from './tool-route';
 import { LandingPage } from '@/pages/landing-page';
 import { FeaturesPage } from '@/pages/features-page';
 import { LangLayout } from '@/components/i18n/lang-layout';
-import { isSupportedLanguage } from '@/utils/language-utils';
+import { isPublicLanguage } from '@/utils/language-utils';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
 import { setFaroView } from '@/lib/faro';
 
@@ -773,7 +773,7 @@ const router = createBrowserRouter([
     // first-segment language codes. Unsupported codes render the 404 page.
     path: '/:lang',
     loader: ({ params }) => {
-      if (!params.lang || !isSupportedLanguage(params.lang)) {
+      if (!params.lang || !isPublicLanguage(params.lang)) {
         throw new Response('Not Found', { status: 404 });
       }
       return null;

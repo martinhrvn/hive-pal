@@ -1,0 +1,5 @@
+{
+    "resetPasswordDialog": {
+        "description": "Setze ein temporäres Passwort für {email}. Der Benutzer muss sein Passwort beim nächsten Login ändern."
+    }
+}

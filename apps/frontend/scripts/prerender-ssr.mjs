@@ -115,9 +115,17 @@ function outputFile(urlPath) {
   return path.join(DIST, `${urlPath.replace(/^\//, '')}.html`);
 }
 
+// In-app register variants (e.g. `de-informal`) live as their own locale
+// directory but must not be prerendered as public, indexable pages — they share
+// the canonical language's URLs. Keep them out of language discovery.
+const NON_PUBLIC_LOCALES = new Set(['de-informal']);
+
 async function discoverLanguages() {
   const entries = await readdir(LOCALES_DIR, { withFileTypes: true });
-  const langs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
+  const langs = entries
+    .filter(e => e.isDirectory() && !NON_PUBLIC_LOCALES.has(e.name))
+    .map(e => e.name)
+    .sort();
   if (!langs.includes(DEFAULT_LANGUAGE)) langs.unshift(DEFAULT_LANGUAGE);
   return langs;
 }
@@ -156,18 +164,19 @@ function cleanTemplate(html) {
 // at build time, so the app code stays language-agnostic. `x-default` is kept.
 function filterAlternateLinks(html, availableLangs) {
   const keep = new Set([...availableLangs, 'x-default']);
-  return html.replace(
-    /<link\b[^>]*\brel="alternate"[^>]*>\n?/g,
-    match => {
-      const lang = /\bhreflang="([^"]+)"/i.exec(match)?.[1];
-      return lang && !keep.has(lang) ? '' : match;
-    },
-  );
+  return html.replace(/<link\b[^>]*\brel="alternate"[^>]*>\n?/g, match => {
+    const lang = /\bhreflang="([^"]+)"/i.exec(match)?.[1];
+    return lang && !keep.has(lang) ? '' : match;
+  });
 }
 
 // Build the page HTML by injecting the SSR output into the client template,
 // stripping the template's static SEO tags so they don't duplicate Helmet's.
-function buildPage(template, { appHtml, head, htmlAttributes }, availableLangs) {
+function buildPage(
+  template,
+  { appHtml, head, htmlAttributes },
+  availableLangs,
+) {
   let html = template;
 
   if (htmlAttributes) {
@@ -266,7 +275,8 @@ async function main() {
   for (const lang of languages) {
     resourcesByLang[lang] = { [lang]: namespacesByLang[lang] };
     if (lang !== DEFAULT_LANGUAGE) {
-      resourcesByLang[lang][DEFAULT_LANGUAGE] = namespacesByLang[DEFAULT_LANGUAGE];
+      resourcesByLang[lang][DEFAULT_LANGUAGE] =
+        namespacesByLang[DEFAULT_LANGUAGE];
     }
   }
 

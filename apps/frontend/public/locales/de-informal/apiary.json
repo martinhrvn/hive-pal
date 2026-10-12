@@ -1,0 +1,9 @@
+{
+    "delete": {
+        "confirm": "Möchtest du diesen Bienenstand wirklich löschen?"
+    },
+    "calendarSubscription": {
+        "description": "Abonniere den Durchsichtenplan dieses Bienenstands in deiner Kalender-App",
+        "readOnlyNote": "Diese URL bietet schreibgeschützten Zugriff auf deinen Durchsichtenplan. Beim Neugenerieren wird die vorherige URL ungültig."
+    }
+}

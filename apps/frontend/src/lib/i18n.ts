@@ -9,7 +9,12 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'en',
+    // `de-informal` is a thin overlay: missing keys fall back to formal `de`,
+    // then English. Every other language falls back straight to English.
+    fallbackLng: { 'de-informal': ['de', 'en'], default: ['en'] },
+    // Load exactly the requested language file; do not strip `de-informal`
+    // down to its base `de` when fetching resources.
+    load: 'currentOnly',
     debug: false,
 
     interpolation: {
