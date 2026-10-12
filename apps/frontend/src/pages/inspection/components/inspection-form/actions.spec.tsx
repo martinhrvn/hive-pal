@@ -198,7 +198,39 @@ test.describe('Feeding', () => {
   });
 });
 
+// The treatment form loads its product picker from the catalog API; serve the
+// built-ins the tests pick from (name + default unit are all the form reads).
+const TREATMENT_PRODUCTS_FIXTURE = [
+  {
+    id: 'a1b2c3d4-0000-4000-8000-000000000001',
+    name: 'Formic Acid',
+    defaultUnit: 'ml',
+  },
+  {
+    id: 'a1b2c3d4-0000-4000-8000-000000000002',
+    name: 'Thymol',
+    defaultUnit: 'g',
+  },
+].map(p => ({
+  ...p,
+  userId: null,
+  physicalForm: 'LIQUID',
+  applicationMethod: null,
+  density: null,
+  withdrawalPeriodDays: null,
+  isBuiltIn: true,
+  ingredients: [],
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+}));
+
 test.describe('Treatment', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/api/treatment-products', route =>
+      route.fulfill({ json: TREATMENT_PRODUCTS_FIXTURE }),
+    );
+  });
+
   test('When selecting Treatment form should be added to the inspection', async ({
     page,
     mount,
@@ -210,7 +242,9 @@ test.describe('Treatment', () => {
 
     await expect(treatmentSection.getTreatmentTypeField()).toBeVisible();
     await expect(treatmentSection.getAmountField()).toBeVisible();
-    await expect(page.getByText('Treatment Type')).toBeVisible();
+    await expect(
+      page.getByText('Treatment Type', { exact: true }),
+    ).toBeVisible();
     await expect(page.getByText('Amount')).toBeVisible();
   });
 
@@ -253,7 +287,7 @@ test.describe('Treatment', () => {
     await actionsSection.selectAction('Treatment');
 
     await treatmentSection.fillTreatmentForm('Other', '30');
-    await treatmentSection.verifyTreatmentView('30', 'Custom Treatment', 'pcs');
+    await treatmentSection.verifyTreatmentView('30', 'Custom Treatment', 'ml');
 
     await treatmentSection.getRemoveButton().click();
     await expect(
