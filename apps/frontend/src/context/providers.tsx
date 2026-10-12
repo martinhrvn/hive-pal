@@ -1,4 +1,5 @@
-import { Fragment, PropsWithChildren } from 'react';
+import { Fragment, PropsWithChildren, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth-context';
 import { ThemeProvider } from './theme-provider';
 import { QueryClient } from '@tanstack/react-query';
@@ -22,14 +23,17 @@ const queryClient = new QueryClient({
   },
 });
 
-const persister = createSyncStoragePersister({
-  storage: window.localStorage,
-  key: 'hive-pal-query-cache',
-});
+// Without storage (prerendering on the server) the persister is a no-op.
+const createPersister = () =>
+  createSyncStoragePersister({
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    key: 'hive-pal-query-cache',
+  });
 
 const SKIP_SIDEBAR_PAGES = ['/login', '/register', '/onboarding'];
 export const Providers: React.FC<PropsWithChildren> = ({ children }) => {
-  const pathname = window.location.pathname;
+  const { pathname } = useLocation();
+  const [persister] = useState(createPersister);
   const skipSidebar = SKIP_SIDEBAR_PAGES.includes(pathname);
   const SidebarProviderComponent = skipSidebar ? Fragment : SidebarProvider;
   return (

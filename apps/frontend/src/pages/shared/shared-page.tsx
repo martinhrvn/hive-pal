@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,13 +53,11 @@ export function SharedPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{ogTitle} - Hive Pal</title>
-        <meta property="og:title" content={ogTitle} />
-        <meta property="og:description" content={ogDescription} />
-        {imageUrl && <meta property="og:image" content={imageUrl} />}
-        <meta property="og:type" content="website" />
-      </Helmet>
+      <title>{`${ogTitle} - Hive Pal`}</title>
+      <meta property="og:title" content={ogTitle} />
+      <meta property="og:description" content={ogDescription} />
+      {imageUrl && <meta property="og:image" content={imageUrl} />}
+      <meta property="og:type" content="website" />
 
       <div className="min-h-screen bg-muted/30">
         {/* Header */}

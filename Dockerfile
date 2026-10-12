@@ -30,7 +30,7 @@ WORKDIR /app
 COPY --from=builder /app/ /app/
 
 # Copy frontend build output into backend's static directory
-RUN cp -r /app/apps/frontend/dist /app/apps/backend/dist/static
+RUN cp -r /app/apps/frontend/dist/client /app/apps/backend/dist/static
 
 RUN mkdir -p /data/uploads
 

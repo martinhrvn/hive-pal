@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { NotFoundPage } from '@/pages/not-found-page';
 import {
+  isPublicLanguage,
   normalizeLanguageCode,
   toPublicLanguage,
 } from '@/utils/language-utils';
@@ -14,13 +16,17 @@ import {
  * carries over into the (language-neutral) app. A register variant of the URL
  * language (e.g. `de-informal` on a `/de` page) is left untouched, since it
  * shares the canonical language's URLs.
+ *
+ * The `/:lang` segment also catches any unknown single-segment path (static
+ * routes rank higher); unsupported codes render the 404 page.
  */
 export function LangLayout() {
   const { lang } = useParams<{ lang: string }>();
   const { i18n } = useTranslation();
+  const supported = !!lang && isPublicLanguage(lang);
 
   useEffect(() => {
-    if (!lang) return;
+    if (!lang || !supported) return;
     const normalized = normalizeLanguageCode(lang);
     const current = normalizeLanguageCode(i18n.language);
     const effective =
@@ -32,9 +38,13 @@ export function LangLayout() {
     try {
       localStorage.setItem('language', effective);
     } catch {
-      // localStorage may be unavailable (private mode / prerender) — ignore.
+      // localStorage may be unavailable (private mode) — ignore.
     }
-  }, [lang, i18n]);
+  }, [lang, supported, i18n]);
+
+  if (!supported) {
+    return <NotFoundPage />;
+  }
 
   return <Outlet />;
 }
