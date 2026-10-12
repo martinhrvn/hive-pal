@@ -764,6 +764,7 @@ export class ActionsService {
           harvestAction: true,
           boxConfigurationAction: true,
           maintenanceAction: true,
+          statusChangeAction: true,
           splitAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
