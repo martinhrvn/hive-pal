@@ -1,1138 +1,1138 @@
 {
-  "navigation": {
-    "home": "Domov",
-    "dashboard": "Dashboard",
-    "apiaries": "Včelnice",
-    "hives": "Úle",
-    "inspections": "Prehliadky",
-    "queens": "Matky",
-    "settings": "Nastavenia",
-    "admin": "Administrácia",
-    "users": "Používatelia",
-    "feedback": "Spätná väzba",
-    "logout": "Odhlásiť",
-    "allApiaries": "Všetky včelnice",
-    "createApiary": "Vytvoriť včelnicu",
-    "allHives": "Všetky úle",
-    "allInspections": "Všetky prehliadky",
-    "schedule": "Naplánovať",
-    "recent": "Nedávne",
-    "upcoming": "Nadchádzajúce",
-    "general": "Všeobecné",
-    "harvests": "Zbery",
-    "allHarvests": "Všetky zbery",
-    "reports": "Reporty",
-    "metrics": "Metriky",
-    "allQueens": "Všetky matky",
-    "todos": "Úlohy",
-    "allTodos": "Všetky úlohy",
-    "tools": "Nástroje",
-    "syrupCalculator": "Kalkulačka sirupu",
-    "calendar": "Kalendár",
-    "actions": "Hromadné pridanie",
-    "hivehub": "HiveHub"
-  },
-  "actions": {
-    "save": "Uložiť",
-    "cancel": "Zrušiť",
-    "delete": "Vymazať",
-    "edit": "Upraviť",
-    "create": "Vytvoriť",
-    "add": "Pridať",
-    "remove": "Odstrániť",
-    "search": "Hľadať",
-    "filter": "Filtrovať",
-    "export": "Exportovať",
-    "import": "Importovať",
-    "submit": "Odoslať",
-    "back": "Späť",
-    "next": "Ďalej",
-    "previous": "Predchádzajúce",
-    "close": "Zavrieť",
-    "confirm": "Potvrdiť",
-    "view": "Zobraziť",
-    "download": "Stiahnuť",
-    "upload": "Nahrať",
-    "refresh": "Obnoviť",
-    "actions": "Akcie",
-    "createNew": "Vytvoriť nové",
-    "navigate": "Navigácia",
-    "refreshData": "Obnoviť údaje",
-    "notifications": "Oznámenia",
-    "newHive": "Nový úľ",
-    "language": "Jazyk",
-    "logout": "Odhlásiť sa",
-    "newInspection": "Nová prehliadka",
-    "scheduleInspection": "Naplánovať prehliadku",
-    "newQueen": "Nová matka",
-    "recentInspections": "Nedávne prehliadky"
-  },
-  "status": {
-    "loading": "Načítava sa...",
-    "success": "Úspech",
-    "error": "Chyba",
-    "warning": "Upozornenie",
-    "info": "Informácia",
-    "pending": "Čaká sa",
-    "completed": "Dokončené",
-    "failed": "Zlyhalo",
-    "active": "Aktívne",
-    "inactive": "Neaktívne",
-    "archived": "Archivované"
-  },
-  "messages": {
-    "confirmDelete": "Naozaj chcete vymazať túto položku?",
-    "changesSaved": "Zmeny boli úspešne uložené",
-    "errorOccurred": "Vyskytla sa chyba",
-    "noData": "Žiadne údaje nie sú k dispozícii",
-    "required": "Toto pole je povinné",
-    "invalidEmail": "Neplatná emailová adresa",
-    "invalidFormat": "Neplatný formát",
-    "notificationsComingSoon": "Funkcia oznámení bude čoskoro k dispozícii"
-  },
-  "releaseNotes": {
-    "title": "Novinky v HivePal",
-    "version": "Verzia {{version}}",
-    "released": "Vydané {{date}}",
-    "newVersionAvailable": "Nová verzia v{{version}} je k dispozícii!",
-    "checkLatestFeatures": "Pozrite si najnovšie funkcie a vylepšenia.",
-    "whatsNew": "Čo je nové",
-    "dismiss": "Zamietnuť"
-  },
-  "time": {
-    "today": "Dnes",
-    "yesterday": "Včera",
-    "tomorrow": "Zajtra",
-    "week": "Týždeň",
-    "month": "Mesiac",
-    "year": "Rok",
-    "date": "Dátum",
-    "time": "Čas",
-    "days": "Dni",
-    "hours": "Hodiny",
-    "minutes": "Minúty",
-    "seconds": "Sekundy"
-  },
-  "months": {
-    "selectMonth": "Vyberte mesiac",
-    "january": "Január",
-    "february": "Február",
-    "march": "Marec",
-    "april": "Apríl",
-    "may": "Máj",
-    "june": "Jún",
-    "july": "Júl",
-    "august": "August",
-    "september": "September",
-    "october": "Október",
-    "november": "November",
-    "december": "December"
-  },
-  "weather": {
-    "selectHiveToView": "Vyberte úľ s včelnicou na zobrazenie počasia",
-    "unableToLoad": "Nie je možné načítať údaje o počasí",
-    "noWeatherData": "Žiadne údaje o počasí nie sú k dispozícii",
-    "currentWeather": "Aktuálne počasie",
-    "feelsLike": "Pocitovo {{temperature}}°C",
-    "humidity": "Vlhkosť",
-    "wind": "Vietor",
-    "nextHours": "Najbližších 5 hodín",
-    "dayForecast": "7-dňová predpoveď",
-    "weatherForecast": "Predpoveď počasia"
-  },
-  "settings": {
-    "managePreferences": "Spravujte nastavenia vášho účtu a aplikácie",
-    "generalSettings": "Všeobecné nastavenia",
-    "configureLanguageRegional": "Nakonfigurujte jazyk a regionálne nastavenia",
-    "dateFormat": "Formát dátumu",
-    "unitsOfMeasurement": "Jednotky merania",
-    "metric": "Metrické (kg, km, °C)",
-    "imperial": "Imperiálne (lbs, míle, °F)",
-    "displayPreferences": "Nastavenia zobrazenia",
-    "customizeAppearance": "Prispôsobte vzhľad aplikácie",
-    "theme": "Téma",
-    "light": "Svetlá",
-    "dark": "Tmavá",
-    "system": "Systémová",
-    "notificationPreferences": "Nastavenia oznámení",
-    "chooseNotificationMethod": "Vyberte si, ako chcete byť informovaní o dôležitých udalostiach",
-    "emailNotifications": "E-mailové oznámenia",
-    "receiveEmailUpdates": "Dostávať aktualizácie e-mailom",
-    "pushNotifications": "Push oznámenia",
-    "receiveBrowserNotifications": "Dostávať push oznámenia v prehliadači",
-    "inspectionReminders": "Pripomienky prehliadok",
-    "upcomingInspectionsNotify": "Dostávať upozornenia na nadchádzajúce prehliadky",
-    "harvestReminders": "Pripomienky zberov",
-    "harvestSchedulesNotify": "Dostávať upozornenia na plánované zbery",
-    "accountSettings": "Nastavenia účtu",
-    "manageAccountInfo": "Spravujte informácie o vašom účte",
-    "name": "Názov",
-    "enterName": "Zadajte vaše meno",
-    "email": "Email",
-    "enterEmail": "Zadajte váš e-mail",
-    "password": "Heslo",
-    "changePassword": "Zmeniť heslo účtu",
-    "saveSettings": "Uložiť nastavenia",
-    "preferencesUpdated": "Vaše nastavenia boli úspešne aktualizované.",
-    "saving": "Ukladanie..."
-  },
-  "feedback": {
-    "title": "Poslať spätnú väzbu",
-    "description": "Vážime si vašu spätnú väzbu! Pomôžte nám zlepšiť HivePal zdieľaním vašich myšlienok, hlásením chýb alebo navrhovaním nových funkcií.",
-    "sendFeedback": "Poslať spätnú väzbu",
-    "type": "Typ spätnej väzby",
-    "selectType": "Vyberte typ spätnej väzby",
-    "typeBug": "Hlásenie chyby",
-    "typeSuggestion": "Návrh funkcie",
-    "typeOther": "Iné",
-    "subject": "Predmet",
-    "subjectPlaceholder": "Stručný popis vašej spätnej väzby",
-    "message": "Správa",
-    "messagePlaceholder": "Prosím, poskytnite podrobné informácie o vašej spätnej väzbe...",
-    "email": "E-mail (voliteľné)",
-    "emailPlaceholder": "vas@email.com",
-    "emailDescription": "Zadajte váš e-mail, ak chcete dostať odpoveď",
-    "submit": "Odoslať spätnú väzbu",
-    "thankYou": "Ďakujeme!",
-    "submittedMessage": "Vaša spätná väzba bola úspešne odoslaná. Vážime si váš názor a čoskoro ho preskúmame.",
-    "submitAnother": "Odoslať ďalšiu spätnú väzbu"
-  },
-  "alerts": {
-    "alert": "upozornenie",
-    "alerts": "upozornenia",
-    "activeAlerts": "Aktívne upozornenia",
-    "activeAlert": "Aktívne upozornenie"
-  },
-  "calendar": {
-    "both": "Obe",
-    "inspections": "Prehliadky",
-    "actions": "Akcie"
-  },
-  "quickCheck": {
-    "title": "Rýchla kontrola",
-    "description": "Túto akciu nie je možné vrátiť. Natrvalo sa vymaže táto rýchla kontrola a jej fotografie.",
-    "deleteTitle": "Vymazať rýchlu kontrolu?",
-    "deleteDescription": "Túto akciu nie je možné vrátiť. Natrvalo sa vymaže táto rýchla kontrola a jej fotografie.",
-    "deleted": "Rýchla kontrola bola vymazaná",
-    "deleteFailed": "Nepodarilo sa vymazať rýchlu kontrolu"
-  },
-  "timeline": {
-    "recentActivity": "Nedávna aktivita",
-    "noActivity": "Zatiaľ nebola zaznamenaná žiadna aktivita",
-    "noActivityApiary": "V tejto včelnici zatiaľ nebola zaznamenaná žiadna aktivita",
-    "noMatchingFilters": "Žiadne udalosti nezodpovedajú vybraným filtrom",
-    "allEvents": "Všetky udalosti",
-    "inspections": "Prehliadky",
-    "feeding": "Kŕmenie",
-    "treatments": "Ošetrenia",
-    "harvests": "Zbery",
-    "notes": "Poznámky",
-    "quickChecks": "Rýchle kontroly",
-    "other": "Ostatné",
-    "allTime": "Celé obdobie",
-    "lastMonth": "Posledný mesiac",
-    "last3Months": "Posledné 3 mesiace",
-    "last6Months": "Posledných 6 mesiacov",
-    "lastYear": "Posledný rok",
-    "allHives": "Všetky úle",
-    "clearFilters": "Vymazať filtre",
-    "showMore": "Zobraziť ďalších {{count}}",
-    "showLess": "Zobraziť menej",
-    "notesAvailable": "Poznámky k dispozícii",
-    "boxConfiguration": "Konfigurácia nadstavkov",
-    "maintenance": "Údržba",
-    "inspection": "Prehliadka",
-    "overdue": "Po termíne",
-    "scheduled": "Naplánované",
-    "cancelled": "Zrušené",
-    "doInspection": "Vykonať prehliadku",
-    "reschedule": "Preplánovat",
-    "inspectHive": "Prehliadka {{hiveName}}",
-    "strength": "Sila",
-    "honey": "Med",
-    "queenSeen": "Matka videná",
-    "queenNotSeen": "Matka nevidená",
-    "fromInspection": "Z prehliadky"
-  },
-  "reports": {
-    "title": "Reporty",
-    "selectApiary": "Vyberte včelnicu na zobrazenie reportov",
-    "tabs": {
-      "overview": "Prehľad",
-      "charts": "Grafy",
-      "trends": "Trendy"
+    "navigation": {
+        "home": "Domov",
+        "dashboard": "Dashboard",
+        "apiaries": "Včelnice",
+        "hives": "Úle",
+        "inspections": "Prehliadky",
+        "queens": "Matky",
+        "settings": "Nastavenia",
+        "admin": "Administrácia",
+        "users": "Používatelia",
+        "feedback": "Spätná väzba",
+        "logout": "Odhlásiť",
+        "allApiaries": "Všetky včelnice",
+        "createApiary": "Vytvoriť včelnicu",
+        "allHives": "Všetky úle",
+        "allInspections": "Všetky prehliadky",
+        "schedule": "Naplánovať",
+        "recent": "Nedávne",
+        "upcoming": "Nadchádzajúce",
+        "general": "Všeobecné",
+        "harvests": "Zbery",
+        "allHarvests": "Všetky zbery",
+        "reports": "Reporty",
+        "metrics": "Metriky",
+        "allQueens": "Všetky matky",
+        "todos": "Úlohy",
+        "allTodos": "Všetky úlohy",
+        "tools": "Nástroje",
+        "syrupCalculator": "Kalkulačka sirupu",
+        "calendar": "Kalendár",
+        "actions": "Hromadné pridanie",
+        "hivehub": "HiveHub"
     },
-    "honeyProduction": "Produkcia medu",
-    "feedingTotals": "Celkové prikrmovanie",
-    "healthScores": "Zdravotné skóre",
-    "hiveComparison": "Porovnanie úľov",
-    "table": {
-      "hiveName": "Úľ",
-      "honey": "Med",
-      "sugarFed": "Cukor",
-      "overall": "Celkové",
-      "population": "Populácia",
-      "stores": "Zásoby",
-      "queen": "Matka",
-      "lastInspection": "Posledná prehliadka"
+    "actions": {
+        "save": "Uložiť",
+        "cancel": "Zrušiť",
+        "delete": "Vymazať",
+        "edit": "Upraviť",
+        "create": "Vytvoriť",
+        "add": "Pridať",
+        "remove": "Odstrániť",
+        "search": "Hľadať",
+        "filter": "Filtrovať",
+        "export": "Exportovať",
+        "import": "Importovať",
+        "submit": "Odoslať",
+        "back": "Späť",
+        "next": "Ďalej",
+        "previous": "Predchádzajúce",
+        "close": "Zavrieť",
+        "confirm": "Potvrdiť",
+        "view": "Zobraziť",
+        "download": "Stiahnuť",
+        "upload": "Nahrať",
+        "refresh": "Obnoviť",
+        "actions": "Akcie",
+        "createNew": "Vytvoriť nové",
+        "navigate": "Navigácia",
+        "refreshData": "Obnoviť údaje",
+        "notifications": "Oznámenia",
+        "newHive": "Nový úľ",
+        "language": "Jazyk",
+        "logout": "Odhlásiť sa",
+        "newInspection": "Nová prehliadka",
+        "scheduleInspection": "Naplánovať prehliadku",
+        "newQueen": "Nová matka",
+        "recentInspections": "Nedávne prehliadky"
     },
-    "charts": {
-      "hiveScoreTrends": "Trendy skóre úľov"
+    "status": {
+        "loading": "Načítava sa...",
+        "success": "Úspech",
+        "error": "Chyba",
+        "warning": "Upozornenie",
+        "info": "Informácia",
+        "pending": "Čaká sa",
+        "completed": "Dokončené",
+        "failed": "Zlyhalo",
+        "active": "Aktívne",
+        "inactive": "Neaktívne",
+        "archived": "Archivované"
     },
-    "periods": {
-      "1month": "1 mesiac",
-      "3months": "3 mesiace",
-      "6months": "6 mesiacov",
-      "ytd": "Od začiatku roka",
-      "1year": "1 rok",
-      "all": "Všetko"
+    "messages": {
+        "confirmDelete": "Naozaj chcete vymazať túto položku?",
+        "changesSaved": "Zmeny boli úspešne uložené",
+        "errorOccurred": "Vyskytla sa chyba",
+        "noData": "Žiadne údaje nie sú k dispozícii",
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Neplatná emailová adresa",
+        "invalidFormat": "Neplatný formát",
+        "notificationsComingSoon": "Funkcia oznámení bude čoskoro k dispozícii"
     },
-    "filters": {
-      "period": "Obdobie"
+    "releaseNotes": {
+        "title": "Novinky v HivePal",
+        "version": "Verzia {{version}}",
+        "released": "Vydané {{date}}",
+        "newVersionAvailable": "Nová verzia v{{version}} je k dispozícii!",
+        "checkLatestFeatures": "Pozrite si najnovšie funkcie a vylepšenia.",
+        "whatsNew": "Čo je nové",
+        "dismiss": "Zamietnuť"
     },
-    "export": {
-      "title": "Export",
-      "csv": "Exportovať CSV",
-      "pdf": "Exportovať PDF",
-      "success": "Report bol úspešne exportovaný",
-      "error": "Nepodarilo sa exportovať report"
+    "time": {
+        "today": "Dnes",
+        "yesterday": "Včera",
+        "tomorrow": "Zajtra",
+        "week": "Týždeň",
+        "month": "Mesiac",
+        "year": "Rok",
+        "date": "Dátum",
+        "time": "Čas",
+        "days": "Dni",
+        "hours": "Hodiny",
+        "minutes": "Minúty",
+        "seconds": "Sekundy"
     },
-    "widget": {
-      "title": "Štatistiky včelnice",
-      "viewReports": "Zobraziť reporty",
-      "noApiary": "Vyberte včelnicu na zobrazenie štatistík"
+    "months": {
+        "selectMonth": "Vyberte mesiac",
+        "january": "Január",
+        "february": "Február",
+        "march": "Marec",
+        "april": "Apríl",
+        "may": "Máj",
+        "june": "Jún",
+        "july": "Júl",
+        "august": "August",
+        "september": "September",
+        "october": "Október",
+        "november": "November",
+        "december": "December"
+    },
+    "weather": {
+        "selectHiveToView": "Vyberte úľ s včelnicou na zobrazenie počasia",
+        "unableToLoad": "Nie je možné načítať údaje o počasí",
+        "noWeatherData": "Žiadne údaje o počasí nie sú k dispozícii",
+        "currentWeather": "Aktuálne počasie",
+        "feelsLike": "Pocitovo {{temperature}}°C",
+        "humidity": "Vlhkosť",
+        "wind": "Vietor",
+        "nextHours": "Najbližších 5 hodín",
+        "dayForecast": "7-dňová predpoveď",
+        "weatherForecast": "Predpoveď počasia"
+    },
+    "settings": {
+        "managePreferences": "Spravujte nastavenia vášho účtu a aplikácie",
+        "generalSettings": "Všeobecné nastavenia",
+        "configureLanguageRegional": "Nakonfigurujte jazyk a regionálne nastavenia",
+        "dateFormat": "Formát dátumu",
+        "unitsOfMeasurement": "Jednotky merania",
+        "metric": "Metrické (kg, km, °C)",
+        "imperial": "Imperiálne (lbs, míle, °F)",
+        "displayPreferences": "Nastavenia zobrazenia",
+        "customizeAppearance": "Prispôsobte vzhľad aplikácie",
+        "theme": "Téma",
+        "light": "Svetlá",
+        "dark": "Tmavá",
+        "system": "Systémová",
+        "notificationPreferences": "Nastavenia oznámení",
+        "chooseNotificationMethod": "Vyberte si, ako chcete byť informovaní o dôležitých udalostiach",
+        "emailNotifications": "E-mailové oznámenia",
+        "receiveEmailUpdates": "Dostávať aktualizácie e-mailom",
+        "pushNotifications": "Push oznámenia",
+        "receiveBrowserNotifications": "Dostávať push oznámenia v prehliadači",
+        "inspectionReminders": "Pripomienky prehliadok",
+        "upcomingInspectionsNotify": "Dostávať upozornenia na nadchádzajúce prehliadky",
+        "harvestReminders": "Pripomienky zberov",
+        "harvestSchedulesNotify": "Dostávať upozornenia na plánované zbery",
+        "accountSettings": "Nastavenia účtu",
+        "manageAccountInfo": "Spravujte informácie o vašom účte",
+        "name": "Názov",
+        "enterName": "Zadajte vaše meno",
+        "email": "Email",
+        "enterEmail": "Zadajte váš e-mail",
+        "password": "Heslo",
+        "changePassword": "Zmeniť heslo účtu",
+        "saveSettings": "Uložiť nastavenia",
+        "preferencesUpdated": "Vaše nastavenia boli úspešne aktualizované.",
+        "saving": "Ukladanie..."
+    },
+    "feedback": {
+        "title": "Poslať spätnú väzbu",
+        "description": "Vážime si vašu spätnú väzbu! Pomôžte nám zlepšiť HivePal zdieľaním vašich myšlienok, hlásením chýb alebo navrhovaním nových funkcií.",
+        "sendFeedback": "Poslať spätnú väzbu",
+        "type": "Typ spätnej väzby",
+        "selectType": "Vyberte typ spätnej väzby",
+        "typeBug": "Hlásenie chyby",
+        "typeSuggestion": "Návrh funkcie",
+        "typeOther": "Iné",
+        "subject": "Predmet",
+        "subjectPlaceholder": "Stručný popis vašej spätnej väzby",
+        "message": "Správa",
+        "messagePlaceholder": "Prosím, poskytnite podrobné informácie o vašej spätnej väzbe...",
+        "email": "E-mail (voliteľné)",
+        "emailPlaceholder": "vas@email.com",
+        "emailDescription": "Zadajte váš e-mail, ak chcete dostať odpoveď",
+        "submit": "Odoslať spätnú väzbu",
+        "thankYou": "Ďakujeme!",
+        "submittedMessage": "Vaša spätná väzba bola úspešne odoslaná. Vážime si váš názor a čoskoro ho preskúmame.",
+        "submitAnother": "Odoslať ďalšiu spätnú väzbu"
+    },
+    "alerts": {
+        "alert": "upozornenie",
+        "alerts": "upozornenia",
+        "activeAlerts": "Aktívne upozornenia",
+        "activeAlert": "Aktívne upozornenie"
+    },
+    "calendar": {
+        "both": "Obe",
+        "inspections": "Prehliadky",
+        "actions": "Akcie"
+    },
+    "quickCheck": {
+        "title": "Rýchla kontrola",
+        "description": "Túto akciu nie je možné vrátiť. Natrvalo sa vymaže táto rýchla kontrola a jej fotografie.",
+        "deleteTitle": "Vymazať rýchlu kontrolu?",
+        "deleteDescription": "Túto akciu nie je možné vrátiť. Natrvalo sa vymaže táto rýchla kontrola a jej fotografie.",
+        "deleted": "Rýchla kontrola bola vymazaná",
+        "deleteFailed": "Nepodarilo sa vymazať rýchlu kontrolu"
+    },
+    "timeline": {
+        "recentActivity": "Nedávna aktivita",
+        "noActivity": "Zatiaľ nebola zaznamenaná žiadna aktivita",
+        "noActivityApiary": "V tejto včelnici zatiaľ nebola zaznamenaná žiadna aktivita",
+        "noMatchingFilters": "Žiadne udalosti nezodpovedajú vybraným filtrom",
+        "allEvents": "Všetky udalosti",
+        "inspections": "Prehliadky",
+        "feeding": "Kŕmenie",
+        "treatments": "Ošetrenia",
+        "harvests": "Zbery",
+        "notes": "Poznámky",
+        "quickChecks": "Rýchle kontroly",
+        "other": "Ostatné",
+        "allTime": "Celé obdobie",
+        "lastMonth": "Posledný mesiac",
+        "last3Months": "Posledné 3 mesiace",
+        "last6Months": "Posledných 6 mesiacov",
+        "lastYear": "Posledný rok",
+        "allHives": "Všetky úle",
+        "clearFilters": "Vymazať filtre",
+        "showMore": "Zobraziť ďalších {{count}}",
+        "showLess": "Zobraziť menej",
+        "notesAvailable": "Poznámky k dispozícii",
+        "boxConfiguration": "Konfigurácia nadstavkov",
+        "maintenance": "Údržba",
+        "inspection": "Prehliadka",
+        "overdue": "Po termíne",
+        "scheduled": "Naplánované",
+        "cancelled": "Zrušené",
+        "doInspection": "Vykonať prehliadku",
+        "reschedule": "Preplánovat",
+        "inspectHive": "Prehliadka {{hiveName}}",
+        "strength": "Sila",
+        "honey": "Med",
+        "queenSeen": "Matka videná",
+        "queenNotSeen": "Matka nevidená",
+        "fromInspection": "Z prehliadky"
+    },
+    "reports": {
+        "title": "Reporty",
+        "selectApiary": "Vyberte včelnicu na zobrazenie reportov",
+        "tabs": {
+            "overview": "Prehľad",
+            "charts": "Grafy",
+            "trends": "Trendy"
+        },
+        "honeyProduction": "Produkcia medu",
+        "feedingTotals": "Celkové prikrmovanie",
+        "healthScores": "Zdravotné skóre",
+        "hiveComparison": "Porovnanie úľov",
+        "table": {
+            "hiveName": "Úľ",
+            "honey": "Med",
+            "sugarFed": "Cukor",
+            "overall": "Celkové",
+            "population": "Populácia",
+            "stores": "Zásoby",
+            "queen": "Matka",
+            "lastInspection": "Posledná prehliadka"
+        },
+        "charts": {
+            "hiveScoreTrends": "Trendy skóre úľov"
+        },
+        "periods": {
+            "1month": "1 mesiac",
+            "3months": "3 mesiace",
+            "6months": "6 mesiacov",
+            "ytd": "Od začiatku roka",
+            "1year": "1 rok",
+            "all": "Všetko"
+        },
+        "filters": {
+            "period": "Obdobie"
+        },
+        "export": {
+            "title": "Export",
+            "csv": "Exportovať CSV",
+            "pdf": "Exportovať PDF",
+            "success": "Report bol úspešne exportovaný",
+            "error": "Nepodarilo sa exportovať report"
+        },
+        "widget": {
+            "title": "Štatistiky včelnice",
+            "viewReports": "Zobraziť reporty",
+            "noApiary": "Vyberte včelnicu na zobrazenie štatistík"
+        }
+    },
+    "syrupCalculator": {
+        "title": "Kalkulačka cukrového roztoku",
+        "description": "Vypočítajte množstvo cukru a vody pre kŕmny roztok",
+        "intro": "Bezplatná kalkulačka cukrového roztoku pre včelárov. Roztok 1:1 (riedky) použite na jarné podnietenie, 3:2 (stredný) ako univerzálne krmivo a 2:1 (hustý) na jesenné kŕmenie a budovanie zimných zásob. Vyberte objem nádoby a pomer — presné hmotnosti cukru a vody sa vypočítajú z vytlačenia objemu sacharózou tak, aby hotový roztok naplnil vašu nádobu.",
+        "units": "Jednotky",
+        "unitsDescription": "Prepínajte medzi metrickými a imperiálnymi jednotkami",
+        "metric": "Metrické (L, g, kg)",
+        "imperial": "Imperiálne (qt, gal, lb)",
+        "ratio": "Pomer roztoku",
+        "ratioDescription": "Pomer cukru k vode (podľa hmotnosti a objemu)",
+        "thin": "Riedky (1:1)",
+        "medium": "Stredný (3:2)",
+        "thick": "Hustý (2:1)",
+        "containerSize": "Veľkosť nádoby",
+        "containerDescription": "Celkový objem roztoku, ktorý chcete pripraviť",
+        "customSize": "Vlastná",
+        "results": "Výsledky",
+        "water": "Voda",
+        "sugar": "Cukor",
+        "totalWeight": "Celková hmotnosť",
+        "instructions": "Postup",
+        "step1": "Odmerajte {{water}} vody",
+        "step2": "Vodu zohrejte, kým nebude teplá (nie vriaca)",
+        "step3": "Pridajte {{sugar}} bieleho kryštálového cukru",
+        "step4": "Miešajte, kým sa cukor úplne nerozpustí",
+        "step5": "Pred kŕmením nechajte roztok vychladnúť na izbovú teplotu",
+        "tips": "Tipy a návod na použitie",
+        "tip1Title": "Riedky roztok (1:1)",
+        "tip1Description": "Najvhodnejší na jarné kŕmenie na podnietenie plodovania a napodobnenie znášky. Použite ho, keď včely potrebujú povzbudiť k rozvoju.",
+        "tip2Title": "Stredný roztok (3:2)",
+        "tip2Description": "Dobrý univerzálny roztok. Funguje na jarné podnietenie aj na ľahké jesenné kŕmenie.",
+        "tip3Title": "Hustý roztok (2:1)",
+        "tip3Description": "Najvhodnejší na jesenné kŕmenie a budovanie zimných zásob. Včely ho dokážu rýchlo uložiť s menšou námahou na odparenie prebytočnej vody.",
+        "tip4Title": "Všeobecné tipy",
+        "tip4Description": "Používajte vždy biely kryštálový cukor — nikdy nie hnedý cukor, melasu ani umelé sladidlá. Roztok nevarte, pretože môže vzniknúť HMF (hydroxymetylfurfural), ktorý je pre včely toxický. Kŕmte večer, aby ste obmedzili lúpež.",
+        "faq": {
+            "title": "Časté otázky",
+            "items": [
+                {
+                    "question": "Aký pomer cukru a vody mám použiť na kŕmenie včiel?",
+                    "answer": "Roztok 1:1 (rovnaké diely cukru a vody podľa hmotnosti) použite na jar na podnietenie plodovania, 3:2 ako univerzálne krmivo a 2:1 (dva diely cukru na jeden diel vody) na jeseň na budovanie zimných zásob. Hustý roztok včely ľahšie premenia na zaviečkované zásoby; riedky roztok napodobňuje znášku."
+                },
+                {
+                    "question": "Kedy mám včelám podávať riedky roztok (1:1)?",
+                    "answer": "Riedky roztok 1:1 podávajte na jar alebo vždy, keď chcete podnietiť plodovanie. Jeho obsah vody napodobňuje prirodzenú znášku a povzbudzuje matku ku kladeniu a včelstvo k rozvoju."
+                },
+                {
+                    "question": "Kedy mám včelám podávať hustý roztok (2:1)?",
+                    "answer": "Hustý roztok 2:1 podávajte koncom leta a na jeseň, aby si včelstvá vybudovali zimné zásoby. Nižší obsah vody znamená, že včely spotrebujú menej energie na jej odparenie pred zaviečkovaním."
+                },
+                {
+                    "question": "Môžem na roztok použiť hnedý cukor, med alebo melasu?",
+                    "answer": "Nie. Používajte iba biely kryštálový trstinový alebo repný cukor. Hnedý cukor, melasa a nerafinované sladidlá obsahujú látky, ktoré u včiel spôsobujú hnačku. Med z neznámych zdrojov môže navyše prenášať choroby."
+                },
+                {
+                    "question": "Mám cukrový roztok pre včely variť?",
+                    "answer": "Nie. Vodu zohrejte len natoľko, aby sa cukor rozpustil, ale nevarte ju. Varením cukrového roztoku vzniká hydroxymetylfurfural (HMF), ktorý je pre včely toxický."
+                },
+                {
+                    "question": "Koľko cukru potrebujem na jeden liter roztoku 1:1?",
+                    "answer": "Na jeden liter hotového roztoku 1:1 potrebujete približne 715 g vody a 715 g bieleho kryštálového cukru. Presné množstvá závisia od pomeru a konečného objemu — túto kalkulačku počíta na základe vytlačenia objemu sacharózou."
+                }
+            ]
+        }
+    },
+    "swarmManagement": {
+        "backToOverview": "Back to Swarm Management",
+        "eyebrow": "Swarm control guidance",
+        "title": "Swarm Management",
+        "cards": {
+            "available": "Available",
+            "comingSoon": "Coming soon",
+            "placeholderCta": "Not available yet",
+            "demaree": {
+                "title": "Demaree Method",
+                "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
+                "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
+                "cta": "Open guide"
+            },
+            "pagden": {
+                "title": "Pagden split",
+                "description": "Placeholder for a future guide covering the classic artificial swarm split.",
+                "detail": "",
+                "cta": ""
+            },
+            "artificialSwarm": {
+                "title": "Artificial swarm",
+                "description": "Placeholder for a future guide focused on moving flying bees and brood apart.",
+                "detail": "",
+                "cta": ""
+            }
+        },
+        "aside": {
+            "title": "Choosing a method",
+            "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+            "points": [
+                "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
+                "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
+                "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+            ],
+            "criticalTimingTitle": "Critical timing",
+            "criticalTimingLead": "The first follow-up is the point where timing matters most.",
+            "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+        },
+        "demaree": {
+            "badge": "Reference method",
+            "title": "Demaree Method",
+            "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
+            "overviewTitle": "Method overview",
+            "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+            "overviewPoints": [
+                "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
+                "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
+                "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+            ],
+            "prerequisitesTitle": "Prerequisites",
+            "prerequisites": [
+                "Check that the hive is a strong colony with enough bees and brood to justify the method.",
+                "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
+                "Make sure you can find and confidently retain the laying queen in the lower brood box.",
+                "Have a queen excluder ready, with at least two honey supers available to stack above it.",
+                "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
+                "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+            ],
+            "stepsTitle": "Method Detail",
+            "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+            "methodDetail": {
+                "preparation": {
+                    "title": "Preparation",
+                    "items": [
+                        {
+                            "text": "Find a spare brood box with foundation or drawn comb.",
+                            "children": [
+                                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+                            ]
+                        },
+                        {
+                            "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+                        }
+                    ]
+                },
+                "huntTheQueen": {
+                    "title": "Hunt the Queen",
+                    "items": [
+                        {
+                            "text": "Inspect the old brood box(es) and locate the Queen."
+                        },
+                        {
+                            "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+                        }
+                    ]
+                },
+                "broodManipulation": {
+                    "title": "Brood Manipulation",
+                    "items": [
+                        {
+                            "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+                            "children": [
+                                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+                            ]
+                        },
+                        {
+                            "text": "Make sure to knock down all queen cells.",
+                            "children": [
+                                "With the queen safe you can shake bees off the frames to make sure you find them all."
+                            ]
+                        },
+                        {
+                            "text": "(Double Brood) - You should now have three brood boxes.",
+                            "children": [
+                                "Box with the queen, mostly empty directly on the hive floor.",
+                                "Box with no brood - place this on top of the queen to retain double brood status.",
+                                "Box with all the brood - keep this aside for now."
+                            ]
+                        }
+                    ]
+                },
+                "reassembly": {
+                    "title": "Reassembly",
+                    "items": [
+                        {
+                            "text": "Put the queen excluder on top of the new brood boxes."
+                        },
+                        {
+                            "text": "Add the supers (minimum 2, add extra if more space is required)."
+                        },
+                        {
+                            "text": "Place an additional queen excluder over the supers."
+                        },
+                        {
+                            "text": "The box with all the brood now goes on top of the supers."
+                        },
+                        {
+                            "text": "Fit crown board and roof and the job is done."
+                        }
+                    ]
+                }
+            },
+            "advantagesTitle": "Why the method works",
+            "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+            "advantages": [
+                "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
+                "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
+                "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+            ],
+            "followUpTitle": "Follow-up timing",
+            "followUpDayHeader": "Day",
+            "followUpTaskHeader": "Task",
+            "followUp": [
+                {
+                    "day": "Day 7-8",
+                    "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+                },
+                {
+                    "day": "Day 14-15",
+                    "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+                },
+                {
+                    "day": "Day 21-22",
+                    "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+                }
+            ],
+            "prosConsTitle": "Pros and Cons",
+            "prosTitle": "Advantages",
+            "consTitle": "Disadvantages",
+            "pros": [
+                "Works well as a swarm control method.",
+                "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
+                "Comb renewal is simple.",
+                "Good brood combs can be drawn out in the top box.",
+                "The effect is similar to an artificial swarm, but the colony is kept together."
+            ],
+            "cons": [
+                "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
+                "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
+                "There may be heavy lifting.",
+                "Regular inspections are essential.",
+                "You MUST understand the basics."
+            ]
+        },
+        "planner": {
+            "title": "Demaree inspection planner",
+            "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
+            "hiveLabel": "Hive",
+            "hivePlaceholder": "Select a hive",
+            "startDateLabel": "Demaree setup date",
+            "startDatePlaceholder": "Pick the setup date",
+            "generate": "Generate checkpoints",
+            "selectedHive": "Selected hive",
+            "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
+            "notesLabel": "Inspection notes",
+            "notesChecklistLabel": "Checklist",
+            "checkpointPrefix": "Demaree checkpoint:",
+            "dayOffset_one": "Day {{count}}",
+            "dayOffset_other": "Day {{count}}",
+            "save": "Save scheduled inspections",
+            "saving": "Saving inspections...",
+            "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
+            "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
+            "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
+            "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
+            "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+            "checkpoints": {
+                "setup": {
+                    "title": "Initial Demaree setup",
+                    "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+                    "checklist": [
+                        "Confirm the laying queen is in the lower brood box.",
+                        "Place the brood and supers in the planned Demaree order.",
+                        "Record any details you want visible at the next inspection."
+                    ]
+                },
+                "queenCellCheck": {
+                    "title": "Queen-cell check",
+                    "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+                    "checklist": [
+                        "Inspect every brood frame above the excluder for queen cells.",
+                        "Remove queen cells started during the swarm impulse.",
+                        "Confirm the queen still has room and activity below."
+                    ]
+                },
+                "secondQueenCellCheck": {
+                    "title": "Second queen-cell check",
+                    "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+                    "checklist": [
+                        "Look again for newly started or missed queen cells.",
+                        "Check whether brood and stores need to be rebalanced.",
+                        "Note whether the colony is settling or still crowding upward."
+                    ]
+                },
+                "colonyReview": {
+                    "title": "Colony review",
+                    "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+                    "checklist": [
+                        "Assess whether the colony can return to a more normal arrangement.",
+                        "Check space, brood pattern, and nectar intake across the stack.",
+                        "Schedule any additional inspection you want beyond the standard plan."
+                    ]
+                }
+            }
+        },
+        "warnings": {
+            "bannerTitle": "Timing warnings",
+            "lateQueenCellCheck": {
+                "title": "First queen-cell check is later than day 8",
+                "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+            },
+            "unsafeCheckpointSpacing": {
+                "title": "Checkpoint spacing looks risky",
+                "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+            },
+            "illogicalScheduleOrder": {
+                "title": "Checkpoint order is no longer chronological",
+                "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+            }
+        },
+        "pagden": {
+            "badge": "",
+            "title": "",
+            "description": "",
+            "intro": "",
+            "overviewTitle": "",
+            "overviewLead": "",
+            "overviewPoints": [
+                "",
+                "",
+                ""
+            ],
+            "prerequisitesTitle": "",
+            "prerequisites": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "stepsTitle": "",
+            "stepsDescription": "",
+            "methodDetail": {
+                "preparation": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "relocateQueen": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "queenCells": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "reassembly": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                }
+            },
+            "advantagesTitle": "",
+            "advantagesDescription": "",
+            "advantages": [
+                "",
+                "",
+                ""
+            ],
+            "followUpTitle": "",
+            "followUpDayHeader": "",
+            "followUpTaskHeader": "",
+            "followUp": [
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                }
+            ],
+            "prosConsTitle": "",
+            "prosTitle": "",
+            "consTitle": "",
+            "pros": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "cons": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "faq": {
+                "title": "",
+                "items": [
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    }
+                ]
+            },
+            "planner": {
+                "title": "",
+                "description": "",
+                "selectHiveLabel": "",
+                "selectHivePlaceholder": "",
+                "startDateLabel": "",
+                "startDatePlaceholder": "",
+                "generateButton": "",
+                "saveButton": "",
+                "checkpointPrefix": "",
+                "notesChecklistLabel": "",
+                "savedSuccess": "",
+                "savedPartial": "",
+                "savedError": "",
+                "noHivesMessage": "",
+                "checkpoints": {
+                    "setup": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "queenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "secondQueenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "colonyReview": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    }
+                }
+            },
+            "warnings": {
+                "lateQueenCellCheck": {
+                    "title": "",
+                    "description": ""
+                },
+                "unsafeCheckpointSpacing": {
+                    "title": "",
+                    "description": ""
+                },
+                "illogicalScheduleOrder": {
+                    "title": "",
+                    "description": ""
+                }
+            }
+        },
+        "artificialSwarm": {
+            "badge": "",
+            "title": "",
+            "description": "",
+            "intro": "",
+            "overviewTitle": "",
+            "overviewLead": "",
+            "overviewPoints": [
+                "",
+                "",
+                ""
+            ],
+            "prerequisitesTitle": "",
+            "prerequisites": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "stepsTitle": "",
+            "stepsDescription": "",
+            "methodDetail": {
+                "preparation": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "relocateQueen": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "queenCells": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                },
+                "reassembly": {
+                    "title": "",
+                    "items": [
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "text": ""
+                        }
+                    ]
+                }
+            },
+            "advantagesTitle": "",
+            "advantagesDescription": "",
+            "advantages": [
+                "",
+                "",
+                ""
+            ],
+            "followUpTitle": "",
+            "followUpDayHeader": "",
+            "followUpTaskHeader": "",
+            "followUp": [
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                },
+                {
+                    "day": "",
+                    "task": ""
+                }
+            ],
+            "prosConsTitle": "",
+            "prosTitle": "",
+            "consTitle": "",
+            "pros": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "cons": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "faq": {
+                "title": "",
+                "items": [
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    },
+                    {
+                        "question": "",
+                        "answer": ""
+                    }
+                ]
+            },
+            "planner": {
+                "title": "",
+                "description": "",
+                "selectHiveLabel": "",
+                "selectHivePlaceholder": "",
+                "startDateLabel": "",
+                "startDatePlaceholder": "",
+                "generateButton": "",
+                "saveButton": "",
+                "checkpointPrefix": "",
+                "notesChecklistLabel": "",
+                "savedSuccess": "",
+                "savedPartial": "",
+                "savedError": "",
+                "noHivesMessage": "",
+                "checkpoints": {
+                    "setup": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "queenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "secondQueenCellCheck": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    },
+                    "colonyReview": {
+                        "title": "",
+                        "summary": "",
+                        "checklist": [
+                            "",
+                            "",
+                            ""
+                        ]
+                    }
+                }
+            },
+            "warnings": {
+                "lateQueenCellCheck": {
+                    "title": "",
+                    "description": ""
+                },
+                "unsafeCheckpointSpacing": {
+                    "title": "",
+                    "description": ""
+                },
+                "illogicalScheduleOrder": {
+                    "title": "",
+                    "description": ""
+                }
+            }
+        },
+        "cushmanCredit": {
+            "text": "",
+            "linkLabel": ""
+        }
+    },
+    "footer": {
+        "privacyPolicy": "Zásady ochrany osobných údajov"
+    },
+    "bulkAdd": {
+        "title": "Hromadné pridanie",
+        "subtitle": "Vyberte dátum a úle, ktorých sa to týka, zostavte akciu, prehliadku alebo záznam o matke a pridajte to do frontu.",
+        "loading": "Načítavajú sa úle…",
+        "sections": {
+            "when": "Kedy",
+            "hives": "Úle",
+            "what": "Čo",
+            "queue": "Front"
+        },
+        "tabs": {
+            "actions": "Akcie",
+            "inspections": "Prehliadky",
+            "queens": "Matky"
+        },
+        "hives": {
+            "filterPlaceholder": "Filtrovať úle",
+            "selectAll": "Vybrať všetky",
+            "clearVisible": "Zrušiť výber",
+            "noMatches": "Žiadne úle nezodpovedajú „{{filter}}“"
+        },
+        "datePlaceholder": "Vyberte dátum",
+        "applyHint": "Použiť pre {{count}} úľ dňa {{date}}",
+        "applyHintPlural": "Použiť pre {{count}} úľov dňa {{date}}",
+        "selectHivesHint": "Vyberte aspoň jeden úľ vľavo",
+        "addToQueue": {
+            "action": "Pridať akciu do frontu",
+            "inspection": "Pridať prehliadku do frontu",
+            "queen": "Pridať matku do frontu"
+        },
+        "queue": {
+            "clear": "Vymazať",
+            "emptyTitle": "Front je prázdny",
+            "emptyBody": "Zostavte niečo vľavo a pridajte to do frontu.",
+            "submit": "Odoslať",
+            "submitOne": "Odoslať {{count}} položku",
+            "submitMany": "Odoslať {{count}} položiek",
+            "submitting": "Odosiela sa…"
+        },
+        "kind": {
+            "action": "Akcia",
+            "inspection": "Prehliadka",
+            "queen": "Matka"
+        },
+        "edit": {
+            "title": "Upraviť akciu",
+            "hive": "Úľ",
+            "type": "Typ",
+            "date": "Dátum",
+            "cancel": "Zrušiť",
+            "save": "Uložiť zmeny"
+        },
+        "errors": {
+            "noHives": "Vyberte aspoň jeden úľ",
+            "emptyAction": "Pridajte aspoň jednu akciu pred odoslaním do frontu",
+            "emptyInspection": "Najprv vyplňte nejaké polia prehliadky",
+            "emptyQueen": "Najprv vyplňte údaje o matke",
+            "noItems": "Žiadne položky na odoslanie"
+        },
+        "toast": {
+            "addedOne": "Pridaná {{count}} položka do frontu",
+            "addedMany": "Pridaných {{count}} položiek do frontu",
+            "actionUpdated": "Akcia bola aktualizovaná",
+            "createdOne": "Vytvorená {{count}} položka: {{breakdown}}",
+            "createdMany": "Vytvorených {{count}} položiek: {{breakdown}}",
+            "partial": "Vytvorených {{success}}, zlyhalo {{failed}}. Zlyhané položky ostávajú vo fronte.",
+            "breakdown": {
+                "actionOne": "{{count}} akcia",
+                "actionMany": "{{count}} akcií",
+                "inspectionOne": "{{count}} prehliadka",
+                "inspectionMany": "{{count}} prehliadok",
+                "queenOne": "{{count}} matka",
+                "queenMany": "{{count}} matiek"
+            }
+        }
+    },
+    "marketing": {
+        "toolsIndex": {
+            "items": {
+                "liebefelder": {
+                    "title": "Liebefelder Schätzmethode",
+                    "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+                }
+            }
+        }
+    },
+    "files": {
+        "apiary": "Včelnica"
     }
-  },
-  "syrupCalculator": {
-    "title": "Kalkulačka cukrového roztoku",
-    "description": "Vypočítajte množstvo cukru a vody pre kŕmny roztok",
-    "intro": "Bezplatná kalkulačka cukrového roztoku pre včelárov. Roztok 1:1 (riedky) použite na jarné podnietenie, 3:2 (stredný) ako univerzálne krmivo a 2:1 (hustý) na jesenné kŕmenie a budovanie zimných zásob. Vyberte objem nádoby a pomer — presné hmotnosti cukru a vody sa vypočítajú z vytlačenia objemu sacharózou tak, aby hotový roztok naplnil vašu nádobu.",
-    "units": "Jednotky",
-    "unitsDescription": "Prepínajte medzi metrickými a imperiálnymi jednotkami",
-    "metric": "Metrické (L, g, kg)",
-    "imperial": "Imperiálne (qt, gal, lb)",
-    "ratio": "Pomer roztoku",
-    "ratioDescription": "Pomer cukru k vode (podľa hmotnosti a objemu)",
-    "thin": "Riedky (1:1)",
-    "medium": "Stredný (3:2)",
-    "thick": "Hustý (2:1)",
-    "containerSize": "Veľkosť nádoby",
-    "containerDescription": "Celkový objem roztoku, ktorý chcete pripraviť",
-    "customSize": "Vlastná",
-    "results": "Výsledky",
-    "water": "Voda",
-    "sugar": "Cukor",
-    "totalWeight": "Celková hmotnosť",
-    "instructions": "Postup",
-    "step1": "Odmerajte {{water}} vody",
-    "step2": "Vodu zohrejte, kým nebude teplá (nie vriaca)",
-    "step3": "Pridajte {{sugar}} bieleho kryštálového cukru",
-    "step4": "Miešajte, kým sa cukor úplne nerozpustí",
-    "step5": "Pred kŕmením nechajte roztok vychladnúť na izbovú teplotu",
-    "tips": "Tipy a návod na použitie",
-    "tip1Title": "Riedky roztok (1:1)",
-    "tip1Description": "Najvhodnejší na jarné kŕmenie na podnietenie plodovania a napodobnenie znášky. Použite ho, keď včely potrebujú povzbudiť k rozvoju.",
-    "tip2Title": "Stredný roztok (3:2)",
-    "tip2Description": "Dobrý univerzálny roztok. Funguje na jarné podnietenie aj na ľahké jesenné kŕmenie.",
-    "tip3Title": "Hustý roztok (2:1)",
-    "tip3Description": "Najvhodnejší na jesenné kŕmenie a budovanie zimných zásob. Včely ho dokážu rýchlo uložiť s menšou námahou na odparenie prebytočnej vody.",
-    "tip4Title": "Všeobecné tipy",
-    "tip4Description": "Používajte vždy biely kryštálový cukor — nikdy nie hnedý cukor, melasu ani umelé sladidlá. Roztok nevarte, pretože môže vzniknúť HMF (hydroxymetylfurfural), ktorý je pre včely toxický. Kŕmte večer, aby ste obmedzili lúpež.",
-    "faq": {
-      "title": "Časté otázky",
-      "items": [
-        {
-          "question": "Aký pomer cukru a vody mám použiť na kŕmenie včiel?",
-          "answer": "Roztok 1:1 (rovnaké diely cukru a vody podľa hmotnosti) použite na jar na podnietenie plodovania, 3:2 ako univerzálne krmivo a 2:1 (dva diely cukru na jeden diel vody) na jeseň na budovanie zimných zásob. Hustý roztok včely ľahšie premenia na zaviečkované zásoby; riedky roztok napodobňuje znášku."
-        },
-        {
-          "question": "Kedy mám včelám podávať riedky roztok (1:1)?",
-          "answer": "Riedky roztok 1:1 podávajte na jar alebo vždy, keď chcete podnietiť plodovanie. Jeho obsah vody napodobňuje prirodzenú znášku a povzbudzuje matku ku kladeniu a včelstvo k rozvoju."
-        },
-        {
-          "question": "Kedy mám včelám podávať hustý roztok (2:1)?",
-          "answer": "Hustý roztok 2:1 podávajte koncom leta a na jeseň, aby si včelstvá vybudovali zimné zásoby. Nižší obsah vody znamená, že včely spotrebujú menej energie na jej odparenie pred zaviečkovaním."
-        },
-        {
-          "question": "Môžem na roztok použiť hnedý cukor, med alebo melasu?",
-          "answer": "Nie. Používajte iba biely kryštálový trstinový alebo repný cukor. Hnedý cukor, melasa a nerafinované sladidlá obsahujú látky, ktoré u včiel spôsobujú hnačku. Med z neznámych zdrojov môže navyše prenášať choroby."
-        },
-        {
-          "question": "Mám cukrový roztok pre včely variť?",
-          "answer": "Nie. Vodu zohrejte len natoľko, aby sa cukor rozpustil, ale nevarte ju. Varením cukrového roztoku vzniká hydroxymetylfurfural (HMF), ktorý je pre včely toxický."
-        },
-        {
-          "question": "Koľko cukru potrebujem na jeden liter roztoku 1:1?",
-          "answer": "Na jeden liter hotového roztoku 1:1 potrebujete približne 715 g vody a 715 g bieleho kryštálového cukru. Presné množstvá závisia od pomeru a konečného objemu — túto kalkulačku počíta na základe vytlačenia objemu sacharózou."
-        }
-      ]
-    }
-  },
-  "swarmManagement": {
-    "backToOverview": "Back to Swarm Management",
-    "eyebrow": "Swarm control guidance",
-    "title": "Swarm Management",
-    "cards": {
-      "available": "Available",
-      "comingSoon": "Coming soon",
-      "placeholderCta": "Not available yet",
-      "demaree": {
-        "title": "Demaree Method",
-        "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
-        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
-        "cta": "Open guide"
-      },
-      "pagden": {
-        "title": "Pagden split",
-        "description": "Placeholder for a future guide covering the classic artificial swarm split.",
-        "detail": "",
-        "cta": ""
-      },
-      "artificialSwarm": {
-        "title": "Artificial swarm",
-        "description": "Placeholder for a future guide focused on moving flying bees and brood apart.",
-        "detail": "",
-        "cta": ""
-      }
-    },
-    "aside": {
-      "title": "Choosing a method",
-      "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
-      "points": [
-        "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
-        "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
-        "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
-      ],
-      "criticalTimingTitle": "Critical timing",
-      "criticalTimingLead": "The first follow-up is the point where timing matters most.",
-      "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
-    },
-    "demaree": {
-      "badge": "Reference method",
-      "title": "Demaree Method",
-      "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
-      "overviewTitle": "Method overview",
-      "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
-      "overviewPoints": [
-        "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
-        "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
-        "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
-      ],
-      "prerequisitesTitle": "Prerequisites",
-      "prerequisites": [
-        "Check that the hive is a strong colony with enough bees and brood to justify the method.",
-        "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
-        "Make sure you can find and confidently retain the laying queen in the lower brood box.",
-        "Have a queen excluder ready, with at least two honey supers available to stack above it.",
-        "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
-        "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
-      ],
-      "stepsTitle": "Method Detail",
-      "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
-      "methodDetail": {
-        "preparation": {
-          "title": "Preparation",
-          "items": [
-            {
-              "text": "Find a spare brood box with foundation or drawn comb.",
-              "children": [
-                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
-              ]
-            },
-            {
-              "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
-            }
-          ]
-        },
-        "huntTheQueen": {
-          "title": "Hunt the Queen",
-          "items": [
-            {
-              "text": "Inspect the old brood box(es) and locate the Queen."
-            },
-            {
-              "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
-            }
-          ]
-        },
-        "broodManipulation": {
-          "title": "Brood Manipulation",
-          "items": [
-            {
-              "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
-              "children": [
-                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
-              ]
-            },
-            {
-              "text": "Make sure to knock down all queen cells.",
-              "children": [
-                "With the queen safe you can shake bees off the frames to make sure you find them all."
-              ]
-            },
-            {
-              "text": "(Double Brood) - You should now have three brood boxes.",
-              "children": [
-                "Box with the queen, mostly empty directly on the hive floor.",
-                "Box with no brood - place this on top of the queen to retain double brood status.",
-                "Box with all the brood - keep this aside for now."
-              ]
-            }
-          ]
-        },
-        "reassembly": {
-          "title": "Reassembly",
-          "items": [
-            {
-              "text": "Put the queen excluder on top of the new brood boxes."
-            },
-            {
-              "text": "Add the supers (minimum 2, add extra if more space is required)."
-            },
-            {
-              "text": "Place an additional queen excluder over the supers."
-            },
-            {
-              "text": "The box with all the brood now goes on top of the supers."
-            },
-            {
-              "text": "Fit crown board and roof and the job is done."
-            }
-          ]
-        }
-      },
-      "advantagesTitle": "Why the method works",
-      "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
-      "advantages": [
-        "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
-        "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
-        "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
-      ],
-      "followUpTitle": "Follow-up timing",
-      "followUpDayHeader": "Day",
-      "followUpTaskHeader": "Task",
-      "followUp": [
-        {
-          "day": "Day 7-8",
-          "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
-        },
-        {
-          "day": "Day 14-15",
-          "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
-        },
-        {
-          "day": "Day 21-22",
-          "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
-        }
-      ],
-      "prosConsTitle": "Pros and Cons",
-      "prosTitle": "Advantages",
-      "consTitle": "Disadvantages",
-      "pros": [
-        "Works well as a swarm control method.",
-        "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
-        "Comb renewal is simple.",
-        "Good brood combs can be drawn out in the top box.",
-        "The effect is similar to an artificial swarm, but the colony is kept together."
-      ],
-      "cons": [
-        "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
-        "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
-        "There may be heavy lifting.",
-        "Regular inspections are essential.",
-        "You MUST understand the basics."
-      ]
-    },
-    "planner": {
-      "title": "Demaree inspection planner",
-      "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
-      "hiveLabel": "Hive",
-      "hivePlaceholder": "Select a hive",
-      "startDateLabel": "Demaree setup date",
-      "startDatePlaceholder": "Pick the setup date",
-      "generate": "Generate checkpoints",
-      "selectedHive": "Selected hive",
-      "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
-      "notesLabel": "Inspection notes",
-      "notesChecklistLabel": "Checklist",
-      "checkpointPrefix": "Demaree checkpoint:",
-      "dayOffset_one": "Day {{count}}",
-      "dayOffset_other": "Day {{count}}",
-      "save": "Save scheduled inspections",
-      "saving": "Saving inspections...",
-      "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
-      "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
-      "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
-      "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
-      "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
-      "checkpoints": {
-        "setup": {
-          "title": "Initial Demaree setup",
-          "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
-          "checklist": [
-            "Confirm the laying queen is in the lower brood box.",
-            "Place the brood and supers in the planned Demaree order.",
-            "Record any details you want visible at the next inspection."
-          ]
-        },
-        "queenCellCheck": {
-          "title": "Queen-cell check",
-          "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
-          "checklist": [
-            "Inspect every brood frame above the excluder for queen cells.",
-            "Remove queen cells started during the swarm impulse.",
-            "Confirm the queen still has room and activity below."
-          ]
-        },
-        "secondQueenCellCheck": {
-          "title": "Second queen-cell check",
-          "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
-          "checklist": [
-            "Look again for newly started or missed queen cells.",
-            "Check whether brood and stores need to be rebalanced.",
-            "Note whether the colony is settling or still crowding upward."
-          ]
-        },
-        "colonyReview": {
-          "title": "Colony review",
-          "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
-          "checklist": [
-            "Assess whether the colony can return to a more normal arrangement.",
-            "Check space, brood pattern, and nectar intake across the stack.",
-            "Schedule any additional inspection you want beyond the standard plan."
-          ]
-        }
-      }
-    },
-    "warnings": {
-      "bannerTitle": "Timing warnings",
-      "lateQueenCellCheck": {
-        "title": "First queen-cell check is later than day 8",
-        "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
-      },
-      "unsafeCheckpointSpacing": {
-        "title": "Checkpoint spacing looks risky",
-        "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
-      },
-      "illogicalScheduleOrder": {
-        "title": "Checkpoint order is no longer chronological",
-        "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
-      }
-    },
-    "pagden": {
-      "badge": "",
-      "title": "",
-      "description": "",
-      "intro": "",
-      "overviewTitle": "",
-      "overviewLead": "",
-      "overviewPoints": [
-        "",
-        "",
-        ""
-      ],
-      "prerequisitesTitle": "",
-      "prerequisites": [
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "stepsTitle": "",
-      "stepsDescription": "",
-      "methodDetail": {
-        "preparation": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        },
-        "relocateQueen": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        },
-        "queenCells": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        },
-        "reassembly": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        }
-      },
-      "advantagesTitle": "",
-      "advantagesDescription": "",
-      "advantages": [
-        "",
-        "",
-        ""
-      ],
-      "followUpTitle": "",
-      "followUpDayHeader": "",
-      "followUpTaskHeader": "",
-      "followUp": [
-        {
-          "day": "",
-          "task": ""
-        },
-        {
-          "day": "",
-          "task": ""
-        },
-        {
-          "day": "",
-          "task": ""
-        }
-      ],
-      "prosConsTitle": "",
-      "prosTitle": "",
-      "consTitle": "",
-      "pros": [
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "cons": [
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "faq": {
-        "title": "",
-        "items": [
-          {
-            "question": "",
-            "answer": ""
-          },
-          {
-            "question": "",
-            "answer": ""
-          },
-          {
-            "question": "",
-            "answer": ""
-          },
-          {
-            "question": "",
-            "answer": ""
-          }
-        ]
-      },
-      "planner": {
-        "title": "",
-        "description": "",
-        "selectHiveLabel": "",
-        "selectHivePlaceholder": "",
-        "startDateLabel": "",
-        "startDatePlaceholder": "",
-        "generateButton": "",
-        "saveButton": "",
-        "checkpointPrefix": "",
-        "notesChecklistLabel": "",
-        "savedSuccess": "",
-        "savedPartial": "",
-        "savedError": "",
-        "noHivesMessage": "",
-        "checkpoints": {
-          "setup": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          },
-          "queenCellCheck": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          },
-          "secondQueenCellCheck": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          },
-          "colonyReview": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          }
-        }
-      },
-      "warnings": {
-        "lateQueenCellCheck": {
-          "title": "",
-          "description": ""
-        },
-        "unsafeCheckpointSpacing": {
-          "title": "",
-          "description": ""
-        },
-        "illogicalScheduleOrder": {
-          "title": "",
-          "description": ""
-        }
-      }
-    },
-    "artificialSwarm": {
-      "badge": "",
-      "title": "",
-      "description": "",
-      "intro": "",
-      "overviewTitle": "",
-      "overviewLead": "",
-      "overviewPoints": [
-        "",
-        "",
-        ""
-      ],
-      "prerequisitesTitle": "",
-      "prerequisites": [
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "stepsTitle": "",
-      "stepsDescription": "",
-      "methodDetail": {
-        "preparation": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        },
-        "relocateQueen": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        },
-        "queenCells": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        },
-        "reassembly": {
-          "title": "",
-          "items": [
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            },
-            {
-              "text": ""
-            }
-          ]
-        }
-      },
-      "advantagesTitle": "",
-      "advantagesDescription": "",
-      "advantages": [
-        "",
-        "",
-        ""
-      ],
-      "followUpTitle": "",
-      "followUpDayHeader": "",
-      "followUpTaskHeader": "",
-      "followUp": [
-        {
-          "day": "",
-          "task": ""
-        },
-        {
-          "day": "",
-          "task": ""
-        },
-        {
-          "day": "",
-          "task": ""
-        }
-      ],
-      "prosConsTitle": "",
-      "prosTitle": "",
-      "consTitle": "",
-      "pros": [
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "cons": [
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "faq": {
-        "title": "",
-        "items": [
-          {
-            "question": "",
-            "answer": ""
-          },
-          {
-            "question": "",
-            "answer": ""
-          },
-          {
-            "question": "",
-            "answer": ""
-          },
-          {
-            "question": "",
-            "answer": ""
-          }
-        ]
-      },
-      "planner": {
-        "title": "",
-        "description": "",
-        "selectHiveLabel": "",
-        "selectHivePlaceholder": "",
-        "startDateLabel": "",
-        "startDatePlaceholder": "",
-        "generateButton": "",
-        "saveButton": "",
-        "checkpointPrefix": "",
-        "notesChecklistLabel": "",
-        "savedSuccess": "",
-        "savedPartial": "",
-        "savedError": "",
-        "noHivesMessage": "",
-        "checkpoints": {
-          "setup": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          },
-          "queenCellCheck": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          },
-          "secondQueenCellCheck": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          },
-          "colonyReview": {
-            "title": "",
-            "summary": "",
-            "checklist": [
-              "",
-              "",
-              ""
-            ]
-          }
-        }
-      },
-      "warnings": {
-        "lateQueenCellCheck": {
-          "title": "",
-          "description": ""
-        },
-        "unsafeCheckpointSpacing": {
-          "title": "",
-          "description": ""
-        },
-        "illogicalScheduleOrder": {
-          "title": "",
-          "description": ""
-        }
-      }
-    },
-    "cushmanCredit": {
-      "text": "",
-      "linkLabel": ""
-    }
-  },
-  "footer": {
-    "privacyPolicy": "Zásady ochrany osobných údajov"
-  },
-  "bulkAdd": {
-    "title": "Hromadné pridanie",
-    "subtitle": "Vyberte dátum a úle, ktorých sa to týka, zostavte akciu, prehliadku alebo záznam o matke a pridajte to do frontu.",
-    "loading": "Načítavajú sa úle…",
-    "sections": {
-      "when": "Kedy",
-      "hives": "Úle",
-      "what": "Čo",
-      "queue": "Front"
-    },
-    "tabs": {
-      "actions": "Akcie",
-      "inspections": "Prehliadky",
-      "queens": "Matky"
-    },
-    "hives": {
-      "filterPlaceholder": "Filtrovať úle",
-      "selectAll": "Vybrať všetky",
-      "clearVisible": "Zrušiť výber",
-      "noMatches": "Žiadne úle nezodpovedajú „{{filter}}“"
-    },
-    "datePlaceholder": "Vyberte dátum",
-    "applyHint": "Použiť pre {{count}} úľ dňa {{date}}",
-    "applyHintPlural": "Použiť pre {{count}} úľov dňa {{date}}",
-    "selectHivesHint": "Vyberte aspoň jeden úľ vľavo",
-    "addToQueue": {
-      "action": "Pridať akciu do frontu",
-      "inspection": "Pridať prehliadku do frontu",
-      "queen": "Pridať matku do frontu"
-    },
-    "queue": {
-      "clear": "Vymazať",
-      "emptyTitle": "Front je prázdny",
-      "emptyBody": "Zostavte niečo vľavo a pridajte to do frontu.",
-      "submit": "Odoslať",
-      "submitOne": "Odoslať {{count}} položku",
-      "submitMany": "Odoslať {{count}} položiek",
-      "submitting": "Odosiela sa…"
-    },
-    "kind": {
-      "action": "Akcia",
-      "inspection": "Prehliadka",
-      "queen": "Matka"
-    },
-    "edit": {
-      "title": "Upraviť akciu",
-      "hive": "Úľ",
-      "type": "Typ",
-      "date": "Dátum",
-      "cancel": "Zrušiť",
-      "save": "Uložiť zmeny"
-    },
-    "errors": {
-      "noHives": "Vyberte aspoň jeden úľ",
-      "emptyAction": "Pridajte aspoň jednu akciu pred odoslaním do frontu",
-      "emptyInspection": "Najprv vyplňte nejaké polia prehliadky",
-      "emptyQueen": "Najprv vyplňte údaje o matke",
-      "noItems": "Žiadne položky na odoslanie"
-    },
-    "toast": {
-      "addedOne": "Pridaná {{count}} položka do frontu",
-      "addedMany": "Pridaných {{count}} položiek do frontu",
-      "actionUpdated": "Akcia bola aktualizovaná",
-      "createdOne": "Vytvorená {{count}} položka: {{breakdown}}",
-      "createdMany": "Vytvorených {{count}} položiek: {{breakdown}}",
-      "partial": "Vytvorených {{success}}, zlyhalo {{failed}}. Zlyhané položky ostávajú vo fronte.",
-      "breakdown": {
-        "actionOne": "{{count}} akcia",
-        "actionMany": "{{count}} akcií",
-        "inspectionOne": "{{count}} prehliadka",
-        "inspectionMany": "{{count}} prehliadok",
-        "queenOne": "{{count}} matka",
-        "queenMany": "{{count}} matiek"
-      }
-    }
-  },
-  "marketing": {
-    "toolsIndex": {
-      "items": {
-        "liebefelder": {
-          "title": "Liebefelder Schätzmethode",
-          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
-        }
-      }
-    }
-  },
-  "files": {
-    "apiary": "Včelnica"
-  }
 }
