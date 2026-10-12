@@ -1,12 +1,9 @@
-import { defineConfig, devices } from '@playwright/experimental-ct-react';
-import { dirname, resolve } from 'path';
-import react from '@vitejs/plugin-react';
-import { fileURLToPath } from 'node:url';
-// @ts-expect-error __filename and __dirname are not available in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { defineConfig, devices } from '@playwright/test';
+
 /**
- * See https://playwright.dev/docs/test-configuration.
+ * Component tests run against the story gallery (playwright/gallery/),
+ * served by the app's own Vite dev server — see
+ * https://playwright.dev/docs/test-components
  */
 export default defineConfig({
   testDir: './',
@@ -31,26 +28,27 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     testIdAttribute: 'data-test',
-    /* Port to use for Playwright component endpoint. */
-    ctPort: 3100,
-    ctViteConfig: {
-      plugins: [react()],
-      resolve: {
-        alias: [
-          {
-            find: '@',
-            replacement: resolve(__dirname, './src'),
-          },
-        ],
-      },
-    },
   },
 
-  /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // The mount fixture navigates to baseURL, so it must point at the gallery.
+        baseURL: 'http://localhost:5173/playwright/gallery/index.html',
+        // Keep the app's own service worker from serving cached responses
+        // that would shadow page.route() mocks.
+        serviceWorkers: 'block',
+        // Reuse the browser context between tests in a worker (large speedup).
+        reuseContext: true,
+      },
     },
   ],
+
+  webServer: {
+    command: 'pnpm run dev',
+    url: 'http://localhost:5173/playwright/gallery/index.html',
+    reuseExistingServer: !process.env.CI,
+  },
 });

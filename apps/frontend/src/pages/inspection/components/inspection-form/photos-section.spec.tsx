@@ -1,8 +1,4 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-import {
-  PhotosForExistingInspection,
-  PhotosForNewInspection,
-} from './photos-section.story';
+import { test, expect } from '@playwright/test';
 
 const INSPECTION_ID = '11111111-1111-1111-1111-111111111111';
 
@@ -31,7 +27,9 @@ test('reports it when the API rejects the upload', async ({ mount, page }) => {
     });
   });
 
-  const component = await mount(<PhotosForExistingInspection />);
+  const component = await mount(
+    'pages/inspection/components/inspection-form/photos-section/PhotosForExistingInspection',
+  );
   await component
     .locator('input[type="file"]:not([capture])')
     .setInputFiles(IMAGE);
@@ -52,7 +50,9 @@ test('reports it when the request never reaches the API', async ({
     return route.fulfill({ status: 413, body: 'Payload Too Large' });
   });
 
-  const component = await mount(<PhotosForExistingInspection />);
+  const component = await mount(
+    'pages/inspection/components/inspection-form/photos-section/PhotosForExistingInspection',
+  );
   await component
     .locator('input[type="file"]:not([capture])')
     .setInputFiles(IMAGE);
@@ -64,7 +64,9 @@ test('rejects an unsupported file without contacting the API', async ({
   mount,
   page,
 }) => {
-  const component = await mount(<PhotosForNewInspection />);
+  const component = await mount(
+    'pages/inspection/components/inspection-form/photos-section/PhotosForNewInspection',
+  );
   await component.locator('input[type="file"]:not([capture])').setInputFiles({
     name: 'notes.pdf',
     mimeType: 'application/pdf',
@@ -79,7 +81,9 @@ test('shows a thumbnail for a photo picked on an unsaved inspection', async ({
   mount,
   page,
 }) => {
-  const component = await mount(<PhotosForNewInspection />);
+  const component = await mount(
+    'pages/inspection/components/inspection-form/photos-section/PhotosForNewInspection',
+  );
   await component
     .locator('input[type="file"]:not([capture])')
     .setInputFiles(IMAGE);

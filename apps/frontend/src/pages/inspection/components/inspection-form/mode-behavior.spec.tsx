@@ -1,12 +1,8 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@playwright/test';
 import {
   applyInspectionModeToFormData,
   getModeSpecificObservations,
 } from './mode-behavior';
-import {
-  DataDrivenObservationsWithForm,
-  SubjectiveObservationsWithAi,
-} from './mode-behavior.story';
 import type { InspectionFormData } from './schema';
 
 test.describe('Inspection mode behavior', () => {
@@ -14,7 +10,9 @@ test.describe('Inspection mode behavior', () => {
     mount,
     page,
   }) => {
-    await mount(<DataDrivenObservationsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/mode-behavior/DataDrivenObservationsWithForm',
+    );
 
     await expect(
       page.getByRole('button', { name: 'Increase Strength' }),
@@ -34,7 +32,9 @@ test.describe('Inspection mode behavior', () => {
     mount,
     page,
   }) => {
-    await mount(<SubjectiveObservationsWithAi />);
+    await mount(
+      'pages/inspection/components/inspection-form/mode-behavior/SubjectiveObservationsWithAi',
+    );
 
     await expect(page.getByText('Capped Brood', { exact: true })).toBeVisible();
     await expect(
