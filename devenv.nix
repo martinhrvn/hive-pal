@@ -3,12 +3,14 @@
 let
   pkgs-playwright =
     import inputs.nixpkgs-playwright { system = pkgs.stdenv.system; };
+  # No config runs WebKit, and its build at this pin fails (libmanette missing).
+  playwright-browsers =
+    pkgs-playwright.playwright-driver.browsers.override { withWebkit = false; };
 in {
   packages = with pkgs; [
     nodejs_22
     pnpm_9
-    pkgs-playwright.playwright-driver.browsers
-    pkgs-playwright.playwright-test
+    playwright-browsers
     openssl
     prisma
     go-task
@@ -20,7 +22,7 @@ in {
     # Keep nixpkgs-playwright pinned to the same Playwright version as the
     # `playwright` catalog in pnpm-workspace.yaml, otherwise the browsers here
     # do not match the revision @playwright/test expects.
-    PLAYWRIGHT_BROWSERS_PATH = "${pkgs-playwright.playwright.browsers}";
+    PLAYWRIGHT_BROWSERS_PATH = "${playwright-browsers}";
     PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
     PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";

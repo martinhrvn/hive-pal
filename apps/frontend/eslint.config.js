@@ -7,7 +7,7 @@ import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default tseslint.config(
   {
-    ignores: ['dist', '.react-router', 'src/components/ui/**', 'playwright/**'],
+    ignores: ['dist', '.react-router', 'src/components/ui/**'],
   },
   {
     extends: [

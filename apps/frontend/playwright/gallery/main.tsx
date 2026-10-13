@@ -7,14 +7,18 @@ import '../../src/index.css';
 import '../../src/lib/i18n';
 import i18n from 'i18next';
 
+// Stories take arbitrary serialisable props from the test; the gallery only
+// forwards them, so a loose props type is enough here.
+type Story = ComponentType<Record<string, unknown>>;
+
 // Discover every story file next to the components. Story ids are the path
 // under src/ without the `.story.tsx` suffix, plus the export name, e.g.
 // `components/common/numeric-input-field/NumericInputFieldWithIcon`.
 const storyModules = import.meta.glob('../../src/**/*.story.tsx', {
   eager: true,
-}) as Record<string, Record<string, ComponentType<any>>>;
+}) as Record<string, Record<string, Story>>;
 
-const registry = new Map<string, ComponentType<any>>();
+const registry = new Map<string, Story>();
 for (const [path, mod] of Object.entries(storyModules)) {
   const base = path.replace('../../src/', '').replace(/\.story\.tsx$/, '');
   for (const [exportName, Component] of Object.entries(mod)) {
@@ -92,7 +96,8 @@ async function mount({ story, props }: MountParams): Promise<void> {
 async function unmount(): Promise<void> {
   root?.unmount();
   root = null;
-  document.getElementById('root')!.innerHTML = '';
+  const el = document.getElementById('root');
+  if (el) el.innerHTML = '';
 }
 
 declare global {

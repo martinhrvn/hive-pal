@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Component tests run against the story gallery (playwright/gallery/),
- * served by the app's own Vite dev server — see
+ * served by its own Vite server (vite.gallery.config.ts) — see
  * https://playwright.dev/docs/test-components
  */
 export default defineConfig({
@@ -36,7 +36,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         // The mount fixture navigates to baseURL, so it must point at the gallery.
-        baseURL: 'http://localhost:5173/playwright/gallery/index.html',
+        baseURL: 'http://localhost:3100/playwright/gallery/index.html',
         // Keep the app's own service worker from serving cached responses
         // that would shadow page.route() mocks.
         serviceWorkers: 'block',
@@ -47,8 +47,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'pnpm run dev',
-    url: 'http://localhost:5173/playwright/gallery/index.html',
+    command: 'pnpm exec vite --config vite.gallery.config.ts',
+    url: 'http://localhost:3100/playwright/gallery/index.html',
     reuseExistingServer: !process.env.CI,
   },
 });

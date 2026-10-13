@@ -26,6 +26,7 @@
   },
   "include": [
     "vite.config.ts",
+    "vite.gallery.config.ts",
     "react-router.config.ts",
     "scripts/finalize-client-build.ts"
   ]

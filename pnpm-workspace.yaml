@@ -13,4 +13,4 @@ catalogs:
   typescript:
     typescript: 5.9.x
   playwright:
-    '@playwright/test': '1.64'
+    '@playwright/test': 1.63.0
