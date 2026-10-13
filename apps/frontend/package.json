@@ -74,7 +74,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/experimental-ct-react": "catalog:playwright",
     "@playwright/test": "catalog:playwright",
     "@react-router/dev": "^7.18.4",
     "@tanstack/eslint-plugin-query": "^5.104.1",

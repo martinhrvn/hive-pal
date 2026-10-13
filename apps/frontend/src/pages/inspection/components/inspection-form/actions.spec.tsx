@@ -1,12 +1,13 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@playwright/test';
 import { ActionsSectionPageObject } from 'page-objects';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
-import { ActionsWithForm } from '@/pages/inspection/components/inspection-form/actions.story.tsx';
 
 test.describe('Action chips', () => {
   ['Feeding', 'Treatment', 'Frames'].forEach(label => {
     test(`renders ${label} chip`, async ({ page, mount }) => {
-      await mount(<ActionsWithForm />);
+      await mount(
+        'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+      );
       await expect(page.getByText(label)).toBeVisible();
     });
   });
@@ -17,7 +18,9 @@ test.describe('Feeding', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -37,7 +40,9 @@ test.describe('Feeding', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -61,7 +66,9 @@ test.describe('Feeding', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -83,7 +90,9 @@ test.describe('Feeding', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -105,7 +114,9 @@ test.describe('Feeding', () => {
   });
 
   test('Water dilution is recorded in ml', async ({ page, mount }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -124,7 +135,9 @@ test.describe('Feeding', () => {
   });
 
   test('Edit should work', async ({ page, mount }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -152,7 +165,9 @@ test.describe('Feeding', () => {
   });
 
   test('Remove should work', async ({ page, mount }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -178,7 +193,9 @@ test.describe('Feeding', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const feedingSection = actionsSection.feedingSection;
     await actionsSection.selectAction('Feeding');
@@ -235,7 +252,9 @@ test.describe('Treatment', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
@@ -252,7 +271,9 @@ test.describe('Treatment', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
@@ -264,7 +285,9 @@ test.describe('Treatment', () => {
   });
 
   test('Edit should work', async ({ page, mount }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
@@ -281,7 +304,9 @@ test.describe('Treatment', () => {
   });
 
   test('Remove should work', async ({ page, mount }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const treatmentSection = actionsSection.treatmentSection;
     await actionsSection.selectAction('Treatment');
@@ -302,7 +327,9 @@ test.describe('Frames', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
@@ -322,7 +349,9 @@ test.describe('Frames', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
@@ -337,7 +366,9 @@ test.describe('Frames', () => {
     page,
     mount,
   }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
@@ -349,7 +380,9 @@ test.describe('Frames', () => {
   });
 
   test('Edit should work', async ({ page, mount }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');
@@ -366,7 +399,9 @@ test.describe('Frames', () => {
   });
 
   test('Remove should work', async ({ page, mount }) => {
-    await mount(<ActionsWithForm />);
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
     const actionsSection = new ActionsSectionPageObject(page);
     const framesSection = actionsSection.framesSection;
     await actionsSection.selectAction('Frames');

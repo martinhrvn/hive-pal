@@ -1,16 +1,13 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-import {
-  AiDraftFlow,
-  AiDraftFlowWithExistingFeeding,
-  AiDraftFlowLegacyDraft,
-} from './ai-draft-flow.story';
+import { test, expect } from '@playwright/test';
 
 test.describe('AI inspection draft flow (canonical shape)', () => {
   test('renders per-action suggestions and accepting one merges it into the form', async ({
     mount,
     page,
   }) => {
-    await mount(<AiDraftFlow />);
+    await mount(
+      'pages/inspection/components/inspection-form/ai-draft-flow/AiDraftFlow',
+    );
 
     // One suggestion card per action (actions are shown in the form's shape).
     await expect(page.getByText('treatmentType: OXALIC_ACID')).toBeVisible();
@@ -36,7 +33,9 @@ test.describe('AI inspection draft flow (canonical shape)', () => {
     mount,
     page,
   }) => {
-    await mount(<AiDraftFlow />);
+    await mount(
+      'pages/inspection/components/inspection-form/ai-draft-flow/AiDraftFlow',
+    );
 
     const weatherField = page.locator('[data-ai-field="weatherConditions"]');
     await weatherField.getByRole('button', { name: 'Accept' }).click();
@@ -50,7 +49,9 @@ test.describe('AI inspection draft flow (canonical shape)', () => {
     mount,
     page,
   }) => {
-    await mount(<AiDraftFlowWithExistingFeeding />);
+    await mount(
+      'pages/inspection/components/inspection-form/ai-draft-flow/AiDraftFlowWithExistingFeeding',
+    );
 
     const feedingCard = page.locator('[data-ai-field="actions.1"]');
     await expect(
@@ -69,7 +70,9 @@ test.describe('AI inspection draft flow (canonical shape)', () => {
     mount,
     page,
   }) => {
-    await mount(<AiDraftFlowLegacyDraft />);
+    await mount(
+      'pages/inspection/components/inspection-form/ai-draft-flow/AiDraftFlowLegacyDraft',
+    );
 
     // Legacy flat actions and free-text weather are dropped; valid scalars
     // (temperature, notes, observations) survive as suggestions.
