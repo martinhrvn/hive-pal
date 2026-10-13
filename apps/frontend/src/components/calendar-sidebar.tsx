@@ -1,21 +1,49 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { useCalendar } from '@/api/hooks/useCalendar';
 import { useOverdueInspections } from '@/api/hooks/useInspections';
 import { useHives } from '@/api/hooks/useHives';
 import { InspectionResponse } from 'shared-schemas';
 import { format, isBefore, isSameDay, startOfDay } from 'date-fns';
-import { Clock, AlertTriangle, ExternalLink } from 'lucide-react';
+import { Clock, AlertTriangle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getDateLocale } from '@/utils/locale-utils.ts';
+import { cn } from '@/lib/utils';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
 } from '@/components/sidebar';
 
+type InspectionState = 'completed' | 'overdue' | 'today' | 'upcoming';
+
+const inspectionStateClass: Record<InspectionState, string> = {
+  completed: 'border-success/25 bg-success-muted text-success-foreground',
+  overdue: 'border-destructive/25 bg-destructive/5 text-destructive-foreground',
+  today: 'border-warning/30 bg-warning-muted text-warning-foreground',
+  upcoming: 'bg-muted/50 text-foreground/80',
+};
+
+const getInspectionState = (
+  inspection: InspectionResponse,
+  todayStart: Date,
+): InspectionState => {
+  if (inspection.status === 'COMPLETED') return 'completed';
+  const date = new Date(inspection.date);
+  if (isBefore(date, todayStart)) return 'overdue';
+  if (isSameDay(date, todayStart)) return 'today';
+  return 'upcoming';
+};
+
+// ActionType enum value → common:actionTypes key, e.g. BOX_CONFIGURATION → boxConfiguration.
+const actionTypeKey = (type: string) =>
+  type.toLowerCase().replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
+
+const DOT_CLASS =
+  'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1 after:rounded-full';
+
 export const CalendarSidebar = () => {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['common', 'inspection']);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const currentMonth = selectedDate.getMonth();
@@ -41,86 +69,56 @@ export const CalendarSidebar = () => {
   const { data: overdueInspections } = useOverdueInspections();
   const { data: hives } = useHives();
 
-  const hiveNameMap =
-    hives?.reduce(
-      (acc, hive) => {
-        acc[hive.id] = hive.name;
-        return acc;
-      },
-      {} as Record<string, string>,
-    ) || {};
-
+  const hiveNameMap = useMemo(
+    () => new Map(hives?.map(hive => [hive.id, hive.name])),
+    [hives],
+  );
   const getHiveName = (hiveId: string) =>
-    hiveNameMap[hiveId] || `Hive ${hiveId}`;
+    hiveNameMap.get(hiveId) ??
+    t('common:calendar.unknownHive', { defaultValue: 'Unknown hive' });
 
-  const datesWithInspections =
-    monthEvents
-      ?.filter(event => event.inspections.length > 0)
-      .map(event => new Date(event.date)) || [];
-  const datesWithActions =
-    monthEvents
-      ?.filter(event => event.standaloneActions.length > 0)
-      .map(event => new Date(event.date)) || [];
-  const datesWithBoth =
-    monthEvents
-      ?.filter(
-        event =>
-          event.inspections.length > 0 && event.standaloneActions.length > 0,
-      )
-      .map(event => new Date(event.date)) || [];
-
-  const getEventsForSelectedDate = () => {
-    if (!monthEvents) return { inspections: [], standaloneActions: [] };
-    const dateKey = format(selectedDate, 'yyyy-MM-dd');
-    const dayEvents = monthEvents.find(event => event.date === dateKey);
+  // One pass over the month: calendar dot modifiers + a by-date lookup.
+  const { modifiers, eventsByDate } = useMemo(() => {
+    const inspectionsOnly: Date[] = [];
+    const actionsOnly: Date[] = [];
+    const both: Date[] = [];
+    const byDate = new Map<string, NonNullable<typeof monthEvents>[number]>();
+    for (const event of monthEvents ?? []) {
+      byDate.set(event.date, event);
+      const hasInspections = event.inspections.length > 0;
+      const hasActions = event.standaloneActions.length > 0;
+      const date = new Date(event.date);
+      if (hasInspections && hasActions) both.push(date);
+      else if (hasInspections) inspectionsOnly.push(date);
+      else if (hasActions) actionsOnly.push(date);
+    }
     return {
-      inspections: dayEvents?.inspections || [],
-      standaloneActions: dayEvents?.standaloneActions || [],
+      modifiers: {
+        hasInspectionsOnly: inspectionsOnly,
+        hasActionsOnly: actionsOnly,
+        hasBoth: both,
+      },
+      eventsByDate: byDate,
     };
-  };
+  }, [monthEvents]);
 
-  const getStatusTone = (inspection: InspectionResponse) => {
-    const inspectionDate = new Date(inspection.date);
-    const today = new Date();
-    if (inspection.status === 'COMPLETED') {
-      return 'border-emerald-200 bg-emerald-50/70 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300';
-    }
-    if (isBefore(inspectionDate, startOfDay(today))) {
-      return 'border-red-200 bg-red-50/70 text-red-900 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300';
-    }
-    if (isSameDay(inspectionDate, today)) {
-      return 'border-amber-200 bg-amber-50/70 text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200';
-    }
-    return 'border-stone-200 bg-stone-50/70 text-stone-700 dark:border-stone-700 dark:bg-stone-900/40 dark:text-stone-200';
-  };
-
-  const getStatusIcon = (inspection: InspectionResponse) => {
-    const inspectionDate = new Date(inspection.date);
-    const today = new Date();
-    if (inspection.status === 'COMPLETED') return null;
-    if (isBefore(inspectionDate, startOfDay(today))) {
-      return <AlertTriangle className="h-3 w-3 shrink-0 mt-0.5" />;
-    }
-    if (isSameDay(inspectionDate, today)) {
-      return <Clock className="h-3 w-3 shrink-0 mt-0.5" />;
-    }
-    return null;
-  };
-
-  const { inspections, standaloneActions } = getEventsForSelectedDate();
+  const dayEvents = eventsByDate.get(format(selectedDate, 'yyyy-MM-dd'));
+  const inspections = dayEvents?.inspections ?? [];
+  const standaloneActions = dayEvents?.standaloneActions ?? [];
   const totalEvents = inspections.length + standaloneActions.length;
-  const isToday = isSameDay(selectedDate, new Date());
+  const todayStart = startOfDay(new Date());
+  const isToday = isSameDay(selectedDate, todayStart);
 
   const dayTitle = (
-    <span className="inline-flex items-center gap-2">
+    <span className="inline-flex w-full items-center gap-2">
       {formatDayHeader(selectedDate)}
       {isToday && (
-        <span className="rounded-full bg-amber-100 dark:bg-amber-950/40 px-1.5 py-px text-[10px] tracking-normal font-medium text-amber-800 dark:text-amber-300 normal-case">
+        <span className="rounded-full bg-honey-muted px-1.5 py-px text-xs font-medium normal-case tracking-normal text-honey-foreground">
           {t('common:calendar.today', { defaultValue: 'Today' })}
         </span>
       )}
       {totalEvents > 0 && (
-        <span className="ml-auto text-[10px] tabular-nums tracking-normal font-medium text-stone-500 normal-case">
+        <span className="ml-auto text-xs font-medium normal-case tracking-normal tabular-nums text-muted-foreground">
           {totalEvents}
         </span>
       )}
@@ -140,36 +138,28 @@ export const CalendarSidebar = () => {
             if (date) setSelectedDate(date);
           }}
           className="w-full p-0"
-          modifiers={{
-            hasInspectionsOnly: datesWithInspections.filter(
-              d => !datesWithBoth.some(b => isSameDay(b, d)),
-            ),
-            hasActionsOnly: datesWithActions.filter(
-              d => !datesWithBoth.some(b => isSameDay(b, d)),
-            ),
-            hasBoth: datesWithBoth,
-          }}
+          modifiers={modifiers}
           modifiersClassNames={{
-            hasInspectionsOnly:
-              'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-amber-500 after:rounded-full',
-            hasActionsOnly:
-              'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-emerald-500 after:rounded-full',
-            hasBoth:
-              'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-2 after:h-1 after:bg-gradient-to-r after:from-amber-500 after:to-emerald-500 after:rounded-full',
+            hasInspectionsOnly: cn(DOT_CLASS, 'after:w-1 after:bg-honey'),
+            hasActionsOnly: cn(DOT_CLASS, 'after:w-1 after:bg-success'),
+            hasBoth: cn(
+              DOT_CLASS,
+              'after:w-2 after:bg-gradient-to-r after:from-honey after:to-success',
+            ),
           }}
         />
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 px-2 text-[11px] text-stone-500 dark:text-stone-400">
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 px-2 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            <span className="size-1.5 rounded-full bg-honey" />
             {t('common:calendar.inspections')}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span className="size-1.5 rounded-full bg-success" />
             {t('common:calendar.actions')}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="h-1 w-2 rounded-full bg-gradient-to-r from-amber-500 to-emerald-500" />
+            <span className="h-1 w-2 rounded-full bg-gradient-to-r from-honey to-success" />
             {t('common:calendar.both')}
           </span>
         </div>
@@ -177,58 +167,72 @@ export const CalendarSidebar = () => {
 
       <ActionSidebarGroup title={dayTitle}>
         {totalEvents === 0 ? (
-          <p className="px-2 text-xs italic text-stone-400 dark:text-stone-500">
+          <p className="px-2 text-xs text-muted-foreground">
             {t('common:calendar.noEvents', { defaultValue: 'No events' })}
           </p>
         ) : (
           <div className="space-y-1.5 max-h-48 overflow-y-auto px-1">
-            {inspections.map(inspection => (
-              <div
-                key={`inspection-${inspection.id}`}
-                className={`rounded-md border px-2 py-1.5 text-xs ${getStatusTone(inspection)}`}
-              >
-                <div className="flex items-start gap-1.5">
-                  {getStatusIcon(inspection)}
-                  <div className="flex-1 min-w-0">
-                    <Link
-                      to={`/hives/${inspection.hiveId}`}
-                      className="font-medium hover:underline truncate inline-flex items-center gap-1"
-                    >
-                      {getHiveName(inspection.hiveId)}
-                      <ExternalLink className="h-2.5 w-2.5" />
-                    </Link>
-                    <span className="ml-1.5 text-[10px] uppercase tracking-wider opacity-70">
-                      {inspection.status.toLowerCase()}
-                    </span>
-                    {inspection.notes && (
-                      <p className="text-[11px] mt-0.5 opacity-80 truncate">
-                        {inspection.notes}
-                      </p>
+            {inspections.map(inspection => {
+              const state = getInspectionState(inspection, todayStart);
+              return (
+                <div
+                  key={`inspection-${inspection.id}`}
+                  className={cn(
+                    'rounded-md border px-2 py-1.5 text-xs',
+                    inspectionStateClass[state],
+                  )}
+                >
+                  <div className="flex items-start gap-1.5">
+                    {state === 'overdue' && (
+                      <AlertTriangle className="size-3 shrink-0 mt-0.5" />
                     )}
+                    {state === 'today' && (
+                      <Clock className="size-3 shrink-0 mt-0.5" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <Link
+                        to={`/hives/${inspection.hiveId}`}
+                        className="font-medium hover:underline truncate"
+                      >
+                        {getHiveName(inspection.hiveId)}
+                      </Link>
+                      <span className="ml-1.5 font-overline opacity-70">
+                        {t(
+                          `inspection:status.${inspection.status.toLowerCase()}`,
+                          { defaultValue: inspection.status.toLowerCase() },
+                        )}
+                      </span>
+                      {inspection.notes && (
+                        <p className="mt-0.5 opacity-80 truncate">
+                          {inspection.notes}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {standaloneActions.map(action => (
               <div
                 key={`action-${action.id}`}
-                className="rounded-md border border-emerald-200 bg-emerald-50/70 dark:border-emerald-900 dark:bg-emerald-950/30 px-2 py-1.5 text-xs text-emerald-900 dark:text-emerald-300"
+                className="rounded-md border border-success/25 bg-success-muted px-2 py-1.5 text-xs text-success-foreground"
               >
-                <Link
-                  to={`/hives/${action.hiveId}`}
-                  className="font-medium hover:underline truncate inline-flex items-center gap-1"
-                >
-                  {getHiveName(action.hiveId ?? '')}
-                  <ExternalLink className="h-2.5 w-2.5" />
-                </Link>
-                <span className="ml-1.5 text-[10px] uppercase tracking-wider opacity-70">
-                  {action.type.toLowerCase()}
+                {action.hiveId ? (
+                  <Link
+                    to={`/hives/${action.hiveId}`}
+                    className="font-medium hover:underline truncate"
+                  >
+                    {getHiveName(action.hiveId)}
+                  </Link>
+                ) : null}
+                <span className="ml-1.5 font-overline opacity-70">
+                  {t(`common:actionTypes.${actionTypeKey(action.type)}`, {
+                    defaultValue: action.type.toLowerCase().replace(/_/g, ' '),
+                  })}
                 </span>
                 {action.notes && (
-                  <p className="text-[11px] mt-0.5 opacity-80 truncate">
-                    {action.notes}
-                  </p>
+                  <p className="mt-0.5 opacity-80 truncate">{action.notes}</p>
                 )}
               </div>
             ))}
@@ -238,10 +242,10 @@ export const CalendarSidebar = () => {
 
       {overdueInspections && overdueInspections.length > 0 && (
         <ActionSidebarGroup
-          className="bg-red-50/30 dark:bg-red-950/10"
+          className="bg-destructive/[0.03]"
           title={
-            <span className="inline-flex items-center gap-1.5 text-red-700 dark:text-red-400">
-              <AlertTriangle className="h-3 w-3" />
+            <span className="inline-flex items-center gap-1.5 text-destructive-foreground">
+              <AlertTriangle className="size-3" />
               {t('common:calendar.overdueInspections', {
                 overdueInspectionsSize: overdueInspections.length,
                 defaultValue:
@@ -254,34 +258,36 @@ export const CalendarSidebar = () => {
             {overdueInspections.map(inspection => (
               <div
                 key={`overdue-${inspection.id}`}
-                className="rounded-md border border-red-200 bg-red-50/70 dark:border-red-900 dark:bg-red-950/30 px-2 py-1.5 text-xs text-red-900 dark:text-red-300"
+                className={cn(
+                  'rounded-md border px-2 py-1.5 text-xs',
+                  inspectionStateClass.overdue,
+                )}
               >
                 <div className="flex items-start gap-1.5">
-                  <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0" />
+                  <AlertTriangle className="size-3 mt-0.5 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <Link
                       to={`/hives/${inspection.hiveId}`}
-                      className="font-medium hover:underline truncate inline-flex items-center gap-1"
+                      className="font-medium hover:underline truncate"
                     >
                       {getHiveName(inspection.hiveId)}
-                      <ExternalLink className="h-2.5 w-2.5" />
                     </Link>
-                    <span className="ml-1.5 text-[10px] uppercase tracking-wider opacity-70">
+                    <span className="ml-1.5 font-overline opacity-70">
                       {formatDayHeader(new Date(inspection.date))}
                     </span>
                     {inspection.notes && (
-                      <p className="text-[11px] mt-0.5 opacity-80 truncate">
+                      <p className="mt-0.5 opacity-80 truncate">
                         {inspection.notes}
                       </p>
                     )}
                     <Link
                       to={`/inspections/${inspection.id}`}
-                      className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium hover:underline"
+                      className="group mt-1 inline-flex items-center gap-1 font-medium hover:underline"
                     >
                       {t('common:calendar.viewInspection', {
                         defaultValue: 'View Inspection',
                       })}
-                      <ExternalLink className="h-2.5 w-2.5" />
+                      <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                   </div>
                 </div>

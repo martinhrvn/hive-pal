@@ -1,4 +1,4 @@
-export { MenuItemButton } from './menu-item-button';
+export { MenuItemButton, MenuItemLink } from './menu-item-button';
 export {
   ActionSidebarSection,
   ActionSidebarContainer,

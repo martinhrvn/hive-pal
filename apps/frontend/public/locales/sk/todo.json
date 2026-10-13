@@ -8,7 +8,8 @@
   },
   "quickAdd": {
     "placeholder": "Pridať úlohu…",
-    "button": "Pridať"
+    "button": "Pridať",
+    "error": "Úlohu sa nepodarilo pridať"
   },
   "hive": {
     "title": "Úlohy",
@@ -22,7 +23,9 @@
   },
   "delete": {
     "success": "Úloha vymazaná",
-    "error": "Nepodarilo sa vymazať úlohu"
+    "error": "Nepodarilo sa vymazať úlohu",
+    "confirmTitle": "Vymazať túto úlohu?",
+    "confirmDescription": "Túto akciu nie je možné vrátiť späť."
   },
   "fields": {
     "title": "Názov",

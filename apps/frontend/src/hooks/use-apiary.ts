@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { APIARY_SELECTION, VIEW_ALL_APIARIES } from '@/context/auth-context';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
@@ -53,7 +53,13 @@ export const useApiaryStore = create<ApiaryState>(set => {
   };
 });
 
-export const useApiary = () => {
+/**
+ * Validates the persisted activeApiaryId against the user's apiaries and
+ * auto-selects the first one when it is missing or stale. Mounted once for
+ * logged-in pages (see ApiarySelectionSync in routes/protected-route.tsx) so
+ * the many `useApiary()` callers don't each run this effect.
+ */
+export const useApiarySelectionSync = () => {
   const { data: apiaries } = useApiaries();
   const {
     activeApiaryId,
@@ -71,7 +77,6 @@ export const useApiary = () => {
     })),
   );
 
-  // Validate activeApiaryId against user's apiaries and auto-select
   useEffect(() => {
     if (!apiaries) return;
 
@@ -99,10 +104,29 @@ export const useApiary = () => {
     clearActiveApiaryId,
     setViewAllApiaries,
   ]);
+};
+
+export const useApiary = () => {
+  const { data: apiaries } = useApiaries();
+  const {
+    activeApiaryId,
+    viewAllApiaries,
+    setActiveApiaryId,
+    setViewAllApiaries,
+  } = useApiaryStore(
+    useShallow(state => ({
+      activeApiaryId: state.activeApiaryId,
+      viewAllApiaries: state.viewAllApiaries,
+      setActiveApiaryId: state.setActiveApiaryId,
+      setViewAllApiaries: state.setViewAllApiaries,
+    })),
+  );
 
   // Find the active apiary object
-  const activeApiary = apiaries?.find(
-    (apiary: ApiaryResponse) => apiary.id === activeApiaryId,
+  const activeApiary = useMemo(
+    () =>
+      apiaries?.find((apiary: ApiaryResponse) => apiary.id === activeApiaryId),
+    [apiaries, activeApiaryId],
   );
 
   return {

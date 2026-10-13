@@ -141,7 +141,7 @@ Here's how to integrate these components into the reports page:
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReportPeriod } from 'shared-schemas';
-import { MainContent, Page, Sidebar } from '@/components/layout/page-grid-layout';
+import { MainContent, PageGrid, PageAside } from '@/components/layout/page-grid-layout';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import { useApiary } from '@/hooks/use-apiary';
 import { useApiaryStatistics } from '@/api/hooks/useReports';

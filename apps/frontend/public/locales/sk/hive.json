@@ -90,10 +90,12 @@
     "showDetails": "Zobraziť podrobnosti",
     "lastInspected": "Posledná prehliadka {{date}}",
     "noInspection": "Zatiaľ žiadna prehliadka",
-    "score": "Skóre:",
-    "strength": "",
-    "inspectionWarnings": "",
-    "feeding": "Kŕmenie:"
+    "score": "Skóre",
+    "strength": "Sila",
+    "inspectionWarnings": "Upozornenia z prehliadky",
+    "feeding": "Kŕmenie",
+    "inspectedWhen": "Prehliadka {{when}}",
+    "feedingProgress": "Kŕmenie · {{percent}} %"
   },
   "scores": {
     "overall": "Celkové",
@@ -184,7 +186,10 @@
     "grid": "Mriežka",
     "unpositionedHives": "Neumiestnené úle",
     "noHivesInApiary": "V tejto včelnici zatiaľ nie sú žiadne úle.",
-    "dragToOrganize": "Pridajte úle a presuňte ich do mriežky vyššie, aby ste usporiadali rozloženie včelnice."
+    "dragToOrganize": "Pridajte úle a presuňte ich do mriežky vyššie, aby ste usporiadali rozloženie včelnice.",
+    "edit": "Upraviť rozloženie",
+    "emptyHive": "Prázdny",
+    "minimapEmpty": "Na rozložení zatiaľ nie sú umiestnené žiadne úle. Usporiadajte ich na stránke včelnice."
   },
   "equipment": {
     "currentHives": "Aktuálne úle",

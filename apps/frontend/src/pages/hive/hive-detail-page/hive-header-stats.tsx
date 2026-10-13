@@ -100,7 +100,7 @@ const CompactStatItem = ({
         {current}
         {unit}
       </span>
-      <TrendIndicator delta={delta} unit={unit} iconSize="h-3 w-3" />
+      <TrendIndicator delta={delta} unit={unit} iconClassName="size-3" />
     </div>
   </div>
 );
@@ -125,7 +125,7 @@ const MobileStatItem = ({
     <TrendIndicator
       delta={delta}
       unit={unit}
-      iconSize="h-3 w-3"
+      iconClassName="size-3"
       showDelta={false}
     />
   </div>

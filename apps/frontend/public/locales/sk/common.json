@@ -65,7 +65,8 @@
         "newInspection": "Nová prehliadka",
         "scheduleInspection": "Naplánovať prehliadku",
         "newQueen": "Nová matka",
-        "recentInspections": "Nedávne prehliadky"
+        "recentInspections": "Nedávne prehliadky",
+        "openMenu": "Otvoriť menu"
     },
     "status": {
         "loading": "Načítava sa...",
@@ -206,7 +207,8 @@
     "calendar": {
         "both": "Obe",
         "inspections": "Prehliadky",
-        "actions": "Akcie"
+        "actions": "Akcie",
+        "unknownHive": "Neznámy úľ"
     },
     "quickCheck": {
         "title": "Rýchla kontrola",
@@ -252,7 +254,37 @@
         "honey": "Med",
         "queenSeen": "Matka videná",
         "queenNotSeen": "Matka nevidená",
-        "fromInspection": "Z prehliadky"
+        "fromInspection": "Z prehliadky",
+        "undoSplit": "Zrušiť delenie",
+        "actionLabel": {
+            "feeding": "Kŕmenie",
+            "fed": "Nakŕmené: {{amount}} {{feed}}{{extra}}",
+            "sugarEquivalent": " (≈ {{kg}} kg cukru)",
+            "treatment": "Ošetrenie",
+            "treatedWith": "Ošetrené prípravkom {{product}} ({{quantity}} {{unit}})",
+            "frameManagement": "Správa rámikov",
+            "addedFrames_one": "Pridaný {{count}} rámik",
+            "addedFrames_few": "Pridané {{count}} rámiky",
+            "addedFrames_many": "Pridaných {{count}} rámikov",
+            "addedFrames_other": "Pridaných {{count}} rámikov",
+            "harvest": "Zber",
+            "harvested": "Zber {{amount}} {{unit}}",
+            "note": "Poznámka",
+            "statusChange": "Zmena stavu",
+            "statusChangedTo": "Stav zmenený na {{to}}",
+            "statusChangedFromTo": "Stav zmenený z {{from}} na {{to}}",
+            "split": "Delenie včelstva",
+            "splitSource_one": "Delenie včelstva: {{count}} plodový rámik odovzdaný novému včelstvu",
+            "splitSource_few": "Delenie včelstva: {{count}} plodové rámiky odovzdané novému včelstvu",
+            "splitSource_many": "Delenie včelstva: {{count}} plodových rámikov odovzdaných novému včelstvu",
+            "splitSource_other": "Delenie včelstva: {{count}} plodových rámikov odovzdaných novému včelstvu",
+            "splitTarget_one": "Delenie včelstva: vytvorené s {{count}} plodovým rámikom",
+            "splitTarget_few": "Delenie včelstva: vytvorené s {{count}} plodovými rámikmi",
+            "splitTarget_many": "Delenie včelstva: vytvorené s {{count}} plodovými rámikmi",
+            "splitTarget_other": "Delenie včelstva: vytvorené s {{count}} plodovými rámikmi",
+            "cleaned": "Vyčistené: {{component}}",
+            "replaced": "Vymenené: {{component}}"
+        }
     },
     "reports": {
         "title": "Reporty",
@@ -1134,5 +1166,27 @@
     },
     "files": {
         "apiary": "Včelnica"
+    },
+    "photo": {
+        "featureAlt": "Fotografia {{name}}"
+    },
+    "imageDisplay": {
+        "label": "Obrázky: {{mode}}",
+        "modes": {
+            "banner": "Banner",
+            "side": "Bočne",
+            "hidden": "Skryté"
+        }
+    },
+    "actionTypes": {
+        "feeding": "Kŕmenie",
+        "treatment": "Ošetrenie",
+        "frame": "Rámiky",
+        "harvest": "Zber",
+        "boxConfiguration": "Konfigurácia nadstavkov",
+        "maintenance": "Údržba",
+        "note": "Poznámka",
+        "other": "Iné",
+        "weighing": "Váženie"
     }
 }

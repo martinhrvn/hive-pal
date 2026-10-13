@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays, Hexagon } from 'lucide-react';
 
 import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useUpdateTodo } from '@/api/hooks/useTodos';
 import { TodoResponse } from 'shared-schemas';
@@ -21,8 +22,9 @@ export function TodoList({ todos, emptyMessage, hideHive }: TodoListProps) {
   const [selectedTodo, setSelectedTodo] = useState<TodoResponse | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  // Optimistic in useUpdateTodo; the hook rolls back and logs on failure.
   const toggleCompleted = (todo: TodoResponse, completed: boolean) => {
-    void updateTodo.mutateAsync({ id: todo.id, data: { completed } });
+    updateTodo.mutate({ id: todo.id, data: { completed } });
   };
 
   const openTodo = (todo: TodoResponse) => {
@@ -30,16 +32,19 @@ export function TodoList({ todos, emptyMessage, hideHive }: TodoListProps) {
     setDialogOpen(true);
   };
 
-  const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString(i18n.language, {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
+  const dateFormat = useMemo(
+    () =>
+      new Intl.DateTimeFormat(i18n.language, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }),
+    [i18n.language],
+  );
 
   if (todos.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground py-4">
+      <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
         {emptyMessage ?? t('list.empty')}
       </p>
     );
@@ -47,7 +52,7 @@ export function TodoList({ todos, emptyMessage, hideHive }: TodoListProps) {
 
   return (
     <>
-      <ul className="divide-y rounded-md border">
+      <ul className="divide-y overflow-hidden rounded-xl border bg-card">
         {todos.map(todo => (
           <li
             key={todo.id}
@@ -63,7 +68,7 @@ export function TodoList({ todos, emptyMessage, hideHive }: TodoListProps) {
             <button
               type="button"
               onClick={() => openTodo(todo)}
-              className="flex-1 min-w-0 text-left"
+              className="flex-1 min-w-0 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <span
                 className={cn(
@@ -77,13 +82,13 @@ export function TodoList({ todos, emptyMessage, hideHive }: TodoListProps) {
                 <span className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground">
                   {todo.dueDate && (
                     <span className="flex items-center gap-1">
-                      <CalendarDays className="h-3 w-3" />
-                      {formatDate(todo.dueDate)}
+                      <CalendarDays className="size-3" />
+                      {dateFormat.format(new Date(todo.dueDate))}
                     </span>
                   )}
                   {todo.hiveName && !hideHive && (
                     <span className="flex items-center gap-1">
-                      <Hexagon className="h-3 w-3" />
+                      <Hexagon className="size-3" />
                       {todo.hiveName}
                     </span>
                   )}
@@ -95,10 +100,26 @@ export function TodoList({ todos, emptyMessage, hideHive }: TodoListProps) {
       </ul>
 
       <TodoDialog
+        // Remount per todo so the form initialises from it (no sync effect).
+        key={selectedTodo?.id}
         todo={selectedTodo}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
     </>
+  );
+}
+
+/** Row-shaped placeholder matching TodoList while todos load. */
+export function TodoListSkeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <div className="divide-y overflow-hidden rounded-xl border bg-card">
+      {Array.from({ length: rows }, (_, i) => (
+        <div key={i} className="flex items-center gap-3 px-3 py-3">
+          <Skeleton className="size-4 rounded-sm" />
+          <Skeleton className="h-4 flex-1" />
+        </div>
+      ))}
+    </div>
   );
 }

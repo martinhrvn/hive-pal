@@ -18,7 +18,6 @@ import { setFaroView } from '@/lib/faro';
 import { useRestorePreferredLanguage } from '@/lib/i18n-client';
 import { DEFAULT_LANGUAGE, isSupportedLanguage } from '@/utils/language-utils';
 import './index.css';
-import './App.css';
 
 const SITE_TITLE = 'Hive Pal - Modern Beekeeping Management Software';
 const SITE_DESCRIPTION =

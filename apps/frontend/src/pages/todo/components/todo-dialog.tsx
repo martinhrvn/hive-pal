@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
 import { useHiveOptions } from '@/api/hooks';
 import { useUpdateTodo, useDeleteTodo } from '@/api/hooks/useTodos';
 import { TodoResponse } from 'shared-schemas';
@@ -29,6 +30,7 @@ import { TodoResponse } from 'shared-schemas';
 const NO_HIVE = '__none__';
 
 interface TodoDialogProps {
+  /** The form initialises from this once; remount (key) to edit another todo. */
   todo: TodoResponse | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -44,19 +46,11 @@ export function TodoDialog({ todo, open, onOpenChange }: TodoDialogProps) {
   const updateTodo = useUpdateTodo();
   const deleteTodo = useDeleteTodo();
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [hiveId, setHiveId] = useState<string>(NO_HIVE);
-
-  useEffect(() => {
-    if (todo) {
-      setTitle(todo.title);
-      setDescription(todo.description ?? '');
-      setDueDate(toDateInputValue(todo.dueDate));
-      setHiveId(todo.hiveId ?? NO_HIVE);
-    }
-  }, [todo]);
+  const [title, setTitle] = useState(() => todo?.title ?? '');
+  const [description, setDescription] = useState(() => todo?.description ?? '');
+  const [dueDate, setDueDate] = useState(() => toDateInputValue(todo?.dueDate));
+  const [hiveId, setHiveId] = useState<string>(() => todo?.hiveId ?? NO_HIVE);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const handleSave = async () => {
     if (!todo) return;
@@ -86,6 +80,7 @@ export function TodoDialog({ todo, open, onOpenChange }: TodoDialogProps) {
     try {
       await deleteTodo.mutateAsync(todo.id);
       toast.success(t('todo:delete.success'));
+      setConfirmingDelete(false);
       onOpenChange(false);
     } catch {
       toast.error(t('todo:delete.error'));
@@ -161,10 +156,10 @@ export function TodoDialog({ todo, open, onOpenChange }: TodoDialogProps) {
             type="button"
             variant="ghost"
             className="text-destructive hover:text-destructive"
-            onClick={handleDelete}
+            onClick={() => setConfirmingDelete(true)}
             disabled={deleteTodo.isPending}
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="size-4" />
             {t('common:actions.delete')}
           </Button>
           <Button
@@ -173,11 +168,22 @@ export function TodoDialog({ todo, open, onOpenChange }: TodoDialogProps) {
             disabled={updateTodo.isPending}
           >
             {updateTodo.isPending && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             )}
             {t('common:actions.save')}
           </Button>
         </DialogFooter>
+        <DeleteConfirmDialog
+          open={confirmingDelete}
+          onOpenChange={setConfirmingDelete}
+          onConfirm={() => void handleDelete()}
+          isPending={deleteTodo.isPending}
+          title={t('todo:delete.confirmTitle', 'Delete this todo?')}
+          description={t(
+            'todo:delete.confirmDescription',
+            'This cannot be undone.',
+          )}
+        />
       </DialogContent>
     </Dialog>
   );

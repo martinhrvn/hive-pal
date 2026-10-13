@@ -22,10 +22,9 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
 
   return (
     <MenuItemButton
-      icon={<RefreshCw className="h-4 w-4" />}
+      icon={<RefreshCw />}
       label={refreshLabel}
       onClick={() => onRefresh?.()}
-      tooltip={refreshLabel}
       disabled={disabled}
     />
   );

@@ -99,7 +99,8 @@
     "newInspection": "New Inspection",
     "scheduleInspection": "Schedule Inspection",
     "newQueen": "New Queen",
-    "recentInspections": "Recent Inspections"
+    "recentInspections": "Recent Inspections",
+    "openMenu": "Open menu"
   },
   "status": {
     "loading": "Loading...",
@@ -293,7 +294,8 @@
     "dayHeader": "{{date}}",
     "noEvents": "No events",
     "overdueInspections": "Overdue Inspections ({{overdueInspectionsSize}})",
-    "viewInspection": "View Inspection"
+    "viewInspection": "View Inspection",
+    "unknownHive": "Unknown hive"
   },
   "quickAdd": {
     "title": "Add Entry",
@@ -319,7 +321,8 @@
     "deleteTitle": "Delete Photo?",
     "deleteDescription": "This action cannot be undone. This will permanently delete this photo.",
     "deleted": "Photo deleted",
-    "deleteFailed": "Failed to delete photo"
+    "deleteFailed": "Failed to delete photo",
+    "featureAlt": "{{name}} photo"
   },
   "document": {
     "title": "Add Document",
@@ -424,7 +427,31 @@
     "yesterday": "Yesterday",
     "filterEventType": "Type",
     "filterDateRange": "Range",
-    "filterHive": "Hive"
+    "filterHive": "Hive",
+    "undoSplit": "Undo split",
+    "actionLabel": {
+      "feeding": "Feeding",
+      "fed": "Fed {{amount}} of {{feed}}{{extra}}",
+      "sugarEquivalent": " (≈ {{kg}} kg sugar)",
+      "treatment": "Treatment",
+      "treatedWith": "Treated with {{product}} ({{quantity}} {{unit}})",
+      "frameManagement": "Frame management",
+      "addedFrames_one": "Added {{count}} frame",
+      "addedFrames_other": "Added {{count}} frames",
+      "harvest": "Harvest",
+      "harvested": "Harvested {{amount}} {{unit}}",
+      "note": "Note",
+      "statusChange": "Status change",
+      "statusChangedTo": "Status changed to {{to}}",
+      "statusChangedFromTo": "Status changed from {{from}} to {{to}}",
+      "split": "Colony split",
+      "splitSource_one": "Colony split: gave {{count}} brood frame to a new colony",
+      "splitSource_other": "Colony split: gave {{count}} brood frames to a new colony",
+      "splitTarget_one": "Colony split: created with {{count}} brood frame",
+      "splitTarget_other": "Colony split: created with {{count}} brood frames",
+      "cleaned": "Cleaned {{component}}",
+      "replaced": "Replaced {{component}}"
+    }
   },
   "syrupCalculator": {
     "title": "Syrup Calculator",
@@ -2232,5 +2259,13 @@
     "save": "Save",
     "deleteTitle": "Delete treatment product?",
     "deleteDesc": "This removes your custom product. This cannot be undone."
+  },
+  "imageDisplay": {
+    "label": "Images: {{mode}}",
+    "modes": {
+      "banner": "Banner",
+      "side": "Side",
+      "hidden": "Hidden"
+    }
   }
 }

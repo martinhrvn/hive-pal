@@ -1,4 +1,5 @@
-import { HiveList } from '@/pages/hive/components';
+import { useMemo } from 'react';
+import { HiveList } from '@/pages/hive/components/hive-list';
 import {
   MainContent,
   PageAside,
@@ -8,16 +9,13 @@ import { HomeActionSidebar } from '@/components/home-action-sidebar';
 import { HiveMinimap } from '@/components/hive-minimap';
 import { ApiaryHeader } from '@/components/apiary-header';
 import { ApiaryTimeline } from '@/components/apiary-timeline';
-import { Card, CardContent } from '@/components/ui/card';
+import { DashboardSection } from '@/components/dashboard/dashboard-section';
+import { DashboardSkeleton } from '@/components/dashboard/dashboard-skeleton';
+import { EmptyState, IconBadge } from '@/components/dashboard/empty-state';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import {
   ArrowUpRight,
-  ChevronDown,
   Clock,
   HomeIcon,
   MapPin,
@@ -28,77 +26,15 @@ import {
 import { ApiaryResponse, HiveResponse } from 'shared-schemas';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useApiaries, useHives, useTodos } from '@/api/hooks';
+import { useApiaries, useHivesWithBoxes, useTodos } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
-import { TodoQuickAdd, TodoList } from '@/pages/todo';
-import { useOnboardingNudges } from '@/hooks/use-onboarding-nudges';
+import { TodoList, TodoListSkeleton } from '@/pages/todo/components/todo-list';
+import { TodoQuickAdd } from '@/pages/todo/components/todo-quick-add';
 import { useLocalStorageBoolean } from '@/hooks/use-local-storage-boolean';
-import { cn } from '@/lib/utils';
 
-type CollapsibleSectionProps = {
-  storageKey: string;
-  title: string;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-};
-
-const CollapsibleSection = ({
-  storageKey,
-  title,
-  action,
-  children,
-}: CollapsibleSectionProps) => {
-  const [open, setOpen] = useLocalStorageBoolean(storageKey, true);
-
-  return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <div className="flex items-center justify-between mb-2">
-        <CollapsibleTrigger className="group flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-          <ChevronDown
-            className={cn(
-              'h-4 w-4 transition-transform',
-              !open && '-rotate-90',
-            )}
-          />
-          {title}
-        </CollapsibleTrigger>
-        {action}
-      </div>
-      <CollapsibleContent>{children}</CollapsibleContent>
-    </Collapsible>
-  );
-};
-
-type EmptyStateCardProps = {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  action: React.ReactNode;
-  secondary?: React.ReactNode;
-};
-
-const EmptyStateCard = ({
-  icon,
-  title,
-  description,
-  action,
-  secondary,
-}: EmptyStateCardProps) => (
-  <Card>
-    <CardContent className="flex flex-col items-center text-center gap-3 py-10">
-      <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center">
-        {icon}
-      </div>
-      <div className="space-y-1">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-muted-foreground max-w-md">{description}</p>
-      </div>
-      {action}
-      {secondary}
-    </CardContent>
-  </Card>
-);
+const isSubjectiveApiary = (apiary?: ApiaryResponse) =>
+  apiary?.settings?.inspectionType === 'subjective';
 
 // In "view all" mode the dashboard lists hives grouped under each apiary,
 // mirroring how BEEP presents apiaries with their hives.
@@ -109,30 +45,39 @@ const GroupedHives = ({
   hives: HiveResponse[];
   apiaries?: ApiaryResponse[];
 }) => {
-  const byApiary = new Map<string, HiveResponse[]>();
-  for (const hive of hives) {
-    const key = hive.apiaryId ?? '__none__';
-    const list = byApiary.get(key) ?? [];
-    list.push(hive);
-    byApiary.set(key, list);
-  }
-  // Preserve the apiary order from the switcher; only show apiaries with hives.
-  const groups = (apiaries ?? []).filter(a => byApiary.has(a.id));
+  const groups = useMemo(() => {
+    const byApiary = new Map<string, HiveResponse[]>();
+    for (const hive of hives) {
+      const key = hive.apiaryId ?? '__none__';
+      const list = byApiary.get(key);
+      if (list) list.push(hive);
+      else byApiary.set(key, [hive]);
+    }
+    // Preserve the apiary order from the switcher; only show apiaries with hives.
+    return (apiaries ?? []).flatMap(apiary => {
+      const apiaryHives = byApiary.get(apiary.id);
+      return apiaryHives ? [{ apiary, hives: apiaryHives }] : [];
+    });
+  }, [hives, apiaries]);
 
   return (
     <div className="space-y-8">
-      {groups.map(apiary => (
+      {groups.map(({ apiary, hives: apiaryHives }) => (
         <div key={apiary.id} className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="flex size-6 items-center justify-center rounded-md bg-sidebar-primary/10 text-amber-700 dark:text-amber-400">
-              <HomeIcon className="size-4" />
-            </div>
+            <IconBadge size="sm">
+              <HomeIcon />
+            </IconBadge>
             <h3 className="font-medium">{apiary.name}</h3>
             <span className="text-xs text-muted-foreground tabular-nums">
-              {byApiary.get(apiary.id)?.length ?? 0}
+              {apiaryHives.length}
             </span>
           </div>
-          <HiveList hives={byApiary.get(apiary.id) ?? []} />
+          {/* Each group uses its own apiary's inspection type. */}
+          <HiveList
+            hives={apiaryHives}
+            isSubjective={isSubjectiveApiary(apiary)}
+          />
         </div>
       ))}
     </div>
@@ -141,176 +86,194 @@ const GroupedHives = ({
 
 const DashboardTodos = () => {
   const { t } = useTranslation('todo');
-  const { data } = useTodos();
+  const { data, isLoading } = useTodos();
   const { canEdit } = useApiaryPermission();
 
-  const openTodos = (data ?? []).filter(todo => !todo.completed);
+  const openTodos = useMemo(
+    () => (data ?? []).filter(todo => !todo.completed),
+    [data],
+  );
 
   return (
-    <CollapsibleSection storageKey="home-section:todos" title={t('list.title')}>
+    <DashboardSection storageKey="home-section:todos" title={t('list.title')}>
       <div className="space-y-3">
         {canEdit && <TodoQuickAdd />}
-        <TodoList todos={openTodos} emptyMessage={t('list.emptyOpen')} />
+        {isLoading ? (
+          <TodoListSkeleton />
+        ) : (
+          <TodoList todos={openTodos} emptyMessage={t('list.emptyOpen')} />
+        )}
       </div>
-    </CollapsibleSection>
+    </DashboardSection>
+  );
+};
+
+const LocationNudge = ({ apiary }: { apiary: ApiaryResponse }) => {
+  const { t } = useTranslation('onboarding');
+  const [dismissed, setDismissed] = useLocalStorageBoolean(
+    `home-nudge:location-dismissed:${apiary.id}`,
+    false,
+  );
+  if (apiary.latitude != null || dismissed) return null;
+
+  return (
+    <Card className="flex-row items-center gap-4 px-4 py-4">
+      <IconBadge tone="info">
+        <MapPin />
+      </IconBadge>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium">{t('empty.noLocation.title')}</h3>
+        <p className="text-sm text-muted-foreground">
+          {t('empty.noLocation.description')}
+        </p>
+      </div>
+      <Button asChild size="sm">
+        <Link to={`/apiaries/${apiary.id}/edit`}>
+          {t('empty.noLocation.action')}
+        </Link>
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={t('empty.noLocation.dismiss')}
+        onClick={() => setDismissed(true)}
+      >
+        <X className="size-4" />
+      </Button>
+    </Card>
   );
 };
 
 export const HomePage = () => {
-  const { t } = useTranslation('onboarding');
-  const { data, isLoading, refetch } = useHives();
+  const { t } = useTranslation(['onboarding', 'hive']);
+  // Boxes come with the list so the hive cards can draw their box gradient
+  // without a per-hive detail request.
+  const { data: hives, isPending: hivesPending } = useHivesWithBoxes();
   const { activeApiaryId, apiaries, activeApiary, viewAllApiaries } =
     useApiary();
-  const { pendingMemberships } = useApiaries();
-  const [locationDismissed, setLocationDismissed] = useLocalStorageBoolean(
-    `home-nudge:location-dismissed:${activeApiaryId ?? 'none'}`,
-    false,
-  );
+  const { pendingMemberships, isLoading: apiariesLoading } = useApiaries();
 
-  // Soft-onboarding toast nudges (add hive / add location).
-  useOnboardingNudges();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (apiariesLoading) {
+    return <DashboardSkeleton />;
   }
+
+  const hasNoApiaries = !apiaries || apiaries.length === 0;
 
   // User has no apiaries at all — invite them to create one (default apiary is
   // auto-created on registration, so this mainly covers users who removed it).
-  if ((!apiaries || apiaries.length === 0) && pendingMemberships === 0) {
+  if (hasNoApiaries && pendingMemberships === 0) {
     return (
       <PageGrid>
         <MainContent>
-          <EmptyStateCard
-            icon={<Plus className="h-6 w-6 text-amber-600" />}
+          <EmptyState
+            icon={<Plus />}
             title={t('empty.noApiary.title')}
             description={t('empty.noApiary.description')}
-            action={
-              <Button asChild>
-                <Link to="/apiaries/create">{t('empty.noApiary.action')}</Link>
-              </Button>
-            }
-            secondary={
-              <Link
-                to="/onboarding"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {t('empty.noApiary.guided')}
-              </Link>
-            }
-          />
+          >
+            <Button asChild>
+              <Link to="/apiaries/create">{t('empty.noApiary.action')}</Link>
+            </Button>
+            <Link
+              to="/onboarding"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t('empty.noApiary.guided')}
+            </Link>
+          </EmptyState>
         </MainContent>
       </PageGrid>
     );
   }
 
   // User has no apiaries but has pending join requests
-  if ((!apiaries || apiaries.length === 0) && pendingMemberships > 0) {
+  if (hasNoApiaries) {
     return (
       <PageGrid>
         <MainContent>
-          <Card>
-            <CardContent className="flex items-center gap-4 py-8">
-              <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center shrink-0">
-                <Clock className="h-6 w-6 text-amber-600" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold">Waiting for approval</h2>
-                <p className="text-muted-foreground">
-                  You&apos;ve requested to join{' '}
-                  {pendingMemberships === 1
-                    ? 'an apiary'
-                    : `${pendingMemberships} apiaries`}
-                  . The owner will review your request shortly.
-                </p>
-              </div>
-            </CardContent>
+          <Card className="flex-row items-center gap-4 px-6 py-8">
+            <IconBadge size="lg">
+              <Clock />
+            </IconBadge>
+            <div>
+              <h2 className="text-lg font-semibold">
+                {t('empty.pendingApproval.title')}
+              </h2>
+              <p className="text-muted-foreground">
+                {t('empty.pendingApproval.description', {
+                  count: pendingMemberships,
+                })}
+              </p>
+            </div>
           </Card>
         </MainContent>
       </PageGrid>
     );
   }
 
+  // The hive query stays pending until the selected apiary is synced, which
+  // avoids flashing the "no hives" state on first load.
+  if (hivesPending) {
+    return <DashboardSkeleton />;
+  }
+
   return (
     <PageGrid>
       <MainContent>
-        <div className="space-y-6">
-          {/* Apiary-specific header only makes sense for a single apiary. */}
-          {!viewAllApiaries && <ApiaryHeader />}
-          {!viewAllApiaries &&
-            activeApiary &&
-            activeApiary.latitude == null &&
-            !locationDismissed && (
-              <Card>
-                <CardContent className="flex items-center gap-4 py-4">
-                  <div className="h-10 w-10 rounded-full bg-sky-100 dark:bg-sky-950/30 flex items-center justify-center shrink-0">
-                    <MapPin className="h-5 w-5 text-sky-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium">
-                      {t('empty.noLocation.title')}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {t('empty.noLocation.description')}
-                    </p>
-                  </div>
-                  <Button asChild size="sm">
-                    <Link to={`/apiaries/${activeApiary.id}/edit`}>
-                      {t('empty.noLocation.action')}
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={t('empty.noLocation.dismiss')}
-                    onClick={() => setLocationDismissed(true)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+        <div className="space-y-8">
+          {/* Apiary-specific blocks only make sense for a single apiary. */}
+          {!viewAllApiaries && (
+            <div className="space-y-4">
+              <ApiaryHeader />
+              {activeApiary && <LocationNudge apiary={activeApiary} />}
+            </div>
+          )}
           {/* The hive-layout minimap is tied to one apiary's grid. */}
           {activeApiaryId && !viewAllApiaries && (
-            <CollapsibleSection
+            <DashboardSection
               storageKey="home-section:minimap"
-              title="Hive Layout"
+              title={t('hive:layout.title')}
               action={
                 <Link
                   to={`/apiaries/${activeApiaryId}?tab=hives`}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center gap-1 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  Edit Hive Layout
-                  <ArrowUpRight className="h-4 w-4" />
+                  {t('hive:layout.edit')}
+                  <ArrowUpRight className="size-4" />
                 </Link>
               }
             >
-              <HiveMinimap apiaryId={activeApiaryId} showHeader={false} />
-            </CollapsibleSection>
+              <HiveMinimap apiaryId={activeApiaryId} />
+            </DashboardSection>
           )}
-          <CollapsibleSection storageKey="home-section:hives" title="Hives">
-            {data && data.length > 0 ? (
+          <DashboardSection
+            storageKey="home-section:hives"
+            title={t('hive:title')}
+          >
+            {hives && hives.length > 0 ? (
               viewAllApiaries ? (
-                <GroupedHives hives={data} apiaries={apiaries} />
+                <GroupedHives hives={hives} apiaries={apiaries} />
               ) : (
-                <HiveList hives={data} />
+                <HiveList
+                  hives={hives}
+                  isSubjective={isSubjectiveApiary(activeApiary)}
+                />
               )
             ) : (
-              <EmptyStateCard
-                icon={<Sparkles className="h-6 w-6 text-amber-600" />}
+              <EmptyState
+                icon={<Sparkles />}
                 title={t('empty.noHives.title')}
                 description={t(
                   viewAllApiaries
                     ? 'empty.noHives.descriptionAll'
                     : 'empty.noHives.description',
                 )}
-                action={
-                  <Button asChild>
-                    <Link to="/hives/create">{t('empty.noHives.action')}</Link>
-                  </Button>
-                }
-              />
+              >
+                <Button asChild>
+                  <Link to="/hives/create">{t('empty.noHives.action')}</Link>
+                </Button>
+              </EmptyState>
             )}
-          </CollapsibleSection>
+          </DashboardSection>
           {/* Todos are apiary-scoped but the todos endpoint supports the
               cross-apiary view, so they aggregate across all apiaries here. */}
           <DashboardTodos />
@@ -321,7 +284,7 @@ export const HomePage = () => {
         </div>
       </MainContent>
       <PageAside>
-        <HomeActionSidebar onRefreshData={refetch} />
+        <HomeActionSidebar />
       </PageAside>
     </PageGrid>
   );

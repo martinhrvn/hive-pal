@@ -9,7 +9,8 @@
   },
   "quickAdd": {
     "placeholder": "Add a todo…",
-    "button": "Add"
+    "button": "Add",
+    "error": "Could not add the todo"
   },
   "hive": {
     "title": "Todos",
@@ -23,7 +24,9 @@
   },
   "delete": {
     "success": "Todo deleted",
-    "error": "Failed to delete todo"
+    "error": "Failed to delete todo",
+    "confirmTitle": "Delete this todo?",
+    "confirmDescription": "This cannot be undone."
   },
   "fields": {
     "title": "Title",

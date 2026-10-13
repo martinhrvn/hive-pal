@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,39 +17,39 @@ export function TodoQuickAdd({ hiveId }: TodoQuickAddProps) {
   const [title, setTitle] = useState('');
   const createTodo = useCreateTodo();
 
-  const handleAdd = async () => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const trimmed = title.trim();
-    if (!trimmed) return;
-    await createTodo.mutateAsync({ title: trimmed, hiveId });
-    setTitle('');
+    // Guard against a second Enter while the first create is in flight.
+    if (!trimmed || createTodo.isPending) return;
+    try {
+      await createTodo.mutateAsync({ title: trimmed, hiveId });
+      setTitle('');
+    } catch {
+      toast.error(t('quickAdd.error', 'Could not add the todo'));
+    }
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2">
       <Input
         value={title}
         onChange={e => setTitle(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            void handleAdd();
-          }
-        }}
         placeholder={t('quickAdd.placeholder')}
         aria-label={t('quickAdd.placeholder')}
       />
       <Button
-        type="button"
-        onClick={() => void handleAdd()}
+        type="submit"
         disabled={!title.trim() || createTodo.isPending}
+        aria-label={t('quickAdd.button')}
       >
         {createTodo.isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="size-4 animate-spin" />
         ) : (
-          <Plus className="h-4 w-4" />
+          <Plus className="size-4" />
         )}
-        <span className="ml-2 hidden sm:inline">{t('quickAdd.button')}</span>
+        <span className="hidden sm:inline">{t('quickAdd.button')}</span>
       </Button>
-    </div>
+    </form>
   );
 }

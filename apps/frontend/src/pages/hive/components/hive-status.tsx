@@ -1,40 +1,20 @@
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { HiveResponse } from 'shared-schemas';
-
-type HiveStatusEnum = HiveResponse['status'];
+import { StatusPill } from '@/components/common/status-pill';
+import { getStatusTone, hiveStatusLabelKey } from '@/utils/status-colors';
 
 type HiveStatusProps = {
   status?: HiveResponse['status'];
 };
 
-const getStatusClasses = (status: HiveStatusEnum) => {
-  switch (status) {
-    case 'ACTIVE':
-      return 'text-green-600 bg-green-400/10 ring-green-400/30';
-    case 'INACTIVE':
-      return 'text-gray-600 bg-gray-400/10 ring-gray-400/30';
-    case 'DEAD':
-      return 'bg-gray-700 text-white';
-    case 'UNKNOWN':
-      return 'bg-gray-300 text-gray-900';
-    default:
-      return 'bg-blue-500 text-white';
-  }
-};
-
-export const HiveStatus: React.FC<HiveStatusProps> = ({ status }) => {
+export const HiveStatus = ({ status }: HiveStatusProps) => {
+  const { t } = useTranslation('hive');
   if (!status) {
     return null;
   }
   return (
-    <span
-      className={`
-        whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset
-        capitalize
-        ${getStatusClasses(status)}
-      `}
-    >
-      {status}
-    </span>
+    <StatusPill tone={getStatusTone(status)} size="sm">
+      {t(hiveStatusLabelKey(status))}
+    </StatusPill>
   );
 };
