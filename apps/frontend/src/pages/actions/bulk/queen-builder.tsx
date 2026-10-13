@@ -238,7 +238,7 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
                         mode="single"
                         selected={field.value}
                         onSelect={d => d && field.onChange(d)}
-                        initialFocus
+                        autoFocus
                       />
                     </PopoverContent>
                   </Popover>

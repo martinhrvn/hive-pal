@@ -46,6 +46,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  type YAxisTickContentProps,
 } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -738,9 +739,23 @@ function useAxisScaleEditor(
       orientation: 'left' | 'right' = 'left',
       displayUnit?: string,
     ) =>
-    (props: RechartsYAxisTickProps) => (
+    ({
+      x,
+      y,
+      fill,
+      index,
+      visibleTicksCount,
+      textAnchor,
+      payload,
+    }: YAxisTickContentProps) => (
       <ClickableYAxisTick
-        {...props}
+        x={typeof x === 'number' ? x : undefined}
+        y={typeof y === 'number' ? y : undefined}
+        fill={fill}
+        index={index}
+        visibleTicksCount={visibleTicksCount}
+        textAnchor={textAnchor}
+        payload={payload}
         axisId={axisId}
         displayUnit={displayUnit}
         orientation={orientation}

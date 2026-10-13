@@ -174,7 +174,6 @@ export const HiveDetailPage = () => {
                             <HiveMinimap
                               apiaryId={hive.apiaryId}
                               highlightedHiveId={hive.id}
-                              showHeader={false}
                               className="border-0 shadow-none"
                             />
                           </PopoverContent>

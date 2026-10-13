@@ -21,6 +21,7 @@ import { AddActionDialog } from '@/pages/hive/hive-detail-page/actions/add-actio
 import { AddPhotoDialog } from '@/components/add-photo-dialog';
 import { AddDocumentDialog } from '@/components/add-document-dialog';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 
 type ActiveDialog = 'quick-check' | 'action' | 'photo' | 'document' | null;
 
@@ -44,21 +45,18 @@ export function QuickAddMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          {variant === 'sidebar' ? (
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <Plus className="mr-2 h-4 w-4" />
-              {t('quickAdd.title', { defaultValue: 'Add Entry' })}
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm">
-              <Plus className="mr-2 h-4 w-4" />
-              {t('quickAdd.title', { defaultValue: 'Add Entry' })}
-            </Button>
-          )}
+          <Button
+            variant={variant === 'sidebar' ? 'ghost' : 'outline'}
+            size="sm"
+            className={cn(variant === 'sidebar' && 'w-full justify-start')}
+          >
+            <Plus className="size-4" />
+            {t('quickAdd.title', { defaultValue: 'Add Entry' })}
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setActiveDialog('quick-check')}>
-            <ClipboardCheck className="mr-2 h-4 w-4" />
+            <ClipboardCheck className="mr-2 size-4" />
             {t('quickAdd.quickCheck', { defaultValue: 'Quick Check' })}
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -70,23 +68,23 @@ export function QuickAddMenu({
               );
             }}
           >
-            <ClipboardPlus className="mr-2 h-4 w-4" />
+            <ClipboardPlus className="mr-2 size-4" />
             {t('quickAdd.inspection', { defaultValue: 'Inspection' })}
           </DropdownMenuItem>
           {hiveId && (
             <DropdownMenuItem onClick={() => setActiveDialog('action')}>
-              <Zap className="mr-2 h-4 w-4" />
+              <Zap className="mr-2 size-4" />
               {t('quickAdd.action', { defaultValue: 'Action' })}
             </DropdownMenuItem>
           )}
           {features?.storageEnabled && (
             <>
               <DropdownMenuItem onClick={() => setActiveDialog('photo')}>
-                <Camera className="mr-2 h-4 w-4" />
+                <Camera className="mr-2 size-4" />
                 {t('quickAdd.photo', { defaultValue: 'Photo' })}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setActiveDialog('document')}>
-                <FileText className="mr-2 h-4 w-4" />
+                <FileText className="mr-2 size-4" />
                 {t('quickAdd.document', { defaultValue: 'Document' })}
               </DropdownMenuItem>
             </>

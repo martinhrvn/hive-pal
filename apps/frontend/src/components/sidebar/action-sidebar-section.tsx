@@ -17,7 +17,7 @@ export const ActionSidebarContainer: React.FC<ActionSidebarContainerProps> = ({
 }) => (
   <div
     className={cn(
-      'rounded-xl border border-stone-200/80 dark:border-stone-800 bg-card overflow-hidden',
+      'rounded-xl border bg-card overflow-hidden',
       'shadow-[0_1px_2px_rgba(0,0,0,0.03),0_8px_22px_-14px_rgba(120,80,20,0.08)]',
       className,
     )}
@@ -43,13 +43,10 @@ export const ActionSidebarGroup: React.FC<ActionSidebarGroupProps> = ({
   className,
 }) => (
   <section
-    className={cn(
-      'px-3 py-3 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-stone-200/70 dark:[&:not(:first-child)]:border-stone-800',
-      className,
-    )}
+    className={cn('px-3 py-3 [&:not(:first-child)]:border-t', className)}
   >
     {title && (
-      <h3 className="font-overline text-stone-500 dark:text-stone-400 mb-1.5 px-2">
+      <h3 className="font-overline text-muted-foreground mb-1.5 px-2">
         {title}
       </h3>
     )}
@@ -63,8 +60,6 @@ interface ActionSidebarSectionProps {
   title: string;
   children: React.ReactNode;
   className?: string;
-  withBorder?: boolean;
-  withPadding?: boolean;
 }
 
 export const ActionSidebarSection: React.FC<ActionSidebarSectionProps> = ({

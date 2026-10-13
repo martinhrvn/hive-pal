@@ -1,37 +1,31 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   PlusCircle,
   ClipboardCheck,
   CalendarCheck,
   CalendarPlus,
   Crown,
+  Hexagon,
   Home,
-  Bell,
 } from 'lucide-react';
 
 import { CalendarSidebar } from '@/components/calendar-sidebar';
-import { useApiary } from '@/hooks/use-apiary';
+import { useApiaryStore } from '@/hooks/use-apiary';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
-  MenuItemButton,
+  MenuItemLink,
   WeatherForecastSection,
 } from '@/components/sidebar';
 import { RefreshButton } from '@/components/sidebar/refresh-button';
 
-interface HomeActionSidebarProps {
-  onRefreshData?: () => void;
-}
-
-export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
-  onRefreshData,
-}) => {
+export const HomeActionSidebar: React.FC = () => {
   const { t } = useTranslation('common');
-  const navigate = useNavigate();
-  const { activeApiaryId } = useApiary();
+  const queryClient = useQueryClient();
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   const { canEdit } = useApiaryPermission();
 
   return (
@@ -43,72 +37,59 @@ export const HomeActionSidebar: React.FC<HomeActionSidebarProps> = ({
       <ActionSidebarContainer>
         {canEdit && (
           <ActionSidebarGroup title={t('actions.createNew')}>
-            <MenuItemButton
-              icon={<PlusCircle className="h-4 w-4 text-green-600" />}
+            <MenuItemLink
+              to="/hives/create"
+              icon={<PlusCircle />}
               label={t('actions.newHive')}
-              onClick={() => navigate('/hives/create/')}
-              tooltip={t('actions.newHive')}
             />
-            <MenuItemButton
-              icon={<ClipboardCheck className="h-4 w-4 text-blue-600" />}
+            <MenuItemLink
+              to="/inspections/create"
+              icon={<ClipboardCheck />}
               label={t('actions.newInspection')}
-              onClick={() => navigate('/inspections/create')}
-              tooltip={t('actions.newInspection')}
             />
-            <MenuItemButton
-              icon={<CalendarPlus className="h-4 w-4 text-indigo-600" />}
+            <MenuItemLink
+              to="/inspections/schedule"
+              icon={<CalendarPlus />}
               label={t('actions.scheduleInspection')}
-              onClick={() => navigate('/inspections/schedule')}
-              tooltip={t('actions.scheduleInspection')}
             />
-            <MenuItemButton
-              icon={<Crown className="h-4 w-4 text-purple-600" />}
+            <MenuItemLink
+              to="/queens/create"
+              icon={<Crown />}
               label={t('actions.newQueen')}
-              onClick={() => navigate('/queens/create')}
-              tooltip={t('actions.newQueen')}
             />
           </ActionSidebarGroup>
         )}
 
         <ActionSidebarGroup title={t('actions.navigate')}>
-          <MenuItemButton
-            icon={<Home className="h-4 w-4" />}
+          <MenuItemLink
+            to="/"
+            icon={<Home />}
             label={t('navigation.home')}
-            onClick={() => navigate('/')}
-            tooltip={t('navigation.home')}
             isActive
           />
-          <MenuItemButton
-            icon={<Home className="h-4 w-4" />}
+          <MenuItemLink
+            to="/hives"
+            icon={<Hexagon />}
             label={t('navigation.allHives')}
-            onClick={() => navigate('/hives')}
-            tooltip={t('navigation.allHives')}
           />
-          <MenuItemButton
-            icon={<ClipboardCheck className="h-4 w-4" />}
+          <MenuItemLink
+            to="/inspections"
+            icon={<ClipboardCheck />}
             label={t('navigation.allInspections')}
-            onClick={() => navigate('/inspections')}
-            tooltip={t('navigation.allInspections')}
           />
-          <MenuItemButton
-            icon={<CalendarCheck className="h-4 w-4" />}
+          <MenuItemLink
+            to="/inspections/list/recent"
+            icon={<CalendarCheck />}
             label={t('actions.recentInspections')}
-            onClick={() => navigate('/inspections/list/recent')}
-            tooltip={t('actions.recentInspections')}
           />
         </ActionSidebarGroup>
 
         <ActionSidebarGroup title={t('actions.actions')}>
+          {/* Refreshes everything on the dashboard (hives, todos, timeline,
+              calendar, weather), not just the hive list. */}
           <RefreshButton
-            onRefresh={onRefreshData}
-            i18nNamespace="common"
+            onRefresh={() => void queryClient.invalidateQueries()}
             label={t('actions.refreshData')}
-          />
-          <MenuItemButton
-            icon={<Bell className="h-4 w-4" />}
-            label={t('actions.notifications')}
-            onClick={() => alert(t('messages.notificationsComingSoon'))}
-            tooltip={`${t('actions.notifications')} (${t('messages.notificationsComingSoon')})`}
           />
         </ActionSidebarGroup>
       </ActionSidebarContainer>

@@ -575,7 +575,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                           }
                           field.onChange(selected);
                         }}
-                        initialFocus
+                        autoFocus
                       />
                     </PopoverContent>
                   </Popover>

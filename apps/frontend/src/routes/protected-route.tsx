@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useReleaseNotesNotification } from '@/hooks/use-release-notes-notification.tsx';
 import { LandingPage } from '@/pages/landing-page.tsx';
+import { useApiarySelectionSync } from '@/hooks/use-apiary';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isLoggedIn, isLoading } = useAuth();
@@ -31,5 +32,16 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <ApiarySelectionSync />
+      {children}
+    </>
+  );
+}
+
+/** Keeps the selected apiary valid for every logged-in page. */
+function ApiarySelectionSync() {
+  useApiarySelectionSync();
+  return null;
 }

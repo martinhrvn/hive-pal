@@ -357,7 +357,7 @@ export const BoxConfigPanel = ({
           <Checkbox
             id="queen-excluder"
             checked={box.hasExcluder}
-            onCheckedChange={handleExcluderChange}
+            onCheckedChange={checked => handleExcluderChange(checked === true)}
           />
           <Label
             htmlFor="queen-excluder"
@@ -372,7 +372,7 @@ export const BoxConfigPanel = ({
           <Checkbox
             id="winterized"
             checked={box.winterized ?? false}
-            onCheckedChange={handleWinterizedChange}
+            onCheckedChange={checked => handleWinterizedChange(checked === true)}
           />
           <Label
             htmlFor="winterized"

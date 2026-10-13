@@ -150,7 +150,7 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
             <Label htmlFor="qr-target">QR Target</Label>
             <Select
               value={target}
-              onValueChange={(value: QrTarget) => setTarget(value)}
+              onValueChange={value => setTarget(value as QrTarget)}
             >
               <SelectTrigger id="qr-target">
                 <SelectValue />

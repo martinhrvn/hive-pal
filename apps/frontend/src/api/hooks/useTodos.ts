@@ -89,13 +89,32 @@ export const useUpdateTodo = () => {
       );
       return response.data;
     },
+    // Toggling completion is the common, instant-feedback case: flip it in the
+    // cached lists right away and roll back if the request fails.
+    onMutate: async ({ id, data }) => {
+      const { completed } = data;
+      if (completed === undefined) return undefined;
+      await queryClient.cancelQueries({ queryKey: TODOS_KEYS.lists() });
+      const previous = queryClient.getQueriesData<TodoResponse[]>({
+        queryKey: TODOS_KEYS.lists(),
+      });
+      queryClient.setQueriesData<TodoResponse[]>(
+        { queryKey: TODOS_KEYS.lists() },
+        old =>
+          old?.map(todo => (todo.id === id ? { ...todo, completed } : todo)),
+      );
+      return { previous };
+    },
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({
         queryKey: TODOS_KEYS.detail(variables.id),
       });
       await queryClient.invalidateQueries({ queryKey: TODOS_KEYS.lists() });
     },
-    onError: (error, variables) => {
+    onError: (error, variables, context) => {
+      context?.previous.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data),
+      );
       logApiError(error, `/api/todos/${variables.id}`, 'PATCH');
     },
   });

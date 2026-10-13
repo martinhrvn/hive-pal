@@ -321,7 +321,7 @@ export function QRCodesPrintPage() {
               <Label htmlFor="qr-target">QR Target</Label>
               <Select
                 value={target}
-                onValueChange={(value: QrTarget) => setTarget(value)}
+                onValueChange={value => setTarget(value as QrTarget)}
               >
                 <SelectTrigger id="qr-target">
                   <SelectValue />
@@ -342,8 +342,8 @@ export function QRCodesPrintPage() {
                 <Label htmlFor="qr-size">QR Code Size</Label>
                 <Select
                   value={qrSize}
-                  onValueChange={(value: 'small' | 'medium' | 'large') =>
-                    setQrSize(value)
+                  onValueChange={value =>
+                    setQrSize(value as 'small' | 'medium' | 'large')
                   }
                 >
                   <SelectTrigger id="qr-size">
@@ -364,8 +364,8 @@ export function QRCodesPrintPage() {
                 <Label htmlFor="layout">Page Layout</Label>
                 <Select
                   value={layout}
-                  onValueChange={(value: '2x3' | '2x4' | '3x3') =>
-                    setLayout(value)
+                  onValueChange={value =>
+                    setLayout(value as '2x3' | '2x4' | '3x3')
                   }
                 >
                   <SelectTrigger id="layout">

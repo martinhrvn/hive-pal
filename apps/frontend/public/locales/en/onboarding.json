@@ -56,6 +56,11 @@
       "description": "Set your apiary's location to get weather updates and forecasts.",
       "action": "Add location",
       "dismiss": "Dismiss"
+    },
+    "pendingApproval": {
+      "title": "Waiting for approval",
+      "description_one": "You've requested to join an apiary. The owner will review your request shortly.",
+      "description_other": "You've requested to join {{count}} apiaries. The owners will review your requests shortly."
     }
   }
 }

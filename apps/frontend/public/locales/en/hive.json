@@ -91,10 +91,12 @@
     "showDetails": "Show details",
     "lastInspected": "Last inspected {{date}}",
     "noInspection": "No inspection yet",
-    "score": "Score:",
-    "strength": "Strength:",
+    "score": "Score",
+    "strength": "Strength",
     "inspectionWarnings": "Inspection Warnings",
-    "feeding": "Feeding:"
+    "feeding": "Feeding",
+    "inspectedWhen": "Inspected {{when}}",
+    "feedingProgress": "Feeding · {{percent}}%"
   },
   "scores": {
     "overall": "Overall",
@@ -241,7 +243,10 @@
     "grid": "Grid",
     "unpositionedHives": "Unpositioned Hives",
     "noHivesInApiary": "No hives in this apiary yet.",
-    "dragToOrganize": "Add hives and drag them to the grid above to organize your apiary layout."
+    "dragToOrganize": "Add hives and drag them to the grid above to organize your apiary layout.",
+    "edit": "Edit layout",
+    "emptyHive": "Empty",
+    "minimapEmpty": "No hives are placed on the layout yet. Arrange them from the apiary page."
   },
   "equipment": {
     "currentHives": "Current Hives",

@@ -330,7 +330,7 @@ export const CompactBoxConfig = ({
           <Checkbox
             id="queen-excluder"
             checked={box.hasExcluder}
-            onCheckedChange={handleExcluderChange}
+            onCheckedChange={checked => handleExcluderChange(checked === true)}
             className="h-4 w-4"
           />
           <Label
@@ -346,7 +346,7 @@ export const CompactBoxConfig = ({
           <Checkbox
             id="winterized"
             checked={box.winterized ?? false}
-            onCheckedChange={handleWinterizedChange}
+            onCheckedChange={checked => handleWinterizedChange(checked === true)}
             className="h-4 w-4"
           />
           <Label

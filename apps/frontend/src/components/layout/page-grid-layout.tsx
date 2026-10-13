@@ -18,11 +18,5 @@ export const MainContent: React.FC<PropsWithChildren> = ({ children }) => {
 
 // The one-third aside column — page-level actions / secondary content.
 export const PageAside: React.FC<PropsWithChildren> = ({ children }) => {
-  return <div className={'col-span-1'}>{children}</div>;
+  return <div className={'col-span-1 min-w-0'}>{children}</div>;
 };
-
-// Re-export with old names for backward compatibility during migration
-/** @deprecated Use PageGrid instead */
-export const Page = PageGrid;
-/** @deprecated Use PageAside instead */
-export const Sidebar = PageAside;

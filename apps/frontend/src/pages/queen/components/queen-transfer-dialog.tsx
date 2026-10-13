@@ -142,7 +142,7 @@ export const QueenTransferDialog: React.FC<QueenTransferDialogProps> = ({
                   mode="single"
                   selected={movedAt}
                   onSelect={date => date && setMovedAt(date)}
-                  initialFocus
+                  autoFocus
                 />
               </PopoverContent>
             </Popover>

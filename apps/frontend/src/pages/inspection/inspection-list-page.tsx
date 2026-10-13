@@ -421,7 +421,7 @@ const renderStrengthCell = (
                 {strength}
                 {totalFrames != null ? `/${totalFrames}` : ''}
               </span>
-              <TrendIndicator delta={strengthDelta} iconSize="h-3 w-3" />
+              <TrendIndicator delta={strengthDelta} iconClassName="size-3" />
             </>
           )}
           <InfoIcon className="h-3 w-3 text-muted-foreground ml-1" />

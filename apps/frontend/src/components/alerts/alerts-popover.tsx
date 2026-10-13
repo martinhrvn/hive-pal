@@ -57,17 +57,18 @@ export function AlertsPopover({ alerts, className }: AlertsPopoverProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div
+        <button
+          type="button"
           className={cn(
-            'flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 rounded px-2 py-1 -mx-2',
+            'flex items-center gap-2 text-sm rounded px-2 py-1 -mx-2 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             className,
           )}
         >
-          <Icon className={cn('h-4 w-4', config.color)} />
-          <span className="text-gray-600 dark:text-gray-400">
+          <Icon className={cn('size-4', config.color)} />
+          <span className="text-muted-foreground">
             {alertCount} {pluralLabel}
           </span>
-        </div>
+        </button>
       </PopoverTrigger>
 
       <PopoverContent className="w-80 p-0" align="start">

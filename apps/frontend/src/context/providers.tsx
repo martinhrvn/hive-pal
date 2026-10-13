@@ -8,6 +8,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import { AxiosError } from 'axios';
 import { SidebarProvider } from '@/components/ui/sidebar.tsx';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,7 +44,9 @@ export const Providers: React.FC<PropsWithChildren> = ({ children }) => {
         persistOptions={{ persister, maxAge: 1000 * 60 * 60 * 24 }}
       >
         <AuthProvider>
-          <ThemeProvider defaultTheme="light">{children}</ThemeProvider>
+          <ThemeProvider defaultTheme="light">
+            <TooltipProvider>{children}</TooltipProvider>
+          </ThemeProvider>
         </AuthProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </PersistQueryClientProvider>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
@@ -7,8 +7,11 @@ import {
   FileBarChart,
   MapPin,
 } from 'lucide-react';
+import { format } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Metric, type MetricTone } from '@/components/common/metric';
+import { StatusPill } from '@/components/common/status-pill';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import { useApiaryStatistics } from '@/api/hooks/useReports';
 import { useApiary, useHives } from '@/api/hooks';
@@ -22,52 +25,12 @@ import { useScheduledInspectionActions } from '@/api/hooks/useScheduledInspectio
 import { UpcomingInspectionListItem } from '@/components/upcoming-inspection-list-item';
 import { cn } from '@/lib/utils';
 
-const formatNumber = (value: number) =>
-  new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 1,
-  }).format(value);
-
-const getScoreTone = (value: number | null | undefined) => {
-  if (value === null || value === undefined)
-    return 'text-stone-400 dark:text-stone-500';
-  if (value >= 6) return 'text-emerald-700 dark:text-emerald-400';
-  if (value >= 3) return 'text-amber-600 dark:text-amber-400';
-  return 'text-red-600 dark:text-red-400';
+const getScoreTone = (value: number | null | undefined): MetricTone => {
+  if (value === null || value === undefined) return 'muted';
+  if (value >= 6) return 'success';
+  if (value >= 3) return 'warning';
+  return 'danger';
 };
-
-type MetricProps = {
-  label: string;
-  value: React.ReactNode;
-  unit?: React.ReactNode;
-  valueClassName?: string;
-};
-
-const Metric: React.FC<MetricProps> = ({
-  label,
-  value,
-  unit,
-  valueClassName,
-}) => (
-  <div className="flex flex-col items-start gap-1 py-1">
-    <div
-      className={cn(
-        'font-display text-2xl @sm/header:text-2xl @lg/header:text-3xl leading-none tabular-nums',
-        valueClassName,
-      )}
-    >
-      {value}
-      {unit && (
-        <span className="ml-1 text-sm font-normal text-stone-500 dark:text-stone-400 tracking-tight">
-          {unit}
-        </span>
-      )}
-    </div>
-    <span className="font-overline text-stone-500 dark:text-stone-400">
-      {label}
-    </span>
-  </div>
-);
 
 const ActionLink: React.FC<{
   to: string;
@@ -77,29 +40,48 @@ const ActionLink: React.FC<{
   <Link
     to={to}
     aria-label={label}
-    className="group inline-flex items-center gap-1.5 rounded-full border border-stone-200 dark:border-stone-700 bg-white/70 dark:bg-stone-900/40 backdrop-blur-sm px-2 @sm/header:px-3 py-1.5 text-xs font-medium text-stone-700 dark:text-stone-200 transition-all hover:border-amber-500/70 hover:text-stone-900 dark:hover:text-white hover:shadow-sm"
+    className="group inline-flex items-center gap-1.5 rounded-full border bg-background/70 px-2 py-1.5 text-xs font-medium text-foreground/80 backdrop-blur-sm transition-all hover:border-honey/70 hover:text-foreground hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97] @sm/header:px-3 [&_svg]:size-3.5"
   >
-    <span className="text-stone-500 dark:text-stone-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+    <span className="text-muted-foreground transition-colors group-hover:text-honey-foreground">
       {icon}
     </span>
     <span className="hidden @xl/header:inline">{label}</span>
   </Link>
 );
 
+const HeaderSkeleton = () => (
+  <div className="overflow-hidden rounded-xl border bg-card">
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-3 w-24" />
+      <Skeleton className="h-9 w-56" />
+      <MetricsSkeleton />
+    </div>
+  </div>
+);
+
+const MetricsSkeleton = () => (
+  <div className="grid grid-cols-3 gap-4 pt-2">
+    <Skeleton className="h-14 w-full" />
+    <Skeleton className="h-14 w-full" />
+    <Skeleton className="h-14 w-full" />
+  </div>
+);
+
 export const ApiaryHeader: React.FC = () => {
-  const { t } = useTranslation(['common', 'inspection']);
+  const { t, i18n } = useTranslation(['common', 'inspection']);
   const navigate = useNavigate();
-  const { activeApiaryId } = useApiaryStore();
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   const { data: statistics, isLoading: statsLoading } = useApiaryStatistics(
     activeApiaryId ?? undefined,
     'ytd',
   );
-  const { data: apiary } = useApiary(activeApiaryId ?? '', {
-    enabled: !!activeApiaryId,
-  });
+  const { data: apiary, isLoading: apiaryLoading } = useApiary(
+    activeApiaryId ?? '',
+    { enabled: !!activeApiaryId },
+  );
   const { data: hives } = useHives();
 
-  const { mode: imageMode } = useImageDisplayStore();
+  const imageMode = useImageDisplayStore(state => state.mode);
 
   const { data: overdueInspections, isLoading: overdueLoading } =
     useOverdueInspections();
@@ -108,12 +90,29 @@ export const ApiaryHeader: React.FC = () => {
   const { data: upcomingInspections, isLoading: upcomingLoading } =
     useUpcomingInspections(5);
 
-  const hiveNameMap = useMemo(() => {
-    if (!hives) return new Map<string, string>();
-    return new Map(hives.map(hive => [hive.id, hive.name]));
+  const numberFormat = useMemo(
+    () =>
+      new Intl.NumberFormat(i18n.language, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1,
+      }),
+    [i18n.language],
+  );
+
+  const { hiveNameMap, activeHiveCount } = useMemo(() => {
+    const names = new Map<string, string>();
+    let active = 0;
+    for (const hive of hives ?? []) {
+      names.set(hive.id, hive.name);
+      if (hive.status === 'ACTIVE') active++;
+    }
+    return { hiveNameMap: names, activeHiveCount: active };
   }, [hives]);
 
-  const getHiveName = (hiveId: string) => hiveNameMap.get(hiveId) || hiveId;
+  const getHiveName = useCallback(
+    (hiveId: string) => hiveNameMap.get(hiveId) || hiveId,
+    [hiveNameMap],
+  );
 
   const {
     setReschedulingInspection,
@@ -128,70 +127,57 @@ export const ApiaryHeader: React.FC = () => {
     overdueLoading || dueTodayLoading || upcomingLoading;
   const hasInspections =
     overdueCount > 0 || dueTodayCount > 0 || upcomingCount > 0;
-  const activeHiveCount = hives?.filter(h => h.status === 'ACTIVE').length ?? 0;
 
   const handleViewOverdue = () => {
     navigate('/inspections?status=OVERDUE');
   };
 
   const handleViewDueToday = () => {
+    // Local calendar date, not the UTC one from toISOString().
     navigate(
-      '/inspections?status=SCHEDULED&date=' +
-        new Date().toISOString().split('T')[0],
+      `/inspections?status=SCHEDULED&date=${format(new Date(), 'yyyy-MM-dd')}`,
     );
   };
 
-  if (statsLoading) {
-    return (
-      <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-card overflow-hidden">
-        <Skeleton className="h-44 w-full rounded-none" />
-        <div className="p-6 space-y-4">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-9 w-56" />
-          <div className="grid grid-cols-3 gap-4 pt-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (!activeApiaryId) {
     return (
-      <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-card p-6">
-        <span className="font-overline text-stone-500">
+      <div className="rounded-xl border bg-card p-6">
+        <span className="font-overline text-muted-foreground">
           {t('reports.widget.title')}
         </span>
-        <p className="mt-2 font-display text-xl text-stone-700 dark:text-stone-300">
+        <p className="mt-2 font-display text-xl text-foreground/80">
           {t('reports.widget.noApiary')}
         </p>
       </div>
     );
   }
 
-  if (!statistics) {
-    return null;
+  // Only the apiary itself gates the header; statistics fill in when ready.
+  if (apiaryLoading) {
+    return <HeaderSkeleton />;
   }
 
-  const hasImage = imageMode !== 'hidden' && !!apiary?.featurePhotoUrl;
+  const featurePhotoUrl =
+    imageMode !== 'hidden' ? apiary?.featurePhotoUrl : null;
   // Side image is only applied when the container is wide enough (@md = 28rem = 448px).
   // Below that, fall back to a top banner so the content has room to breathe.
-  const allowSide = imageMode === 'side' && hasImage;
+  const allowSide = imageMode === 'side' && !!featurePhotoUrl;
 
-  const imageBlock = hasImage && (
+  const imageBlock = featurePhotoUrl && (
     <div
       className={cn(
-        'relative overflow-hidden bg-stone-100 dark:bg-stone-900',
+        'relative overflow-hidden bg-muted',
         allowSide
           ? 'w-full @md/header:w-[200px] @lg/header:w-[240px] flex-shrink-0 h-40 @sm/header:h-48 @md/header:h-auto @md/header:min-h-[260px]'
           : 'w-full h-40 @sm/header:h-48 @md/header:h-56',
       )}
     >
       <img
-        src={apiary!.featurePhotoUrl!}
-        alt={`${apiary?.name ?? ''} feature photo`}
+        src={featurePhotoUrl}
+        alt={t('common:photo.featureAlt', {
+          name: apiary?.name ?? '',
+          defaultValue: '{{name}} photo',
+        })}
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div
@@ -202,7 +188,7 @@ export const ApiaryHeader: React.FC = () => {
             : 'bg-gradient-to-t from-card/40 via-transparent to-transparent',
         )}
       />
-      <div className="absolute inset-0 pointer-events-none bg-amber-500/[0.04]" />
+      <div className="absolute inset-0 pointer-events-none bg-honey/[0.04]" />
     </div>
   );
 
@@ -214,12 +200,14 @@ export const ApiaryHeader: React.FC = () => {
     },
   );
 
+  const averageScore = statistics?.healthScores.averageOverall;
+
   return (
     <>
       <div className="@container/header">
         <section
           className={cn(
-            'group/header relative rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(120,80,20,0.08)]',
+            'group/header relative rounded-xl overflow-hidden border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(120,80,20,0.08)]',
             'flex flex-col',
             allowSide && '@md/header:flex-row',
           )}
@@ -231,17 +219,17 @@ export const ApiaryHeader: React.FC = () => {
             <div className="flex flex-wrap justify-end gap-1.5 px-4 @sm/header:px-5 @lg/header:px-6 pt-4">
               <ActionLink
                 to={`/apiaries/${activeApiaryId}`}
-                icon={<MapPin className="h-3.5 w-3.5" />}
+                icon={<MapPin />}
                 label={t('reports.widget.apiaryDetails')}
               />
               <ActionLink
                 to="/reports"
-                icon={<FileBarChart className="h-3.5 w-3.5" />}
+                icon={<FileBarChart />}
                 label={t('reports.widget.viewReports')}
               />
               <ActionLink
                 to="/calendar"
-                icon={<CalendarDays className="h-3.5 w-3.5" />}
+                icon={<CalendarDays />}
                 label={t('inspection:dashboard.viewCalendar', 'Calendar')}
               />
             </div>
@@ -249,93 +237,92 @@ export const ApiaryHeader: React.FC = () => {
             {/* Overline + apiary name as an editorial block */}
             <div className="px-4 @sm/header:px-5 @lg/header:px-6 pt-3 min-w-0">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.15)]" />
-                <span className="font-overline text-stone-500 dark:text-stone-400 truncate">
+                <span className="inline-flex size-1.5 shrink-0 rounded-full bg-success ring-[3px] ring-success/15" />
+                <span className="font-overline text-muted-foreground truncate">
                   {overline}
                 </span>
               </div>
-              <h2 className="mt-1.5 font-display text-2xl @sm/header:text-3xl @lg/header:text-4xl font-medium leading-[1.05] text-stone-900 dark:text-stone-50 break-words">
+              <h2 className="mt-1.5 font-display text-2xl @sm/header:text-3xl @lg/header:text-4xl font-medium leading-[1.05] text-foreground break-words">
                 {apiary?.name ?? t('reports.widget.title')}
               </h2>
             </div>
 
-            {/* Metric row — stacks at narrow widths, becomes a hairline-divided trio at @sm+ */}
+            {/* Metric row — stacks at narrow widths, becomes a hairline-divided trio at @lg+ */}
             <div className="px-4 @sm/header:px-5 @lg/header:px-6 pt-4 @sm/header:pt-5 pb-5">
-              <div className="grid grid-cols-1 @lg/header:grid-cols-3 gap-3 @lg/header:gap-0 @lg/header:divide-x @lg/header:divide-stone-200 @lg/header:dark:divide-stone-800 @lg/header:-mx-2">
-                <div className="@lg/header:px-2">
-                  <Metric
-                    label={t('reports.honeyProduction')}
-                    value={formatNumber(statistics.honeyProduction.totalAmount)}
-                    unit={statistics.honeyProduction.unit}
-                    valueClassName="text-amber-700 dark:text-amber-400"
-                  />
-                </div>
-                <div className="@lg/header:px-3">
-                  <Metric
-                    label={t('reports.healthScores')}
-                    value={
-                      statistics.healthScores.averageOverall
-                        ? formatNumber(statistics.healthScores.averageOverall)
-                        : '—'
-                    }
-                    unit={
-                      statistics.healthScores.averageOverall
-                        ? '/ 10'
-                        : undefined
-                    }
-                    valueClassName={getScoreTone(
-                      statistics.healthScores.averageOverall,
-                    )}
-                  />
-                </div>
-                <div className="@lg/header:px-3">
-                  <Metric
-                    label={t('reports.feedingTotals')}
-                    value={formatNumber(statistics.feedingTotals.totalSugarKg)}
-                    unit="kg"
-                    valueClassName="text-stone-800 dark:text-stone-100"
-                  />
-                </div>
-              </div>
+              {statsLoading ? (
+                <MetricsSkeleton />
+              ) : (
+                statistics && (
+                  <div className="grid grid-cols-1 @lg/header:grid-cols-3 gap-3 @lg/header:gap-0 @lg/header:divide-x @lg/header:-mx-2">
+                    <Metric
+                      size="lg"
+                      className="py-1 @lg/header:px-2"
+                      label={t('reports.honeyProduction')}
+                      value={numberFormat.format(
+                        statistics.honeyProduction.totalAmount,
+                      )}
+                      unit={statistics.honeyProduction.unit}
+                      tone="honey"
+                    />
+                    <Metric
+                      size="lg"
+                      className="py-1 @lg/header:px-3"
+                      label={t('reports.healthScores')}
+                      value={
+                        averageScore ? numberFormat.format(averageScore) : '—'
+                      }
+                      unit={averageScore ? '/ 10' : undefined}
+                      tone={getScoreTone(averageScore)}
+                    />
+                    <Metric
+                      size="lg"
+                      className="py-1 @lg/header:px-3"
+                      label={t('reports.feedingTotals')}
+                      value={numberFormat.format(
+                        statistics.feedingTotals.totalSugarKg,
+                      )}
+                      unit="kg"
+                    />
+                  </div>
+                )
+              )}
             </div>
 
             {/* Inspection section, set apart with a hairline */}
             {!inspectionsLoading && hasInspections && (
-              <div className="mt-auto border-t border-stone-200 dark:border-stone-800 px-4 @sm/header:px-5 @lg/header:px-6 py-4 space-y-3 bg-stone-50/60 dark:bg-stone-900/40">
+              <div className="mt-auto border-t px-4 @sm/header:px-5 @lg/header:px-6 py-4 space-y-3 bg-muted/40">
                 {(overdueCount > 0 || dueTodayCount > 0) && (
                   <div className="flex flex-wrap items-center gap-2">
                     {overdueCount > 0 && (
-                      <button
-                        onClick={handleViewOverdue}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-red-50 dark:bg-red-950/40 px-2.5 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-200 dark:ring-red-900 hover:bg-red-100 dark:hover:bg-red-950/60 transition-colors"
-                      >
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                        <span className="tabular-nums">{overdueCount}</span>
-                        <span>
-                          {t('inspection:dashboard.overdue', 'overdue')}
-                        </span>
-                      </button>
+                      <StatusPill tone="danger" asChild>
+                        <button type="button" onClick={handleViewOverdue}>
+                          <AlertTriangle />
+                          <span className="tabular-nums">{overdueCount}</span>
+                          <span>
+                            {t('inspection:dashboard.overdue', 'overdue')}
+                          </span>
+                        </button>
+                      </StatusPill>
                     )}
                     {dueTodayCount > 0 && (
-                      <button
-                        onClick={handleViewDueToday}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1 text-xs font-medium text-amber-800 dark:text-amber-300 ring-1 ring-inset ring-amber-200 dark:ring-amber-900 hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors"
-                      >
-                        <Clock className="h-3.5 w-3.5" />
-                        <span className="tabular-nums">{dueTodayCount}</span>
-                        <span>
-                          {t('inspection:dashboard.dueToday', 'due today')}
-                        </span>
-                      </button>
+                      <StatusPill tone="warning" asChild>
+                        <button type="button" onClick={handleViewDueToday}>
+                          <Clock />
+                          <span className="tabular-nums">{dueTodayCount}</span>
+                          <span>
+                            {t('inspection:dashboard.dueToday', 'due today')}
+                          </span>
+                        </button>
+                      </StatusPill>
                     )}
                   </div>
                 )}
 
                 {upcomingCount > 0 && (
                   <div className="space-y-2">
-                    <h4 className="font-overline text-stone-500 dark:text-stone-400">
+                    <h3 className="font-overline text-muted-foreground">
                       {t('inspection:dashboard.upcoming', 'Upcoming')}
-                    </h4>
+                    </h3>
                     <div className="space-y-1.5">
                       {upcomingInspections?.map(inspection => (
                         <UpcomingInspectionListItem

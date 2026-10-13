@@ -195,7 +195,6 @@ export const InspectionHeader = ({
                   <HiveMinimap
                     apiaryId={apiaryId}
                     highlightedHiveId={hiveId}
-                    showHeader={false}
                     className="border-0 shadow-none"
                   />
                 </PopoverContent>

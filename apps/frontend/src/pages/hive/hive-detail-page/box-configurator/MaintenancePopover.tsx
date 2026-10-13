@@ -155,7 +155,7 @@ export const MaintenancePopover = ({
                 if (d) setDate(d);
                 setShowCalendar(false);
               }}
-              initialFocus
+              autoFocus
             />
           )}
 
@@ -236,7 +236,7 @@ export const MaintenanceInline = ({
             if (d) setDate(d);
             setShowCalendar(false);
           }}
-          initialFocus
+          autoFocus
         />
       )}
 

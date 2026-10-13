@@ -124,7 +124,7 @@ export const HarvestWizard = () => {
                   mode="single"
                   selected={date}
                   onSelect={newDate => newDate && setDate(newDate)}
-                  initialFocus
+                  autoFocus
                 />
               </PopoverContent>
             </Popover>

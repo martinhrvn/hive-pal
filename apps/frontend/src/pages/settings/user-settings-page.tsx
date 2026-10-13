@@ -33,6 +33,7 @@ import { toast } from 'sonner';
 import { usePreferences } from '@/api/hooks/useUserPreferences';
 import { useDeleteAccount } from '@/api/hooks/useDeleteAccount';
 import { useTheme } from '@/context/use-theme';
+import type { Theme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context/use-auth';
 import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
@@ -214,8 +215,11 @@ export const UserSettingsPage = () => {
                 </Label>
                 <Select
                   value={settings.weekStartsOn}
-                  onValueChange={(value: 'monday' | 'sunday') =>
-                    setSettings({ ...settings, weekStartsOn: value })
+                  onValueChange={value =>
+                    setSettings({
+                      ...settings,
+                      weekStartsOn: value as 'monday' | 'sunday',
+                    })
                   }
                 >
                   <SelectTrigger id="weekStartsOn">
@@ -238,8 +242,8 @@ export const UserSettingsPage = () => {
                 </Label>
                 <Select
                   value={settings.timeFormat}
-                  onValueChange={(value: '12h' | '24h') =>
-                    setSettings({ ...settings, timeFormat: value })
+                  onValueChange={value =>
+                    setSettings({ ...settings, timeFormat: value as '12h' | '24h' })
                   }
                 >
                   <SelectTrigger id="timeFormat">
@@ -265,8 +269,11 @@ export const UserSettingsPage = () => {
               <Label htmlFor="units">{t('settings.unitsOfMeasurement')}</Label>
               <Select
                 value={settings.units}
-                onValueChange={(value: 'metric' | 'imperial') =>
-                  setSettings({ ...settings, units: value })
+                onValueChange={value =>
+                  setSettings({
+                    ...settings,
+                    units: value as 'metric' | 'imperial',
+                  })
                 }
               >
                 <SelectTrigger id="units">
@@ -297,7 +304,10 @@ export const UserSettingsPage = () => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="theme">{t('settings.theme')}</Label>
-              <Select value={theme} onValueChange={setTheme}>
+              <Select
+                value={theme}
+                onValueChange={value => setTheme(value as Theme)}
+              >
                 <SelectTrigger id="theme">
                   <SelectValue />
                 </SelectTrigger>

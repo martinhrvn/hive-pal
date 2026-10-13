@@ -232,37 +232,30 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
           documentsLoading
         }
         emptyMessage="No activity recorded for this hive yet"
-        onEditAction={canEdit ? setEditingAction : undefined}
-        onDeleteAction={canEdit ? setDeletingAction : undefined}
-        onUndoSplit={
-          canEdit
-            ? action => {
-                setUndoConflict(false);
-                setUndoingSplit(action);
-              }
-            : undefined
-        }
-        onDeleteQuickCheck={canEdit ? setDeletingQuickCheck : undefined}
-        onDeletePhoto={canEdit ? setDeletingPhoto : undefined}
-        onDeleteDocument={canEdit ? setDeletingDocument : undefined}
-        onInspectionClick={inspection =>
-          navigate(`/inspections/${inspection.id}`)
-        }
-        onActionClick={action =>
-          action.harvestId
-            ? navigate(`/harvests/${action.harvestId}`)
-            : undefined
-        }
-        headerSlot={
-          canEdit && hiveId && apiaryId ? (
-            <QuickAddMenu
-              apiaryId={apiaryId}
-              hiveId={hiveId}
-              variant="inline"
-            />
-          ) : undefined
-        }
-      />
+        handlers={{
+          onInspectionClick: inspection =>
+            navigate(`/inspections/${inspection.id}`),
+          onActionClick: action =>
+            action.harvestId
+              ? navigate(`/harvests/${action.harvestId}`)
+              : undefined,
+          ...(canEdit && {
+            onEditAction: setEditingAction,
+            onDeleteAction: setDeletingAction,
+            onUndoSplit: action => {
+              setUndoConflict(false);
+              setUndoingSplit(action);
+            },
+            onDeleteQuickCheck: setDeletingQuickCheck,
+            onDeletePhoto: setDeletingPhoto,
+            onDeleteDocument: setDeletingDocument,
+          }),
+        }}
+      >
+        {canEdit && hiveId && apiaryId && (
+          <QuickAddMenu apiaryId={apiaryId} hiveId={hiveId} variant="inline" />
+        )}
+      </TimelineEventList>
 
       {/* Edit Action Dialog */}
       {editingAction && (

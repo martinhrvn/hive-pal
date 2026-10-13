@@ -24,5 +24,14 @@
     "title": "Gratulujeme!",
     "description": "Úspešne ste nastavili svoju prvú včelnicu a úľ. Ste pripravený začať sledovať svoje včelárske aktivity s Hive-Pal!",
     "action": "Prejsť na nástenku"
+  },
+  "empty": {
+    "pendingApproval": {
+      "title": "Čaká sa na schválenie",
+      "description_one": "Požiadali ste o pripojenie k včelnici. Vlastník vašu žiadosť čoskoro posúdi.",
+      "description_few": "Požiadali ste o pripojenie k {{count}} včelniciam. Vlastníci vaše žiadosti čoskoro posúdia.",
+      "description_many": "Požiadali ste o pripojenie k {{count}} včelniciam. Vlastníci vaše žiadosti čoskoro posúdia.",
+      "description_other": "Požiadali ste o pripojenie k {{count}} včelniciam. Vlastníci vaše žiadosti čoskoro posúdia."
+    }
   }
 }

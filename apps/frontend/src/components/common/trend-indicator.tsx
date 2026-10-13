@@ -3,8 +3,8 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 interface TrendIndicatorProps {
   delta: number | null;
   unit?: string;
-  /** Size class applied to the icon, e.g. "h-3 w-3" */
-  iconSize?: string;
+  /** Classes applied to the icon, e.g. "size-3.5" */
+  iconClassName?: string;
   /** Whether to render the numeric delta alongside the icon */
   showDelta?: boolean;
 }
@@ -16,7 +16,7 @@ interface TrendIndicatorProps {
 export const TrendIndicator: React.FC<TrendIndicatorProps> = ({
   delta,
   unit = '',
-  iconSize = 'h-3 w-3',
+  iconClassName = 'size-3',
   showDelta = true,
 }) => {
   const isUp = delta != null && delta > 0;
@@ -41,7 +41,7 @@ export const TrendIndicator: React.FC<TrendIndicatorProps> = ({
 
   return (
     <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
-      <Icon className={iconSize} />
+      <Icon className={iconClassName} />
       {showDelta && deltaStr && (
         <span className="tabular-nums">{deltaStr}</span>
       )}
