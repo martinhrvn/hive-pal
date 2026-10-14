@@ -143,6 +143,15 @@ SENTRY_DSN=                # Optional error tracking
 - Components should use Tailwind CSS classes, avoid inline styles
 - API responses follow consistent structure with proper HTTP status codes
 
+### Touching a frontend component
+When a focused change (a bug fix or feature in a few components) modifies a frontend component, also do this pass on the files you touched (not the whole tree) before finishing. Skip it for broad or mechanical changes that touch many files, such as renames, moves, codemods or dependency bumps; mixing a clean-up pass into those makes them hard to review.
+- **i18n**: every user-visible string (labels, buttons, placeholders, toasts, warnings) goes through `t()`. Add keys to the `en` and `sk` locales only; other locales are filled in through Weblate. Reuse existing `common:` keys (e.g. `common:actions.cancel`) where they fit.
+- **React review**: apply the `composition-patterns` and `react-best-practices` skills (vendored in `.claude/skills/`) to the touched code and fix what they flag.
+- **Sonar**: check the touched files for open MAJOR or higher issues and fix them. The API is public:
+  `curl -s "https://sonarcloud.io/api/issues/search?componentKeys=martinhrvn_hive-pal:<path/from/repo/root>&resolved=false&severities=MAJOR,CRITICAL,BLOCKER"`.
+  Ignore duplication findings.
+- **Dates**: display dates with `useDateFormat()` (`apps/frontend/src/hooks/use-date-format.ts`), which respects the user's date format and week start, not raw date-fns `format`.
+
 ### Handling modifications / push
  - do not push any modifications to github
  - when the user explicitly asks for a handoff (e.g. "package these changes", "give me a zip"), put modified files in a .zip archive with the relevant repository structure. Do not do this for normal edits.

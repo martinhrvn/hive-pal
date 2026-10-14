@@ -309,5 +309,32 @@
       "harvest": "Medobranie",
       "note": "Poznámka"
     }
+  },
+  "actionDialog": {
+    "addTrigger": "Pridať úkon",
+    "addTitle": "Pridať úkony",
+    "editTitle": "Upraviť úkon",
+    "date": "Dátum úkonu",
+    "notes": "Poznámky",
+    "splitNotesPlaceholder": "Poznámky k tomuto deleniu…",
+    "saving": "Ukladá sa...",
+    "saveActions": "Uložiť úkony",
+    "saveChanges": "Uložiť zmeny",
+    "noActions": "Pred uložením pridajte aspoň jeden úkon.",
+    "createSuccess_one": "Uložený {{count}} úkon.",
+    "createSuccess_few": "Uložené {{count}} úkony.",
+    "createSuccess_many": "Uložených {{count}} úkonov.",
+    "createSuccess_other": "Uložených {{count}} úkonov.",
+    "createError": "Pri ukladaní úkonov nastala chyba. Skúste to znova.",
+    "updateSuccess": "Úkon bol upravený",
+    "splitUpdateSuccess": "Delenie upravené — oba záznamy na časovej osi majú nový dátum",
+    "updateError": "Úkon sa nepodarilo upraviť. Skúste to znova.",
+    "warnings": {
+      "inspection": "Tento úkon je súčasťou prehliadky. Ak ho upravíte tu, nebude sa zhodovať so záznamom prehliadky.",
+      "inspectionLink": "Upraviť radšej prehliadku",
+      "harvest": "Tento úkon je prepojený s medobraním. Ak ho upravíte tu, nebude sa zhodovať so záznamom medobrania.",
+      "harvestLink": "Prejsť na medobranie",
+      "split": "Toto je delenie včelstva. Tu sa dá upraviť len dátum a poznámky — zmena dátumu sa prejaví v oboch prepojených záznamoch na časovej osi a posunie aj pripomienku kontroly. Ak chcete samotné delenie vrátiť, použite na časovej osi „Zrušiť delenie“."
+    }
   }
 }

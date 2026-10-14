@@ -80,7 +80,9 @@ packages/prisma/node_modules/.prisma
 #Dev tool directories
 openspec
 apps/backend/TEST_REPORT_GROUP_2.md
-.claude
+# Local Claude Code state stays private; project skills are shared
+**/.claude/*
+!/.claude/skills/
 .vscode/settings.json
 
 # Python bytecode (apps/ai-app)

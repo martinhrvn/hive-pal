@@ -375,5 +375,30 @@
     "safeToHarvest": "Withdrawal passed — safe to harvest",
     "empty": "No treatments with a known composition yet.",
     "incompleteHint": "{{n}} treatment(s) could not be converted (missing density / incompatible units)"
+  },
+  "actionDialog": {
+    "addTrigger": "Add Action",
+    "addTitle": "Add Actions",
+    "editTitle": "Edit Action",
+    "date": "Action Date",
+    "notes": "Notes",
+    "splitNotesPlaceholder": "Notes about this split…",
+    "saving": "Saving...",
+    "saveActions": "Save Actions",
+    "saveChanges": "Save Changes",
+    "noActions": "Please add at least one action before saving.",
+    "createSuccess_one": "Saved {{count}} action.",
+    "createSuccess_other": "Saved {{count}} actions.",
+    "createError": "There was an error saving the actions. Please try again.",
+    "updateSuccess": "Action updated successfully",
+    "splitUpdateSuccess": "Split updated — both timeline entries were re-dated",
+    "updateError": "Failed to update action. Please try again.",
+    "warnings": {
+      "inspection": "This action is part of an inspection. Editing it here will cause it to be out of sync with the inspection record.",
+      "inspectionLink": "Edit inspection instead",
+      "harvest": "This action is linked to a harvest. Editing it here will cause it to be out of sync with the harvest record.",
+      "harvestLink": "Go to harvest",
+      "split": "This is a colony split. Only the date and notes can be edited here — the date change applies to both linked timeline entries and shifts the follow-up reminder. To revert the split itself, use \"Undo split\" on the timeline."
+    }
   }
 }

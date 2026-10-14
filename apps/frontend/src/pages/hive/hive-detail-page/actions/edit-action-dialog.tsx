@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   Dialog,
   DialogContent,
@@ -6,22 +8,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon, AlertTriangle } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+import { AlertTriangle } from 'lucide-react';
+import { parseISO } from 'date-fns';
+import { ActionDateTimeField } from './action-date-time-field';
 import { Link } from 'react-router-dom';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions';
 import { useUpdateAction } from '@/api/hooks/useActions';
 import { ActionResponse, ActionType, UpdateAction } from 'shared-schemas';
 import { toast } from 'sonner';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type {
   ActionData,
@@ -41,7 +38,45 @@ interface EditActionDialogProps {
 interface ActionFormData {
   date: Date;
   actions: ActionData[];
+  /** Only edited for splits, whose details are immutable. */
+  notes: string;
 }
+
+const toFormValues = (action: ActionResponse): ActionFormData => ({
+  date: parseISO(action.date),
+  actions: [convertResponseToFormData(action)],
+  notes: action.notes ?? '',
+});
+
+interface ActionWarning {
+  message: string;
+  linkTo?: string;
+  linkText?: string;
+}
+
+const getWarning = (
+  action: ActionResponse,
+  t: TFunction,
+): ActionWarning | null => {
+  if (action.inspectionId) {
+    return {
+      message: t('hive:actionDialog.warnings.inspection'),
+      linkTo: `/inspections/${action.inspectionId}`,
+      linkText: t('hive:actionDialog.warnings.inspectionLink'),
+    };
+  }
+  if (action.type === ActionType.HARVEST || action.harvestId) {
+    return {
+      message: t('hive:actionDialog.warnings.harvest'),
+      linkTo: action.harvestId ? `/harvests/${action.harvestId}` : '/harvests',
+      linkText: t('hive:actionDialog.warnings.harvestLink'),
+    };
+  }
+  if (action.type === ActionType.SPLIT) {
+    return { message: t('hive:actionDialog.warnings.split') };
+  }
+  return null;
+};
 
 // Convert API ActionResponse to form ActionData
 const convertResponseToFormData = (action: ActionResponse): ActionData => {
@@ -182,58 +217,20 @@ export const EditActionDialog = ({
   open,
   onOpenChange,
 }: EditActionDialogProps) => {
+  const { t } = useTranslation(['hive', 'common']);
+  const notesId = useId();
   const updateAction = useUpdateAction();
   // A split is a structural paired record: only date + notes are editable.
   const isSplit = action.type === ActionType.SPLIT;
-  const [splitNotes, setSplitNotes] = useState(action.notes ?? '');
 
   const methods = useForm<ActionFormData>({
-    defaultValues: {
-      date: parseISO(action.date),
-      actions: [convertResponseToFormData(action)],
-    },
+    defaultValues: toFormValues(action),
   });
 
   // Reset form when action changes
   useEffect(() => {
-    methods.reset({
-      date: parseISO(action.date),
-      actions: [convertResponseToFormData(action)],
-    });
-    setSplitNotes(action.notes ?? '');
+    methods.reset(toFormValues(action));
   }, [action, methods]);
-
-  const getWarning = (): {
-    message: string;
-    linkTo?: string;
-    linkText?: string;
-  } | null => {
-    if (action.inspectionId) {
-      return {
-        message:
-          'This action is part of an inspection. Editing it here will cause it to be out of sync with the inspection record.',
-        linkTo: `/inspections/${action.inspectionId}`,
-        linkText: 'Edit inspection instead',
-      };
-    }
-    if (action.type === ActionType.HARVEST || action.harvestId) {
-      return {
-        message:
-          'This action is linked to a harvest. Editing it here will cause it to be out of sync with the harvest record.',
-        linkTo: action.harvestId
-          ? `/harvests/${action.harvestId}`
-          : '/harvests',
-        linkText: 'Go to harvest',
-      };
-    }
-    if (isSplit) {
-      return {
-        message:
-          'This is a colony split. Only the date and notes can be edited here — the date change applies to both linked timeline entries and shifts the follow-up reminder. To revert the split itself, use "Undo split" on the timeline.',
-      };
-    }
-    return null;
-  };
 
   const handleSave = async () => {
     const values = methods.getValues();
@@ -247,19 +244,19 @@ export const EditActionDialog = ({
           actionId: action.id,
           data: {
             date: selectedDate.toISOString(),
-            notes: splitNotes.trim() || undefined,
+            notes: values.notes.trim() || undefined,
           },
         });
-        toast.success('Split updated — both timeline entries were re-dated');
+        toast.success(t('hive:actionDialog.splitUpdateSuccess'));
         onOpenChange(false);
       } catch {
-        toast.error('Failed to update action. Please try again.');
+        toast.error(t('hive:actionDialog.updateError'));
       }
       return;
     }
 
     if (actions.length === 0) {
-      toast.error('Please add at least one action before saving.');
+      toast.error(t('hive:actionDialog.noActions'));
       return;
     }
 
@@ -273,20 +270,20 @@ export const EditActionDialog = ({
         data: updateData,
       });
 
-      toast.success('Action updated successfully');
+      toast.success(t('hive:actionDialog.updateSuccess'));
       onOpenChange(false);
     } catch {
-      toast.error('Failed to update action. Please try again.');
+      toast.error(t('hive:actionDialog.updateError'));
     }
   };
 
-  const warning = getWarning();
+  const warning = getWarning(action, t);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Action</DialogTitle>
+          <DialogTitle>{t('hive:actionDialog.editTitle')}</DialogTitle>
         </DialogHeader>
 
         {warning && (
@@ -311,44 +308,25 @@ export const EditActionDialog = ({
 
         <FormProvider {...methods}>
           <form onSubmit={e => e.preventDefault()}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Action Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !methods.watch('date') && 'text-muted-foreground',
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {methods.watch('date') ? (
-                      format(methods.watch('date'), 'PPP')
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={methods.watch('date')}
-                    onSelect={date => date && methods.setValue('date', date)}
-                    autoFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <Controller
+              name="date"
+              control={methods.control}
+              render={({ field }) => (
+                <ActionDateTimeField
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
             {isSplit ? (
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Notes</label>
+                <Label htmlFor={notesId} className="mb-2">
+                  {t('hive:actionDialog.notes')}
+                </Label>
                 <Textarea
-                  value={splitNotes}
-                  onChange={e => setSplitNotes(e.target.value)}
-                  placeholder="Notes about this split…"
+                  id={notesId}
+                  {...methods.register('notes')}
+                  placeholder={t('hive:actionDialog.splitNotesPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -361,14 +339,16 @@ export const EditActionDialog = ({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                {t('common:actions.cancel')}
               </Button>
               <Button
                 type="button"
                 onClick={handleSave}
                 disabled={updateAction.isPending}
               >
-                {updateAction.isPending ? 'Saving...' : 'Save Changes'}
+                {updateAction.isPending
+                  ? t('hive:actionDialog.saving')
+                  : t('hive:actionDialog.saveChanges')}
               </Button>
             </div>
           </form>
