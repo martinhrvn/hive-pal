@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { AlertTriangle } from 'lucide-react';
 import { parseISO } from 'date-fns';
 import { ActionDateTimeField } from './action-date-time-field';
@@ -319,12 +320,9 @@ export const EditActionDialog = ({
             />
             {isSplit ? (
               <div className="mb-4">
-                <label
-                  htmlFor={notesId}
-                  className="block text-sm font-medium mb-2"
-                >
+                <Label htmlFor={notesId} className="mb-2">
                   {t('hive:actionDialog.notes')}
-                </label>
+                </Label>
                 <Textarea
                   id={notesId}
                   {...methods.register('notes')}

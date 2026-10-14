@@ -6,6 +6,7 @@ import { useDateFormat } from '@/hooks/use-date-format';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
@@ -48,9 +49,9 @@ export const ActionDateTimeField = ({
   return (
     <div className="mb-4 flex flex-wrap items-end gap-3">
       <div className="min-w-48 flex-1">
-        <label htmlFor={dateId} className="block text-sm font-medium mb-2">
+        <Label htmlFor={dateId} className="mb-2">
           {t('hive:actionDialog.date')}
-        </label>
+        </Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -75,9 +76,9 @@ export const ActionDateTimeField = ({
         </Popover>
       </div>
       <div>
-        <label htmlFor={timeId} className="block text-sm font-medium mb-2">
+        <Label htmlFor={timeId} className="mb-2">
           {t('common:time.time')}
-        </label>
+        </Label>
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
           <Input
