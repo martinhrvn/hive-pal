@@ -150,26 +150,26 @@ export class AlertsScheduler {
     });
     this.logger.log(`Found ${hives.length} active hives to check`);
 
+    // Hives are independent; the Prisma pool bounds the concurrency
+    const results = await Promise.allSettled(
+      hives.map((hive) => this.checkHive(toHiveContext(hive), startTime)),
+    );
+
     let totalIssuesFound = 0;
     let totalHivesProcessed = 0;
-
-    // Process each hive
-    for (const hive of hives) {
-      try {
-        const issuesFound = await this.checkHive(
-          toHiveContext(hive),
-          startTime,
-        );
-        totalIssuesFound += issuesFound;
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        totalIssuesFound += result.value;
         totalHivesProcessed++;
-      } catch (error) {
+      } else {
+        // Other hives are still checked even if one fails
+        const hive = hives[index];
         this.logger.error(
           `Failed to check hive ${hive.id} (${hive.name})`,
-          error,
+          result.reason,
         );
-        // Continue with other hives even if one fails
       }
-    }
+    });
 
     this.logger.log(
       `Alert check completed: ${totalHivesProcessed} hives processed, ${totalIssuesFound} total issues found`,
@@ -187,38 +187,51 @@ export class AlertsScheduler {
       currentTime,
     };
 
-    let totalIssues = 0;
-
     // Run all checkers against this hive
-    for (const checker of this.checkers) {
-      try {
-        const issues = checker.checkHive(hive, checkerContext);
-
-        if (issues.length === 0) {
-          await this.resolveHiveAlerts(hive.hiveId, checker.getCheckerType());
-        } else {
-          this.logger.debug(
-            `Checker ${checker.getCheckerType()} found ${issues.length} issues for hive ${hive.name}`,
-          );
-
-          // Process issues through the alerts service
-          await this.alertsService.processIssues(hive.hiveId, issues);
-          totalIssues += issues.length;
-        }
-      } catch (error) {
-        this.logger.error(
-          `Checker ${checker.getCheckerType()} failed for hive ${hive.name}`,
-          error,
-        );
-        // Continue with other checkers even if one fails
-      }
-    }
+    const counts = await Promise.all(
+      this.checkers.map((checker) =>
+        this.runChecker(checker, hive, checkerContext),
+      ),
+    );
+    const totalIssues = counts.reduce((sum, count) => sum + count, 0);
 
     if (totalIssues > 0) {
       this.logger.log(`Found ${totalIssues} issues for hive "${hive.name}"`);
     }
 
     return totalIssues;
+  }
+
+  /**
+   * Run one checker: record its issues, or resolve its alerts when it finds
+   * none. Returns the number of issues found (0 if the checker failed).
+   */
+  private async runChecker(
+    checker: HiveChecker,
+    hive: HiveContext,
+    checkerContext: CheckerContext,
+  ): Promise<number> {
+    try {
+      const issues = checker.checkHive(hive, checkerContext);
+
+      if (issues.length === 0) {
+        await this.resolveHiveAlerts(hive.hiveId, checker.getCheckerType());
+        return 0;
+      }
+
+      this.logger.debug(
+        `Checker ${checker.getCheckerType()} found ${issues.length} issues for hive ${hive.name}`,
+      );
+      await this.alertsService.processIssues(hive.hiveId, issues);
+      return issues.length;
+    } catch (error) {
+      // Other checkers still run even if one fails
+      this.logger.error(
+        `Checker ${checker.getCheckerType()} failed for hive ${hive.name}`,
+        error,
+      );
+      return 0;
+    }
   }
 
   /**
