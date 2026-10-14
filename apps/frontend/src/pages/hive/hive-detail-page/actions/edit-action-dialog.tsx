@@ -6,16 +6,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { CalendarIcon, AlertTriangle } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { AlertTriangle } from 'lucide-react';
+import { parseISO } from 'date-fns';
+import { ActionDateTimeField } from './action-date-time-field';
 import { Link } from 'react-router-dom';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions';
 import { useUpdateAction } from '@/api/hooks/useActions';
@@ -311,37 +305,10 @@ export const EditActionDialog = ({
 
         <FormProvider {...methods}>
           <form onSubmit={e => e.preventDefault()}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Action Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !methods.watch('date') && 'text-muted-foreground',
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {methods.watch('date') ? (
-                      format(methods.watch('date'), 'PPP')
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={methods.watch('date')}
-                    onSelect={date => date && methods.setValue('date', date)}
-                    autoFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <ActionDateTimeField
+              value={methods.watch('date')}
+              onChange={date => methods.setValue('date', date)}
+            />
             {isSplit ? (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Notes</label>
