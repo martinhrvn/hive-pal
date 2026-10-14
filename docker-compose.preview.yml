@@ -6,14 +6,14 @@ services:
       tags:
         - hive-pal
     expose:
-      - '3000'
+      - "3000"
     environment:
       NODE_ENV: production
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       # Set SEED_DEMO_DATA=true to fill the admin account with demo apiaries,
       # hives and a season of data (scripts/seed-demo.ts).
-      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+      SEED_DEMO_DATA: $SEED_DEMO_DATA
       JWT_SECRET: ${JWT_SECRET}
       # Coolify suffixes compose service names with -pr-<id> for PR previews and
       # exposes the real name as SERVICE_NAME_<SERVICE>, so the host is not always "postgres".
@@ -56,7 +56,7 @@ services:
     volumes:
       - hivepal_postgres_data_preview:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d beekeeper']
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d beekeeper"]
       interval: 10s
       timeout: 5s
       retries: 5
