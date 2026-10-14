@@ -144,7 +144,7 @@ SENTRY_DSN=                # Optional error tracking
 - API responses follow consistent structure with proper HTTP status codes
 
 ### Touching a frontend component
-When a change modifies a frontend component, also do this pass on the files you touched (not the whole tree) before finishing:
+When a focused change (a bug fix or feature in a few components) modifies a frontend component, also do this pass on the files you touched (not the whole tree) before finishing. Skip it for broad or mechanical changes that touch many files, such as renames, moves, codemods or dependency bumps; mixing a clean-up pass into those makes them hard to review.
 - **i18n**: every user-visible string (labels, buttons, placeholders, toasts, warnings) goes through `t()`. Add keys to the `en` and `sk` locales only; other locales are filled in through Weblate. Reuse existing `common:` keys (e.g. `common:actions.cancel`) where they fit.
 - **React review**: apply the `composition-patterns` and `react-best-practices` skills (vendored in `.claude/skills/`) to the touched code and fix what they flag.
 - **Sonar**: check the touched files for open MAJOR or higher issues and fix them. The API is public:
