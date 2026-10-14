@@ -42,18 +42,22 @@ import { z } from 'zod';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
+/** "+3 boxes"-style change fragment, or empty when there was no change. */
+const signedCount = (count: number, sign: '+' | '-', unit: string) =>
+  count > 0 ? `${sign}${count} ${unit}` : '';
+
 @Injectable()
 export class HiveService {
   private readonly stringArraySchema = z.array(z.string());
 
   constructor(
-    private prisma: PrismaService,
-    private inspectionService: InspectionsService,
-    private metricsService: MetricsService,
-    private prometheus: PrometheusService,
-    private fileUpload: FileUploadService,
-    private logger: CustomLoggerService,
-    private eventEmitter: EventEmitter2,
+    private readonly prisma: PrismaService,
+    private readonly inspectionService: InspectionsService,
+    private readonly metricsService: MetricsService,
+    private readonly prometheus: PrometheusService,
+    private readonly fileUpload: FileUploadService,
+    private readonly logger: CustomLoggerService,
+    private readonly eventEmitter: EventEmitter2,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly winstonLogger: Logger,
   ) {
     this.logger.setContext('HiveService');
@@ -647,11 +651,14 @@ export class HiveService {
     };
   }
 
-  async remove(id: string, filter: ApiaryScopeFilter) {
-    this.logger.log(`Removing hive with ID: ${id}`);
-    // The user must be able to write to the hive's apiary.
+  /** Throws NotFound unless the user can write to the hive's apiary. */
+  private async assertHiveWritable(
+    id: string,
+    filter: ApiaryScopeFilter,
+  ): Promise<void> {
     const hive = await this.prisma.hive.findFirst({
       where: { id, apiary: apiaryWriteScope(filter) },
+      select: { id: true },
     });
 
     if (!hive) {
@@ -662,6 +669,11 @@ export class HiveService {
         `Hive with id ${id} not found or doesn't belong to this apiary`,
       );
     }
+  }
+
+  async remove(id: string, filter: ApiaryScopeFilter) {
+    this.logger.log(`Removing hive with ID: ${id}`);
+    await this.assertHiveWritable(id, filter);
 
     const deletedHive = await this.prisma.hive.update({
       data: { status: 'ARCHIVED' },
@@ -669,6 +681,54 @@ export class HiveService {
     });
     this.logger.log(`Hive with ID: ${id} removed successfully`);
     return deletedHive;
+  }
+
+  /**
+   * Permanently deletes a hive. The database cascade removes its inspections,
+   * queens, boxes, measurements, media rows and harvest entries; the media
+   * files are then removed from storage.
+   */
+  async removePermanently(id: string, filter: ApiaryScopeFilter) {
+    this.logger.log(`Permanently deleting hive with ID: ${id}`);
+    await this.assertHiveWritable(id, filter);
+
+    const storageKeys = await this.collectHiveStorageKeys(id);
+    await this.prisma.hive.delete({ where: { id } });
+    // Files go after the rows, so a failed delete never leaves rows without files.
+    await this.fileUpload.deleteManyFromStorage(storageKeys, id);
+
+    this.logger.log({
+      message: 'Hive permanently deleted',
+      hiveId: id,
+      storageKeysRemoved: storageKeys.length,
+    });
+  }
+
+  /** Storage keys of every file attached to the hive or its inspections. */
+  private async collectHiveStorageKeys(hiveId: string): Promise<string[]> {
+    const [photos, documents, quickCheckPhotos, audio] = await Promise.all([
+      this.prisma.photo.findMany({
+        where: { OR: [{ hiveId }, { inspection: { hiveId } }] },
+        select: { storageKey: true },
+      }),
+      this.prisma.document.findMany({
+        where: { hiveId },
+        select: { storageKey: true },
+      }),
+      this.prisma.quickCheckPhoto.findMany({
+        where: { quickCheck: { hiveId } },
+        select: { storageKey: true },
+      }),
+      this.prisma.inspectionAudio.findMany({
+        where: { inspection: { hiveId } },
+        select: { storageKey: true },
+      }),
+    ]);
+
+    const keys = [...photos, ...documents, ...quickCheckPhotos, ...audio]
+      .map((file) => file.storageKey)
+      .filter(Boolean);
+    return [...new Set(keys)];
   }
 
   async updateBoxes(
@@ -708,6 +768,17 @@ export class HiveService {
     const oldBoxesByPosition = new Map(
       oldBoxes.map((box) => [box.position, box]),
     );
+    // Keep a box's original addedAt when it is re-sent without one.
+    const resolveAddedAt = (box: UpdateHiveBoxes['boxes'][number]): Date => {
+      if (box.addedAt instanceof Date) return box.addedAt;
+      if (box.addedAt) return new Date(box.addedAt);
+      const byId = box.id
+        ? (oldBoxesById.get(box.id) as { addedAt?: Date } | undefined)
+        : undefined;
+      const byPosition = oldBoxesByPosition.get(box.position) as
+        { addedAt?: Date } | undefined;
+      return byId?.addedAt ?? byPosition?.addedAt ?? new Date();
+    };
 
     const oldBoxCount = oldBoxes.length;
     const newBoxCount = newBoxes.length;
@@ -777,22 +848,7 @@ export class HiveService {
             variant: box.variant,
             frameSizeId: box.frameSizeId ?? null,
             color: box.color,
-            addedAt:
-              box.addedAt instanceof Date
-                ? box.addedAt
-                : box.addedAt
-                  ? new Date(box.addedAt)
-                  : ((box.id
-                      ? (
-                          oldBoxesById.get(box.id) as
-                            { addedAt?: Date } | undefined
-                        )?.addedAt
-                      : undefined) ??
-                    (
-                      oldBoxesByPosition.get(box.position) as
-                        { addedAt?: Date } | undefined
-                    )?.addedAt ??
-                    new Date()),
+            addedAt: resolveAddedAt(box),
             winterized: box.winterized ?? false,
           },
         });
@@ -818,7 +874,7 @@ export class HiveService {
             hiveId: id,
             type: 'BOX_CONFIGURATION',
             notes:
-              `Box configuration updated: ${boxesAdded > 0 ? `+${boxesAdded} boxes` : ''}${boxesRemoved > 0 ? `-${boxesRemoved} boxes` : ''} ${framesAdded > 0 ? `+${framesAdded} frames` : ''}${framesRemoved > 0 ? `-${framesRemoved} frames` : ''}`.trim(),
+              `Box configuration updated: ${signedCount(boxesAdded, '+', 'boxes')}${signedCount(boxesRemoved, '-', 'boxes')} ${signedCount(framesAdded, '+', 'frames')}${signedCount(framesRemoved, '-', 'frames')}`.trim(),
             date: new Date(),
           },
         });

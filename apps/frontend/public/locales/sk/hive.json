@@ -47,7 +47,8 @@
     "apiary": "Včelnica",
     "notSpecified": "Nešpecifikované",
     "noInspectionYet": "Zatiaľ žiadna prehliadka",
-    "noNotes": "Žiadne poznámky"
+    "noNotes": "Žiadne poznámky",
+    "activeAlerts": "Aktívne upozornenia"
   },
   "boxConfigurator": {
     "title": "Konfigurácia nadstavkov",
@@ -132,12 +133,22 @@
     "share": "Zdieľať zoznam úľov",
     "dataOptions": "Možnosti údajov",
     "createNewHive": "Vytvoriť nový úľ",
-    "qr": "QR kód"
+    "qr": "QR kód",
+    "splitColony": "Rozdeliť včelstvo"
   },
   "manage": {
     "title": "Spravovať úľ",
     "llmPrompt": "LLM prompt",
-    "removeHive": "Odstrániť úľ"
+    "removeHive": "Archivovať úľ",
+    "removeHiveConfirmation": "Archivovať tento úľ? Skryje sa z aktívneho zobrazenia a všetky jeho údaje zostanú zachované.",
+    "deletePermanently": "Natrvalo odstrániť",
+    "deletePermanentlyTitle": "Natrvalo odstrániť tento úľ?",
+    "deletePermanentlyDescription": "Odstráni sa úľ a všetky jeho údaje: prehliadky, matky, fotografie, dokumenty, zvukové nahrávky, váženia a jeho podiel na minulých medobraniach. Túto akciu nie je možné vrátiť späť. Ak chcete zachovať históriu, úľ radšej archivujte.",
+    "deletePermanentlyTypeName": "Pre potvrdenie zadajte názov úľa {{name}}:",
+    "deletePermanentlyButton": "Odstrániť úľ",
+    "deletePermanentlyDeleting": "Odstraňuje sa úľ...",
+    "deletePermanentlySuccess": "Úľ {{name}} bol odstránený",
+    "deletePermanentlyFailed": "Úľ sa nepodarilo odstrániť"
   },
   "form": {
     "selectHive": "Vybrať úľ",

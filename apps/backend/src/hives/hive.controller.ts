@@ -12,6 +12,8 @@ import {
   UseGuards,
   Req,
   Query,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
@@ -149,6 +151,19 @@ export class HiveController {
     @Req() req: RequestWithApiaryScope,
   ): Promise<UpdateHiveResponse> {
     return this.hiveService.update(id, updateHiveDto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
+  }
+
+  @Delete(':id/permanent')
+  @ApiaryOptional()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removePermanently(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiaryScope,
+  ): Promise<void> {
+    return this.hiveService.removePermanently(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
     });

@@ -30,6 +30,7 @@ import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
 import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { SplitWizard } from './split/split-wizard';
+import { DeleteHivePermanently } from './delete-hive-permanently';
 
 type ActionSideBarProps = {
   hiveId?: string;
@@ -239,6 +240,13 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               })}
               disabled={!hiveId}
             />
+            {hiveId && hive && (
+              <DeleteHivePermanently
+                hiveId={hiveId}
+                hiveName={hive.name}
+                apiaryId={hive.apiaryId}
+              />
+            )}
           </ActionSidebarGroup>
         )}
 

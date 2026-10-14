@@ -48,7 +48,8 @@
     "apiary": "Apiary",
     "notSpecified": "Not specified",
     "noInspectionYet": "No inspection yet",
-    "noNotes": "No notes"
+    "noNotes": "No notes",
+    "activeAlerts": "Active Alerts"
   },
   "boxConfigurator": {
     "title": "Box Configuration",
@@ -193,7 +194,16 @@
   "manage": {
     "title": "Manage Hive",
     "llmPrompt": "LLM Prompt",
-    "removeHive": "Remove Hive"
+    "removeHive": "Archive Hive",
+    "removeHiveConfirmation": "Archive this hive? It will be hidden from the active view, and all of its data is kept.",
+    "deletePermanently": "Delete Permanently",
+    "deletePermanentlyTitle": "Delete this hive permanently?",
+    "deletePermanentlyDescription": "This deletes the hive and all of its data: inspections, queens, photos, documents, audio recordings, weights and its share of past harvests. This cannot be undone. To keep the history, archive the hive instead.",
+    "deletePermanentlyTypeName": "Type the hive name {{name}} to confirm:",
+    "deletePermanentlyButton": "Delete hive",
+    "deletePermanentlyDeleting": "Deleting hive...",
+    "deletePermanentlySuccess": "Hive {{name}} was deleted",
+    "deletePermanentlyFailed": "Failed to delete the hive"
   },
   "form": {
     "selectHive": "Select a hive",

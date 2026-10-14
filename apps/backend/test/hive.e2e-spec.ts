@@ -261,6 +261,45 @@ describe('Hives (e2e)', () => {
     expect(hive?.status).toBe('ARCHIVED');
   });
 
+  it('should permanently delete a hive with its inspections', async () => {
+    const hive = await prisma.hive.create({
+      data: getRandomHive({ apiaryId, name: 'Hive to delete permanently' }),
+    });
+    const inspection = await prisma.inspection.create({
+      data: { hiveId: hive.id, date: new Date() },
+    });
+
+    await request(app.getHttpServer())
+      .delete(`/hives/${hive.id}/permanent`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(204);
+
+    expect(await prisma.hive.findUnique({ where: { id: hive.id } })).toBeNull();
+    expect(
+      await prisma.inspection.findUnique({ where: { id: inspection.id } }),
+    ).toBeNull();
+  });
+
+  it('should not permanently delete a hive from another apiary', async () => {
+    const otherApiary = await prisma.apiary.create({
+      data: getRandomApiary({ userId, name: 'Other Apiary (permanent)' }),
+    });
+    const otherHive = await prisma.hive.create({
+      data: getRandomHive({ apiaryId: otherApiary.id, name: 'Kept hive' }),
+    });
+
+    await request(app.getHttpServer())
+      .delete(`/hives/${otherHive.id}/permanent`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(404);
+
+    expect(
+      await prisma.hive.findUnique({ where: { id: otherHive.id } }),
+    ).not.toBeNull();
+  });
+
   it('should not fetch archived hives', async () => {
     // Create an archived hive
     const archivedHive = await prisma.hive.create({
