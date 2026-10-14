@@ -281,23 +281,32 @@ describe('Hives (e2e)', () => {
     ).toBeNull();
   });
 
-  it('should not permanently delete a hive from another apiary', async () => {
+  it("should not permanently delete another user's hive", async () => {
+    const otherUser = await createTestUser(prisma, {
+      email: 'hive-test-other-user@example.com',
+      password: 'password123',
+    });
     const otherApiary = await prisma.apiary.create({
-      data: getRandomApiary({ userId, name: 'Other Apiary (permanent)' }),
+      data: getRandomApiary({ userId: otherUser.id, name: 'Not my apiary' }),
     });
     const otherHive = await prisma.hive.create({
       data: getRandomHive({ apiaryId: otherApiary.id, name: 'Kept hive' }),
     });
 
-    await request(app.getHttpServer())
-      .delete(`/hives/${otherHive.id}/permanent`)
-      .set('Cookie', authCookie)
-      .set('x-apiary-id', apiaryId)
-      .expect(404);
+    try {
+      await request(app.getHttpServer())
+        .delete(`/hives/${otherHive.id}/permanent`)
+        .set('Cookie', authCookie)
+        .set('x-apiary-id', apiaryId)
+        .expect(404);
 
-    expect(
-      await prisma.hive.findUnique({ where: { id: otherHive.id } }),
-    ).not.toBeNull();
+      expect(
+        await prisma.hive.findUnique({ where: { id: otherHive.id } }),
+      ).not.toBeNull();
+    } finally {
+      // Cascades to the other user's apiary and hive.
+      await prisma.user.delete({ where: { id: otherUser.id } });
+    }
   });
 
   it('should not fetch archived hives', async () => {
