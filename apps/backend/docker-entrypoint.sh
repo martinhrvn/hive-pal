@@ -35,5 +35,10 @@ cd /app
 echo "Seeding admin user..."
 node /app/apps/backend/dist/scripts/seed-admin.js || echo "Admin seeding failed (continuing startup)"
 
+# Demo data for the admin user on preview deployments (SEED_DEMO_DATA=true in
+# docker-compose.preview.yml). Skips users that already have hives.
+echo "Seeding demo data..."
+node /app/apps/backend/dist/scripts/seed-demo.js || echo "Demo data seeding failed (continuing startup)"
+
 echo "Starting application..."
 exec "$@"
