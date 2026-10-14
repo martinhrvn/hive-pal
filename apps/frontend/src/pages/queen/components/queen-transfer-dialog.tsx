@@ -1,17 +1,19 @@
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import type { QueenResponse } from 'shared-schemas';
+import { useApiaries, useHives, useRecordQueenTransfer } from '@/api/hooks';
+import { DatePickerPopover } from '@/components/common/date-picker-popover';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -21,29 +23,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-import { useRecordQueenTransfer, useHives, useApiaries } from '@/api/hooks';
-import { QueenResponse } from 'shared-schemas';
 
-interface QueenTransferDialogProps {
+const REMOVE_FROM_HIVE = 'none';
+
+type QueenTransferDialogProps = {
   queen: QueenResponse;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
-export const QueenTransferDialog: React.FC<QueenTransferDialogProps> = ({
+// Lives inside DialogContent, which unmounts on close, so every opening
+// starts from a clean form.
+const TransferForm = ({
   queen,
-  open,
-  onOpenChange,
+  onDone,
+}: {
+  queen: QueenResponse;
+  onDone: () => void;
 }) => {
+  const { t } = useTranslation(['queen', 'common']);
+  const id = useId();
+  const ids = {
+    hive: `${id}-hive`,
+    date: `${id}-date`,
+    reason: `${id}-reason`,
+    notes: `${id}-notes`,
+  };
   const [toHiveId, setToHiveId] = useState<string | null>(null);
-  const [movedAt, setMovedAt] = useState<Date>(new Date());
+  const [movedAt, setMovedAt] = useState<Date>(() => new Date());
   const [reason, setReason] = useState('');
   const [notes, setNotes] = useState('');
 
@@ -65,121 +72,128 @@ export const QueenTransferDialog: React.FC<QueenTransferDialogProps> = ({
 
   const isNoOp = toHiveId === queen.hiveId;
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
     try {
       await recordTransfer({
         queenId: queen.id,
         fromHiveId: queen.hiveId,
         data: {
-          toHiveId: toHiveId,
+          toHiveId,
           movedAt: movedAt.toISOString(),
           reason: reason || null,
           notes: notes || null,
         },
       });
-      toast.success('Queen transferred successfully');
-      onOpenChange(false);
+      toast.success(t('transfer.success'));
+      onDone();
     } catch {
-      toast.error('Failed to transfer queen');
+      toast.error(t('transfer.error'));
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
-        <DialogHeader>
-          <DialogTitle>Transfer Queen</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="toHive">Move to Hive</Label>
-            {queen.hiveName && (
-              <p className="text-xs text-muted-foreground">
-                Currently in {queen.hiveName}
-                {queen.apiaryName ? ` (${queen.apiaryName})` : ''}
-              </p>
-            )}
-            <Select
-              value={toHiveId ?? 'none'}
-              onValueChange={val => setToHiveId(val === 'none' ? null : val)}
-            >
-              <SelectTrigger id="toHive">
-                <SelectValue placeholder="Select destination hive" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Remove from hive</SelectItem>
-                {hiveGroups.map(({ apiary, hives: groupHives }) => (
-                  <SelectGroup key={apiary.id}>
-                    <SelectLabel>{apiary.name}</SelectLabel>
-                    {groupHives.map(hive => (
-                      <SelectItem key={hive.id} value={hive.id}>
-                        {hive.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Transfer Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    'w-full justify-start text-left font-normal',
-                    !movedAt && 'text-muted-foreground',
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {movedAt ? format(movedAt, 'PPP') : 'Pick a date'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={movedAt}
-                  onSelect={date => date && setMovedAt(date)}
-                  autoFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="reason">Reason (optional)</Label>
-            <Input
-              id="reason"
-              value={reason}
-              onChange={e => setReason(e.target.value)}
-              placeholder="e.g., Hive split, requeen..."
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes (optional)</Label>
-            <Input
-              id="notes"
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Additional notes..."
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isPending}
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor={ids.hive}>{t('transfer.moveTo')}</Label>
+          {queen.hiveName && (
+            <p className="text-xs text-muted-foreground">
+              {queen.apiaryName
+                ? t('transfer.currentlyInApiary', {
+                    hive: queen.hiveName,
+                    apiary: queen.apiaryName,
+                  })
+                : t('transfer.currentlyIn', { hive: queen.hiveName })}
+            </p>
+          )}
+          <Select
+            value={toHiveId ?? REMOVE_FROM_HIVE}
+            onValueChange={value =>
+              setToHiveId(value === REMOVE_FROM_HIVE ? null : value)
+            }
           >
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isPending || isNoOp}>
-            {isPending ? 'Transferring...' : 'Transfer Queen'}
-          </Button>
-        </DialogFooter>
+            <SelectTrigger id={ids.hive} className="w-full">
+              <SelectValue placeholder={t('transfer.selectDestination')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={REMOVE_FROM_HIVE}>
+                {t('transfer.removeFromHive')}
+              </SelectItem>
+              {hiveGroups.map(({ apiary, hives: groupHives }) => (
+                <SelectGroup key={apiary.id}>
+                  <SelectLabel>{apiary.name}</SelectLabel>
+                  {groupHives.map(hive => (
+                    <SelectItem key={hive.id} value={hive.id}>
+                      {hive.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={ids.date}>{t('transfer.date')}</Label>
+          <DatePickerPopover
+            id={ids.date}
+            date={movedAt}
+            onDateChange={date => date && setMovedAt(date)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={ids.reason}>{t('transfer.reason')}</Label>
+          <Input
+            id={ids.reason}
+            value={reason}
+            onChange={e => setReason(e.target.value)}
+            placeholder={t('transfer.reasonPlaceholder')}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={ids.notes}>{t('transfer.notes')}</Label>
+          <Input
+            id={ids.notes}
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+            placeholder={t('transfer.notesPlaceholder')}
+          />
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onDone}
+          disabled={isPending}
+        >
+          {t('common:actions.cancel')}
+        </Button>
+        <Button type="submit" disabled={isPending || isNoOp}>
+          {isPending ? t('transfer.submitting') : t('transfer.submit')}
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+};
+
+export const QueenTransferDialog = ({
+  queen,
+  open,
+  onOpenChange,
+}: QueenTransferDialogProps) => {
+  const { t } = useTranslation('queen');
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t('transfer.title')}</DialogTitle>
+        </DialogHeader>
+        <TransferForm queen={queen} onDone={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );

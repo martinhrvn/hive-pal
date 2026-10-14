@@ -17,6 +17,7 @@ interface HiveSelectProps {
   readonly emptyMessage?: string;
   readonly i18nNamespace?: string;
   readonly disabled?: boolean;
+  readonly className?: string;
 }
 
 export const HiveSelect: React.FC<HiveSelectProps> = ({
@@ -26,6 +27,7 @@ export const HiveSelect: React.FC<HiveSelectProps> = ({
   emptyMessage,
   i18nNamespace = 'common',
   disabled,
+  className,
 }) => {
   const { t } = useTranslation(i18nNamespace);
   const { data: hives = [], isLoading } = useHives();
@@ -45,7 +47,7 @@ export const HiveSelect: React.FC<HiveSelectProps> = ({
 
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-      <SelectTrigger>
+      <SelectTrigger className={className}>
         <SelectValue
           placeholder={
             placeholder || t('selectHive', { defaultValue: 'Select a hive' })

@@ -1,5 +1,3 @@
-import { QueenForm } from './components/queen-form';
+import { CreateQueenForm } from './components/form/queen-form';
 
-export const CreateQueenPage = () => {
-  return <QueenForm />;
-};
+export const CreateQueenPage = () => <CreateQueenForm />;

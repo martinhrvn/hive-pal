@@ -5,16 +5,21 @@
   "create": {
     "title": "Nová matka",
     "button": "Vytvoriť matku",
-    "success": "Matka bola úspešne vytvorená"
+    "success": "Matka bola úspešne vytvorená",
+    "error": "Matku sa nepodarilo vytvoriť"
   },
   "edit": {
     "title": "Upraviť matku",
     "button": "Uložiť zmeny",
-    "success": "Matka bola úspešne aktualizovaná"
+    "success": "Matka bola úspešne aktualizovaná",
+    "error": "Matku sa nepodarilo aktualizovať"
   },
   "delete": {
     "confirm": "Naozaj chcete vymazať túto matku?",
-    "success": "Matka bola úspešne vymazaná"
+    "success": "Matka bola úspešne vymazaná",
+    "title": "Vymazať túto matku?",
+    "description": "Matka aj s históriou presunov bude natrvalo vymazaná. Jej dcéry zostanú, ale bez prepojenia na ňu.",
+    "error": "Matku sa nepodarilo vymazať"
   },
   "fields": {
     "hive": "Úľ",
@@ -26,7 +31,17 @@
     "installationDate": "Dátum inštalácie",
     "replacedDate": "Dátum výmeny (voliteľné)",
     "installedOn": "Inštalovaná {{date}}",
-    "via": "cez {{source}}"
+    "via": "cez {{source}}",
+    "name": "Meno",
+    "breeder": "Chovateľ",
+    "line": "Línia",
+    "mother": "Matka",
+    "matingType": "Párenie",
+    "matingStation": "Plemenná stanica",
+    "matedAt": "Dátum spárenia",
+    "installed": "Inštalovaná",
+    "replaced": "Vymenená",
+    "notes": "Poznámky"
   },
   "colors": {
     "blue": "Modrá",
@@ -53,7 +68,8 @@
     "addQueen": "Pridať matku",
     "editQueen": "Upraviť matku",
     "viewDetails": "Zobraziť podrobnosti",
-    "manageQueen": "Spravovať matku"
+    "manageQueen": "Spravovať matku",
+    "transferQueen": "Presunúť matku"
   },
   "form": {
     "selectHive": "Vybrať úľ",
@@ -62,10 +78,126 @@
     "enterMarking": "Zadať označenie matky",
     "enterSource": "Zadať zdroj matky",
     "selectStatus": "Vybrať stav",
-    "pickDate": "Vybrať dátum"
+    "pickDate": "Vybrať dátum",
+    "enterName": "Voliteľné",
+    "enterBreeder": "Kto ju odchoval",
+    "enterLine": "napr. Carnica Troiseck",
+    "selectMother": "Vybrať matku",
+    "noMother": "Žiadna",
+    "selectMatingType": "Vybrať spôsob párenia",
+    "enterMatingStation": "Názov stanice",
+    "enterNotes": "Povaha, podrobnosti o pôvode, čokoľvek dôležité",
+    "hiveLocked": "Do iného úľa ju presuniete cez Presunúť na stránke matky.",
+    "notInHive": "Nie je v úli",
+    "notSet": "Neuvedené"
   },
   "information": {
     "noActiveQueen": "Nenašla sa žiadna aktívna matka",
     "hasActiveQueen": "Tento úľ už má aktívnu matku. Výmenou matky sa súčasná matka označí ako vymenená."
+  },
+  "fallbackName": "Matka {{year}}",
+  "sections": {
+    "queen": "Matka",
+    "hive": "Úľ",
+    "origin": "Pôvod",
+    "mating": "Párenie",
+    "dates": "Dátumy",
+    "traits": "Vlastnosti",
+    "notes": "Poznámky",
+    "details": "Podrobnosti",
+    "lineage": "Rodokmeň",
+    "movements": "História presunov"
+  },
+  "matingType": {
+    "OPEN": "Voľné párenie",
+    "INSTRUMENTAL": "Inseminovaná",
+    "MATING_STATION": "Plemenná stanica"
+  },
+  "traits": {
+    "gentleness": "Mierumilovnosť",
+    "hygiene": "Hygienické správanie",
+    "swarmResistance": "Nerojivosť",
+    "honeyProduction": "Medná úžitkovosť",
+    "hint": "1 je slabé, 5 je výborné.",
+    "value": "{{value}} z 5",
+    "rate": "Ohodnotiť {{trait}} na {{value}} z 5",
+    "clear": "Zrušiť",
+    "clearLabel": "Zrušiť hodnotenie: {{trait}}",
+    "notRated": "Nehodnotené"
+  },
+  "detail": {
+    "back": "Matky",
+    "currentlyIn": "Teraz v úli {{hive}}",
+    "notInHive": "Nie je v úli",
+    "notFound": {
+      "title": "Matka sa nenašla",
+      "description": "Mohla byť vymazaná alebo patrí do včelnice, ku ktorej už nemáte prístup.",
+      "cta": "Späť na matky"
+    },
+    "mother": "Matka",
+    "daughters": "Dcéry",
+    "noDaughters": "Zatiaľ žiadne dcéry.",
+    "addDaughter": "Pridať dcéru",
+    "noMovements": {
+      "title": "Zatiaľ žiadne presuny",
+      "description": "Presuny medzi úľmi sa zobrazia tu."
+    },
+    "movement": {
+      "date": "Dátum",
+      "from": "Z",
+      "direction": "Smer",
+      "to": "Do",
+      "reason": "Dôvod",
+      "none": "Žiadny",
+      "removed": "Odobraná"
+    }
+  },
+  "transfer": {
+    "title": "Presunúť matku",
+    "moveTo": "Presunúť do úľa",
+    "currentlyIn": "Teraz v úli {{hive}}",
+    "currentlyInApiary": "Teraz v úli {{hive}} ({{apiary}})",
+    "selectDestination": "Vybrať cieľový úľ",
+    "removeFromHive": "Odobrať z úľa",
+    "date": "Dátum presunu",
+    "reason": "Dôvod (voliteľné)",
+    "reasonPlaceholder": "napr. delenie, výmena matky",
+    "notes": "Poznámky (voliteľné)",
+    "notesPlaceholder": "Ďalšie poznámky",
+    "submit": "Presunúť matku",
+    "submitting": "Presúva sa…",
+    "success": "Matka bola presunutá",
+    "error": "Matku sa nepodarilo presunúť"
+  },
+  "table": {
+    "queen": "Matka",
+    "color": "Farba",
+    "year": "Rok",
+    "hive": "Úľ",
+    "status": "Stav",
+    "installed": "Inštalovaná",
+    "replaced": "Vymenená",
+    "noHive": "Bez úľa"
+  },
+  "list": {
+    "filters": "Filtre",
+    "statusFilter": "Stav",
+    "hiveFilter": "Úľ",
+    "allStatuses": "Všetky stavy",
+    "allHives": "Všetky úle",
+    "empty": {
+      "title": "Zatiaľ žiadne matky",
+      "description": "Pridajte matku a sledujte jej vek, označenie a rodokmeň.",
+      "cta": "Pridať prvú matku"
+    },
+    "noMatches": {
+      "title": "Filtrom nezodpovedá žiadna matka",
+      "description": "Skúste iný stav alebo úľ.",
+      "cta": "Zrušiť filtre"
+    }
+  },
+  "validation": {
+    "hiveRequired": "Vyberte úľ",
+    "yearRange": "Zadajte rok od {{min}} do {{max}}"
   }
 }

@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { QueensService } from './queens.service';
 import { createServiceTestModule } from '../test/service-test.helper';
 import { apiaryWriteAccessWhere } from '../common';
@@ -46,7 +46,10 @@ describe('QueensService', () => {
         $transaction: vi.fn(async (cb: (t: typeof tx) => Promise<void>) =>
           cb(tx),
         ),
-        queen: { findFirst: vi.fn().mockResolvedValue(queenRow) },
+        queen: {
+          findFirst: vi.fn().mockResolvedValue(queenRow),
+          findMany: vi.fn().mockResolvedValue([]),
+        },
       };
       const prometheus = { incrementQueensCreated: vi.fn() };
       const svc = new QueensService(
@@ -115,6 +118,116 @@ describe('QueensService', () => {
         svc.recordTransfer('q1', { toHiveId: 'hive-b' }, filter),
       ).rejects.toThrow(NotFoundException);
       expect(tx.hive.findFirst).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('update', () => {
+    const filter = { userId: 'user-1' };
+    const existing = { id: 'q2', hiveId: 'hive-a', motherQueenId: null };
+
+    const makeService = () => {
+      const prisma = {
+        $queryRaw: vi.fn().mockResolvedValue([]),
+        queen: {
+          findFirst: vi.fn(),
+          update: vi.fn().mockResolvedValue({
+            ...existing,
+            name: null,
+            marking: null,
+            color: null,
+            year: 2025,
+            source: null,
+            status: 'ACTIVE',
+            installedAt: null,
+            replacedAt: null,
+            notes: null,
+            breeder: null,
+            line: null,
+            matingType: null,
+            matingStation: null,
+            matedAt: null,
+            gentleness: null,
+            hygiene: null,
+            swarmResistance: null,
+            honeyProduction: null,
+            hive: null,
+          }),
+        },
+      };
+      const svc = new QueensService(
+        prisma as unknown as ConstructorParameters<typeof QueensService>[0],
+        {} as ConstructorParameters<typeof QueensService>[1],
+      );
+      return { svc, prisma };
+    };
+
+    it('leaves dates alone when they are not in the payload', async () => {
+      const { svc, prisma } = makeService();
+      prisma.queen.findFirst.mockResolvedValueOnce(existing);
+
+      await svc.update('q2', { name: 'Bella' }, filter);
+
+      const { data } = prisma.queen.update.mock.calls[0][0];
+      expect(data.replacedAt).toBeUndefined();
+      expect(data.installedAt).toBeUndefined();
+      expect(data.matedAt).toBeUndefined();
+    });
+
+    it('clears a date sent as null', async () => {
+      const { svc, prisma } = makeService();
+      prisma.queen.findFirst.mockResolvedValueOnce(existing);
+
+      await svc.update('q2', { replacedAt: null }, filter);
+
+      expect(prisma.queen.update.mock.calls[0][0].data.replacedAt).toBeNull();
+    });
+
+    it('rejects the queen as her own mother', async () => {
+      const { svc, prisma } = makeService();
+      prisma.queen.findFirst.mockResolvedValueOnce(existing);
+
+      await expect(
+        svc.update('q2', { motherQueenId: 'q2' }, filter),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.queen.update).not.toHaveBeenCalled();
+    });
+
+    it('rejects a mother the user cannot see', async () => {
+      const { svc, prisma } = makeService();
+      prisma.queen.findFirst
+        .mockResolvedValueOnce(existing)
+        .mockResolvedValueOnce(null);
+
+      await expect(
+        svc.update('q2', { motherQueenId: 'q9' }, filter),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejects a daughter as the mother (lineage cycle)', async () => {
+      const { svc, prisma } = makeService();
+      // q2 -> mother q3, whose mother is q2
+      prisma.queen.findFirst
+        .mockResolvedValueOnce(existing)
+        .mockResolvedValueOnce({ id: 'q3' });
+      prisma.$queryRaw.mockResolvedValueOnce([{ found: 1 }]);
+
+      await expect(
+        svc.update('q2', { motherQueenId: 'q3' }, filter),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.queen.update).not.toHaveBeenCalled();
+    });
+
+    it('accepts a mother from an unrelated line', async () => {
+      const { svc, prisma } = makeService();
+      prisma.queen.findFirst
+        .mockResolvedValueOnce(existing)
+        .mockResolvedValueOnce({ id: 'q3' });
+
+      await svc.update('q2', { motherQueenId: 'q3' }, filter);
+
+      expect(prisma.queen.update.mock.calls[0][0].data.motherQueenId).toBe(
+        'q3',
+      );
     });
   });
 });
