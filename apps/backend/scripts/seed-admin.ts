@@ -19,8 +19,11 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
-// auth hooks reference authDeps.prisma; populate before any auth API call.
+// Auth hooks use authDeps; populate before any auth API call. Sign-up also
+// signs the user in, and the session hook emits a login event: nothing
+// listens outside Nest, so a no-op emitter is enough.
 authDeps.prisma = prisma as never;
+authDeps.eventEmitter = { emit: () => true } as never;
 
 async function main() {
   const email = process.env.ADMIN_EMAIL;
