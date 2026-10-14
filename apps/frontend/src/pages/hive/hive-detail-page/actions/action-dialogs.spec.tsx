@@ -22,9 +22,7 @@ const addNote = async (page: Page) => {
 };
 
 const pickDay = async (page: Page, label: RegExp) => {
-  await page
-    .getByRole('button', { name: /June \d+(st|nd|rd|th), 2026/ })
-    .click();
+  await page.getByLabel('Action Date').click();
   await page.getByRole('button', { name: label }).click();
   await page.keyboard.press('Escape');
 };
@@ -82,4 +80,28 @@ test.describe('Add action dialog (#230)', () => {
 
     await expect.poll(() => saved).toEqual(['2026-06-10T06:05:00.000Z']);
   });
+});
+
+test('a split saves only its date and edited notes', async ({
+  page,
+  mount,
+}) => {
+  const bodies: unknown[] = [];
+  await page.route('**/api/actions/**', async route => {
+    bodies.push(route.request().postDataJSON());
+    await route.fulfill({ json: {} });
+  });
+  await mount(
+    'pages/hive/hive-detail-page/actions/action-dialogs/EditSplitAction',
+  );
+
+  await expect(page.getByLabel('Notes')).toHaveValue('Moved 3 brood frames');
+  await page.getByLabel('Notes').fill('  Moved 4 brood frames ');
+  await page.getByRole('button', { name: 'Save Changes' }).click();
+
+  await expect
+    .poll(() => bodies)
+    .toEqual([
+      { date: '2026-06-10T09:00:00.000Z', notes: 'Moved 4 brood frames' },
+    ]);
 });

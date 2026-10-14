@@ -25,3 +25,18 @@ export const AddAction = () => (
     <AddActionDialog hiveId="hive-1" open onOpenChange={() => {}} />
   </MemoryRouter>
 );
+
+const splitAction = {
+  id: 'action-2',
+  hiveId: 'hive-1',
+  type: ActionType.SPLIT,
+  date: '2026-06-10T09:00:00.000Z',
+  notes: 'Moved 3 brood frames',
+  details: { type: ActionType.SPLIT },
+} as unknown as ActionResponse;
+
+export const EditSplitAction = () => (
+  <MemoryRouter>
+    <EditActionDialog action={splitAction} open onOpenChange={() => {}} />
+  </MemoryRouter>
+);

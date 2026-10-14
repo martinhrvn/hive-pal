@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,7 @@ import { ActionsSection } from '@/pages/inspection/components/inspection-form/ac
 import { useCreateAction } from '@/api/hooks/useActions';
 import { CreateStandaloneAction } from 'shared-schemas';
 import { toast } from 'sonner';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
 import type {
   ActionData,
   FeedingActionData,
@@ -36,6 +37,9 @@ interface ActionFormData {
   actions: ActionData[];
 }
 
+// A fresh "now" each time, so a reopened dialog doesn't keep a stale time.
+const emptyForm = (): ActionFormData => ({ date: new Date(), actions: [] });
+
 export const AddActionDialog = ({
   hiveId,
   open: controlledOpen,
@@ -47,14 +51,15 @@ export const AddActionDialog = ({
   const setOpen = isControlled
     ? (v: boolean) => controlledOnOpenChange?.(v)
     : setInternalOpen;
+  const { t } = useTranslation(['hive', 'common']);
   const createAction = useCreateAction();
 
-  const methods = useForm<ActionFormData>({
-    defaultValues: {
-      date: new Date(),
-      actions: [],
-    },
-  });
+  const methods = useForm<ActionFormData>({ defaultValues: emptyForm() });
+
+  const close = () => {
+    methods.reset(emptyForm());
+    setOpen(false);
+  };
 
   const handleSave = async () => {
     const values = methods.getValues();
@@ -62,15 +67,14 @@ export const AddActionDialog = ({
     const selectedDate = values.date;
 
     if (actions.length === 0) {
-      toast.error('Please add at least one action before saving.');
+      toast.error(t('hive:actionDialog.noActions'));
       return;
     }
 
     try {
-      // Create each action individually
-      for (const action of actions) {
+      const payloads = actions.map(action => {
         // Map the action data from the form to the API structure
-        let details: Record<string, unknown> = {};
+        let details: Record<string, unknown>;
 
         if (action.type === 'FEEDING') {
           // Feeding: quantity -> amount
@@ -134,16 +138,18 @@ export const AddActionDialog = ({
           date: selectedDate.toISOString(),
         };
 
-        await createAction.mutateAsync(data);
-      }
+        return data;
+      });
 
-      toast.success(`Successfully saved ${actions.length} action(s).`);
+      // Actions are independent records, so create them in parallel.
+      await Promise.all(payloads.map(data => createAction.mutateAsync(data)));
 
-      // Reset form and close dialog
-      methods.reset();
-      setOpen(false);
+      toast.success(
+        t('hive:actionDialog.createSuccess', { count: actions.length }),
+      );
+      close();
     } catch {
-      toast.error('There was an error saving the actions. Please try again.');
+      toast.error(t('hive:actionDialog.createError'));
     }
   };
 
@@ -153,38 +159,39 @@ export const AddActionDialog = ({
         <DialogTrigger asChild>
           <Button size="sm">
             <Plus className="mr-2 h-4 w-4" />
-            Add Action
+            {t('hive:actionDialog.addTrigger')}
           </Button>
         </DialogTrigger>
       )}
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Actions</DialogTitle>
+          <DialogTitle>{t('hive:actionDialog.addTitle')}</DialogTitle>
         </DialogHeader>
         <FormProvider {...methods}>
           <form onSubmit={e => e.preventDefault()}>
-            <ActionDateTimeField
-              value={methods.watch('date')}
-              onChange={date => methods.setValue('date', date)}
+            <Controller
+              name="date"
+              control={methods.control}
+              render={({ field }) => (
+                <ActionDateTimeField
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
             <ActionsSection />
             <div className="flex justify-end gap-2 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  methods.reset();
-                  setOpen(false);
-                }}
-              >
-                Cancel
+              <Button type="button" variant="outline" onClick={close}>
+                {t('common:actions.cancel')}
               </Button>
               <Button
                 type="button"
                 onClick={handleSave}
                 disabled={createAction.isPending}
               >
-                {createAction.isPending ? 'Saving...' : 'Save Actions'}
+                {createAction.isPending
+                  ? t('hive:actionDialog.saving')
+                  : t('hive:actionDialog.saveActions')}
               </Button>
             </div>
           </form>

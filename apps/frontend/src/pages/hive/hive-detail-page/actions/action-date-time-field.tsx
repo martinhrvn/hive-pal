@@ -1,5 +1,8 @@
+import { useId } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CalendarIcon, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -22,6 +25,11 @@ export const ActionDateTimeField = ({
   value,
   onChange,
 }: ActionDateTimeFieldProps) => {
+  const { t } = useTranslation(['hive', 'common']);
+  const { formatDate, weekStartsOn } = useDateFormat();
+  const dateId = useId();
+  const timeId = useId();
+
   const handleDaySelect = (day: Date | undefined) => {
     if (!day) return;
     const next = new Date(day);
@@ -40,15 +48,18 @@ export const ActionDateTimeField = ({
   return (
     <div className="mb-4 flex flex-wrap items-end gap-3">
       <div className="min-w-48 flex-1">
-        <label className="block text-sm font-medium mb-2">Action Date</label>
+        <label htmlFor={dateId} className="block text-sm font-medium mb-2">
+          {t('hive:actionDialog.date')}
+        </label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
+              id={dateId}
               variant="outline"
               className="w-full justify-start text-left font-normal"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {format(value, 'PPP')}
+              {formatDate(value)}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -56,6 +67,7 @@ export const ActionDateTimeField = ({
               mode="single"
               selected={value}
               defaultMonth={value}
+              weekStartsOn={weekStartsOn}
               onSelect={handleDaySelect}
               autoFocus
             />
@@ -63,13 +75,13 @@ export const ActionDateTimeField = ({
         </Popover>
       </div>
       <div>
-        <label htmlFor="action-time" className="block text-sm font-medium mb-2">
-          Time
+        <label htmlFor={timeId} className="block text-sm font-medium mb-2">
+          {t('common:time.time')}
         </label>
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
           <Input
-            id="action-time"
+            id={timeId}
             type="time"
             className="w-32"
             value={format(value, 'HH:mm')}
