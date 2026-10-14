@@ -1,6 +1,10 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { QueenDetail } from 'shared-schemas';
+import { addDays, parseISO } from 'date-fns';
+import {
+  QUEEN_CELL_CAPPED_TO_EMERGENCE_DAYS,
+  type QueenDetail,
+} from 'shared-schemas';
 import { useDateFormat } from '@/hooks/use-date-format';
 import { QueenColorBadge } from '../queen-color-badge';
 
@@ -15,6 +19,14 @@ const Fact = ({ label, children }: { label: string; children: ReactNode }) => (
 export const QueenFacts = ({ queen }: { queen: QueenDetail }) => {
   const { t } = useTranslation('queen');
   const { formatDate } = useDateFormat();
+  // Without a real emergence date, estimate it from the capped cell
+  const expectedEmergence =
+    !queen.emergedAt && queen.cellCappedAt
+      ? addDays(
+          parseISO(queen.cellCappedAt),
+          QUEEN_CELL_CAPPED_TO_EMERGENCE_DAYS,
+        )
+      : null;
 
   const facts: { key: string; label: string; value: ReactNode }[] = [
     { key: 'year', label: t('fields.year'), value: queen.year },
@@ -41,6 +53,23 @@ export const QueenFacts = ({ queen }: { queen: QueenDetail }) => {
       key: 'matedAt',
       label: t('fields.matedAt'),
       value: queen.matedAt && formatDate(queen.matedAt),
+    },
+    {
+      key: 'cellCappedAt',
+      label: t('fields.cellCappedAt'),
+      value: queen.cellCappedAt && formatDate(queen.cellCappedAt),
+    },
+    {
+      key: 'emergedAt',
+      label: t('fields.emergedAt'),
+      value: queen.emergedAt && formatDate(queen.emergedAt),
+    },
+    {
+      key: 'expectedEmergence',
+      label: t('fields.expectedEmergence'),
+      value:
+        expectedEmergence &&
+        t('detail.approxDate', { date: formatDate(expectedEmergence) }),
     },
     {
       key: 'installedAt',

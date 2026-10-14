@@ -38,6 +38,7 @@ const colorOptions = [
 ];
 
 const statusOptions: BulkQueenPayload['status'][] = [
+  'VIRGIN',
   'ACTIVE',
   'REPLACED',
   'DEAD',

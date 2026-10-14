@@ -28,6 +28,7 @@ describe('QueensService', () => {
       status: 'ACTIVE',
       installedAt: null,
       replacedAt: null,
+      statusChangedAt: new Date('2026-01-01T00:00:00Z'),
       hive: {
         name: 'Hive B',
         apiaryId: 'apiary-b',
@@ -55,6 +56,9 @@ describe('QueensService', () => {
       const svc = new QueensService(
         prisma as unknown as ConstructorParameters<typeof QueensService>[0],
         prometheus as unknown as ConstructorParameters<typeof QueensService>[1],
+        { emit: vi.fn() } as unknown as ConstructorParameters<
+          typeof QueensService
+        >[2],
       );
       return { svc, tx, prisma };
     };
@@ -98,6 +102,24 @@ describe('QueensService', () => {
       expect(result.apiaryName).toBe('Apiary B');
     });
 
+    it('keeps a virgin queen virgin when she moves', async () => {
+      const { svc, tx } = makeService();
+      tx.queen.findFirst
+        .mockResolvedValueOnce({ id: 'q1', hiveId: 'hive-a', status: 'VIRGIN' })
+        .mockResolvedValueOnce(null);
+      tx.hive.findFirst.mockResolvedValue({ id: 'hive-b' });
+
+      await svc.recordTransfer('q1', { toHiveId: 'hive-b' }, filter);
+
+      expect(tx.queen.update).toHaveBeenCalledWith({
+        where: { id: 'q1' },
+        data: expect.objectContaining({
+          status: 'VIRGIN',
+          statusChangedAt: undefined,
+        }),
+      });
+    });
+
     it('rejects a target hive in an apiary the user cannot write to', async () => {
       const { svc, tx } = makeService();
       tx.queen.findFirst.mockResolvedValueOnce({ id: 'q1', hiveId: 'hive-a' });
@@ -123,7 +145,12 @@ describe('QueensService', () => {
 
   describe('update', () => {
     const filter = { userId: 'user-1' };
-    const existing = { id: 'q2', hiveId: 'hive-a', motherQueenId: null };
+    const existing = {
+      id: 'q2',
+      hiveId: 'hive-a',
+      motherQueenId: null,
+      status: 'ACTIVE',
+    };
 
     const makeService = () => {
       const prisma = {
@@ -140,6 +167,9 @@ describe('QueensService', () => {
             status: 'ACTIVE',
             installedAt: null,
             replacedAt: null,
+            statusChangedAt: new Date('2026-01-01T00:00:00Z'),
+            cellCappedAt: null,
+            emergedAt: null,
             notes: null,
             breeder: null,
             line: null,
@@ -157,6 +187,9 @@ describe('QueensService', () => {
       const svc = new QueensService(
         prisma as unknown as ConstructorParameters<typeof QueensService>[0],
         {} as ConstructorParameters<typeof QueensService>[1],
+        { emit: vi.fn() } as unknown as ConstructorParameters<
+          typeof QueensService
+        >[2],
       );
       return { svc, prisma };
     };
@@ -171,6 +204,21 @@ describe('QueensService', () => {
       expect(data.replacedAt).toBeUndefined();
       expect(data.installedAt).toBeUndefined();
       expect(data.matedAt).toBeUndefined();
+    });
+
+    it('stamps statusChangedAt only when the status changes', async () => {
+      const { svc, prisma } = makeService();
+      prisma.queen.findFirst.mockResolvedValue(existing);
+
+      await svc.update('q2', { status: 'ACTIVE' }, filter);
+      await svc.update('q2', { status: 'VIRGIN' }, filter);
+
+      const [same, changed] = prisma.queen.update.mock.calls.map(
+        ([args]) =>
+          (args as { data: { statusChangedAt?: Date } }).data.statusChangedAt,
+      );
+      expect(same).toBeUndefined();
+      expect(changed).toBeInstanceOf(Date);
     });
 
     it('clears a date sent as null', async () => {

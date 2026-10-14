@@ -314,8 +314,13 @@ model Queen {
   year        Int?
   source      String?
   status      QueenStatus @default(ACTIVE)
+  // When the status last changed; starts the "still virgin" clock
+  statusChangedAt DateTime @default(now())
   installedAt DateTime?
   replacedAt  DateTime?
+  // Queen-cell dates, for queens reared or bought as cells. Both may be estimates.
+  cellCappedAt DateTime?
+  emergedAt    DateTime?
   movements   QueenMovement[]
 
   notes   String?
@@ -765,6 +770,7 @@ enum HiveStatus {
 }
 
 enum QueenStatus {
+  VIRGIN
   ACTIVE
   REPLACED
   DEAD

@@ -1,0 +1,7 @@
+-- AlterEnum
+ALTER TYPE "QueenStatus" ADD VALUE 'VIRGIN';
+
+-- AlterTable
+ALTER TABLE "Queen" ADD COLUMN     "cellCappedAt" TIMESTAMP(3),
+ADD COLUMN     "emergedAt" TIMESTAMP(3),
+ADD COLUMN     "statusChangedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

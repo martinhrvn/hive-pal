@@ -6,10 +6,23 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Prisma } from '@/prisma/client';
-import { ActionType, SplitHive, SplitHiveResponse } from 'shared-schemas';
+import {
+  ActionType,
+  CURRENT_QUEEN_STATUSES,
+  SplitHive,
+  SplitHiveResponse,
+  QueenStatus,
+  queenStatusOnInstall,
+} from 'shared-schemas';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryWriteAccessWhere, apiaryWriteScope } from '../common';
+
+/** Status (and its timestamp, if it changes) for a queen moved into a hive. */
+const installStatus = (status: QueenStatus, at: Date) => {
+  const next = queenStatusOnInstall(status);
+  return next === status ? { status } : { status: next, statusChangedAt: at };
+};
 
 const DEFAULT_FOLLOW_UP_DAYS = 24;
 // Exported so the actions service can shift the reminder when a split is
@@ -170,7 +183,10 @@ export class SplitService {
               where: { id: dto.queenId, hiveId: source.id },
             })
           : await tx.queen.findFirst({
-              where: { hiveId: source.id, status: 'ACTIVE' },
+              where: {
+                hiveId: source.id,
+                status: { in: [...CURRENT_QUEEN_STATUSES] },
+              },
             });
         if (!queen) {
           throw new BadRequestException(
@@ -188,7 +204,11 @@ export class SplitService {
         });
         await tx.queen.update({
           where: { id: queen.id },
-          data: { hiveId: daughter.id, installedAt: date, status: 'ACTIVE' },
+          data: {
+            hiveId: daughter.id,
+            installedAt: date,
+            ...installStatus(queen.status, date),
+          },
         });
         queenlessHiveId = source.id; // the mother is now queenless
       }
@@ -301,7 +321,10 @@ export class SplitService {
       // Revert a queen that was moved to the daughter.
       if (queenDisposition === 'MOVED_TO_NEW') {
         const queen = await tx.queen.findFirst({
-          where: { hiveId: newHiveId, status: 'ACTIVE' },
+          where: {
+            hiveId: newHiveId,
+            status: { in: [...CURRENT_QUEEN_STATUSES] },
+          },
         });
         if (queen) {
           await tx.queenMovement.create({
@@ -315,7 +338,10 @@ export class SplitService {
           });
           await tx.queen.update({
             where: { id: queen.id },
-            data: { hiveId: sourceHiveId, status: 'ACTIVE' },
+            data: {
+              hiveId: sourceHiveId,
+              ...installStatus(queen.status, new Date(sourceAction.date)),
+            },
           });
         }
       }

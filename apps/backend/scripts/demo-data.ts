@@ -43,6 +43,8 @@ type HiveSpec = {
   vigor: number;
   queenYear: number;
   dead?: boolean;
+  /** Requeened from an own cell: the queen is still a virgin. */
+  virginQueen?: boolean;
 };
 
 const HIVES: HiveSpec[] = [
@@ -63,7 +65,15 @@ const HIVES: HiveSpec[] = [
     vigor: 0.5,
     queenYear: -2,
   },
-  { name: 'Hive 04', apiary: 'home', row: 1, col: 0, vigor: 0.8, queenYear: 0 },
+  {
+    name: 'Hive 04',
+    apiary: 'home',
+    row: 1,
+    col: 0,
+    vigor: 0.8,
+    queenYear: 0,
+    virginQueen: true,
+  },
   {
     name: 'Orchard 1',
     apiary: 'outyard',
@@ -232,7 +242,11 @@ export async function seedDemoData(
 
     const queenYear = thisYear + spec.queenYear;
     const queenId = randomUUID();
-    const queenInstalled = spec.queenYear === 0 ? daysAgo(70) : installed;
+    // A virgin emerged from a cell placed in the hive about three weeks ago
+    const virginEmerged = daysAgo(24);
+    let queenInstalled = installed;
+    if (spec.virginQueen) queenInstalled = virginEmerged;
+    else if (spec.queenYear === 0) queenInstalled = daysAgo(70);
     queens.push({
       id: queenId,
       hiveId,
@@ -240,7 +254,14 @@ export async function seedDemoData(
       color: markingColor(queenYear),
       marking: 'Dot',
       source: spec.queenYear === 0 ? 'Own rearing' : 'Local breeder',
-      status: spec.dead ? 'DEAD' : 'ACTIVE',
+      ...(spec.virginQueen
+        ? {
+            status: 'VIRGIN',
+            statusChangedAt: virginEmerged,
+            cellCappedAt: daysAgo(32),
+            emergedAt: virginEmerged,
+          }
+        : { status: spec.dead ? 'DEAD' : 'ACTIVE' }),
       installedAt: queenInstalled,
     });
     movements.push({

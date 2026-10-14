@@ -43,6 +43,17 @@ describe('Demo data (e2e)', () => {
     expect(apiaries).toHaveLength(2);
   });
 
+  it('treats the virgin queen in Hive 04 as the hive queen', async () => {
+    const hive = await prisma.hive.findFirstOrThrow({
+      where: { name: 'Hive 04', apiary: { userId: user.userId } },
+    });
+
+    const detail = await as(http().get(`/hives/${hive.id}`))
+      .set('x-apiary-id', hive.apiaryId!)
+      .expect(200);
+    expect(detail.body.activeQueen).toMatchObject({ status: 'VIRGIN' });
+  });
+
   it('serves hive details with boxes, an active queen and scored inspections', async () => {
     const hive = await prisma.hive.findFirstOrThrow({
       where: { name: 'Hive 01', apiary: { userId: user.userId } },

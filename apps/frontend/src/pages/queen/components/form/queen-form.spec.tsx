@@ -103,10 +103,35 @@ test('creates a queen with mating details and trait ratings', async ({
   expect(sent[0].body).toMatchObject({
     hiveId: HIVE_ID,
     year: YEAR,
+    status: 'ACTIVE',
     matingType: 'MATING_STATION',
     matingStation: 'Bergstation',
     gentleness: 4,
     hygiene: null,
+  });
+});
+
+test('starts a daughter reared from a mother as a virgin', async ({
+  mount,
+  page,
+}) => {
+  const sent: Sent[] = [];
+  await mockApi(page, sent);
+  await mount(STORY, {
+    path: `/hives/${HIVE_ID}/queens/create?motherQueenId=${MOTHER_ID}`,
+  });
+
+  await expect(page.getByRole('combobox', { name: 'Status' })).toHaveText(
+    'Virgin',
+  );
+  await page.getByRole('button', { name: 'Create Queen' }).click();
+
+  await expect(page.getByTestId('landed')).toHaveText(`/hives/${HIVE_ID}`);
+  expect(sent[0].body).toMatchObject({
+    status: 'VIRGIN',
+    motherQueenId: MOTHER_ID,
+    cellCappedAt: null,
+    emergedAt: null,
   });
 });
 

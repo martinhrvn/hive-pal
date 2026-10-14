@@ -470,6 +470,12 @@ export class AccountTransferImportRunner {
                 status: q.status as never,
                 installedAt: q.installedAt ? new Date(q.installedAt) : null,
                 replacedAt: q.replacedAt ? new Date(q.replacedAt) : null,
+                // Older exports have no timestamp: keep the default (now)
+                statusChangedAt: q.statusChangedAt
+                  ? new Date(q.statusChangedAt)
+                  : undefined,
+                cellCappedAt: q.cellCappedAt ? new Date(q.cellCappedAt) : null,
+                emergedAt: q.emergedAt ? new Date(q.emergedAt) : null,
                 notes: q.notes ?? null,
                 breeder: q.breeder ?? null,
                 line: q.line ?? null,

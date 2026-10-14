@@ -6,7 +6,7 @@ import { AlertsScheduler } from './alerts.scheduler';
 import { AlertsService } from './alerts.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
-import { InspectionOverdueChecker } from './checkers';
+import { InspectionOverdueChecker, VirginQueenChecker } from './checkers';
 import {
   HiveUpdatedEvent,
   InspectionCreatedEvent,
@@ -45,6 +45,7 @@ describe('Alerts Event System Integration', () => {
         AlertsScheduler,
         AlertsService,
         InspectionOverdueChecker,
+        VirginQueenChecker,
         {
           provide: PrismaService,
           useValue: mockPrismaService,
@@ -82,6 +83,7 @@ describe('Alerts Event System Integration', () => {
         status: 'ACTIVE',
         settings: { inspection: { frequencyDays: 7 } },
         inspections: [],
+        queens: [],
         apiary: { id: 'apiary-id', userId: 'user-id' },
       };
 
@@ -123,6 +125,7 @@ describe('Alerts Event System Integration', () => {
         status: 'ACTIVE',
         settings: { inspection: { frequencyDays: 7 } },
         inspections: [{ date: new Date() }],
+        queens: [],
         apiary: { id: 'apiary-id', userId: 'user-id' },
       };
 
@@ -185,6 +188,7 @@ describe('Alerts Event System Integration', () => {
         status: 'ACTIVE',
         settings: { inspection: { frequencyDays: 7 } },
         inspections: [{ date: new Date() }], // Recent inspection
+        queens: [],
         apiary: { id: 'apiary-id', userId: 'user-id' },
       };
 
@@ -197,6 +201,7 @@ describe('Alerts Event System Integration', () => {
       expect(mockPrismaService.alert.updateMany).toHaveBeenCalledWith({
         where: {
           hiveId: 'test-hive-id',
+          type: 'inspection_overdue',
           status: 'ACTIVE',
         },
         data: {

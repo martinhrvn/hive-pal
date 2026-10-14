@@ -3,17 +3,22 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { Prisma } from '@/prisma/client';
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
+import { HiveUpdatedEvent } from '../events/hive.events';
 import {
+  CURRENT_QUEEN_STATUSES,
   CreateQueen,
   QueenResponse,
   UpdateQueen,
   RecordQueenTransfer,
   QueenDetail,
+  isCurrentQueenStatus,
+  queenStatusOnInstall,
 } from 'shared-schemas';
 
 const queenInclude = {
@@ -50,6 +55,7 @@ export class QueensService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly prometheus: PrometheusService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   private mapQueenToResponse(queen: QueenWithHive): QueenResponse {
@@ -67,6 +73,9 @@ export class QueensService {
       status: queen.status,
       installedAt: queen.installedAt?.toISOString() ?? null,
       replacedAt: queen.replacedAt?.toISOString() ?? null,
+      statusChangedAt: queen.statusChangedAt.toISOString(),
+      cellCappedAt: queen.cellCappedAt?.toISOString() ?? null,
+      emergedAt: queen.emergedAt?.toISOString() ?? null,
       notes: queen.notes,
       breeder: queen.breeder,
       line: queen.line,
@@ -90,6 +99,8 @@ export class QueensService {
       matingType: dto.matingType,
       matingStation: dto.matingStation,
       matedAt: toOptionalDate(dto.matedAt),
+      cellCappedAt: toOptionalDate(dto.cellCappedAt),
+      emergedAt: toOptionalDate(dto.emergedAt),
       gentleness: dto.gentleness,
       hygiene: dto.hygiene,
       swarmResistance: dto.swarmResistance,
@@ -197,7 +208,7 @@ export class QueensService {
           `Hive with ID ${createQueenDto.hiveId} not found or does not belong to this apiary`,
         );
       }
-      if (createQueenDto.status === 'ACTIVE') {
+      if (isCurrentQueenStatus(createQueenDto.status)) {
         await this.markAllActiveQueensAsReplaced(createQueenDto.hiveId);
       }
     }
@@ -313,6 +324,9 @@ export class QueensService {
       await this.assertValidMother(updateQueenDto.motherQueenId, id, filter);
     }
 
+    const statusChanged =
+      !!updateQueenDto.status && updateQueenDto.status !== existingQueen.status;
+
     const updatedQueen = await this.prisma.queen.update({
       where: { id },
       data: {
@@ -323,6 +337,7 @@ export class QueensService {
         year: updateQueenDto.year,
         source: updateQueenDto.source,
         status: updateQueenDto.status ?? undefined,
+        statusChangedAt: statusChanged ? new Date() : undefined,
         installedAt: toOptionalDate(updateQueenDto.installedAt),
         replacedAt: toOptionalDate(updateQueenDto.replacedAt),
         motherQueenId: updateQueenDto.motherQueenId,
@@ -330,6 +345,13 @@ export class QueensService {
       },
       include: queenInclude,
     });
+    if (statusChanged && updatedQueen.hiveId && updatedQueen.hive) {
+      this.notifyHiveChanged(
+        updatedQueen.hiveId,
+        updatedQueen.hive.apiaryId,
+        filter.userId,
+      );
+    }
     return this.mapQueenToResponse(updatedQueen);
   }
 
@@ -348,6 +370,8 @@ export class QueensService {
     filter: ApiaryScopeFilter,
   ): Promise<QueenDetail> {
     const movedAt = dto.movedAt ? new Date(dto.movedAt) : new Date();
+    // Hives whose current queen changed, to re-check their alerts afterwards
+    const changedHives: { id: string; apiaryId: string | null }[] = [];
 
     await this.prisma.$transaction(async (tx) => {
       // The user must be able to write to the queen's current apiary (or, for a
@@ -355,9 +379,13 @@ export class QueensService {
       // selected apiary is not a constraint: transfers may cross apiaries.
       const queen = await tx.queen.findFirst({
         where: { id: queenId, ...this.queenScopeWhere(filter, 'write') },
+        include: { hive: { select: { apiaryId: true } } },
       });
       if (!queen)
         throw new NotFoundException(`Queen with ID ${queenId} not found`);
+      if (queen.hive && queen.hiveId) {
+        changedHives.push({ id: queen.hiveId, apiaryId: queen.hive.apiaryId });
+      }
 
       if (dto.toHiveId) {
         // The target may be in any apiary the user can write to.
@@ -369,13 +397,21 @@ export class QueensService {
             `Target hive with ID ${dto.toHiveId} not found or you cannot edit its apiary`,
           );
         }
-        const activeQueenInTarget = await tx.queen.findFirst({
-          where: { hiveId: dto.toHiveId, status: 'ACTIVE' },
+        changedHives.push({ id: targetHive.id, apiaryId: targetHive.apiaryId });
+        const currentQueenInTarget = await tx.queen.findFirst({
+          where: {
+            hiveId: dto.toHiveId,
+            status: { in: [...CURRENT_QUEEN_STATUSES] },
+          },
         });
-        if (activeQueenInTarget && activeQueenInTarget.id !== queenId) {
+        if (currentQueenInTarget && currentQueenInTarget.id !== queenId) {
           await tx.queen.update({
-            where: { id: activeQueenInTarget.id },
-            data: { status: 'REPLACED', replacedAt: movedAt },
+            where: { id: currentQueenInTarget.id },
+            data: {
+              status: 'REPLACED',
+              replacedAt: movedAt,
+              statusChangedAt: movedAt,
+            },
           });
         }
       }
@@ -394,12 +430,14 @@ export class QueensService {
       // Only update installedAt/status when moving TO a hive; removing from a hive
       // should not overwrite installedAt with the removal timestamp or keep status ACTIVE.
       if (dto.toHiveId) {
+        const status = queenStatusOnInstall(queen.status);
         await tx.queen.update({
           where: { id: queenId },
           data: {
             hiveId: dto.toHiveId,
             installedAt: movedAt,
-            status: 'ACTIVE',
+            status,
+            statusChangedAt: status === queen.status ? undefined : movedAt,
           },
         });
       } else {
@@ -409,6 +447,10 @@ export class QueensService {
         });
       }
     });
+
+    for (const hive of changedHives) {
+      this.notifyHiveChanged(hive.id, hive.apiaryId, filter.userId);
+    }
 
     return this.getQueenHistory(queenId, filter);
   }
@@ -539,13 +581,28 @@ export class QueensService {
   }
 
   async findCurrentQueen(hiveId: string) {
-    return this.prisma.queen.findFirst({ where: { hiveId, status: 'ACTIVE' } });
+    return this.prisma.queen.findFirst({
+      where: { hiveId, status: { in: [...CURRENT_QUEEN_STATUSES] } },
+    });
   }
 
   async markAllActiveQueensAsReplaced(hiveId: string) {
+    const now = new Date();
     return this.prisma.queen.updateMany({
-      where: { hiveId, status: 'ACTIVE' },
-      data: { status: 'REPLACED', replacedAt: new Date() },
+      where: { hiveId, status: { in: [...CURRENT_QUEEN_STATUSES] } },
+      data: { status: 'REPLACED', replacedAt: now, statusChangedAt: now },
     });
+  }
+
+  /** Re-runs the hive's alert checks, e.g. the virgin queen reminder. */
+  private notifyHiveChanged(
+    hiveId: string,
+    apiaryId: string | null,
+    userId: string,
+  ) {
+    this.eventEmitter.emit(
+      'hive.updated',
+      new HiveUpdatedEvent(hiveId, apiaryId ?? '', userId, 'general'),
+    );
   }
 }

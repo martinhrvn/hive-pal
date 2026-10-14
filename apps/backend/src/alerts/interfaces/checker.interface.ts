@@ -14,6 +14,15 @@ export interface HiveContext {
   lastInspectionDate?: Date;
   status: string;
   apiaryId?: string;
+  // The hive's current (active or virgin) queen, if any
+  currentQueen?: {
+    id: string;
+    name: string | null;
+    marking: string | null;
+    year: number | null;
+    status: string;
+    statusChangedAt: Date;
+  } | null;
 }
 
 export interface CheckerContext {

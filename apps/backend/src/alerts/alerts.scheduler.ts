@@ -3,7 +3,45 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { AlertsService } from './alerts.service';
 import { HiveChecker, HiveContext, CheckerContext } from './interfaces';
-import { InspectionOverdueChecker } from './checkers';
+import { InspectionOverdueChecker, VirginQueenChecker } from './checkers';
+import { Prisma } from '@/prisma/client';
+import { CURRENT_QUEEN_STATUSES } from 'shared-schemas';
+
+// What the checkers need to know about a hive
+const hiveCheckInclude = {
+  inspections: {
+    select: { date: true },
+    orderBy: { date: 'desc' },
+    take: 1,
+  },
+  queens: {
+    where: { status: { in: [...CURRENT_QUEEN_STATUSES] } },
+    select: {
+      id: true,
+      name: true,
+      marking: true,
+      year: true,
+      status: true,
+      statusChangedAt: true,
+    },
+    orderBy: { installedAt: 'desc' },
+    take: 1,
+  },
+} satisfies Prisma.HiveInclude;
+
+type HiveForChecking = Prisma.HiveGetPayload<{
+  include: typeof hiveCheckInclude;
+}>;
+
+const toHiveContext = (hive: HiveForChecking): HiveContext => ({
+  hiveId: hive.id,
+  name: hive.name,
+  settings: hive.settings,
+  lastInspectionDate: hive.inspections[0]?.date,
+  status: hive.status,
+  apiaryId: hive.apiaryId || undefined,
+  currentQueen: hive.queens[0] ?? null,
+});
 
 @Injectable()
 export class AlertsScheduler {
@@ -14,9 +52,11 @@ export class AlertsScheduler {
     private readonly prisma: PrismaService,
     private readonly alertsService: AlertsService,
     private readonly inspectionOverdueChecker: InspectionOverdueChecker,
+    private readonly virginQueenChecker: VirginQueenChecker,
   ) {
     // Register all available checkers
     this.registerChecker(this.inspectionOverdueChecker);
+    this.registerChecker(this.virginQueenChecker);
   }
 
   /**
@@ -50,21 +90,19 @@ export class AlertsScheduler {
     this.logger.log(`Checking alerts for single hive ${hiveId}`);
 
     try {
-      // Get the hive with necessary data
-      const hive = await this.getHiveForChecking(hiveId);
+      const hive = await this.prisma.hive.findFirst({
+        where: { id: hiveId, status: 'ACTIVE' },
+        include: hiveCheckInclude,
+      });
 
       if (!hive) {
         this.logger.warn(`Hive ${hiveId} not found or not active`);
         return;
       }
 
-      const issuesFound = await this.checkHive(hive, startTime);
-
+      const issuesFound = await this.checkHive(toHiveContext(hive), startTime);
       if (issuesFound > 0) {
         this.logger.log(`Found ${issuesFound} issues for hive ${hiveId}`);
-      } else {
-        // If no issues found, resolve any active alerts for this hive
-        await this.resolveHiveAlerts(hiveId);
       }
     } catch (error) {
       this.logger.error(`Failed to check alerts for hive ${hiveId}`, error);
@@ -73,12 +111,14 @@ export class AlertsScheduler {
   }
 
   /**
-   * Resolve active alerts for a hive when no issues are found
+   * Resolve a hive's active alerts of one type once its checker finds no
+   * issue, e.g. the virgin queen reminder after she starts laying.
    */
-  private async resolveHiveAlerts(hiveId: string): Promise<void> {
+  private async resolveHiveAlerts(hiveId: string, type: string): Promise<void> {
     const resolvedCount = await this.prisma.alert.updateMany({
       where: {
         hiveId,
+        type,
         status: 'ACTIVE',
       },
       data: {
@@ -89,53 +129,9 @@ export class AlertsScheduler {
 
     if (resolvedCount.count > 0) {
       this.logger.log(
-        `Resolved ${resolvedCount.count} active alerts for hive ${hiveId}`,
+        `Resolved ${resolvedCount.count} active ${type} alerts for hive ${hiveId}`,
       );
     }
-  }
-
-  /**
-   * Get a single hive for checking
-   */
-  private async getHiveForChecking(
-    hiveId: string,
-  ): Promise<HiveContext | null> {
-    const hive = await this.prisma.hive.findFirst({
-      where: {
-        id: hiveId,
-        status: 'ACTIVE',
-      },
-      include: {
-        inspections: {
-          select: {
-            date: true,
-          },
-          orderBy: {
-            date: 'desc',
-          },
-          take: 1,
-        },
-        apiary: {
-          select: {
-            id: true,
-            userId: true,
-          },
-        },
-      },
-    });
-
-    if (!hive) {
-      return null;
-    }
-
-    return {
-      hiveId: hive.id,
-      name: hive.name,
-      settings: hive.settings,
-      lastInspectionDate: hive.inspections[0]?.date || null,
-      status: hive.status,
-      apiaryId: hive.apiaryId || undefined,
-    };
   }
 
   /**
@@ -148,7 +144,10 @@ export class AlertsScheduler {
     );
 
     // Get all active hives with their necessary data
-    const hives = await this.getHivesForChecking();
+    const hives = await this.prisma.hive.findMany({
+      where: { status: 'ACTIVE' },
+      include: hiveCheckInclude,
+    });
     this.logger.log(`Found ${hives.length} active hives to check`);
 
     let totalIssuesFound = 0;
@@ -157,12 +156,15 @@ export class AlertsScheduler {
     // Process each hive
     for (const hive of hives) {
       try {
-        const issuesFound = await this.checkHive(hive, startTime);
+        const issuesFound = await this.checkHive(
+          toHiveContext(hive),
+          startTime,
+        );
         totalIssuesFound += issuesFound;
         totalHivesProcessed++;
       } catch (error) {
         this.logger.error(
-          `Failed to check hive ${hive.hiveId} (${hive.name})`,
+          `Failed to check hive ${hive.id} (${hive.name})`,
           error,
         );
         // Continue with other hives even if one fails
@@ -172,40 +174,6 @@ export class AlertsScheduler {
     this.logger.log(
       `Alert check completed: ${totalHivesProcessed} hives processed, ${totalIssuesFound} total issues found`,
     );
-  }
-
-  private async getHivesForChecking(): Promise<HiveContext[]> {
-    const hives = await this.prisma.hive.findMany({
-      where: {
-        status: 'ACTIVE',
-      },
-      include: {
-        inspections: {
-          select: {
-            date: true,
-          },
-          orderBy: {
-            date: 'desc',
-          },
-          take: 1,
-        },
-        apiary: {
-          select: {
-            id: true,
-            userId: true,
-          },
-        },
-      },
-    });
-
-    return hives.map((hive) => ({
-      hiveId: hive.id,
-      name: hive.name,
-      settings: hive.settings,
-      lastInspectionDate: hive.inspections[0]?.date || null,
-      status: hive.status,
-      apiaryId: hive.apiaryId || undefined,
-    }));
   }
 
   private async checkHive(
@@ -226,7 +194,9 @@ export class AlertsScheduler {
       try {
         const issues = checker.checkHive(hive, checkerContext);
 
-        if (issues.length > 0) {
+        if (issues.length === 0) {
+          await this.resolveHiveAlerts(hive.hiveId, checker.getCheckerType());
+        } else {
           this.logger.debug(
             `Checker ${checker.getCheckerType()} found ${issues.length} issues for hive ${hive.name}`,
           );

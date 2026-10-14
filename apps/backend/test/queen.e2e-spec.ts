@@ -11,6 +11,8 @@ describe('Queens (e2e)', () => {
   let other: { userId: string; authCookie: string[] };
   let hiveA: string;
   let hiveB: string;
+  let hiveC: string;
+  let apiaryId: string;
   let foreignQueenId: string;
 
   const asMe = (req: request.Test) => req.set('Cookie', me.authCookie);
@@ -28,9 +30,10 @@ describe('Queens (e2e)', () => {
     me = await setupUser(app);
     other = await setupUser(app);
 
-    const apiary = await setupApiary(app, me.userId);
-    hiveA = await setupHive(app, apiary);
-    hiveB = await setupHive(app, apiary);
+    apiaryId = await setupApiary(app, me.userId);
+    hiveA = await setupHive(app, apiaryId);
+    hiveB = await setupHive(app, apiaryId);
+    hiveC = await setupHive(app, apiaryId);
 
     const foreignApiary = await setupApiary(app, other.userId);
     const foreignHive = await setupHive(app, foreignApiary);
@@ -81,6 +84,40 @@ describe('Queens (e2e)', () => {
       swarmResistance: 3,
       honeyProduction: 2,
     });
+  });
+
+  it("makes a virgin queen the hive's queen and dates her status", async () => {
+    const laying = await createQueen({ hiveId: hiveC, status: 'ACTIVE' });
+    const virgin = await createQueen({
+      hiveId: hiveC,
+      status: 'VIRGIN',
+      cellCappedAt: '2026-06-01T00:00:00.000Z',
+      emergedAt: '2026-06-09T00:00:00.000Z',
+    });
+    expect(virgin).toMatchObject({
+      status: 'VIRGIN',
+      cellCappedAt: '2026-06-01T00:00:00.000Z',
+      emergedAt: '2026-06-09T00:00:00.000Z',
+      statusChangedAt: expect.any(String),
+    });
+
+    // She replaces the laying queen and heads the hive
+    const old = await asMe(http().get(`/queens/${laying.id}`)).expect(200);
+    expect(old.body.status).toBe('REPLACED');
+    const hive = await asMe(http().get(`/hives/${hiveC}`))
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+    expect(hive.body.activeQueen).toMatchObject({
+      id: virgin.id,
+      status: 'VIRGIN',
+    });
+
+    const mated = await asMe(http().patch(`/queens/${virgin.id}`))
+      .send({ status: 'ACTIVE' })
+      .expect(200);
+    expect(new Date(mated.body.statusChangedAt).getTime()).toBeGreaterThan(
+      new Date(virgin.statusChangedAt as string).getTime(),
+    );
   });
 
   it('rejects a rating outside 1-5', async () => {

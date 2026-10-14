@@ -2,6 +2,7 @@ import type { QueenStatus } from 'shared-schemas';
 import type { StatusTone } from '@/components/common/status-pill';
 
 export const QUEEN_STATUSES = [
+  'VIRGIN',
   'ACTIVE',
   'REPLACED',
   'DEAD',
@@ -9,6 +10,7 @@ export const QUEEN_STATUSES = [
 ] as const satisfies readonly QueenStatus[];
 
 export const QUEEN_STATUS_TONE: Record<QueenStatus, StatusTone> = {
+  VIRGIN: 'info',
   ACTIVE: 'success',
   REPLACED: 'neutral',
   DEAD: 'danger',

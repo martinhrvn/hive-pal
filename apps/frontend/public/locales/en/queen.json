@@ -41,7 +41,10 @@
     "matedAt": "Mated on",
     "installed": "Installed",
     "replaced": "Replaced",
-    "notes": "Notes"
+    "notes": "Notes",
+    "cellCappedAt": "Queen cell capped",
+    "emergedAt": "Emerged",
+    "expectedEmergence": "Expected emergence"
   },
   "colors": {
     "blue": "Blue",
@@ -56,6 +59,7 @@
     "white": "White"
   },
   "status": {
+    "virgin": "Virgin",
     "active": "Active",
     "replaced": "Replaced",
     "dead": "Dead",
@@ -89,7 +93,8 @@
     "enterNotes": "Temperament, origin details, anything worth remembering",
     "hiveLocked": "To move her to another hive, use Transfer on the queen page.",
     "notInHive": "Not in a hive",
-    "notSet": "Not set"
+    "notSet": "Not set",
+    "estimateHint": "An estimate is fine."
   },
   "information": {
     "noActiveQueen": "No active queen found",
@@ -150,7 +155,8 @@
       "reason": "Reason",
       "none": "None",
       "removed": "Removed"
-    }
+    },
+    "approxDate": "about {{date}}"
   },
   "transfer": {
     "title": "Transfer queen",
@@ -199,5 +205,11 @@
   "validation": {
     "hiveRequired": "Select a hive",
     "yearRange": "Enter a year between {{min}} and {{max}}"
+  },
+  "virgin": {
+    "days_one": "Virgin for {{count}} day.",
+    "days_other": "Virgin for {{count}} days.",
+    "expectLaying": "She usually starts laying within about {{days}} days.",
+    "checkForEggs": "Check for eggs: she should be laying by now."
   }
 }
