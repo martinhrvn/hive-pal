@@ -97,6 +97,9 @@
         }
     },
     "actions": {
+        "addInspection": "Pridať prehliadku",
+        "audioInspection": "Hlasová prehliadka",
+        "mobileInspection": "Mobilná prehliadka",
         "details": "Podrobnosti",
         "createInspection": "Vytvoriť prehliadku",
         "scheduleInspection": "Naplánovať prehliadku",

@@ -59,6 +59,20 @@ export const useHiveApiaryLookup = () => {
   };
 };
 
+// URL of the hive list endpoint with the filters as query parameters.
+const hiveListUrl = (
+  filters?: HiveFilter,
+  extra: Record<string, string> = {},
+) => {
+  const params = new URLSearchParams(extra);
+  if (filters?.apiaryId) params.append('apiaryId', filters.apiaryId);
+  if (filters?.status) params.append('status', filters.status);
+  if (filters?.includeInactive !== undefined)
+    params.append('includeInactive', filters.includeInactive.toString());
+  const query = params.toString();
+  return query ? `/api/hives?${query}` : '/api/hives';
+};
+
 // Get all hives with optional filtering
 export const useHives = (
   filters?: HiveFilter & {
@@ -84,21 +98,14 @@ export const useHives = (
     queryKey: HIVES_KEYS.list(scope, filters),
     queryFn: async () => {
       try {
-        const params = new URLSearchParams();
-        if (filters?.apiaryId) params.append('apiaryId', filters.apiaryId);
-        if (filters?.status) params.append('status', filters.status);
-        if (filters?.includeInactive !== undefined)
-          params.append('includeInactive', filters.includeInactive.toString());
-
-        const url = `/api/hives${params.toString() ? `?${params.toString()}` : ''}`;
         // An explicit apiary filter forces that apiary regardless of view-all;
         // allApiaries forces the cross-apiary scope regardless of the selection.
-        const config = filters?.apiaryId
-          ? { headers: { 'x-apiary-id': filters.apiaryId } }
-          : filters?.allApiaries
-            ? { headers: { 'x-apiary-id': 'all' } }
-            : undefined;
-        const response = await apiClient.get<HiveResponse[]>(url, config);
+        const response = await apiClient.get<HiveResponse[]>(
+          hiveListUrl(filters),
+          apiaryHeaderConfig(
+            filters?.apiaryId ?? (filters?.allApiaries ? 'all' : undefined),
+          ),
+        );
         return response.data;
       } catch (error) {
         logApiError(error, '/api/hives', 'GET');
@@ -133,21 +140,10 @@ export const useHivesWithBoxes = (
     ...queryOptions,
     queryKey: HIVES_KEYS.listWithBoxes(scope, filters),
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (filters?.apiaryId) params.append('apiaryId', filters.apiaryId);
-      if (filters?.status) params.append('status', filters.status);
-      if (filters?.includeInactive !== undefined)
-        params.append('includeInactive', filters.includeInactive.toString());
-      params.append('includeBoxes', 'true');
-
-      const url = `/api/hives${params.toString() ? `?${params.toString()}` : ''}`;
       // An explicit apiary filter forces that apiary regardless of view-all.
-      const config = filters?.apiaryId
-        ? { headers: { 'x-apiary-id': filters.apiaryId } }
-        : undefined;
       const response = await apiClient.get<HiveWithBoxesResponse[]>(
-        url,
-        config,
+        hiveListUrl(filters, { includeBoxes: 'true' }),
+        apiaryHeaderConfig(filters?.apiaryId),
       );
       return response.data;
     },
@@ -271,6 +267,35 @@ export const useDeleteHive = () => {
     onSuccess: async () => {
       // Remove from cache and invalidate lists
       queryClient.invalidateQueries({ queryKey: HIVES_KEYS.lists() });
+    },
+  });
+};
+
+// Permanently delete a hive and all its data (archiving is useDeleteHive)
+export const usePermanentlyDeleteHive = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, apiaryId }: { id: string; apiaryId?: string }) => {
+      try {
+        await apiClient.delete(
+          `/api/hives/${id}/permanent`,
+          apiaryHeaderConfig(apiaryId),
+        );
+      } catch (error) {
+        logApiError(error, `/api/hives/${id}/permanent`, 'DELETE');
+        throw error;
+      }
+
+      return id;
+    },
+    onSuccess: async id => {
+      queryClient.removeQueries({ queryKey: HIVES_KEYS.detail(id) });
+      // The hive's inspections, harvests, queens etc. are gone too. Only mark
+      // them stale: refetching now would hit the deleted hive's endpoints from
+      // the still-mounted hive page.
+      queryClient.invalidateQueries({ refetchType: 'none' });
+      await queryClient.invalidateQueries({ queryKey: HIVES_KEYS.lists() });
     },
   });
 };

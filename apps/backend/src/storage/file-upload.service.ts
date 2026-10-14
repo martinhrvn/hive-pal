@@ -15,6 +15,9 @@ import {
 import { Prisma } from '@/prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 
+// S3 DeleteObjects accepts at most 1000 keys per request.
+const S3_DELETE_BATCH_SIZE = 1000;
+
 const MIME_TO_EXT: Record<string, string> = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -42,9 +45,9 @@ export interface FileFilterInternal {
 @Injectable()
 export class FileUploadService {
   constructor(
-    private prisma: PrismaService,
-    private storageService: StorageService,
-    private logger: CustomLoggerService,
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
+    private readonly logger: CustomLoggerService,
   ) {}
 
   /** Validates that storage is enabled, mime type is allowed, and file size is within limits. */
@@ -146,6 +149,30 @@ export class FileUploadService {
           message: 'Failed to delete file from storage',
           entityId,
           storageKey,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+  }
+
+  /** Best-effort batched deletion of many files; logs failures, never throws. */
+  async deleteManyFromStorage(
+    storageKeys: string[],
+    entityId: string,
+  ): Promise<void> {
+    if (storageKeys.length === 0 || !this.storageService.isEnabled()) {
+      return;
+    }
+
+    for (let i = 0; i < storageKeys.length; i += S3_DELETE_BATCH_SIZE) {
+      const batch = storageKeys.slice(i, i + S3_DELETE_BATCH_SIZE);
+      try {
+        await this.storageService.deleteObjects(batch);
+      } catch (error) {
+        this.logger.warn({
+          message: 'Failed to delete files from storage',
+          entityId,
+          batchSize: batch.length,
           error: error instanceof Error ? error.message : String(error),
         });
       }

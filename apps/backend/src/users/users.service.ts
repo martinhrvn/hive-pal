@@ -1,19 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { StorageService } from '../storage/storage.interface';
+import { FileUploadService } from '../storage/file-upload.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { UserPreferences, UpdateUserInfo } from 'shared-schemas';
-
-// S3 DeleteObjects accepts at most 1000 keys per request.
-const S3_DELETE_BATCH_SIZE = 1000;
 
 @Injectable()
 export class UsersService {
   constructor(
-    private prismaService: PrismaService,
-    private storageService: StorageService,
-    private logger: CustomLoggerService,
+    private readonly prismaService: PrismaService,
+    private readonly fileUpload: FileUploadService,
+    private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('UsersService');
   }
@@ -126,7 +123,7 @@ export class UsersService {
       userId,
       ownedApiaryIds,
     );
-    await this.deleteStorageObjects(storageKeys, userId);
+    await this.fileUpload.deleteManyFromStorage(storageKeys, userId);
 
     // AccountTransferJob has no FK to User, so it does not cascade — remove it
     // explicitly (its storage artifacts were gathered above).
@@ -198,29 +195,5 @@ export class UsersService {
     }
 
     return [...new Set(keys.filter(Boolean))];
-  }
-
-  /** Best-effort deletion of storage objects; never throws. */
-  private async deleteStorageObjects(
-    keys: string[],
-    userId: string,
-  ): Promise<void> {
-    if (keys.length === 0 || !this.storageService.isEnabled()) {
-      return;
-    }
-
-    for (let i = 0; i < keys.length; i += S3_DELETE_BATCH_SIZE) {
-      const batch = keys.slice(i, i + S3_DELETE_BATCH_SIZE);
-      try {
-        await this.storageService.deleteObjects(batch);
-      } catch (error) {
-        this.logger.warn({
-          message: 'Failed to delete storage objects during account deletion',
-          userId,
-          batchSize: batch.length,
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    }
   }
 }
