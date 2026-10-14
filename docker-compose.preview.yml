@@ -11,9 +11,9 @@ services:
       NODE_ENV: production
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      # Fill the admin account with demo apiaries, hives and a season of data
-      # (scripts/seed-demo.ts). Previews only: prod builds from the Dockerfile.
-      SEED_DEMO_DATA: 'true'
+      # Set SEED_DEMO_DATA=true to fill the admin account with demo apiaries,
+      # hives and a season of data (scripts/seed-demo.ts).
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
       JWT_SECRET: ${JWT_SECRET}
       # Coolify suffixes compose service names with -pr-<id> for PR previews and
       # exposes the real name as SERVICE_NAME_<SERVICE>, so the host is not always "postgres".

@@ -2,7 +2,7 @@
  * Fills the admin account with demo data on preview deployments.
  *
  * Runs on container startup after seed-admin. A no-op unless
- * SEED_DEMO_DATA=true (set in docker-compose.preview.yml only), and skips a
+ * SEED_DEMO_DATA=true (an env var on the deployment), and skips a
  * user who already has hives, so redeploys never duplicate or touch data.
  *
  *   SEED_DEMO_DATA=true ADMIN_EMAIL=admin@example.com \
