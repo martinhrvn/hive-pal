@@ -504,18 +504,22 @@ export class AccountTransferImportRunner {
 
         // Lineage, once every queen of this apiary exists (a mother may be
         // exported after her daughter). Mothers outside the apiary are dropped.
-        for (const h of a.hives) {
-          for (const q of h.queens) {
+        const lineageUpdates = a.hives.flatMap((h) =>
+          h.queens.flatMap((q) => {
             const motherQueenId = q.motherQueenId
               ? queenIdMap.get(q.motherQueenId)
               : undefined;
-            if (!motherQueenId) continue;
-            await tx.queen.update({
-              where: { id: queenIdMap.get(q.id)! },
-              data: { motherQueenId },
-            });
-          }
-        }
+            return motherQueenId
+              ? [
+                  tx.queen.update({
+                    where: { id: queenIdMap.get(q.id)! },
+                    data: { motherQueenId },
+                  }),
+                ]
+              : [];
+          }),
+        );
+        await Promise.all(lineageUpdates);
 
         // Harvests
         for (const h of a.harvests) {

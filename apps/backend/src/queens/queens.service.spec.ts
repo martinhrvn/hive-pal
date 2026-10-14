@@ -127,9 +127,9 @@ describe('QueensService', () => {
 
     const makeService = () => {
       const prisma = {
+        $queryRaw: vi.fn().mockResolvedValue([]),
         queen: {
           findFirst: vi.fn(),
-          findUnique: vi.fn(),
           update: vi.fn().mockResolvedValue({
             ...existing,
             name: null,
@@ -209,7 +209,7 @@ describe('QueensService', () => {
       prisma.queen.findFirst
         .mockResolvedValueOnce(existing)
         .mockResolvedValueOnce({ id: 'q3' });
-      prisma.queen.findUnique.mockResolvedValueOnce({ motherQueenId: 'q2' });
+      prisma.$queryRaw.mockResolvedValueOnce([{ found: 1 }]);
 
       await expect(
         svc.update('q2', { motherQueenId: 'q3' }, filter),
@@ -222,7 +222,6 @@ describe('QueensService', () => {
       prisma.queen.findFirst
         .mockResolvedValueOnce(existing)
         .mockResolvedValueOnce({ id: 'q3' });
-      prisma.queen.findUnique.mockResolvedValueOnce({ motherQueenId: null });
 
       await svc.update('q2', { motherQueenId: 'q3' }, filter);
 

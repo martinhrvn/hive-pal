@@ -1,4 +1,3 @@
-import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -14,15 +13,16 @@ type RatingInputProps = {
 /** 1–5 segmented rating; "not rated" is a valid state, so it can be cleared. */
 export const RatingInput = ({ label, value, onChange }: RatingInputProps) => {
   const { t } = useTranslation('queen');
-  const labelId = useId();
-
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <span id={labelId} className="text-sm font-medium">
+    <fieldset className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      {/* A legend can't be laid out as a flex item, so it is for screen
+          readers only and the visible label is hidden from them */}
+      <legend className="sr-only">{label}</legend>
+      <span aria-hidden className="text-sm font-medium">
         {label}
       </span>
       <div className="flex items-center gap-2">
-        <div role="group" aria-labelledby={labelId} className="flex gap-1">
+        <div className="flex gap-1">
           {SCALE.map(step => (
             <button
               key={step}
@@ -54,7 +54,7 @@ export const RatingInput = ({ label, value, onChange }: RatingInputProps) => {
           {t('traits.clear')}
         </Button>
       </div>
-    </div>
+    </fieldset>
   );
 };
 

@@ -21,10 +21,7 @@ const ActiveQueenWarning = ({ hiveId }: { hiveId: string }) => {
 
   if (status !== 'ACTIVE' || !hive?.activeQueen) return null;
   return (
-    <p
-      role="status"
-      className="flex gap-2 rounded-md bg-warning-muted p-3 text-sm text-warning-foreground"
-    >
+    <p className="flex gap-2 rounded-md bg-warning-muted p-3 text-sm text-warning-foreground">
       <TriangleAlert className="mt-0.5 size-4 shrink-0" />
       {t('information.hasActiveQueen')}
     </p>

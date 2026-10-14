@@ -123,19 +123,22 @@ export class QueensService {
     }
     if (!queenId) return;
 
-    let ancestorId: string | null = motherQueenId;
-    for (let depth = 0; ancestorId && depth < MAX_LINEAGE_DEPTH; depth++) {
-      const ancestor: { motherQueenId: string | null } | null =
-        await this.prisma.queen.findUnique({
-          where: { id: ancestorId },
-          select: { motherQueenId: true },
-        });
-      ancestorId = ancestor?.motherQueenId ?? null;
-      if (ancestorId === queenId) {
-        throw new BadRequestException(
-          'A queen cannot descend from one of her daughters',
-        );
-      }
+    // Walk up from the new mother; reaching this queen means a cycle.
+    const [cycle] = await this.prisma.$queryRaw<{ found: number }[]>`
+      WITH RECURSIVE ancestors AS (
+        SELECT "id", "motherQueenId", 1 AS depth
+        FROM "Queen" WHERE "id" = ${motherQueenId}
+        UNION ALL
+        SELECT q."id", q."motherQueenId", a.depth + 1
+        FROM "Queen" q JOIN ancestors a ON q."id" = a."motherQueenId"
+        WHERE a.depth < ${MAX_LINEAGE_DEPTH}
+      )
+      SELECT 1 AS found FROM ancestors WHERE "id" = ${queenId} LIMIT 1
+    `;
+    if (cycle) {
+      throw new BadRequestException(
+        'A queen cannot descend from one of her daughters',
+      );
     }
   }
 
