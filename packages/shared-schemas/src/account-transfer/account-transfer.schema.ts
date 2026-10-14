@@ -124,6 +124,17 @@ const queenExportSchema = z
     status: z.string(),
     installedAt: dateOrNullSchema,
     replacedAt: dateOrNullSchema,
+    notes: z.string().nullable().optional(),
+    breeder: z.string().nullable().optional(),
+    line: z.string().nullable().optional(),
+    motherQueenId: idStringSchema.nullable().optional(),
+    matingType: z.string().nullable().optional(),
+    matingStation: z.string().nullable().optional(),
+    matedAt: dateOrNullSchema.optional(),
+    gentleness: z.number().int().nullable().optional(),
+    hygiene: z.number().int().nullable().optional(),
+    swarmResistance: z.number().int().nullable().optional(),
+    honeyProduction: z.number().int().nullable().optional(),
     movements: z.array(queenMovementExportSchema).default([]),
   })
   .passthrough();

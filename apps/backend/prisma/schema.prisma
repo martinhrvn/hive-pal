@@ -318,8 +318,28 @@ model Queen {
   replacedAt  DateTime?
   movements   QueenMovement[]
 
+  notes   String?
+  breeder String?
+  line    String? // Breeding line / strain, e.g. "Carnica Troiseck"
+
+  // Lineage: queens reared in-house point at their mother
+  motherQueenId String?
+  motherQueen   Queen?  @relation("QueenLineage", fields: [motherQueenId], references: [id], onDelete: SetNull)
+  daughters     Queen[] @relation("QueenLineage")
+
+  matingType    QueenMatingType?
+  matingStation String?
+  matedAt       DateTime?
+
+  // Trait ratings, 1-5, higher is always better
+  gentleness      Int?
+  hygiene         Int?
+  swarmResistance Int?
+  honeyProduction Int?
+
   // Create index for quick lookup by hiveId - used in authorization checks
   @@index([hiveId])
+  @@index([motherQueenId])
 }
 
 model QueenMovement {
@@ -749,6 +769,12 @@ enum QueenStatus {
   REPLACED
   DEAD
   UNKNOWN
+}
+
+enum QueenMatingType {
+  OPEN
+  INSTRUMENTAL
+  MATING_STATION
 }
 
 enum BoxType {

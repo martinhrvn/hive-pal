@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
-import { QueenForm } from './components/queen-form';
+import { EditQueenForm } from './components/form/queen-form';
 
 export const EditQueenPage = () => {
-  const { queenId } = useParams<{ queenId: string }>();
-
-  return <QueenForm queenId={queenId} />;
+  const { queenId = '' } = useParams<{ queenId: string }>();
+  // Remount on navigation between queens so the form picks up new defaults
+  return <EditQueenForm key={queenId} queenId={queenId} />;
 };

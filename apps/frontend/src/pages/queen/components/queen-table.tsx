@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { format, parseISO } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
+import type { QueenResponse } from 'shared-schemas';
+import { StatusPill } from '@/components/common/status-pill';
 import {
   Table,
   TableBody,
@@ -9,86 +10,110 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { QUEEN_STATUS_VARIANTS, getQueenDisplayName } from '@/lib/queen-utils';
+import { useDateFormat } from '@/hooks/use-date-format';
+import {
+  QUEEN_STATUS_TONE,
+  getQueenDisplayName,
+  queenStatusLabelKey,
+} from '@/lib/queen-utils';
 import { QueenColorBadge } from './queen-color-badge';
-import { QueenResponse } from 'shared-schemas';
 
 type QueenTableProps = {
   queens: QueenResponse[];
+  /** Column toggles: the list page shows the hive, a hive's history the replacement date. */
   showHive?: boolean;
   showReplaced?: boolean;
 };
 
-const QueenTableRow: React.FC<{
+type QueenTableRowProps = {
   queen: QueenResponse;
   showHive?: boolean;
   showReplaced?: boolean;
-}> = ({ queen, showHive, showReplaced }) => (
-  <TableRow>
-    <TableCell>
-      <Link to={`/queens/${queen.id}`} className="font-medium hover:underline">
-        {getQueenDisplayName(queen.name, queen.marking, queen.year)}
-      </Link>
-    </TableCell>
-    <TableCell>
-      <QueenColorBadge color={queen.color} />
-    </TableCell>
-    <TableCell>{queen.year ?? '—'}</TableCell>
-    {showHive && (
+  formatDate: (date: string) => string;
+};
+
+const QueenTableRow = ({
+  queen,
+  showHive,
+  showReplaced,
+  formatDate,
+}: QueenTableRowProps) => {
+  const { t } = useTranslation('queen');
+  return (
+    <TableRow>
       <TableCell>
-        {queen.hiveName ? (
-          <span className="text-sm">{queen.hiveName}</span>
-        ) : (
-          <span className="text-sm text-muted-foreground italic">No hive</span>
+        <Link
+          to={`/queens/${queen.id}`}
+          className="rounded-sm font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {getQueenDisplayName(t, queen)}
+        </Link>
+      </TableCell>
+      <TableCell>
+        <QueenColorBadge color={queen.color} />
+      </TableCell>
+      <TableCell className="tabular-nums">{queen.year ?? '—'}</TableCell>
+      {showHive && (
+        <TableCell>
+          {queen.hiveName ?? (
+            <span className="italic text-muted-foreground">
+              {t('table.noHive')}
+            </span>
+          )}
+        </TableCell>
+      )}
+      <TableCell>
+        {queen.status && (
+          <StatusPill size="sm" tone={QUEEN_STATUS_TONE[queen.status]}>
+            {t(queenStatusLabelKey(queen.status))}
+          </StatusPill>
         )}
       </TableCell>
-    )}
-    <TableCell>
-      <Badge
-        variant={QUEEN_STATUS_VARIANTS[queen.status ?? 'UNKNOWN'] ?? 'outline'}
-      >
-        {queen.status}
-      </Badge>
-    </TableCell>
-    <TableCell className="text-sm">
-      {queen.installedAt ? format(parseISO(queen.installedAt), 'PP') : '—'}
-    </TableCell>
-    {showReplaced && (
-      <TableCell className="text-sm">
-        {queen.replacedAt ? format(parseISO(queen.replacedAt), 'PP') : '—'}
+      <TableCell>
+        {queen.installedAt ? formatDate(queen.installedAt) : '—'}
       </TableCell>
-    )}
-  </TableRow>
-);
+      {showReplaced && (
+        <TableCell>
+          {queen.replacedAt ? formatDate(queen.replacedAt) : '—'}
+        </TableCell>
+      )}
+    </TableRow>
+  );
+};
 
 export const QueenTable: React.FC<QueenTableProps> = ({
   queens,
   showHive = false,
   showReplaced = false,
-}) => (
-  <div className="rounded-md border">
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Queen</TableHead>
-          <TableHead>Color</TableHead>
-          <TableHead>Year</TableHead>
-          {showHive && <TableHead>Hive</TableHead>}
-          <TableHead>Status</TableHead>
-          <TableHead>Installed</TableHead>
-          {showReplaced && <TableHead>Replaced</TableHead>}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {queens.map(queen => (
-          <QueenTableRow
-            key={queen.id}
-            queen={queen}
-            showHive={showHive}
-            showReplaced={showReplaced}
-          />
-        ))}
-      </TableBody>
-    </Table>
-  </div>
-);
+}) => {
+  const { t } = useTranslation('queen');
+  const { formatDate } = useDateFormat();
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('table.queen')}</TableHead>
+            <TableHead>{t('table.color')}</TableHead>
+            <TableHead>{t('table.year')}</TableHead>
+            {showHive && <TableHead>{t('table.hive')}</TableHead>}
+            <TableHead>{t('table.status')}</TableHead>
+            <TableHead>{t('table.installed')}</TableHead>
+            {showReplaced && <TableHead>{t('table.replaced')}</TableHead>}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {queens.map(queen => (
+            <QueenTableRow
+              key={queen.id}
+              queen={queen}
+              showHive={showHive}
+              showReplaced={showReplaced}
+              formatDate={formatDate}
+            />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};

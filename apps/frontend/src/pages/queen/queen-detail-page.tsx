@@ -1,212 +1,132 @@
 import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import {
-  ChevronLeft,
-  ArrowRight,
-  Crown,
-  History,
-  Pencil,
-  ArrowLeftRight,
-} from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { ChevronLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import { useDeleteQueen, useQueenHistory } from '@/api/hooks';
+import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { useQueenHistory } from '@/api/hooks';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useApiaryPermission } from '@/hooks/useApiaryPermission';
+import { QueenDetailHeader } from './components/detail/queen-detail-header';
+import { QueenFacts } from './components/detail/queen-facts';
+import { QueenLineage } from './components/detail/queen-lineage';
+import { QueenMovements } from './components/detail/queen-movements';
+import { QueenTraits } from './components/detail/queen-traits';
+import { QueenNotFound } from './components/queen-not-found';
 import { QueenTransferDialog } from './components/queen-transfer-dialog';
-import { QueenResponse } from 'shared-schemas';
-import {
-  QUEEN_STATUS_VARIANTS,
-  getQueenColorClass,
-  getQueenDisplayName,
-} from '@/lib/queen-utils';
+
+const QueenDetailSkeleton = () => (
+  <div className="container mx-auto max-w-3xl space-y-6 p-4">
+    <Skeleton className="h-8 w-24" />
+    <Card>
+      <CardHeader className="flex flex-row items-center gap-3">
+        <Skeleton className="size-10 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+      </CardHeader>
+      <CardContent className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        {[0, 1, 2, 3, 4, 5].map(i => (
+          <Skeleton key={i} className="h-10" />
+        ))}
+      </CardContent>
+    </Card>
+    <Skeleton className="h-40 rounded-xl" />
+  </div>
+);
+
+type Dialog = 'transfer' | 'delete' | null;
 
 export const QueenDetailPage = () => {
-  const { queenId } = useParams<{ queenId: string }>();
+  const { t } = useTranslation('queen');
+  const { queenId = '' } = useParams<{ queenId: string }>();
   const navigate = useNavigate();
-  const [transferOpen, setTransferOpen] = useState(false);
+  const [dialog, setDialog] = useState<Dialog>(null);
 
-  const { data: queen, isLoading, error } = useQueenHistory(queenId ?? '');
+  const { data: queen, isPending, isError } = useQueenHistory(queenId);
+  const { canEdit } = useApiaryPermission(queen?.apiaryId);
+  const { mutateAsync: deleteQueen, isPending: isDeleting } = useDeleteQueen();
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
+  if (isPending) return <QueenDetailSkeleton />;
+  if (isError) return <QueenNotFound />;
 
-  if (error || !queen) {
-    return (
-      <div className="p-4">
-        <p className="text-muted-foreground">Queen not found.</p>
-        <Button variant="ghost" onClick={() => navigate(-1)} className="mt-2">
-          <ChevronLeft className="mr-2 h-4 w-4" /> Go back
-        </Button>
-      </div>
-    );
-  }
+  const closeDialog = (open: boolean) => !open && setDialog(null);
+  const openTransfer = () => setDialog('transfer');
 
-  const colorClass = getQueenColorClass(queen.color, 'bg-white');
+  const handleDelete = async () => {
+    try {
+      await deleteQueen({ id: queen.id, hiveId: queen.hiveId });
+      toast.success(t('delete.success'));
+      navigate('/queens');
+    } catch {
+      toast.error(t('delete.error'));
+    }
+  };
+
+  const notes = queen.notes?.trim();
 
   return (
-    <div className="container mx-auto max-w-3xl p-4 space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-        <ChevronLeft className="mr-2 h-4 w-4" /> Back
+    <div className="container mx-auto max-w-3xl space-y-6 p-4">
+      <Button variant="ghost" size="sm" asChild>
+        <Link to="/queens">
+          <ChevronLeft className="size-4" />
+          {t('detail.back')}
+        </Link>
       </Button>
 
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className={`h-8 w-8 rounded-full border border-gray-400 ${colorClass}`}
-              />
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Crown className="h-5 w-5 text-amber-500" />
-                  {getQueenDisplayName(queen.name, queen.marking, queen.year)}
-                </CardTitle>
-                {queen.hiveName && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Currently in:{' '}
-                    <span className="font-medium">{queen.hiveName}</span>
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge
-                variant={
-                  QUEEN_STATUS_VARIANTS[queen.status ?? 'UNKNOWN'] ?? 'outline'
-                }
-              >
-                {queen.status}
-              </Badge>
-            </div>
-          </div>
+          <QueenDetailHeader
+            queen={queen}
+            actions={
+              canEdit
+                ? {
+                    onTransfer: openTransfer,
+                    onDelete: () => setDialog('delete'),
+                  }
+                : undefined
+            }
+          />
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-            {queen.year && (
-              <div>
-                <p className="text-muted-foreground">Year</p>
-                <p className="font-medium">{queen.year}</p>
-              </div>
-            )}
-            {queen.marking && (
-              <div>
-                <p className="text-muted-foreground">Marking</p>
-                <p className="font-medium">{queen.marking}</p>
-              </div>
-            )}
-            {queen.source && (
-              <div>
-                <p className="text-muted-foreground">Source</p>
-                <p className="font-medium">{queen.source}</p>
-              </div>
-            )}
-            {queen.installedAt && (
-              <div>
-                <p className="text-muted-foreground">Installed</p>
-                <p className="font-medium">
-                  {format(parseISO(queen.installedAt), 'PP')}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="flex gap-2 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setTransferOpen(true)}
-            >
-              <ArrowLeftRight className="mr-2 h-4 w-4" />
-              Transfer Queen
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`/queens/${queenId}/edit`}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5" />
-            Movement History
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {queen.movements.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-4">
-              No movement history recorded.
-            </p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>From</TableHead>
-                  <TableHead></TableHead>
-                  <TableHead>To</TableHead>
-                  <TableHead>Reason</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {queen.movements.map(movement => (
-                  <TableRow key={movement.id}>
-                    <TableCell className="text-sm">
-                      {format(parseISO(movement.movedAt), 'PP')}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {movement.fromHiveName ?? (
-                        <span className="text-muted-foreground italic">
-                          None
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {movement.toHiveName ?? (
-                        <span className="text-muted-foreground italic">
-                          Removed
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {movement.reason ?? '—'}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        <CardContent className="space-y-6">
+          <QueenFacts queen={queen} />
+          {notes && (
+            <div className="space-y-1 border-t pt-4">
+              <h2 className="font-overline text-muted-foreground">
+                {t('sections.notes')}
+              </h2>
+              <p className="whitespace-pre-line text-sm">{notes}</p>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {queen && (
-        <QueenTransferDialog
-          queen={queen as QueenResponse}
-          open={transferOpen}
-          onOpenChange={setTransferOpen}
-        />
-      )}
+      <div className="grid grid-cols-1 gap-6 md:auto-cols-fr md:grid-flow-col">
+        <QueenLineage queen={queen} canEdit={canEdit} />
+        <QueenTraits queen={queen} />
+      </div>
+
+      <QueenMovements
+        movements={queen.movements}
+        onTransfer={canEdit ? openTransfer : undefined}
+      />
+
+      <QueenTransferDialog
+        queen={queen}
+        open={dialog === 'transfer'}
+        onOpenChange={closeDialog}
+      />
+      <DeleteConfirmDialog
+        open={dialog === 'delete'}
+        onOpenChange={closeDialog}
+        onConfirm={handleDelete}
+        isPending={isDeleting}
+        title={t('delete.title')}
+        description={t('delete.description')}
+      />
     </div>
   );
 };

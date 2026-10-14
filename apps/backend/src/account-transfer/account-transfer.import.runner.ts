@@ -470,6 +470,16 @@ export class AccountTransferImportRunner {
                 status: q.status as never,
                 installedAt: q.installedAt ? new Date(q.installedAt) : null,
                 replacedAt: q.replacedAt ? new Date(q.replacedAt) : null,
+                notes: q.notes ?? null,
+                breeder: q.breeder ?? null,
+                line: q.line ?? null,
+                matingType: (q.matingType ?? null) as never,
+                matingStation: q.matingStation ?? null,
+                matedAt: q.matedAt ? new Date(q.matedAt) : null,
+                gentleness: q.gentleness ?? null,
+                hygiene: q.hygiene ?? null,
+                swarmResistance: q.swarmResistance ?? null,
+                honeyProduction: q.honeyProduction ?? null,
               },
             });
             queenIdMap.set(q.id, newQueen.id);
@@ -489,6 +499,21 @@ export class AccountTransferImportRunner {
                 },
               });
             }
+          }
+        }
+
+        // Lineage, once every queen of this apiary exists (a mother may be
+        // exported after her daughter). Mothers outside the apiary are dropped.
+        for (const h of a.hives) {
+          for (const q of h.queens) {
+            const motherQueenId = q.motherQueenId
+              ? queenIdMap.get(q.motherQueenId)
+              : undefined;
+            if (!motherQueenId) continue;
+            await tx.queen.update({
+              where: { id: queenIdMap.get(q.id)! },
+              data: { motherQueenId },
+            });
           }
         }
 

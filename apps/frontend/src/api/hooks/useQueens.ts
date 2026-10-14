@@ -93,15 +93,14 @@ export const useCreateQueen = (callbacks?: { onSuccess: () => void }) => {
     },
     onSuccess: async data => {
       callbacks?.onSuccess?.();
-      await queryClient.invalidateQueries({ queryKey: QUEENS_KEYS.lists() });
-      if (data.hiveId) {
-        await queryClient.invalidateQueries({
-          queryKey: ['hives', 'detail', data.hiveId],
-        });
-        await queryClient.invalidateQueries({
-          queryKey: QUEENS_KEYS.hiveHistory(data.hiveId),
-        });
-      }
+      // Also refreshes the mother's daughters list
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: QUEENS_KEYS.all }),
+        data.hiveId &&
+          queryClient.invalidateQueries({
+            queryKey: ['hives', 'detail', data.hiveId],
+          }),
+      ]);
     },
   });
 };
@@ -116,16 +115,15 @@ export const useUpdateQueen = () => {
       );
       return response.data;
     },
-    onSuccess: async (data, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: QUEENS_KEYS.detail(variables.id),
-      });
-      await queryClient.invalidateQueries({ queryKey: QUEENS_KEYS.lists() });
-      if (data.hiveId) {
-        await queryClient.invalidateQueries({
-          queryKey: ['hives', 'detail', data.hiveId],
-        });
-      }
+    onSuccess: async data => {
+      // Detail, history, lists and lineage of other queens all show these fields
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: QUEENS_KEYS.all }),
+        data.hiveId &&
+          queryClient.invalidateQueries({
+            queryKey: ['hives', 'detail', data.hiveId],
+          }),
+      ]);
     },
   });
 };
@@ -148,29 +146,14 @@ export const useRecordQueenTransfer = () => {
       return response.data;
     },
     onSuccess: async (data, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: QUEENS_KEYS.history(variables.queenId),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: QUEENS_KEYS.detail(variables.queenId),
-      });
-      await queryClient.invalidateQueries({ queryKey: QUEENS_KEYS.lists() });
-      if (data.hiveId) {
-        await queryClient.invalidateQueries({
-          queryKey: ['hives', 'detail', data.hiveId],
-        });
-        await queryClient.invalidateQueries({
-          queryKey: QUEENS_KEYS.hiveHistory(data.hiveId),
-        });
-      }
-      if (variables.fromHiveId) {
-        await queryClient.invalidateQueries({
-          queryKey: ['hives', 'detail', variables.fromHiveId],
-        });
-        await queryClient.invalidateQueries({
-          queryKey: QUEENS_KEYS.hiveHistory(variables.fromHiveId),
-        });
-      }
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: QUEENS_KEYS.all }),
+        ...[data.hiveId, variables.fromHiveId].filter(Boolean).map(hiveId =>
+          queryClient.invalidateQueries({
+            queryKey: ['hives', 'detail', hiveId],
+          }),
+        ),
+      ]);
     },
   });
 };
@@ -178,12 +161,23 @@ export const useRecordQueenTransfer = () => {
 export const useDeleteQueen = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async ({ id }: { id: string; hiveId?: string | null }) => {
       await apiClient.delete(`/api/queens/${id}`);
       return id;
     },
-    onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: QUEENS_KEYS.lists() });
+    onSuccess: async (id, { hiveId }) => {
+      await Promise.all([
+        // Skip the deleted queen's own queries: refetching them would 404
+        // while her page is still mounted
+        queryClient.invalidateQueries({
+          queryKey: QUEENS_KEYS.all,
+          predicate: query => !query.queryKey.includes(id),
+        }),
+        hiveId &&
+          queryClient.invalidateQueries({
+            queryKey: ['hives', 'detail', hiveId],
+          }),
+      ]);
     },
   });
 };

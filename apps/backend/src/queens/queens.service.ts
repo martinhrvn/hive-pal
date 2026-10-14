@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { Prisma } from '@/prisma/client';
@@ -12,30 +16,43 @@ import {
   QueenDetail,
 } from 'shared-schemas';
 
+const queenInclude = {
+  hive: {
+    select: {
+      name: true,
+      apiaryId: true,
+      apiary: { select: { name: true } },
+    },
+  },
+} satisfies Prisma.QueenInclude;
+
+const queenRefSelect = {
+  id: true,
+  name: true,
+  year: true,
+  color: true,
+  status: true,
+} satisfies Prisma.QueenSelect;
+
+type QueenWithHive = Prisma.QueenGetPayload<{ include: typeof queenInclude }>;
+
+// Guard against runaway walks through corrupt lineage data
+const MAX_LINEAGE_DEPTH = 100;
+
+/** Date fields: absent leaves the value alone, null clears it. */
+const toOptionalDate = (value: string | Date | null | undefined) => {
+  if (value === undefined) return undefined;
+  return value === null ? null : new Date(value);
+};
+
 @Injectable()
 export class QueensService {
   constructor(
-    private prisma: PrismaService,
-    private prometheus: PrometheusService,
+    private readonly prisma: PrismaService,
+    private readonly prometheus: PrometheusService,
   ) {}
 
-  private mapQueenToResponse(queen: {
-    id: string;
-    hiveId: string | null;
-    name: string | null;
-    marking: string | null;
-    color: string | null;
-    year: number | null;
-    source: string | null;
-    status: string;
-    installedAt: Date | null;
-    replacedAt: Date | null;
-    hive?: {
-      name: string;
-      apiaryId?: string | null;
-      apiary?: { name: string } | null;
-    } | null;
-  }): QueenResponse {
+  private mapQueenToResponse(queen: QueenWithHive): QueenResponse {
     return {
       id: queen.id,
       hiveId: queen.hiveId,
@@ -47,10 +64,79 @@ export class QueensService {
       color: queen.color,
       year: queen.year,
       source: queen.source,
-      status: queen.status as QueenResponse['status'],
+      status: queen.status,
       installedAt: queen.installedAt?.toISOString() ?? null,
       replacedAt: queen.replacedAt?.toISOString() ?? null,
+      notes: queen.notes,
+      breeder: queen.breeder,
+      line: queen.line,
+      motherQueenId: queen.motherQueenId,
+      matingType: queen.matingType,
+      matingStation: queen.matingStation,
+      matedAt: queen.matedAt?.toISOString() ?? null,
+      gentleness: queen.gentleness,
+      hygiene: queen.hygiene,
+      swarmResistance: queen.swarmResistance,
+      honeyProduction: queen.honeyProduction,
     };
+  }
+
+  /** Breeding/mating/trait columns shared by create and update. */
+  private profileData(dto: UpdateQueen) {
+    return {
+      notes: dto.notes,
+      breeder: dto.breeder,
+      line: dto.line,
+      matingType: dto.matingType,
+      matingStation: dto.matingStation,
+      matedAt: toOptionalDate(dto.matedAt),
+      gentleness: dto.gentleness,
+      hygiene: dto.hygiene,
+      swarmResistance: dto.swarmResistance,
+      honeyProduction: dto.honeyProduction,
+    };
+  }
+
+  /**
+   * A mother must be a queen the user can see in any of their apiaries, must
+   * not be the queen itself, and must not be one of its descendants.
+   */
+  private async assertValidMother(
+    motherQueenId: string,
+    queenId: string | null,
+    filter: ApiaryScopeFilter,
+  ) {
+    if (motherQueenId === queenId) {
+      throw new BadRequestException('A queen cannot be her own mother');
+    }
+    const mother = await this.prisma.queen.findFirst({
+      where: {
+        id: motherQueenId,
+        ...this.queenScopeWhere({ userId: filter.userId }, 'read'),
+      },
+      select: { id: true },
+    });
+    if (!mother) {
+      throw new BadRequestException(
+        `Mother queen with ID ${motherQueenId} not found`,
+      );
+    }
+    if (!queenId) return;
+
+    let ancestorId: string | null = motherQueenId;
+    for (let depth = 0; ancestorId && depth < MAX_LINEAGE_DEPTH; depth++) {
+      const ancestor: { motherQueenId: string | null } | null =
+        await this.prisma.queen.findUnique({
+          where: { id: ancestorId },
+          select: { motherQueenId: true },
+        });
+      ancestorId = ancestor?.motherQueenId ?? null;
+      if (ancestorId === queenId) {
+        throw new BadRequestException(
+          'A queen cannot descend from one of her daughters',
+        );
+      }
+    }
   }
 
   /**
@@ -96,6 +182,9 @@ export class QueensService {
     createQueenDto: CreateQueen,
     filter: ApiaryScopeFilter,
   ): Promise<QueenResponse> {
+    if (createQueenDto.motherQueenId) {
+      await this.assertValidMother(createQueenDto.motherQueenId, null, filter);
+    }
     if (createQueenDto.hiveId) {
       const hive = await this.prisma.hive.findFirst({
         where: { id: createQueenDto.hiveId, apiary: apiaryWriteScope(filter) },
@@ -125,16 +214,10 @@ export class QueensService {
         replacedAt: createQueenDto.replacedAt
           ? new Date(createQueenDto.replacedAt)
           : null,
+        motherQueenId: createQueenDto.motherQueenId,
+        ...this.profileData(createQueenDto),
       },
-      include: {
-        hive: {
-          select: {
-            name: true,
-            apiaryId: true,
-            apiary: { select: { name: true } },
-          },
-        },
-      },
+      include: queenInclude,
     });
 
     if (createQueenDto.hiveId) {
@@ -191,15 +274,7 @@ export class QueensService {
 
     const queens = await this.prisma.queen.findMany({
       where,
-      include: {
-        hive: {
-          select: {
-            name: true,
-            apiaryId: true,
-            apiary: { select: { name: true } },
-          },
-        },
-      },
+      include: queenInclude,
     });
     return queens.map((queen) => this.mapQueenToResponse(queen));
   }
@@ -207,15 +282,7 @@ export class QueensService {
   async findOne(id: string, filter: ApiaryScopeFilter): Promise<QueenResponse> {
     const queen = await this.prisma.queen.findFirst({
       where: { id, ...this.queenScopeWhere(filter, 'read') },
-      include: {
-        hive: {
-          select: {
-            name: true,
-            apiaryId: true,
-            apiary: { select: { name: true } },
-          },
-        },
-      },
+      include: queenInclude,
     });
     if (!queen) throw new NotFoundException(`Queen with ID ${id} not found`);
     return this.mapQueenToResponse(queen);
@@ -239,6 +306,9 @@ export class QueensService {
     ) {
       await this.assertWritableHive(updateQueenDto.hiveId, filter);
     }
+    if (updateQueenDto.motherQueenId) {
+      await this.assertValidMother(updateQueenDto.motherQueenId, id, filter);
+    }
 
     const updatedQueen = await this.prisma.queen.update({
       where: { id },
@@ -250,22 +320,12 @@ export class QueensService {
         year: updateQueenDto.year,
         source: updateQueenDto.source,
         status: updateQueenDto.status ?? undefined,
-        installedAt: updateQueenDto.installedAt
-          ? new Date(updateQueenDto.installedAt)
-          : undefined,
-        replacedAt: updateQueenDto.replacedAt
-          ? new Date(updateQueenDto.replacedAt)
-          : null,
+        installedAt: toOptionalDate(updateQueenDto.installedAt),
+        replacedAt: toOptionalDate(updateQueenDto.replacedAt),
+        motherQueenId: updateQueenDto.motherQueenId,
+        ...this.profileData(updateQueenDto),
       },
-      include: {
-        hive: {
-          select: {
-            name: true,
-            apiaryId: true,
-            apiary: { select: { name: true } },
-          },
-        },
-      },
+      include: queenInclude,
     });
     return this.mapQueenToResponse(updatedQueen);
   }
@@ -357,13 +417,7 @@ export class QueensService {
     const queen = await this.prisma.queen.findFirst({
       where: { id: queenId, ...this.queenScopeWhere(filter, 'read') },
       include: {
-        hive: {
-          select: {
-            name: true,
-            apiaryId: true,
-            apiary: { select: { name: true } },
-          },
-        },
+        ...queenInclude,
         movements: {
           include: {
             fromHive: { select: { name: true } },
@@ -377,20 +431,29 @@ export class QueensService {
     if (!queen)
       throw new NotFoundException(`Queen with ID ${queenId} not found`);
 
+    // Lineage may span apiaries; only show relatives the user can see.
+    const relativesScope = this.queenScopeWhere(
+      { userId: filter.userId },
+      'read',
+    );
+    const [motherQueen, daughters] = await Promise.all([
+      queen.motherQueenId
+        ? this.prisma.queen.findFirst({
+            where: { id: queen.motherQueenId, ...relativesScope },
+            select: queenRefSelect,
+          })
+        : null,
+      this.prisma.queen.findMany({
+        where: { motherQueenId: queen.id, ...relativesScope },
+        select: queenRefSelect,
+        orderBy: [{ year: 'desc' }, { name: 'asc' }],
+      }),
+    ]);
+
     return {
-      id: queen.id,
-      hiveId: queen.hiveId,
-      name: queen.name,
-      hiveName: queen.hive?.name ?? null,
-      apiaryId: queen.hive?.apiaryId ?? null,
-      apiaryName: queen.hive?.apiary?.name ?? null,
-      marking: queen.marking,
-      color: queen.color,
-      year: queen.year,
-      source: queen.source,
-      status: queen.status as QueenResponse['status'],
-      installedAt: queen.installedAt?.toISOString() ?? null,
-      replacedAt: queen.replacedAt?.toISOString() ?? null,
+      ...this.mapQueenToResponse(queen),
+      motherQueen,
+      daughters,
       movements: queen.movements.map((m) => ({
         id: m.id,
         queenId: m.queenId,
@@ -426,13 +489,7 @@ export class QueensService {
         ],
       },
       include: {
-        hive: {
-          select: {
-            name: true,
-            apiaryId: true,
-            apiary: { select: { name: true } },
-          },
-        },
+        ...queenInclude,
         // Include only movements relevant to this hive for date derivation
         movements: {
           where: { OR: [{ toHiveId: hiveId }, { fromHiveId: hiveId }] },

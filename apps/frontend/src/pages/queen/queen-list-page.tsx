@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Crown, Plus } from 'lucide-react';
+import type { QueenResponse } from 'shared-schemas';
+import { useHives, useQueens } from '@/api/hooks';
+import { EmptyState } from '@/components/dashboard/empty-state';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -9,32 +14,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useQueens, useHives } from '@/api/hooks';
+import { Skeleton } from '@/components/ui/skeleton';
+import { QUEEN_STATUSES, queenStatusLabelKey } from '@/lib/queen-utils';
 import { QueenTable } from './components/queen-table';
-import { QueenResponse } from 'shared-schemas';
 
-const QueenListContent: React.FC<{
+const ALL = 'all';
+
+const QueenListContent = ({
+  queens,
+  isPending,
+  isFiltered,
+  onClearFilters,
+}: {
   queens?: QueenResponse[];
-  isLoading: boolean;
-}> = ({ queens, isLoading }) => {
-  if (isLoading) {
+  isPending: boolean;
+  isFiltered: boolean;
+  onClearFilters: () => void;
+}) => {
+  const { t } = useTranslation('queen');
+
+  if (isPending) {
     return (
-      <div className="flex h-32 items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="space-y-2">
+        {[0, 1, 2, 3].map(i => (
+          <Skeleton key={i} className="h-12 w-full" />
+        ))}
       </div>
     );
   }
 
-  if (!queens || queens.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <Crown className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No queens found.</p>
-        <Button asChild className="mt-4" size="sm">
-          <Link to="/queens/create">Add your first queen</Link>
+  if (!queens?.length) {
+    return isFiltered ? (
+      <EmptyState
+        icon={<Crown />}
+        title={t('list.noMatches.title')}
+        description={t('list.noMatches.description')}
+      >
+        <Button variant="outline" onClick={onClearFilters}>
+          {t('list.noMatches.cta')}
         </Button>
-      </div>
+      </EmptyState>
+    ) : (
+      <EmptyState
+        icon={<Crown />}
+        title={t('list.empty.title')}
+        description={t('list.empty.description')}
+      >
+        <Button asChild>
+          <Link to="/queens/create">{t('list.empty.cta')}</Link>
+        </Button>
+      </EmptyState>
     );
   }
 
@@ -42,70 +71,83 @@ const QueenListContent: React.FC<{
 };
 
 export const QueenListPage = () => {
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [hiveFilter, setHiveFilter] = useState<string>('all');
+  const { t } = useTranslation('queen');
+  const [statusFilter, setStatusFilter] = useState<string>(ALL);
+  const [hiveFilter, setHiveFilter] = useState<string>(ALL);
 
   const { data: hives } = useHives();
-  const { data: queens, isLoading } = useQueens({
-    status: statusFilter === 'all' ? undefined : statusFilter,
-    hiveId: hiveFilter === 'all' ? undefined : hiveFilter,
+  const { data: queens, isPending } = useQueens({
+    status: statusFilter === ALL ? undefined : statusFilter,
+    hiveId: hiveFilter === ALL ? undefined : hiveFilter,
   });
 
+  const clearFilters = () => {
+    setStatusFilter(ALL);
+    setHiveFilter(ALL);
+  };
+
   return (
-    <div className="container mx-auto p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold flex items-center gap-2">
-          <Crown className="h-6 w-6 text-amber-500" />
-          Queens
+    <div className="container mx-auto space-y-6 p-4">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="flex items-center gap-2 text-2xl font-semibold">
+          <Crown className="size-6 text-honey" />
+          {t('title')}
         </h1>
         <Button asChild size="sm">
           <Link to="/queens/create">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Queen
+            <Plus className="size-4" />
+            {t('actions.addQueen')}
           </Link>
         </Button>
       </div>
 
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Filters</CardTitle>
+        <CardHeader>
+          <CardTitle className="font-overline text-muted-foreground">
+            {t('list.filters')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            <div className="w-40">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="REPLACED">Replaced</SelectItem>
-                  <SelectItem value="DEAD">Dead</SelectItem>
-                  <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-48">
-              <Select value={hiveFilter} onValueChange={setHiveFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Hive" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Hives</SelectItem>
-                  {hives?.map(hive => (
-                    <SelectItem key={hive.id} value={hive.id}>
-                      {hive.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger
+                className="w-40"
+                aria-label={t('list.statusFilter')}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL}>{t('list.allStatuses')}</SelectItem>
+                {QUEEN_STATUSES.map(status => (
+                  <SelectItem key={status} value={status}>
+                    {t(queenStatusLabelKey(status))}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={hiveFilter} onValueChange={setHiveFilter}>
+              <SelectTrigger className="w-48" aria-label={t('list.hiveFilter')}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL}>{t('list.allHives')}</SelectItem>
+                {hives?.map(hive => (
+                  <SelectItem key={hive.id} value={hive.id}>
+                    {hive.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
 
-      <QueenListContent queens={queens} isLoading={isLoading} />
+      <QueenListContent
+        queens={queens}
+        isPending={isPending}
+        isFiltered={statusFilter !== ALL || hiveFilter !== ALL}
+        onClearFilters={clearFilters}
+      />
     </div>
   );
 };

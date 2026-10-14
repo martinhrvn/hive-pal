@@ -5,16 +5,21 @@
   "create": {
     "title": "New Queen",
     "button": "Create Queen",
-    "success": "Queen created successfully"
+    "success": "Queen created successfully",
+    "error": "Failed to create queen"
   },
   "edit": {
     "title": "Edit Queen",
     "button": "Save Changes",
-    "success": "Queen updated successfully"
+    "success": "Queen updated successfully",
+    "error": "Failed to update queen"
   },
   "delete": {
     "confirm": "Are you sure you want to delete this queen?",
-    "success": "Queen deleted successfully"
+    "success": "Queen deleted successfully",
+    "title": "Delete this queen?",
+    "description": "This permanently deletes the queen and her movement history. Her daughters stay, without the link to her.",
+    "error": "Failed to delete queen"
   },
   "fields": {
     "hive": "Hive",
@@ -26,7 +31,17 @@
     "installationDate": "Installation Date",
     "replacedDate": "Replaced Date (Optional)",
     "installedOn": "Installed on {{date}}",
-    "via": "via {{source}}"
+    "via": "via {{source}}",
+    "name": "Name",
+    "breeder": "Breeder",
+    "line": "Line",
+    "mother": "Mother",
+    "matingType": "Mating",
+    "matingStation": "Mating station",
+    "matedAt": "Mated on",
+    "installed": "Installed",
+    "replaced": "Replaced",
+    "notes": "Notes"
   },
   "colors": {
     "blue": "Blue",
@@ -63,10 +78,126 @@
     "enterMarking": "Enter queen marking",
     "enterSource": "Enter queen source",
     "selectStatus": "Select status",
-    "pickDate": "Pick a date"
+    "pickDate": "Pick a date",
+    "enterName": "Optional, e.g. Queen Bee",
+    "enterBreeder": "Who reared her",
+    "enterLine": "e.g. Carnica Troiseck",
+    "selectMother": "Select the mother queen",
+    "noMother": "None",
+    "selectMatingType": "Select how she was mated",
+    "enterMatingStation": "Station name",
+    "enterNotes": "Temperament, origin details, anything worth remembering",
+    "hiveLocked": "To move her to another hive, use Transfer on the queen page.",
+    "notInHive": "Not in a hive",
+    "notSet": "Not set"
   },
   "information": {
     "noActiveQueen": "No active queen found",
     "hasActiveQueen": "This hive already has an active queen. Replacing the queen will mark the current queen as replaced."
+  },
+  "fallbackName": "Queen {{year}}",
+  "sections": {
+    "queen": "Queen",
+    "hive": "Hive",
+    "origin": "Origin",
+    "mating": "Mating",
+    "dates": "Dates",
+    "traits": "Traits",
+    "notes": "Notes",
+    "details": "Details",
+    "lineage": "Lineage",
+    "movements": "Movement history"
+  },
+  "matingType": {
+    "OPEN": "Open mated",
+    "INSTRUMENTAL": "Instrumentally inseminated",
+    "MATING_STATION": "Mating station"
+  },
+  "traits": {
+    "gentleness": "Gentleness",
+    "hygiene": "Hygiene",
+    "swarmResistance": "Swarm resistance",
+    "honeyProduction": "Honey production",
+    "hint": "1 is poor, 5 is excellent.",
+    "value": "{{value}} of 5",
+    "rate": "Rate {{trait}} {{value}} of 5",
+    "clear": "Clear",
+    "clearLabel": "Clear {{trait}} rating",
+    "notRated": "Not rated"
+  },
+  "detail": {
+    "back": "Queens",
+    "currentlyIn": "Currently in {{hive}}",
+    "notInHive": "Not in a hive",
+    "notFound": {
+      "title": "Queen not found",
+      "description": "She may have been deleted, or she belongs to an apiary you can no longer access.",
+      "cta": "Back to queens"
+    },
+    "mother": "Mother",
+    "daughters": "Daughters",
+    "noDaughters": "No daughters recorded yet.",
+    "addDaughter": "Add daughter",
+    "noMovements": {
+      "title": "No movements yet",
+      "description": "Transfers between hives will show up here."
+    },
+    "movement": {
+      "date": "Date",
+      "from": "From",
+      "direction": "Direction",
+      "to": "To",
+      "reason": "Reason",
+      "none": "None",
+      "removed": "Removed"
+    }
+  },
+  "transfer": {
+    "title": "Transfer queen",
+    "moveTo": "Move to hive",
+    "currentlyIn": "Currently in {{hive}}",
+    "currentlyInApiary": "Currently in {{hive}} ({{apiary}})",
+    "selectDestination": "Select destination hive",
+    "removeFromHive": "Remove from hive",
+    "date": "Transfer date",
+    "reason": "Reason (optional)",
+    "reasonPlaceholder": "e.g. hive split, requeening",
+    "notes": "Notes (optional)",
+    "notesPlaceholder": "Additional notes",
+    "submit": "Transfer queen",
+    "submitting": "Transferring…",
+    "success": "Queen transferred",
+    "error": "Failed to transfer queen"
+  },
+  "table": {
+    "queen": "Queen",
+    "color": "Color",
+    "year": "Year",
+    "hive": "Hive",
+    "status": "Status",
+    "installed": "Installed",
+    "replaced": "Replaced",
+    "noHive": "No hive"
+  },
+  "list": {
+    "filters": "Filters",
+    "statusFilter": "Status",
+    "hiveFilter": "Hive",
+    "allStatuses": "All statuses",
+    "allHives": "All hives",
+    "empty": {
+      "title": "No queens yet",
+      "description": "Add a queen to keep track of her age, marking and lineage.",
+      "cta": "Add your first queen"
+    },
+    "noMatches": {
+      "title": "No queens match these filters",
+      "description": "Try a different status or hive.",
+      "cta": "Clear filters"
+    }
+  },
+  "validation": {
+    "hiveRequired": "Select a hive",
+    "yearRange": "Enter a year between {{min}} and {{max}}"
   }
 }
