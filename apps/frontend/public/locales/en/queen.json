@@ -209,7 +209,9 @@
   "virgin": {
     "days_one": "Virgin for {{count}} day.",
     "days_other": "Virgin for {{count}} days.",
-    "expectLaying": "She usually starts laying within about {{days}} days.",
-    "checkForEggs": "Check for eggs: she should be laying by now."
+    "checkForEggs": "Check for eggs: she should be laying by now.",
+    "emergesIn_one": "Expected to emerge tomorrow ({{date}}).",
+    "emergesIn_other": "Expected to emerge in {{count}} days ({{date}}).",
+    "expectLayingFrom": "Look for eggs from about {{date}}."
   }
 }

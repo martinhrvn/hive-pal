@@ -1,31 +1,45 @@
 import { useTranslation } from 'react-i18next';
-import { differenceInCalendarDays } from 'date-fns';
+import { addDays, differenceInCalendarDays } from 'date-fns';
 import { Egg, Hourglass } from 'lucide-react';
 import {
   VIRGIN_QUEEN_CHECK_DAYS,
   virginQueenSince,
   type QueenDetail,
 } from 'shared-schemas';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { cn } from '@/lib/utils';
 
-/** How long the queen has been a virgin, and when to look for eggs. */
+/**
+ * Where a virgin queen is in her timeline: still in the cell, waiting to
+ * mate, or due a check for eggs.
+ */
 export const VirginQueenNotice = ({ queen }: { queen: QueenDetail }) => {
   const { t } = useTranslation('queen');
+  const { formatDate } = useDateFormat();
   if (queen.status !== 'VIRGIN' || !queen.statusChangedAt) return null;
 
-  const days = Math.max(
-    0,
-    differenceInCalendarDays(
-      new Date(),
-      virginQueenSince({
-        emergedAt: queen.emergedAt,
-        cellCappedAt: queen.cellCappedAt,
-        statusChangedAt: queen.statusChangedAt,
-      }),
-    ),
-  );
+  const since = virginQueenSince({
+    emergedAt: queen.emergedAt,
+    cellCappedAt: queen.cellCappedAt,
+    statusChangedAt: queen.statusChangedAt,
+  });
+  const days = differenceInCalendarDays(new Date(), since);
+  const layingFrom = formatDate(addDays(since, VIRGIN_QUEEN_CHECK_DAYS));
   const checkDue = days >= VIRGIN_QUEEN_CHECK_DAYS;
   const Icon = checkDue ? Egg : Hourglass;
+
+  let status: string;
+  let hint: string;
+  if (days < 0) {
+    // The capped cell hasn't hatched yet
+    status = t('virgin.emergesIn', { count: -days, date: formatDate(since) });
+    hint = t('virgin.expectLayingFrom', { date: layingFrom });
+  } else {
+    status = t('virgin.days', { count: days });
+    hint = checkDue
+      ? t('virgin.checkForEggs')
+      : t('virgin.expectLayingFrom', { date: layingFrom });
+  }
 
   return (
     <p
@@ -38,10 +52,7 @@ export const VirginQueenNotice = ({ queen }: { queen: QueenDetail }) => {
     >
       <Icon className="mt-0.5 size-4 shrink-0" />
       <span>
-        <span className="font-medium">{t('virgin.days', { count: days })}</span>{' '}
-        {checkDue
-          ? t('virgin.checkForEggs')
-          : t('virgin.expectLaying', { days: VIRGIN_QUEEN_CHECK_DAYS })}
+        <span className="font-medium">{status}</span> {hint}
       </span>
     </p>
   );

@@ -211,7 +211,11 @@
     "days_few": "Panenská {{count}} dni.",
     "days_many": "Panenská {{count}} dňa.",
     "days_other": "Panenská {{count}} dní.",
-    "expectLaying": "Zvyčajne začne klásť do {{days}} dní.",
-    "checkForEggs": "Skontrolujte vajíčka: matka by už mala klásť."
+    "checkForEggs": "Skontrolujte vajíčka: matka by už mala klásť.",
+    "emergesIn_one": "Vyliahnutie očakávané zajtra ({{date}}).",
+    "emergesIn_few": "Vyliahnutie očakávané o {{count}} dni ({{date}}).",
+    "emergesIn_many": "Vyliahnutie očakávané o {{count}} dňa ({{date}}).",
+    "emergesIn_other": "Vyliahnutie očakávané o {{count}} dní ({{date}}).",
+    "expectLayingFrom": "Vajíčka hľadajte približne od {{date}}."
   }
 }
