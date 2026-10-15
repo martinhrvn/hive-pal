@@ -363,5 +363,10 @@
       "queens": "História matiek",
       "assistant": "Asistent"
     }
+  },
+  "scoreWarnings": {
+    "noBrood": "Nezistený plod",
+    "swarmPreparation": "Zistená príprava na rojenie",
+    "supersedure": "Zistená výmena matky"
   }
 }
