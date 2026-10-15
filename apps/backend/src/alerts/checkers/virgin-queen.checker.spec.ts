@@ -20,6 +20,8 @@ const hiveWith = (
     year: 2026,
     status: 'VIRGIN',
     statusChangedAt: daysAgo(VIRGIN_QUEEN_CHECK_DAYS),
+    cellCappedAt: null,
+    emergedAt: null,
     ...queen,
   },
 });
@@ -52,6 +54,23 @@ describe('VirginQueenChecker', () => {
         hiveWith({ statusChangedAt: daysAgo(VIRGIN_QUEEN_CHECK_DAYS - 1) }),
       ),
     ).toEqual([]);
+  });
+
+  it('counts from the emergence date when there is one', () => {
+    const queen = {
+      statusChangedAt: daysAgo(30),
+      cellCappedAt: daysAgo(40),
+      emergedAt: daysAgo(VIRGIN_QUEEN_CHECK_DAYS - 1),
+    };
+    expect(check(hiveWith(queen))).toEqual([]);
+  });
+
+  it('counts from the expected emergence of a capped cell', () => {
+    // Capped 29 days ago: emerged about 21 days ago
+    const [issue] = check(
+      hiveWith({ statusChangedAt: daysAgo(5), cellCappedAt: daysAgo(29) }),
+    );
+    expect(issue.metadata).toMatchObject({ daysVirgin: 21 });
   });
 
   it('ignores laying queens and queenless hives', () => {

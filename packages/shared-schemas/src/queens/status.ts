@@ -35,3 +35,27 @@ export type QueenMatingType = z.infer<typeof queenMatingTypeSchema>;
 export const QUEEN_CELL_CAPPED_TO_EMERGENCE_DAYS = 8;
 // A virgin queen usually mates by about day 20 and is laying soon after.
 export const VIRGIN_QUEEN_CHECK_DAYS = 21;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+type DateLike = Date | string;
+const toDate = (value: DateLike) => new Date(value);
+
+/**
+ * When a virgin queen's clock starts: her emergence date, else the expected
+ * emergence from the capped cell, else when she was recorded as a virgin.
+ */
+export const virginQueenSince = (queen: {
+  emergedAt?: DateLike | null;
+  cellCappedAt?: DateLike | null;
+  statusChangedAt: DateLike;
+}): Date => {
+  if (queen.emergedAt) return toDate(queen.emergedAt);
+  if (queen.cellCappedAt) {
+    return new Date(
+      toDate(queen.cellCappedAt).getTime() +
+        QUEEN_CELL_CAPPED_TO_EMERGENCE_DAYS * DAY_MS,
+    );
+  }
+  return toDate(queen.statusChangedAt);
+};

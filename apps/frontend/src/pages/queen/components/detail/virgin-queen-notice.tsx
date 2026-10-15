@@ -1,7 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { differenceInCalendarDays, parseISO } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { Egg, Hourglass } from 'lucide-react';
-import { VIRGIN_QUEEN_CHECK_DAYS, type QueenDetail } from 'shared-schemas';
+import {
+  VIRGIN_QUEEN_CHECK_DAYS,
+  virginQueenSince,
+  type QueenDetail,
+} from 'shared-schemas';
 import { cn } from '@/lib/utils';
 
 /** How long the queen has been a virgin, and when to look for eggs. */
@@ -11,7 +15,14 @@ export const VirginQueenNotice = ({ queen }: { queen: QueenDetail }) => {
 
   const days = Math.max(
     0,
-    differenceInCalendarDays(new Date(), parseISO(queen.statusChangedAt)),
+    differenceInCalendarDays(
+      new Date(),
+      virginQueenSince({
+        emergedAt: queen.emergedAt,
+        cellCappedAt: queen.cellCappedAt,
+        statusChangedAt: queen.statusChangedAt,
+      }),
+    ),
   );
   const checkDue = days >= VIRGIN_QUEEN_CHECK_DAYS;
   const Icon = checkDue ? Egg : Hourglass;

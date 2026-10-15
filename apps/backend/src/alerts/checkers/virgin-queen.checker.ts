@@ -5,7 +5,7 @@ import {
   CheckerContext,
   AlertIssue,
 } from '../interfaces';
-import { VIRGIN_QUEEN_CHECK_DAYS } from 'shared-schemas';
+import { VIRGIN_QUEEN_CHECK_DAYS, virginQueenSince } from 'shared-schemas';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -23,9 +23,9 @@ export class VirginQueenChecker extends HiveChecker {
     const queen = hive.currentQueen;
     if (hive.status !== 'ACTIVE' || queen?.status !== 'VIRGIN') return [];
 
+    const virginSince = virginQueenSince(queen);
     const daysVirgin = Math.floor(
-      (context.currentTime.getTime() - queen.statusChangedAt.getTime()) /
-        DAY_MS,
+      (context.currentTime.getTime() - virginSince.getTime()) / DAY_MS,
     );
     if (daysVirgin < VIRGIN_QUEEN_CHECK_DAYS) return [];
 
@@ -41,7 +41,7 @@ export class VirginQueenChecker extends HiveChecker {
           queenName,
           hiveName: hive.name,
           daysVirgin,
-          virginSince: queen.statusChangedAt.toISOString(),
+          virginSince: virginSince.toISOString(),
         },
       },
     ];

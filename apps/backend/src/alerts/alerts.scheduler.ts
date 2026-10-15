@@ -23,6 +23,8 @@ const hiveCheckInclude = {
       year: true,
       status: true,
       statusChangedAt: true,
+      cellCappedAt: true,
+      emergedAt: true,
     },
     orderBy: { installedAt: 'desc' },
     take: 1,

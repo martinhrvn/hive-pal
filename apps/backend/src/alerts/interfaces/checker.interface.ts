@@ -22,6 +22,8 @@ export interface HiveContext {
     year: number | null;
     status: string;
     statusChangedAt: Date;
+    cellCappedAt: Date | null;
+    emergedAt: Date | null;
   } | null;
 }
 
