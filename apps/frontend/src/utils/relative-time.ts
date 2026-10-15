@@ -2,6 +2,9 @@ import { differenceInCalendarDays } from 'date-fns';
 
 export const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** Anything `new Date()` accepts: a Date, an ISO string or epoch milliseconds. */
+export type DateInput = Date | string | number;
+
 const formatters = new Map<string, Intl.RelativeTimeFormat>();
 
 /** One cached formatter per language ("yesterday", "in 3 days"). */
@@ -22,14 +25,14 @@ const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ['minute', 60 * 1000],
 ];
 
-const toTime = (date: Date | string | number) => new Date(date).getTime();
+const toTime = (date: DateInput) => new Date(date).getTime();
 
 /**
  * "3 hours ago" / "in 2 days", using the largest unit that fits. Returns null
  * for an unparseable date so callers pick their own placeholder.
  */
 export function formatRelativeTime(
-  date: Date | string | number,
+  date: DateInput,
   language: string,
   now: number = Date.now(),
 ): string | null {
@@ -48,7 +51,7 @@ export function formatRelativeTime(
  * so something that happened last evening is "yesterday", not "today".
  */
 export function formatRelativeDays(
-  date: Date | string | number,
+  date: DateInput,
   language: string,
   now: Date = new Date(),
 ): string {
@@ -57,5 +60,5 @@ export function formatRelativeDays(
 }
 
 /** Calendar days from `date` until `now` (positive for the past). */
-export const daysAgo = (date: Date | string | number, now: Date = new Date()) =>
+export const daysAgo = (date: DateInput, now: Date = new Date()) =>
   differenceInCalendarDays(now, new Date(date));
