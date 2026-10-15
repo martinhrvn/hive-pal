@@ -101,6 +101,8 @@ The application will be available at http://localhost.
 
 | Variable                            | Description                                                                                                                    |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `DB_HOST`                           | Host the container waits for before running migrations (default: parsed from `DATABASE_URL`)                                   |
+| `DB_PORT`                           | Port for that startup check (default: parsed from `DATABASE_URL`, else `5432`)                                                 |
 | `PASSKEY_RP_ID`                     | WebAuthn relying-party ID for passkeys (default: `localhost`)                                                                  |
 | `COOKIE_DOMAIN`                     | Set in production when frontend and backend share a parent domain                                                              |
 | `MAIL_PROVIDER`                     | Force a specific provider: `resend`, `smtp`, or `none` (auto-selects if unset)                                                 |

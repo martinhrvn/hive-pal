@@ -9,9 +9,21 @@ if [ -z "$DB_HOST" ] && [ -n "$DATABASE_URL" ]; then
   _hostport="${_hostport##*@}"       # strip credentials
   _hostport="${_hostport%%/*}"       # strip database name
   _hostport="${_hostport%%\?*}"      # strip query string
-  DB_HOST="${_hostport%%:*}"
+  _hostport="${_hostport%%,*}"       # first host of a multi-host URL
   case "$_hostport" in
-    *:*) DB_PORT="${DB_PORT:-${_hostport##*:}}" ;;
+    \[*)                             # IPv6 literal: [::1]:5432
+      DB_HOST="${_hostport#\[}"
+      DB_HOST="${DB_HOST%%]*}"
+      case "$_hostport" in
+        *]:*) DB_PORT="${DB_PORT:-${_hostport##*]:}}" ;;
+      esac
+      ;;
+    *)
+      DB_HOST="${_hostport%%:*}"
+      case "$_hostport" in
+        *:*) DB_PORT="${DB_PORT:-${_hostport##*:}}" ;;
+      esac
+      ;;
   esac
 fi
 
