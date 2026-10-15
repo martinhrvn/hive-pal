@@ -28,7 +28,7 @@ export class HiveDetailPage {
     return this.page.getByRole('heading', { level: 1, name });
   }
 
-  /** Tab labels are hard-coded English: Overview, Analytics, Boxes, Settings, Queen History. */
+  /** English tab labels: Overview, Analytics, Boxes, Settings, Queen History. */
   tab(name: string): Locator {
     return this.page.getByRole('tab', { name });
   }

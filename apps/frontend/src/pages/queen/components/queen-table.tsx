@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ChevronRight } from 'lucide-react';
 import type { QueenResponse } from 'shared-schemas';
 import { StatusPill } from '@/components/common/status-pill';
 import {
@@ -40,11 +41,12 @@ const QueenTableRow = ({
 }: QueenTableRowProps) => {
   const { t } = useTranslation('queen');
   return (
-    <TableRow>
+    // The name link stretches over the whole row, so any cell opens the queen
+    <TableRow className="relative">
       <TableCell>
         <Link
           to={`/queens/${queen.id}`}
-          className="rounded-sm font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="font-medium after:absolute after:inset-0 after:rounded-sm focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
         >
           {getQueenDisplayName(t, queen)}
         </Link>
@@ -77,6 +79,15 @@ const QueenTableRow = ({
           {queen.replacedAt ? formatDate(queen.replacedAt) : '—'}
         </TableCell>
       )}
+      <TableCell className="text-right">
+        <span
+          aria-hidden
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground"
+        >
+          {t('table.details')}
+          <ChevronRight className="size-4" />
+        </span>
+      </TableCell>
     </TableRow>
   );
 };
@@ -89,31 +100,32 @@ export const QueenTable: React.FC<QueenTableProps> = ({
   const { t } = useTranslation('queen');
   const { formatDate } = useDateFormat();
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t('table.queen')}</TableHead>
-            <TableHead>{t('table.color')}</TableHead>
-            <TableHead>{t('table.year')}</TableHead>
-            {showHive && <TableHead>{t('table.hive')}</TableHead>}
-            <TableHead>{t('table.status')}</TableHead>
-            <TableHead>{t('table.installed')}</TableHead>
-            {showReplaced && <TableHead>{t('table.replaced')}</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {queens.map(queen => (
-            <QueenTableRow
-              key={queen.id}
-              queen={queen}
-              showHive={showHive}
-              showReplaced={showReplaced}
-              formatDate={formatDate}
-            />
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>{t('table.queen')}</TableHead>
+          <TableHead>{t('table.color')}</TableHead>
+          <TableHead>{t('table.year')}</TableHead>
+          {showHive && <TableHead>{t('table.hive')}</TableHead>}
+          <TableHead>{t('table.status')}</TableHead>
+          <TableHead>{t('table.installed')}</TableHead>
+          {showReplaced && <TableHead>{t('table.replaced')}</TableHead>}
+          <TableHead>
+            <span className="sr-only">{t('table.details')}</span>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {queens.map(queen => (
+          <QueenTableRow
+            key={queen.id}
+            queen={queen}
+            showHive={showHive}
+            showReplaced={showReplaced}
+            formatDate={formatDate}
+          />
+        ))}
+      </TableBody>
+    </Table>
   );
 };

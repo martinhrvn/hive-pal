@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Plus } from 'lucide-react';
+import { GitBranch, Plus } from 'lucide-react';
 import type { QueenDetail } from 'shared-schemas';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,10 @@ export const QueenLineage = ({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-2">
-        <CardTitle>{t('sections.lineage')}</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <GitBranch className="size-4 text-muted-foreground" />
+          {t('sections.lineage')}
+        </CardTitle>
         {canEdit && (
           <Button variant="outline" size="sm" asChild>
             <Link to={`/queens/create?motherQueenId=${queen.id}`}>

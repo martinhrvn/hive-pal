@@ -410,5 +410,21 @@
       "harvestLink": "Go to harvest",
       "split": "This is a colony split. Only the date and notes can be edited here — the date change applies to both linked timeline entries and shifts the follow-up reminder. To revert the split itself, use \"Undo split\" on the timeline."
     }
+  },
+  "detail": {
+    "established": "Established · {{date}}",
+    "activeHive": "Active hive",
+    "showApiaryLayout": "Show apiary layout",
+    "featurePhotoAlt": "{{name}} feature photo",
+    "inspectionWarnings": "Inspection warnings",
+    "error": "The hive could not be loaded.",
+    "tabs": {
+      "overview": "Overview",
+      "analytics": "Analytics",
+      "boxes": "Boxes",
+      "settings": "Settings",
+      "queens": "Queen History",
+      "assistant": "Assistant"
+    }
   }
 }

@@ -13,7 +13,13 @@ import { cn } from '@/lib/utils';
  * Where a virgin queen is in her timeline: still in the cell, waiting to
  * mate, or due a check for eggs.
  */
-export const VirginQueenNotice = ({ queen }: { queen: QueenDetail }) => {
+export const VirginQueenNotice = ({
+  queen,
+  className,
+}: {
+  queen: QueenDetail;
+  className?: string;
+}) => {
   const { t } = useTranslation('queen');
   const { formatDate } = useDateFormat();
   if (queen.status !== 'VIRGIN' || !queen.statusChangedAt) return null;
@@ -45,6 +51,7 @@ export const VirginQueenNotice = ({ queen }: { queen: QueenDetail }) => {
     <p
       className={cn(
         'flex gap-2 rounded-md p-3 text-sm',
+        className,
         checkDue
           ? 'bg-warning-muted text-warning-foreground'
           : 'bg-info-muted text-info-foreground',
