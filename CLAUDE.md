@@ -122,7 +122,7 @@ SENTRY_DSN=                # Optional error tracking
 - **Unit Tests**: Jest for backend services
 - **Integration Tests**: Testcontainers for database operations
 - **E2E Tests**: Playwright for full user workflows
-- **Component Tests**: Playwright stories model (`@playwright/test`). Scenarios are named exports in `*.story.tsx` next to the component; specs call `mount(path/under/src/ExportName, props)` with no JSX. `pnpm test:ct` starts the story gallery (`playwright/gallery/`) on its own Vite server (`vite.gallery.config.ts`, port 3100), separate from the React Router dev server
+- **Component Tests**: Playwright stories model (`@playwright/test`). Scenarios are named exports in `*.story.tsx` next to the component; specs call `mount(path/under/src/ExportName, props)` with no JSX. `pnpm test:ct` starts the story gallery (`playwright/gallery/`) on its own Vite server (`vite.gallery.config.ts`, port 3100), separate from the React Router dev server. `pnpm gallery` opens the same gallery for browsing stories by hand (`?story=<id>&props=<json>`).
 
 ### Error Handling
 - Global exception filter in backend (`apps/backend/src/global-exception.filter.ts`)
