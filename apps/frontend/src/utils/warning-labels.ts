@@ -1,5 +1,9 @@
-export const WARNING_LABELS: Record<string, string> = {
-  no_brood: 'No brood detected',
-  swarm_preparation: 'Swarm preparation detected',
-  supersedure: 'Queen supersedure detected',
+const WARNING_LABEL_KEYS: Record<string, string> = {
+  no_brood: 'hive:scoreWarnings.noBrood',
+  swarm_preparation: 'hive:scoreWarnings.swarmPreparation',
+  supersedure: 'hive:scoreWarnings.supersedure',
 };
+
+/** i18n key for a hive score warning code; unknown codes fall back to the code. */
+export const warningLabelKey = (code: string) =>
+  WARNING_LABEL_KEYS[code] ?? code;

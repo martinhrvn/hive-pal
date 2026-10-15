@@ -426,5 +426,10 @@
       "queens": "Queen History",
       "assistant": "Assistant"
     }
+  },
+  "scoreWarnings": {
+    "noBrood": "No brood detected",
+    "swarmPreparation": "Swarm preparation detected",
+    "supersedure": "Queen supersedure detected"
   }
 }

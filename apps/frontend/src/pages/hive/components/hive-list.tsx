@@ -16,15 +16,18 @@ import {
   calculateFeedingTotals,
   isWithinFeedingWindow,
 } from '@/utils/feeding-calculations';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
+import { differenceInCalendarDays } from 'date-fns';
 import { buildBoxGradient } from '@/utils/box-gradient';
+import { FeaturePhoto } from '@/components/common/feature-photo';
+import { useDateFormat } from '@/hooks/use-date-format';
+import { useUnitFormat } from '@/hooks/use-unit-format';
 import {
   useImageDisplayStore,
   type ImageDisplayMode,
 } from '@/stores/image-display-store';
-import { WARNING_LABELS } from '@/utils/warning-labels';
+import { warningLabelKey } from '@/utils/warning-labels';
 import {
   STATUS_DOT_CLASS,
   STATUS_TEXT_CLASS,
@@ -32,8 +35,6 @@ import {
   hiveStatusLabelKey,
 } from '@/utils/status-colors';
 import { cn } from '@/lib/utils';
-
-const DAY_MS = 1000 * 60 * 60 * 24;
 
 type HiveListProps = {
   hives: HiveResponse[];
@@ -60,26 +61,24 @@ const StatusIndicator: React.FC<{ status?: HiveResponse['status'] }> = ({
   );
 };
 
-const inspectionLabel = (
-  t: TFunction,
-  language: string,
-  dateString?: string,
-) => {
-  if (!dateString) return t('hive:card.noInspection');
-  const date = new Date(dateString);
-  const days = Math.floor((Date.now() - date.getTime()) / DAY_MS);
-  const when =
-    days < 30
-      ? new Intl.RelativeTimeFormat(language, { numeric: 'auto' }).format(
-          -days,
-          'day',
-        )
-      : date.toLocaleDateString(language, {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        });
-  return t('hive:card.inspectedWhen', { when });
+/** "Inspected yesterday" for the last 30 calendar days, the user's date format after that. */
+const useInspectionLabel = () => {
+  const { t, i18n } = useTranslation('hive');
+  const { formatDate } = useDateFormat();
+  const relative = useMemo(
+    () => new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }),
+    [i18n.language],
+  );
+  return useCallback(
+    (dateString?: string) => {
+      if (!dateString) return t('card.noInspection');
+      const date = new Date(dateString);
+      const days = differenceInCalendarDays(new Date(), date);
+      const when = days < 30 ? relative.format(-days, 'day') : formatDate(date);
+      return t('card.inspectedWhen', { when });
+    },
+    [t, relative, formatDate],
+  );
 };
 
 const HiveCard: React.FC<{
@@ -87,7 +86,9 @@ const HiveCard: React.FC<{
   isSubjective: boolean;
   imageMode: ImageDisplayMode;
 }> = ({ hive, isSubjective, imageMode }) => {
-  const { t, i18n } = useTranslation(['hive', 'common']);
+  const { t } = useTranslation(['hive', 'common']);
+  const inspectionLabel = useInspectionLabel();
+  const { formatWeight, getWeightUnit } = useUnitFormat();
   // The list response already carries settings, so no per-hive detail fetch.
   const settings = hive.settings ?? undefined;
   const inFeedingWindow = isWithinFeedingWindow(settings);
@@ -127,40 +128,20 @@ const HiveCard: React.FC<{
     ? 'w-full @md/hivecard:w-[160px] @lg/hivecard:w-[180px] flex-shrink-0 h-32 @sm/hivecard:h-36 @md/hivecard:h-auto @md/hivecard:min-h-[200px]'
     : 'w-full h-32 @sm/hivecard:h-36';
 
-  let imageElement: React.ReactNode = null;
-  if (imageMode !== 'hidden' && hive.featurePhotoUrl) {
-    imageElement = (
-      <div
-        className={cn('relative overflow-hidden bg-muted', imageSizeClasses)}
-      >
-        <img
-          src={hive.featurePhotoUrl}
-          alt={t('common:photo.featureAlt', {
-            name: hive.name,
-            defaultValue: '{{name}} photo',
-          })}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[700ms] ease-out group-hover/hivecard:scale-[1.03]"
-        />
-        <div
-          className={cn(
-            'absolute inset-0 pointer-events-none',
-            allowSide
-              ? '@md/hivecard:bg-gradient-to-r @md/hivecard:from-transparent @md/hivecard:to-card/15 bg-gradient-to-t from-card/30 via-transparent to-transparent'
-              : 'bg-gradient-to-t from-card/30 via-transparent to-transparent',
-          )}
-        />
-      </div>
-    );
-  } else if (imageMode !== 'hidden') {
-    imageElement = (
-      <div
-        className={cn('relative overflow-hidden', imageSizeClasses)}
-        style={{ background: buildBoxGradient(hive.boxes) }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/10 pointer-events-none" />
-      </div>
-    );
-  }
+  const imageElement = imageMode !== 'hidden' && (
+    <FeaturePhoto
+      src={hive.featurePhotoUrl}
+      alt={t('common:photo.featureAlt', { name: hive.name })}
+      fallback={buildBoxGradient(hive.boxes)}
+      className={imageSizeClasses}
+      imgClassName="transition-transform duration-700 ease-out group-hover/hivecard:scale-[1.03]"
+      overlayClassName={cn(
+        'from-card/30',
+        allowSide &&
+          '@md/hivecard:bg-gradient-to-r @md/hivecard:from-transparent @md/hivecard:to-card/15',
+      )}
+    />
+  );
 
   return (
     <div className="@container/hivecard">
@@ -182,7 +163,7 @@ const HiveCard: React.FC<{
           {/* Overline row: inspection time + status */}
           <div className="flex items-center justify-between gap-3 min-w-0">
             <span className="font-overline text-muted-foreground truncate">
-              {inspectionLabel(t, i18n.language, hive.lastInspectionDate)}
+              {inspectionLabel(hive.lastInspectionDate)}
             </span>
             <StatusIndicator status={hive.status} />
           </div>
@@ -190,7 +171,7 @@ const HiveCard: React.FC<{
           <h3 className="mt-1 font-display text-xl @sm/hivecard:text-2xl @lg/hivecard:text-[1.6rem] font-medium leading-tight text-foreground truncate">
             <Link
               to={`/hives/${hive.id}`}
-              className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none"
+              className="after:absolute after:inset-0 after:z-[1] after:rounded-xl focus-visible:outline-none"
             >
               {hive.name}
             </Link>
@@ -232,8 +213,8 @@ const HiveCard: React.FC<{
                   label={t('hive:card.feedingProgress', {
                     percent: feedingInfo.percentage,
                   })}
-                  value={feedingInfo.fed.toFixed(1)}
-                  unit={`/ ${feedingInfo.optimal} kg`}
+                  value={formatWeight(feedingInfo.fed).value.toFixed(1)}
+                  unit={`/ ${formatWeight(feedingInfo.optimal).value} ${getWeightUnit()}`}
                   tone="success"
                   icon={<Activity className="size-4 -mb-0.5 opacity-80" />}
                 />
@@ -279,7 +260,7 @@ const HiveCard: React.FC<{
                               key={w}
                               className="text-sm text-muted-foreground"
                             >
-                              {WARNING_LABELS[w] ?? w}
+                              {t(warningLabelKey(w), { defaultValue: w })}
                             </li>
                           ))}
                         </ul>
@@ -298,7 +279,7 @@ const HiveCard: React.FC<{
                 aria-hidden="true"
                 className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 group-hover/hivecard:text-honey-foreground transition-colors"
               >
-                {t('hive:card.showDetails', 'Show details')}
+                {t('hive:card.showDetails')}
                 <ArrowRight className="size-3.5 transition-transform group-hover/hivecard:translate-x-0.5" />
               </span>
             </div>

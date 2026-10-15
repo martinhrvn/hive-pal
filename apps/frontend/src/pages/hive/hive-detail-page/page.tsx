@@ -25,7 +25,8 @@ import { buildBoxGradient } from '@/utils/box-gradient';
 import { useImageDisplayStore } from '@/stores/image-display-store';
 import { AlertTriangle, Map } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { WARNING_LABELS } from '@/utils/warning-labels';
+import { warningLabelKey } from '@/utils/warning-labels';
+import { FeaturePhoto } from '@/components/common/feature-photo';
 import { useDateFormat } from '@/hooks/use-date-format';
 import {
   DetailAside,
@@ -57,7 +58,7 @@ export const HiveDetailPage = () => {
   const { data: hive, error, refetch } = useHive(hiveId as string);
   const { data: features } = useFeatures();
   const { setHiveContext, clearContext } = useBreadcrumbStore();
-  const { mode: imageMode } = useImageDisplayStore();
+  const imageMode = useImageDisplayStore(state => state.mode);
   const [activeTab, setActiveTab] = useState('overview');
   const [assistantInit, setAssistantInit] = useState<{
     threadId?: string;
@@ -113,35 +114,21 @@ export const HiveDetailPage = () => {
           className={cn('mb-4 sm:mb-6', isSide && '@md/editorial:flex-row')}
         >
           {imageMode !== 'hidden' && (
-            <div
-              className={cn(
-                'relative overflow-hidden bg-muted',
+            <FeaturePhoto
+              src={hive?.featurePhotoUrl}
+              alt={t('detail.featurePhotoAlt', { name: hive?.name })}
+              fallback={buildBoxGradient(hive?.boxes)}
+              className={
                 isSide
                   ? 'h-32 w-full shrink-0 @sm/editorial:h-40 @md/editorial:h-auto @md/editorial:min-h-[220px] @md/editorial:w-[200px] @lg/editorial:w-[240px]'
-                  : 'h-32 w-full @sm/editorial:h-40 @md/editorial:h-44',
+                  : 'h-32 w-full @sm/editorial:h-40 @md/editorial:h-44'
+              }
+              overlayClassName={cn(
+                isSide &&
+                  '@md/editorial:bg-gradient-to-r @md/editorial:from-transparent @md/editorial:to-card/15',
               )}
-            >
-              {hive?.featurePhotoUrl ? (
-                <img
-                  src={hive.featurePhotoUrl}
-                  alt={t('detail.featurePhotoAlt', { name: hive.name })}
-                  className="absolute inset-0 size-full object-cover"
-                />
-              ) : (
-                <div
-                  className="absolute inset-0"
-                  style={{ background: buildBoxGradient(hive?.boxes) }}
-                />
-              )}
-              <div
-                className={cn(
-                  'pointer-events-none absolute inset-0 bg-gradient-to-t from-card/40 via-transparent to-transparent',
-                  isSide &&
-                    '@md/editorial:bg-gradient-to-r @md/editorial:from-transparent @md/editorial:to-card/15',
-                )}
-              />
-              <div className="pointer-events-none absolute inset-0 bg-honey/5" />
-            </div>
+              tint
+            />
           )}
 
           <EditorialCardBody>
@@ -265,7 +252,9 @@ export const HiveDetailPage = () => {
                 <AlertDescription>
                   <ul className="mt-1 space-y-1">
                     {hive!.hiveScore!.warnings.map(w => (
-                      <li key={w}>{WARNING_LABELS[w] ?? w}</li>
+                      <li key={w}>
+                        {t(warningLabelKey(w), { defaultValue: w })}
+                      </li>
                     ))}
                   </ul>
                 </AlertDescription>

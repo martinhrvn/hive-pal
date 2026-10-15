@@ -8,7 +8,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Metric, type MetricTone } from '@/components/common/metric';
 import { StatusPill } from '@/components/common/status-pill';
@@ -24,6 +24,7 @@ import {
 import { useScheduledInspectionActions } from '@/api/hooks/useScheduledInspectionActions';
 import { UpcomingInspectionListItem } from '@/components/upcoming-inspection-list-item';
 import { cn } from '@/lib/utils';
+import { FeaturePhoto } from '@/components/common/feature-photo';
 
 const getScoreTone = (value: number | null | undefined): MetricTone => {
   if (value === null || value === undefined) return 'muted';
@@ -69,7 +70,6 @@ const MetricsSkeleton = () => (
 
 export const ApiaryHeader: React.FC = () => {
   const { t, i18n } = useTranslation(['common', 'inspection']);
-  const navigate = useNavigate();
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
   const { data: statistics, isLoading: statsLoading } = useApiaryStatistics(
     activeApiaryId ?? undefined,
@@ -128,17 +128,6 @@ export const ApiaryHeader: React.FC = () => {
   const hasInspections =
     overdueCount > 0 || dueTodayCount > 0 || upcomingCount > 0;
 
-  const handleViewOverdue = () => {
-    navigate('/inspections?status=OVERDUE');
-  };
-
-  const handleViewDueToday = () => {
-    // Local calendar date, not the UTC one from toISOString().
-    navigate(
-      `/inspections?status=SCHEDULED&date=${format(new Date(), 'yyyy-MM-dd')}`,
-    );
-  };
-
   if (!activeApiaryId) {
     return (
       <div className="rounded-xl border bg-card p-6">
@@ -164,32 +153,20 @@ export const ApiaryHeader: React.FC = () => {
   const allowSide = imageMode === 'side' && !!featurePhotoUrl;
 
   const imageBlock = featurePhotoUrl && (
-    <div
-      className={cn(
-        'relative overflow-hidden bg-muted',
+    <FeaturePhoto
+      src={featurePhotoUrl}
+      alt={t('common:photo.featureAlt', { name: apiary?.name ?? '' })}
+      className={
         allowSide
           ? 'w-full @md/header:w-[200px] @lg/header:w-[240px] flex-shrink-0 h-40 @sm/header:h-48 @md/header:h-auto @md/header:min-h-[260px]'
-          : 'w-full h-40 @sm/header:h-48 @md/header:h-56',
+          : 'w-full h-40 @sm/header:h-48 @md/header:h-56'
+      }
+      overlayClassName={cn(
+        allowSide &&
+          '@md/header:bg-gradient-to-r @md/header:from-transparent @md/header:via-transparent @md/header:to-card/10',
       )}
-    >
-      <img
-        src={featurePhotoUrl}
-        alt={t('common:photo.featureAlt', {
-          name: apiary?.name ?? '',
-          defaultValue: '{{name}} photo',
-        })}
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-      <div
-        className={cn(
-          'absolute inset-0 pointer-events-none',
-          allowSide
-            ? '@md/header:bg-gradient-to-r @md/header:from-transparent @md/header:via-transparent @md/header:to-card/10 bg-gradient-to-t from-card/40 via-transparent to-transparent'
-            : 'bg-gradient-to-t from-card/40 via-transparent to-transparent',
-        )}
-      />
-      <div className="absolute inset-0 pointer-events-none bg-honey/[0.04]" />
-    </div>
+      tint
+    />
   );
 
   const overline = t(
@@ -295,24 +272,27 @@ export const ApiaryHeader: React.FC = () => {
                   <div className="flex flex-wrap items-center gap-2">
                     {overdueCount > 0 && (
                       <StatusPill tone="danger" asChild>
-                        <button type="button" onClick={handleViewOverdue}>
+                        <Link to="/inspections?status=OVERDUE">
                           <AlertTriangle />
                           <span className="tabular-nums">{overdueCount}</span>
                           <span>
                             {t('inspection:dashboard.overdue', 'overdue')}
                           </span>
-                        </button>
+                        </Link>
                       </StatusPill>
                     )}
                     {dueTodayCount > 0 && (
+                      // Local calendar date, not the UTC one from toISOString().
                       <StatusPill tone="warning" asChild>
-                        <button type="button" onClick={handleViewDueToday}>
+                        <Link
+                          to={`/inspections?status=SCHEDULED&date=${format(new Date(), 'yyyy-MM-dd')}`}
+                        >
                           <Clock />
                           <span className="tabular-nums">{dueTodayCount}</span>
                           <span>
                             {t('inspection:dashboard.dueToday', 'due today')}
                           </span>
-                        </button>
+                        </Link>
                       </StatusPill>
                     )}
                   </div>
