@@ -41,7 +41,10 @@
     "matedAt": "Dátum spárenia",
     "installed": "Inštalovaná",
     "replaced": "Vymenená",
-    "notes": "Poznámky"
+    "notes": "Poznámky",
+    "cellCappedAt": "Matečník zaviečkovaný",
+    "emergedAt": "Vyliahnutá",
+    "expectedEmergence": "Očakávané vyliahnutie"
   },
   "colors": {
     "blue": "Modrá",
@@ -56,6 +59,7 @@
     "white": "Biela"
   },
   "status": {
+    "virgin": "Panenská",
     "active": "Aktívna",
     "replaced": "Vymenená",
     "dead": "Mŕtva",
@@ -89,7 +93,8 @@
     "enterNotes": "Povaha, podrobnosti o pôvode, čokoľvek dôležité",
     "hiveLocked": "Do iného úľa ju presuniete cez Presunúť na stránke matky.",
     "notInHive": "Nie je v úli",
-    "notSet": "Neuvedené"
+    "notSet": "Neuvedené",
+    "estimateHint": "Stačí odhad."
   },
   "information": {
     "noActiveQueen": "Nenašla sa žiadna aktívna matka",
@@ -150,7 +155,8 @@
       "reason": "Dôvod",
       "none": "Žiadny",
       "removed": "Odobraná"
-    }
+    },
+    "approxDate": "približne {{date}}"
   },
   "transfer": {
     "title": "Presunúť matku",
@@ -199,5 +205,17 @@
   "validation": {
     "hiveRequired": "Vyberte úľ",
     "yearRange": "Zadajte rok od {{min}} do {{max}}"
+  },
+  "virgin": {
+    "days_one": "Panenská {{count}} deň.",
+    "days_few": "Panenská {{count}} dni.",
+    "days_many": "Panenská {{count}} dňa.",
+    "days_other": "Panenská {{count}} dní.",
+    "checkForEggs": "Skontrolujte vajíčka: matka by už mala klásť.",
+    "emergesIn_one": "Vyliahnutie očakávané zajtra ({{date}}).",
+    "emergesIn_few": "Vyliahnutie očakávané o {{count}} dni ({{date}}).",
+    "emergesIn_many": "Vyliahnutie očakávané o {{count}} dňa ({{date}}).",
+    "emergesIn_other": "Vyliahnutie očakávané o {{count}} dní ({{date}}).",
+    "expectLayingFrom": "Vajíčka hľadajte približne od {{date}}."
   }
 }

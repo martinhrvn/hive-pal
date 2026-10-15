@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { QueenDetailHeader } from './components/detail/queen-detail-header';
 import { QueenFacts } from './components/detail/queen-facts';
+import { VirginQueenNotice } from './components/detail/virgin-queen-notice';
 import { QueenLineage } from './components/detail/queen-lineage';
 import { QueenMovements } from './components/detail/queen-movements';
 import { QueenTraits } from './components/detail/queen-traits';
@@ -92,6 +93,7 @@ export const QueenDetailPage = () => {
           />
         </CardHeader>
         <CardContent className="space-y-6">
+          <VirginQueenNotice queen={queen} />
           <QueenFacts queen={queen} />
           {notes && (
             <div className="space-y-1 border-t pt-4">

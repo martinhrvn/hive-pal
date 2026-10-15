@@ -8,7 +8,6 @@ import {
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { CalendarDays, MoreHorizontal } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import {
@@ -17,18 +16,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ActiveQueen, QueenResponse } from 'shared-schemas';
+import { ActiveQueen, QueenResponse, QueenStatus } from 'shared-schemas';
+import { StatusPill } from '@/components/common/status-pill';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { useState } from 'react';
 import { QueenTransferDialog } from '@/pages/queen/components/queen-transfer-dialog';
 import { getQueenColorClass } from '@/lib/queen-utils';
 import { useUpdateQueen } from '@/api/hooks';
 
-function formatInstalledDate(installedAt: string | Date): string {
-  return format(
-    typeof installedAt === 'string' ? parseISO(installedAt) : installedAt,
-    'PPP',
+const InstalledDate = ({ date }: { date: string | Date }) => {
+  const { formatDate } = useDateFormat();
+  return <>{formatDate(date)}</>;
+};
+
+const VirginPill = ({ status }: { status?: QueenStatus | null }) => {
+  const { t } = useTranslation('queen');
+  if (status !== 'VIRGIN') return null;
+  return (
+    <StatusPill tone="info" size="sm">
+      {t('status.virgin')}
+    </StatusPill>
   );
-}
+};
 
 const QueenColorDot: React.FC<{
   color?: string | null;
@@ -157,43 +166,49 @@ const QueenMobileView: React.FC<{
   asLink = false,
   onTransferClick,
   onQueenUpdated,
-}) => (
-  <div className="sm:hidden">
-    {activeQueen ? (
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Queen:</span>
-          <QueenColorDot color={activeQueen.color} />
-          {asLink ? (
-            <Link
-              to={`/queens/${activeQueen.id}`}
-              className="text-sm font-medium hover:underline"
-            >
-              {activeQueen.marking} • {activeQueen.year}
-            </Link>
-          ) : (
-            <span className="text-sm font-medium">
-              {activeQueen.marking} • {activeQueen.year}
-            </span>
-          )}
-          {activeQueen.installedAt && (
+}) => {
+  const { t } = useTranslation('queen');
+  return (
+    <div className="sm:hidden">
+      {activeQueen ? (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">
-              {formatInstalledDate(activeQueen.installedAt)}
+              {t('singular')}
             </span>
-          )}
+            <QueenColorDot color={activeQueen.color} />
+            {asLink ? (
+              <Link
+                to={`/queens/${activeQueen.id}`}
+                className="text-sm font-medium hover:underline"
+              >
+                {activeQueen.marking} • {activeQueen.year}
+              </Link>
+            ) : (
+              <span className="text-sm font-medium">
+                {activeQueen.marking} • {activeQueen.year}
+              </span>
+            )}
+            <VirginPill status={activeQueen.status} />
+            {activeQueen.installedAt && (
+              <span className="text-xs text-muted-foreground">
+                <InstalledDate date={activeQueen.installedAt} />
+              </span>
+            )}
+          </div>
+          <QueenActionsMenu
+            queen={activeQueen}
+            hiveId={hiveId}
+            onTransferClick={onTransferClick}
+            onQueenUpdated={onQueenUpdated}
+          />
         </div>
-        <QueenActionsMenu
-          queen={activeQueen}
-          hiveId={hiveId}
-          onTransferClick={onTransferClick}
-          onQueenUpdated={onQueenUpdated}
-        />
-      </div>
-    ) : (
-      <NoActiveQueenPrompt hiveId={hiveId} />
-    )}
-  </div>
-);
+      ) : (
+        <NoActiveQueenPrompt hiveId={hiveId} />
+      )}
+    </div>
+  );
+};
 
 type QueenInformationProps = {
   hiveId?: string;
@@ -210,6 +225,7 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
 }) => {
   const { t } = useTranslation('queen');
   const [transferOpen, setTransferOpen] = useState(false);
+  const { formatDate } = useDateFormat();
 
   const transferDialog = activeQueen && (
     <QueenTransferDialog
@@ -232,7 +248,9 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
         <div className="hidden sm:flex items-center gap-3">
           {activeQueen ? (
             <>
-              <span className="text-xs text-muted-foreground">Queen:</span>
+              <span className="text-xs text-muted-foreground">
+                {t('singular')}
+              </span>
               <QueenColorDot color={activeQueen.color} />
               <Link
                 to={`/queens/${activeQueen.id}`}
@@ -243,11 +261,12 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
               <span className="text-xs text-muted-foreground">
                 {activeQueen.year}
               </span>
+              <VirginPill status={activeQueen.status} />
               {activeQueen.installedAt && (
                 <>
                   <span className="text-xs text-muted-foreground">•</span>
                   <span className="text-xs text-muted-foreground">
-                    {formatInstalledDate(activeQueen.installedAt)}
+                    <InstalledDate date={activeQueen.installedAt} />
                   </span>
                 </>
               )}
@@ -286,6 +305,7 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
           <CardTitle className="text-lg font-medium flex items-center gap-3">
             <QueenColorDot color={activeQueen?.color} size="md" />
             {t('singular')} {activeQueen?.marking}
+            <VirginPill status={activeQueen?.status} />
           </CardTitle>
 
           <div className="flex items-center space-x-2">
@@ -309,7 +329,7 @@ export const QueenInformation: React.FC<QueenInformationProps> = ({
                   {activeQueen.installedAt && (
                     <span>
                       {t('fields.installedOn', {
-                        date: formatInstalledDate(activeQueen.installedAt),
+                        date: formatDate(activeQueen.installedAt),
                       })}
                     </span>
                   )}

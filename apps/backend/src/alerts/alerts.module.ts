@@ -5,7 +5,7 @@ import { AlertsScheduler } from './alerts.scheduler';
 import { AlertsEventHandler } from './alerts.event-handler';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
-import { InspectionOverdueChecker } from './checkers';
+import { InspectionOverdueChecker, VirginQueenChecker } from './checkers';
 
 @Module({
   controllers: [AlertsController],
@@ -16,6 +16,7 @@ import { InspectionOverdueChecker } from './checkers';
     PrismaService,
     CustomLoggerService,
     InspectionOverdueChecker,
+    VirginQueenChecker,
   ],
   exports: [AlertsService, AlertsScheduler],
 })

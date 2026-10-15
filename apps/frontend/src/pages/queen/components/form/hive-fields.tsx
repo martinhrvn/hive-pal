@@ -1,6 +1,7 @@
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { TriangleAlert } from 'lucide-react';
+import { isCurrentQueenStatus } from 'shared-schemas';
 import { useHive } from '@/api/hooks';
 import { HiveSelect } from '@/components/common/hive-select';
 import {
@@ -13,13 +14,13 @@ import {
 import { FormSection } from './form-section';
 import type { QueenFormValues } from './queen-form-schema';
 
-/** Saving an ACTIVE queen into a hive retires that hive's current queen. */
+/** Saving an active or virgin queen into a hive retires that hive's current queen. */
 const ActiveQueenWarning = ({ hiveId }: { hiveId: string }) => {
   const { t } = useTranslation('queen');
   const status = useWatch<QueenFormValues, 'status'>({ name: 'status' });
   const { data: hive } = useHive(hiveId);
 
-  if (status !== 'ACTIVE' || !hive?.activeQueen) return null;
+  if (!isCurrentQueenStatus(status) || !hive?.activeQueen) return null;
   return (
     <p className="flex gap-2 rounded-md bg-warning-muted p-3 text-sm text-warning-foreground">
       <TriangleAlert className="mt-0.5 size-4 shrink-0" />

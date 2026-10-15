@@ -31,6 +31,7 @@ import {
   HiveFilter,
   UpdateHiveResponse,
   CreateHiveResponse,
+  CURRENT_QUEEN_STATUSES,
   BoxVariantEnum,
   HiveSettings,
   isVariantCompatible,
@@ -244,7 +245,7 @@ export class HiveService {
       },
       queens: {
         where: {
-          status: 'ACTIVE' as const,
+          status: { in: [...CURRENT_QUEEN_STATUSES] },
         },
         orderBy: {
           installedAt: 'desc' as const,
@@ -387,7 +388,7 @@ export class HiveService {
         apiary: { select: { settings: true } },
         queens: {
           where: {
-            status: 'ACTIVE',
+            status: { in: [...CURRENT_QUEEN_STATUSES] },
           },
           orderBy: {
             installedAt: 'desc',
@@ -592,7 +593,7 @@ export class HiveService {
       include: {
         queens: {
           where: {
-            status: 'ACTIVE',
+            status: { in: [...CURRENT_QUEEN_STATUSES] },
           },
           orderBy: {
             installedAt: 'desc',

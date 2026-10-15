@@ -31,6 +31,8 @@ export const createQueenSchema = z.object({
   status: queenStatusSchema.optional().nullable(),
   installedAt: dateInputSchema,
   replacedAt: dateInputSchema,
+  cellCappedAt: dateInputSchema,
+  emergedAt: dateInputSchema,
   notes: z.string().max(5000).nullish(),
   breeder: z.string().max(200).nullish(),
   line: z.string().max(200).nullish(),
@@ -69,6 +71,9 @@ export const queenResponseSchema = z.object({
   status: queenStatusSchema.nullable(),
   installedAt: z.string().datetime().optional().nullable(),
   replacedAt: z.string().datetime().optional().nullable(),
+  cellCappedAt: z.string().datetime().nullish(),
+  emergedAt: z.string().datetime().nullish(),
+  statusChangedAt: z.string().datetime().nullish(),
   // Apiary of the queen's current hive (null for a queen not in a hive).
   apiaryId: z.string().uuid().optional().nullable(),
   apiaryName: z.string().optional().nullable(),

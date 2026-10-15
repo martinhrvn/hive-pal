@@ -1,3 +1,4 @@
+import type { QueenStatus } from 'shared-schemas';
 import type {
   ActionData,
   ObservationFormData,
@@ -18,7 +19,7 @@ export interface BulkQueenPayload {
   marking?: string | null;
   color?: string | null;
   source?: string | null;
-  status: 'ACTIVE' | 'REPLACED' | 'DEAD' | 'UNKNOWN';
+  status: QueenStatus;
   installedAt: Date;
   replacedAt?: Date | null;
 }

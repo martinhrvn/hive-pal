@@ -3,7 +3,9 @@ import { z } from 'zod';
 export const CURRENT_EXPORT_VERSION = '1.0';
 
 export const accountTransferJobTypeSchema = z.enum(['EXPORT', 'IMPORT']);
-export type AccountTransferJobType = z.infer<typeof accountTransferJobTypeSchema>;
+export type AccountTransferJobType = z.infer<
+  typeof accountTransferJobTypeSchema
+>;
 
 export const accountTransferJobStatusSchema = z.enum([
   'PENDING',
@@ -61,7 +63,9 @@ export const accountTransferJobSchema = z.object({
 export type AccountTransferJob = z.infer<typeof accountTransferJobSchema>;
 
 export const accountTransferJobListSchema = z.array(accountTransferJobSchema);
-export type AccountTransferJobList = z.infer<typeof accountTransferJobListSchema>;
+export type AccountTransferJobList = z.infer<
+  typeof accountTransferJobListSchema
+>;
 
 export const createJobResponseSchema = z.object({
   jobId: z.string().uuid(),
@@ -124,6 +128,9 @@ const queenExportSchema = z
     status: z.string(),
     installedAt: dateOrNullSchema,
     replacedAt: dateOrNullSchema,
+    statusChangedAt: dateOrNullSchema.optional(),
+    cellCappedAt: dateOrNullSchema.optional(),
+    emergedAt: dateOrNullSchema.optional(),
     notes: z.string().nullable().optional(),
     breeder: z.string().nullable().optional(),
     line: z.string().nullable().optional(),
@@ -438,7 +445,9 @@ export const exportEnvelopeSchema = z
     userConfig: z
       .object({
         equipmentItems: z.array(equipmentItemExportSchema).default([]),
-        equipmentMultiplier: equipmentMultiplierExportSchema.nullable().optional(),
+        equipmentMultiplier: equipmentMultiplierExportSchema
+          .nullable()
+          .optional(),
         frameSizes: z.array(frameSizeExportSchema).default([]),
         feedTypes: z.array(userFeedTypeExportSchema).default([]),
       })
