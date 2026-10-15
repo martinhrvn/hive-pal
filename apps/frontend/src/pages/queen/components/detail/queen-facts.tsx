@@ -5,6 +5,7 @@ import {
   QUEEN_CELL_CAPPED_TO_EMERGENCE_DAYS,
   type QueenDetail,
 } from 'shared-schemas';
+import { EditorialCardStrip } from '@/components/common/editorial-card';
 import { useDateFormat } from '@/hooks/use-date-format';
 import { QueenColorBadge } from '../queen-color-badge';
 
@@ -15,7 +16,7 @@ const Fact = ({ label, children }: { label: string; children: ReactNode }) => (
   </div>
 );
 
-/** Everything known about the queen; empty values are left out. */
+/** Everything known about the queen, as a header strip; empty values are left out. */
 export const QueenFacts = ({ queen }: { queen: QueenDetail }) => {
   const { t } = useTranslation('queen');
   const { formatDate } = useDateFormat();
@@ -83,15 +84,18 @@ export const QueenFacts = ({ queen }: { queen: QueenDetail }) => {
     },
   ];
 
+  const known = facts.filter(fact => fact.value != null && fact.value !== '');
+  if (known.length === 0) return null;
+
   return (
-    <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-      {facts
-        .filter(fact => fact.value != null && fact.value !== '')
-        .map(fact => (
+    <EditorialCardStrip>
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 @md/editorial:grid-cols-3 @2xl/editorial:grid-cols-4">
+        {known.map(fact => (
           <Fact key={fact.key} label={fact.label}>
             {fact.value}
           </Fact>
         ))}
-    </dl>
+      </dl>
+    </EditorialCardStrip>
   );
 };

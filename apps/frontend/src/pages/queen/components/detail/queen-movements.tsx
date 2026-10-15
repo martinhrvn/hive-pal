@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { ArrowLeftRight, ArrowRight } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Route } from 'lucide-react';
 import type { QueenMovement } from 'shared-schemas';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,7 +31,10 @@ export const QueenMovements = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('sections.movements')}</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Route className="size-4 text-muted-foreground" />
+          {t('sections.movements')}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {movements.length === 0 ? (

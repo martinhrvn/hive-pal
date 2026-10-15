@@ -73,7 +73,10 @@
     "addQueen": "Add Queen",
     "editQueen": "Edit Queen",
     "viewDetails": "View Details",
-    "manageQueen": "Manage Queen"
+    "manageQueen": "Manage Queen",
+    "title": "Queen Actions",
+    "viewHive": "View Hive",
+    "deleteQueen": "Delete Queen"
   },
   "form": {
     "selectHive": "Select a hive",
@@ -131,8 +134,6 @@
     "notRated": "Not rated"
   },
   "detail": {
-    "back": "Queens",
-    "currentlyIn": "Currently in {{hive}}",
     "notInHive": "Not in a hive",
     "notFound": {
       "title": "Queen not found",
@@ -156,7 +157,9 @@
       "none": "None",
       "removed": "Removed"
     },
-    "approxDate": "about {{date}}"
+    "approxDate": "about {{date}}",
+    "overline": "Queen",
+    "installedOn": "Installed · {{date}}"
   },
   "transfer": {
     "title": "Transfer queen",
@@ -183,10 +186,10 @@
     "status": "Status",
     "installed": "Installed",
     "replaced": "Replaced",
-    "noHive": "No hive"
+    "noHive": "No hive",
+    "details": "Details"
   },
   "list": {
-    "filters": "Filters",
     "statusFilter": "Status",
     "hiveFilter": "Hive",
     "allStatuses": "All statuses",
@@ -200,7 +203,8 @@
       "title": "No queens match these filters",
       "description": "Try a different status or hive.",
       "cta": "Clear filters"
-    }
+    },
+    "searchPlaceholder": "Search queens…"
   },
   "validation": {
     "hiveRequired": "Select a hive",

@@ -20,3 +20,23 @@ export const MainContent: React.FC<PropsWithChildren> = ({ children }) => {
 export const PageAside: React.FC<PropsWithChildren> = ({ children }) => {
   return <div className={'col-span-1 min-w-0'}>{children}</div>;
 };
+
+// Detail-page scaffold (hive, queen): a wide main column beside a narrower
+// action sidebar on lg+ screens, stacked on smaller ones.
+export const DetailGrid: React.FC<PropsWithChildren> = ({ children }) => (
+  <div className="p-2 sm:p-4">
+    <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
+      {children}
+    </div>
+  </div>
+);
+
+export const DetailMain: React.FC<PropsWithChildren> = ({ children }) => (
+  <div className="min-w-0 lg:col-span-8 xl:col-span-9">{children}</div>
+);
+
+export const DetailAside: React.FC<PropsWithChildren> = ({ children }) => (
+  <div className="min-w-0 space-y-4 lg:col-span-4 xl:col-span-3">
+    {children}
+  </div>
+);

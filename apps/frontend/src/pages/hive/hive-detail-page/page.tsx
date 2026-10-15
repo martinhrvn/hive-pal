@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BoxConfigurator } from './box-configurator';
@@ -23,9 +24,22 @@ import { TreatmentSummary } from './treatment-summary';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { useImageDisplayStore } from '@/stores/image-display-store';
 import { AlertTriangle, Map } from 'lucide-react';
-import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { WARNING_LABELS } from '@/utils/warning-labels';
+import { useDateFormat } from '@/hooks/use-date-format';
+import {
+  DetailAside,
+  DetailGrid,
+  DetailMain,
+} from '@/components/layout/page-grid-layout';
+import {
+  EditorialCard,
+  EditorialCardBody,
+  EditorialCardHeader,
+  EditorialCardOverline,
+  EditorialCardStrip,
+  EditorialCardTitle,
+} from '@/components/common/editorial-card';
 import {
   Popover,
   PopoverContent,
@@ -36,6 +50,8 @@ import { HiveMinimap } from '@/components/hive-minimap';
 import { HiveHubHiveCard } from './hivehub-hive-card';
 
 export const HiveDetailPage = () => {
+  const { t } = useTranslation('hive');
+  const { formatDate } = useDateFormat();
   const { id: hiveId } = useParams<{ id: string }>();
   const location = useLocation();
   const { data: hive, error, refetch } = useHive(hiveId as string);
@@ -87,248 +103,224 @@ export const HiveDetailPage = () => {
     };
   }, [hive, setHiveContext, clearContext]);
   if (error) {
-    return <div>Error</div>;
+    return <div>{t('detail.error')}</div>;
   }
 
   return (
-    <div className="p-2 sm:p-4">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-        <div className="lg:col-span-8 xl:col-span-9">
-          {/* Editorial hive header card */}
-          <div className="@container/hive mb-4 sm:mb-6">
-            <section
+    <DetailGrid>
+      <DetailMain>
+        <EditorialCard
+          className={cn('mb-4 sm:mb-6', isSide && '@md/editorial:flex-row')}
+        >
+          {imageMode !== 'hidden' && (
+            <div
               className={cn(
-                'group/hive relative rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-card',
-                'shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(120,80,20,0.08)]',
-                'flex flex-col',
-                isSide && '@md/hive:flex-row',
+                'relative overflow-hidden bg-muted',
+                isSide
+                  ? 'h-32 w-full shrink-0 @sm/editorial:h-40 @md/editorial:h-auto @md/editorial:min-h-[220px] @md/editorial:w-[200px] @lg/editorial:w-[240px]'
+                  : 'h-32 w-full @sm/editorial:h-40 @md/editorial:h-44',
               )}
             >
-              {imageMode !== 'hidden' && (
+              {hive?.featurePhotoUrl ? (
+                <img
+                  src={hive.featurePhotoUrl}
+                  alt={t('detail.featurePhotoAlt', { name: hive.name })}
+                  className="absolute inset-0 size-full object-cover"
+                />
+              ) : (
                 <div
-                  className={cn(
-                    'relative overflow-hidden bg-stone-100 dark:bg-stone-900',
-                    isSide
-                      ? 'w-full @md/hive:w-[200px] @lg/hive:w-[240px] flex-shrink-0 h-32 @sm/hive:h-40 @md/hive:h-auto @md/hive:min-h-[220px]'
-                      : 'w-full h-32 @sm/hive:h-40 @md/hive:h-44',
-                  )}
-                >
-                  {hive?.featurePhotoUrl ? (
-                    <img
-                      src={hive.featurePhotoUrl}
-                      alt={`${hive.name} feature photo`}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: buildBoxGradient(hive?.boxes) }}
-                    />
-                  )}
-                  <div
-                    className={cn(
-                      'absolute inset-0 pointer-events-none',
-                      isSide
-                        ? '@md/hive:bg-gradient-to-r @md/hive:from-transparent @md/hive:via-transparent @md/hive:to-card/15 bg-gradient-to-t from-card/40 via-transparent to-transparent'
-                        : 'bg-gradient-to-t from-card/40 via-transparent to-transparent',
-                    )}
-                  />
-                  <div className="absolute inset-0 pointer-events-none bg-amber-500/[0.04]" />
-                </div>
+                  className="absolute inset-0"
+                  style={{ background: buildBoxGradient(hive?.boxes) }}
+                />
               )}
-
-              <div className="flex-1 min-w-0 flex flex-col">
-                {/* Overline + status pill */}
-                <div className="px-4 @sm/hive:px-5 @lg/hive:px-6 pt-4 min-w-0">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2 min-w-0 pt-0.5">
-                      <span
-                        className="inline-flex h-1.5 w-1.5 rounded-full bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.18)] shrink-0"
-                        aria-hidden
-                      />
-                      <span className="font-overline text-stone-500 dark:text-stone-400 truncate">
-                        {hive?.installationDate
-                          ? `Established · ${format(new Date(hive.installationDate), 'MMM d, yyyy')}`
-                          : 'Active hive'}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {hive?.apiaryId && (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50"
-                              aria-label="Show apiary layout"
-                              title="Show apiary layout"
-                            >
-                              <Map className="h-4 w-4" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            align="end"
-                            className="w-auto max-w-[min(90vw,520px)] p-0"
-                          >
-                            <HiveMinimap
-                              apiaryId={hive.apiaryId}
-                              highlightedHiveId={hive.id}
-                              className="border-0 shadow-none"
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                      {hiveId && (
-                        <HiveStatusButton
-                          hiveId={hiveId}
-                          status={hive?.status}
-                          apiaryId={hive?.apiaryId}
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <h1 className="mt-1.5 font-display text-2xl @sm/hive:text-3xl @lg/hive:text-4xl font-medium leading-[1.05] text-stone-900 dark:text-stone-50 break-words">
-                    {hive?.name}
-                  </h1>
-                  {hive?.notes && (
-                    <p className="mt-2 text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
-                      {hive.notes}
-                    </p>
-                  )}
-                  {hive && <HiveProvenance hive={hive} />}
-                </div>
-
-                {/* Brood stats — hairline-separated */}
-                {((hive?.inspectionType === 'subjective' && hive?.hiveScore) ||
-                  (hive?.inspectionType === 'data_driven' && hiveId)) && (
-                  <div className="border-t border-stone-200 dark:border-stone-800 mt-4 px-4 @sm/hive:px-5 @lg/hive:px-6 py-4">
-                    {hive?.inspectionType === 'subjective' &&
-                      hive?.hiveScore && (
-                        <StatisticCards
-                          score={hive.hiveScore}
-                          variant="inline"
-                        />
-                      )}
-                    {hive?.inspectionType === 'data_driven' && hiveId && (
-                      <HiveHeaderStats hiveId={hiveId} />
-                    )}
-                  </div>
+              <div
+                className={cn(
+                  'pointer-events-none absolute inset-0 bg-gradient-to-t from-card/40 via-transparent to-transparent',
+                  isSide &&
+                    '@md/editorial:bg-gradient-to-r @md/editorial:from-transparent @md/editorial:to-card/15',
                 )}
-
-                {/* Queen + feeding strip — bottom block with subtle stone wash, stacked rows */}
-                <div className="mt-auto border-t border-stone-200 dark:border-stone-800 px-4 @sm/hive:px-5 @lg/hive:px-6 py-3 bg-stone-50/60 dark:bg-stone-900/40 flex flex-col gap-2">
-                  <QueenInformation
-                    hiveId={hive?.id}
-                    activeQueen={hive?.activeQueen}
-                    onQueenUpdated={() => refetch()}
-                    variant="inline"
-                  />
-                  {hive && <FeedingSection hiveId={hive.id} variant="inline" />}
-                </div>
-              </div>
-            </section>
-          </div>
-
-          {/* Tabs for different sections */}
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="mb-4 sm:mb-6"
-          >
-            <TabsList className="mb-3 sm:mb-4 flex-wrap h-auto">
-              <TabsTrigger value="overview" className="text-xs sm:text-sm">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="text-xs sm:text-sm">
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger value="boxes" className="text-xs sm:text-sm">
-                Boxes
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="text-xs sm:text-sm">
-                Settings
-              </TabsTrigger>
-              <TabsTrigger value="queens" className="text-xs sm:text-sm">
-                Queen History
-              </TabsTrigger>
-              {features?.aiEnabled && (
-                <TabsTrigger value="assistant" className="text-xs sm:text-sm">
-                  Assistant
-                </TabsTrigger>
-              )}
-            </TabsList>
-
-            <TabsContent value="overview">
-              {(hive?.hiveScore?.warnings?.length ?? 0) > 0 && (
-                <Alert className="mb-4 border-amber-400 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-100 dark:border-amber-600">
-                  <AlertTriangle className="h-4 w-4 !text-amber-600 dark:!text-amber-400" />
-                  <AlertTitle className="font-semibold">
-                    Inspection Warnings
-                  </AlertTitle>
-                  <AlertDescription>
-                    <ul className="mt-1 space-y-1">
-                      {hive!.hiveScore!.warnings.map(w => (
-                        <li key={w}>{WARNING_LABELS[w] ?? w}</li>
-                      ))}
-                    </ul>
-                  </AlertDescription>
-                </Alert>
-              )}
-              {hiveId && (
-                <HiveTodos hiveId={hiveId} apiaryId={hive?.apiaryId} />
-              )}
-              {hiveId && <TreatmentSummary hiveId={hiveId} />}
-              <HiveTimeline hiveId={hiveId} apiaryId={hive?.apiaryId} />
-            </TabsContent>
-
-            <TabsContent value="analytics">
-              <HiveCharts
-                hiveId={hiveId}
-                inspectionType={hive?.inspectionType ?? 'data_driven'}
-                hiveScore={hive?.hiveScore}
               />
-            </TabsContent>
+              <div className="pointer-events-none absolute inset-0 bg-honey/5" />
+            </div>
+          )}
 
-            <TabsContent value="boxes">
-              <BoxConfigurator hive={hive} />
-            </TabsContent>
+          <EditorialCardBody>
+            <EditorialCardHeader>
+              <EditorialCardOverline
+                trailing={
+                  <>
+                    {hive?.apiaryId && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-8 text-muted-foreground hover:text-foreground"
+                            aria-label={t('detail.showApiaryLayout')}
+                            title={t('detail.showApiaryLayout')}
+                          >
+                            <Map className="size-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          align="end"
+                          className="w-auto max-w-[min(90vw,520px)] p-0"
+                        >
+                          <HiveMinimap
+                            apiaryId={hive.apiaryId}
+                            highlightedHiveId={hive.id}
+                            className="border-0 shadow-none"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                    {hiveId && (
+                      <HiveStatusButton
+                        hiveId={hiveId}
+                        status={hive?.status}
+                        apiaryId={hive?.apiaryId}
+                      />
+                    )}
+                  </>
+                }
+              >
+                {hive?.installationDate
+                  ? t('detail.established', {
+                      date: formatDate(hive.installationDate),
+                    })
+                  : t('detail.activeHive')}
+              </EditorialCardOverline>
+              <EditorialCardTitle>{hive?.name}</EditorialCardTitle>
+              {hive?.notes && (
+                <p className="mt-2 text-sm leading-relaxed text-foreground/80">
+                  {hive.notes}
+                </p>
+              )}
+              {hive && <HiveProvenance hive={hive} />}
+            </EditorialCardHeader>
 
-            <TabsContent value="settings">
-              <HiveSettings hive={hive} onHiveUpdated={refetch} />
-            </TabsContent>
+            {/* Brood stats */}
+            {((hive?.inspectionType === 'subjective' && hive?.hiveScore) ||
+              (hive?.inspectionType === 'data_driven' && hiveId)) && (
+              <EditorialCardStrip>
+                {hive?.inspectionType === 'subjective' && hive?.hiveScore && (
+                  <StatisticCards score={hive.hiveScore} variant="inline" />
+                )}
+                {hive?.inspectionType === 'data_driven' && hiveId && (
+                  <HiveHeaderStats hiveId={hiveId} />
+                )}
+              </EditorialCardStrip>
+            )}
 
-            <TabsContent value="queens">
-              {hive && (
-                <QueenHistoryTab
+            {/* Queen + feeding */}
+            <EditorialCardStrip muted className="flex flex-col gap-2">
+              <QueenInformation
+                hiveId={hive?.id}
+                activeQueen={hive?.activeQueen}
+                onQueenUpdated={() => refetch()}
+                variant="inline"
+              />
+              {hive && <FeedingSection hiveId={hive.id} variant="inline" />}
+            </EditorialCardStrip>
+          </EditorialCardBody>
+        </EditorialCard>
+
+        {/* Tabs for different sections */}
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="mb-4 sm:mb-6"
+        >
+          <TabsList className="mb-3 sm:mb-4 flex-wrap h-auto">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm">
+              {t('detail.tabs.overview')}
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm">
+              {t('detail.tabs.analytics')}
+            </TabsTrigger>
+            <TabsTrigger value="boxes" className="text-xs sm:text-sm">
+              {t('detail.tabs.boxes')}
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs sm:text-sm">
+              {t('detail.tabs.settings')}
+            </TabsTrigger>
+            <TabsTrigger value="queens" className="text-xs sm:text-sm">
+              {t('detail.tabs.queens')}
+            </TabsTrigger>
+            {features?.aiEnabled && (
+              <TabsTrigger value="assistant" className="text-xs sm:text-sm">
+                {t('detail.tabs.assistant')}
+              </TabsTrigger>
+            )}
+          </TabsList>
+
+          <TabsContent value="overview">
+            {(hive?.hiveScore?.warnings?.length ?? 0) > 0 && (
+              <Alert className="mb-4 border-warning bg-warning-muted text-warning-foreground">
+                <AlertTriangle className="size-4 !text-warning" />
+                <AlertTitle className="font-semibold">
+                  {t('detail.inspectionWarnings')}
+                </AlertTitle>
+                <AlertDescription>
+                  <ul className="mt-1 space-y-1">
+                    {hive!.hiveScore!.warnings.map(w => (
+                      <li key={w}>{WARNING_LABELS[w] ?? w}</li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+            {hiveId && <HiveTodos hiveId={hiveId} apiaryId={hive?.apiaryId} />}
+            {hiveId && <TreatmentSummary hiveId={hiveId} />}
+            <HiveTimeline hiveId={hiveId} apiaryId={hive?.apiaryId} />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <HiveCharts
+              hiveId={hiveId}
+              inspectionType={hive?.inspectionType ?? 'data_driven'}
+              hiveScore={hive?.hiveScore}
+            />
+          </TabsContent>
+
+          <TabsContent value="boxes">
+            <BoxConfigurator hive={hive} />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <HiveSettings hive={hive} onHiveUpdated={refetch} />
+          </TabsContent>
+
+          <TabsContent value="queens">
+            {hive && (
+              <QueenHistoryTab
+                hiveId={hive.id}
+                activeQueen={hive.activeQueen}
+              />
+            )}
+          </TabsContent>
+
+          {features?.aiEnabled && (
+            <TabsContent value="assistant">
+              {hive?.apiaryId && hive?.id && (
+                <AssistantChat
+                  key={assistantInit?.threadId ?? 'default'}
+                  apiaryId={hive.apiaryId}
                   hiveId={hive.id}
-                  activeQueen={hive.activeQueen}
+                  threadId={assistantInit?.threadId}
+                  initialMessage={assistantInit?.prompt}
                 />
               )}
             </TabsContent>
+          )}
+        </Tabs>
+      </DetailMain>
 
-            {features?.aiEnabled && (
-              <TabsContent value="assistant">
-                {hive?.apiaryId && hive?.id && (
-                  <AssistantChat
-                    key={assistantInit?.threadId ?? 'default'}
-                    apiaryId={hive.apiaryId}
-                    hiveId={hive.id}
-                    threadId={assistantInit?.threadId}
-                    initialMessage={assistantInit?.prompt}
-                  />
-                )}
-              </TabsContent>
-            )}
-          </Tabs>
-        </div>
-
-        {/* Action Sidebar - Hidden on mobile, visible on larger screens */}
-        <div className="lg:col-span-4 xl:col-span-3 space-y-4">
-          <ActionSideBar hiveId={hive?.id} onRefreshData={refetch} />
-          {hiveId && <HiveHubHiveCard hiveId={hiveId} />}
-        </div>
-      </div>
-    </div>
+      <DetailAside>
+        <ActionSideBar hiveId={hive?.id} onRefreshData={refetch} />
+        {hiveId && <HiveHubHiveCard hiveId={hiveId} />}
+      </DetailAside>
+    </DetailGrid>
   );
 };

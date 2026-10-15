@@ -347,5 +347,21 @@
       "harvestLink": "Prejsť na medobranie",
       "split": "Toto je delenie včelstva. Tu sa dá upraviť len dátum a poznámky — zmena dátumu sa prejaví v oboch prepojených záznamoch na časovej osi a posunie aj pripomienku kontroly. Ak chcete samotné delenie vrátiť, použite na časovej osi „Zrušiť delenie“."
     }
+  },
+  "detail": {
+    "established": "Založený · {{date}}",
+    "activeHive": "Aktívny úľ",
+    "showApiaryLayout": "Zobraziť rozloženie včelnice",
+    "featurePhotoAlt": "Titulná fotka úľa {{name}}",
+    "inspectionWarnings": "Upozornenia z prehliadky",
+    "error": "Úľ sa nepodarilo načítať.",
+    "tabs": {
+      "overview": "Prehľad",
+      "analytics": "Analýza",
+      "boxes": "Nadstavky",
+      "settings": "Nastavenia",
+      "queens": "História matiek",
+      "assistant": "Asistent"
+    }
   }
 }

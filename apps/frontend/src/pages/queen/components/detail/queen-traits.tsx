@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Star } from 'lucide-react';
 import { QUEEN_TRAITS, type QueenDetail } from 'shared-schemas';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RatingMeter } from '../trait-rating';
@@ -15,7 +16,10 @@ export const QueenTraits = ({ queen }: { queen: QueenDetail }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('sections.traits')}</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Star className="size-4 text-muted-foreground" />
+          {t('sections.traits')}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <dl className="space-y-3">

@@ -73,7 +73,10 @@
     "editQueen": "Upraviť matku",
     "viewDetails": "Zobraziť podrobnosti",
     "manageQueen": "Spravovať matku",
-    "transferQueen": "Presunúť matku"
+    "transferQueen": "Presunúť matku",
+    "title": "Akcie matky",
+    "viewHive": "Zobraziť úľ",
+    "deleteQueen": "Vymazať matku"
   },
   "form": {
     "selectHive": "Vybrať úľ",
@@ -131,8 +134,6 @@
     "notRated": "Nehodnotené"
   },
   "detail": {
-    "back": "Matky",
-    "currentlyIn": "Teraz v úli {{hive}}",
     "notInHive": "Nie je v úli",
     "notFound": {
       "title": "Matka sa nenašla",
@@ -156,7 +157,9 @@
       "none": "Žiadny",
       "removed": "Odobraná"
     },
-    "approxDate": "približne {{date}}"
+    "approxDate": "približne {{date}}",
+    "overline": "Matka",
+    "installedOn": "Inštalovaná · {{date}}"
   },
   "transfer": {
     "title": "Presunúť matku",
@@ -183,10 +186,10 @@
     "status": "Stav",
     "installed": "Inštalovaná",
     "replaced": "Vymenená",
-    "noHive": "Bez úľa"
+    "noHive": "Bez úľa",
+    "details": "Podrobnosti"
   },
   "list": {
-    "filters": "Filtre",
     "statusFilter": "Stav",
     "hiveFilter": "Úľ",
     "allStatuses": "Všetky stavy",
@@ -200,7 +203,8 @@
       "title": "Filtrom nezodpovedá žiadna matka",
       "description": "Skúste iný stav alebo úľ.",
       "cta": "Zrušiť filtre"
-    }
+    },
+    "searchPlaceholder": "Hľadať matky…"
   },
   "validation": {
     "hiveRequired": "Vyberte úľ",
