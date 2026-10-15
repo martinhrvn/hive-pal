@@ -13,6 +13,9 @@ import { BoxVariantEnum, BoxTypeEnum } from 'shared-schemas';
  * - 'minimap': Very compact minimap display
  * - 'detail': Large detail/configurator view
  */
+/** Natural wood colour for boxes without a colour of their own. */
+export const DEFAULT_BOX_COLOR = '#CD853F';
+
 type BoxHeightContext = 'hive-card' | 'minimap' | 'detail';
 
 /**

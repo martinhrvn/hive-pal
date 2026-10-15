@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 
-/** `/hives` — table of hives in the active apiary; each row navigates to the detail page. */
+/** `/hives` — table of hives in the active apiary; the name link in each row opens the detail page. */
 export class HiveListPage {
   readonly page: Page;
 
@@ -17,7 +17,7 @@ export class HiveListPage {
   }
 
   async openDetails(name: string) {
-    await this.row(name).click();
+    await this.row(name).getByRole('link', { name, exact: true }).click();
   }
 }
 

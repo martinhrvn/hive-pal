@@ -29,7 +29,8 @@
     "tabs": {
       "overview": "Overview",
       "hives": "Hives",
-      "location": "Location"
+      "location": "Location",
+      "sharing": "Sharing"
     },
     "apiaryInformation": "Apiary Information",
     "locationMap": "Location Map",

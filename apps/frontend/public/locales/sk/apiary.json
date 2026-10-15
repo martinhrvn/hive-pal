@@ -29,7 +29,8 @@
     "tabs": {
       "overview": "Prehľad",
       "hives": "Úle",
-      "location": "Poloha"
+      "location": "Poloha",
+      "sharing": "Zdieľanie"
     },
     "apiaryInformation": "Informácie o včelnici",
     "locationMap": "Mapa polohy",
