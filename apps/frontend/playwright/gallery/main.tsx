@@ -66,6 +66,13 @@ async function ensureI18n() {
 
 let root: Root | null = null;
 
+function getRoot(): Root {
+  const el = document.getElementById('root');
+  if (!el) throw new Error('Gallery root element #root is missing');
+  root ??= createRoot(el);
+  return root;
+}
+
 export interface MountParams {
   story: string;
   props?: Record<string, unknown>;
@@ -79,10 +86,7 @@ async function mount({ story, props }: MountParams): Promise<void> {
     );
   }
   await ensureI18n();
-  const el = document.getElementById('root');
-  if (!el) throw new Error('Gallery root element #root is missing');
-  if (!root) root = createRoot(el);
-  root.render(
+  getRoot().render(
     <QueryClientProvider client={queryClient}>
       <AuthContext.Provider value={authStub}>
         <ThemeProvider defaultTheme="light">
@@ -109,3 +113,54 @@ declare global {
 
 window.mount = mount;
 window.unmount = unmount;
+
+// Browse mode, for opening the gallery by hand (pnpm gallery): the index lists
+// every story, and ?story=<id>&props=<json> renders one. Tests drive
+// window.mount instead, so it stays off under automation.
+const StoryIndex = () => {
+  const groups = new Map<string, string[]>();
+  for (const id of [...registry.keys()].sort()) {
+    const dir = id.slice(0, id.lastIndexOf('/'));
+    groups.set(dir, [...(groups.get(dir) ?? []), id]);
+  }
+  return (
+    <main className="mx-auto max-w-3xl space-y-6 p-6">
+      <h1 className="text-xl font-semibold">Stories</h1>
+      <p className="text-sm text-muted-foreground">
+        Add <code>&amp;props=&#123;...&#125;</code> (JSON) to a story URL to
+        pass props. Stories whose data comes from mocked API calls in their spec
+        render empty here.
+      </p>
+      {[...groups].map(([dir, ids]) => (
+        <section key={dir} className="space-y-1">
+          <h2 className="font-mono text-sm text-muted-foreground">{dir}</h2>
+          <ul className="list-inside list-disc">
+            {ids.map(id => (
+              <li key={id}>
+                <a
+                  className="text-sm underline"
+                  href={`?story=${encodeURIComponent(id)}`}
+                >
+                  {id.slice(dir.length + 1)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </main>
+  );
+};
+
+async function browse(): Promise<void> {
+  const params = new URLSearchParams(location.search);
+  const story = params.get('story');
+  if (story) {
+    const props = params.get('props');
+    await mount({ story, props: props ? JSON.parse(props) : undefined });
+  } else {
+    getRoot().render(<StoryIndex />);
+  }
+}
+
+if (!navigator.webdriver) void browse();

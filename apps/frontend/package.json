@@ -12,6 +12,7 @@
     "typecheck": "react-router typegen && tsc -b",
     "test": "vitest",
     "test:watch": "vitest --watch",
+    "gallery": "vite --config vite.gallery.config.ts --open playwright/gallery/index.html",
     "test:ct": "playwright test -c playwright-ct.config.ts",
     "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug"
   },
