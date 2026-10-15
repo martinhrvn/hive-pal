@@ -5,15 +5,15 @@
   "list": {
     "title": "Hive List",
     "caption": "A list of all your hives",
-    "captionFiltered": "Showing {{count}} {{status}} hive",
-    "captionFilteredPlural": "Showing {{count}} {{status}} hives",
+    "captionFiltered_one": "Showing {{count}} hive with status {{status}}",
+    "captionFiltered_other": "Showing {{count}} hives with status {{status}}",
     "searchPlaceholder": "Search hives...",
     "filterByStatus": "Filter by status",
     "allStatuses": "All Statuses",
     "noHives": "No hives found",
-    "noHivesMatchingBoth": "No {{status}} hives found matching \"{{searchTerm}}\"",
+    "noHivesMatchingBoth": "No hives with status {{status}} match \"{{searchTerm}}\"",
     "noHivesMatchingSearch": "No hives found matching \"{{searchTerm}}\"",
-    "noHivesWithStatus": "No {{status}} hives found",
+    "noHivesWithStatus": "No hives with status {{status}}",
     "clearFilters": "Clear filters",
     "createFirst": "Create your first hive"
   },
@@ -255,8 +255,15 @@
     "noHivesInApiary": "No hives in this apiary yet.",
     "dragToOrganize": "Add hives and drag them to the grid above to organize your apiary layout.",
     "edit": "Edit layout",
-    "emptyHive": "Empty",
-    "minimapEmpty": "No hives are placed on the layout yet. Arrange them from the apiary page."
+    "minimapEmpty": "No hives are placed on the layout yet. Arrange them from the apiary page.",
+    "noBoxes": "No boxes",
+    "moreBoxes_one": "+{{count}} more",
+    "moreBoxes_other": "+{{count}} more",
+    "boxTypeShort": {
+      "brood": "B",
+      "honey": "H",
+      "feeder": "F"
+    }
   },
   "equipment": {
     "currentHives": "Current Hives",

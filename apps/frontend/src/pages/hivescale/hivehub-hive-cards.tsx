@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { DAY_MS, formatRelativeTime } from '@/utils/relative-time';
 import {
   ArrowDownUp,
   Bluetooth,
@@ -53,7 +53,6 @@ const STALE_CYCLES = 3;
 const MIN_STALE_MS = 15 * 60000;
 const MAX_STALE_MS = 24 * 3600000;
 const DEFAULT_CYCLE_MS = 60 * 60000;
-const DAY_MS = 24 * 3600000;
 // How far the reference reading may sit from "24 h ago" and still be called a
 // 24 h change — otherwise a short history would pass off a 2 h delta as 24 h.
 const DELTA_TOLERANCE_MS = 6 * 3600000;
@@ -149,6 +148,18 @@ interface SensorIcon {
   state: SensorState;
 }
 
+/** State of the in-hive (BLE / accelerometer) sensor, or null when none reported. */
+function inHiveSensorState(hive: HiveScaleHiveReading): SensorState | null {
+  const ble = hive.ble;
+  const bleSeen =
+    ble != null &&
+    [ble.sensor_type, ble.device_name, ble.mac, ble.board].some(
+      v => v != null && v !== '',
+    );
+  if (!bleSeen && hive.accel?.ok == null && ble?.present == null) return null;
+  return hive.accel?.ok === false || ble?.present === false ? 'fault' : 'ok';
+}
+
 function sensorIcons(hive: HiveScaleHiveReading | undefined): SensorIcon[] {
   if (!hive) return [];
   const out: SensorIcon[] = [];
@@ -160,19 +171,13 @@ function sensorIcons(hive: HiveScaleHiveReading | undefined): SensorIcon[] {
       labelKey: 'hiveCards.sensor.scale',
       state: scaleOk ? 'ok' : 'fault',
     });
-  const ble = hive.ble;
-  const bleSeen =
-    ble != null &&
-    [ble.sensor_type, ble.device_name, ble.mac, ble.board].some(
-      v => v != null && v !== '',
-    );
-  if (bleSeen || hive.accel?.ok != null || ble?.present != null)
+  const inHive = inHiveSensorState(hive);
+  if (inHive)
     out.push({
       key: 'inHive',
       icon: Bluetooth,
       labelKey: 'hiveCards.sensor.inHive',
-      state:
-        hive.accel?.ok === false || ble?.present === false ? 'fault' : 'ok',
+      state: inHive,
     });
   if (hive.bee_counter?.ok != null)
     out.push({
@@ -196,6 +201,65 @@ function sensorIcons(hive: HiveScaleHiveReading | undefined): SensorIcon[] {
   return out;
 }
 
+type WeightValue = { kg: number; comp: boolean };
+
+/**
+ * Change against the reading closest to 24 h before `reading`, using the same
+ * column (compensated or raw); null when nothing lies within the tolerance.
+ */
+function weightDelta24h(
+  rows: HiveScaleMeasurement[],
+  n: number,
+  reading: Reading<WeightValue> | null,
+): number | null {
+  const at = reading ? timeOf(reading.row) : null;
+  if (!reading || at == null) return null;
+  const target = at - DAY_MS;
+  const pick = reading.value.comp ? compensatedWeight : rawWeight;
+  let best: { kg: number; off: number } | null = null;
+  for (const m of rows) {
+    const tm = timeOf(m);
+    if (tm == null || tm >= at) continue;
+    const kg = pick(m, n);
+    if (kg == null) continue;
+    const off = Math.abs(tm - target);
+    if (off <= DELTA_TOLERANCE_MS && (!best || off < best.off))
+      best = { kg, off };
+  }
+  return best ? reading.value.kg - best.kg : null;
+}
+
+/** Insights state in the card header: spinner, "unavailable" note or severity pill. */
+function InsightsStatus({
+  loading,
+  error,
+  severity,
+  count,
+}: Readonly<{
+  loading?: boolean;
+  error?: boolean;
+  severity: HiveScaleInsightAlert['severity'] | undefined;
+  count: number;
+}>) {
+  const { t } = useTranslation('hivescale');
+  if (loading) {
+    return (
+      <Loader2
+        className="size-3.5 animate-spin text-muted-foreground"
+        aria-label={t('hiveCards.insightsLoading')}
+      />
+    );
+  }
+  if (error) {
+    return (
+      <span className="text-[10px] text-muted-foreground">
+        {t('hiveCards.insightsUnavailable')}
+      </span>
+    );
+  }
+  return <HiveScaleSeverityPill severity={severity} count={count} />;
+}
+
 function MetricValue({
   label,
   reading,
@@ -211,9 +275,9 @@ function MetricValue({
   sub?: string | null;
   large?: boolean;
 }>) {
-  const { t } = useTranslation('hivescale');
+  const { t, i18n } = useTranslation('hivescale');
   const age = reading?.stale
-    ? formatDistanceToNowStrict(new Date(reading.at), { addSuffix: true })
+    ? formatRelativeTime(reading.at, i18n.language)
     : null;
   return (
     <div className="min-w-0">
@@ -281,29 +345,12 @@ function HiveCard({
       const raw = rawWeight(m, n);
       return raw != null ? { kg: raw, comp: false } : null;
     });
-    let weightDelta: number | null = null;
-    const at = weightReading ? timeOf(weightReading.row) : null;
-    if (weightReading && at != null) {
-      const target = at - DAY_MS;
-      const pick = weightReading.value.comp ? compensatedWeight : rawWeight;
-      let best: { kg: number; off: number } | null = null;
-      for (const m of rows) {
-        const tm = timeOf(m);
-        if (tm == null || tm >= at) continue;
-        const kg = pick(m, n);
-        if (kg == null) continue;
-        const off = Math.abs(tm - target);
-        if (off <= DELTA_TOLERANCE_MS && (!best || off < best.off))
-          best = { kg, off };
-      }
-      if (best) weightDelta = weightReading.value.kg - best.kg;
-    }
     const toNumber = (
-      r: Reading<{ kg: number; comp: boolean }> | null,
+      r: Reading<WeightValue> | null,
     ): Reading<number> | null => (r ? { ...r, value: r.value.kg } : null);
     return {
       weight: toNumber(weightReading),
-      delta: weightDelta,
+      delta: weightDelta24h(rows, n, weightReading),
       temp: readingBy(rows, n, limitMs, m => cleanTemp(hiveOf(m, n)?.temp_c)),
       humidity: readingBy(rows, n, limitMs, m => {
         const h = hiveOf(m, n);
@@ -342,18 +389,12 @@ function HiveCard({
                 {t('hiveCards.inspection')}
               </Badge>
             )}
-            {insightsLoading ? (
-              <Loader2
-                className="h-3.5 w-3.5 animate-spin text-muted-foreground"
-                aria-label={t('hiveCards.insightsLoading')}
-              />
-            ) : insightsError ? (
-              <span className="text-[10px] text-muted-foreground">
-                {t('hiveCards.insightsUnavailable')}
-              </span>
-            ) : (
-              <HiveScaleSeverityPill severity={highest} count={alerts.length} />
-            )}
+            <InsightsStatus
+              loading={insightsLoading}
+              error={insightsError}
+              severity={highest}
+              count={alerts.length}
+            />
             <HiveScaleInsightsHistoryDialog
               deviceId={deviceId}
               scale1Name={scale1Name}

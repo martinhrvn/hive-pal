@@ -1,6 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Button } from '@/components/ui/button';
 import {
   MainContent,
@@ -24,15 +25,94 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { HiveStatus, HiveActionSidebar } from './components';
+import { Skeleton } from '@/components/ui/skeleton';
+import { HiveStatus } from './components/hive-status';
+import { HiveActionSidebar } from './components/hive-action-sidebar';
 import { ChevronRight, Search } from 'lucide-react';
 import { useHives } from '@/api/hooks';
 import { HiveResponse, HiveStatus as HiveStatusEnum } from 'shared-schemas';
-import { useUserPreferences } from '@/api/hooks/useUserPreferences';
-import {
-  formatDateWithPreference,
-  DateFormatPreference,
-} from '@/utils/date-format';
+import { useDateFormat } from '@/hooks/use-date-format';
+import { hiveStatusLabelKey } from '@/utils/status-colors';
+
+const ALL = 'ALL';
+const STATUSES = Object.values(HiveStatusEnum);
+
+const matchesSearch = (hive: HiveResponse, term: string) => {
+  const needle = term.toLowerCase();
+  return (
+    hive.name.toLowerCase().includes(needle) ||
+    (hive.notes?.toLowerCase().includes(needle) ?? false)
+  );
+};
+
+const emptyMessage = (
+  t: TFunction,
+  searchTerm: string,
+  status: string | null,
+) => {
+  if (searchTerm && status) {
+    return t('hive:list.noHivesMatchingBoth', { status, searchTerm });
+  }
+  if (searchTerm) return t('hive:list.noHivesMatchingSearch', { searchTerm });
+  if (status) return t('hive:list.noHivesWithStatus', { status });
+  return t('hive:list.noHives');
+};
+
+const HiveTableRow = ({
+  hive,
+  formatDate,
+}: {
+  hive: HiveResponse;
+  formatDate: (date: string) => string;
+}) => {
+  const { t } = useTranslation('hive');
+  return (
+    // The name link stretches over the whole row, so any cell opens the hive
+    <TableRow className="relative">
+      <TableCell>
+        <Link
+          to={`/hives/${hive.id}`}
+          className="font-medium after:absolute after:inset-0 after:rounded-sm focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
+        >
+          {hive.name}
+        </Link>
+      </TableCell>
+      <TableCell>
+        <HiveStatus status={hive.status} />
+      </TableCell>
+      <TableCell>
+        {hive.installationDate
+          ? formatDate(hive.installationDate)
+          : t('fields.notSpecified')}
+      </TableCell>
+      <TableCell>
+        {hive.lastInspectionDate
+          ? formatDate(hive.lastInspectionDate)
+          : t('fields.noInspectionYet')}
+      </TableCell>
+      <TableCell className="max-w-[200px] truncate">
+        {hive.notes ?? t('fields.noNotes')}
+      </TableCell>
+      <TableCell className="text-right">
+        <span
+          aria-hidden="true"
+          className="inline-flex items-center text-sm text-muted-foreground"
+        >
+          {t('actions.details')}
+          <ChevronRight className="ml-1 size-4" />
+        </span>
+      </TableCell>
+    </TableRow>
+  );
+};
+
+const HiveTableSkeleton = () => (
+  <div className="space-y-2">
+    {Array.from({ length: 6 }, (_, i) => (
+      <Skeleton key={i} className="h-10 w-full rounded-md" />
+    ))}
+  </div>
+);
 
 export const HiveListPage = () => {
   const { t } = useTranslation(['hive', 'common']);
@@ -41,46 +121,85 @@ export const HiveListPage = () => {
     isLoading,
     refetch,
   } = useHives({ includeInactive: true });
-  const navigate = useNavigate();
+  const { formatDate } = useDateFormat();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  const { data: userPreferences } = useUserPreferences();
-  const dateFormat = (userPreferences?.dateFormat ??
-    'MM/DD/YYYY') as DateFormatPreference;
-
-  const formatDate = (date: string | null | undefined) =>
-    date ? formatDateWithPreference(date, dateFormat) : null;
+  const [statusFilter, setStatusFilter] = useState<string>(ALL);
 
   const handleRefreshData = useCallback(() => {
     refetch();
   }, [refetch]);
 
-  if (isLoading) {
-    return <div>{t('common:status.loading')}</div>;
-  }
-
   const allHives = hivesResponse ?? [];
+  const hives = allHives.filter(
+    hive =>
+      (searchTerm === '' || matchesSearch(hive, searchTerm)) &&
+      (statusFilter === ALL || hive.status === statusFilter),
+  );
+  const statusLabel =
+    statusFilter === ALL ? null : t(hiveStatusLabelKey(statusFilter));
 
-  // Apply filters
-  const hives: HiveResponse[] = allHives.filter(hive => {
-    const matchesSearch =
-      searchTerm === '' ||
-      hive.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (hive.notes &&
-        hive.notes.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    const matchesStatus =
-      statusFilter === 'ALL' || hive.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  const renderContent = () => {
+    if (isLoading) return <HiveTableSkeleton />;
+    if (hives.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-muted-foreground mb-4">
+            {emptyMessage(t, searchTerm, statusLabel)}
+          </p>
+          {allHives.length === 0 ? (
+            <Button asChild>
+              <Link to="/hives/create">{t('hive:list.createFirst')}</Link>
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter(ALL);
+              }}
+            >
+              {t('hive:list.clearFilters')}
+            </Button>
+          )}
+        </div>
+      );
+    }
+    return (
+      <Table>
+        <TableCaption>
+          {statusLabel
+            ? t('hive:list.captionFiltered', {
+                count: hives.length,
+                status: statusLabel,
+              })
+            : t('hive:list.caption')}
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('hive:fields.name')}</TableHead>
+            <TableHead>{t('hive:fields.status')}</TableHead>
+            <TableHead>{t('hive:fields.installationDate')}</TableHead>
+            <TableHead>{t('hive:fields.lastInspection')}</TableHead>
+            <TableHead>{t('hive:fields.notes')}</TableHead>
+            <TableHead className="text-right">
+              {t('common:actions.actions')}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {hives.map(hive => (
+            <HiveTableRow key={hive.id} hive={hive} formatDate={formatDate} />
+          ))}
+        </TableBody>
+      </Table>
+    );
+  };
 
   return (
     <PageGrid>
       <MainContent>
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
             <Input
               placeholder={t('hive:list.searchPlaceholder')}
               className="pl-8"
@@ -90,122 +209,25 @@ export const HiveListPage = () => {
           </div>
 
           <div className="w-full sm:w-40">
-            <Select
-              value={statusFilter}
-              onValueChange={value => setStatusFilter(value)}
-            >
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('hive:list.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">
+                <SelectItem value={ALL}>
                   {t('hive:list.allStatuses')}
                 </SelectItem>
-                <SelectItem value={HiveStatusEnum.ACTIVE}>
-                  {t('hive:status.active')}
-                </SelectItem>
-                <SelectItem value={HiveStatusEnum.INACTIVE}>
-                  {t('hive:status.inactive')}
-                </SelectItem>
-                <SelectItem value={HiveStatusEnum.DEAD}>
-                  {t('hive:status.dead')}
-                </SelectItem>
-                <SelectItem value={HiveStatusEnum.SOLD}>
-                  {t('hive:status.sold')}
-                </SelectItem>
-                <SelectItem value={HiveStatusEnum.UNKNOWN}>
-                  {t('hive:status.unknown')}
-                </SelectItem>
+                {STATUSES.map(status => (
+                  <SelectItem key={status} value={status}>
+                    {t(hiveStatusLabelKey(status))}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {hives.length > 0 ? (
-          <Table>
-            <TableCaption>
-              {statusFilter === 'ALL'
-                ? t('hive:list.caption')
-                : t(
-                    hives.length === 1
-                      ? 'hive:list.captionFiltered'
-                      : 'hive:list.captionFilteredPlural',
-                    {
-                      count: hives.length,
-                      status: statusFilter.toLowerCase(),
-                    },
-                  )}
-            </TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('hive:fields.name')}</TableHead>
-                <TableHead>{t('hive:fields.status')}</TableHead>
-                <TableHead>{t('hive:fields.installationDate')}</TableHead>
-                <TableHead>{t('hive:fields.lastInspection')}</TableHead>
-                <TableHead>{t('hive:fields.notes')}</TableHead>
-                <TableHead className="text-right">
-                  {t('common:actions.actions')}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {hives.map(hive => (
-                <TableRow
-                  key={hive.id}
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => navigate(`/hives/${hive.id}`)}
-                >
-                  <TableCell className="font-medium">{hive.name}</TableCell>
-                  <TableCell>
-                    <HiveStatus status={hive.status} />
-                  </TableCell>
-                  <TableCell>
-                    {formatDate(hive.installationDate) ??
-                      t('hive:fields.notSpecified')}
-                  </TableCell>
-                  <TableCell>
-                    {formatDate(hive.lastInspectionDate) ??
-                      t('hive:fields.noInspectionYet')}
-                  </TableCell>
-                  <TableCell className="max-w-[200px] truncate">
-                    {hive.notes ?? t('hive:fields.noNotes')}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="inline-flex items-center text-sm text-muted-foreground">
-                      {t('hive:actions.details')}
-                      <ChevronRight className="ml-1 h-4 w-4" />
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              {searchTerm && statusFilter !== 'ALL'
-                ? t('hive:list.noHivesMatchingBoth', {
-                    status: statusFilter.toLowerCase(),
-                    searchTerm,
-                  })
-                : searchTerm
-                  ? t('hive:list.noHivesMatchingSearch', { searchTerm })
-                  : statusFilter !== 'ALL'
-                    ? t('hive:list.noHivesWithStatus', {
-                        status: statusFilter.toLowerCase(),
-                      })
-                    : t('hive:list.noHives')}
-            </p>
-            <Button
-              onClick={() => {
-                setSearchTerm('');
-                setStatusFilter('ALL');
-              }}
-            >
-              {t('hive:list.clearFilters')}
-            </Button>
-          </div>
-        )}
+        {renderContent()}
       </MainContent>
       <PageAside>
         <HiveActionSidebar onRefreshData={handleRefreshData} />

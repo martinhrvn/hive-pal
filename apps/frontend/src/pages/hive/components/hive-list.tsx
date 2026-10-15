@@ -18,7 +18,7 @@ import {
 } from '@/utils/feeding-calculations';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { differenceInCalendarDays } from 'date-fns';
+import { daysAgo, formatRelativeDays } from '@/utils/relative-time';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { FeaturePhoto } from '@/components/common/feature-photo';
 import { useDateFormat } from '@/hooks/use-date-format';
@@ -65,19 +65,16 @@ const StatusIndicator: React.FC<{ status?: HiveResponse['status'] }> = ({
 const useInspectionLabel = () => {
   const { t, i18n } = useTranslation('hive');
   const { formatDate } = useDateFormat();
-  const relative = useMemo(
-    () => new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }),
-    [i18n.language],
-  );
   return useCallback(
     (dateString?: string) => {
       if (!dateString) return t('card.noInspection');
-      const date = new Date(dateString);
-      const days = differenceInCalendarDays(new Date(), date);
-      const when = days < 30 ? relative.format(-days, 'day') : formatDate(date);
+      const when =
+        daysAgo(dateString) < 30
+          ? formatRelativeDays(dateString, i18n.language)
+          : formatDate(dateString);
       return t('card.inspectedWhen', { when });
     },
-    [t, relative, formatDate],
+    [t, i18n.language, formatDate],
   );
 };
 

@@ -93,7 +93,11 @@ export const ApiaryDetailPage = () => {
             <TabsTrigger value="location">
               {t('apiary:detail.tabs.location')}
             </TabsTrigger>
-            {isOwner && <TabsTrigger value="sharing">Sharing</TabsTrigger>}
+            {isOwner && (
+              <TabsTrigger value="sharing">
+                {t('apiary:detail.tabs.sharing')}
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="overview">
@@ -102,7 +106,7 @@ export const ApiaryDetailPage = () => {
                 {apiary.featurePhotoUrl ? (
                   <img
                     src={apiary.featurePhotoUrl}
-                    alt={`${apiary.name} feature photo`}
+                    alt={t('common:photo.featureAlt', { name: apiary.name })}
                     className="w-full h-40 object-cover"
                   />
                 ) : (

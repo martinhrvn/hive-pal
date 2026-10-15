@@ -5,15 +5,17 @@
   "list": {
     "title": "Zoznam úľov",
     "caption": "Zoznam všetkých vašich úľov",
-    "captionFiltered": "Zobrazuje sa {{count}} {{status}} úľ",
-    "captionFilteredPlural": "Zobrazuje sa {{count}} {{status}} úľov",
+    "captionFiltered_one": "Zobrazuje sa {{count}} úľ so stavom {{status}}",
+    "captionFiltered_few": "Zobrazujú sa {{count}} úle so stavom {{status}}",
+    "captionFiltered_many": "Zobrazuje sa {{count}} úľov so stavom {{status}}",
+    "captionFiltered_other": "Zobrazuje sa {{count}} úľov so stavom {{status}}",
     "searchPlaceholder": "Hľadať úle...",
     "filterByStatus": "Filtrovať podľa stavu",
     "allStatuses": "Všetky stavy",
     "noHives": "Žiadne úle neboli nájdené",
-    "noHivesMatchingBoth": "Nenašli sa žiadne {{status}} úle zodpovedajúce \"{{searchTerm}}\"",
+    "noHivesMatchingBoth": "Žiadne úle so stavom {{status}} nezodpovedajú \"{{searchTerm}}\"",
     "noHivesMatchingSearch": "Nenašli sa žiadne úle zodpovedajúce \"{{searchTerm}}\"",
-    "noHivesWithStatus": "Nenašli sa žiadne {{status}} úle",
+    "noHivesWithStatus": "Žiadne úle so stavom {{status}}",
     "clearFilters": "Vymazať filtre",
     "createFirst": "Vytvorte svoj prvý úľ"
   },
@@ -199,8 +201,17 @@
     "noHivesInApiary": "V tejto včelnici zatiaľ nie sú žiadne úle.",
     "dragToOrganize": "Pridajte úle a presuňte ich do mriežky vyššie, aby ste usporiadali rozloženie včelnice.",
     "edit": "Upraviť rozloženie",
-    "emptyHive": "Prázdny",
-    "minimapEmpty": "Na rozložení zatiaľ nie sú umiestnené žiadne úle. Usporiadajte ich na stránke včelnice."
+    "minimapEmpty": "Na rozložení zatiaľ nie sú umiestnené žiadne úle. Usporiadajte ich na stránke včelnice.",
+    "noBoxes": "Bez nadstavkov",
+    "moreBoxes_one": "+{{count}} ďalší",
+    "moreBoxes_few": "+{{count}} ďalšie",
+    "moreBoxes_many": "+{{count}} ďalších",
+    "moreBoxes_other": "+{{count}} ďalších",
+    "boxTypeShort": {
+      "brood": "P",
+      "honey": "M",
+      "feeder": "K"
+    }
   },
   "equipment": {
     "currentHives": "Aktuálne úle",

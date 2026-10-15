@@ -31,6 +31,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { DAY_MS, formatRelativeTime } from '@/utils/relative-time';
 import type { TFunction } from 'i18next';
 import {
   Bar,
@@ -138,32 +139,6 @@ const formatDateTime = (value: string | number | null | undefined) => {
   }).format(date);
 };
 
-const formatRelativeTime = (value: string | null | undefined): string => {
-  if (!value) return '—';
-  const ts = new Date(value).getTime();
-  if (!Number.isFinite(ts)) return '—';
-  const diffMs = Date.now() - ts;
-  const absSec = Math.abs(diffMs) / 1000;
-  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
-  const units: [Intl.RelativeTimeFormatUnit, number][] = [
-    ['year', 60 * 60 * 24 * 365],
-    ['month', 60 * 60 * 24 * 30],
-    ['day', 60 * 60 * 24],
-    ['hour', 60 * 60],
-    ['minute', 60],
-    ['second', 1],
-  ];
-
-  for (const [unit, secondsInUnit] of units) {
-    if (absSec >= secondsInUnit || unit === 'second') {
-      const valueInUnit = Math.round(-diffMs / 1000 / secondsInUnit);
-      return rtf.format(valueInUnit, unit);
-    }
-  }
-
-  return '—';
-};
-
 const resolveDateRangeBounds = (
   dateRange: HiveScaleDateRange,
 ): ResolvedDateRangeBounds => {
@@ -186,10 +161,10 @@ const resolveDateRangeBounds = (
     // Preset ranges should always mean "from now backwards", never an open
     // future range. Custom ranges keep their explicit end when one is set.
     endMs:
-      dateRange.preset === 'custom'
-        ? explicitEndMs !== undefined && Number.isFinite(explicitEndMs)
-          ? explicitEndMs
-          : Date.now()
+      dateRange.preset === 'custom' &&
+      explicitEndMs !== undefined &&
+      Number.isFinite(explicitEndMs)
+        ? explicitEndMs
         : Date.now(),
   };
 };
@@ -611,6 +586,16 @@ function AxisBoundEditorInput({
   );
 }
 
+/** First tick is the axis minimum, last tick the maximum, others neither. */
+const axisBoundary = (
+  tickIndex: number,
+  tickCount: number,
+): AxisBoundary | null => {
+  if (tickIndex < 0 || tickCount <= 0) return null;
+  if (tickIndex === 0) return 'min';
+  return tickIndex === tickCount - 1 ? 'max' : null;
+};
+
 function ClickableYAxisTick({
   axisId,
   displayUnit,
@@ -636,14 +621,7 @@ function ClickableYAxisTick({
   const y = props.y ?? 0;
   const tickIndex = props.index ?? -1;
   const tickCount = props.visibleTicksCount ?? 0;
-  const boundary: AxisBoundary | null =
-    tickIndex >= 0 && tickCount > 0
-      ? tickIndex === 0
-        ? 'min'
-        : tickIndex === tickCount - 1
-          ? 'max'
-          : null
-      : null;
+  const boundary = axisBoundary(tickIndex, tickCount);
   const tickValue = props.payload?.value;
   const rawLabel =
     tickValue === undefined || tickValue === null ? '' : String(tickValue);
@@ -1379,6 +1357,9 @@ const hiveMetricValue = (
   metric: HiveMetricKey,
 ): number | null => {
   if (!hive) return null;
+  // A sensor that reports a fault yields no values at all.
+  const counter = hive.bee_counter?.ok === false ? undefined : hive.bee_counter;
+  const accel = hive.accel?.ok === false ? undefined : hive.accel;
 
   switch (metric) {
     case 'weight':
@@ -1392,35 +1373,22 @@ const hiveMetricValue = (
     case 'pressure':
       return toFiniteNumber(hive.ble?.pressure_hpa);
     case 'beeIn':
-      return hive.bee_counter?.ok === false
-        ? null
-        : toFiniteNumber(hive.bee_counter?.interval_in);
+      return toFiniteNumber(counter?.interval_in);
     case 'beeOut':
-      return hive.bee_counter?.ok === false
-        ? null
-        : toFiniteNumber(hive.bee_counter?.interval_out);
+      return toFiniteNumber(counter?.interval_out);
     case 'beeNet': {
-      if (hive.bee_counter?.ok === false) return null;
-      const inCount = toFiniteNumber(hive.bee_counter?.interval_in);
-      const outCount = toFiniteNumber(hive.bee_counter?.interval_out);
+      const inCount = toFiniteNumber(counter?.interval_in);
+      const outCount = toFiniteNumber(counter?.interval_out);
       return inCount !== null && outCount !== null ? inCount - outCount : null;
     }
     case 'vibration':
-      return hive.accel?.ok === false
-        ? null
-        : toFiniteNumber(hive.accel?.rms_mg);
+      return toFiniteNumber(accel?.rms_mg);
     case 'swarmBand':
-      return hive.accel?.ok === false
-        ? null
-        : toFiniteNumber(hive.accel?.band_swarm_mg);
+      return toFiniteNumber(accel?.band_swarm_mg);
     case 'fanningBand':
-      return hive.accel?.ok === false
-        ? null
-        : toFiniteNumber(hive.accel?.band_fanning_mg);
+      return toFiniteNumber(accel?.band_fanning_mg);
     case 'activityBand':
-      return hive.accel?.ok === false
-        ? null
-        : toFiniteNumber(hive.accel?.band_activity_mg);
+      return toFiniteNumber(accel?.band_activity_mg);
     default:
       return null;
   }
@@ -1602,12 +1570,8 @@ const buildHiveSlots = (
   return Array.from({ length: MAX_HIVE_SLOTS }, (_, i) => {
     const index = i + 1;
     const reading = readingMap.get(index) ?? null;
-    const fallbackName =
-      index === 1
-        ? fallbackNames.scale1Name
-        : index === 2
-          ? fallbackNames.scale2Name
-          : hiveFallbackLabel(index);
+    const legacyNames = [fallbackNames.scale1Name, fallbackNames.scale2Name];
+    const fallbackName = legacyNames[index - 1] ?? hiveFallbackLabel(index);
     const name = reading?.name?.trim() || fallbackName;
     const weightKg = hiveMetricValue(reading, 'weight');
     const tempC = hiveMetricValue(reading, 'temperature');
@@ -1762,8 +1726,6 @@ const latestMeasurement = (
   )[0];
 };
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
 function DateRangeControls({
   dateRange,
   onDateRangeChange,
@@ -1887,23 +1849,20 @@ const latestHiveInsideFirmwareSummary = (
       new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime(),
   );
 
+  // The newest measurement that reports any in-hive firmware wins.
   for (const measurement of sorted) {
-    for (const value of [
+    const candidates: unknown[] = [
       measurement.ble_1_firmware_version,
       measurement.ble_2_firmware_version,
-    ]) {
+      ...measurementHiveReadings(measurement, fallbackNames).map(
+        hive => hive.ble?.firmware_version,
+      ),
+    ];
+    for (const value of candidates) {
       if (typeof value === 'string' && value.trim()) {
         versions.add(value.trim());
       }
     }
-
-    for (const hive of measurementHiveReadings(measurement, fallbackNames)) {
-      const firmwareVersion = hive.ble?.firmware_version;
-      if (typeof firmwareVersion === 'string' && firmwareVersion.trim()) {
-        versions.add(firmwareVersion.trim());
-      }
-    }
-
     if (versions.size > 0) break;
   }
 
@@ -1914,6 +1873,29 @@ const sensorSummary = (t: TFunction, sensors: HiveSensorKind[]) =>
   sensors.length
     ? sensors.map(sensor => t(`dashboard.sensors.${sensor}`)).join(', ')
     : t('dashboard.sensors.none');
+
+/** Slot status in the overview grid: alert count, OK, or no data yet. */
+function SlotBadge({
+  alertCount,
+  hasData,
+}: Readonly<{ alertCount: number; hasData: boolean }>) {
+  const { t } = useTranslation('hivescale');
+  if (alertCount > 0) {
+    return (
+      <Badge variant="destructive" className="shrink-0 text-[10px]">
+        {alertCount}
+      </Badge>
+    );
+  }
+  return (
+    <Badge
+      variant={hasData ? 'outline' : 'secondary'}
+      className="shrink-0 text-[10px]"
+    >
+      {t(hasData ? 'dashboard.overview.ok' : 'dashboard.overview.noData')}
+    </Badge>
+  );
+}
 
 function HiveOverviewGrid({
   slots,
@@ -1932,7 +1914,7 @@ function HiveOverviewGrid({
   latest: HiveScaleMeasurement | undefined;
   hiveInsideFirmware: string;
 }>) {
-  const { t } = useTranslation('hivescale');
+  const { t, i18n } = useTranslation('hivescale');
   const [isOpen, setIsOpen] = useState(true);
   const hivesWithData = slots.filter(slot => slot.hasData).length;
   const hivescaleFirmware =
@@ -1954,7 +1936,9 @@ function HiveOverviewGrid({
                 <span>
                   {t('dashboard.overview.lastData')}{' '}
                   <span className="font-medium text-foreground">
-                    {formatRelativeTime(latest?.measured_at)}
+                    {(latest?.measured_at &&
+                      formatRelativeTime(latest.measured_at, i18n.language)) ||
+                      '—'}
                   </span>
                 </span>
                 <span>
@@ -2025,28 +2009,10 @@ function HiveOverviewGrid({
                             })}
                           </p>
                         </div>
-                        {alerts.length > 0 ? (
-                          <Badge
-                            variant="destructive"
-                            className="shrink-0 text-[10px]"
-                          >
-                            {alerts.length}
-                          </Badge>
-                        ) : slot.hasData ? (
-                          <Badge
-                            variant="outline"
-                            className="shrink-0 text-[10px]"
-                          >
-                            {t('dashboard.overview.ok')}
-                          </Badge>
-                        ) : (
-                          <Badge
-                            variant="secondary"
-                            className="shrink-0 text-[10px]"
-                          >
-                            {t('dashboard.overview.noData')}
-                          </Badge>
-                        )}
+                        <SlotBadge
+                          alertCount={alerts.length}
+                          hasData={slot.hasData}
+                        />
                       </div>
                       <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
                         <div>
@@ -3779,7 +3745,8 @@ const hiveHeartBinForFrequency = (hz: number): number => {
   let best = 0;
   let bestDistance = Number.POSITIVE_INFINITY;
   HIVEHEART_FFT_RANGES.forEach(([lo, hi], bin) => {
-    const distance = hz < lo ? lo - hz : hz > hi ? hz - hi : 0;
+    // Zero inside the bin, else the gap to its nearer edge.
+    const distance = Math.max(lo - hz, hz - hi, 0);
     if (distance < bestDistance) {
       best = bin;
       bestDistance = distance;
