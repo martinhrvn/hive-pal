@@ -66,6 +66,7 @@ export const EditorialCardOverline = ({
 
 export const EditorialCardTitle = ({
   className,
+  children,
   ...props
 }: ComponentProps<'h1'>) => (
   <h1
@@ -74,7 +75,9 @@ export const EditorialCardTitle = ({
       className,
     )}
     {...props}
-  />
+  >
+    {children}
+  </h1>
 );
 
 /**
