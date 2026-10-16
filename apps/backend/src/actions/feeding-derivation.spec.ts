@@ -38,6 +38,13 @@ describe('builtinFeedTypeId', () => {
     expect(builtinFeedTypeId(feeding({ feedType: 'My mix' }))).toBeUndefined();
   });
 
+  it('stays fast on long names', () => {
+    const name = `${'_'.repeat(50_000)}x`;
+    const start = performance.now();
+    expect(builtinFeedTypeId(feeding({ feedType: name }))).toBeUndefined();
+    expect(performance.now() - start).toBeLessThan(200);
+  });
+
   it('matches built-ins by display name', () => {
     expect(builtinFeedTypeId(feeding({ feedType: 'Syrup 2:1' }))).toBe(
       'SYRUP_2_1',

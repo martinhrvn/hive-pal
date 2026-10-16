@@ -21,13 +21,17 @@ export interface FeedSpecValues {
   sugarContent: number;
 }
 
-/** "Syrup 2:1" → "SYRUP_2_1": the id form of a feed type name. */
+/**
+ * "Syrup 2:1" → "SYRUP_2_1": the id form of a feed type name. Splitting on
+ * runs of other characters avoids a trim regex such as /^_+|_+$/, which
+ * static analysis flags as backtracking-prone on client-sent input.
+ */
 const toIdForm = (name: string): string =>
   name
-    .trim()
     .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '');
+    .split(/[^A-Z0-9]+/)
+    .filter(Boolean)
+    .join('_');
 
 /** Case-insensitive comparison of feed type labels. */
 export const sameFeedLabel = (a: string, b: string): boolean =>
