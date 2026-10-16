@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { isoDateTime } from '../utils/datetime';
 import { observationSchema } from './observations.schema';
-import {  inspectionStatusSchema } from './status';
-import {actionResponseSchema, createActionSchema} from '../actions';
+import { inspectionStatusSchema } from './status';
+import { actionResponseSchema, createActionSchema } from '../actions';
 import {
   weightReadingSchema,
   weightReadingResponseSchema,
@@ -20,7 +21,7 @@ export type ScoreOverride = z.infer<typeof scoreOverrideSchema>;
 export const createInspectionSchema = z.object({
   id: z.string().uuid().optional(),
   hiveId: z.string().uuid(),
-  date: z.string().datetime(),
+  date: isoDateTime(),
   isAllDay: z.boolean().optional(),
   temperature: z.number().nullish(),
   weatherConditions: z.string().nullish(),
@@ -79,8 +80,8 @@ export const inspectionResponseSchema = createInspectionSchema.extend({
 // Schema for filtering inspections
 export const inspectionFilterSchema = z.object({
   hiveId: z.string().uuid().optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
+  startDate: isoDateTime().optional(),
+  endDate: isoDateTime().optional(),
   status: inspectionStatusSchema.optional(),
 });
 

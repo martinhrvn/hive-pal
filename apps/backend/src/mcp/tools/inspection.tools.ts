@@ -6,6 +6,7 @@ import {
   createInspectionSchema,
   createStandaloneActionSchema,
   inspectionStatusSchema,
+  isoDateTime,
 } from 'shared-schemas';
 import { InspectionsService } from '../../inspections/inspections.service';
 import { ActionsService } from '../../actions/actions.service';
@@ -41,8 +42,8 @@ const limitArg = z
   );
 
 const dateRange = {
-  startDate: z.string().datetime().optional().describe('ISO 8601 date-time'),
-  endDate: z.string().datetime().optional().describe('ISO 8601 date-time'),
+  startDate: isoDateTime().optional().describe('ISO 8601 date-time'),
+  endDate: isoDateTime().optional().describe('ISO 8601 date-time'),
 };
 
 const CONFIRM_FIRST =

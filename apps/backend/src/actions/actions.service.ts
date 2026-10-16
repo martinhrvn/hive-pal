@@ -25,6 +25,17 @@ import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
 import { SPLIT_FOLLOWUP_TITLE } from '../hives/split.service';
 
+/**
+ * A NOTE has no detail table: its content is stored in the action's notes
+ * column (and read back from there by mapPrismaToDto). Take it from
+ * details.content, falling back to notes for clients that only send notes.
+ */
+const actionNotes = (
+  notes: string | undefined,
+  details: CreateAction['details'] | undefined,
+): string | undefined =>
+  details?.type === ActionType.NOTE ? details.content || notes : notes;
+
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
     feedingAction: true;
@@ -338,7 +349,7 @@ export class ActionsService {
           hiveId: inspection.hiveId,
           inspectionId,
           type,
-          notes,
+          notes: actionNotes(notes, details),
           date: inspection.date,
           ...(userId && { createdByUserId: userId }),
         },
@@ -517,7 +528,7 @@ export class ActionsService {
         data: {
           hiveId: createActionDto.hiveId,
           type,
-          notes,
+          notes: actionNotes(notes, details),
           date: date ? new Date(date) : new Date(),
           createdByUserId: filter.userId,
         },
@@ -608,7 +619,8 @@ export class ActionsService {
       );
     }
 
-    const { type, notes, details, date } = updateActionDto;
+    const { type, details, date } = updateActionDto;
+    const notes = actionNotes(updateActionDto.notes, details);
 
     // Use transaction to update action and related details
     const result = await this.prisma.$transaction(async (tx) => {

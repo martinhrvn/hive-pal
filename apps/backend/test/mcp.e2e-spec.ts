@@ -203,4 +203,50 @@ describe('MCP (e2e)', () => {
     expect(todo).not.toBeNull();
     await prisma.todo.deleteMany({ where: { hiveId: ownHiveId } });
   });
+
+  it('accepts offset timestamps and keeps NOTE content', async () => {
+    const token = await getAccessToken('openid hivepal:read hivepal:write');
+
+    const note = await mcpCall(token, 'tools/call', {
+      name: 'record_action',
+      arguments: {
+        hiveId: ownHiveId,
+        type: 'NOTE',
+        date: '2026-10-23T08:00:00+02:00',
+        details: { type: 'NOTE', content: 'Bees calm, queen seen' },
+      },
+    }).expect(200);
+    expect(note.body.result.isError).toBeFalsy();
+    const standalone = await prisma.action.findFirst({
+      where: { hiveId: ownHiveId, inspectionId: null, type: 'NOTE' },
+    });
+    expect(standalone?.notes).toBe('Bees calm, queen seen');
+    expect(standalone?.date.toISOString()).toBe('2026-10-23T06:00:00.000Z');
+
+    const inspection = await mcpCall(token, 'tools/call', {
+      name: 'create_inspection',
+      arguments: {
+        hiveId: ownHiveId,
+        date: '2026-10-20T14:30:00+02:00',
+        actions: [
+          {
+            type: 'NOTE',
+            details: { type: 'NOTE', content: 'Added a super' },
+          },
+        ],
+      },
+    }).expect(200);
+    expect(inspection.body.result.isError).toBeFalsy();
+    const inspectionNote = await prisma.action.findFirst({
+      where: { hiveId: ownHiveId, inspectionId: { not: null }, type: 'NOTE' },
+      include: { inspection: true },
+    });
+    expect(inspectionNote?.notes).toBe('Added a super');
+    expect(inspectionNote?.inspection?.date.toISOString()).toBe(
+      '2026-10-20T12:30:00.000Z',
+    );
+
+    await prisma.action.deleteMany({ where: { hiveId: ownHiveId } });
+    await prisma.inspection.deleteMany({ where: { hiveId: ownHiveId } });
+  });
 });

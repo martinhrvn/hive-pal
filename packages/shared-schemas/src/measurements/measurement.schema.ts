@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isoDateTime } from '../utils/datetime';
 
 export const metricNameSchema = z
   .string()
@@ -108,7 +109,7 @@ export const weightReadingSchema = z.object({
   unit: z.string().max(16).default('kg'),
   boxId: z.string().uuid().nullish(),
   side: measurementSideSchema.nullish(),
-  recordedAt: z.string().datetime().optional(),
+  recordedAt: isoDateTime().optional(),
 });
 
 export type WeightReading = z.infer<typeof weightReadingSchema>;
