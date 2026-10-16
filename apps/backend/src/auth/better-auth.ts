@@ -5,8 +5,10 @@ import {
   admin,
   customSession,
   genericOAuth,
+  jwt,
 } from 'better-auth/plugins';
 import { passkey } from '@better-auth/passkey';
+import { mcp } from '@better-auth/mcp';
 import {
   APIError,
   createAuthMiddleware,
@@ -27,6 +29,7 @@ import {
   loadOidcConfig,
 } from './oidc-config';
 import { secureOidcAccountLink } from './oidc-linking';
+import { MCP_SCOPES, loadMcpConfig } from './mcp-config';
 
 const prismaForAuth = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
@@ -53,6 +56,14 @@ const useSecureCookies =
     ? process.env.BETTER_AUTH_SECURE_COOKIES.toLowerCase() === 'true'
     : (process.env.BETTER_AUTH_URL ?? '').startsWith('https://');
 
+const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173';
+const mcpConfig = loadMcpConfig();
+if (!mcpConfig.enabled && process.env.MCP_ENABLED?.toLowerCase() !== 'false') {
+  console.warn(
+    `[auth] MCP is disabled: its resource URL ${mcpConfig.resource} must be https (or a loopback host in development).`,
+  );
+}
+
 const oidc = loadOidcConfig();
 const localLoginDisabled = isLocalLoginDisabled(process.env, oidc);
 if (
@@ -68,7 +79,10 @@ export const auth = betterAuth({
   database: prismaAdapter(prismaForAuth, { provider: 'postgresql' }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.FRONTEND_URL ?? 'http://localhost:5173'],
+  trustedOrigins: [frontendUrl],
+  // The jwt plugin's session-to-JWT endpoint isn't used; MCP access tokens
+  // come from the OAuth provider's /oauth2/token.
+  disabledPaths: mcpConfig.enabled ? ['/token'] : [],
 
   emailAndPassword: {
     enabled: true,
@@ -292,8 +306,24 @@ export const auth = betterAuth({
     passkey({
       rpID: process.env.PASSKEY_RP_ID ?? 'localhost',
       rpName: 'Hive Pal',
-      origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',
+      origin: frontendUrl,
     }),
+    ...(mcpConfig.enabled
+      ? [
+          jwt(),
+          mcp({
+            resource: mcpConfig.resource,
+            // The login and consent pages are SPA routes on the frontend.
+            loginPage: `${frontendUrl}/login`,
+            consentPage: `${frontendUrl}/oauth/consent`,
+            scopes: MCP_SCOPES,
+            // MCP clients register themselves (RFC 7591) before the first login.
+            allowDynamicClientRegistration: true,
+            allowUnauthenticatedClientRegistration: true,
+            clientRegistrationDefaultScopes: MCP_SCOPES,
+          }),
+        ]
+      : []),
     ...(oidc.enabled
       ? [
           genericOAuth({

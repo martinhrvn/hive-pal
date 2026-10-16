@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { WeatherCondition, Prisma } from '@/prisma/client';
 import axios from 'axios';
+import { apiaryAccessWhere } from '../common/apiary-scope';
 
 interface OpenMeteoHourlyData {
   time: string[];
@@ -45,6 +46,21 @@ interface WeatherUpdateOptions {
   daily: boolean;
 }
 
+// Open-Meteo weather code ranges [min, max] → simplified condition.
+const WEATHER_CODE_RANGES: [number, number, WeatherCondition][] = [
+  [0, 0, WeatherCondition.CLEAR],
+  [1, 2, WeatherCondition.PARTLY_CLOUDY],
+  [3, 3, WeatherCondition.OVERCAST],
+  [45, 45, WeatherCondition.FOG],
+  [48, 48, WeatherCondition.FOG],
+  [51, 57, WeatherCondition.DRIZZLE],
+  [61, 67, WeatherCondition.RAIN],
+  [71, 77, WeatherCondition.SNOW],
+  [80, 82, WeatherCondition.RAIN], // Rain showers
+  [85, 86, WeatherCondition.SNOW], // Snow showers
+  [95, 99, WeatherCondition.RAIN], // Thunderstorm
+];
+
 @Injectable()
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name);
@@ -59,19 +75,11 @@ export class WeatherService {
    * Based on: https://open-meteo.com/en/docs
    */
   private mapWeatherCode(code: number): WeatherCondition {
-    if (code === 0) return WeatherCondition.CLEAR;
-    if (code === 1 || code === 2) return WeatherCondition.PARTLY_CLOUDY;
-    if (code === 3) return WeatherCondition.OVERCAST;
-    if (code === 45 || code === 48) return WeatherCondition.FOG;
-    if (code >= 51 && code <= 57) return WeatherCondition.DRIZZLE;
-    if (code >= 61 && code <= 67) return WeatherCondition.RAIN;
-    if (code >= 71 && code <= 77) return WeatherCondition.SNOW;
-    if (code >= 80 && code <= 82) return WeatherCondition.RAIN; // Rain showers
-    if (code >= 85 && code <= 86) return WeatherCondition.SNOW; // Snow showers
-    if (code >= 95 && code <= 99) return WeatherCondition.RAIN; // Thunderstorm
-
+    const match = WEATHER_CODE_RANGES.find(
+      ([min, max]) => code >= min && code <= max,
+    );
     // Default to partly cloudy for unknown codes
-    return WeatherCondition.PARTLY_CLOUDY;
+    return match?.[2] ?? WeatherCondition.PARTLY_CLOUDY;
   }
 
   /**
@@ -464,6 +472,20 @@ export class WeatherService {
     }
 
     this.logger.log('Weather update completed for all apiaries');
+  }
+
+  /**
+   * Weather is keyed by apiary only; callers must check that the user can see
+   * the apiary before reading it.
+   */
+  async assertApiaryReadable(apiaryId: string, userId: string): Promise<void> {
+    const apiary = await this.prisma.apiary.findFirst({
+      where: { id: apiaryId, ...apiaryAccessWhere(userId) },
+      select: { id: true },
+    });
+    if (!apiary) {
+      throw new NotFoundException(`Apiary with ID ${apiaryId} not found`);
+    }
   }
 
   /**

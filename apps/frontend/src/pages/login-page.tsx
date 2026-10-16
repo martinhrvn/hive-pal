@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import {
   useNavigate,
@@ -15,6 +15,7 @@ import { authClient } from '@/lib/auth-client';
 import { getAuthConfig } from '@/lib/auth-config';
 import { SsoButton, SsoDivider } from '@/components/auth/sso-button';
 import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
+import { getOAuthResumeUrl } from '@/lib/oauth-resume';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -34,8 +35,11 @@ const LoginPage = () => {
   const { oidcEnabled, oidcAllowSignup, localLoginEnabled } = getAuthConfig();
   const showSignUpLink = localLoginEnabled || oidcAllowSignup;
 
-  // Get the redirect path from location state, default to '/'
-  const from = location.state?.from?.pathname || '/';
+  // An OAuth client (e.g. Claude over MCP) sent the user here to sign in:
+  // every sign-in method then returns to its authorization request.
+  const oauthResumeUrl = getOAuthResumeUrl(location.search);
+  // Otherwise go back to the page that required login, default to '/'
+  const from = oauthResumeUrl ?? (location.state?.from?.pathname || '/');
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +60,7 @@ const LoginPage = () => {
   const handleMagicLink = async () => {
     setError('');
     if (!username) {
-      setError(t('login.email') + ' ?');
+      setError(t('login.magicLink.emailRequired'));
       return;
     }
     setBusy('magic');
@@ -66,7 +70,7 @@ const LoginPage = () => {
         callbackURL: from,
       });
       if (result.error) {
-        setError(result.error.message ?? 'Failed to send magic link');
+        setError(result.error.message ?? t('login.magicLink.failed'));
       } else {
         setMagicLinkSent(true);
       }
@@ -81,21 +85,24 @@ const LoginPage = () => {
     try {
       const result = await authClient.signIn.passkey();
       if (result?.error) {
-        setError(result.error.message ?? 'Passkey sign-in failed');
+        setError(result.error.message ?? t('login.passkey.failed'));
       } else {
         window.location.href = from;
       }
     } catch (err) {
       console.error('Passkey error:', err);
-      setError('Passkey sign-in failed');
+      setError(t('login.passkey.failed'));
     } finally {
       setBusy(null);
     }
   };
 
-  if (isLoggedIn) {
-    navigate(from);
-  }
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    // The authorize endpoint is a backend route, not an SPA page.
+    if (oauthResumeUrl) window.location.replace(oauthResumeUrl);
+    else navigate(from);
+  }, [isLoggedIn, oauthResumeUrl, from, navigate]);
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-center relative overflow-hidden">
@@ -203,7 +210,7 @@ const LoginPage = () => {
 
               {magicLinkSent ? (
                 <div className="mt-6 p-3 text-center bg-emerald-900/40 border border-emerald-400/30 rounded text-sm text-emerald-100">
-                  Magic link sent — check your email for a sign-in link.
+                  {t('login.magicLink.sent')}
                 </div>
               ) : (
                 <div className="mt-6 space-y-3">
@@ -213,7 +220,7 @@ const LoginPage = () => {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase tracking-wider">
                       <span className="bg-transparent px-2 text-white/60">
-                        or
+                        {t('sso.or')}
                       </span>
                     </div>
                   </div>
@@ -224,7 +231,7 @@ const LoginPage = () => {
                     onClick={handleMagicLink}
                     disabled={busy !== null}
                   >
-                    {busy === 'magic' ? '…' : 'Email me a sign-in link'}
+                    {busy === 'magic' ? '…' : t('login.magicLink.submit')}
                   </Button>
                   <Button
                     type="button"
@@ -233,7 +240,7 @@ const LoginPage = () => {
                     onClick={handlePasskey}
                     disabled={busy !== null}
                   >
-                    {busy === 'passkey' ? '…' : 'Sign in with passkey'}
+                    {busy === 'passkey' ? '…' : t('login.passkey.submit')}
                   </Button>
                 </div>
               )}
