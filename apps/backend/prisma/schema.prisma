@@ -127,6 +127,8 @@ model Passkey {
 
 // Better Auth jwt + @better-auth/mcp (OAuth 2.1 provider) models, used to
 // issue access tokens to MCP clients. Field names follow the plugins' schemas.
+// Optional string[] fields are Json? because Prisma lists can't be NULL and the
+// plugin treats NULL ("not set") differently from [] (see prismaForAuth).
 model Jwks {
   id         String    @id
   publicKey  String
@@ -146,7 +148,7 @@ model OauthClient {
   skipConsent                      Boolean?
   enableEndSession                 Boolean?
   subjectType                      String?
-  scopes                           String[]
+  scopes                           Json?
   clientCredentialsScopes          String[]  @default([])
   userId                           String?
   user                             User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -155,22 +157,22 @@ model OauthClient {
   name                             String?
   uri                              String?
   icon                             String?
-  contacts                         String[]
+  contacts                         Json?
   tos                              String?
   policy                           String?
   softwareId                       String?
   softwareVersion                  String?
   softwareStatement                String?
   redirectUris                     String[]
-  postLogoutRedirectUris           String[]
+  postLogoutRedirectUris           Json?
   backchannelLogoutUri             String?
   backchannelLogoutSessionRequired Boolean?
   tokenEndpointAuthMethod          String?
   applicationType                  String?
   jwks                             String?
   jwksUri                          String?
-  grantTypes                       String[]
-  responseTypes                    String[]
+  grantTypes                       Json?
+  responseTypes                    Json?
   requirePKCE                      Boolean?
   dpopBoundAccessTokens            Boolean?  @default(false)
   referenceId                      String?
@@ -192,7 +194,7 @@ model OauthResource {
   refreshTokenTtl               Int?
   signingAlgorithm              String?
   signingKeyId                  String?
-  allowedScopes                 String[]
+  allowedScopes                 Json?
   customClaims                  Json?
   dpopBoundAccessTokensRequired Boolean?  @default(false)
   disabled                      Boolean?  @default(false)
@@ -229,8 +231,8 @@ model OauthRefreshToken {
   user                    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   referenceId             String?
   authorizationCodeId     String?
-  resources               String[]
-  requestedUserInfoClaims String[]
+  resources               Json?
+  requestedUserInfoClaims Json?
   expiresAt               DateTime?
   createdAt               DateTime?
   revoked                 DateTime?
@@ -260,8 +262,8 @@ model OauthAccessToken {
   user                    User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
   referenceId             String?
   authorizationCodeId     String?
-  resources               String[]
-  requestedUserInfoClaims String[]
+  resources               Json?
+  requestedUserInfoClaims Json?
   refreshId               String?
   refresh                 OauthRefreshToken? @relation(fields: [refreshId], references: [id], onDelete: Cascade)
   expiresAt               DateTime?
@@ -284,8 +286,8 @@ model OauthConsent {
   userId                  String?
   user                    User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   referenceId             String?
-  resources               String[]
-  requestedUserInfoClaims String[]
+  resources               Json?
+  requestedUserInfoClaims Json?
   scopes                  String[]
   createdAt               DateTime?
   updatedAt               DateTime?

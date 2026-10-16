@@ -53,3 +53,32 @@ export function loadMcpConfig(env: NodeJS.ProcessEnv = process.env): McpConfig {
     resource,
   };
 }
+
+const isLoopbackHttpUri = (uri: unknown): boolean => {
+  if (typeof uri !== 'string') return false;
+  try {
+    const url = new URL(uri);
+    return url.protocol === 'http:' && LOOPBACK_HOSTS.has(url.hostname);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Dynamic client registration defaults `application_type` to "web", which
+ * only allows https redirect URIs. Local MCP clients (Claude Code, the MCP
+ * Inspector, IDEs) register http://localhost callbacks without declaring
+ * themselves native, so treat such a registration as a native app.
+ */
+export function nativeLoopbackRegistration(
+  body: unknown,
+): { application_type: 'native' } | undefined {
+  if (!body || typeof body !== 'object') return undefined;
+  const { application_type, redirect_uris } = body as Record<string, unknown>;
+  if (application_type !== undefined || !Array.isArray(redirect_uris)) {
+    return undefined;
+  }
+  return redirect_uris.length > 0 && redirect_uris.every(isLoopbackHttpUri)
+    ? { application_type: 'native' }
+    : undefined;
+}

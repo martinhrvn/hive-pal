@@ -20,7 +20,7 @@ import {
 } from 'better-auth/crypto';
 import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../generated/prisma/client.js';
+import { Prisma, PrismaClient } from '../generated/prisma/client.js';
 import { authDeps } from './auth-deps';
 import { UserLoginEvent } from '../events/auth.events';
 import {
@@ -29,10 +29,59 @@ import {
   loadOidcConfig,
 } from './oidc-config';
 import { secureOidcAccountLink } from './oidc-linking';
-import { MCP_SCOPES, loadMcpConfig } from './mcp-config';
+import {
+  MCP_SCOPES,
+  loadMcpConfig,
+  nativeLoopbackRegistration,
+} from './mcp-config';
+
+// Optional string[] fields of the OAuth provider models, stored as Json?
+// because Prisma lists can't be NULL. The plugin writes an explicit null for
+// "not set" (e.g. a resource with no scope restriction), which Prisma only
+// accepts for Json columns as Prisma.DbNull.
+const NULLABLE_LIST_FIELDS: Record<string, readonly string[]> = {
+  OauthClient: [
+    'scopes',
+    'contacts',
+    'postLogoutRedirectUris',
+    'grantTypes',
+    'responseTypes',
+  ],
+  OauthResource: ['allowedScopes'],
+  OauthRefreshToken: ['resources', 'requestedUserInfoClaims'],
+  OauthAccessToken: ['resources', 'requestedUserInfoClaims'],
+  OauthConsent: ['resources', 'requestedUserInfoClaims'],
+};
+
+const nullListsToDbNull = (fields: readonly string[], data: unknown): void => {
+  if (Array.isArray(data)) {
+    data.forEach((row) => nullListsToDbNull(fields, row));
+    return;
+  }
+  if (!data || typeof data !== 'object') return;
+  const row = data as Record<string, unknown>;
+  for (const field of fields) {
+    if (row[field] === null) row[field] = Prisma.DbNull;
+  }
+};
 
 const prismaForAuth = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+}).$extends({
+  query: {
+    $allModels: {
+      $allOperations({ model, args, query }) {
+        const fields = NULLABLE_LIST_FIELDS[model];
+        if (fields && args && typeof args === 'object') {
+          const writes = args as Record<string, unknown>;
+          for (const key of ['data', 'create', 'update']) {
+            nullListsToDbNull(fields, writes[key]);
+          }
+        }
+        return query(args);
+      },
+    },
+  },
 });
 
 const isBcryptHash = (hash: string): boolean =>
@@ -170,6 +219,10 @@ export const auth = betterAuth({
         throw new APIError('FORBIDDEN', {
           message: 'Local login is disabled. Please sign in with SSO.',
         });
+      }
+      if (ctx.path === '/oauth2/register') {
+        const defaults = nativeLoopbackRegistration(ctx.body);
+        if (defaults) return { context: { body: defaults } };
       }
     }),
     after: createAuthMiddleware(async (ctx) => {

@@ -1,4 +1,8 @@
-import { isValidMcpResource, loadMcpConfig } from './mcp-config';
+import {
+  isValidMcpResource,
+  loadMcpConfig,
+  nativeLoopbackRegistration,
+} from './mcp-config';
 
 describe('loadMcpConfig', () => {
   it('serves MCP under /api/mcp on the auth base URL', () => {
@@ -35,5 +39,37 @@ describe('isValidMcpResource', () => {
 
   it('accepts the IPv4 loopback address', () => {
     expect(isValidMcpResource('http://127.0.0.1:3000/api/mcp')).toBe(true);
+  });
+});
+
+describe('nativeLoopbackRegistration', () => {
+  it('marks clients with only loopback http callbacks as native', () => {
+    expect(
+      nativeLoopbackRegistration({
+        redirect_uris: ['http://localhost:6274/oauth/callback'],
+      }),
+    ).toEqual({ application_type: 'native' });
+  });
+
+  it('leaves web clients and explicit application types alone', () => {
+    expect(
+      nativeLoopbackRegistration({
+        redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
+      }),
+    ).toBeUndefined();
+    expect(
+      nativeLoopbackRegistration({
+        application_type: 'web',
+        redirect_uris: ['http://localhost:6274/oauth/callback'],
+      }),
+    ).toBeUndefined();
+    expect(
+      nativeLoopbackRegistration({
+        redirect_uris: [
+          'http://localhost:6274/oauth/callback',
+          'http://example.com/callback',
+        ],
+      }),
+    ).toBeUndefined();
   });
 });
