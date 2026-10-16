@@ -11,9 +11,9 @@ import {
  */
 export function MarketingCtaSection({
   i18nPrefix,
-}: {
+}: Readonly<{
   i18nPrefix: 'marketing.landing.cta' | 'marketing.features.cta';
-}) {
+}>) {
   const { t } = useTranslation('common');
   return (
     <section className="relative overflow-hidden bg-cream py-24 sm:py-32">

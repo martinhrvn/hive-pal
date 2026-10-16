@@ -9,7 +9,9 @@ const FONTS_URL =
  * header and footer. Loads the marketing typefaces here (React hoists the
  * stylesheet into <head>), so app routes don't pay for them.
  */
-export function MarketingLayout({ children }: { children: React.ReactNode }) {
+export function MarketingLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   preconnect('https://fonts.googleapis.com');
   preconnect('https://fonts.gstatic.com', { crossOrigin: 'anonymous' });
   return (

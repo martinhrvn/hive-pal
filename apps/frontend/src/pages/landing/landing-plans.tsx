@@ -42,14 +42,14 @@ function PlanCard({
   body,
   items,
   action,
-}: {
+}: Readonly<{
   tone: keyof typeof PLAN_TONE;
   title: string;
   badge: string;
   body: string;
   items: string[];
   action: React.ReactNode;
-}) {
+}>) {
   const styles = PLAN_TONE[tone];
   return (
     <div className={cn('relative rounded-2xl border p-10', styles.card)}>

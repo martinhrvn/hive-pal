@@ -17,11 +17,11 @@ export function MarketingHeading({
   size = 'lg',
   className,
   children,
-}: {
+}: Readonly<{
   size?: keyof typeof HEADING_SIZE;
   className?: string;
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <h2
       className={cn(
@@ -36,7 +36,7 @@ export function MarketingHeading({
 }
 
 /** Faint hexagon tiling behind a section. */
-export function HexPattern({ tone }: { tone: 'light' | 'dark' }) {
+export function HexPattern({ tone }: Readonly<{ tone: 'light' | 'dark' }>) {
   return (
     <div
       aria-hidden="true"
@@ -55,11 +55,11 @@ export function ArrowLink({
   to,
   className,
   children,
-}: {
+}: Readonly<{
   to: string;
   className?: string;
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <Link
       to={to}
@@ -76,7 +76,10 @@ export function ArrowLink({
 }
 
 /** One feature in a `<dl>`: hex bullet and rule, then title and body. */
-export function FeatureItem({ title, body }: { title: string; body: string }) {
+export function FeatureItem({
+  title,
+  body,
+}: Readonly<{ title: string; body: string }>) {
   return (
     <div className="group relative">
       <div className="flex items-center gap-3">
@@ -99,11 +102,11 @@ export function MarketingCtas({
   variant,
   signupLabel,
   githubLabel,
-}: {
+}: Readonly<{
   variant: 'heroOnImage' | 'hero' | 'closing';
   signupLabel: string;
   githubLabel: string;
-}) {
+}>) {
   const onImage = variant === 'heroOnImage';
   return (
     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">

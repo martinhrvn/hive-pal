@@ -10,7 +10,7 @@ import { DOCS_URL, GITHUB_URL, MARKETING_FOCUS } from './marketing-constants';
 const HEX_PATH = 'M12 2.5l8.66 5v9l-8.66 5-8.66-5v-9l8.66-5z';
 
 /** Hexagon bullet used in feature lists; colour it with a text-* class. */
-export function HexBullet({ className }: { className?: string }) {
+export function HexBullet({ className }: Readonly<{ className?: string }>) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -27,10 +27,10 @@ export function HexBullet({ className }: { className?: string }) {
 export function SectionLabel({
   children,
   tone = 'light',
-}: {
+}: Readonly<{
   children: React.ReactNode;
   tone?: 'light' | 'dark';
-}) {
+}>) {
   return (
     <div
       className={cn(
@@ -50,7 +50,7 @@ export function SectionLabel({
 }
 
 /** The Hive Pal mark, 36 px tall; the 112 px source covers high-DPI screens. */
-function Logo({ className }: { className?: string }) {
+function Logo({ className }: Readonly<{ className?: string }>) {
   return (
     <picture>
       <source srcSet="/hive-pal-logo-112.webp" type="image/webp" />
@@ -74,10 +74,10 @@ type NavLink = { label: string; icon?: React.ReactNode } & (
 function MarketingNavLink({
   link,
   className,
-}: {
+}: Readonly<{
   link: NavLink;
   className: string;
-}) {
+}>) {
   const content = (
     <>
       {link.icon}

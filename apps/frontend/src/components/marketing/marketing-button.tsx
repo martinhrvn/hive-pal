@@ -22,8 +22,10 @@ const marketingButtonVariants = cva('', {
   },
 });
 
-type MarketingButtonProps = Omit<ComponentProps<typeof Button>, 'variant'> &
-  Required<VariantProps<typeof marketingButtonVariants>>;
+type MarketingButtonProps = Readonly<
+  Omit<ComponentProps<typeof Button>, 'variant'> &
+    Required<VariantProps<typeof marketingButtonVariants>>
+>;
 
 export function MarketingButton({
   variant,

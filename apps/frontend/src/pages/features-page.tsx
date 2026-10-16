@@ -124,10 +124,10 @@ function FeaturesHero() {
 function FeatureGroup({
   group,
   shaded,
-}: {
+}: Readonly<{
   group: (typeof GROUPS)[number];
   shaded: boolean;
-}) {
+}>) {
   const { t } = useTranslation('common');
   const prefix = `marketing.features.groups.${group.id}`;
   const Icon = group.icon;
