@@ -11,7 +11,7 @@ import { AlertsService } from '../alerts/alerts.service';
 import { WeatherService } from '../weather/weather.service';
 import { FeedTypesService } from '../users/feed-types.service';
 import { McpScopeService } from './mcp-scope.service';
-import { McpContext } from './mcp-context';
+import { McpContext, publishFlatToolList } from './mcp-context';
 import { registerApiaryTools } from './tools/apiary.tools';
 import { registerHiveTools } from './tools/hive.tools';
 import { registerInspectionTools } from './tools/inspection.tools';
@@ -68,6 +68,7 @@ export class McpServerFactory {
       todos: this.todos,
       alerts: this.alerts,
     });
+    publishFlatToolList(server);
     return server;
   }
 }

@@ -93,6 +93,16 @@ describe('McpServerFactory', () => {
     expect(JSON.stringify(recordAction?.inputSchema)).toContain('SYRUP_2_1');
   });
 
+  it('publishes flat tool schemas without $ref or unrepresentable types', async () => {
+    const { client } = await connect([MCP_READ_SCOPE, MCP_WRITE_SCOPE]);
+    const { tools } = await client.listTools();
+    // Some MCP clients and validators mishandle $ref in tool schemas.
+    const offenders = tools
+      .filter((t) => /"\$ref"|"not":\{\}/.test(JSON.stringify(t.inputSchema)))
+      .map((t) => t.name);
+    expect(offenders).toEqual([]);
+  });
+
   it('scopes reads to all apiaries unless an apiary is given', async () => {
     const { client, deps } = await connect([MCP_READ_SCOPE]);
     const result = await client.callTool({ name: 'list_hives', arguments: {} });

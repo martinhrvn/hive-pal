@@ -73,7 +73,8 @@
     "winston-loki": "^6.1.7",
     "winston-transport": "^4.9.0",
     "yauzl": "^3.4.0",
-    "zod": "catalog:zod"
+    "zod": "catalog:zod",
+    "zod-to-json-schema": "3.25.2"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^2.34.2",
