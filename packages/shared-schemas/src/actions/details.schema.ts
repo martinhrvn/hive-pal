@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ActionType } from './types';
 import { boxTypeSchema } from '../hives/box.schema';
 import { hiveStatusSchema } from '../hives/status';
-import { feedEntryUnitSchema } from './feeding';
+import { feedEntryUnitSchema, feedTypeIdSchema } from './feeding';
 
 // Treatment product configuration with default units and quantity requirements
 export const TREATMENT_PRODUCTS = {
@@ -56,7 +56,7 @@ export const feedingActionDetailsSchema = z.object({
   concentration: z.string().optional(),
   // v2 fields
   /** Built-in registry id or a UserFeedType id. */
-  feedTypeId: z.string().optional(),
+  feedTypeId: feedTypeIdSchema.optional(),
   /** What the user typed, preserved for display. */
   enteredAmount: z.number().positive().optional(),
   enteredUnit: feedEntryUnitSchema.optional(),

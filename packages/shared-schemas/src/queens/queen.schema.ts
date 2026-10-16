@@ -1,12 +1,9 @@
 import { z } from 'zod';
+import { isoDateTime } from '../utils/datetime';
 import { queenMatingTypeSchema, queenStatusSchema } from './status';
 
-const dateInputSchema = z
-  .string()
-  .datetime()
-  .optional()
-  .or(z.date().optional())
-  .nullable();
+// Optional, nullable ISO date-time (offsets allowed) or a Date.
+const dateInputSchema = z.union([isoDateTime(), z.date()]).nullish();
 
 // Trait ratings are 1-5 where higher is always better
 const traitRatingSchema = z.number().int().min(1).max(5).nullish();

@@ -33,3 +33,4 @@ export * from './hivehub';
 
 // Export utility functions
 export * from './utils/inspection-type';
+export * from './utils/datetime';

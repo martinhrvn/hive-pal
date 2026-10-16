@@ -9,5 +9,6 @@ import { PrometheusModule } from '../health/prometheus/prometheus.module';
   imports: [LoggerModule, PrometheusModule],
   controllers: [ApiariesController],
   providers: [ApiariesService, PrismaService],
+  exports: [ApiariesService],
 })
 export class ApiariesModule {}

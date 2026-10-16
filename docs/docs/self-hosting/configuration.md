@@ -85,6 +85,16 @@ Users created through SSO are asked once to accept the privacy policy after thei
 Keep local login enabled until you have confirmed that SSO works. Users with `ADMIN_EMAIL` get the admin role no matter how they sign in.
 :::
 
+### AI assistants (MCP)
+
+Hive-Pal serves an [MCP](https://modelcontextprotocol.io/) endpoint at `<BETTER_AUTH_URL>/api/mcp` and acts as the OAuth server MCP clients sign in through (see [Connecting AI assistants](../user-guide/mcp.md)).
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MCP_ENABLED` | Set to `false` to turn off the MCP endpoint and the OAuth provider | `true` |
+
+MCP requires `BETTER_AUTH_URL` to be `https://` (plain `http://` works only on `localhost`), so it is switched off automatically on deployments served over plain http. If a reverse proxy sits in front of Hive-Pal, it must also forward `/.well-known/oauth-protected-resource`, `/.well-known/oauth-authorization-server` and `/.well-known/openid-configuration` to the backend.
+
 ## Email
 
 Email powers magic-link sign-in and password-reset messages. Hive-Pal supports **Resend** or **SMTP** and auto-selects based on what's configured. Without email, password and passkey login still work, but magic links and password resets do not.

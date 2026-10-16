@@ -28,7 +28,10 @@
     "@aws-sdk/client-s3": "^3.1149.0",
     "@aws-sdk/lib-storage": "^3.1149.0",
     "@aws-sdk/s3-request-presigner": "^3.1149.0",
+    "@better-auth/mcp": "1.7.7",
+    "@better-auth/oauth-provider": "1.7.7",
     "@better-auth/passkey": "1.7.7",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@nestjs/axios": "^12.0.1",
     "@nestjs/common": "^12.1.2",
     "@nestjs/config": "^12.0.1",
@@ -70,7 +73,8 @@
     "winston-loki": "^6.1.7",
     "winston-transport": "^4.9.0",
     "yauzl": "^3.4.0",
-    "zod": "catalog:zod"
+    "zod": "catalog:zod",
+    "zod-to-json-schema": "3.25.2"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^2.34.2",

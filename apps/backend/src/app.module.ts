@@ -49,6 +49,7 @@ import { WorkerJobsModule } from './worker-jobs/worker-jobs.module';
 import { AdminMediaModule } from './admin-media/admin-media.module';
 import { HiveScaleModule } from './hivescale/hivescale.module';
 import { AssistantModule } from './assistant/assistant.module';
+import { McpModule } from './mcp/mcp.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { AccountTransferModule } from './account-transfer/account-transfer.module';
 
@@ -70,7 +71,7 @@ const NO_STORE_FILES = /(?:^|[\\/])(?:sw\.js|registerSW\.js|index\.html)$/;
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
-      exclude: ['/api{/*path}'],
+      exclude: ['/api{/*path}', '/.well-known{/*path}'],
       renderPath: /^(?!\/assets\/)/,
       serveStaticOptions: {
         setHeaders: (res, filePath) => {
@@ -125,6 +126,7 @@ const NO_STORE_FILES = /(?:^|[\\/])(?:sw\.js|registerSW\.js|index\.html)$/;
     AdminMediaModule,
     HiveScaleModule,
     AssistantModule,
+    McpModule,
     MeasurementsModule,
     AccountTransferModule,
   ],

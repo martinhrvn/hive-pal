@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isoDateTime } from '../utils/datetime';
 import { actionDetailsSchema } from './details.schema';
 import { actionTypeSchema } from './types';
 
@@ -16,7 +17,7 @@ export const createActionSchema = baseActionSchema.extend({
 // Create schema for standalone actions (not tied to inspection)
 export const createStandaloneActionSchema = createActionSchema.extend({
   hiveId: z.string().uuid(),
-  date: z.string().datetime().optional(),
+  date: isoDateTime().optional(),
 });
 
 // Response schema for actions (with IDs)
@@ -33,8 +34,8 @@ export const actionResponseSchema = createActionSchema.extend({
 export const actionFilterSchema = z.object({
   hiveId: z.string().uuid().optional(),
   type: actionTypeSchema.optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
+  startDate: isoDateTime().optional(),
+  endDate: isoDateTime().optional(),
 });
 
 // Update schema for actions (partial, hiveId cannot be changed)

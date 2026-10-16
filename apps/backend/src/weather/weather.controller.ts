@@ -1,4 +1,5 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import type { Request } from 'express';
 import { WeatherService } from './weather.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
@@ -7,6 +8,8 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
+
+type AuthedRequest = Request & { user: { id: string } };
 
 @ApiTags('weather')
 @Controller('weather')
@@ -17,19 +20,31 @@ export class WeatherController {
 
   @Get('current/:apiaryId')
   @ApiOperation({ summary: 'Get current weather for an apiary' })
-  async getCurrentWeather(@Param('apiaryId') apiaryId: string) {
+  async getCurrentWeather(
+    @Param('apiaryId') apiaryId: string,
+    @Req() req: AuthedRequest,
+  ) {
+    await this.weatherService.assertApiaryReadable(apiaryId, req.user.id);
     return this.weatherService.getCurrentWeather(apiaryId);
   }
 
   @Get('hourly-forecast/:apiaryId')
   @ApiOperation({ summary: 'Get 5-hour hourly forecast for an apiary' })
-  async getHourlyForecast(@Param('apiaryId') apiaryId: string) {
+  async getHourlyForecast(
+    @Param('apiaryId') apiaryId: string,
+    @Req() req: AuthedRequest,
+  ) {
+    await this.weatherService.assertApiaryReadable(apiaryId, req.user.id);
     return this.weatherService.getHourlyForecast(apiaryId);
   }
 
   @Get('daily-forecast/:apiaryId')
   @ApiOperation({ summary: 'Get 7-day daily forecast for an apiary' })
-  async getDailyForecast(@Param('apiaryId') apiaryId: string) {
+  async getDailyForecast(
+    @Param('apiaryId') apiaryId: string,
+    @Req() req: AuthedRequest,
+  ) {
+    await this.weatherService.assertApiaryReadable(apiaryId, req.user.id);
     return this.weatherService.getDailyForecast(apiaryId);
   }
 
@@ -46,7 +61,9 @@ export class WeatherController {
   async getWeatherForDate(
     @Param('apiaryId') apiaryId: string,
     @Query('date') date: string,
+    @Req() req: AuthedRequest,
   ) {
+    await this.weatherService.assertApiaryReadable(apiaryId, req.user.id);
     const weather = await this.weatherService.getWeatherForDate(apiaryId, date);
     if (!weather) {
       return null;
@@ -76,10 +93,12 @@ export class WeatherController {
   })
   async getWeatherHistory(
     @Param('apiaryId') apiaryId: string,
+    @Req() req: AuthedRequest,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
     @Query('limit') limit?: string,
   ) {
+    await this.weatherService.assertApiaryReadable(apiaryId, req.user.id);
     const numLimit = limit ? parseInt(limit, 10) : undefined;
     return this.weatherService.getWeatherHistory(
       apiaryId,
@@ -94,7 +113,11 @@ export class WeatherController {
   @ApiOperation({
     summary: 'Get 5-day forecast for an apiary (now returns daily forecast)',
   })
-  async getForecast(@Param('apiaryId') apiaryId: string) {
+  async getForecast(
+    @Param('apiaryId') apiaryId: string,
+    @Req() req: AuthedRequest,
+  ) {
+    await this.weatherService.assertApiaryReadable(apiaryId, req.user.id);
     return this.weatherService.getDailyForecast(apiaryId);
   }
 }

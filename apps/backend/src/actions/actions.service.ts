@@ -12,8 +12,7 @@ import {
   CreateAction,
   CreateStandaloneAction,
   HiveStatus,
-  feedAmountToGrams,
-  feedSugarGrams,
+  getBuiltinFeedType,
   UpdateAction,
   UserPreferences,
 } from 'shared-schemas';
@@ -24,6 +23,24 @@ const boxesSchema = z
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
 import { SPLIT_FOLLOWUP_TITLE } from '../hives/split.service';
+import {
+  FeedSpecValues,
+  FeedingDetails,
+  builtinFeedTypeId,
+  deriveFeeding,
+  sameFeedLabel,
+} from './feeding-derivation';
+
+/**
+ * A NOTE has no detail table: its content is stored in the action's notes
+ * column (and read back from there by mapPrismaToDto). Take it from
+ * details.content, falling back to notes for clients that only send notes.
+ */
+const actionNotes = (
+  notes: string | undefined,
+  details: CreateAction['details'] | undefined,
+): string | undefined =>
+  details?.type === ActionType.NOTE ? details.content || notes : notes;
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
@@ -49,12 +66,38 @@ export class ActionsService {
   ) {}
 
   /**
+   * The acting user's own feed type a feeding refers to, by feedTypeId or by
+   * its label sent as feedType.
+   */
+  private async findUserFeedType(
+    details: FeedingDetails,
+    userId: string | undefined,
+    tx: Prisma.TransactionClient,
+  ): Promise<(FeedSpecValues & { id: string }) | undefined> {
+    if (!userId) return undefined;
+    const select = { id: true, label: true, density: true, sugarContent: true };
+    if (details.feedTypeId) {
+      const byId = await tx.userFeedType.findFirst({
+        where: { id: details.feedTypeId, userId },
+        select,
+      });
+      return byId ?? undefined;
+    }
+    const own = await tx.userFeedType.findMany({
+      where: { userId, archived: false },
+      select,
+    });
+    return own.find((feed) => sameFeedLabel(feed.label, details.feedType));
+  }
+
+  /**
    * Creates type-specific action details within a transaction
    */
   private async createActionDetails(
     actionId: string,
     details: CreateAction['details'],
     tx: Prisma.TransactionClient,
+    userId?: string,
   ): Promise<void> {
     if (!details) return;
 
@@ -65,18 +108,12 @@ export class ActionsService {
       case ActionType.FEEDING: {
         // v2: recompute the derived values server-side (client values are a
         // convenience only) so amountG/sugarG stay trustworthy for reports.
-        const amountG =
-          details.enteredAmount != null && details.enteredUnit != null
-            ? (feedAmountToGrams(
-                details.enteredAmount,
-                details.enteredUnit,
-                details.density,
-              ) ?? undefined)
-            : details.amountG;
-        const sugarG =
-          amountG != null && details.sugarContent != null
-            ? feedSugarGrams(amountG, details.sugarContent)
-            : details.sugarG;
+        // The feed type's spec fills in what API/MCP clients leave out.
+        const builtinId = builtinFeedTypeId(details);
+        const builtin = builtinId ? getBuiltinFeedType(builtinId) : undefined;
+        const spec =
+          builtin ?? (await this.findUserFeedType(details, userId, tx));
+        const derived = deriveFeeding(details, spec);
         await tx.feedingAction.create({
           data: {
             actionId,
@@ -84,13 +121,13 @@ export class ActionsService {
             amount: details.amount,
             unit: details.unit,
             concentration: details.concentration,
-            feedTypeId: details.feedTypeId,
-            enteredAmount: details.enteredAmount,
-            enteredUnit: details.enteredUnit,
-            amountG,
-            density: details.density,
-            sugarContent: details.sugarContent,
-            sugarG,
+            feedTypeId: details.feedTypeId ?? spec?.id,
+            enteredAmount: derived.enteredAmount,
+            enteredUnit: derived.enteredUnit,
+            amountG: derived.amountG,
+            density: derived.density,
+            sugarContent: derived.sugarContent,
+            sugarG: derived.sugarG,
             waterAddedMl: details.waterAddedMl,
           },
         });
@@ -329,24 +366,26 @@ export class ActionsService {
       throw new Error('Inspection not found');
     }
 
-    for (const action of actions) {
-      const { type, notes, details } = action;
+    // The actions are independent of each other; the transaction runs the
+    // queries on its one connection.
+    await Promise.all(
+      actions.map(async ({ type, notes, details }) => {
+        // Create the base action
+        const createdAction = await tx.action.create({
+          data: {
+            hiveId: inspection.hiveId,
+            inspectionId,
+            type,
+            notes: actionNotes(notes, details),
+            date: inspection.date,
+            ...(userId && { createdByUserId: userId }),
+          },
+        });
 
-      // Create the base action
-      const createdAction = await tx.action.create({
-        data: {
-          hiveId: inspection.hiveId,
-          inspectionId,
-          type,
-          notes,
-          date: inspection.date,
-          ...(userId && { createdByUserId: userId }),
-        },
-      });
-
-      // Add type-specific details
-      await this.createActionDetails(createdAction.id, details, tx);
-    }
+        // Add type-specific details
+        await this.createActionDetails(createdAction.id, details, tx, userId);
+      }),
+    );
 
     // If any status change was logged, re-derive the hive's live status.
     if (actions.some((a) => a.type === ActionType.STATUS_CHANGE)) {
@@ -517,14 +556,19 @@ export class ActionsService {
         data: {
           hiveId: createActionDto.hiveId,
           type,
-          notes,
+          notes: actionNotes(notes, details),
           date: date ? new Date(date) : new Date(),
           createdByUserId: filter.userId,
         },
       });
 
       // Add type-specific details
-      await this.createActionDetails(createdAction.id, details, tx);
+      await this.createActionDetails(
+        createdAction.id,
+        details,
+        tx,
+        filter.userId,
+      );
 
       // A standalone status change updates the hive's live status (newest wins).
       if (type === ActionType.STATUS_CHANGE) {
@@ -608,7 +652,8 @@ export class ActionsService {
       );
     }
 
-    const { type, notes, details, date } = updateActionDto;
+    const { type, details, date } = updateActionDto;
+    const notes = actionNotes(updateActionDto.notes, details);
 
     // Use transaction to update action and related details
     const result = await this.prisma.$transaction(async (tx) => {
@@ -637,7 +682,7 @@ export class ActionsService {
         await this.deleteActionDetails(actionId, tx);
 
         // Create new details
-        await this.createActionDetails(actionId, details, tx);
+        await this.createActionDetails(actionId, details, tx, filter.userId);
       }
 
       // Re-derive the hive's live status if this action is or was a status

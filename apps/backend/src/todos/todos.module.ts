@@ -8,5 +8,6 @@ import { LoggerModule } from '../logger/logger.module';
   imports: [LoggerModule],
   controllers: [TodosController],
   providers: [TodosService, PrismaService],
+  exports: [TodosService],
 })
 export class TodosModule {}

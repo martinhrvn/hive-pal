@@ -171,6 +171,7 @@ export default [
   route('reset-password', 'route-modules/auth/reset-password.tsx'),
   route('account/change-password', 'route-modules/auth/change-password.tsx'),
   route('account/consent', 'route-modules/auth/consent.tsx'),
+  route('oauth/consent', 'route-modules/auth/oauth-consent.tsx'),
 
   // Logged-in pages rendered without the dashboard chrome.
   layout('route-modules/guards/protected.tsx', [

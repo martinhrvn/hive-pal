@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { isoDateTime } from '../utils/datetime';
 
 // Base schema for creating todos
 export const createTodoSchema = z.object({
   title: z.string().min(1),
   description: z.string().nullish(),
-  dueDate: z.string().datetime().nullish(),
+  dueDate: isoDateTime().nullish(),
   hiveId: z.string().uuid().nullish(),
   completed: z.boolean().optional(),
 });

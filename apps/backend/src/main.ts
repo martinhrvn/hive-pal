@@ -7,6 +7,7 @@ import { setup } from './setup';
 import { CustomLoggerService } from './logger/logger.service';
 import { createPrerenderFallback } from './prerender-fallback.middleware';
 import { startMetricsServer } from './health/prometheus/metrics-server';
+import { WELL_KNOWN_PATHS } from './mcp/well-known.controller';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,7 +24,8 @@ async function bootstrap() {
     });
   }
   app.setGlobalPrefix('api', {
-    exclude: ['env.js'],
+    // OAuth / MCP discovery documents live at the origin root.
+    exclude: ['env.js', ...WELL_KNOWN_PATHS],
   });
   app.useGlobalPipes(
     new ValidationPipe({

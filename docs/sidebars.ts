@@ -54,6 +54,7 @@ const sidebars: SidebarsConfig = {
             'user-guide/calendar',
             'user-guide/reports',
             'user-guide/assistant',
+            'user-guide/mcp',
             'user-guide/hivescale',
           ],
         },

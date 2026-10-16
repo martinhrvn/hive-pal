@@ -5,8 +5,10 @@ import {
   admin,
   customSession,
   genericOAuth,
+  jwt,
 } from 'better-auth/plugins';
 import { passkey } from '@better-auth/passkey';
+import { mcp } from '@better-auth/mcp';
 import {
   APIError,
   createAuthMiddleware,
@@ -18,7 +20,7 @@ import {
 } from 'better-auth/crypto';
 import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../generated/prisma/client.js';
+import { Prisma, PrismaClient } from '../generated/prisma/client.js';
 import { authDeps } from './auth-deps';
 import { UserLoginEvent } from '../events/auth.events';
 import {
@@ -27,9 +29,59 @@ import {
   loadOidcConfig,
 } from './oidc-config';
 import { secureOidcAccountLink } from './oidc-linking';
+import {
+  MCP_SCOPES,
+  loadMcpConfig,
+  nativeLoopbackRegistration,
+} from './mcp-config';
+
+// Optional string[] fields of the OAuth provider models, stored as Json?
+// because Prisma lists can't be NULL. The plugin writes an explicit null for
+// "not set" (e.g. a resource with no scope restriction), which Prisma only
+// accepts for Json columns as Prisma.DbNull.
+const NULLABLE_LIST_FIELDS: Record<string, readonly string[]> = {
+  OauthClient: [
+    'scopes',
+    'contacts',
+    'postLogoutRedirectUris',
+    'grantTypes',
+    'responseTypes',
+  ],
+  OauthResource: ['allowedScopes'],
+  OauthRefreshToken: ['resources', 'requestedUserInfoClaims'],
+  OauthAccessToken: ['resources', 'requestedUserInfoClaims'],
+  OauthConsent: ['resources', 'requestedUserInfoClaims'],
+};
+
+const nullListsToDbNull = (fields: readonly string[], data: unknown): void => {
+  if (Array.isArray(data)) {
+    data.forEach((row) => nullListsToDbNull(fields, row));
+    return;
+  }
+  if (!data || typeof data !== 'object') return;
+  const row = data as Record<string, unknown>;
+  for (const field of fields) {
+    if (row[field] === null) row[field] = Prisma.DbNull;
+  }
+};
 
 const prismaForAuth = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+}).$extends({
+  query: {
+    $allModels: {
+      $allOperations({ model, args, query }) {
+        const fields = NULLABLE_LIST_FIELDS[model];
+        if (fields && args && typeof args === 'object') {
+          const writes = args as Record<string, unknown>;
+          for (const key of ['data', 'create', 'update']) {
+            nullListsToDbNull(fields, writes[key]);
+          }
+        }
+        return query(args);
+      },
+    },
+  },
 });
 
 const isBcryptHash = (hash: string): boolean =>
@@ -53,6 +105,14 @@ const useSecureCookies =
     ? process.env.BETTER_AUTH_SECURE_COOKIES.toLowerCase() === 'true'
     : (process.env.BETTER_AUTH_URL ?? '').startsWith('https://');
 
+const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173';
+const mcpConfig = loadMcpConfig();
+if (!mcpConfig.enabled && process.env.MCP_ENABLED?.toLowerCase() !== 'false') {
+  console.warn(
+    `[auth] MCP is disabled: its resource URL ${mcpConfig.resource} must be https (or a loopback host in development).`,
+  );
+}
+
 const oidc = loadOidcConfig();
 const localLoginDisabled = isLocalLoginDisabled(process.env, oidc);
 if (
@@ -68,7 +128,10 @@ export const auth = betterAuth({
   database: prismaAdapter(prismaForAuth, { provider: 'postgresql' }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.FRONTEND_URL ?? 'http://localhost:5173'],
+  trustedOrigins: [frontendUrl],
+  // The jwt plugin's session-to-JWT endpoint isn't used; MCP access tokens
+  // come from the OAuth provider's /oauth2/token.
+  disabledPaths: mcpConfig.enabled ? ['/token'] : [],
 
   emailAndPassword: {
     enabled: true,
@@ -156,6 +219,10 @@ export const auth = betterAuth({
         throw new APIError('FORBIDDEN', {
           message: 'Local login is disabled. Please sign in with SSO.',
         });
+      }
+      if (ctx.path === '/oauth2/register') {
+        const defaults = nativeLoopbackRegistration(ctx.body);
+        if (defaults) return { context: { body: defaults } };
       }
     }),
     after: createAuthMiddleware(async (ctx) => {
@@ -292,8 +359,24 @@ export const auth = betterAuth({
     passkey({
       rpID: process.env.PASSKEY_RP_ID ?? 'localhost',
       rpName: 'Hive Pal',
-      origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',
+      origin: frontendUrl,
     }),
+    ...(mcpConfig.enabled
+      ? [
+          jwt(),
+          mcp({
+            resource: mcpConfig.resource,
+            // The login and consent pages are SPA routes on the frontend.
+            loginPage: `${frontendUrl}/login`,
+            consentPage: `${frontendUrl}/oauth/consent`,
+            scopes: MCP_SCOPES,
+            // MCP clients register themselves (RFC 7591) before the first login.
+            allowDynamicClientRegistration: true,
+            allowUnauthenticatedClientRegistration: true,
+            clientRegistrationDefaultScopes: MCP_SCOPES,
+          }),
+        ]
+      : []),
     ...(oidc.enabled
       ? [
           genericOAuth({
