@@ -28,6 +28,7 @@ import {
   FeedingDetails,
   builtinFeedTypeId,
   deriveFeeding,
+  sameFeedLabel,
 } from './feeding-derivation';
 
 /**
@@ -64,18 +65,29 @@ export class ActionsService {
     private usersService: UsersService,
   ) {}
 
-  /** The acting user's own custom feed type a feeding refers to, if any. */
-  private async findUserFeedSpec(
+  /**
+   * The acting user's own feed type a feeding refers to, by feedTypeId or by
+   * its label sent as feedType.
+   */
+  private async findUserFeedType(
     details: FeedingDetails,
     userId: string | undefined,
     tx: Prisma.TransactionClient,
-  ): Promise<FeedSpecValues | undefined> {
-    if (!details.feedTypeId || !userId) return undefined;
-    const feedType = await tx.userFeedType.findFirst({
-      where: { id: details.feedTypeId, userId },
-      select: { density: true, sugarContent: true },
+  ): Promise<(FeedSpecValues & { id: string }) | undefined> {
+    if (!userId) return undefined;
+    const select = { id: true, label: true, density: true, sugarContent: true };
+    if (details.feedTypeId) {
+      const byId = await tx.userFeedType.findFirst({
+        where: { id: details.feedTypeId, userId },
+        select,
+      });
+      return byId ?? undefined;
+    }
+    const own = await tx.userFeedType.findMany({
+      where: { userId, archived: false },
+      select,
     });
-    return feedType ?? undefined;
+    return own.find((feed) => sameFeedLabel(feed.label, details.feedType));
   }
 
   /**
@@ -98,9 +110,9 @@ export class ActionsService {
         // convenience only) so amountG/sugarG stay trustworthy for reports.
         // The feed type's spec fills in what API/MCP clients leave out.
         const builtinId = builtinFeedTypeId(details);
+        const builtin = builtinId ? getBuiltinFeedType(builtinId) : undefined;
         const spec =
-          (builtinId && getBuiltinFeedType(builtinId)) ||
-          (await this.findUserFeedSpec(details, userId, tx));
+          builtin ?? (await this.findUserFeedType(details, userId, tx));
         const derived = deriveFeeding(details, spec);
         await tx.feedingAction.create({
           data: {
@@ -109,7 +121,7 @@ export class ActionsService {
             amount: details.amount,
             unit: details.unit,
             concentration: details.concentration,
-            feedTypeId: details.feedTypeId ?? builtinId,
+            feedTypeId: details.feedTypeId ?? spec?.id,
             enteredAmount: derived.enteredAmount,
             enteredUnit: derived.enteredUnit,
             amountG: derived.amountG,
@@ -354,24 +366,26 @@ export class ActionsService {
       throw new Error('Inspection not found');
     }
 
-    for (const action of actions) {
-      const { type, notes, details } = action;
+    // The actions are independent of each other; the transaction runs the
+    // queries on its one connection.
+    await Promise.all(
+      actions.map(async ({ type, notes, details }) => {
+        // Create the base action
+        const createdAction = await tx.action.create({
+          data: {
+            hiveId: inspection.hiveId,
+            inspectionId,
+            type,
+            notes: actionNotes(notes, details),
+            date: inspection.date,
+            ...(userId && { createdByUserId: userId }),
+          },
+        });
 
-      // Create the base action
-      const createdAction = await tx.action.create({
-        data: {
-          hiveId: inspection.hiveId,
-          inspectionId,
-          type,
-          notes: actionNotes(notes, details),
-          date: inspection.date,
-          ...(userId && { createdByUserId: userId }),
-        },
-      });
-
-      // Add type-specific details
-      await this.createActionDetails(createdAction.id, details, tx, userId);
-    }
+        // Add type-specific details
+        await this.createActionDetails(createdAction.id, details, tx, userId);
+      }),
+    );
 
     // If any status change was logged, re-derive the hive's live status.
     if (actions.some((a) => a.type === ActionType.STATUS_CHANGE)) {

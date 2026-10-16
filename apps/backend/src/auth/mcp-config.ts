@@ -42,10 +42,8 @@ export function isValidMcpResource(resource: string): boolean {
 }
 
 export function loadMcpConfig(env: NodeJS.ProcessEnv = process.env): McpConfig {
-  const baseUrl = (env.BETTER_AUTH_URL ?? 'http://localhost:3000').replace(
-    /\/+$/,
-    '',
-  );
+  let baseUrl = env.BETTER_AUTH_URL ?? 'http://localhost:3000';
+  while (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
   const resource = `${baseUrl}/api/mcp`;
   const optedOut = env.MCP_ENABLED?.trim().toLowerCase() === 'false';
   return {

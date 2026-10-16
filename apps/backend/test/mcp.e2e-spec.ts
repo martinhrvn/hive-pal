@@ -274,6 +274,27 @@ describe('MCP (e2e)', () => {
     expect(feeding?.sugarG).toBeCloseTo(1230);
     expect(feeding?.density).toBe(1.23);
 
+    // A feed type sent by its display name only resolves the same way.
+    await mcpCall(token, 'tools/call', {
+      name: 'record_action',
+      arguments: {
+        hiveId: ownHiveId,
+        type: 'FEEDING',
+        details: {
+          type: 'FEEDING',
+          feedType: 'Syrup 2:1',
+          amount: 4,
+          unit: 'l',
+        },
+      },
+    }).expect(200);
+    const byName = await prisma.feedingAction.findFirst({
+      where: { action: { hiveId: ownHiveId }, feedType: 'Syrup 2:1' },
+    });
+    expect(byName?.feedTypeId).toBe('SYRUP_2_1');
+    expect(byName?.amountG).toBeCloseTo(5320);
+    expect(byName?.sugarG).toBeCloseTo(3548.44);
+
     const res = await mcpCall(token, 'tools/call', {
       name: 'create_inspection',
       arguments: { hiveId: ownHiveId, date: '2026-10-01T10:15:00+02:00' },

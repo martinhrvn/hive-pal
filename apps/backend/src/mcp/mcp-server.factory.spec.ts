@@ -86,6 +86,11 @@ describe('McpServerFactory', () => {
         'update_queen',
       ]),
     );
+    const recordAction = (await client.listTools()).tools.find(
+      (t) => t.name === 'record_action',
+    );
+    // Clients see the valid built-in feed type ids.
+    expect(JSON.stringify(recordAction?.inputSchema)).toContain('SYRUP_2_1');
   });
 
   it('scopes reads to all apiaries unless an apiary is given', async () => {

@@ -157,6 +157,21 @@ export const BUILTIN_FEED_TYPES: readonly FeedTypeSpec[] = [
   },
 ] as const;
 
+const BUILTIN_FEED_TYPE_IDS = BUILTIN_FEED_TYPES.map(f => f.id) as [
+  string,
+  ...string[],
+];
+
+/**
+ * A feeding's feed type: a built-in id, or the id (uuid) of a user-defined
+ * feed type. Listing the built-in ids lets API clients send one directly.
+ */
+export const feedTypeIdSchema = z
+  .union([z.enum(BUILTIN_FEED_TYPE_IDS), z.string().uuid()])
+  .describe(
+    `Built-in feed type id (${BUILTIN_FEED_TYPE_IDS.join(', ')}) or the id of a user-defined feed type.`,
+  );
+
 export const getBuiltinFeedType = (id: string): FeedTypeSpec | undefined =>
   BUILTIN_FEED_TYPES.find(f => f.id === id);
 

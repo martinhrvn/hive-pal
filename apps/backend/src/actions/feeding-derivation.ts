@@ -1,5 +1,6 @@
 import {
   ActionType,
+  BUILTIN_FEED_TYPES,
   CreateAction,
   FEED_ENTRY_UNITS,
   FeedEntryUnit,
@@ -20,10 +21,22 @@ export interface FeedSpecValues {
   sugarContent: number;
 }
 
+/** "Syrup 2:1" → "SYRUP_2_1": the id form of a feed type name. */
+const toIdForm = (name: string): string =>
+  name
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+
+/** Case-insensitive comparison of feed type labels. */
+export const sameFeedLabel = (a: string, b: string): boolean =>
+  a.trim().localeCompare(b.trim(), undefined, { sensitivity: 'accent' }) === 0;
+
 /**
- * The built-in feed type a feeding refers to: its feedTypeId, a feedType
- * naming a built-in id (SYRUP_1_1), or a legacy feedType + concentration
- * (SYRUP + 3:2). Undefined for custom and free-text feeds.
+ * The built-in feed type a feeding refers to: its feedTypeId, or a feedType
+ * naming a built-in by id (SYRUP_2_1), by name ("Syrup 2:1") or as a legacy
+ * type + concentration (SYRUP + 3:2). Undefined for custom and free-text feeds.
  */
 export const builtinFeedTypeId = (
   details: FeedingDetails,
@@ -31,10 +44,11 @@ export const builtinFeedTypeId = (
   if (details.feedTypeId) {
     return getBuiltinFeedType(details.feedTypeId)?.id;
   }
-  const named = getBuiltinFeedType(details.feedType.trim().toUpperCase());
-  return (
-    named?.id ?? legacyFeedToBuiltinId(details.feedType, details.concentration)
-  );
+  const { feedType } = details;
+  const named =
+    getBuiltinFeedType(toIdForm(feedType)) ??
+    BUILTIN_FEED_TYPES.find((spec) => sameFeedLabel(spec.label, feedType));
+  return named?.id ?? legacyFeedToBuiltinId(feedType, details.concentration);
 };
 
 const toEntryUnit = (unit: string): FeedEntryUnit | undefined => {

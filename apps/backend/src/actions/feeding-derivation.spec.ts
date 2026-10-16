@@ -37,6 +37,18 @@ describe('builtinFeedTypeId', () => {
     ).toBe('SYRUP_3_2');
     expect(builtinFeedTypeId(feeding({ feedType: 'My mix' }))).toBeUndefined();
   });
+
+  it('matches built-ins by display name', () => {
+    expect(builtinFeedTypeId(feeding({ feedType: 'Syrup 2:1' }))).toBe(
+      'SYRUP_2_1',
+    );
+    expect(builtinFeedTypeId(feeding({ feedType: ' dry sugar ' }))).toBe(
+      'DRY_SUGAR',
+    );
+    expect(builtinFeedTypeId(feeding({ feedType: 'Apiinvert' }))).toBe(
+      'APIINVERT',
+    );
+  });
 });
 
 describe('deriveFeeding', () => {
