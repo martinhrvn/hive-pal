@@ -35,9 +35,9 @@ const makeDeps = () => ({
 
 async function connect(scopes: string[]) {
   const deps = makeDeps();
-  const factory = new (McpServerFactory as unknown as new (
-    ...args: unknown[]
-  ) => McpServerFactory)(
+  const factory = new (
+    McpServerFactory as unknown as new (...args: unknown[]) => McpServerFactory
+  )(
     deps.scope,
     deps.apiaries,
     deps.hives,
@@ -91,9 +91,9 @@ describe('McpServerFactory', () => {
     expect(deps.hives.findAll).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'user-1', allApiaries: true }),
     );
-    expect(JSON.parse((result.content as { text: string }[])[0].text)).toEqual(
-      [{ id: HIVE_ID, name: 'Hive 1' }],
-    );
+    expect(JSON.parse((result.content as { text: string }[])[0].text)).toEqual([
+      { id: HIVE_ID, name: 'Hive 1' },
+    ]);
 
     await client.callTool({
       name: 'list_hives',

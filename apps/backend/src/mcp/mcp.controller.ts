@@ -7,7 +7,11 @@ import type {
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import { requireMcpAuth } from '@better-auth/mcp';
 import { auth } from '../auth/better-auth';
-import { MCP_READ_SCOPE, loadMcpConfig } from '../auth/mcp-config';
+import {
+  MCP_READ_SCOPE,
+  MCP_WRITE_SCOPE,
+  loadMcpConfig,
+} from '../auth/mcp-config';
 import { McpServerFactory } from './mcp-server.factory';
 import { parseScopes } from './mcp-context';
 import { sendWebResponse, toWebRequest } from './web-request';
@@ -37,7 +41,13 @@ export class McpController {
   private readonly handle = requireMcpAuth(
     auth,
     (request, claims) => this.serve(request, claims),
-    { resource: this.config.resource, requiredScopes: [MCP_READ_SCOPE] },
+    {
+      resource: this.config.resource,
+      requiredScopes: [MCP_READ_SCOPE],
+      // Clients request the scopes named in the 401 challenge; offer write
+      // too so the write tools are available once the user consents.
+      challengeScopes: [MCP_READ_SCOPE, MCP_WRITE_SCOPE],
+    },
   );
 
   constructor(private readonly serverFactory: McpServerFactory) {}

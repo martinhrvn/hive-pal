@@ -163,6 +163,9 @@ describe('MCP (e2e)', () => {
     const res = await mcpCall(undefined, 'tools/list');
     expect(res.status).toBe(401);
     expect(res.headers['www-authenticate']).toContain('resource_metadata');
+    expect(res.headers['www-authenticate']).toContain(
+      'scope="hivepal:read hivepal:write"',
+    );
   });
 
   it("lists only the user's own hives with a read token", async () => {
