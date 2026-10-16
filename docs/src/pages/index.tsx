@@ -1,108 +1,195 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
-import { CalendarDays, GitPullRequest, Code, Users } from 'lucide-react';
+import CodeBlock from '@theme/CodeBlock';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Boxes,
+  ClipboardCheck,
+  Compass,
+  Database,
+  Server,
+  Wrench,
+} from 'lucide-react';
 import { GithubIcon } from '@site/src/components/GithubIcon';
 
 import styles from './index.module.css';
 
-function HomepageHeader() {
-  const { siteConfig } = useDocusaurusContext();
+type GuideLink = { label: string; to: string };
+type GuideGroup = { title: string; icon: ReactNode; links: GuideLink[] };
+
+// Mirrors the sidebar categories in sidebars.ts.
+const GUIDE_GROUPS: GuideGroup[] = [
+  {
+    title: 'Getting around',
+    icon: <Compass size={20} strokeWidth={1.75} />,
+    links: [
+      { label: 'Apiaries', to: '/docs/user-guide/apiaries' },
+      { label: 'Hives', to: '/docs/user-guide/hives' },
+      { label: 'Quick actions button', to: '/docs/user-guide/fab-actions' },
+    ],
+  },
+  {
+    title: 'Inspections',
+    icon: <ClipboardCheck size={20} strokeWidth={1.75} />,
+    links: [
+      { label: 'Recording an inspection', to: '/docs/user-guide/inspections' },
+      { label: 'Quick check', to: '/docs/user-guide/quick-check' },
+      { label: 'Batch inspections', to: '/docs/user-guide/batch-inspections' },
+      { label: 'Scheduled inspections', to: '/docs/user-guide/scheduled-inspections' },
+      { label: 'Voice notes and AI', to: '/docs/user-guide/audio-ai' },
+      { label: 'Bulk add', to: '/docs/user-guide/bulk-add' },
+    ],
+  },
+  {
+    title: 'Colony management',
+    icon: <Boxes size={20} strokeWidth={1.75} />,
+    links: [
+      { label: 'Queens', to: '/docs/user-guide/queens' },
+      { label: 'Equipment', to: '/docs/user-guide/equipment' },
+      { label: 'Harvests', to: '/docs/user-guide/harvest' },
+      { label: 'Weather', to: '/docs/user-guide/weather' },
+    ],
+  },
+  {
+    title: 'Data and devices',
+    icon: <Database size={20} strokeWidth={1.75} />,
+    links: [
+      { label: 'QR codes', to: '/docs/user-guide/qr-codes' },
+      { label: 'Import and export', to: '/docs/user-guide/import-export' },
+      { label: 'Calendar', to: '/docs/user-guide/calendar' },
+      { label: 'Reports', to: '/docs/user-guide/reports' },
+      { label: 'Apiary assistant', to: '/docs/user-guide/assistant' },
+      { label: 'AI assistants (MCP)', to: '/docs/user-guide/mcp' },
+      { label: 'HiveScale', to: '/docs/user-guide/hivescale' },
+    ],
+  },
+  {
+    title: 'Tools and account',
+    icon: <Wrench size={20} strokeWidth={1.75} />,
+    links: [
+      { label: 'Free beekeeping tools', to: '/docs/user-guide/tools' },
+      { label: 'Signing in', to: '/docs/user-guide/login' },
+      { label: 'Account and settings', to: '/docs/user-guide/account-settings' },
+      { label: 'Sending feedback', to: '/docs/user-guide/feedback' },
+    ],
+  },
+  {
+    title: 'Self-hosting',
+    icon: <Server size={20} strokeWidth={1.75} />,
+    links: [
+      { label: 'Requirements', to: '/docs/self-hosting/requirements' },
+      { label: 'Docker setup', to: '/docs/self-hosting/docker-setup' },
+      { label: 'Manual setup', to: '/docs/self-hosting/manual-setup' },
+      { label: 'Configuration', to: '/docs/self-hosting/configuration' },
+      { label: 'Backup and restore', to: '/docs/self-hosting/backup-restore' },
+      { label: 'Monitoring', to: '/docs/self-hosting/monitoring' },
+    ],
+  },
+];
+
+const COMPOSE_SNIPPET = `# docker-compose.yaml: the app and a PostgreSQL database
+services:
+  app:
+    image: ghcr.io/martinhrvn/hive-pal:latest
+    ports: ['80:3000']
+  postgres:
+    image: postgres:14
+
+$ docker compose up -d`;
+
+function Hero() {
   return (
-    <header className={clsx(styles.heroBanner)}>
-      <div className="container">
-        <div className={styles.heroContent}>
-          <div className={styles.heroText}>
-            <Heading as="h1" className={styles.heroTitle}>
-              {siteConfig.title}
-            </Heading>
-            <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
-            <div className={styles.buttons}>
-              <Link
-                className={clsx('button', styles.buttonPrimary)}
-                to="/docs/intro"
-              >
-                Get Started 🐝
-              </Link>
-              <Link
-                className={clsx('button', styles.buttonSecondary)}
-                to="https://github.com/martinhrvn/hive-pal"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className={styles.githubIcon}
-                >
-                  <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                  <path d="M9 18c-4.51 2-5-2-7-2" />
-                </svg>
-                GitHub
-              </Link>
-            </div>
-          </div>
-          <div className={styles.heroImage}>
-            {/*<img src="/hivepal/img/hive.png" alt="Hive-Pal App" />*/}
+    <header className={styles.hero}>
+      <div className={clsx('container', styles.heroGrid)}>
+        <div className={styles.heroText}>
+          <Heading as="h1" className={styles.heroTitle}>
+            Learn Hive-Pal, from first hive to your own server.
+          </Heading>
+          <p className={styles.heroLede}>
+            Guides for recording apiaries, hives and inspections, and for
+            running Hive-Pal on hardware you control.
+          </p>
+          <div className={styles.heroCtas}>
+            <Link className={clsx(styles.btn, styles.btnPrimary)} to="/docs/intro">
+              Read the guide
+              <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+            </Link>
+            <Link className={clsx(styles.btn, styles.btnGhost)} to="/docs/installation">
+              Self-host it
+            </Link>
           </div>
         </div>
-      </div>
-      <div className={styles.waveDivider}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-            opacity=".25"
-            className={styles.shapeFill}
-          ></path>
-          <path
-            d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-            opacity=".5"
-            className={styles.shapeFill}
-          ></path>
-          <path
-            d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-            className={styles.shapeFill}
-          ></path>
-        </svg>
+        <picture className={styles.heroMedia}>
+          <source
+            type="image/webp"
+            srcSet="/img/hero-768.webp 768w, /img/hero-1280.webp 1280w"
+            sizes="(min-width: 997px) 45vw, 100vw"
+          />
+          <img
+            src="/img/hero-1280.webp"
+            alt="Honey bees working across a capped frame"
+            width={1280}
+            height={904}
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
       </div>
     </header>
   );
 }
 
-function FeaturesSection() {
+function RunOptions() {
   return (
-    <section className={styles.features}>
+    <section className={styles.section}>
       <div className="container">
-        <div className={styles.sectionHeader}>
-          <Heading as="h2">About Hive-Pal</Heading>
-          <p>An open-source beekeeping management application</p>
-        </div>
-        <HomepageFeatures />
-        <div className={styles.developmentNotice}>
-          <div className={styles.developmentNoticeIcon}>
-            <Code size={24} />
-          </div>
-          <div>
-            <h3>Project Status: Active Development</h3>
+        <Heading as="h2" className={styles.sectionTitle}>
+          Two ways to run it
+        </Heading>
+        <div className={styles.runGrid}>
+          <div className={styles.runHosted}>
+            <Heading as="h3" className={styles.runTitle}>
+              Use hivepal.app
+            </Heading>
             <p>
-              Hive-Pal is currently under active development. Some features
-              described here are still being implemented or refined. We welcome
-              contributors to help build and improve this open-source tool for
-              the beekeeping community.
+              Sign up and start recording straight away. The hosted app runs
+              the same open-source code, and you can export your data at any
+              time.
             </p>
+            <div className={styles.runLinks}>
+              <Link to="https://hivepal.app">
+                Open the app
+                <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+              </Link>
+              <Link to="/docs/getting-started/quickstart">
+                Quick start walkthrough
+                <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+          <div className={styles.runSelf}>
+            <Heading as="h3" className={styles.runTitle}>
+              Run it yourself
+            </Heading>
+            <p>
+              One Docker image with the API and web app, plus a PostgreSQL
+              database. Two containers, one compose file.
+            </p>
+            <CodeBlock
+              language="yaml"
+              className={styles.runCode}
+              children={COMPOSE_SNIPPET}
+            />
+            <div className={styles.runLinks}>
+              <Link to="/docs/installation">
+                Full installation guide
+                <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -110,141 +197,87 @@ function FeaturesSection() {
   );
 }
 
-/**
- * Project stats section with repeated card structure.
- * The duplication is intentional declarative JSX for landing page layout.
- */
-function ProjectStatsSection() {
+function GuideDirectory() {
   return (
-    <section className={styles.statsSection}>
+    <section className={clsx(styles.section, styles.sectionTight)}>
       <div className="container">
-        <div className={styles.sectionHeader}>
-          <Heading as="h2">Open Source Project</Heading>
-          <p>Join our community and help shape the future of Hive-Pal</p>
-        </div>
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <GithubIcon size={32} />
-            </div>
-            <div className={styles.statValue}>Open Source</div>
-            <div className={styles.statLabel}>Self-hostable & Free</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <GitPullRequest size={32} />
-            </div>
-            <div className={styles.statValue}>Contributions</div>
-            <div className={styles.statLabel}>Welcome</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <Users size={32} />
-            </div>
-            <div className={styles.statValue}>Community</div>
-            <div className={styles.statLabel}>Driven</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <CalendarDays size={32} />
-            </div>
-            <div className={styles.statValue}>Active</div>
-            <div className={styles.statLabel}>Development</div>
-          </div>
+        <Heading as="h2" className={styles.sectionTitle}>
+          Find a guide
+        </Heading>
+        <div className={styles.guideGrid}>
+          {GUIDE_GROUPS.map((group) => (
+            <nav key={group.title} className={styles.guideGroup} aria-label={group.title}>
+              <div className={styles.guideHeading}>
+                <span className={styles.guideIcon}>{group.icon}</span>
+                <Heading as="h3" className={styles.guideTitle}>
+                  {group.title}
+                </Heading>
+              </div>
+              <ul className={styles.guideList}>
+                {group.links.map((link) => (
+                  <li key={link.to}>
+                    <Link to={link.to}>{link.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-function ContributeSection() {
+function OpenSource() {
   return (
-    <section className={styles.contributeSection}>
-      <div className="container">
-        <div className={styles.sectionHeader}>
-          <Heading as="h2">How to Contribute</Heading>
-          <p>Help make Hive-Pal better for everyone</p>
-        </div>
-        <div className={styles.contributeGrid}>
-          <div className={styles.contributeCard}>
-            <h3>Code Contributions</h3>
-            <p>
-              Contribute to the codebase by implementing features, fixing bugs,
-              or improving performance. Check our GitHub issues for tasks
-              labeled "good first issue" to get started.
-            </p>
-          </div>
-          <div className={styles.contributeCard}>
-            <h3>Documentation</h3>
-            <p>
-              Help improve our documentation by fixing errors, adding examples,
-              or writing tutorials to help new users get started with Hive-Pal.
-            </p>
-          </div>
-          <div className={styles.contributeCard}>
-            <h3>Testing</h3>
-            <p>
-              Test new features, report bugs, and provide feedback on user
-              experience to help us improve the application for everyone.
-            </p>
-          </div>
-          <div className={styles.contributeCard}>
-            <h3>Feature Requests</h3>
-            <p>
-              Suggest new features or improvements that would make Hive-Pal more
-              useful for your beekeeping workflow.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CtaSection() {
-  return (
-    <section className={styles.ctaSection}>
-      <div className="container">
-        <div className={styles.ctaContent}>
-          <Heading as="h2">Join the Hive-Pal Community</Heading>
-          <p>
-            Hive-Pal is an open-source project in active development. Some
-            features are still being implemented, but we welcome contributions
-            and feedback from the beekeeping community.
+    <section className={styles.openSource}>
+      <div className={clsx('container', styles.openSourceGrid)}>
+        <div>
+          <Heading as="h2" className={styles.sectionTitle}>
+            Open source, MIT licensed.
+          </Heading>
+          <p className={styles.openSourceBody}>
+            Hive-Pal is built in the open by beekeepers. Bug reports, fixes and
+            corrections to these pages are all welcome.
           </p>
-          <div className={styles.ctaButtons}>
-            <Link
-              className={clsx('button', styles.buttonPrimary)}
-              to="/docs/intro"
-            >
-              Explore the Docs
-            </Link>
-            <Link
-              className={clsx('button', styles.buttonOutline)}
-              to="https://github.com/martinhrvn/hive-pal/issues"
-            >
-              View GitHub Issues
-            </Link>
-          </div>
         </div>
+        <ul className={styles.openSourceLinks}>
+          <li>
+            <Link to="https://github.com/martinhrvn/hive-pal">
+              <GithubIcon width={18} height={18} />
+              Browse the source
+              <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+            </Link>
+          </li>
+          <li>
+            <Link to="https://github.com/martinhrvn/hive-pal/issues">
+              Report an issue
+              <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+            </Link>
+          </li>
+          <li>
+            <Link to="https://github.com/martinhrvn/hive-pal/tree/main/docs">
+              Improve these docs
+              <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+            </Link>
+          </li>
+        </ul>
       </div>
     </section>
   );
 }
 
 export default function Home() {
-  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title} - Open Source Beekeeping Management`}
-      description="An open-source beekeeping management application designed for both mobile and desktop use. Track your apiaries, hives, inspections, and more with our intuitive interface."
+      title="Hive-Pal Documentation"
+      description="Guides for Hive-Pal, the open-source beekeeping app: apiaries, hives, inspections, queens, harvests, and self-hosting with Docker."
     >
-      <HomepageHeader />
+      <Hero />
       <main>
-        <FeaturesSection />
-        <ProjectStatsSection />
-        <ContributeSection />
-        <CtaSection />
+        <RunOptions />
+        <GuideDirectory />
+        <OpenSource />
       </main>
     </Layout>
   );

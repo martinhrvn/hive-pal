@@ -26,7 +26,26 @@ const config: Config = {
     locales: ['en'],
   },
 
+  stylesheets: [
+    {
+      href: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400;500;600;700&display=swap',
+      type: 'text/css',
+    },
+  ],
+
   headTags: [
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'anonymous',
+      },
+    },
     {
       tagName: 'script',
       attributes: {
@@ -105,6 +124,9 @@ const config: Config = {
   ],
 
   themeConfig: {
+    colorMode: {
+      respectPrefersColorScheme: true,
+    },
     // Hive-Pal social card
     image: 'img/hive-pal-social-card.jpg',
     metadata: [
@@ -184,11 +206,11 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Hive-Pal. Built with Docusaurus.`,
+      copyright: `© ${new Date().getFullYear()} Hive-Pal. MIT licensed.`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.oneLight,
+      darkTheme: prismThemes.oneDark,
     },
   } satisfies Preset.ThemeConfig,
 };
