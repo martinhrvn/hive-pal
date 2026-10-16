@@ -12,8 +12,7 @@ import {
   CreateAction,
   CreateStandaloneAction,
   HiveStatus,
-  feedAmountToGrams,
-  feedSugarGrams,
+  getBuiltinFeedType,
   UpdateAction,
   UserPreferences,
 } from 'shared-schemas';
@@ -24,6 +23,12 @@ const boxesSchema = z
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
 import { SPLIT_FOLLOWUP_TITLE } from '../hives/split.service';
+import {
+  FeedSpecValues,
+  FeedingDetails,
+  builtinFeedTypeId,
+  deriveFeeding,
+} from './feeding-derivation';
 
 /**
  * A NOTE has no detail table: its content is stored in the action's notes
@@ -59,6 +64,20 @@ export class ActionsService {
     private usersService: UsersService,
   ) {}
 
+  /** The acting user's own custom feed type a feeding refers to, if any. */
+  private async findUserFeedSpec(
+    details: FeedingDetails,
+    userId: string | undefined,
+    tx: Prisma.TransactionClient,
+  ): Promise<FeedSpecValues | undefined> {
+    if (!details.feedTypeId || !userId) return undefined;
+    const feedType = await tx.userFeedType.findFirst({
+      where: { id: details.feedTypeId, userId },
+      select: { density: true, sugarContent: true },
+    });
+    return feedType ?? undefined;
+  }
+
   /**
    * Creates type-specific action details within a transaction
    */
@@ -66,6 +85,7 @@ export class ActionsService {
     actionId: string,
     details: CreateAction['details'],
     tx: Prisma.TransactionClient,
+    userId?: string,
   ): Promise<void> {
     if (!details) return;
 
@@ -76,18 +96,12 @@ export class ActionsService {
       case ActionType.FEEDING: {
         // v2: recompute the derived values server-side (client values are a
         // convenience only) so amountG/sugarG stay trustworthy for reports.
-        const amountG =
-          details.enteredAmount != null && details.enteredUnit != null
-            ? (feedAmountToGrams(
-                details.enteredAmount,
-                details.enteredUnit,
-                details.density,
-              ) ?? undefined)
-            : details.amountG;
-        const sugarG =
-          amountG != null && details.sugarContent != null
-            ? feedSugarGrams(amountG, details.sugarContent)
-            : details.sugarG;
+        // The feed type's spec fills in what API/MCP clients leave out.
+        const builtinId = builtinFeedTypeId(details);
+        const spec =
+          (builtinId && getBuiltinFeedType(builtinId)) ||
+          (await this.findUserFeedSpec(details, userId, tx));
+        const derived = deriveFeeding(details, spec);
         await tx.feedingAction.create({
           data: {
             actionId,
@@ -95,13 +109,13 @@ export class ActionsService {
             amount: details.amount,
             unit: details.unit,
             concentration: details.concentration,
-            feedTypeId: details.feedTypeId,
-            enteredAmount: details.enteredAmount,
-            enteredUnit: details.enteredUnit,
-            amountG,
-            density: details.density,
-            sugarContent: details.sugarContent,
-            sugarG,
+            feedTypeId: details.feedTypeId ?? builtinId,
+            enteredAmount: derived.enteredAmount,
+            enteredUnit: derived.enteredUnit,
+            amountG: derived.amountG,
+            density: derived.density,
+            sugarContent: derived.sugarContent,
+            sugarG: derived.sugarG,
             waterAddedMl: details.waterAddedMl,
           },
         });
@@ -356,7 +370,7 @@ export class ActionsService {
       });
 
       // Add type-specific details
-      await this.createActionDetails(createdAction.id, details, tx);
+      await this.createActionDetails(createdAction.id, details, tx, userId);
     }
 
     // If any status change was logged, re-derive the hive's live status.
@@ -535,7 +549,12 @@ export class ActionsService {
       });
 
       // Add type-specific details
-      await this.createActionDetails(createdAction.id, details, tx);
+      await this.createActionDetails(
+        createdAction.id,
+        details,
+        tx,
+        filter.userId,
+      );
 
       // A standalone status change updates the hive's live status (newest wins).
       if (type === ActionType.STATUS_CHANGE) {
@@ -649,7 +668,7 @@ export class ActionsService {
         await this.deleteActionDetails(actionId, tx);
 
         // Create new details
-        await this.createActionDetails(actionId, details, tx);
+        await this.createActionDetails(actionId, details, tx, filter.userId);
       }
 
       // Re-derive the hive's live status if this action is or was a status

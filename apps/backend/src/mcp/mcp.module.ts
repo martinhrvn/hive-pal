@@ -9,6 +9,7 @@ import { CalendarModule } from '../calendar/calendar.module';
 import { TodosModule } from '../todos/todos.module';
 import { AlertsModule } from '../alerts/alerts.module';
 import { WeatherModule } from '../weather/weather.module';
+import { UsersModule } from '../users/users.module';
 import { McpController } from './mcp.controller';
 import { WellKnownController } from './well-known.controller';
 import { McpServerFactory } from './mcp-server.factory';
@@ -25,6 +26,7 @@ import { McpScopeService } from './mcp-scope.service';
     TodosModule,
     AlertsModule,
     WeatherModule,
+    UsersModule,
   ],
   controllers: [McpController, WellKnownController],
   providers: [McpServerFactory, McpScopeService, PrismaService],

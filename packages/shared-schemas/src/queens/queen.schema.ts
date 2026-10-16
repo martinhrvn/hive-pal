@@ -1,9 +1,8 @@
 import { z } from 'zod';
+import { isoDateTime } from '../utils/datetime';
 import { queenMatingTypeSchema, queenStatusSchema } from './status';
 
-const dateInputSchema = z
-  .string()
-  .datetime()
+const dateInputSchema = isoDateTime()
   .optional()
   .or(z.date().optional())
   .nullable();

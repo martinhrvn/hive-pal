@@ -31,6 +31,7 @@ const makeDeps = () => ({
   },
   alerts: { findAll: vi.fn(), dismiss: vi.fn() },
   weather: { assertApiaryReadable: vi.fn() },
+  feedTypes: { getFeedTypes: vi.fn().mockResolvedValue([]) },
 });
 
 async function connect(scopes: string[]) {
@@ -48,6 +49,7 @@ async function connect(scopes: string[]) {
     deps.todos,
     deps.alerts,
     deps.weather,
+    deps.feedTypes,
   );
   const ctx: McpContext = { userId: 'user-1', scopes: new Set(scopes) };
   const server = factory.create(ctx);
@@ -81,6 +83,7 @@ describe('McpServerFactory', () => {
         'create_todo',
         'update_todo',
         'dismiss_alert',
+        'update_queen',
       ]),
     );
   });

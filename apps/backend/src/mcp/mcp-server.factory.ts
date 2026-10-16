@@ -9,6 +9,7 @@ import { CalendarService } from '../calendar/calendar.service';
 import { TodosService } from '../todos/todos.service';
 import { AlertsService } from '../alerts/alerts.service';
 import { WeatherService } from '../weather/weather.service';
+import { FeedTypesService } from '../users/feed-types.service';
 import { McpScopeService } from './mcp-scope.service';
 import { McpContext } from './mcp-context';
 import { registerApiaryTools } from './tools/apiary.tools';
@@ -37,6 +38,7 @@ export class McpServerFactory {
     private readonly todos: TodosService,
     private readonly alerts: AlertsService,
     private readonly weather: WeatherService,
+    private readonly feedTypes: FeedTypesService,
   ) {}
 
   create(ctx: McpContext): McpServer {
@@ -59,6 +61,7 @@ export class McpServerFactory {
       inspections: this.inspections,
       actions: this.actions,
       calendar: this.calendar,
+      feedTypes: this.feedTypes,
     });
     registerTaskTools(server, ctx, {
       scope,

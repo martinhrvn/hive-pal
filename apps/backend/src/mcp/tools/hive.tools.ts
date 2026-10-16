@@ -1,13 +1,19 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { hiveStatusSchema, queenStatusSchema } from 'shared-schemas';
+import {
+  hiveStatusSchema,
+  queenStatusSchema,
+  updateQueenSchema,
+} from 'shared-schemas';
 import { HiveService } from '../../hives/hive.service';
 import { QueensService } from '../../queens/queens.service';
 import { McpScopeService } from '../mcp-scope.service';
 import {
   McpContext,
   READ_ONLY,
+  WRITE,
   apiaryIdArg,
+  canWrite,
   jsonResult,
   registerTool,
 } from '../mcp-context';
@@ -78,6 +84,27 @@ export function registerHiveTools(
     async ({ apiaryId, hiveId, status }) => {
       const filter = await deps.scope.resolve(ctx.userId, apiaryId);
       return jsonResult(await deps.queens.findAll(filter, { hiveId, status }));
+    },
+  );
+
+  if (!canWrite(ctx)) return;
+
+  registerTool(
+    server,
+    'update_queen',
+    {
+      title: 'Update queen',
+      description:
+        'Change a queen record: e.g. set status to ACTIVE once a virgin queen is laying (eggs found), REPLACED or DEAD when she is gone, or update marking, color, year or notes. Moving a queen to another hive is done in the web app. Confirm the change with the user first.',
+      inputSchema: {
+        queenId: z.string().uuid(),
+        ...updateQueenSchema.omit({ hiveId: true, motherQueenId: true }).shape,
+      },
+      annotations: { ...WRITE, idempotentHint: true },
+    },
+    async ({ queenId, ...changes }) => {
+      const filter = await deps.scope.resolve(ctx.userId);
+      return jsonResult(await deps.queens.update(queenId, changes, filter));
     },
   );
 }

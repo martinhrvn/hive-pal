@@ -2,6 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { NotFoundException } from '@nestjs/common';
 import { z } from 'zod';
 import {
+  BUILTIN_FEED_TYPES,
   actionTypeSchema,
   createInspectionSchema,
   createStandaloneActionSchema,
@@ -11,6 +12,7 @@ import {
 import { InspectionsService } from '../../inspections/inspections.service';
 import { ActionsService } from '../../actions/actions.service';
 import { CalendarService } from '../../calendar/calendar.service';
+import { FeedTypesService } from '../../users/feed-types.service';
 import { McpScopeService } from '../mcp-scope.service';
 import {
   McpContext,
@@ -27,6 +29,7 @@ export interface InspectionToolDeps {
   inspections: InspectionsService;
   actions: ActionsService;
   calendar: CalendarService;
+  feedTypes: FeedTypesService;
 }
 
 const DEFAULT_LIMIT = 20;
@@ -45,6 +48,18 @@ const dateRange = {
   startDate: isoDateTime().optional().describe('ISO 8601 date-time'),
   endDate: isoDateTime().optional().describe('ISO 8601 date-time'),
 };
+
+/**
+ * Whether an ISO date-time names a time of day (in its own offset), as
+ * opposed to a bare date at midnight.
+ */
+const hasTimeOfDay = (dateTime: string): boolean => {
+  const time = /T(\d{2}):(\d{2})(?::(\d{2}))?/.exec(dateTime);
+  return !!time && time.slice(1).some((part) => part && Number(part) !== 0);
+};
+
+const FEEDING_HINT =
+  'For a FEEDING, set details.feedTypeId to an id from list_feed_types and give amount with unit g, kg, ml or l; the sugar and gram totals are calculated from the feed type.';
 
 const CONFIRM_FIRST =
   'Summarise what will be recorded and get the user to confirm before calling this.';
@@ -165,6 +180,22 @@ export function registerInspectionTools(
     },
   );
 
+  registerTool(
+    server,
+    'list_feed_types',
+    {
+      title: 'List feed types',
+      description:
+        "Feed types available for feedings: the built-in ones (syrups, Apiinvert, fondant, …) and the user's own, with density (g/ml) and sugar content (% w/w).",
+      annotations: READ_ONLY,
+    },
+    async () =>
+      jsonResult({
+        builtIn: BUILTIN_FEED_TYPES,
+        custom: await deps.feedTypes.getFeedTypes(ctx.userId),
+      }),
+  );
+
   if (!canWrite(ctx)) return;
 
   registerTool(
@@ -172,13 +203,17 @@ export function registerInspectionTools(
     'create_inspection',
     {
       title: 'Record inspection',
-      description: `Record a hive inspection, optionally with observations and actions taken during it (e.g. feeding, treatment). Use a past or current date for a completed inspection, a future one to schedule it. ${CONFIRM_FIRST}`,
+      description: `Record a hive inspection, optionally with observations and actions taken during it (e.g. feeding, treatment). Use a past or current date for a completed inspection, a future one to schedule it. A date with a time of day is saved at that time unless isAllDay is set. ${FEEDING_HINT} Returns the stored inspection, including its score. ${CONFIRM_FIRST}`,
       inputSchema: createInspectionSchema.omit({ id: true }).shape,
       annotations: WRITE,
     },
-    async (input) => {
+    async ({ isAllDay, ...input }) => {
       const filter = await deps.scope.resolve(ctx.userId);
-      return jsonResult(await deps.inspections.create(input, filter));
+      const created = await deps.inspections.create(
+        { ...input, isAllDay: isAllDay ?? !hasTimeOfDay(input.date) },
+        filter,
+      );
+      return jsonResult(await deps.inspections.findOne(created.id, filter));
     },
   );
 
@@ -187,7 +222,7 @@ export function registerInspectionTools(
     'record_action',
     {
       title: 'Record action',
-      description: `Record a standalone action on a hive outside an inspection, such as a feeding, treatment or note. ${CONFIRM_FIRST}`,
+      description: `Record a standalone action on a hive outside an inspection, such as a feeding, treatment or note. ${FEEDING_HINT} ${CONFIRM_FIRST}`,
       inputSchema: createStandaloneActionSchema.shape,
       annotations: WRITE,
     },

@@ -249,4 +249,56 @@ describe('MCP (e2e)', () => {
     await prisma.action.deleteMany({ where: { hiveId: ownHiveId } });
     await prisma.inspection.deleteMany({ where: { hiveId: ownHiveId } });
   });
+
+  it('derives feeding totals, returns the stored inspection and updates queens', async () => {
+    const token = await getAccessToken('openid hivepal:read hivepal:write');
+
+    await mcpCall(token, 'tools/call', {
+      name: 'record_action',
+      arguments: {
+        hiveId: ownHiveId,
+        type: 'FEEDING',
+        details: {
+          type: 'FEEDING',
+          feedType: 'Syrup 1:1',
+          feedTypeId: 'SYRUP_1_1',
+          amount: 2,
+          unit: 'l',
+        },
+      },
+    }).expect(200);
+    const feeding = await prisma.feedingAction.findFirst({
+      where: { action: { hiveId: ownHiveId } },
+    });
+    expect(feeding?.amountG).toBeCloseTo(2460);
+    expect(feeding?.sugarG).toBeCloseTo(1230);
+    expect(feeding?.density).toBe(1.23);
+
+    const res = await mcpCall(token, 'tools/call', {
+      name: 'create_inspection',
+      arguments: { hiveId: ownHiveId, date: '2026-10-01T10:15:00+02:00' },
+    }).expect(200);
+    const inspection = JSON.parse(res.body.result.content[0].text);
+    expect(inspection).toMatchObject({
+      hiveId: ownHiveId,
+      status: 'COMPLETED',
+      isAllDay: false,
+    });
+    expect(inspection).toHaveProperty('actions');
+
+    const queen = await prisma.queen.create({
+      data: { hiveId: ownHiveId, status: 'VIRGIN', year: 2026 },
+    });
+    const updated = await mcpCall(token, 'tools/call', {
+      name: 'update_queen',
+      arguments: { queenId: queen.id, status: 'ACTIVE' },
+    }).expect(200);
+    expect(updated.body.result.isError).toBeFalsy();
+    const stored = await prisma.queen.findUnique({ where: { id: queen.id } });
+    expect(stored?.status).toBe('ACTIVE');
+
+    await prisma.queen.deleteMany({ where: { hiveId: ownHiveId } });
+    await prisma.action.deleteMany({ where: { hiveId: ownHiveId } });
+    await prisma.inspection.deleteMany({ where: { hiveId: ownHiveId } });
+  });
 });
