@@ -1869,7 +1869,8 @@
       "releaseNotes": "Release notes",
       "github": "GitHub",
       "signIn": "Sign in",
-      "startFree": "Start free"
+      "startFree": "Start free",
+      "ariaLabel": "Main"
     },
     "footer": {
       "tagline": "Free, open-source beekeeping management. Making the craft simpler, more productive, and a little more enjoyable.",
@@ -1904,6 +1905,10 @@
         "draft": {
           "title": "AI-drafted notes",
           "body": "Local LLMs extract queen sightings, brood patterns, treatments, and observations into a pre-filled inspection — you just review and save."
+        },
+        "mcp": {
+          "title": "Bring your own assistant",
+          "body": "Connect Claude or another MCP-compatible assistant to your Hive Pal. Ask which hives are due for an inspection, or have it log a feeding for you, once you sign in and approve access."
         }
       },
       "assuranceLead": "Your recordings, your models.",
@@ -2112,6 +2117,10 @@
             "assistant": {
               "title": "AI assistant",
               "body": "Ask questions about your apiary and get help making sense of your records, right inside the app."
+            },
+            "mcp": {
+              "title": "Works with AI assistants (MCP)",
+              "body": "Connect Claude and other MCP clients to read your apiary records and record inspections, feedings and todos for you, after you approve access."
             },
             "bulkActions": {
               "title": "Bulk actions",

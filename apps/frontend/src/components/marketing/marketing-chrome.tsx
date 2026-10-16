@@ -2,43 +2,104 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
-import { sans } from './marketing-styles';
+import { MarketingButton } from './marketing-button';
+import { DOCS_URL, GITHUB_URL, MARKETING_FOCUS } from './marketing-constants';
 
-/** Amber hexagon bullet used in feature lists. */
-export function HexBullet({ className = 'h-3.5 w-3.5 text-amber-600' }) {
+const HEX_PATH = 'M12 2.5l8.66 5v9l-8.66 5-8.66-5v-9l8.66-5z';
+
+/** Hexagon bullet used in feature lists; colour it with a text-* class. */
+export function HexBullet({ className }: Readonly<{ className?: string }>) {
   return (
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className={`flex-none ${className}`}
+      className={cn('size-3.5 flex-none text-amber-600', className)}
     >
-      <path
-        d="M12 2.5l8.66 5v9l-8.66 5-8.66-5v-9l8.66-5z"
-        fill="currentColor"
-        opacity="0.18"
-      />
-      <path
-        d="M12 2.5l8.66 5v9l-8.66 5-8.66-5v-9l8.66-5z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-      />
+      <path d={HEX_PATH} fill="currentColor" opacity="0.18" />
+      <path d={HEX_PATH} fill="none" stroke="currentColor" strokeWidth="1.4" />
     </svg>
   );
 }
 
-/** Uppercase eyebrow label with a leading amber rule. */
-export function SectionLabel({ children }: { children: React.ReactNode }) {
+/** Uppercase eyebrow label with a leading rule, for cream or forest sections. */
+export function SectionLabel({
+  children,
+  tone = 'light',
+}: Readonly<{
+  children: React.ReactNode;
+  tone?: 'light' | 'dark';
+}>) {
   return (
     <div
-      className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-stone-600"
-      style={sans}
+      className={cn(
+        'flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em]',
+        tone === 'light' ? 'text-stone-600' : 'text-amber-200/80',
+      )}
     >
-      <span className="h-px w-8 bg-amber-600/70" />
+      <span
+        className={cn(
+          'h-px w-8',
+          tone === 'light' ? 'bg-amber-600/70' : 'bg-amber-300/70',
+        )}
+      />
       <span>{children}</span>
     </div>
+  );
+}
+
+/** The Hive Pal mark, 36 px tall; the 112 px source covers high-DPI screens. */
+function Logo({ className }: Readonly<{ className?: string }>) {
+  return (
+    <picture>
+      <source srcSet="/hive-pal-logo-112.webp" type="image/webp" />
+      <img
+        src="/hive-pal-logo-112.png"
+        alt="Hive Pal"
+        width={32}
+        height={36}
+        className={cn('h-9 w-auto select-none', className)}
+        draggable={false}
+      />
+    </picture>
+  );
+}
+
+type NavLink = { label: string; icon?: React.ReactNode } & (
+  { to: string } | { href: string }
+);
+
+/** A footer or header link: internal routes via Link, external in a new tab. */
+function MarketingNavLink({
+  link,
+  className,
+}: Readonly<{
+  link: NavLink;
+  className: string;
+}>) {
+  const content = (
+    <>
+      {link.icon}
+      {link.label}
+    </>
+  );
+  if ('to' in link) {
+    return (
+      <Link to={link.to} className={cn(MARKETING_FOCUS, className)}>
+        {content}
+      </Link>
+    );
+  }
+  return (
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(MARKETING_FOCUS, className)}
+    >
+      {content}
+    </a>
   );
 }
 
@@ -46,236 +107,157 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
 export function MarketingHeader() {
   const localize = useLocalizedPath();
   const { t } = useTranslation('common');
+  const links: NavLink[] = [
+    { label: t('marketing.nav.features'), to: localize('/features') },
+    { label: t('marketing.nav.freeTools'), to: localize('/tools') },
+    { label: t('marketing.nav.documentation'), href: DOCS_URL },
+    { label: t('marketing.nav.releaseNotes'), to: localize('/releases') },
+  ];
+  const linkClass = 'transition-colors hover:text-stone-900';
+
   return (
-    <header className="sticky top-0 z-40 border-b border-stone-900/10 bg-[#FBF5EA]/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-stone-900/10 bg-cream/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
-        <Link to={localize('/')} className="flex items-center gap-3">
-          <img
-            src="/hive-pal-logo.png"
-            alt="Hive Pal"
-            className="h-9 w-9 select-none"
-            draggable={false}
-          />
-          <span
-            className="text-lg font-semibold tracking-tight text-stone-900"
-            style={sans}
-          >
+        <Link
+          to={localize('/')}
+          className={cn(MARKETING_FOCUS, 'flex items-center gap-3')}
+        >
+          <Logo />
+          <span className="text-lg font-semibold tracking-tight text-stone-900">
             Hive Pal
           </span>
         </Link>
 
         <nav
+          aria-label={t('marketing.nav.ariaLabel')}
           className="hidden items-center gap-8 text-sm text-stone-700 md:flex"
-          style={sans}
         >
-          <Link
-            to={localize('/features')}
-            className="transition-colors hover:text-stone-900"
-          >
-            {t('marketing.nav.features')}
-          </Link>
-          <Link
-            to={localize('/tools')}
-            className="transition-colors hover:text-stone-900"
-          >
-            {t('marketing.nav.freeTools')}
-          </Link>
-          <a
-            href="https://docs.hivepal.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-stone-900"
-          >
-            {t('marketing.nav.documentation')}
-          </a>
-          <Link
-            to={localize('/releases')}
-            className="transition-colors hover:text-stone-900"
-          >
-            {t('marketing.nav.releaseNotes')}
-          </Link>
-          <a
-            href="https://github.com/martinhrvn/hive-pal"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 transition-colors hover:text-stone-900"
-          >
-            <GithubIcon className="h-4 w-4" />
-            {t('marketing.nav.github')}
-          </a>
+          {links.map(link => (
+            <MarketingNavLink
+              key={link.label}
+              link={link}
+              className={linkClass}
+            />
+          ))}
+          <MarketingNavLink
+            link={{
+              label: t('marketing.nav.github'),
+              href: GITHUB_URL,
+              icon: <GithubIcon className="size-4" />,
+            }}
+            className={cn(linkClass, 'inline-flex items-center gap-1.5')}
+          />
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button
+          <MarketingButton
             variant="ghost"
             asChild
-            className="hidden text-stone-700 hover:bg-stone-900/5 hover:text-stone-900 sm:inline-flex"
+            className="hidden sm:inline-flex"
           >
             <Link to="/login">{t('marketing.nav.signIn')}</Link>
-          </Button>
-          <Button
-            asChild
-            className="bg-stone-900 text-amber-50 shadow-sm hover:bg-stone-800"
-          >
+          </MarketingButton>
+          <MarketingButton variant="dark" asChild className="shadow-sm">
             <Link to="/register">
               {t('marketing.nav.startFree')}
-              <ArrowUpRight className="ml-1 h-4 w-4" />
+              <ArrowUpRight className="size-4" />
             </Link>
-          </Button>
+          </MarketingButton>
         </div>
       </div>
     </header>
   );
 }
 
+const FOOTER_LINK = 'text-amber-50/75 transition-colors hover:text-amber-50';
+
 /** Dark footer shared across the public marketing pages. */
 export function MarketingFooter() {
   const localize = useLocalizedPath();
   const { t } = useTranslation('common');
+  const columns: { title: string; links: NavLink[] }[] = [
+    {
+      title: t('marketing.footer.product'),
+      links: [
+        { label: t('marketing.footer.features'), to: localize('/features') },
+        { label: t('marketing.footer.freeTools'), to: localize('/tools') },
+        {
+          label: t('marketing.footer.releaseNotes'),
+          to: localize('/releases'),
+        },
+      ],
+    },
+    {
+      title: t('marketing.footer.project'),
+      links: [
+        { label: t('marketing.footer.documentation'), href: DOCS_URL },
+        {
+          label: t('marketing.footer.reportIssue'),
+          href: `${GITHUB_URL}/issues`,
+        },
+        {
+          label: t('marketing.footer.privacyPolicy'),
+          to: localize('/privacy-policy'),
+        },
+      ],
+    },
+    {
+      title: t('marketing.footer.source'),
+      links: [
+        {
+          label: t('marketing.footer.github'),
+          href: GITHUB_URL,
+          icon: <GithubIcon className="size-4" />,
+        },
+        { label: t('marketing.footer.signIn'), to: '/login' },
+        { label: t('marketing.footer.createAccount'), to: '/register' },
+      ],
+    },
+  ];
+
   return (
-    <footer className="bg-[#15201E] text-amber-50/80">
+    <footer className="bg-forest text-amber-50/80">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
-            <Link to={localize('/')} className="flex items-center gap-3">
-              <img
-                src="/hive-pal-logo.png"
-                alt="Hive Pal"
-                className="h-9 w-9"
-              />
-              <span
-                className="text-lg font-semibold text-amber-50"
-                style={sans}
-              >
+            <Link
+              to={localize('/')}
+              className={cn(MARKETING_FOCUS, 'inline-flex items-center gap-3')}
+            >
+              <Logo />
+              <span className="text-lg font-semibold text-amber-50">
                 Hive Pal
               </span>
             </Link>
-            <p
-              className="mt-5 max-w-xs text-sm leading-relaxed text-amber-50/65"
-              style={sans}
-            >
+            <p className="mt-5 max-w-xs text-sm leading-relaxed text-amber-50/65">
               {t('marketing.footer.tagline')}
             </p>
           </div>
 
-          <div>
-            <p
-              className="text-[11px] uppercase tracking-[0.22em] text-amber-200/60"
-              style={sans}
-            >
-              {t('marketing.footer.product')}
-            </p>
-            <ul className="mt-4 space-y-2.5 text-sm">
-              <li>
-                <Link
-                  to={localize('/features')}
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.features')}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={localize('/tools')}
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.freeTools')}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={localize('/releases')}
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.releaseNotes')}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <p
-              className="text-[11px] uppercase tracking-[0.22em] text-amber-200/60"
-              style={sans}
-            >
-              {t('marketing.footer.project')}
-            </p>
-            <ul className="mt-4 space-y-2.5 text-sm">
-              <li>
-                <a
-                  href="https://docs.hivepal.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.documentation')}
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/martinhrvn/hive-pal/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.reportIssue')}
-                </a>
-              </li>
-              <li>
-                <Link
-                  to={localize('/privacy-policy')}
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.privacyPolicy')}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <p
-              className="text-[11px] uppercase tracking-[0.22em] text-amber-200/60"
-              style={sans}
-            >
-              {t('marketing.footer.source')}
-            </p>
-            <ul className="mt-4 space-y-2.5 text-sm">
-              <li>
-                <a
-                  href="https://github.com/martinhrvn/hive-pal"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-amber-50/75 hover:text-amber-50"
-                >
-                  <GithubIcon className="h-4 w-4" />
-                  {t('marketing.footer.github')}
-                </a>
-              </li>
-              <li>
-                <Link
-                  to="/login"
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.signIn')}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/register"
-                  className="text-amber-50/75 hover:text-amber-50"
-                >
-                  {t('marketing.footer.createAccount')}
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {columns.map(column => (
+            <nav key={column.title} aria-label={column.title}>
+              <p className="text-xs uppercase tracking-[0.22em] text-amber-200/60">
+                {column.title}
+              </p>
+              <ul className="mt-4 space-y-2.5 text-sm">
+                {column.links.map(link => (
+                  <li key={link.label}>
+                    <MarketingNavLink
+                      link={link}
+                      className={cn(
+                        FOOTER_LINK,
+                        link.icon && 'inline-flex items-center gap-1.5',
+                      )}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-amber-50/10 pt-8 sm:flex-row">
-          <p
-            className="text-[11px] uppercase tracking-[0.22em] text-amber-50/55"
-            style={sans}
-          >
+          <p className="text-xs uppercase tracking-[0.22em] text-amber-50/55">
             {t('marketing.footer.copyright')}
           </p>
           <p className="text-xs text-amber-50/55">
