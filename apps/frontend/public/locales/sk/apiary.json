@@ -8,7 +8,9 @@
     "searchPlaceholder": "Hľadať včelnice...",
     "noApiaries": "Nenašli sa žiadne včelnice",
     "noApiariesMatching": "Nenašli sa žiadne včelnice zodpovedajúce \"{{searchTerm}}\"",
-    "clearFilters": "Vymazať filtre"
+    "clearFilters": "Vymazať filtre",
+    "sharedEdit": "Zdieľaná · úpravy",
+    "sharedView": "Zdieľaná · prezeranie"
   },
   "create": {
     "title": "Vytvoriť včelnicu",
@@ -93,6 +95,56 @@
       "dataDriven": "",
       "subjective": "",
       "description": ""
+    }
+  },
+  "roles": {
+    "EDITOR": "Plný prístup",
+    "VIEWER": "Len na prezeranie"
+  },
+  "join": {
+    "goToDashboard": "Prejsť na Dashboard",
+    "notFound": {
+      "title": "Pozvánka sa nenašla",
+      "description": "Tento odkaz na pozvánku mohol byť zrušený alebo je neplatný."
+    },
+    "expired": {
+      "title": "Platnosť pozvánky vypršala",
+      "description": "Platnosť tohto odkazu na pozvánku vypršala. Požiadajte vlastníka včelnice o nový."
+    },
+    "alreadyMember": {
+      "title": "Už ste členom",
+      "description": "K včelnici <strong>{{apiaryName}}</strong> už máte prístup."
+    },
+    "requested": {
+      "title": "Žiadosť odoslaná!",
+      "description": "Vaša žiadosť o pripojenie k včelnici <strong>{{apiaryName}}</strong> bola odoslaná. Vlastník ju čoskoro posúdi."
+    },
+    "title": "Pripojiť sa k {{apiaryName}}",
+    "invited": "Boli ste pozvaní pripojiť sa k tejto včelnici s oprávnením <badge>{{role}}</badge>.",
+    "signInPrompt": "Pokračujte prihlásením alebo vytvorením účtu.",
+    "signIn": "Prihlásiť sa",
+    "createAccount": "Vytvoriť účet",
+    "requesting": "Odosiela sa...",
+    "requestToJoin": "Požiadať o pripojenie",
+    "joinFailed": "Pripojenie zlyhalo. Skúste to znova."
+  },
+  "sharing": {
+    "inviteLinks": {
+      "title": "Odkazy na pozvánky",
+      "createLink": "Vytvoriť odkaz",
+      "dialogTitle": "Vytvoriť odkaz na pozvánku",
+      "permissionLevel": "Úroveň oprávnení",
+      "viewerHint": "Môže prezerať všetky údaje, ale nemôže robiť zmeny.",
+      "editorHint": "Môže vytvárať, upravovať a mazať úle, prehliadky atď.",
+      "empty": "Žiadne aktívne odkazy na pozvánky. Vytvorte jeden a zdieľajte túto včelnicu."
+    },
+    "members": {
+      "title": "Členovia",
+      "empty": "Zatiaľ žiadni členovia. Začnite zdieľaním odkazu na pozvánku.",
+      "pending": "Čakajúce žiadosti ({{total}})",
+      "active": "Aktívni členovia ({{total}})",
+      "approve": "Schváliť",
+      "reject": "Zamietnuť"
     }
   }
 }

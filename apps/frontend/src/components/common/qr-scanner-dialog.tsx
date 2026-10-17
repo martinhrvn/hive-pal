@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ interface QrScannerDialogProps {
 }
 
 export function QrScannerDialog({ open, onOpenChange }: QrScannerDialogProps) {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   const handleScan = useCallback(
@@ -57,10 +59,8 @@ export function QrScannerDialog({ open, onOpenChange }: QrScannerDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Scan QR Code</DialogTitle>
-          <DialogDescription>
-            Point your camera at a hive QR code to navigate to it
-          </DialogDescription>
+          <DialogTitle>{t('qrScanner.title')}</DialogTitle>
+          <DialogDescription>{t('qrScanner.description')}</DialogDescription>
         </DialogHeader>
 
         <div className="relative overflow-hidden rounded-lg bg-black aspect-square">
@@ -68,7 +68,7 @@ export function QrScannerDialog({ open, onOpenChange }: QrScannerDialogProps) {
             <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
               <Camera className="h-12 w-12 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                Camera access is not available in this browser.
+                {t('qrScanner.cameraUnavailable')}
               </p>
             </div>
           ) : error ? (
@@ -76,7 +76,7 @@ export function QrScannerDialog({ open, onOpenChange }: QrScannerDialogProps) {
               <AlertCircle className="h-12 w-12 text-destructive" />
               <p className="text-sm text-destructive">{error}</p>
               <Button variant="outline" size="sm" onClick={startScanning}>
-                Try Again
+                {t('actions.tryAgain')}
               </Button>
             </div>
           ) : (

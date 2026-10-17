@@ -59,7 +59,7 @@ const DashboardLayout = () => {
             <h1 className="text-xl font-semibold">
               <Link to="/" className="flex items-center gap-3 text-foreground">
                 <img className="w-10" src="/hive-pal-logo.png" alt="" />
-                Hive Pal
+                {t('navigation.brand')}
               </Link>
             </h1>
             <div className="flex items-center gap-4 grow justify-end">

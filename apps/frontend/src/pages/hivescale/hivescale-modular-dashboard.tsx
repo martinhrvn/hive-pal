@@ -272,6 +272,8 @@ type ResolvedDateRangeBounds = {
 
 type AxisBound = number | 'auto';
 type AxisDomain = [AxisBound, AxisBound];
+// Recharts domain that lets both ends of an axis scale to the data.
+const AUTO_AXIS_DOMAIN: AxisDomain = ['auto', 'auto'];
 type AxisScaleSetting = { min: string; max: string };
 type AxisScaleSettingsMap = Record<string, AxisScaleSetting>;
 type AxisScaleDefinition = { id: string; label: string; unit?: string };
@@ -790,8 +792,10 @@ function AxisScaleControls({
               {withUnit(axis.label, axis.unit)}
             </span>
             <span className="text-muted-foreground">
-              y_min {axisBoundLabel(setting?.min, autoLabel)} · y_max{' '}
-              {axisBoundLabel(setting?.max, autoLabel)}
+              {t('dashboard.axisScale.bounds', {
+                min: axisBoundLabel(setting?.min, autoLabel),
+                max: axisBoundLabel(setting?.max, autoLabel),
+              })}
             </span>
             {(setting?.min || setting?.max) && (
               <button
@@ -2020,7 +2024,9 @@ function HiveOverviewGrid({
                             {t('dashboard.overview.weight')}
                           </p>
                           <p className="font-semibold">
-                            {numberOrDash(slot.weightKg)} kg
+                            {t('common.kgValue', {
+                              value: numberOrDash(slot.weightKg),
+                            })}
                           </p>
                         </div>
                         <div>
@@ -2028,7 +2034,9 @@ function HiveOverviewGrid({
                             {t('dashboard.overview.temperature')}
                           </p>
                           <p className="font-semibold">
-                            {numberOrDash(slot.tempC)} °C
+                            {t('common.celsiusValue', {
+                              value: numberOrDash(slot.tempC),
+                            })}
                           </p>
                         </div>
                         <div>
@@ -2099,7 +2107,7 @@ function WidgetShell({
             {isEditing && (
               <>
                 <Badge variant="secondary" className="text-[10px]">
-                  {layout.w} x {layout.h}
+                  {t('dashboard.widgetSize', { w: layout.w, h: layout.h })}
                 </Badge>
                 <button
                   type="button"
@@ -2982,7 +2990,7 @@ function SoundRmsWidget({
           activeAxes,
           axisScales,
           axisScaleEditor,
-          () => ['auto', 'auto'],
+          () => AUTO_AXIS_DOMAIN,
         )}
         {visibleHives.flatMap((hiveIndex, hivePosition) =>
           activeMetrics
@@ -3176,7 +3184,9 @@ function TemperatureHeatmapWidget({ slots }: Readonly<{ slots: HiveSlot[] }>) {
               <div className="mb-1 flex items-center justify-between gap-2 text-xs">
                 <span className="truncate font-medium">{slot.name}</span>
                 <span className="font-medium">
-                  {numberOrDash(slot.tempC)} °C
+                  {t('common.celsiusValue', {
+                    value: numberOrDash(slot.tempC),
+                  })}
                 </span>
               </div>
               <div className="h-2 rounded-full bg-background/70">
@@ -3460,7 +3470,7 @@ function ConfigurableDiagramWidget({
               activeAxes,
               axisScales,
               axisScaleEditor,
-              axis => (axis === 'percent' ? [0, 100] : ['auto', 'auto']),
+              axis => (axis === 'percent' ? [0, 100] : AUTO_AXIS_DOMAIN),
             )}
             {activeMetrics.flatMap((metric, metricPosition) => {
               if (metric.source === 'device') {
@@ -3711,6 +3721,14 @@ const HIVEHEART_FFT_RANGES: readonly (readonly [number, number])[] = [
   [1313, 1406],
   [1407, 1500],
 ];
+// Recharts label styling for the HiveHeart chart (not user-visible text).
+const HIVEHEART_BAND_LABEL_STYLE = {
+  position: 'insideTop',
+  fontSize: 10,
+  fill: 'var(--muted-foreground)',
+} as const;
+const HIVEHEART_SNAPSHOT_LABEL_POSITION = 'top' as const;
+
 const HIVEHEART_FFT_BIN_COUNT = HIVEHEART_FFT_RANGES.length;
 const HIVEHEART_FFT_LEVEL_MAX = 15;
 
@@ -3874,9 +3892,7 @@ function HiveHeartSpectrumWidget({
                 ifOverflow="visible"
                 label={{
                   value: t(span.labelKey),
-                  position: 'insideTop',
-                  fontSize: 10,
-                  fill: 'var(--muted-foreground)',
+                  ...HIVEHEART_BAND_LABEL_STYLE,
                 }}
               />
             ))}
@@ -3924,7 +3940,7 @@ function HiveHeartSpectrumWidget({
                   strokeDasharray="4 2"
                   label={{
                     value: `${Math.round(snapshot.frequencyHz ?? 0)} Hz`,
-                    position: 'top',
+                    position: HIVEHEART_SNAPSHOT_LABEL_POSITION,
                     fontSize: 10,
                     fill: colorFor(snapshot.hiveIndex),
                   }}

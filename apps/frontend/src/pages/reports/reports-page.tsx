@@ -12,12 +12,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReportPeriod } from 'shared-schemas';
 import { toast } from 'sonner';
-import { FeedingTotalsChart } from './components/charts/feeding-totals-chart';
 import { TreatmentTotalsCard } from './components/treatment-totals-card';
 import { FeedingTrendChart } from './components/charts/feeding-trend-chart';
 import { HealthTrendChart } from './components/charts/health-trend-chart';
 import { HiveScoreTrendChart } from './components/charts/hive-score-trend-chart';
-import { HoneyProductionChart } from './components/charts/honey-production-chart';
+import { HiveBarChart } from './components/charts/hive-bar-chart';
 import { ReportsHeader } from './components/reports-header';
 import { ReportsSidebar } from './components/reports-sidebar';
 import { StatisticsCards } from './components/statistics-cards';
@@ -145,13 +144,23 @@ export const ReportsPage = () => {
               />
             </TabsContent>
             <TabsContent value="charts" className="space-y-6 pt-4">
-              <HoneyProductionChart
+              <HiveBarChart
+                title={t('reports.honeyProduction')}
+                description={t('reports.honeyProductionDescription')}
                 data={statistics?.honeyProduction.byHive}
                 isLoading={isLoading}
+                dataKey="amount"
+                seriesLabel={t('reports.charts.honeyKg')}
+                color="var(--honey)"
               />
-              <FeedingTotalsChart
+              <HiveBarChart
+                title={t('reports.feedingTotals')}
+                description={t('reports.feedingTotalsDescription')}
                 data={statistics?.feedingTotals.byHive}
                 isLoading={isLoading}
+                dataKey="sugarKg"
+                seriesLabel={t('reports.charts.sugarKg')}
+                color="var(--chart-1)"
               />
               <TreatmentTotalsCard
                 apiaryId={activeApiaryId || undefined}

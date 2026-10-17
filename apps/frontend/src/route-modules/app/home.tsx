@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { HomePage } from '@/pages/home-page';
 
 // `/` doubles as the prerendered, logged-out landing page (ProtectedRoute
@@ -7,9 +8,10 @@ import { HomePage } from '@/pages/home-page';
 export const meta = () => [];
 
 export default function Home() {
+  const { t } = useTranslation('common');
   return (
     <>
-      <title>Hive Pal - Modern Beekeeping Management Software</title>
+      <title>{t('pageTitles.home')}</title>
       <HomePage />
     </>
   );

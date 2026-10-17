@@ -17,6 +17,7 @@ import {
 } from '@/api/hooks/useInspectionAudioAi';
 import { useWorkerStatus } from '@/api/hooks/useWorkerTokens';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface AudioCardProps {
   inspectionId: string;
@@ -51,30 +52,32 @@ interface RecordingRowProps {
   isDeleting: boolean;
 }
 
-function deriveStageLabel(
+/** Returns the `inspection:audioCard.stage.*` key for the combined status. */
+function deriveStageLabelKey(
   transcriptionStatus: RecordingAiStatus,
   analysisStatus: RecordingAiStatus,
 ): string {
-  if (transcriptionStatus === 'FAILED') return 'Transcription failed';
-  if (analysisStatus === 'FAILED') return 'Analysis failed';
-  if (transcriptionStatus === 'PENDING') return 'Waiting to transcribe';
-  if (transcriptionStatus === 'PROCESSING') return 'Transcribing...';
-  if (analysisStatus === 'PENDING') return 'Waiting to analyze';
-  if (analysisStatus === 'PROCESSING') return 'Analyzing...';
-  if (analysisStatus === 'COMPLETED') return 'Completed';
+  if (transcriptionStatus === 'FAILED') return 'transcriptionFailed';
+  if (analysisStatus === 'FAILED') return 'analysisFailed';
+  if (transcriptionStatus === 'PENDING') return 'waitingToTranscribe';
+  if (transcriptionStatus === 'PROCESSING') return 'transcribing';
+  if (analysisStatus === 'PENDING') return 'waitingToAnalyze';
+  if (analysisStatus === 'PROCESSING') return 'analyzing';
+  if (analysisStatus === 'COMPLETED') return 'completed';
   if (transcriptionStatus === 'COMPLETED' && analysisStatus === 'NONE')
-    return 'Transcribed';
-  return 'Idle';
+    return 'transcribed';
+  return 'idle';
 }
 
-function getAnalyzeButtonLabel(
+/** Returns the `inspection:audioCard.analyze.*` key for the analyze button. */
+function getAnalyzeButtonLabelKey(
   isPending: boolean,
   status: RecordingAiStatus,
 ): string {
-  if (isPending) return 'Starting...';
-  if (status === 'PENDING') return 'Queued...';
-  if (status === 'PROCESSING') return 'Analyzing...';
-  return 'Analyze using AI';
+  if (isPending) return 'starting';
+  if (status === 'PENDING') return 'queued';
+  if (status === 'PROCESSING') return 'analyzing';
+  return 'start';
 }
 
 function getSafeJson(value: unknown): string {
@@ -130,6 +133,7 @@ function AiPanel({
   isSaving: boolean;
   saveError: string | null;
 }) {
+  const { t } = useTranslation(['inspection', 'common']);
   const shouldShowLoading =
     showAiOutput && effectiveStatus === 'COMPLETED' && isLoadingResult;
 
@@ -138,29 +142,35 @@ function AiPanel({
   return (
     <div className="space-y-4 rounded-md border p-4">
       <div className="flex items-center justify-between">
-        <h4 className="font-medium">AI Output</h4>
+        <h4 className="font-medium">{t('inspection:audioCard.aiOutput')}</h4>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => setShowAiOutput(prev => !prev)}
         >
-          {showAiOutput ? 'Hide' : 'Show'}
+          {showAiOutput
+            ? t('inspection:audioCard.hide')
+            : t('inspection:audioCard.show')}
         </Button>
       </div>
 
-      <div className="text-sm text-muted-foreground">Status: {stageLabel}</div>
+      <div className="text-sm text-muted-foreground">
+        {t('inspection:audioCard.status', { status: stageLabel })}
+      </div>
 
       {showWaitingForWorker && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
-          No worker online — job will be picked up when a worker connects.
+          {t('inspection:audioCard.noWorker')}
         </div>
       )}
 
       {effectiveStatus === 'FAILED' && (
         <div className="text-sm text-red-600">
-          AI analysis failed: {statusQueryError ?? 'Unknown error'}
+          {t('inspection:audioCard.analysisFailed', {
+            error: statusQueryError ?? t('inspection:audioCard.unknownError'),
+          })}
         </div>
       )}
 
@@ -168,13 +178,15 @@ function AiPanel({
         <>
           {aiResult?.error && (
             <div className="text-sm text-yellow-600">
-              AI structuring failed, but transcript is available.
+              {t('inspection:audioCard.structuringFailed')}
             </div>
           )}
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <h5 className="text-sm font-medium">Transcript</h5>
+              <h5 className="text-sm font-medium">
+                {t('inspection:audioCard.transcript')}
+              </h5>
               <div className="flex gap-2">
                 {!isEditing && (
                   <Button
@@ -188,7 +200,7 @@ function AiPanel({
                       !transcriptText
                     }
                   >
-                    Edit transcript
+                    {t('inspection:audioCard.editTranscript')}
                   </Button>
                 )}
                 <Button
@@ -199,10 +211,10 @@ function AiPanel({
                   disabled={!transcriptText || isEditing}
                 >
                   {copyTranscriptState === 'copied'
-                    ? 'Copied'
+                    ? t('inspection:audioCard.copied')
                     : copyTranscriptState === 'error'
-                      ? 'Copy failed'
-                      : 'Copy Transcript'}
+                      ? t('inspection:audioCard.copyFailed')
+                      : t('inspection:audioCard.copyTranscript')}
                 </Button>
               </div>
             </div>
@@ -223,7 +235,9 @@ function AiPanel({
                     onClick={() => void saveEditing()}
                     disabled={isSaving || !editValue.trim()}
                   >
-                    {isSaving ? 'Saving...' : 'Save & re-analyze'}
+                    {isSaving
+                      ? t('inspection:form.saving')
+                      : t('inspection:audioCard.saveAndReanalyze')}
                   </Button>
                   <Button
                     type="button"
@@ -232,7 +246,7 @@ function AiPanel({
                     onClick={cancelEditing}
                     disabled={isSaving}
                   >
-                    Cancel
+                    {t('common:actions.cancel')}
                   </Button>
                 </div>
                 {saveError && (
@@ -241,14 +255,16 @@ function AiPanel({
               </div>
             ) : (
               <div className="whitespace-pre-wrap rounded bg-muted p-3 text-sm">
-                {transcriptText || 'No transcript returned.'}
+                {transcriptText || t('inspection:audioCard.noTranscript')}
               </div>
             )}
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <h5 className="text-sm font-medium">Structured JSON</h5>
+              <h5 className="text-sm font-medium">
+                {t('inspection:audioCard.structuredJson')}
+              </h5>
               <Button
                 type="button"
                 variant="outline"
@@ -256,10 +272,10 @@ function AiPanel({
                 onClick={handleCopyJson}
               >
                 {copyJsonState === 'copied'
-                  ? 'Copied'
+                  ? t('inspection:audioCard.copied')
                   : copyJsonState === 'error'
-                    ? 'Copy failed'
-                    : 'Copy JSON'}
+                    ? t('inspection:audioCard.copyFailed')
+                    : t('inspection:audioCard.copyJson')}
               </Button>
             </div>
 
@@ -270,7 +286,7 @@ function AiPanel({
 
           <details className="rounded-md border p-3 text-xs">
             <summary className="cursor-pointer font-medium">
-              Debug / Raw AI Response
+              {t('inspection:audioCard.debugRaw')}
             </summary>
             <pre className="mt-3 overflow-x-auto whitespace-pre-wrap">
               {getSafeJson(aiResult)}
@@ -281,7 +297,7 @@ function AiPanel({
 
       {shouldShowLoading && (
         <div className="text-sm text-muted-foreground">
-          Loading AI result...
+          {t('inspection:audioCard.loadingResult')}
         </div>
       )}
     </div>
@@ -295,6 +311,7 @@ function RecordingRow({
   onDelete,
   isDeleting,
 }: RecordingRowProps) {
+  const { t } = useTranslation('inspection');
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [showAiOutput, setShowAiOutput] = useState(false);
@@ -344,7 +361,9 @@ function RecordingRow({
             ? 'PENDING'
             : transcriptionStatus;
 
-  const stageLabel = deriveStageLabel(transcriptionStatus, analysisStatus);
+  const stageLabel = t(
+    `audioCard.stage.${deriveStageLabelKey(transcriptionStatus, analysisStatus)}`,
+  );
 
   const { data: workerStatus } = useWorkerStatus();
   const showWaitingForWorker =
@@ -410,7 +429,7 @@ function RecordingRow({
 
   const handlePrefillInspection = () => {
     if (!aiResult?.inspectionDraft) {
-      setPrefillMessage('Run analysis first.');
+      setPrefillMessage(t('audioCard.runAnalysisFirst'));
       window.setTimeout(() => setPrefillMessage(null), 2000);
       return;
     }
@@ -466,7 +485,7 @@ function RecordingRow({
   const saveEditing = async () => {
     const trimmed = editValue.trim();
     if (!trimmed) {
-      setSaveError('Transcript must not be empty.');
+      setSaveError(t('audioCard.transcriptEmpty'));
       return;
     }
     try {
@@ -478,7 +497,7 @@ function RecordingRow({
       setShowAiOutput(true);
     } catch (error) {
       console.error('Failed to save transcript:', error);
-      setSaveError('Failed to save transcript. Please try again.');
+      setSaveError(t('audioCard.saveTranscriptFailed'));
     }
   };
 
@@ -489,7 +508,7 @@ function RecordingRow({
       setShowAiOutput(true);
     } catch (error) {
       console.error('AI analysis failed to start:', error);
-      alert('Failed to start AI analysis.');
+      alert(t('audioCard.startFailed'));
     }
   };
 
@@ -508,7 +527,9 @@ function RecordingRow({
         />
       ) : (
         <div className="text-sm text-muted-foreground">
-          {isLoadingUrl ? 'Loading audio...' : 'Preparing audio...'}
+          {isLoadingUrl
+            ? t('audioCard.loadingAudio')
+            : t('audioCard.preparingAudio')}
         </div>
       )}
 
@@ -523,7 +544,9 @@ function RecordingRow({
               effectiveStatus === 'PENDING'
             }
           >
-            {getAnalyzeButtonLabel(startAiMutation.isPending, effectiveStatus)}
+            {t(
+              `audioCard.analyze.${getAnalyzeButtonLabelKey(startAiMutation.isPending, effectiveStatus)}`,
+            )}
           </Button>
 
           <Button
@@ -531,7 +554,7 @@ function RecordingRow({
             variant="outline"
             onClick={handlePrefillInspection}
           >
-            Prefill inspection from AI
+            {t('audioCard.prefill')}
           </Button>
         </div>
 
@@ -570,6 +593,7 @@ function RecordingRow({
 }
 
 export function AudioCard({ inspectionId }: AudioCardProps) {
+  const { t } = useTranslation('inspection');
   const { data: recordings = [], isLoading } = useInspectionAudio(inspectionId);
   const deleteAudio = useDeleteInspectionAudio(inspectionId);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -597,13 +621,12 @@ export function AudioCard({ inspectionId }: AudioCardProps) {
 
   return (
     <InspectionSection
-      title="Audio"
+      title={t('audioCard.title')}
       icon={<Mic className="h-4 w-4" />}
       trailing={
         recordings.length > 0 ? (
           <span className="font-overline tabular-nums text-stone-400">
-            {recordings.length}{' '}
-            {recordings.length === 1 ? 'recording' : 'recordings'}
+            {t('audioCard.recordings', { count: recordings.length })}
           </span>
         ) : null
       }

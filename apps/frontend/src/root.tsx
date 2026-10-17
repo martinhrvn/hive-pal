@@ -10,6 +10,7 @@ import {
   type MetaDescriptor,
 } from 'react-router';
 import { ErrorBoundary as SentryErrorBoundary } from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 import { Toaster } from 'sonner';
 import { Providers } from '@/context/providers';
 import { PWAUpdatePrompt } from '@/components/pwa-update-prompt';
@@ -180,15 +181,14 @@ export function HydrateFallback() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const { t } = useTranslation('common');
   if (isRouteErrorResponse(error)) {
     return (
       <GenericErrorPage
         code={error.status}
-        title={error.status === 404 ? 'Page not found' : undefined}
+        title={error.status === 404 ? t('errorPage.notFound.title') : undefined}
         message={
-          error.status === 404
-            ? "We couldn't find the page you were looking for."
-            : undefined
+          error.status === 404 ? t('errorPage.notFound.message') : undefined
         }
         onHome={() => window.location.assign('/')}
       />

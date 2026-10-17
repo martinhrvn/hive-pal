@@ -11,7 +11,26 @@
     "apiaries": "Včelnice",
     "hives": "Úle",
     "inspections": "Prehliadky",
-    "lastActivity": "Posledná aktivita"
+    "lastActivity": "Posledná aktivita",
+    "type": "Typ",
+    "status": "Stav",
+    "subject": "Predmet",
+    "from": "Od",
+    "date": "Dátum",
+    "widthMm": "Šírka (mm)",
+    "heightMm": "Výška (mm)",
+    "depthMm": "Hĺbka (mm)",
+    "dimensionsMm": "Rozmery (mm)",
+    "submitted": "Odoslané",
+    "source": "Zdroj",
+    "file": "Súbor",
+    "owner": "Vlastník",
+    "apiary": "Včelnica",
+    "size": "Veľkosť",
+    "uploaded": "Nahrané",
+    "prefix": "Prefix",
+    "created": "Vytvorené",
+    "lastSeen": "Naposledy videný"
   },
   "actions": {
     "resetPassword": "Resetovať heslo"
@@ -63,6 +82,179 @@
       "inspections": "Prehliadky",
       "lastInspection": "Posledná prehliadka",
       "noApiaries": "Pre tohto používateľa neboli nájdené žiadne včelnice"
+    }
+  },
+  "accessDenied": "Prístup zamietnutý. Vyžadujú sa administrátorské oprávnenia.",
+  "feedback": {
+    "title": "Správa spätnej väzby",
+    "description": "Spravovať spätnú väzbu a žiadosti o podporu od používateľov",
+    "filterByType": "Filtrovať podľa typu",
+    "allTypes": "Všetky typy",
+    "typeSuggestion": "Návrh",
+    "filterByStatus": "Filtrovať podľa stavu",
+    "allStatuses": "Všetky stavy",
+    "statuses": {
+      "NEW": "Nová",
+      "REVIEWED": "Posúdená",
+      "RESOLVED": "Vyriešená"
+    },
+    "loading": "Načítavam spätnú väzbu...",
+    "empty": "Nenašla sa žiadna spätná väzba",
+    "anonymous": "Anonym",
+    "fromLine": "Od: {{sender}} • {{date}}",
+    "messageLabel": "Správa:",
+    "statusLabel": "Stav:",
+    "showing": "Zobrazené {{from}} až {{to}} z {{total}} výsledkov",
+    "toasts": {
+      "statusUpdated": "Stav spätnej väzby bol aktualizovaný",
+      "statusUpdateFailed": "Stav spätnej väzby sa nepodarilo aktualizovať"
+    }
+  },
+  "frameSizes": {
+    "pendingTitle": "Čakajúce návrhy rozmerov rámikov",
+    "pendingDescription": "Posúďte a schváľte rozmery rámikov navrhnuté komunitou",
+    "noPending": "Žiadne čakajúce návrhy",
+    "approve": "Schváliť",
+    "reject": "Zamietnuť",
+    "allTitle": "Všetky rozmery rámikov",
+    "allDescription": "Spravovať schválené a zamietnuté rozmery rámikov",
+    "empty": "Nenašli sa žiadne rozmery rámikov",
+    "dimensions": "{{width}} x {{height}} x {{depth}}",
+    "builtIn": "Vstavané",
+    "community": "Komunita",
+    "toasts": {
+      "approved": "Rozmer rámika bol schválený",
+      "approveFailed": "Rozmer rámika sa nepodarilo schváliť",
+      "rejected": "Rozmer rámika bol zamietnutý",
+      "rejectFailed": "Rozmer rámika sa nepodarilo zamietnuť",
+      "deleted": "Rozmer rámika bol vymazaný",
+      "deleteFailed": "Rozmer rámika sa nepodarilo vymazať"
+    }
+  },
+  "media": {
+    "title": "Médiá",
+    "description": "Prehliadajte a zobrazte náhľad všetkých nahraných súborov na platforme",
+    "totalFiles": "Celkom súborov",
+    "spaceUsed": "Využité miesto",
+    "byType": "Podľa typu",
+    "countAndSize": "{{files}} · {{size}}",
+    "files": "Súbory",
+    "listSummary": "Celkom {{total}} · strana {{page}} z {{pages}}",
+    "searchPlaceholder": "Hľadať názov súboru, popis...",
+    "types": {
+      "photo": "Fotografia",
+      "document": "Dokument",
+      "inspection-audio": "Zvukový záznam prehliadky",
+      "quick-check-photo": "Fotografia z rýchlej kontroly"
+    },
+    "filters": {
+      "all": "Všetky typy",
+      "photo": "Fotografie",
+      "document": "Dokumenty",
+      "inspection-audio": "Zvukové záznamy prehliadok",
+      "quick-check-photo": "Fotografie z rýchlych kontrol"
+    },
+    "empty": "Nenašli sa žiadne súbory.",
+    "prev": "Predch.",
+    "noInlinePreview": "Pre tento typ súboru nie je k dispozícii náhľad.",
+    "previewFailed": "Nepodarilo sa načítať URL náhľadu.",
+    "openInNewTab": "Otvoriť na novej karte"
+  },
+  "platformMetrics": {
+    "title": "Metriky platformy",
+    "description": "Sledujte rast platformy a štatistiky používania",
+    "totalUsers": "Celkom používateľov",
+    "active30d_one": "{{count}} aktívny (30 d)",
+    "active30d_few": "{{count}} aktívni (30 d)",
+    "active30d_many": "{{count}} aktívneho (30 d)",
+    "active30d_other": "{{count}} aktívnych (30 d)",
+    "totalApiaries": "Celkom včelníc",
+    "totalHives": "Celkom úľov",
+    "totalInspections": "Celkom prehliadok",
+    "trendsTitle": "Trendy metrík platformy",
+    "trendsDescription": "Sledujte rast platformy a aktivitu používateľov v čase",
+    "dateRanges": {
+      "7d": "Posledných 7 dní",
+      "30d": "Posledných 30 dní",
+      "90d": "Posledných 90 dní",
+      "6m": "Posledných 6 mesiacov",
+      "1y": "Posledný rok",
+      "all": "Celé obdobie"
+    },
+    "additionalTitle": "Ďalšie štatistiky",
+    "additionalDescription": "Ďalšie sledované metriky z najnovšieho snímku",
+    "actions": "Akcie",
+    "queens": "Matky",
+    "harvests": "Zbery",
+    "equipmentItems": "Položky vybavenia",
+    "weatherTitle": "Načítania počasia",
+    "weatherDescription": "Volania Open-Meteo API za posledných 24 hodín (podľa najnovšieho snímku)",
+    "totalFetches": "Celkom načítaní",
+    "errors": "Chyby",
+    "activeUsersTitle": "Aktívni používatelia",
+    "activeUsersDescription": "Používatelia, ktorí v danom období vytvorili prehliadky alebo akcie",
+    "allApiariesTitle": "Všetky včelnice",
+    "allApiariesDescription": "Mapa všetkých včelníc so súradnicami",
+    "map": {
+      "loading": "Načítavam mapu...",
+      "failed": "Nepodarilo sa načítať včelnice",
+      "empty": "Nenašli sa žiadne včelnice so súradnicami",
+      "hiveCount_one": "{{count}} úľ",
+      "hiveCount_few": "{{count}} úle",
+      "hiveCount_many": "{{count}} úľa",
+      "hiveCount_other": "{{count}} úľov",
+      "coordinates": "{{lat}}, {{lng}}"
+    },
+    "chart": {
+      "noData": "Zatiaľ nie sú k dispozícii žiadne dáta metrík. Zobrazia sa po prvom dennom snímku.",
+      "view": "Zobraziť:",
+      "metrics": {
+        "entities": "Počty entít",
+        "activity": "Aktívni používatelia",
+        "weather": "Načítania počasia (24 h)"
+      },
+      "series": {
+        "users": "Používatelia",
+        "apiaries": "Včelnice",
+        "hives": "Úle",
+        "inspections": "Prehliadky",
+        "active7Days": "Aktívni (7 dní)",
+        "active30Days": "Aktívni (30 dní)",
+        "weatherFetches": "Načítania počasia",
+        "errors": "Chyby"
+      }
+    }
+  },
+  "workerTokens": {
+    "title": "Tokeny workerov",
+    "newToken": "Nový token",
+    "description": "Dlhodobé API tokeny pre workery na prepis a analýzu, ktoré si úlohy samy sťahujú. Workery ich používajú na prevzatie a dokončenie úloh zo vzdialeného počítača (napr. lokálny Whisper + Ollama).",
+    "workersOnline_one": "{{count}} worker online",
+    "workersOnline_few": "{{count}} workery online",
+    "workersOnline_many": "{{count}} workera online",
+    "workersOnline_other": "{{count}} workerov online",
+    "noWorkersOnline": "Žiadne workery online",
+    "lastSeenAgo": "· naposledy videný {{time}}",
+    "empty": "Zatiaľ žiadne tokeny workerov. Vytvorte token, aby si vzdialený worker mohol preberať úlohy.",
+    "prefixValue": "{{prefix}}…",
+    "never": "nikdy",
+    "revoked": "Zrušený",
+    "online": "Online",
+    "idle": "Nečinný",
+    "revoke": "Zrušiť platnosť",
+    "copied": "Token bol skopírovaný do schránky",
+    "createdTitle": "Token vytvorený",
+    "createdDescription": "Skopírujte si token teraz. Znova sa už nezobrazí — viditeľný zostane iba jeho prefix.",
+    "copy": "Kopírovať",
+    "done": "Hotovo",
+    "newTitle": "Nový token workera",
+    "newDescription": "Pomenujte token, aby ste vedeli, ktorý počítač alebo worker ho používa.",
+    "namePlaceholder": "napr. domaci-pocitac",
+    "toasts": {
+      "created": "Token workera bol vytvorený",
+      "createFailed": "Token workera sa nepodarilo vytvoriť",
+      "revoked": "Token workera bol zrušený",
+      "revokeFailed": "Token workera sa nepodarilo zrušiť"
     }
   }
 }

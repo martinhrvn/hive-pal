@@ -47,7 +47,9 @@ export const ReportsSidebar: React.FC<ReportsSidebarProps> = ({
               >
                 <SelectTrigger className="w-full">
                   <Calendar className="h-4 w-4" />
-                  <SelectValue placeholder="Select period" />
+                  <SelectValue
+                    placeholder={t('reports.filters.selectPeriod')}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1month">

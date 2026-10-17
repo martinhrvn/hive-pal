@@ -16,13 +16,16 @@
     "filterByHive": "Filter by hive",
     "allHives": "All Hives",
     "noInspections": "No inspections found",
-    "unknownHive": "Unknown Hive"
+    "unknownHive": "Unknown Hive",
+    "broodNestStats": "Brood Nest Stats",
+    "noFrameData": "No frame data recorded"
   },
   "status": {
     "scheduled": "Scheduled",
     "completed": "Completed",
     "overdue": "Overdue",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "unknown": "Unknown"
   },
   "fields": {
     "dateTime": "Date & Time",
@@ -116,7 +119,17 @@
     "pollenFrames": "Pollen",
     "nectarFrames": "Nectar",
     "honeyFrames": "Honey",
-    "emptyFrames": "Empty / Foundation"
+    "emptyFrames": "Empty / Foundation",
+    "frameShort": {
+      "eggsFrames": "Eggs",
+      "uncappedBroodFrames": "Uncapped",
+      "cappedBroodFrames": "Capped",
+      "droneBroodFrames": "Drone",
+      "pollenFrames": "Pollen",
+      "nectarFrames": "Nectar",
+      "honeyFrames": "Stores",
+      "emptyFrames": "Space"
+    }
   },
   "actions": {
     "details": "Details",
@@ -150,7 +163,13 @@
   },
   "messages": {
     "exportComingSoon": "Export functionality coming soon",
-    "shareComingSoon": "Share functionality coming soon"
+    "shareComingSoon": "Share functionality coming soon",
+    "boxUpdateWarning": "Inspection saved, but box configuration could not be updated: {{error}}",
+    "boxUpdateStalenessFailed": "Failed to fetch hive data for staleness detection. Box update skipped.",
+    "boxUpdateFailed": "Failed to update box configuration. Please try again.",
+    "boxUpdateUnexpected": "An unexpected error occurred during box update.",
+    "saved": "Inspection saved",
+    "savedSuccessfully": "Inspection saved successfully"
   },
   "scheduled": {
     "title": "Scheduled Inspections",
@@ -180,7 +199,8 @@
       "showFewerDays": "Show Fewer Days",
       "showMoreDays": "Show More Days (+7)",
       "noForecast": "No forecast available",
-      "noWeatherData": "No weather data"
+      "noWeatherData": "No weather data",
+      "noApiaryWeather": "This hive doesn't have an associated apiary for weather data."
     },
     "completingScheduled": {
       "title": "Completing scheduled inspection from {{date}}",
@@ -204,7 +224,8 @@
     "back": "Back",
     "share": "Share",
     "shareFailed": "Failed to create share link",
-    "viewHive": "View hive"
+    "viewHive": "View hive",
+    "showApiaryLayout": "Show apiary layout"
   },
   "statusCard": {
     "title": "Status",
@@ -391,7 +412,9 @@
         "cleaned": "Cleaned",
         "replaced": "Replaced",
         "notesOptional": "Notes (optional)",
-        "notesPlaceholder": "Additional notes about the maintenance..."
+        "notesPlaceholder": "Additional notes about the maintenance...",
+        "savedToast": "{{status}} — {{date}}",
+        "saveError": "Failed to save maintenance action"
       },
       "statusChange": "Change Status",
       "statusChange_section": {
@@ -399,7 +422,8 @@
         "current": "Current",
         "newStatus": "New status",
         "notesOptional": "Reason (optional)"
-      }
+      },
+      "notesValue": "Notes: {{notes}}"
     },
     "audio": {
       "title": "Audio Notes",
@@ -420,7 +444,8 @@
       "deleteFailed": "Could not delete the photo",
       "someFailed_one": "{{count}} photo could not be uploaded",
       "someFailed_other": "{{count}} photos could not be uploaded"
-    }
+    },
+    "strengthSubjectiveRange": "Must be between 0 and 10 in subjective mode"
   },
   "detailSidebar": {
     "inspectionActions": "Inspection Actions",
@@ -499,7 +524,9 @@
     "scheduledSuccessPlural": "Successfully scheduled {{count}} inspections",
     "scheduledFailed": "Failed to schedule {{count}} inspection",
     "scheduledFailedPlural": "Failed to schedule {{count}} inspections",
-    "noApiary": "Unable to determine apiary for selected hives"
+    "noApiary": "Unable to determine apiary for selected hives",
+    "selectAtLeastOneHive": "Please select at least one hive",
+    "batchNameRequired": "Batch name is required when creating a batch inspection"
   },
   "edit": {
     "completingFrom": "Completing scheduled inspection from {{date}}",
@@ -573,5 +600,189 @@
      "stalePayload": "The hive configuration has changed. The box update cannot be retried.",
      "stalePayloadMessage": "The hive configuration has changed since this update failed. Please refresh the page to see the current state.",
      "maxRetriesReached": "Maximum retry attempts reached. Please contact support if the issue persists."
-   }
+   },
+  "units": {
+    "celsius": "{{value}}°C",
+    "kmh": "{{value}} km/h",
+    "outOfTen": "/ 10",
+    "valueOutOfTen": "{{value}} / 10",
+    "unsetOutOfTen": "— / 10"
+  },
+  "wizard": {
+    "inspection": "Inspection",
+    "continue": "Continue",
+    "goToStep": "Go to step {{step}}",
+    "decrease": "Decrease",
+    "increase": "Increase",
+    "max": "max {{max}}"
+  },
+  "actionsCard": {
+    "actionLabels": {
+      "FEEDING": "Feeding",
+      "TREATMENT": "Treatment",
+      "FRAME": "Frames",
+      "BOX_CONFIGURATION": "Box Configuration",
+      "MAINTENANCE": "Maintenance",
+      "NOTE": "Note",
+      "STATUS_CHANGE": "Status Change",
+      "SPLIT": "Colony Split",
+      "HARVEST": "Harvest",
+      "OTHER": "Other"
+    },
+    "frameQuantity_one": "{{value}} frame",
+    "frameQuantity_other": "{{value}} frames",
+    "boxesAdded_one": "+{{count}} box",
+    "boxesAdded_other": "+{{count}} boxes",
+    "boxesRemoved_one": "-{{count}} box",
+    "boxesRemoved_other": "-{{count}} boxes",
+    "framesAdded_one": "+{{count}} frame",
+    "framesAdded_other": "+{{count}} frames",
+    "framesRemoved_one": "-{{count}} frame",
+    "framesRemoved_other": "-{{count}} frames",
+    "result": "Result",
+    "noChanges": "No changes",
+    "boxType": {
+      "BROOD_one": "Brood box",
+      "BROOD_other": "Brood boxes",
+      "HONEY_one": "Honey super",
+      "HONEY_other": "Honey supers",
+      "FEEDER_one": "Feeder",
+      "FEEDER_other": "Feeders"
+    },
+    "frameCount_one": "{{count}} frame",
+    "frameCount_other": "{{count}} frames",
+    "frameList": "{{frames}} frames",
+    "queenDisposition": {
+      "STAYED_WITH_SOURCE": "Queen stayed with source",
+      "MOVED_TO_NEW": "Queen moved to new hive",
+      "NEW_IS_QUEENLESS": "New hive queenless"
+    },
+    "splitFrames_one": "{{sign}}{{count}} frame",
+    "splitFrames_other": "{{sign}}{{count}} frames"
+  },
+  "boxConfigAction": {
+    "instruction": "Configure the hive's box stack. Changes will be recorded as an action on this inspection and applied to the hive when the inspection is saved.",
+    "confirmChanges": "Confirm Changes",
+    "boxesAdded_one": "+{{count}} box added",
+    "boxesAdded_other": "+{{count}} boxes added",
+    "boxesRemoved_one": "−{{count}} box removed",
+    "boxesRemoved_other": "−{{count}} boxes removed",
+    "framesAdded_one": "+{{count}} frame added",
+    "framesAdded_other": "+{{count}} frames added",
+    "framesRemoved_one": "−{{count}} frame removed",
+    "framesRemoved_other": "−{{count}} frames removed",
+    "total": "Total: {{boxes}}, {{frames}}",
+    "boxCount_one": "{{count}} box",
+    "boxCount_other": "{{count}} boxes",
+    "frameCount_one": "{{count}} frame",
+    "frameCount_other": "{{count}} frames"
+  },
+  "audioCard": {
+    "title": "Audio",
+    "recordings_one": "{{count}} recording",
+    "recordings_other": "{{count}} recordings",
+    "aiOutput": "AI Output",
+    "hide": "Hide",
+    "show": "Show",
+    "status": "Status: {{status}}",
+    "noWorker": "No worker online — job will be picked up when a worker connects.",
+    "analysisFailed": "AI analysis failed: {{error}}",
+    "unknownError": "Unknown error",
+    "structuringFailed": "AI structuring failed, but transcript is available.",
+    "transcript": "Transcript",
+    "editTranscript": "Edit transcript",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
+    "copyTranscript": "Copy Transcript",
+    "saveAndReanalyze": "Save & re-analyze",
+    "noTranscript": "No transcript returned.",
+    "structuredJson": "Structured JSON",
+    "copyJson": "Copy JSON",
+    "debugRaw": "Debug / Raw AI Response",
+    "loadingResult": "Loading AI result...",
+    "loadingAudio": "Loading audio...",
+    "preparingAudio": "Preparing audio...",
+    "prefill": "Prefill inspection from AI",
+    "runAnalysisFirst": "Run analysis first.",
+    "transcriptEmpty": "Transcript must not be empty.",
+    "saveTranscriptFailed": "Failed to save transcript. Please try again.",
+    "startFailed": "Failed to start AI analysis.",
+    "stage": {
+      "transcriptionFailed": "Transcription failed",
+      "analysisFailed": "Analysis failed",
+      "waitingToTranscribe": "Waiting to transcribe",
+      "transcribing": "Transcribing...",
+      "waitingToAnalyze": "Waiting to analyze",
+      "analyzing": "Analyzing...",
+      "completed": "Completed",
+      "transcribed": "Transcribed",
+      "idle": "Idle"
+    },
+    "analyze": {
+      "starting": "Starting...",
+      "queued": "Queued...",
+      "analyzing": "Analyzing...",
+      "start": "Analyze using AI"
+    }
+  },
+  "batch": {
+    "backToList": "Back to Batch Inspections",
+    "startedAt": "Started {{date}}",
+    "createdAt": "Created {{date}}",
+    "completedAt": "Completed {{date}}",
+    "minutes": "{{minutes}}m",
+    "status": {
+      "DRAFT": "DRAFT",
+      "IN_PROGRESS": "IN PROGRESS",
+      "COMPLETED": "COMPLETED",
+      "CANCELLED": "CANCELLED"
+    },
+    "progress": {
+      "completed": "Completed",
+      "remaining": "Remaining",
+      "elapsed": "Elapsed",
+      "avgPerHive": "Avg per Hive"
+    },
+    "list": {
+      "title": "Batch Inspections",
+      "subtitle": "Manage your batch inspection workflows",
+      "newBatch": "New Batch",
+      "emptyTitle": "No batch inspections yet",
+      "emptyDescription": "Create your first batch inspection to get started",
+      "loadFailed": "Failed to load batch inspections",
+      "hiveCount_one": "{{count}} hive",
+      "hiveCount_other": "{{count}} hives",
+      "startInspection": "Start Inspection",
+      "continueInspection": "Continue Inspection",
+      "viewDetails": "View Details",
+      "deleteTitle": "Delete batch?",
+      "deleteDescription": "This will permanently delete this batch inspection. This action cannot be undone.",
+      "startFailed": "Failed to start batch inspection",
+      "deleteFailed": "Failed to delete batch inspection"
+    },
+    "detail": {
+      "loadFailed": "Failed to load batch inspection details",
+      "hivesTitle": "Hives ({{count}})",
+      "order": "Order: {{order}}",
+      "skipped_one": "Skipped {{count}} time",
+      "skipped_other": "Skipped {{count}} times"
+    },
+    "inspect": {
+      "noMoreHives": "No more hives to inspect in this batch",
+      "loadFailed": "Failed to load batch inspection",
+      "completeTitle": "Batch Inspection Complete!",
+      "completeDescription": "All hives in this batch have been inspected.",
+      "skipFailed": "Failed to skip hive",
+      "completed": "Batch inspection completed!",
+      "saveFailed": "Failed to save inspection",
+      "hivePosition": "Hive {{position}} of {{total}}",
+      "completeBadge": "{{completed}}/{{total}} Complete",
+      "currentHive": "Current Hive",
+      "skipHive": "Skip Hive",
+      "inspectionForm": "Inspection Form",
+      "saveAndFinish": "Save and Finish",
+      "skipTitle": "Skip this hive?",
+      "skipDescription": "This hive will be moved to the end of the queue. You can inspect it later in this batch."
+    }
+  }
  }

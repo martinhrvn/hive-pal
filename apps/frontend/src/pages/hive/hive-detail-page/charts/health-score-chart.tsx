@@ -19,6 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { HiveScore } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface HealthScoreChartProps {
   hiveScore: HiveScore | null | undefined;
@@ -27,20 +28,33 @@ interface HealthScoreChartProps {
 export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
   hiveScore,
 }) => {
+  const { t } = useTranslation('hive');
   const scoreData = useMemo(() => {
     if (!hiveScore) return [];
 
     return [
-      { metric: 'Overall', value: hiveScore.overallScore || 0, fullMark: 10 },
       {
-        metric: 'Population',
+        metric: t('scores.overall'),
+        value: hiveScore.overallScore || 0,
+        fullMark: 10,
+      },
+      {
+        metric: t('scores.population'),
         value: hiveScore.populationScore || 0,
         fullMark: 10,
       },
-      { metric: 'Stores', value: hiveScore.storesScore || 0, fullMark: 10 },
-      { metric: 'Queen', value: hiveScore.queenScore || 0, fullMark: 10 },
+      {
+        metric: t('scores.stores'),
+        value: hiveScore.storesScore || 0,
+        fullMark: 10,
+      },
+      {
+        metric: t('scores.queen'),
+        value: hiveScore.queenScore || 0,
+        fullMark: 10,
+      },
     ];
-  }, [hiveScore]);
+  }, [hiveScore, t]);
 
   if (!hiveScore || scoreData.length === 0) {
     return null;
@@ -49,14 +63,14 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Hive Health Score</CardTitle>
-        <CardDescription>Current health metrics (0-10 scale)</CardDescription>
+        <CardTitle>{t('charts.healthScore.title')}</CardTitle>
+        <CardDescription>{t('charts.healthScore.description')}</CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center">
         <ChartContainer
           config={{
             value: {
-              label: 'Score',
+              label: t('card.score'),
               color: '#10b981', // Green for health
             },
           }}
@@ -68,7 +82,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
             <PolarRadiusAxis angle={90} domain={[0, 10]} />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Radar
-              name="Score"
+              name={t('card.score')}
               dataKey="value"
               stroke="var(--color-value)"
               fill="var(--color-value)"

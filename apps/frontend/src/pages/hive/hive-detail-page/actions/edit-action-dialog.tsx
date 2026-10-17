@@ -226,6 +226,7 @@ export const EditActionDialog = ({
   const methods = useForm<ActionFormData>({
     defaultValues: toFormValues(action),
   });
+  const notesField = methods.register('notes');
 
   // Reset form when action changes
   useEffect(() => {
@@ -325,7 +326,7 @@ export const EditActionDialog = ({
                 </Label>
                 <Textarea
                   id={notesId}
-                  {...methods.register('notes')}
+                  {...notesField}
                   placeholder={t('hive:actionDialog.splitNotesPlaceholder')}
                   rows={3}
                 />

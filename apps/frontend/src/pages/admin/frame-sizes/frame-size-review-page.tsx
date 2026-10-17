@@ -23,7 +23,8 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { Check, X, Trash2, RefreshCw } from 'lucide-react';
 import { FrameSize, FrameSizeStatus } from 'shared-schemas';
 
@@ -43,6 +44,8 @@ const getStatusBadgeVariant = (
 };
 
 const FrameSizeReviewPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
+  const { formatDate } = useDateFormat();
   const isAdmin = useIsAdmin();
   const { data: frameSizes = [], isLoading, refetch } = useAdminFrameSizes();
   const approveMutation = useApproveFrameSize();
@@ -53,7 +56,7 @@ const FrameSizeReviewPage: React.FC = () => {
     return (
       <Card>
         <CardContent className="p-6">
-          <p>Access denied. Admin privileges required.</p>
+          <p>{t('accessDenied')}</p>
         </CardContent>
       </Card>
     );
@@ -72,7 +75,7 @@ const FrameSizeReviewPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            Pending Frame Size Submissions
+            {t('frameSizes.pendingTitle')}
             <Button
               variant="outline"
               size="sm"
@@ -82,11 +85,11 @@ const FrameSizeReviewPage: React.FC = () => {
               <RefreshCw
                 className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
               />
-              Refresh
+              {t('common:actions.refresh')}
             </Button>
           </CardTitle>
           <CardDescription>
-            Review and approve community-submitted frame sizes
+            {t('frameSizes.pendingDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,19 +97,19 @@ const FrameSizeReviewPage: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Width (mm)</TableHead>
-                  <TableHead>Height (mm)</TableHead>
-                  <TableHead>Depth (mm)</TableHead>
-                  <TableHead>Submitted</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('table.name')}</TableHead>
+                  <TableHead>{t('table.widthMm')}</TableHead>
+                  <TableHead>{t('table.heightMm')}</TableHead>
+                  <TableHead>{t('table.depthMm')}</TableHead>
+                  <TableHead>{t('table.submitted')}</TableHead>
+                  <TableHead>{t('common:actions.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      Loading...
+                      {t('common:status.loading')}
                     </TableCell>
                   </TableRow>
                 ) : pendingSizes.length === 0 ? (
@@ -115,7 +118,7 @@ const FrameSizeReviewPage: React.FC = () => {
                       colSpan={6}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      No pending submissions
+                      {t('frameSizes.noPending')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -125,9 +128,7 @@ const FrameSizeReviewPage: React.FC = () => {
                       <TableCell>{fs.width}</TableCell>
                       <TableCell>{fs.height}</TableCell>
                       <TableCell>{fs.depth}</TableCell>
-                      <TableCell>
-                        {format(new Date(fs.createdAt), 'MMM dd, yyyy')}
-                      </TableCell>
+                      <TableCell>{formatDate(fs.createdAt)}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button
@@ -137,7 +138,7 @@ const FrameSizeReviewPage: React.FC = () => {
                             disabled={approveMutation.isPending}
                           >
                             <Check className="h-4 w-4 mr-1" />
-                            Approve
+                            {t('frameSizes.approve')}
                           </Button>
                           <Button
                             variant="outline"
@@ -146,7 +147,7 @@ const FrameSizeReviewPage: React.FC = () => {
                             disabled={rejectMutation.isPending}
                           >
                             <X className="h-4 w-4 mr-1" />
-                            Reject
+                            {t('frameSizes.reject')}
                           </Button>
                         </div>
                       </TableCell>
@@ -162,21 +163,19 @@ const FrameSizeReviewPage: React.FC = () => {
       {/* All Frame Sizes */}
       <Card>
         <CardHeader>
-          <CardTitle>All Frame Sizes</CardTitle>
-          <CardDescription>
-            Manage approved and rejected frame sizes
-          </CardDescription>
+          <CardTitle>{t('frameSizes.allTitle')}</CardTitle>
+          <CardDescription>{t('frameSizes.allDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Dimensions (mm)</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('table.name')}</TableHead>
+                  <TableHead>{t('table.dimensionsMm')}</TableHead>
+                  <TableHead>{t('table.source')}</TableHead>
+                  <TableHead>{t('table.status')}</TableHead>
+                  <TableHead>{t('common:actions.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -186,7 +185,7 @@ const FrameSizeReviewPage: React.FC = () => {
                       colSpan={5}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      No frame sizes found
+                      {t('frameSizes.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -194,13 +193,21 @@ const FrameSizeReviewPage: React.FC = () => {
                     <TableRow key={fs.id}>
                       <TableCell className="font-medium">{fs.name}</TableCell>
                       <TableCell>
-                        {fs.width} x {fs.height} x {fs.depth}
+                        {t('frameSizes.dimensions', {
+                          width: fs.width,
+                          height: fs.height,
+                          depth: fs.depth,
+                        })}
                       </TableCell>
                       <TableCell>
                         {fs.isBuiltIn ? (
-                          <Badge variant="outline">Built-in</Badge>
+                          <Badge variant="outline">
+                            {t('frameSizes.builtIn')}
+                          </Badge>
                         ) : (
-                          <Badge variant="secondary">Community</Badge>
+                          <Badge variant="secondary">
+                            {t('frameSizes.community')}
+                          </Badge>
                         )}
                       </TableCell>
                       <TableCell>

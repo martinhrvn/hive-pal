@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface HiveTimelineProps {
   hiveId: string | undefined;
@@ -48,6 +49,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   hiveId,
   apiaryId,
 }) => {
+  const { t } = useTranslation(['hive', 'common']);
   const navigate = useNavigate();
   const { canEdit } = useApiaryPermission(apiaryId);
   const [editingAction, setEditingAction] = useState<ActionResponse | null>(
@@ -102,20 +104,18 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   ): { message: string; linkTo?: string; linkText?: string } | null => {
     if (action.inspectionId) {
       return {
-        message:
-          'This action is part of an inspection. Modifying it here will cause it to be out of sync with the inspection record.',
+        message: t('hive:timeline.warnings.inspection'),
         linkTo: `/inspections/${action.inspectionId}`,
-        linkText: 'Edit inspection instead',
+        linkText: t('hive:actionDialog.warnings.inspectionLink'),
       };
     }
     if (action.type === ActionType.HARVEST || action.harvestId) {
       return {
-        message:
-          'This action is linked to a harvest. Modifying it here will cause it to be out of sync with the harvest record.',
+        message: t('hive:timeline.warnings.harvest'),
         linkTo: action.harvestId
           ? `/harvests/${action.harvestId}`
           : '/harvests',
-        linkText: 'Go to harvest',
+        linkText: t('hive:actionDialog.warnings.harvestLink'),
       };
     }
     return null;
@@ -129,12 +129,12 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
       });
       toast.success(
         deletingAction.type === ActionType.SPLIT
-          ? 'Split record deleted from both timelines'
-          : 'Action deleted',
+          ? t('hive:timeline.splitDeleted')
+          : t('hive:timeline.actionDeleted'),
       );
       setDeletingAction(null);
     } catch {
-      toast.error('Failed to delete action');
+      toast.error(t('hive:timeline.actionDeleteFailed'));
     }
   };
 
@@ -155,7 +155,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
     if (!undoingSplit) return;
     const target = splitUndoTarget(undoingSplit);
     if (!target) {
-      toast.error('Could not resolve the split to undo');
+      toast.error(t('hive:timeline.undoSplitUnresolved'));
       setUndoingSplit(null);
       return;
     }
@@ -165,7 +165,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         splitId: target.splitId,
         force,
       });
-      toast.success('Split undone — frames restored, daughter hive removed');
+      toast.success(t('hive:timeline.splitUndone'));
       setUndoingSplit(null);
       setUndoConflict(false);
       // If we were viewing the daughter, it no longer exists.
@@ -177,7 +177,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         setUndoConflict(true);
         return;
       }
-      toast.error('Failed to undo the split');
+      toast.error(t('hive:timeline.undoSplitFailed'));
     }
   };
 
@@ -185,10 +185,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
     if (!deletingQuickCheck) return;
     try {
       await deleteQuickCheckMutation.mutateAsync(deletingQuickCheck.id);
-      toast.success('Quick check deleted');
+      toast.success(t('common:quickCheck.deleted'));
       setDeletingQuickCheck(null);
     } catch {
-      toast.error('Failed to delete quick check');
+      toast.error(t('common:quickCheck.deleteFailed'));
     }
   };
 
@@ -196,10 +196,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
     if (!deletingPhoto) return;
     try {
       await deletePhotoMutation.mutateAsync(deletingPhoto.id);
-      toast.success('Photo deleted');
+      toast.success(t('common:photo.deleted'));
       setDeletingPhoto(null);
     } catch {
-      toast.error('Failed to delete photo');
+      toast.error(t('common:photo.deleteFailed'));
     }
   };
 
@@ -207,17 +207,17 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
     if (!deletingDocument) return;
     try {
       await deleteDocumentMutation.mutateAsync(deletingDocument.id);
-      toast.success('Document deleted');
+      toast.success(t('common:document.deleted'));
       setDeletingDocument(null);
     } catch {
-      toast.error('Failed to delete document');
+      toast.error(t('common:document.deleteFailed'));
     }
   };
 
   if (!hiveId) return null;
 
   return (
-    <Section title="Activity Timeline">
+    <Section title={t('hive:timeline.title')}>
       <TimelineEventList
         inspections={inspections ?? []}
         actions={actions ?? []}
@@ -231,7 +231,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
           photosLoading ||
           documentsLoading
         }
-        emptyMessage="No activity recorded for this hive yet"
+        emptyMessage={t('hive:timeline.empty')}
         handlers={{
           onInspectionClick: inspection =>
             navigate(`/inspections/${inspection.id}`),
@@ -278,25 +278,24 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Undo this split?</DialogTitle>
+            <DialogTitle>
+              {t('hive:timeline.undoSplitDialog.title')}
+            </DialogTitle>
             <DialogDescription>
-              This fully reverts the split: the daughter hive is deleted, the
-              moved frames are restored to the mother, a moved queen returns,
-              and the follow-up reminder plus both timeline entries are removed.
+              {t('hive:timeline.undoSplitDialog.description')}
             </DialogDescription>
           </DialogHeader>
           {undoConflict && (
             <Alert className="border-amber-200 bg-amber-50">
               <AlertTriangle className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-amber-800">
-                The daughter hive already has its own inspections or actions.
-                Undoing anyway will delete those records along with the hive.
+                {t('hive:timeline.undoSplitDialog.conflict')}
               </AlertDescription>
             </Alert>
           )}
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{t('common:actions.cancel')}</Button>
             </DialogClose>
             <Button
               variant="destructive"
@@ -304,10 +303,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
               disabled={undoSplitMutation.isPending}
             >
               {undoSplitMutation.isPending
-                ? 'Undoing...'
+                ? t('hive:timeline.undoSplitDialog.undoing')
                 : undoConflict
-                  ? 'Undo anyway'
-                  : 'Undo split'}
+                  ? t('hive:timeline.undoSplitDialog.undoAnyway')
+                  : t('common:timeline.undoSplit')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -320,11 +319,11 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Action?</DialogTitle>
+            <DialogTitle>{t('hive:timeline.deleteAction.title')}</DialogTitle>
             <DialogDescription>
               {deletingAction?.type === ActionType.SPLIT
-                ? 'This removes the split record from both hives’ timelines. The hives themselves keep their current frames and queen — use "Undo split" instead to fully revert the split.'
-                : 'This action cannot be undone. This will permanently delete this action.'}
+                ? t('hive:timeline.deleteAction.splitDescription')
+                : t('hive:timeline.deleteAction.description')}
             </DialogDescription>
           </DialogHeader>
           {deletingAction &&
@@ -352,14 +351,16 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
             })()}
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{t('common:actions.cancel')}</Button>
             </DialogClose>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               disabled={deleteActionMutation.isPending}
             >
-              {deleteActionMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteActionMutation.isPending
+                ? t('common:actions.deleting')
+                : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -372,22 +373,23 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Quick Check?</DialogTitle>
+            <DialogTitle>{t('common:quickCheck.deleteTitle')}</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete this
-              quick check and its photos.
+              {t('common:quickCheck.deleteDescription')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{t('common:actions.cancel')}</Button>
             </DialogClose>
             <Button
               variant="destructive"
               onClick={handleDeleteQuickCheckConfirm}
               disabled={deleteQuickCheckMutation.isPending}
             >
-              {deleteQuickCheckMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteQuickCheckMutation.isPending
+                ? t('common:actions.deleting')
+                : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -400,22 +402,23 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Photo?</DialogTitle>
+            <DialogTitle>{t('common:photo.deleteTitle')}</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete this
-              photo.
+              {t('common:photo.deleteDescription')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{t('common:actions.cancel')}</Button>
             </DialogClose>
             <Button
               variant="destructive"
               onClick={handleDeletePhotoConfirm}
               disabled={deletePhotoMutation.isPending}
             >
-              {deletePhotoMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deletePhotoMutation.isPending
+                ? t('common:actions.deleting')
+                : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -428,22 +431,23 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Document?</DialogTitle>
+            <DialogTitle>{t('common:document.deleteTitle')}</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete this
-              document.
+              {t('common:document.deleteDescription')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{t('common:actions.cancel')}</Button>
             </DialogClose>
             <Button
               variant="destructive"
               onClick={handleDeleteDocumentConfirm}
               disabled={deleteDocumentMutation.isPending}
             >
-              {deleteDocumentMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteDocumentMutation.isPending
+                ? t('common:actions.deleting')
+                : t('common:actions.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

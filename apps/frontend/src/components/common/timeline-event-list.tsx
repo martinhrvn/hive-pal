@@ -915,7 +915,11 @@ const DayDivider: React.FC<{ date: Date; isFirst: boolean }> = ({
   date,
   isFirst,
 }) => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const shortDate = new Intl.DateTimeFormat(i18n.language, {
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
   return (
     <div
       className={cn(
@@ -928,7 +932,7 @@ const DayDivider: React.FC<{ date: Date; isFirst: boolean }> = ({
         <span className="font-overline text-muted-foreground shrink-0 tabular-nums">
           {formatDayContext(date, t)}
           <span className="text-muted-foreground/50 mx-1.5">·</span>
-          {format(date, 'MMM d')}
+          {shortDate}
         </span>
         <div
           className="h-px flex-1 bg-gradient-to-r from-border to-transparent"

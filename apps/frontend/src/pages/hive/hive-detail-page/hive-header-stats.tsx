@@ -5,6 +5,7 @@ import { InspectionStatus, ObservationSchemaType } from 'shared-schemas';
 import { TrendIndicator } from '@/components/common/trend-indicator';
 import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
+import { useTranslation } from 'react-i18next';
 
 // ─── Field config ─────────────────────────────────────────────────────────────
 
@@ -29,25 +30,25 @@ const FRAME_COUNT_KEYS = FRAME_FIELDS.map(
 
 const TREND_FIELDS: {
   key: NumericObsKey;
-  shortLabel: string;
+  shortLabelKey: string;
   color: string;
   isFrameCount: boolean;
 }[] = [
   {
     key: 'strength',
-    shortLabel: 'Strength',
+    shortLabelKey: 'hive:detail.statShort.strength',
     color: '#6366f1',
     isFrameCount: false,
   },
   ...FRAME_FIELDS.map(ff => ({
     key: ff.obsKey as NumericObsKey,
-    shortLabel: ff.shortLabel,
+    shortLabelKey: ff.shortLabelKey,
     color: ff.color,
     isFrameCount: true as const,
   })),
   {
     key: 'queenCells',
-    shortLabel: 'Q. Cells',
+    shortLabelKey: 'hive:detail.statShort.queenCells',
     color: '#f43f5e',
     isFrameCount: false,
   },
@@ -74,8 +75,9 @@ interface ChipData {
   unit: '%' | '';
 }
 
-interface ChipDataWithKey extends ChipData {
+interface ChipDataWithKey extends Omit<ChipData, 'shortLabel'> {
   fieldKey: NumericObsKey;
+  shortLabelKey: string;
 }
 
 // ─── Stat items ───────────────────────────────────────────────────────────────
@@ -134,6 +136,7 @@ const MobileStatItem = ({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
+  const { t } = useTranslation('hive');
   const { data: inspections } = useInspections({ hiveId });
 
   const chips = useMemo<ChipDataWithKey[]>(() => {
@@ -190,7 +193,7 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
 
         result.push({
           fieldKey: field.key,
-          shortLabel: field.shortLabel,
+          shortLabelKey: field.shortLabelKey,
           color: field.color,
           current: currentPcts[i],
           delta: previousPcts ? currentPcts[i] - previousPcts[i] : null,
@@ -212,7 +215,7 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
 
       result.push({
         fieldKey: field.key,
-        shortLabel: field.shortLabel,
+        shortLabelKey: field.shortLabelKey,
         color: field.color,
         current,
         delta: previous != null ? current - previous : null,
@@ -235,14 +238,14 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
   return (
     <div>
       <p className="text-xs font-medium text-muted-foreground mb-2">
-        Brood Nest Stats
+        {t('detail.broodNestStats')}
       </p>
       {/* Mobile: compact inline list — shown below md (768px) */}
       <div className="md:hidden flex items-center gap-x-3 gap-y-1 flex-wrap">
         {chips.map(chip => (
           <MobileStatItem
             key={chip.fieldKey}
-            shortLabel={chip.shortLabel}
+            shortLabel={t(chip.shortLabelKey)}
             color={chip.color}
             current={chip.current}
             delta={chip.delta}
@@ -256,7 +259,7 @@ export const HiveHeaderStats = ({ hiveId }: { hiveId: string }) => {
         {chips.map(chip => (
           <CompactStatItem
             key={chip.fieldKey}
-            shortLabel={chip.shortLabel}
+            shortLabel={t(chip.shortLabelKey)}
             color={chip.color}
             current={chip.current}
             delta={chip.delta}

@@ -2,7 +2,8 @@
  * Frame field configuration constants
  *
  * Centralizes frame type definitions (eggs, brood, pollen, nectar, honey, empty)
- * with their properties: observation schema keys, display labels, and colors.
+ * with their properties: observation schema keys, display label i18n keys
+ * (translate at render time with `t()`), and colors.
  *
  * Used across multiple components for consistency in frame display and charts.
  *
@@ -14,64 +15,64 @@ export const FRAME_FIELDS = [
   {
     key: 'eggsFrames' as const,
     obsKey: 'eggsFrames' as const,
-    label: 'Eggs',
-    shortLabel: 'Eggs',
+    labelKey: 'inspection:observations.eggsFrames',
+    shortLabelKey: 'inspection:observations.frameShort.eggsFrames',
     color: '#facc15',
     tailwindColor: 'bg-yellow-400',
   },
   {
     key: 'uncappedBrood' as const,
     obsKey: 'uncappedBroodFrames' as const,
-    label: 'Uncapped Brood',
-    shortLabel: 'Uncapped',
+    labelKey: 'inspection:observations.uncappedBroodFrames',
+    shortLabelKey: 'inspection:observations.frameShort.uncappedBroodFrames',
     color: '#fb923c',
     tailwindColor: 'bg-orange-400',
   },
   {
     key: 'cappedBrood' as const,
     obsKey: 'cappedBroodFrames' as const,
-    label: 'Capped Brood',
-    shortLabel: 'Capped',
+    labelKey: 'inspection:observations.cappedBroodFrames',
+    shortLabelKey: 'inspection:observations.frameShort.cappedBroodFrames',
     color: '#b45309',
     tailwindColor: 'bg-amber-600',
   },
   {
     key: 'droneBrood' as const,
     obsKey: 'droneBroodFrames' as const,
-    label: 'Drone Brood',
-    shortLabel: 'Drone',
+    labelKey: 'inspection:observations.droneBroodFrames',
+    shortLabelKey: 'inspection:observations.frameShort.droneBroodFrames',
     color: '#92400e',
     tailwindColor: 'bg-amber-800',
   },
   {
     key: 'pollen' as const,
     obsKey: 'pollenFrames' as const,
-    label: 'Pollen',
-    shortLabel: 'Pollen',
+    labelKey: 'inspection:observations.pollenFrames',
+    shortLabelKey: 'inspection:observations.frameShort.pollenFrames',
     color: '#22c55e',
     tailwindColor: 'bg-green-500',
   },
   {
     key: 'nectar' as const,
     obsKey: 'nectarFrames' as const,
-    label: 'Nectar',
-    shortLabel: 'Nectar',
+    labelKey: 'inspection:observations.nectarFrames',
+    shortLabelKey: 'inspection:observations.frameShort.nectarFrames',
     color: '#f97316',
     tailwindColor: 'bg-orange-500',
   },
   {
     key: 'honey' as const,
     obsKey: 'honeyFrames' as const,
-    label: 'Honey',
-    shortLabel: 'Stores',
+    labelKey: 'inspection:observations.honeyFrames',
+    shortLabelKey: 'inspection:observations.frameShort.honeyFrames',
     color: '#eab308',
     tailwindColor: 'bg-yellow-500',
   },
   {
     key: 'empty' as const,
     obsKey: 'emptyFrames' as const,
-    label: 'Empty / Foundation',
-    shortLabel: 'Space',
+    labelKey: 'inspection:observations.emptyFrames',
+    shortLabelKey: 'inspection:observations.frameShort.emptyFrames',
     color: '#cbd5e1',
     tailwindColor: 'bg-slate-300',
   },

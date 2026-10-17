@@ -27,6 +27,7 @@ import { ChartPeriod } from './index';
 import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
 import { FRAME_FIELDS, FrameFieldKey } from '@/constants/frame-fields';
+import { useTranslation } from 'react-i18next';
 
 interface FrameBreakdownChartProps {
   hiveId: string | undefined;
@@ -44,14 +45,17 @@ function hasFrameData(inspection: InspectionResponse): boolean {
   );
 }
 
-const chartConfig = Object.fromEntries(
-  FRAME_FIELDS.map(ft => [ft.key, { label: ft.label, color: ft.color }]),
-);
-
 export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation('hive');
+  const chartConfig = Object.fromEntries(
+    FRAME_FIELDS.map(ft => [
+      ft.key,
+      { label: t(ft.labelKey), color: ft.color },
+    ]),
+  );
   const [selected, setSelected] = useState<Set<FrameKey>>(
     new Set(FRAME_FIELDS.map(ft => ft.key)),
   );
@@ -97,9 +101,9 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <CardTitle>Frame Composition</CardTitle>
+            <CardTitle>{t('charts.frameComposition.title')}</CardTitle>
             <CardDescription>
-              Raw frame counts by content over time
+              {t('charts.frameComposition.description')}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -112,7 +116,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
                   className="h-8 gap-1.5 text-xs"
                 >
                   <SlidersHorizontal className="h-3.5 w-3.5" />
-                  Fields
+                  {t('charts.frameComposition.fields')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-2" align="end">
@@ -130,7 +134,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
                         className="h-2.5 w-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: ft.color }}
                       />
-                      {ft.label}
+                      {t(ft.labelKey)}
                     </label>
                   ))}
                 </div>

@@ -31,6 +31,7 @@ import {
   Cloud,
 } from 'lucide-react';
 import { format, subDays, subMonths } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { PlatformMetricsTrendChart } from './components/platform-metrics-trend-chart';
 // Lazy: Leaflet touches `window` when imported, which would break the
 // server-side prerender of the public pages (every route module is part of
@@ -43,14 +44,7 @@ const AllApiariesMap = lazy(() =>
 
 type DateRange = '7d' | '30d' | '90d' | '6m' | '1y' | 'all';
 
-const DATE_RANGE_OPTIONS: { value: DateRange; label: string }[] = [
-  { value: '7d', label: 'Last 7 days' },
-  { value: '30d', label: 'Last 30 days' },
-  { value: '90d', label: 'Last 90 days' },
-  { value: '6m', label: 'Last 6 months' },
-  { value: '1y', label: 'Last year' },
-  { value: 'all', label: 'All time' },
-];
+const DATE_RANGE_OPTIONS: DateRange[] = ['7d', '30d', '90d', '6m', '1y', 'all'];
 
 const getDateRange = (
   range: DateRange,
@@ -74,6 +68,7 @@ const getDateRange = (
 };
 
 const PlatformMetricsPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange>('30d');
@@ -100,9 +95,9 @@ const PlatformMetricsPage: React.FC = () => {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Platform Metrics</h1>
+        <h1 className="text-2xl font-bold">{t('platformMetrics.title')}</h1>
         <p className="text-muted-foreground">
-          Monitor platform growth and usage statistics
+          {t('platformMetrics.description')}
         </p>
       </div>
 
@@ -110,7 +105,9 @@ const PlatformMetricsPage: React.FC = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('platformMetrics.totalUsers')}
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -118,7 +115,9 @@ const PlatformMetricsPage: React.FC = () => {
               {latestSnapshot?.totalUsers ?? '-'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {latestSnapshot?.activeUsers30Days ?? 0} active (30d)
+              {t('platformMetrics.active30d', {
+                count: latestSnapshot?.activeUsers30Days ?? 0,
+              })}
             </p>
           </CardContent>
         </Card>
@@ -126,7 +125,7 @@ const PlatformMetricsPage: React.FC = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Apiaries
+              {t('platformMetrics.totalApiaries')}
             </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -139,7 +138,9 @@ const PlatformMetricsPage: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Hives</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('platformMetrics.totalHives')}
+            </CardTitle>
             <Hexagon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -152,7 +153,7 @@ const PlatformMetricsPage: React.FC = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Inspections
+              {t('platformMetrics.totalInspections')}
             </CardTitle>
             <ClipboardList className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -169,9 +170,9 @@ const PlatformMetricsPage: React.FC = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Platform Metrics Trends</CardTitle>
+              <CardTitle>{t('platformMetrics.trendsTitle')}</CardTitle>
               <CardDescription>
-                Track platform growth and user activity over time
+                {t('platformMetrics.trendsDescription')}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -184,8 +185,8 @@ const PlatformMetricsPage: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {DATE_RANGE_OPTIONS.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                    <SelectItem key={option} value={option}>
+                      {t(`platformMetrics.dateRanges.${option}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -199,7 +200,7 @@ const PlatformMetricsPage: React.FC = () => {
                 <RefreshCw
                   className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
                 />
-                Refresh
+                {t('common:actions.refresh')}
               </Button>
             </div>
           </div>
@@ -212,33 +213,41 @@ const PlatformMetricsPage: React.FC = () => {
       {/* Additional Stats Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Additional Statistics</CardTitle>
+          <CardTitle>{t('platformMetrics.additionalTitle')}</CardTitle>
           <CardDescription>
-            Other tracked metrics from the latest snapshot
+            {t('platformMetrics.additionalDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div>
-              <p className="text-sm text-muted-foreground">Actions</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.actions')}
+              </p>
               <p className="text-xl font-semibold">
                 {latestSnapshot?.totalActions ?? '-'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Queens</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.queens')}
+              </p>
               <p className="text-xl font-semibold">
                 {latestSnapshot?.totalQueens ?? '-'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Harvests</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.harvests')}
+              </p>
               <p className="text-xl font-semibold">
                 {latestSnapshot?.totalHarvests ?? '-'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Equipment Items</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.equipmentItems')}
+              </p>
               <p className="text-xl font-semibold">
                 {latestSnapshot?.totalEquipmentItems ?? '-'}
               </p>
@@ -252,23 +261,26 @@ const PlatformMetricsPage: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Cloud className="h-5 w-5" />
-            Weather Fetches
+            {t('platformMetrics.weatherTitle')}
           </CardTitle>
           <CardDescription>
-            Open-Meteo API calls in the last 24 hours (as of the latest
-            snapshot)
+            {t('platformMetrics.weatherDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <p className="text-sm text-muted-foreground">Total fetches</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.totalFetches')}
+              </p>
               <p className="text-3xl font-bold">
                 {latestSnapshot?.weatherFetches24h ?? '-'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Errors</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.errors')}
+              </p>
               <p className="text-3xl font-bold">
                 {latestSnapshot?.weatherFetchErrors24h ?? '-'}
               </p>
@@ -282,22 +294,26 @@ const PlatformMetricsPage: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Active Users
+            {t('platformMetrics.activeUsersTitle')}
           </CardTitle>
           <CardDescription>
-            Users who created inspections or actions in the given period
+            {t('platformMetrics.activeUsersDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <p className="text-sm text-muted-foreground">Last 7 days</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.dateRanges.7d')}
+              </p>
               <p className="text-3xl font-bold">
                 {latestSnapshot?.activeUsers7Days ?? '-'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Last 30 days</p>
+              <p className="text-sm text-muted-foreground">
+                {t('platformMetrics.dateRanges.30d')}
+              </p>
               <p className="text-3xl font-bold">
                 {latestSnapshot?.activeUsers30Days ?? '-'}
               </p>
@@ -311,10 +327,10 @@ const PlatformMetricsPage: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            All Apiaries
+            {t('platformMetrics.allApiariesTitle')}
           </CardTitle>
           <CardDescription>
-            Map of all apiaries with coordinates
+            {t('platformMetrics.allApiariesDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>

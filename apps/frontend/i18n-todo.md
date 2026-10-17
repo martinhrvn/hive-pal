@@ -72,15 +72,61 @@
 - [x] Persist language preference in localStorage  
 - [x] Add language switcher to user menu (`/src/components/nav-user.tsx`)
 
+### Lint ratchet for untranslated strings (#152)
+- [x] `eslint-plugin-i18next` (`no-literal-string`) plus `no-restricted-syntax` rules for literal toasts and config-object labels (`eslint.config.js`)
+- [x] Cleared the whole baseline domain by domain; `eslint-suppressions.json` is now empty. New literals fail `pnpm lint`.
+- [x] New namespaces: `harvest`, `share`. Restored the `privacy` namespace files that were dropped in 1eeb0d62.
+- [x] Public prerendered pages (tools, releases, public layout, marketing chrome) have en-only keys; see the SEO note on untranslated localized URLs.
+
 ## 📋 Remaining Todo
 
+### Left as is during the ratchet cleanup
+Not flagged by the lint rule, or left alone to keep the English unchanged:
+
+**Raw enum values still shown in the UI**
+- [ ] Harvest status badges (DRAFT / IN_PROGRESS / COMPLETED) — `pages/harvest`
+- [ ] Admin feedback type/status badges (NEW, BUG, …) — `pages/admin`
+- [ ] Data-transfer job type/status (EXPORT, PENDING, …) — `pages/settings`
+- [ ] Queen-builder status options (ACTIVE, …) — `pages/actions/bulk/queen-builder.tsx`
+- [ ] Shared-page observation types (`obs.type.replace(/_/g, ' ')`) and harvest status — `pages/shared`
+- [ ] Inspection header capitalises the raw weather condition id — `pages/inspection`
+- [ ] Assistant shows feed type, unit, product and maintenance component values as raw data
+
+**English text the rule can't see**
+- [ ] Error strings returned by `useAudioRecorder` and the QR scanner hook
+- [ ] `` `${hz} Hz` `` chart label (template literal) — `pages/hivescale`
+- [ ] `formatDistanceToNow` "x ago" text (no date-fns locale passed)
+- [ ] `inspection:status.pending` missing from en (falls back to the `'Scheduled'` default)
+- [ ] `navigation.assistant` missing from en `common.json` (has a `defaultValue`)
+
+**Dates not yet localized**
+- [ ] Report chart axis labels use date-fns `'MMM dd'` / `'MMM yyyy'` (English month names); `useDateFormat` has no month-only format
+- [ ] Admin platform-metrics chart axis `'MMM dd'`
+- [ ] Timeline weekday and `h:mm a` times use date-fns directly
+- [ ] Remaining `format(…, 'EEEE, MMMM d, yyyy')` / `'PPP'` calls in inspection pages and the tools date picker
+- [ ] `hivehub-firmware-card.tsx` uses `Intl.DateTimeFormat(undefined, …)`, ignoring the user's date preference
+
+**Slovak gaps (sk is hand-maintained)**
+- [ ] `hive.json`: large parts of what en has are missing, e.g. most of `split`
+- [ ] `hivescale.json`: ~270 values still identical to English
+- [ ] `apiary.json`: `form.inspectionType.*` values are empty strings
+- [ ] `common.json`: `reports.treatmentTotals*` and `reports.widget.apiaryDetails` missing
+- [ ] `hive.json` `boxConfigurator.queenExcluder` says "Matečník nad týmto nadstavkom" (matečník = queen cell); should probably be "Materská mriežka nad týmto nadstavkom"
+- [ ] Native-speaker review of the Slovak added in the cleanup (e.g. "worker" loanword in admin worker tokens, "Prenos dát", "Predch.")
+
+**Other things noticed**
+- [ ] `nav-hives.tsx` has non-functional "View / Share / Delete Project" menu items (template leftovers)
+- [ ] Apiary sharing tab: icon-only copy/revoke buttons have no aria-labels; copying an invite shows no toast
+- [ ] Privacy policy "Last updated" is always today's date
+- [ ] `eslint-suppressions.json` is empty — decide whether to keep the suppressions mechanism and `lint:i18n:prune` script
+
 ### Optional Enhancements
-- [ ] Date formatting with i18n
+- [ ] Date formatting with i18n (display dates go through `useDateFormat()`; see "Dates not yet localized" above)
 - [ ] Number formatting with i18n
 
 ### Testing & Quality Assurance
 - [ ] Test language switching functionality
-- [ ] Verify all strings are translated (no hardcoded text)
+- [x] Verify all strings are translated (no hardcoded text) — enforced in JSX by the lint ratchet
 - [ ] Check for missing translations and fallbacks
 - [ ] Test RTL support (if needed for future languages)
 - [ ] Performance testing with translations loaded
@@ -120,6 +166,12 @@ public/
       queen.json        ✅ Queen management with colors and status
       onboarding.json   ✅ User onboarding flow
       admin.json        ✅ Admin panel and user management
+      ai.json           ✅ Assistant and AI suggestions
+      harvest.json      ✅ Harvests
+      hivescale.json    ✅ HiveHub scales
+      privacy.json      ✅ Privacy policy
+      share.json        ✅ Share dialog, share prompt, public shared page
+      todo.json         ✅ Todos
     sk/
       (same structure as en with Slovak translations)
 ```

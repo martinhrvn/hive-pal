@@ -14,21 +14,25 @@ export type StatusChangeActionType = {
   notes?: string;
 };
 
-const STATUS_OPTIONS: { id: HiveStatusEnum; label: string }[] = [
-  { id: HiveStatusEnum.ACTIVE, label: 'Active' },
-  { id: HiveStatusEnum.INACTIVE, label: 'Inactive' },
-  { id: HiveStatusEnum.DEAD, label: 'Dead' },
-  { id: HiveStatusEnum.SOLD, label: 'Sold' },
-  { id: HiveStatusEnum.UNKNOWN, label: 'Unknown' },
-  { id: HiveStatusEnum.ARCHIVED, label: 'Archived' },
+// `labelKey` is a `hive:status.*` key, translated at render time.
+const STATUS_OPTIONS: { id: HiveStatusEnum; labelKey: string }[] = [
+  { id: HiveStatusEnum.ACTIVE, labelKey: 'hive:status.active' },
+  { id: HiveStatusEnum.INACTIVE, labelKey: 'hive:status.inactive' },
+  { id: HiveStatusEnum.DEAD, labelKey: 'hive:status.dead' },
+  { id: HiveStatusEnum.SOLD, labelKey: 'hive:status.sold' },
+  { id: HiveStatusEnum.UNKNOWN, labelKey: 'hive:status.unknown' },
+  { id: HiveStatusEnum.ARCHIVED, labelKey: 'hive:status.archived' },
 ];
 
-const STATUS_LABELS: Record<string, string> = Object.fromEntries(
-  STATUS_OPTIONS.map(({ id, label }) => [id, label]),
+const STATUS_LABEL_KEYS: Record<string, string> = Object.fromEntries(
+  STATUS_OPTIONS.map(({ id, labelKey }) => [id, labelKey]),
 );
 
-const getHiveStatusLabel = (status: string): string =>
-  STATUS_LABELS[status] ?? status;
+const getHiveStatusLabel = (
+  status: string,
+  t: (key: string) => string,
+): string =>
+  STATUS_LABEL_KEYS[status] ? t(STATUS_LABEL_KEYS[status]) : status;
 
 type StatusChangeActionProps = {
   action?: StatusChangeActionType;
@@ -81,7 +85,7 @@ export const StatusChangeForm: React.FC<StatusChangeActionProps> = ({
           )}
         </label>
         <div className="flex flex-wrap gap-4">
-          {options.map(({ id, label }) => (
+          {options.map(({ id }) => (
             <Pill
               key={id}
               color={'blue'}
@@ -91,7 +95,7 @@ export const StatusChangeForm: React.FC<StatusChangeActionProps> = ({
                 setToStatus(toStatus === id ? null : id);
               }}
             >
-              {getHiveStatusLabel(id) || label}
+              {getHiveStatusLabel(id, t)}
             </Pill>
           ))}
         </div>
@@ -160,7 +164,7 @@ export const StatusChangeView: React.FC<StatusChangeActionProps> = ({
         'inspection:form.actions.statusChange_section.title',
         'Status Change',
       )}
-      badges={<Badge>{getHiveStatusLabel(action.toStatus)}</Badge>}
+      badges={<Badge>{getHiveStatusLabel(action.toStatus, t)}</Badge>}
       notes={action.notes}
       onEdit={() => setIsEditing(true)}
       onRemove={() => onRemove('STATUS_CHANGE')}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Plus, Calendar, ClipboardPlus, ScanLine, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,6 +19,7 @@ export const FloatingActionButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const getContextualActions = (): FABAction[] => {
     const actions: FABAction[] = [];
@@ -26,7 +28,7 @@ export const FloatingActionButton = () => {
     actions.push(
       {
         id: 'add-inspection',
-        label: 'Add Inspection',
+        label: t('fab.addInspection'),
         icon: <ClipboardPlus className="h-4 w-4" />,
         onClick: () => {
           navigate('/inspections/create');
@@ -36,7 +38,7 @@ export const FloatingActionButton = () => {
       },
       {
         id: 'schedule-inspection',
-        label: 'Schedule Inspection',
+        label: t('actions.scheduleInspection'),
         icon: <Calendar className="h-4 w-4" />,
         onClick: () => {
           navigate('/inspections/schedule');
@@ -46,7 +48,7 @@ export const FloatingActionButton = () => {
       },
       {
         id: 'add-actions',
-        label: 'Bulk Add',
+        label: t('navigation.actions'),
         icon: <Plus className="h-4 w-4" />,
         onClick: () => {
           navigate('/actions/bulk');
@@ -56,7 +58,7 @@ export const FloatingActionButton = () => {
       },
       {
         id: 'scan-qr-code',
-        label: 'Scan QR Code',
+        label: t('qrScanner.title'),
         icon: <ScanLine className="h-4 w-4" />,
         onClick: () => {
           setScannerOpen(true);

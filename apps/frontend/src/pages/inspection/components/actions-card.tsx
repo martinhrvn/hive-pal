@@ -82,34 +82,43 @@ const formatSugar = (grams: number): string =>
     ? `${Math.round(grams / 10) / 100} kg`
     : `${Math.round(grams)} g`;
 
-const FeedingDetails = ({ details }: { details: FeedingActionDetails }) => (
-  <div className="flex gap-2 flex-wrap items-center">
-    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 font-normal">
-      {details.feedType}
-    </Badge>
-    <span className="font-medium tabular-nums">
-      {/* v2 records show what was entered; legacy records the stored value */}
-      {details.enteredAmount != null && details.enteredUnit
-        ? `${details.enteredAmount} ${details.enteredUnit === 'l' ? 'L' : details.enteredUnit}`
-        : `${details.amount} ${details.unit}`}
-    </span>
-    {details.sugarG != null && (
-      <span className="text-stone-500 dark:text-stone-400">
-        · ≈ {formatSugar(details.sugarG)} sugar
+const FeedingDetails = ({ details }: { details: FeedingActionDetails }) => {
+  const { t } = useTranslation('inspection');
+  return (
+    <div className="flex gap-2 flex-wrap items-center">
+      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 font-normal">
+        {details.feedType}
+      </Badge>
+      <span className="font-medium tabular-nums">
+        {/* v2 records show what was entered; legacy records the stored value */}
+        {details.enteredAmount != null && details.enteredUnit
+          ? `${details.enteredAmount} ${details.enteredUnit === 'l' ? 'L' : details.enteredUnit}`
+          : `${details.amount} ${details.unit}`}
       </span>
-    )}
-    {details.waterAddedMl != null && details.waterAddedMl > 0 && (
-      <span className="text-stone-500 dark:text-stone-400">
-        · + {details.waterAddedMl} ml water
-      </span>
-    )}
-    {details.sugarG == null && details.concentration && (
-      <span className="text-stone-500 dark:text-stone-400">
-        · {details.concentration}
-      </span>
-    )}
-  </div>
-);
+      {details.sugarG != null && (
+        <span className="text-stone-500 dark:text-stone-400">
+          ·{' '}
+          {t('form.actions.feeding_section.sugarShort', {
+            amount: formatSugar(details.sugarG),
+          })}
+        </span>
+      )}
+      {details.waterAddedMl != null && details.waterAddedMl > 0 && (
+        <span className="text-stone-500 dark:text-stone-400">
+          ·{' '}
+          {t('form.actions.feeding_section.waterShort', {
+            amount: details.waterAddedMl,
+          })}
+        </span>
+      )}
+      {details.sugarG == null && details.concentration && (
+        <span className="text-stone-500 dark:text-stone-400">
+          · {details.concentration}
+        </span>
+      )}
+    </div>
+  );
+};
 
 const TreatmentDetails = ({ details }: { details: TreatmentActionDetails }) => (
   <div className="flex gap-2 flex-wrap items-center">
@@ -130,41 +139,38 @@ const TreatmentDetails = ({ details }: { details: TreatmentActionDetails }) => (
 );
 
 const FrameDetails = ({ details }: { details: FrameActionDetails }) => {
+  const { t } = useTranslation('inspection');
   const q = details.quantity;
   return (
     <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 font-normal tabular-nums">
-      {q > 0 ? `+${q}` : q} frames
+      {t('actionsCard.frameQuantity', {
+        count: Math.abs(q),
+        value: q > 0 ? `+${q}` : q,
+      })}
     </Badge>
   );
 };
 
-const BOX_TYPE_LABEL: Record<string, string> = {
-  BROOD: 'Brood box',
-  HONEY: 'Honey super',
-  FEEDER: 'Feeder',
-};
+const KNOWN_BOX_TYPES = new Set(['BROOD', 'HONEY', 'FEEDER']);
 
 const BoxConfigurationDetails = ({
   details,
 }: {
   details: BoxConfigurationActionDetails;
 }) => {
+  const { t } = useTranslation('inspection');
   const changes: string[] = [];
   if (details.boxesAdded > 0)
-    changes.push(
-      `+${details.boxesAdded} box${details.boxesAdded === 1 ? '' : 'es'}`,
-    );
+    changes.push(t('actionsCard.boxesAdded', { count: details.boxesAdded }));
   if (details.boxesRemoved > 0)
     changes.push(
-      `-${details.boxesRemoved} box${details.boxesRemoved === 1 ? '' : 'es'}`,
+      t('actionsCard.boxesRemoved', { count: details.boxesRemoved }),
     );
   if (details.framesAdded > 0)
-    changes.push(
-      `+${details.framesAdded} frame${details.framesAdded === 1 ? '' : 's'}`,
-    );
+    changes.push(t('actionsCard.framesAdded', { count: details.framesAdded }));
   if (details.framesRemoved > 0)
     changes.push(
-      `-${details.framesRemoved} frame${details.framesRemoved === 1 ? '' : 's'}`,
+      t('actionsCard.framesRemoved', { count: details.framesRemoved }),
     );
 
   type BoxSummary = { type: string; frameCount: number };
@@ -196,25 +202,27 @@ const BoxConfigurationDetails = ({
       {boxes.length > 0 ? (
         <div className="space-y-0.5">
           <p className="font-overline text-stone-500 dark:text-stone-400">
-            Result
+            {t('actionsCard.result')}
           </p>
           {Object.entries(grouped).map(([type, { count, frames }]) => {
-            const label = BOX_TYPE_LABEL[type] ?? type;
-            const plural = count === 1 ? '' : 's';
+            const label = KNOWN_BOX_TYPES.has(type)
+              ? t(`actionsCard.boxType.${type}`, { count })
+              : type;
             const isFramed = type !== 'FEEDER';
             let frameSummary: string | null;
             if (!isFramed) {
               frameSummary = null;
             } else if (frames.every(f => f === frames[0])) {
-              frameSummary = `${frames[0]} frames`;
+              frameSummary = t('actionsCard.frameCount', { count: frames[0] });
             } else {
-              frameSummary = `${frames.join(', ')} frames`;
+              frameSummary = t('actionsCard.frameList', {
+                frames: frames.join(', '),
+              });
             }
             return (
               <p key={type} className="text-sm">
                 <span className="font-medium tabular-nums">{count}</span>{' '}
                 {label}
-                {plural}
                 {frameSummary && (
                   <span className="text-stone-500 dark:text-stone-400">
                     {' '}
@@ -228,7 +236,7 @@ const BoxConfigurationDetails = ({
       ) : (
         changes.length === 0 && (
           <span className="text-sm italic text-stone-500 dark:text-stone-400">
-            No changes
+            {t('actionsCard.noChanges')}
           </span>
         )
       )}
@@ -241,14 +249,15 @@ const MaintenanceDetails = ({
 }: {
   details: MaintenanceActionDetails;
 }) => {
+  const { t } = useTranslation('inspection');
   const componentLabel: Record<string, string> = {
-    BOX: 'Box',
-    BOTTOM_BOARD: 'Bottom Board',
-    COVER: 'Cover',
+    BOX: t('form.actions.maintenance_section.box'),
+    BOTTOM_BOARD: t('form.actions.maintenance_section.bottomBoard'),
+    COVER: t('form.actions.maintenance_section.cover'),
   };
   const statusLabel: Record<string, string> = {
-    CLEANED: 'Cleaned',
-    REPLACED: 'Replaced',
+    CLEANED: t('form.actions.maintenance_section.cleaned'),
+    REPLACED: t('form.actions.maintenance_section.replaced'),
   };
   return (
     <div className="flex gap-2 flex-wrap items-center">
@@ -268,70 +277,68 @@ const NoteDetails = ({ details }: { details: NoteActionDetails }) => (
   </p>
 );
 
-const HIVE_STATUS_LABEL: Record<string, string> = {
-  ACTIVE: 'Active',
-  INACTIVE: 'Inactive',
-  DEAD: 'Dead',
-  SOLD: 'Sold',
-  UNKNOWN: 'Unknown',
-  ARCHIVED: 'Archived',
+const HIVE_STATUS_LABEL_KEY: Record<string, string> = {
+  ACTIVE: 'hive:status.active',
+  INACTIVE: 'hive:status.inactive',
+  DEAD: 'hive:status.dead',
+  SOLD: 'hive:status.sold',
+  UNKNOWN: 'hive:status.unknown',
+  ARCHIVED: 'hive:status.archived',
 };
-
-const statusLabel = (status: string) => HIVE_STATUS_LABEL[status] ?? status;
 
 const StatusChangeDetails = ({
   details,
 }: {
   details: StatusChangeActionDetails;
-}) => (
-  <div className="flex gap-2 flex-wrap items-center">
-    {details.fromStatus && (
-      <>
-        <Badge className="bg-stone-100 text-stone-800 hover:bg-stone-200 font-normal">
-          {statusLabel(details.fromStatus)}
-        </Badge>
-        <span className="text-stone-500 dark:text-stone-400">→</span>
-      </>
-    )}
-    <Badge className="bg-sky-100 text-sky-800 hover:bg-sky-200 font-normal">
-      {statusLabel(details.toStatus)}
-    </Badge>
-  </div>
-);
-
-const QUEEN_DISPOSITION_LABEL: Record<string, string> = {
-  STAYED_WITH_SOURCE: 'Queen stayed with source',
-  MOVED_TO_NEW: 'Queen moved to new hive',
-  NEW_IS_QUEENLESS: 'New hive queenless',
+}) => {
+  const { t } = useTranslation('inspection');
+  const statusLabel = (status: string) =>
+    HIVE_STATUS_LABEL_KEY[status] ? t(HIVE_STATUS_LABEL_KEY[status]) : status;
+  return (
+    <div className="flex gap-2 flex-wrap items-center">
+      {details.fromStatus && (
+        <>
+          <Badge className="bg-stone-100 text-stone-800 hover:bg-stone-200 font-normal">
+            {statusLabel(details.fromStatus)}
+          </Badge>
+          <span className="text-stone-500 dark:text-stone-400">→</span>
+        </>
+      )}
+      <Badge className="bg-sky-100 text-sky-800 hover:bg-sky-200 font-normal">
+        {statusLabel(details.toStatus)}
+      </Badge>
+    </div>
+  );
 };
 
-const SplitDetails = ({ details }: { details: SplitActionDetails }) => (
-  <div className="flex gap-2 flex-wrap items-center">
-    <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 font-normal tabular-nums">
-      {details.role === 'NEW' ? '+' : '−'}
-      {details.framesMoved} frame{details.framesMoved === 1 ? '' : 's'}
-    </Badge>
-    <span className="text-stone-500 dark:text-stone-400">
-      {QUEEN_DISPOSITION_LABEL[details.queenDisposition] ??
-        details.queenDisposition}
-    </span>
-  </div>
-);
+const KNOWN_QUEEN_DISPOSITIONS = new Set([
+  'STAYED_WITH_SOURCE',
+  'MOVED_TO_NEW',
+  'NEW_IS_QUEENLESS',
+]);
+
+const SplitDetails = ({ details }: { details: SplitActionDetails }) => {
+  const { t } = useTranslation('inspection');
+  return (
+    <div className="flex gap-2 flex-wrap items-center">
+      <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 font-normal tabular-nums">
+        {t('actionsCard.splitFrames', {
+          sign: details.role === 'NEW' ? '+' : '−',
+          count: details.framesMoved,
+        })}
+      </Badge>
+      <span className="text-stone-500 dark:text-stone-400">
+        {KNOWN_QUEEN_DISPOSITIONS.has(details.queenDisposition)
+          ? t(`actionsCard.queenDisposition.${details.queenDisposition}`)
+          : details.queenDisposition}
+      </span>
+    </div>
+  );
+};
 
 // ─── Action label ─────────────────────────────────────────────────────────────
 
-const ACTION_LABELS: Record<string, string> = {
-  FEEDING: 'Feeding',
-  TREATMENT: 'Treatment',
-  FRAME: 'Frames',
-  BOX_CONFIGURATION: 'Box Configuration',
-  MAINTENANCE: 'Maintenance',
-  NOTE: 'Note',
-  STATUS_CHANGE: 'Status Change',
-  SPLIT: 'Colony Split',
-  HARVEST: 'Harvest',
-  OTHER: 'Other',
-};
+const KNOWN_ACTION_LABELS = new Set<string>(Object.values(ActionType));
 
 // ─── Single action row ────────────────────────────────────────────────────────
 
@@ -342,6 +349,7 @@ const ActionItem = ({
   action: ActionResponse;
   isLast: boolean;
 }) => {
+  const { t } = useTranslation('inspection');
   const { details } = action;
   const visual = ACTION_VISUAL[action.type] ?? ACTION_VISUAL[ActionType.OTHER];
   const { Icon } = visual;
@@ -381,7 +389,9 @@ const ActionItem = ({
       </span>
       <div className="min-w-0">
         <h3 className="font-display text-base text-stone-900 dark:text-stone-50 leading-tight">
-          {ACTION_LABELS[action.type] ?? action.type}
+          {KNOWN_ACTION_LABELS.has(action.type)
+            ? t(`actionsCard.actionLabels.${action.type}`)
+            : action.type}
         </h3>
         <div className="mt-1.5 text-sm text-stone-700 dark:text-stone-300">
           {renderDetails()}

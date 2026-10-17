@@ -12,14 +12,17 @@ import {
 } from '@/components/ui/table';
 import { useHarvests } from '@/api/hooks/useHarvests';
 import { HarvestWizard } from './components/harvest-wizard';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { HarvestStatus } from 'shared-schemas';
 import { useApiary } from '@/hooks/use-apiary';
 import { Droplets, Calendar, Droplet, Package2 } from 'lucide-react';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import { getStatusColor } from '@/utils/status-colors';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 export const HarvestListPage = () => {
+  const { t } = useTranslation(['harvest', 'common']);
+  const { formatDate } = useDateFormat();
   const navigate = useNavigate();
   const { activeApiaryId, viewAllApiaries } = useApiary();
   const { data: harvests = [], isLoading } = useHarvests({
@@ -55,7 +58,7 @@ export const HarvestListPage = () => {
     completedHarvests.length > 0 ? totalHoney / completedHarvests.length : 0;
 
   if (isLoading) {
-    return <div className="p-6">Loading harvests...</div>;
+    return <div className="p-6">{t('harvest:list.loading')}</div>;
   }
 
   return (
@@ -63,9 +66,9 @@ export const HarvestListPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Harvests</h1>
+          <h1 className="text-3xl font-bold">{t('harvest:list.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Manage your honey harvests and track production
+            {t('harvest:list.subtitle')}
           </p>
         </div>
         <HarvestWizard />
@@ -76,21 +79,25 @@ export const HarvestListPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Harvests
+              {t('harvest:list.stats.totalHarvests')}
             </CardTitle>
             <Droplets className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalHarvests}</div>
             <p className="text-xs text-muted-foreground">
-              {completedHarvests.length} completed
+              {t('harvest:list.stats.completed', {
+                count: completedHarvests.length,
+              })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Honey</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('harvest:list.stats.totalHoney')}
+            </CardTitle>
             <Droplet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -98,41 +105,45 @@ export const HarvestListPage = () => {
               {totalHoney.toFixed(1)} {getWeightUnit()}
             </div>
             <p className="text-xs text-muted-foreground">
-              From completed harvests
+              {t('harvest:list.stats.fromCompleted')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Yield</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('harvest:list.stats.averageYield')}
+            </CardTitle>
             <Package2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {averageHoney.toFixed(1)} {getWeightUnit()}
             </div>
-            <p className="text-xs text-muted-foreground">Per harvest</p>
+            <p className="text-xs text-muted-foreground">
+              {t('harvest:list.stats.perHarvest')}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Latest Harvest
+              {t('harvest:list.stats.latestHarvest')}
             </CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {harvests.length > 0
-                ? format(new Date(harvests[0].date), 'MMM d')
-                : 'None'}
+                ? formatDate(harvests[0].date)
+                : t('harvest:list.stats.none')}
             </div>
             <p className="text-xs text-muted-foreground">
               {harvests.length > 0 && harvests[0].totalWeight
                 ? `${harvests[0].totalWeight} ${harvests[0].totalWeightUnit || getWeightUnit()}`
-                : 'No data'}
+                : t('harvest:list.stats.noData')}
             </p>
           </CardContent>
         </Card>
@@ -141,15 +152,17 @@ export const HarvestListPage = () => {
       {/* Harvests Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Harvest History</CardTitle>
+          <CardTitle>{t('harvest:list.history')}</CardTitle>
         </CardHeader>
         <CardContent>
           {harvests.length === 0 ? (
             <div className="text-center py-12">
               <Droplets className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No harvests yet</h3>
+              <h3 className="text-lg font-medium mb-2">
+                {t('harvest:list.emptyTitle')}
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Start tracking your honey harvests to see production statistics
+                {t('harvest:list.emptyDescription')}
               </p>
               <HarvestWizard />
             </div>
@@ -157,12 +170,16 @@ export const HarvestListPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Hives</TableHead>
-                  <TableHead>Frames</TableHead>
-                  <TableHead>Honey ({getWeightUnit()})</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('harvest:list.columns.date')}</TableHead>
+                  <TableHead>{t('harvest:list.columns.status')}</TableHead>
+                  <TableHead>{t('harvest:list.columns.hives')}</TableHead>
+                  <TableHead>{t('harvest:list.columns.frames')}</TableHead>
+                  <TableHead>
+                    {t('harvest:list.columns.honey', {
+                      unit: getWeightUnit(),
+                    })}
+                  </TableHead>
+                  <TableHead>{t('harvest:list.columns.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -172,9 +189,7 @@ export const HarvestListPage = () => {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => navigate(`/harvests/${harvest.id}`)}
                   >
-                    <TableCell>
-                      {format(new Date(harvest.date), 'PPP')}
-                    </TableCell>
+                    <TableCell>{formatDate(harvest.date)}</TableCell>
                     <TableCell>
                       <Badge
                         className={cn(
@@ -182,7 +197,8 @@ export const HarvestListPage = () => {
                           'text-white',
                         )}
                       >
-                        {getStatusIcon(harvest.status)} {harvest.status}
+                        {getStatusIcon(harvest.status)}{' '}
+                        {t(`harvest:status.${harvest.status}`)}
                       </Badge>
                     </TableCell>
                     <TableCell>{harvest.hiveCount}</TableCell>
@@ -201,7 +217,7 @@ export const HarvestListPage = () => {
                           navigate(`/harvests/${harvest.id}`);
                         }}
                       >
-                        View
+                        {t('common:actions.view')}
                       </Button>
                     </TableCell>
                   </TableRow>

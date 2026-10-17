@@ -3,12 +3,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Copy, Printer } from 'lucide-react';
 import { EquipmentItemWithCalculations } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 interface ShoppingListProps {
   items: EquipmentItemWithCalculations[];
 }
 
 export const ShoppingList = ({ items }: ShoppingListProps) => {
+  const { t } = useTranslation('hive');
+  const { formatDate } = useDateFormat();
   const neededItems = items.filter(
     item => item.enabled && (item.toPurchase || 0) > 0,
   );
@@ -29,7 +33,7 @@ export const ShoppingList = ({ items }: ShoppingListProps) => {
     });
 
     const shoppingList = shoppingItems.join('\n');
-    const fullList = `Equipment Shopping List\n${new Date().toLocaleDateString()}\n\n${shoppingList}`;
+    const fullList = `${t('hive:equipment.shoppingList.documentTitle')}\n${formatDate(new Date())}\n\n${shoppingList}`;
 
     navigator.clipboard.writeText(fullList);
   };
@@ -52,7 +56,7 @@ export const ShoppingList = ({ items }: ShoppingListProps) => {
         <!DOCTYPE html>
         <html>
           <head>
-            <title>Equipment Shopping List</title>
+            <title>${t('hive:equipment.shoppingList.documentTitle')}</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; }
               h1 { color: #333; }
@@ -65,13 +69,13 @@ export const ShoppingList = ({ items }: ShoppingListProps) => {
             </style>
           </head>
           <body>
-            <h1>Equipment Shopping List</h1>
-            <div class="date">${new Date().toLocaleDateString()}</div>
+            <h1>${t('hive:equipment.shoppingList.documentTitle')}</h1>
+            <div class="date">${formatDate(new Date())}</div>
             <table>
               <thead>
                 <tr>
-                  <th>Equipment</th>
-                  <th style="text-align: right;">Quantity</th>
+                  <th>${t('hive:equipment.shoppingList.equipment')}</th>
+                  <th style="text-align: right;">${t('hive:equipment.shoppingList.quantity')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -92,16 +96,16 @@ export const ShoppingList = ({ items }: ShoppingListProps) => {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
-            Shopping List
+            {t('hive:equipment.shoppingList.title')}
           </CardTitle>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleCopy}>
               <Copy className="h-4 w-4 mr-1" />
-              Copy
+              {t('hive:equipment.shoppingList.copy')}
             </Button>
             <Button size="sm" variant="outline" onClick={handlePrint}>
               <Printer className="h-4 w-4 mr-1" />
-              Print
+              {t('hive:equipment.shoppingList.print')}
             </Button>
           </div>
         </div>

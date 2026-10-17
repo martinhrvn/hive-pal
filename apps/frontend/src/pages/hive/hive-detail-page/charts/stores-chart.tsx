@@ -9,6 +9,7 @@ import {
 import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
 import { InspectionResponse } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface StoresChartProps {
   hiveId: string | undefined;
@@ -26,16 +27,26 @@ function hasStoresData(inspection: InspectionResponse): boolean {
 }
 
 export const StoresChart: React.FC<StoresChartProps> = ({ hiveId, period }) => {
+  const { t } = useTranslation(['hive', 'inspection']);
   return (
     <BaseInspectionChart
       hiveId={hiveId}
       period={period}
-      title="Store Trend"
-      description="Pollen, nectar, and honey frame counts over time"
+      title={t('hive:charts.stores.title')}
+      description={t('hive:charts.stores.description')}
       config={{
-        pollen: { label: 'Pollen', color: '#22c55e' },
-        nectar: { label: 'Nectar', color: '#f97316' },
-        honey: { label: 'Honey', color: '#eab308' },
+        pollen: {
+          label: t('inspection:observations.pollenFrames'),
+          color: '#22c55e',
+        },
+        nectar: {
+          label: t('inspection:observations.nectarFrames'),
+          color: '#f97316',
+        },
+        honey: {
+          label: t('inspection:observations.honeyFrames'),
+          color: '#eab308',
+        },
       }}
       dataTransformer={inspection => ({
         date: format(parseISO(inspection.date), 'MMM dd'),

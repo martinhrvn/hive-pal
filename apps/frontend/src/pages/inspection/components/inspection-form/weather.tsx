@@ -15,10 +15,10 @@ import { AiMergeState } from '@/pages/inspection/lib/inspection-ai-merge';
 import { AiSuggestionPreview } from './ai-suggestion-preview';
 import { cn } from '@/lib/utils';
 
+// Labels are translated at render time via `weatherLabels`.
 const weatherConditions = [
   {
     id: 'sunny',
-    label: 'Sunny',
     icon: Sun,
     style: 'bg-background border-border hover:border-amber-600',
     styleActive: 'bg-amber-50 border-amber-400',
@@ -27,7 +27,6 @@ const weatherConditions = [
   },
   {
     id: 'partly-cloudy',
-    label: 'Partly cloudy',
     icon: CloudSun,
     style: 'bg-background border-border hover:border-gray-600',
     styleActive: 'bg-blue-50 border-gray-600',
@@ -36,7 +35,6 @@ const weatherConditions = [
   },
   {
     id: 'cloudy',
-    label: 'Cloudy',
     icon: Cloud,
     style: 'bg-background border-border hover:border-gray-800',
     styleActive: 'bg-gray-100 border-gray-600',
@@ -45,7 +43,6 @@ const weatherConditions = [
   },
   {
     id: 'rainy',
-    label: 'Rainy',
     icon: CloudRain,
     style: 'bg-background border-border hover:border-blue-800',
     styleActive: 'bg-blue-100 border-blue-900',
@@ -217,7 +214,7 @@ export const WeatherSection = ({
                             }`}
                           />
                           <span className="text-sm font-medium">
-                            {weatherLabels[condition.id] || condition.label}
+                            {weatherLabels[condition.id]}
                           </span>
                           {isAiRecommended && <AiBadge />}
                         </button>

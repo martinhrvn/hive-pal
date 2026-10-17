@@ -4,6 +4,7 @@ import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
 import { InspectionResponse } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface StrengthChartProps {
   hiveId: string | undefined;
@@ -18,14 +19,18 @@ export const StrengthChart: React.FC<StrengthChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation(['hive', 'inspection']);
   return (
     <BaseInspectionChart
       hiveId={hiveId}
       period={period}
-      title="Colony Strength"
-      description="Occupied frame-space count recorded over time"
+      title={t('hive:charts.strength.title')}
+      description={t('hive:charts.strength.description')}
       config={{
-        strength: { label: 'Strength', color: '#6366f1' },
+        strength: {
+          label: t('inspection:observations.strength'),
+          color: '#6366f1',
+        },
       }}
       dataTransformer={inspection => ({
         date: format(parseISO(inspection.date), 'MMM dd'),

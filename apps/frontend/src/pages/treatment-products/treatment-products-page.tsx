@@ -95,7 +95,7 @@ function densityNeeded(form: ProductForm): boolean {
 }
 
 export function TreatmentProductsPage() {
-  const { t } = useTranslation('hive');
+  const { t } = useTranslation('common');
   const { data: products, isLoading } = useTreatmentProducts();
   const { data: ingredients } = useActiveIngredients();
   const createMut = useCreateTreatmentProduct();
@@ -236,7 +236,11 @@ export function TreatmentProductsPage() {
         </Button>
       </div>
 
-      {isLoading && <p className="text-muted-foreground">Loading…</p>}
+      {isLoading && (
+        <p className="text-muted-foreground">
+          {t('treatmentProducts.loading')}
+        </p>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {sorted.map(p => (
@@ -332,7 +336,7 @@ export function TreatmentProductsPage() {
                 value={form.name}
                 onChange={e => setField('name', e.target.value)}
                 data-test="tp-name"
-                placeholder="VarroMed"
+                placeholder={t('treatmentProducts.namePlaceholder')}
               />
             </div>
 
@@ -465,7 +469,11 @@ export function TreatmentProductsPage() {
                       className="flex-1"
                       data-test="tp-ingredient-select"
                     >
-                      <SelectValue placeholder="Ingredient" />
+                      <SelectValue
+                        placeholder={t(
+                          'treatmentProducts.ingredientPlaceholder',
+                        )}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {ingredients?.map(ing => (

@@ -30,7 +30,17 @@
         "syrupCalculator": "Kalkulačka sirupu",
         "calendar": "Kalendár",
         "actions": "Hromadné pridanie",
-        "hivehub": "HiveHub"
+        "hivehub": "HiveHub",
+        "batchInspections": "Hromadné prehliadky",
+        "frameSizes": "Rozmery rámikov",
+        "media": "Médiá",
+        "workerTokens": "Tokeny workerov",
+        "userAvatar": "avatar používateľa",
+        "more": "Viac",
+        "viewProject": "Zobraziť projekt",
+        "shareProject": "Zdieľať projekt",
+        "deleteProject": "Vymazať projekt",
+        "brand": "Hive Pal"
     },
     "actions": {
         "save": "Uložiť",
@@ -66,7 +76,9 @@
         "scheduleInspection": "Naplánovať prehliadku",
         "newQueen": "Nová matka",
         "recentInspections": "Nedávne prehliadky",
-        "openMenu": "Otvoriť menu"
+        "openMenu": "Otvoriť menu",
+        "deleting": "Vymazáva sa...",
+        "tryAgain": "Skúsiť znova"
     },
     "status": {
         "loading": "Načítava sa...",
@@ -175,7 +187,56 @@
         "changePassword": "Zmeniť heslo účtu",
         "saveSettings": "Uložiť nastavenia",
         "preferencesUpdated": "Vaše nastavenia boli úspešne aktualizované.",
-        "saving": "Ukladanie..."
+        "failedToSavePreferences": "Nastavenia sa nepodarilo uložiť. Skúste to znova.",
+        "saving": "Ukladanie...",
+        "data": {
+            "title": "Dáta",
+            "description": "Exportujte dáta svojho účtu ako zálohu alebo ich importujte z predchádzajúceho exportu.",
+            "transferTitle": "Export a import",
+            "transferDescription": "Presúvajte dáta medzi inštanciami alebo si uchovávajte vlastné zálohy.",
+            "open": "Otvoriť"
+        },
+        "dataTransfer": {
+            "title": "Prenos dát",
+            "description": "Exportujte dáta svojho účtu ako zálohu alebo do tohto účtu importujte predchádzajúci export.",
+            "exportDescription": "Stiahnite si ZIP archív so všetkými vašimi včelnicami a ich dátami vrátane fotiek, dokumentov a zvukových záznamov.",
+            "startExport": "Spustiť export",
+            "exportInProgress": "Export prebieha…",
+            "importDescription": "Obnovte dáta z predtým vytvoreného ZIP exportu. Importy sa pridávajú k existujúcim dátam — každá importovaná včelnica sa vo vašom účte vytvorí ako nový záznam.",
+            "chooseFile": "Vybrať ZIP súbor…",
+            "importInProgress": "Import prebieha…",
+            "recentJobs": "Posledné úlohy",
+            "recentJobsDescription": "Exporty je možné stiahnuť počas 7 dní.",
+            "noJobs": "Zatiaľ žiadne úlohy.",
+            "columns": {
+                "type": "Typ",
+                "status": "Stav",
+                "created": "Vytvorené",
+                "progress": "Priebeh"
+            },
+            "failed": "Zlyhalo",
+            "expired": "Vypršalo",
+            "viewSummary": "Zobraziť súhrn",
+            "viewError": "Zobraziť chybu",
+            "confirmImportTitle": "Importovať dáta do vášho účtu?",
+            "confirmImportDescription": "Všetky dáta zo súboru <bold>{{fileName}}</bold> sa pridajú do vášho účtu. Importy sa pridávajú k existujúcim dátam a nedajú sa automaticky vrátiť späť.",
+            "startImport": "Spustiť import",
+            "jobError": "Chyba úlohy",
+            "importSummary": "Súhrn importu",
+            "deleteConfirm": "Vymazať túto úlohu a jej uložený súbor?",
+            "toasts": {
+                "exportStarted": "Export bol spustený",
+                "exportStartedDescription": "Váš export sa pripravuje. Môže to trvať niekoľko minút.",
+                "exportFailed": "Export sa nepodarilo spustiť",
+                "importStarted": "Import bol spustený",
+                "importStartedDescription": "Vaše dáta sa importujú. Môže to trvať niekoľko minút.",
+                "importFailed": "Import sa nepodarilo spustiť",
+                "downloadFailed": "Sťahovanie zlyhalo",
+                "downloadFailedWithStatus": "Sťahovanie zlyhalo: {{status}}",
+                "jobDeleted": "Úloha bola vymazaná",
+                "deleteFailed": "Úlohu sa nepodarilo vymazať"
+            }
+        }
     },
     "feedback": {
         "title": "Poslať spätnú väzbu",
@@ -196,7 +257,11 @@
         "submit": "Odoslať spätnú väzbu",
         "thankYou": "Ďakujeme!",
         "submittedMessage": "Vaša spätná väzba bola úspešne odoslaná. Vážime si váš názor a čoskoro ho preskúmame.",
-        "submitAnother": "Odoslať ďalšiu spätnú väzbu"
+        "submitAnother": "Odoslať ďalšiu spätnú väzbu",
+        "toasts": {
+            "submitted": "Ďakujeme za vašu spätnú väzbu!",
+            "submitFailed": "Spätnú väzbu sa nepodarilo odoslať"
+        }
     },
     "alerts": {
         "alert": "upozornenie",
@@ -208,7 +273,19 @@
         "both": "Obe",
         "inspections": "Prehliadky",
         "actions": "Akcie",
-        "unknownHive": "Neznámy úľ"
+        "unknownHive": "Neznámy úľ",
+        "viewInspection": "Zobraziť prehliadku",
+        "inspectionCount_one": "{{count}} prehliadka",
+        "inspectionCount_few": "{{count}} prehliadky",
+        "inspectionCount_many": "{{count}} prehliadok",
+        "inspectionCount_other": "{{count}} prehliadok",
+        "actionCount_one": "{{count}} akcia",
+        "actionCount_few": "{{count}} akcie",
+        "actionCount_many": "{{count}} akcií",
+        "actionCount_other": "{{count}} akcií",
+        "inspectionOf": "Prehliadka úľa <hiveLink>{{hiveName}}</hiveLink>",
+        "actionsList": "Akcie: {{types}}",
+        "actionOn": "{{type}} – <hiveLink>{{hiveName}}</hiveLink>"
     },
     "quickCheck": {
         "title": "Rýchla kontrola",
@@ -216,7 +293,19 @@
         "deleteTitle": "Vymazať rýchlu kontrolu?",
         "deleteDescription": "Túto akciu nie je možné vrátiť. Natrvalo sa vymaže táto rýchla kontrola a jej fotografie.",
         "deleted": "Rýchla kontrola bola vymazaná",
-        "deleteFailed": "Nepodarilo sa vymazať rýchlu kontrolu"
+        "deleteFailed": "Nepodarilo sa vymazať rýchlu kontrolu",
+        "dialogDescription": "Zaznamenajte rýchle pozorovanie pomocou štítkov a voliteľnej poznámky.",
+        "note": "Poznámka",
+        "optional": "(voliteľné)",
+        "notePlaceholder": "Čo ste spozorovali?",
+        "photos": "Fotografie",
+        "photosOptional": "(voliteľné, max. 5)",
+        "addPhotos": "Pridať fotografie",
+        "save": "Uložiť rýchlu kontrolu",
+        "saved": "Rýchla kontrola bola uložená",
+        "saveFailed": "Nepodarilo sa uložiť rýchlu kontrolu",
+        "uploadFailed": "Nepodarilo sa nahrať {{name}}",
+        "maxPhotos": "Povolených je najviac 5 fotografií. Môžete pridať ešte {{remaining}}."
     },
     "timeline": {
         "recentActivity": "Nedávna aktivita",
@@ -306,10 +395,15 @@
             "population": "Populácia",
             "stores": "Zásoby",
             "queen": "Matka",
-            "lastInspection": "Posledná prehliadka"
+            "lastInspection": "Posledná prehliadka",
+            "kgValue": "{{value}} kg"
         },
         "charts": {
-            "hiveScoreTrends": "Trendy skóre úľov"
+            "hiveScoreTrends": "Trendy skóre úľov",
+            "sugarKg": "Cukor (kg)",
+            "honeyKg": "Med (kg)",
+            "noInspectionData": "Za vybrané obdobie nie sú k dispozícii žiadne údaje z prehliadok",
+            "scoreType": "Typ skóre:"
         },
         "periods": {
             "1month": "1 mesiac",
@@ -320,7 +414,8 @@
             "all": "Všetko"
         },
         "filters": {
-            "period": "Obdobie"
+            "period": "Obdobie",
+            "selectPeriod": "Vyberte obdobie"
         },
         "export": {
             "title": "Export",
@@ -333,7 +428,9 @@
             "title": "Štatistiky včelnice",
             "viewReports": "Zobraziť reporty",
             "noApiary": "Vyberte včelnicu na zobrazenie štatistík"
-        }
+        },
+        "feedingTotalsDescription": "Celkové množstvo skrmeného cukru na úľ (kg)",
+        "honeyProductionDescription": "Celkové množstvo získaného medu na úľ (kg)"
     },
     "syrupCalculator": {
         "title": "Kalkulačka cukrového roztoku",
@@ -1076,7 +1173,8 @@
         }
     },
     "footer": {
-        "privacyPolicy": "Zásady ochrany osobných údajov"
+        "privacyPolicy": "Zásady ochrany osobných údajov",
+        "copyright": "© {{year}} HRVN s.r.o."
     },
     "bulkAdd": {
         "title": "Hromadné pridanie",
@@ -1168,7 +1266,14 @@
         "apiary": "Včelnica"
     },
     "photo": {
-        "featureAlt": "Fotografia {{name}}"
+        "featureAlt": "Fotografia {{name}}",
+        "fileInfo": "{{name}} ({{size}} MB)",
+        "count_one": "{{count}} fotografia",
+        "count_few": "{{count}} fotografie",
+        "count_many": "{{count}} fotografií",
+        "count_other": "{{count}} fotografií",
+        "lightboxTitle": "Fotografia",
+        "featurePhotoAlt": "Hlavná fotografia"
     },
     "imageDisplay": {
         "label": "Obrázky: {{mode}}",
@@ -1188,5 +1293,92 @@
         "note": "Poznámka",
         "other": "Iné",
         "weighing": "Váženie"
+    },
+    "breadcrumbs": {
+        "queen": "Matka",
+        "details": "Podrobnosti",
+        "inspectionFrom": "Prehliadka z {{date}}",
+        "harvestFrom": "Zber z {{date}}"
+    },
+    "pageTitles": {
+        "home": "Hive Pal - moderný softvér na správu včelárstva"
+    },
+    "errorPage": {
+        "notFound": {
+            "title": "Stránka sa nenašla",
+            "message": "Stránku, ktorú hľadáte, sme nenašli.",
+            "pageTitle": "Stránka sa nenašla - Hive Pal",
+            "heading": "Nenájdené"
+        },
+        "heading": "Chyba",
+        "title": "Niečo sa pokazilo",
+        "message": "Túto stránku sa nám nedarí načítať. Skúste to znova alebo sa vráťte na domovskú stránku.",
+        "code": "Chyba {{code}}",
+        "tryAgain": "Skúsiť znova",
+        "backToHome": "Späť na domovskú stránku",
+        "persists": "Ak problém pretrváva, skontrolujte svoje internetové pripojenie alebo to skúste neskôr."
+    },
+    "frameSizeToasts": {
+        "submitted": "Rozmer rámika bol odoslaný na posúdenie",
+        "submitFailed": "Rozmer rámika sa nepodarilo odoslať"
+    },
+    "treatmentProducts": {
+        "toasts": {
+            "created": "Prípravok na ošetrenie bol vytvorený",
+            "createFailed": "Prípravok sa nepodarilo vytvoriť",
+            "updated": "Prípravok na ošetrenie bol aktualizovaný",
+            "updateFailed": "Prípravok sa nepodarilo aktualizovať",
+            "deleted": "Prípravok na ošetrenie bol vymazaný",
+            "deleteFailed": "Prípravok sa nepodarilo vymazať",
+            "ingredientAdded": "Účinná látka bola pridaná",
+            "ingredientAddFailed": "Účinnú látku sa nepodarilo pridať"
+        },
+        "title": "Prípravky na ošetrenie",
+        "subtitle": "Definujte si vlastné prípravky na ošetrenie a zloženie ich účinných látok.",
+        "add": "Pridať prípravok",
+        "noComposition": "Zloženie nie je nastavené",
+        "withdrawalDays": "Ochranná lehota: {{d}} dní",
+        "withdrawalUnknown": "Ochranná lehota: neuvedená",
+        "editTitle": "Upraviť prípravok",
+        "dialogHint": "Nastavte fyzickú formu a účinné látky s ich koncentráciou.",
+        "name": "Názov",
+        "form": "Fyzická forma",
+        "method": "Aplikácia (voliteľné)",
+        "defaultUnit": "Jednotka množstva",
+        "withdrawal": "Ochranná lehota (dni)",
+        "composition": "Účinné látky",
+        "addIngredient": "Pridať látku",
+        "density": "Hustota (g/ml)",
+        "densityHint": "Hustota je potrebná na prepočet medzi jednotkou množstva a koncentráciou meranou inak.",
+        "advanced": "Rozšírené",
+        "cancel": "Zrušiť",
+        "save": "Uložiť",
+        "deleteTitle": "Vymazať prípravok na ošetrenie?",
+        "deleteDesc": "Týmto odstránite svoj vlastný prípravok. Túto akciu nie je možné vrátiť.",
+        "loading": "Načítava sa…",
+        "namePlaceholder": "VarroMed",
+        "ingredientPlaceholder": "Účinná látka"
+    },
+    "audioRecorder": {
+        "notSupported": "Tento prehliadač nepodporuje nahrávanie zvuku.",
+        "preview": "Ukážka nahrávky",
+        "discard": "Zahodiť",
+        "save": "Uložiť nahrávku",
+        "paused": "Pozastavené",
+        "recording": "Nahráva sa...",
+        "start": "Začať nahrávanie",
+        "hint": "Nahrajte hlasové poznámky k tejto prehliadke",
+        "empty": "Žiadne zvukové nahrávky"
+    },
+    "fab": {
+        "addInspection": "Pridať prehliadku"
+    },
+    "qrScanner": {
+        "title": "Naskenovať QR kód",
+        "description": "Namierte fotoaparát na QR kód úľa a prejdite naň",
+        "cameraUnavailable": "Prístup k fotoaparátu nie je v tomto prehliadači dostupný."
+    },
+    "temperatureField": {
+        "placeholder": "Zadajte teplotu"
     }
 }

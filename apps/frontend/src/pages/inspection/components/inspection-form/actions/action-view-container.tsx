@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { EditIcon, TrashIcon } from 'lucide-react';
 
@@ -90,6 +91,7 @@ export function ActionViewRenderer({
   onRemove,
   ...props
 }: ActionViewRendererProps) {
+  const { t } = useTranslation(['inspection', 'common']);
   return (
     <div className={'flex justify-between items-center w-full mt-5'} {...props}>
       <div className={'flex flex-col gap-2'}>
@@ -97,15 +99,23 @@ export function ActionViewRenderer({
         <div className={'flex gap-5 text-sm'}>{badges}</div>
         {notes && (
           <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            <span>Notes: {notes}</span>
+            <span>{t('inspection:form.actions.notesValue', { notes })}</span>
           </div>
         )}
       </div>
       <div>
-        <Button variant={'ghost'} aria-label={'Edit'} onClick={onEdit}>
+        <Button
+          variant={'ghost'}
+          aria-label={t('common:actions.edit')}
+          onClick={onEdit}
+        >
           <EditIcon />
         </Button>
-        <Button variant={'ghost'} aria-label={'Delete'} onClick={onRemove}>
+        <Button
+          variant={'ghost'}
+          aria-label={t('common:actions.delete')}
+          onClick={onRemove}
+        >
           <TrashIcon />
         </Button>
       </div>

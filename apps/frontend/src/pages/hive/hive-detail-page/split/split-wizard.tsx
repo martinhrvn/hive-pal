@@ -116,32 +116,29 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
         },
       });
       close(false);
-      toast.success(
-        `${t('split.toastDonePrefix', { defaultValue: 'Split done — created' })} „${name.trim()}“`,
-        {
-          action: {
-            label: t('split.undo', { defaultValue: 'Undo' }),
-            onClick: () =>
-              undo
-                .mutateAsync({
-                  hiveId: hive.id,
-                  splitId: res.splitId,
-                })
-                .then(() =>
-                  toast.success(
-                    t('split.toastUndone', { defaultValue: 'Split undone' }),
-                  ),
-                )
-                .catch(() =>
-                  toast.error(
-                    t('split.toastUndoError', {
-                      defaultValue: 'Could not undo the split',
-                    }),
-                  ),
+      toast.success(t('split.toastDone', { name: name.trim() }), {
+        action: {
+          label: t('split.undo', { defaultValue: 'Undo' }),
+          onClick: () =>
+            undo
+              .mutateAsync({
+                hiveId: hive.id,
+                splitId: res.splitId,
+              })
+              .then(() =>
+                toast.success(
+                  t('split.toastUndone', { defaultValue: 'Split undone' }),
                 ),
-          },
+              )
+              .catch(() =>
+                toast.error(
+                  t('split.toastUndoError', {
+                    defaultValue: 'Could not undo the split',
+                  }),
+                ),
+              ),
         },
-      );
+      });
     } catch {
       toast.error(
         t('split.toastError', {

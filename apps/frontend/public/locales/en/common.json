@@ -64,7 +64,17 @@
     "varroaManagement": "Varroa Management",
     "documentation": "Documentation",
     "hivehub": "HiveHub",
-    "treatmentProducts": "Treatment products"
+    "treatmentProducts": "Treatment products",
+    "batchInspections": "Batch Inspections",
+    "frameSizes": "Frame Sizes",
+    "media": "Media",
+    "workerTokens": "Worker Tokens",
+    "userAvatar": "user avatar",
+    "more": "More",
+    "viewProject": "View Project",
+    "shareProject": "Share Project",
+    "deleteProject": "Delete Project",
+    "brand": "Hive Pal"
   },
   "actions": {
     "save": "Save",
@@ -100,7 +110,9 @@
     "scheduleInspection": "Schedule Inspection",
     "newQueen": "New Queen",
     "recentInspections": "Recent Inspections",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "deleting": "Deleting...",
+    "tryAgain": "Try Again"
   },
   "status": {
     "loading": "Loading...",
@@ -237,6 +249,7 @@
     "passkeyDeleteFailed": "Failed to delete passkey",
     "saveSettings": "Save Settings",
     "preferencesUpdated": "Your preferences have been updated successfully.",
+    "failedToSavePreferences": "Failed to save your preferences. Please try again.",
     "saving": "Saving...",
     "dangerZone": "Danger Zone",
     "dangerZoneDescription": "Irreversible actions for your account.",
@@ -250,7 +263,55 @@
     "deleteAccountButton": "Delete my account",
     "deleteAccountDeleting": "Deleting account...",
     "accountDeleted": "Your account has been deleted.",
-    "deleteAccountFailed": "Failed to delete account. Please try again."
+    "deleteAccountFailed": "Failed to delete account. Please try again.",
+    "data": {
+      "title": "Data",
+      "description": "Export your account data for backup, or import from a previous export.",
+      "transferTitle": "Export and import",
+      "transferDescription": "Migrate between instances or keep your own backups.",
+      "open": "Open"
+    },
+    "dataTransfer": {
+      "title": "Data Transfer",
+      "description": "Export your account data for backup, or import a previous export to this account.",
+      "exportDescription": "Download a ZIP archive containing all apiaries you own and their data, including photos, documents, and audio.",
+      "startExport": "Start export",
+      "exportInProgress": "Export in progress…",
+      "importDescription": "Restore data from a previously created export ZIP. Imports are additive — every imported apiary becomes a new record under your account.",
+      "chooseFile": "Choose ZIP file…",
+      "importInProgress": "Import in progress…",
+      "recentJobs": "Recent jobs",
+      "recentJobsDescription": "Exports remain downloadable for 7 days.",
+      "noJobs": "No jobs yet.",
+      "columns": {
+        "type": "Type",
+        "status": "Status",
+        "created": "Created",
+        "progress": "Progress"
+      },
+      "failed": "Failed",
+      "expired": "Expired",
+      "viewSummary": "View summary",
+      "viewError": "View error",
+      "confirmImportTitle": "Import data into your account?",
+      "confirmImportDescription": "This will add all data from <bold>{{fileName}}</bold> to your account. Imports are additive and cannot be automatically undone.",
+      "startImport": "Start import",
+      "jobError": "Job error",
+      "importSummary": "Import summary",
+      "deleteConfirm": "Delete this job and its stored file?",
+      "toasts": {
+        "exportStarted": "Export started",
+        "exportStartedDescription": "Your export is being prepared. This may take a few minutes.",
+        "exportFailed": "Failed to start export",
+        "importStarted": "Import started",
+        "importStartedDescription": "Your data is being imported. This may take a few minutes.",
+        "importFailed": "Failed to start import",
+        "downloadFailed": "Download failed",
+        "downloadFailedWithStatus": "Download failed: {{status}}",
+        "jobDeleted": "Job deleted",
+        "deleteFailed": "Failed to delete job"
+      }
+    }
   },
   "feedback": {
     "title": "Send Feedback",
@@ -271,7 +332,11 @@
     "submit": "Submit Feedback",
     "thankYou": "Thank You!",
     "submittedMessage": "Your feedback has been submitted successfully. We appreciate your input and will review it soon.",
-    "submitAnother": "Submit Another Feedback"
+    "submitAnother": "Submit Another Feedback",
+    "toasts": {
+      "submitted": "Thank you for your feedback!",
+      "submitFailed": "Failed to submit feedback"
+    }
   },
   "alerts": {
     "alert": "alert",
@@ -295,7 +360,14 @@
     "noEvents": "No events",
     "overdueInspections": "Overdue Inspections ({{overdueInspectionsSize}})",
     "viewInspection": "View Inspection",
-    "unknownHive": "Unknown hive"
+    "unknownHive": "Unknown hive",
+    "inspectionCount_one": "{{count}} inspection",
+    "inspectionCount_other": "{{count}} inspections",
+    "actionCount_one": "{{count}} action",
+    "actionCount_other": "{{count}} actions",
+    "inspectionOf": "Inspection of <hiveLink>{{hiveName}}</hiveLink>",
+    "actionsList": "Actions: {{types}}",
+    "actionOn": "{{type}} on <hiveLink>{{hiveName}}</hiveLink>"
   },
   "quickAdd": {
     "title": "Add Entry",
@@ -322,7 +394,12 @@
     "deleteDescription": "This action cannot be undone. This will permanently delete this photo.",
     "deleted": "Photo deleted",
     "deleteFailed": "Failed to delete photo",
-    "featureAlt": "{{name}} photo"
+    "featureAlt": "{{name}} photo",
+    "fileInfo": "{{name}} ({{size}} MB)",
+    "count_one": "{{count}} photo",
+    "count_other": "{{count}} photos",
+    "lightboxTitle": "Photo",
+    "featurePhotoAlt": "Feature photo"
   },
   "document": {
     "title": "Add Document",
@@ -382,7 +459,19 @@
     "deleteTitle": "Delete Quick Check?",
     "deleteDescription": "This action cannot be undone. This will permanently delete this quick check and its photos.",
     "deleted": "Quick check deleted",
-    "deleteFailed": "Failed to delete quick check"
+    "deleteFailed": "Failed to delete quick check",
+    "dialogDescription": "Record a quick observation with tags and an optional note.",
+    "note": "Note",
+    "optional": "(optional)",
+    "notePlaceholder": "What did you observe?",
+    "photos": "Photos",
+    "photosOptional": "(optional, max 5)",
+    "addPhotos": "Add Photos",
+    "save": "Save Quick Check",
+    "saved": "Quick check saved",
+    "saveFailed": "Failed to save quick check",
+    "uploadFailed": "Failed to upload {{name}}",
+    "maxPhotos": "Maximum 5 photos allowed. You can add {{remaining}} more."
   },
   "timeline": {
     "recentActivity": "Recent Activity",
@@ -516,6 +605,39 @@
           "answer": "For one liter of finished 1:1 syrup, you need roughly 715 g of water and 715 g of white granulated sugar. The exact amounts depend on the ratio and final volume — this calculator computes them based on sucrose displacement."
         }
       ]
+    },
+    "meta": {
+      "title": "Sugar Syrup Calculator for Beekeepers — Hive Pal",
+      "description": "Free sugar syrup calculator for beekeepers. Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size, in metric or imperial units.",
+      "ogDescription": "Free calculator for bee sugar syrup. Get precise sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size.",
+      "appName": "Sugar Syrup Calculator",
+      "appDescription": "Free calculator for bee feeding syrup. Computes exact sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size, in metric or imperial units.",
+      "howTo": {
+        "name": "How to make sugar syrup for bees",
+        "description": "Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.",
+        "steps": [
+          {
+            "name": "Measure the water",
+            "text": "Measure {{water}} ({{waterWeight}}) of water."
+          },
+          {
+            "name": "Warm the water",
+            "text": "Heat the water until warm (not boiling)."
+          },
+          {
+            "name": "Add the sugar",
+            "text": "Add {{sugar}} of white granulated sugar."
+          },
+          {
+            "name": "Stir to dissolve",
+            "text": "Stir until the sugar is completely dissolved."
+          },
+          {
+            "name": "Cool before feeding",
+            "text": "Let the syrup cool to room temperature before feeding."
+          }
+        ]
+      }
     }
   },
   "liebefelder": {
@@ -527,11 +649,23 @@
       "title": "Frame type",
       "description": "Choose the frame format used in your hive — it determines the estimation values per eighth.",
       "custom": "Custom",
-      "customDescription": "Enter your own estimation values for one eighth of a comb side."
+      "customDescription": "Enter your own estimation values for one eighth of a comb side.",
+      "names": {
+        "zander": "Zander",
+        "dnm": "Deutsch-Normal",
+        "langstroth": "Langstroth",
+        "dadant": "Dadant"
+      },
+      "customHint": "Enter the comb-side frame dimensions. Hive Pal derives bees, drones, brood cells, pollen and feed per 1/8 from Zander by scaling with frame area.",
+      "customWidth": "Width (mm)",
+      "customHeight": "Height (mm)",
+      "customDerived": "Derived from Zander ({{dimensions}}) at {{ratio}}× area. The calculated per-1/8 values are shown in the reference card."
     },
     "counts": {
       "title": "Counts — total eighths",
-      "description": "Sum the eighths of comb area across all comb sides for each category. One eighth holds about {{bees}} bees ({{frame}}). Brood and stores are optional — they are needed for split evaluation and feed assessment."
+      "description": "Sum the eighths of comb area across all comb sides for each category. One eighth holds about {{bees}} bees ({{frame}}). Brood and stores are optional — they are needed for split evaluation and feed assessment.",
+      "decrease": "Decrease",
+      "increase": "Increase"
     },
     "fields": {
       "bees": "Bees",
@@ -671,6 +805,13 @@
           "description": "From the unfertilized egg: 3 d egg + 7 d larva + 14 d pupa. A colony holds 0–1,000 drones."
         }
       }
+    },
+    "meta": {
+      "title": "Liebefelder Colony Strength Calculator — Hive Pal",
+      "description": "Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths — with seasonal evaluation guidelines by Dr. Pia Aumeier.",
+      "ogDescription": "Estimate colony strength with the Liebefelder Schätzmethode: bees, brood, pollen and feed from 1/8 comb counts, plus seasonal strength evaluation.",
+      "appName": "Liebefelder Colony Strength Calculator",
+      "appDescription": "Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths, with seasonal evaluation guidelines by Dr. Pia Aumeier."
     }
   },
   "broodTimeline": {
@@ -740,6 +881,13 @@
           "answer": "Drones take 24 days from egg to emergence — the longest of any caste. Drone cells are capped around day 10."
         }
       ]
+    },
+    "meta": {
+      "title": "Honey Bee Brood Development Timeline — Hive Pal",
+      "description": "Free brood development timeline for queen, worker, and drone honey bees. Visualize each stage (egg, larva, pupa, adult) with day counts and project capping or emergence dates from any start date.",
+      "ogDescription": "Visualize queen, worker, and drone brood stages with day counts and projected dates.",
+      "appName": "Honey Bee Brood Development Timeline",
+      "appDescription": "Visualize honey bee brood development stages (egg, larva, pupa, adult) for queens, workers, and drones. Project capping and emergence dates from any start date."
     }
   },
   "swarmManagement": {
@@ -946,6 +1094,47 @@
             "answer": "Missing a queen cell in the upper brood box during the day 7-8 check is the biggest risk — the colony can still swarm if a virgin queen emerges above the excluder. Shaking bees off every brood frame helps spot all cells."
           }
         ]
+      },
+      "meta": {
+        "title": "Demaree Method: Swarm Control Guide and Planner — Hive Pal",
+        "description": "Free reference guide and inspection planner for the Demaree swarm-control method. Prerequisites, step-by-step instructions, follow-up timing, and pros/cons for honey bee beekeepers.",
+        "ogDescription": "Step-by-step Demaree method for honey bee swarm control, with follow-up timing and an inspection planner.",
+        "appName": "Demaree Swarm-Control Method Guide and Planner",
+        "appDescription": "Reference guide and inspection planner for the Demaree swarm-control method, with prerequisites, step-by-step instructions, pros/cons, and follow-up timing.",
+        "howTo": {
+          "name": "How to perform the Demaree swarm-control method",
+          "description": "Step-by-step Demaree procedure for relieving swarm pressure in a strong honey bee colony without splitting it.",
+          "steps": [
+            {
+              "name": "Preparation",
+              "text": "Place a spare brood box with drawn comb or foundation on the hive floor below the existing brood."
+            },
+            {
+              "name": "Hunt the queen",
+              "text": "Find the laying queen, place her and the frame she is on into the centre of the new bottom box, and remove any queen cells from that frame."
+            },
+            {
+              "name": "Brood manipulation",
+              "text": "Consolidate brood frames above and knock down every queen cell. Shake bees off frames to make sure no cells are missed."
+            },
+            {
+              "name": "Reassembly",
+              "text": "Stack queen excluder, two or more honey supers, a second queen excluder, and the brood box above. Refit the crown board and roof."
+            },
+            {
+              "name": "Follow-up at day 7-8",
+              "text": "Inspect the upper brood box for emergency queen cells and remove any that have been started."
+            },
+            {
+              "name": "Follow-up at day 14-15",
+              "text": "Recheck for late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+            },
+            {
+              "name": "Follow-up at day 21-22",
+              "text": "Carry out a final review and decide whether the colony can be normalised or still needs close monitoring."
+            }
+          ]
+        }
       }
     },
     "planner": {
@@ -1239,6 +1428,47 @@
           "title": "Checkpoint order is no longer chronological",
           "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
         }
+      },
+      "meta": {
+        "title": "Pagden Split Method: Swarm Control Guide and Planner — Hive Pal",
+        "description": "Free reference guide and inspection planner for the Pagden split swarm-control method. Prerequisites, step-by-step instructions, follow-up timing, and pros/cons for honey bee beekeepers.",
+        "ogDescription": "Step-by-step Pagden split method for honey bee swarm control, with follow-up timing and an inspection planner.",
+        "appName": "Pagden Split Method Guide and Planner",
+        "appDescription": "Reference guide and inspection planner for the Pagden split swarm-control method, with prerequisites, step-by-step instructions, pros/cons, and follow-up timing.",
+        "howTo": {
+          "name": "How to perform the Pagden split method",
+          "description": "Step-by-step Pagden procedure for relieving swarm pressure by moving the queen to a new hive on the original stand while relocating the parent colony with brood.",
+          "steps": [
+            {
+              "name": "Preparation",
+              "text": "Find a spare brood box with drawn comb and prepare a second hive floor and stand a few metres away."
+            },
+            {
+              "name": "Relocate the Queen",
+              "text": "Locate the laying queen, place her and her frame into the new brood box on the original stand. Flying bees return to her."
+            },
+            {
+              "name": "Manage the Parent Colony",
+              "text": "Move the original hive a few metres away. Reduce queen cells to one or two well-placed cells so the colony can raise a new queen."
+            },
+            {
+              "name": "Reassembly",
+              "text": "Add a queen excluder and supers to the new hive as needed. Fit crown board and roof on both hives."
+            },
+            {
+              "name": "Follow-up at day 7-8",
+              "text": "Inspect the parent colony and reduce queen cells to one well-placed cell."
+            },
+            {
+              "name": "Follow-up at day 14-15",
+              "text": "Check the retained queen cell is capped and developing. Remove any additional cells."
+            },
+            {
+              "name": "Follow-up at day 21-22",
+              "text": "Confirm the new queen is mated and laying in the parent colony."
+            }
+          ]
+        }
       }
     },
     "artificialSwarm": {
@@ -1447,11 +1677,73 @@
           "title": "Checkpoint order is no longer chronological",
           "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
         }
+      },
+      "meta": {
+        "title": "Artificial Swarm Method: Swarm Control Guide and Planner — Hive Pal",
+        "description": "Free reference guide and inspection planner for the artificial swarm swarm-control method. Prerequisites, step-by-step instructions, follow-up timing, and pros/cons for honey bee beekeepers.",
+        "ogDescription": "Step-by-step artificial swarm method for honey bee swarm control when the queen cannot be found, with follow-up timing and an inspection planner.",
+        "appName": "Artificial Swarm Method Guide and Planner",
+        "appDescription": "Reference guide and inspection planner for the artificial swarm swarm-control method, with prerequisites, step-by-step instructions, pros/cons, and follow-up timing.",
+        "howTo": {
+          "name": "How to perform the artificial swarm method",
+          "description": "Step-by-step artificial swarm procedure for moving the parent colony aside while placing a new hive on the original stand with a frame containing a queen cell.",
+          "steps": [
+            {
+              "name": "Preparation",
+              "text": "Find a spare brood box with drawn comb and prepare a second hive floor and stand a few metres away."
+            },
+            {
+              "name": "Move the Parent Colony",
+              "text": "Move the original hive (with the queen) to a new location. Identify a frame with a queen cell or eggs and reduce other queen cells."
+            },
+            {
+              "name": "Set Up the New Colony",
+              "text": "Place the new brood box on the original stand with the selected brood frame in the centre, filled with drawn comb."
+            },
+            {
+              "name": "Reassembly",
+              "text": "Add a queen excluder and supers to the new hive as needed. Fit crown board and roof on both hives."
+            },
+            {
+              "name": "Follow-up at day 7-8",
+              "text": "Inspect the new colony to confirm the queen cell is developing and check for additional queen cells."
+            },
+            {
+              "name": "Follow-up at day 14-15",
+              "text": "Confirm the queen cell is capped and developing. Monitor the parent colony."
+            },
+            {
+              "name": "Follow-up at day 21-22",
+              "text": "Confirm the new queen is mated and laying in the new colony."
+            }
+          ]
+        }
       }
     },
     "cushmanCredit": {
       "text": "Method references sourced from the Dave Cushman Beekeeping Website.",
       "linkLabel": "Dave Cushman Beekeeping Website"
+    },
+    "meta": {
+      "title": "Honey Bee Swarm Management Methods — Hive Pal",
+      "description": "Free reference guides for honey bee swarm-control methods. Compare the Demaree, Pagden, and artificial swarm techniques and plan follow-up inspections.",
+      "ogDescription": "Compare proven honey bee swarm-control methods and plan follow-up inspections.",
+      "collectionName": "Honey Bee Swarm Management Methods",
+      "collectionDescription": "Reference guides for honey bee swarm-control methods, including the Demaree method, Pagden split, and artificial swarm technique, with prerequisites, step-by-step procedures, and follow-up inspection timing.",
+      "parts": {
+        "demaree": {
+          "name": "Demaree Method",
+          "description": "Reference workflow for the Demaree swarm-control method with an inspection planner."
+        },
+        "pagden": {
+          "name": "Pagden Split",
+          "description": "Reference workflow for the Pagden split swarm-control method with an inspection planner."
+        },
+        "artificial": {
+          "name": "Artificial Swarm",
+          "description": "Reference workflow for the artificial swarm swarm-control method with an inspection planner."
+        }
+      }
     }
   },
   "varroaManagement": {
@@ -1728,6 +2020,39 @@
       "principleBody": "The recipe's success factor: record the natural mite fall with screened floors and sticky boards instead of treating on a fixed calendar. Every treatment is matched to the actual infestation and the colony's development. Used nationwide since 2008 in 140 hobby, professional, and institute apiaries, this approach kept colony losses at 7% or less — with no chemicals during the nectar flow and no residue-forming or resistance-building varroacides.",
       "sourceTitle": "Source",
       "sourceBody": "Concept by Dr. Pia Aumeier, developed with Dr. Gerhard Liebig and Dr. Otto Boecking at Ruhr-Universität Bochum in the “Imkerberatung NRW” project; divide-and-treat method as published in Deutsches Bienen-Journal (DNB 07/2017)."
+    },
+    "meta": {
+      "title": "Varroa Management Plan: Production Colony and Nucleus Schedule — Hive Pal",
+      "description": "Free season-long varroa treatment schedule for production colonies and nuclei. Mite-fall thresholds, drone brood removal, formic and oxalic acid timing, and the divide-and-treat method explained step by step.",
+      "ogDescription": "When to treat which colony against varroa — threshold-based schedule plus the divide-and-treat method.",
+      "appName": "Varroa Management Plan for Production Colonies and Nuclei",
+      "appDescription": "Season-long varroa treatment schedule for production colonies and nucleus colonies, based on natural mite-fall thresholds, with a step-by-step divide-and-treat guide.",
+      "howTo": {
+        "name": "How to keep varroa under control through the season",
+        "description": "Five-step varroa management plan combining drone brood removal, nucleus formation, mite-fall monitoring, formic acid, and oxalic acid in broodless periods.",
+        "steps": [
+          {
+            "name": "April to July: cut drone brood",
+            "text": "Remove capped drone brood from production colonies 3-4 times between April and July."
+          },
+          {
+            "name": "April to July: treat new nuclei with lactic acid",
+            "text": "Spray nucleus colonies once with 15% lactic acid in the broodless phase after they are made up."
+          },
+          {
+            "name": "End of July: monitor mite fall after the harvest",
+            "text": "Count natural mite fall for exactly 3 days. Treat with formic acid only above 10 mites/day (production colony) or 5 mites/day (nucleus)."
+          },
+          {
+            "name": "August/September: late-summer care",
+            "text": "Condense the production colony, treat once with formic acid, feed, and re-check mite fall — or make the colony broodless with divide-and-treat and use oxalic acid instead."
+          },
+          {
+            "name": "Late November to mid December: oxalic acid",
+            "text": "In the broodless winter period, trickle oxalic acid once if natural mite fall exceeds 1 mite/day."
+          }
+        ]
+      }
     }
   },
   "reports": {
@@ -1750,10 +2075,15 @@
       "population": "Population",
       "stores": "Stores",
       "queen": "Queen",
-      "lastInspection": "Last Inspection"
+      "lastInspection": "Last Inspection",
+      "kgValue": "{{value}} kg"
     },
     "charts": {
-      "hiveScoreTrends": "Hive Score Trends"
+      "hiveScoreTrends": "Hive Score Trends",
+      "sugarKg": "Sugar (kg)",
+      "honeyKg": "Honey (kg)",
+      "noInspectionData": "No inspection data available for the selected period",
+      "scoreType": "Score Type:"
     },
     "periods": {
       "1month": "1 Month",
@@ -1764,7 +2094,8 @@
       "all": "All Time"
     },
     "filters": {
-      "period": "Period"
+      "period": "Period",
+      "selectPeriod": "Select period"
     },
     "export": {
       "title": "Export",
@@ -1780,10 +2111,13 @@
       "noApiary": "Select an apiary to view statistics"
     },
     "treatmentTotals": "Active ingredients applied (across products)",
-    "treatmentTotalsEmpty": "No treatments recorded for this period."
+    "treatmentTotalsEmpty": "No treatments recorded for this period.",
+    "feedingTotalsDescription": "Total sugar fed per hive (kg)",
+    "honeyProductionDescription": "Total honey harvested per hive (kg)"
   },
   "footer": {
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "© {{year}} HRVN s.r.o."
   },
   "bulkAdd": {
     "title": "Bulk Add",
@@ -2223,7 +2557,8 @@
           "body": "Season-long treatment schedule for production colonies and nuclei with mite-fall thresholds, plus the divide-and-treat method explained step by step."
         }
       }
-    }
+    },
+    "brand": "Hive Pal"
   },
   "pwa": {
     "updateAvailable": "A new version is available",
@@ -2267,7 +2602,20 @@
     "cancel": "Cancel",
     "save": "Save",
     "deleteTitle": "Delete treatment product?",
-    "deleteDesc": "This removes your custom product. This cannot be undone."
+    "deleteDesc": "This removes your custom product. This cannot be undone.",
+    "toasts": {
+      "created": "Treatment product created",
+      "createFailed": "Failed to create product",
+      "updated": "Treatment product updated",
+      "updateFailed": "Failed to update product",
+      "deleted": "Treatment product deleted",
+      "deleteFailed": "Failed to delete product",
+      "ingredientAdded": "Active ingredient added",
+      "ingredientAddFailed": "Failed to add ingredient"
+    },
+    "loading": "Loading…",
+    "namePlaceholder": "VarroMed",
+    "ingredientPlaceholder": "Ingredient"
   },
   "imageDisplay": {
     "label": "Images: {{mode}}",
@@ -2276,5 +2624,96 @@
       "side": "Side",
       "hidden": "Hidden"
     }
+  },
+  "releasesPage": {
+    "meta": {
+      "title": "Release Notes - Hive Pal",
+      "description": "Stay up to date with the latest Hive Pal features, improvements, and bug fixes. See what's new in each release."
+    },
+    "brand": "Hive Pal",
+    "openSource": "Open Source",
+    "home": "Home",
+    "github": "GitHub",
+    "signIn": "Sign In",
+    "startFree": "Start Free",
+    "backToHome": "Back to Home",
+    "title": "Release Notes",
+    "intro": "Stay up to date with the latest features, improvements, and bug fixes in Hive Pal. Follow our development on <githubLink>GitHub</githubLink>.",
+    "versionBadge": "v{{version}}",
+    "latest": "Latest",
+    "empty": "No release notes available.",
+    "footer": {
+      "tagline": "Free and open-source beekeeping management platform. Making beekeeping simpler, more productive, and more enjoyable.",
+      "documentation": "Documentation",
+      "reportIssue": "Report Issue",
+      "copyright": "© 2025 Hive Pal. Released under MIT License. All rights reserved."
+    }
+  },
+  "breadcrumbs": {
+    "queen": "Queen",
+    "details": "Details",
+    "inspectionFrom": "Inspection from {{date}}",
+    "harvestFrom": "Harvest from {{date}}"
+  },
+  "pageTitles": {
+    "home": "Hive Pal - Modern Beekeeping Management Software"
+  },
+  "errorPage": {
+    "notFound": {
+      "title": "Page not found",
+      "message": "We couldn't find the page you were looking for.",
+      "pageTitle": "Page not found - Hive Pal",
+      "heading": "Not Found"
+    },
+    "heading": "Error",
+    "title": "Something went wrong",
+    "message": "We're having trouble loading this page. Please try again or return home.",
+    "code": "Error {{code}}",
+    "tryAgain": "Try Again",
+    "backToHome": "Back to Home",
+    "persists": "If this problem persists, please check your internet connection or try again later."
+  },
+  "publicLayout": {
+    "brand": "Hive Pal",
+    "logoAlt": "Hive Pal logo",
+    "openSource": "Open Source",
+    "liebefelder": "Liebefelder Schätzmethode",
+    "docs": "Docs",
+    "signIn": "Sign In",
+    "startFree": "Start Free",
+    "tagline": "Free and open-source beekeeping management platform.",
+    "freeTools": "Free Tools",
+    "project": "Project",
+    "documentation": "Documentation",
+    "releaseNotes": "Release Notes",
+    "github": "GitHub",
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "© {{year}} Hive Pal. Released under MIT License."
+  },
+  "frameSizeToasts": {
+    "submitted": "Frame size submitted for review",
+    "submitFailed": "Failed to submit frame size"
+  },
+  "audioRecorder": {
+    "notSupported": "Audio recording is not supported in this browser.",
+    "preview": "Recording Preview",
+    "discard": "Discard",
+    "save": "Save Recording",
+    "paused": "Paused",
+    "recording": "Recording...",
+    "start": "Start Recording",
+    "hint": "Record audio notes for this inspection",
+    "empty": "No audio recordings"
+  },
+  "fab": {
+    "addInspection": "Add Inspection"
+  },
+  "qrScanner": {
+    "title": "Scan QR Code",
+    "description": "Point your camera at a hive QR code to navigate to it",
+    "cameraUnavailable": "Camera access is not available in this browser."
+  },
+  "temperatureField": {
+    "placeholder": "Enter temperature"
   }
 }

@@ -10,7 +10,8 @@
   "welcome": {
     "title": "Start Your Beekeeping Journey",
     "description": "Welcome to Hive-Pal, your digital beekeeping assistant! We'll guide you through setting up your first apiary and hive to get you started.",
-    "action": "Let's Get Started"
+    "action": "Let's Get Started",
+    "logoAlt": "Hive-Pal Logo"
   },
   "apiary": {
     "title": "Create Your First Apiary",

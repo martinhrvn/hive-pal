@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/card';
 import { ChartPeriod } from './index';
 import { useInspectionChartData } from './useChartData';
+import { useTranslation } from 'react-i18next';
 
 interface InspectionChartsProps {
   hiveId: string | undefined;
@@ -26,6 +27,7 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation('hive');
   const inspectionData = useInspectionChartData(
     hiveId,
     period,
@@ -42,7 +44,7 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
   if (!hiveId || inspectionData.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
-        No inspection data available
+        {t('charts.noInspectionData')}
       </div>
     );
   }
@@ -51,28 +53,28 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Inspection Score Trends</CardTitle>
+          <CardTitle>{t('charts.scoreTrends.title')}</CardTitle>
           <CardDescription>
-            Colony health scores over recent inspections (0-10 scale)
+            {t('charts.scoreTrends.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer
             config={{
               overallScore: {
-                label: 'Overall Score',
+                label: t('scores.overallScore'),
                 color: '#10b981', // Green
               },
               populationScore: {
-                label: 'Population',
+                label: t('scores.population'),
                 color: '#3b82f6', // Blue
               },
               storesScore: {
-                label: 'Stores',
+                label: t('scores.stores'),
                 color: '#f59e0b', // Amber
               },
               queenScore: {
-                label: 'Queen',
+                label: t('scores.queen'),
                 color: '#a855f7', // Purple
               },
             }}
@@ -118,24 +120,24 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
 
       <Card>
         <CardHeader>
-          <CardTitle>Score Details</CardTitle>
+          <CardTitle>{t('charts.scoreDetails.title')}</CardTitle>
           <CardDescription>
-            Individual score components over time
+            {t('charts.scoreDetails.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer
             config={{
               populationScore: {
-                label: 'Population',
+                label: t('scores.population'),
                 color: '#3b82f6', // Blue
               },
               storesScore: {
-                label: 'Stores',
+                label: t('scores.stores'),
                 color: '#f59e0b', // Amber
               },
               queenScore: {
-                label: 'Queen',
+                label: t('scores.queen'),
                 color: '#a855f7', // Purple
               },
             }}

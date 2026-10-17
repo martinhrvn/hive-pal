@@ -39,6 +39,7 @@ import { InspectionResponse, InspectionStatus } from 'shared-schemas';
 import { useUpdateInspection } from '@/api/hooks/useInspections';
 import { useHiveApiaryLookup } from '@/api/hooks/useHives';
 import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { RescheduleDialog } from './reschedule-dialog';
 
@@ -62,7 +63,8 @@ const getWeatherIcon = (condition: string | null | undefined) => {
 export const ScheduledInspectionCard: React.FC<
   ScheduledInspectionCardProps
 > = ({ inspection, hiveName, onUpdate }) => {
-  const { t } = useTranslation(['inspection']);
+  const { t } = useTranslation(['inspection', 'common']);
+  const { formatDate, formatTime } = useDateFormat();
   const navigate = useNavigate();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
@@ -163,10 +165,10 @@ export const ScheduledInspectionCard: React.FC<
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <CalendarClock className="h-4 w-4 shrink-0" />
                 <span className="font-medium text-foreground">
-                  {format(inspectionDate, 'MMM d')}
+                  {formatDate(inspectionDate)}
                 </span>
                 {!inspection.isAllDay && (
-                  <span>{format(inspectionDate, 'h:mm a')}</span>
+                  <span>{formatTime(inspectionDate)}</span>
                 )}
               </div>
 
@@ -210,7 +212,9 @@ export const ScheduledInspectionCard: React.FC<
                   disabled={isPending}
                 >
                   <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">
+                    {t('common:actions.openMenu')}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">

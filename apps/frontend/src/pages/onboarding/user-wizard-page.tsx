@@ -152,7 +152,7 @@ export const UserWizardPage = () => {
                 <img
                   src="/hive-pal-logo.png"
                   className="w-24"
-                  alt="Hive-Pal Logo"
+                  alt={t('welcome.logoAlt')}
                 />
               </div>
               <h3 className="text-xl font-semibold mb-4">

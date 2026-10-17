@@ -32,41 +32,20 @@ Summary cards displaying key metrics for the selected apiary and period.
 - Heart (red) - Health scores
 - Home (green) - Active hives
 
-### HoneyProductionChart
+### HiveBarChart
 
-Bar chart showing total honey production per hive using Recharts.
-
-**Props:**
-
-- `data: Array<{ hiveId: string; hiveName: string; amount: number }> | undefined` - Per-hive honey data
-- `isLoading: boolean` - Loading state
-
-**Features:**
-
-- Bar chart with hive names on X-axis, honey amount (kg) on Y-axis
-- Responsive ChartContainer from shadcn/ui
-- Tooltip showing hive name and exact amount
-- Skeleton loading state
-- Empty state with "No data available" message
-- Amber color theme (#f59e0b) for bars
-
-### FeedingTotalsChart
-
-Bar chart showing total sugar fed per hive using Recharts.
+Card with one bar per hive (Recharts), used for honey production and feeding totals.
 
 **Props:**
 
-- `data: Array<{ hiveId: string; hiveName: string; sugarKg: number }> | undefined` - Per-hive feeding data
-- `isLoading: boolean` - Loading state
+- `title`, `description`: card header text
+- `data: Array<{ hiveId: string; hiveName: string } & Record<K, number>> | undefined`: per-hive rows
+- `isLoading: boolean`: shows a skeleton
+- `dataKey: K`: numeric field to plot
+- `seriesLabel: string`: tooltip series name
+- `color: string`: bar colour, use theme tokens (`var(--honey)`, `var(--chart-1)`)
 
-**Features:**
-
-- Bar chart with hive names on X-axis, sugar amount (kg) on Y-axis
-- Responsive ChartContainer from shadcn/ui
-- Tooltip showing hive name and exact amount
-- Skeleton loading state
-- Empty state with "No data available" message
-- Orange color theme (#ea580c) for bars
+Shows an empty state when there is no data.
 
 ### HiveComparisonTable
 
@@ -153,10 +132,7 @@ import {
   ReportsHeader,
   ReportsSidebar,
 } from './components';
-import {
-  HoneyProductionChart,
-  FeedingTotalsChart,
-} from './components/charts';
+import { HiveBarChart } from './components/charts';
 
 export const ReportsPage = () => {
   const { t } = useTranslation('common');
@@ -221,13 +197,14 @@ export const ReportsPage = () => {
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
-              <HoneyProductionChart
+              <HiveBarChart
+                title={t('reports.honeyProduction')}
+                description={t('reports.honeyProductionDescription')}
                 data={statistics?.honeyProduction.byHive}
                 isLoading={isLoading}
-              />
-              <FeedingTotalsChart
-                data={statistics?.feedingTotals.byHive}
-                isLoading={isLoading}
+                dataKey="amount"
+                seriesLabel={t('reports.charts.honeyKg')}
+                color="var(--honey)"
               />
             </TabsContent>
 

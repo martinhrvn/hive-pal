@@ -25,6 +25,21 @@ interface RatingSliderProps {
   onClear?: () => void;
 }
 
+/** Tailwind classes for one rating cell given the hover and current value. */
+function cellColor(
+  fullValue: number,
+  hoveredValue: number | null,
+  value: number | null | undefined,
+): string {
+  if (hoveredValue != null && hoveredValue >= fullValue) {
+    return 'bg-amber-200 dark:bg-amber-800';
+  }
+  if (value != null && value >= fullValue) {
+    return 'bg-amber-300 dark:bg-amber-700';
+  }
+  return 'bg-gray-200 dark:bg-gray-700';
+}
+
 export const RatingSlider: React.FC<RatingSliderProps> = ({
   value,
   onChange,
@@ -60,13 +75,7 @@ export const RatingSlider: React.FC<RatingSliderProps> = ({
 
       <div className="grid h-8 min-w-[220px] grow grid-cols-10 gap-1">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fullValue => {
-          let color = 'bg-gray-200 dark:bg-gray-700';
-
-          if (hoveredValue != null && hoveredValue >= fullValue) {
-            color = 'bg-amber-200 dark:bg-amber-800';
-          } else if (value != null && value >= fullValue) {
-            color = 'bg-amber-300 dark:bg-amber-700';
-          }
+          const color = cellColor(fullValue, hoveredValue, value);
 
           return (
             <button

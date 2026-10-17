@@ -1,6 +1,7 @@
 import React from 'react';
 import { TileLayer, Marker, MapContainer, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useTranslation } from 'react-i18next';
 import L, { Icon } from 'leaflet';
 import { useAdminApiariesMap } from '@/api/hooks/useAdminApiaries';
 import type { ApiaryMapPoint } from 'shared-schemas';
@@ -39,12 +40,13 @@ const DEFAULT_CENTER: L.LatLngExpression = [48.5, 10.5];
 const DEFAULT_ZOOM = 4;
 
 export const AllApiariesMap: React.FC = () => {
+  const { t } = useTranslation('admin');
   const { data: apiaries, isLoading, error } = useAdminApiariesMap();
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[400px] text-muted-foreground">
-        Loading map...
+        {t('platformMetrics.map.loading')}
       </div>
     );
   }
@@ -52,7 +54,7 @@ export const AllApiariesMap: React.FC = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-[400px] text-destructive">
-        Failed to load apiaries
+        {t('platformMetrics.map.failed')}
       </div>
     );
   }
@@ -60,7 +62,7 @@ export const AllApiariesMap: React.FC = () => {
   if (!apiaries || apiaries.length === 0) {
     return (
       <div className="flex items-center justify-center h-[400px] text-muted-foreground">
-        No apiaries with coordinates found
+        {t('platformMetrics.map.empty')}
       </div>
     );
   }
@@ -90,10 +92,15 @@ export const AllApiariesMap: React.FC = () => {
               <div className="text-sm">
                 <p className="font-semibold">{apiary.name}</p>
                 <p className="text-muted-foreground">
-                  {apiary.hiveCount} {apiary.hiveCount === 1 ? 'hive' : 'hives'}
+                  {t('platformMetrics.map.hiveCount', {
+                    count: apiary.hiveCount,
+                  })}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {apiary.latitude.toFixed(4)}, {apiary.longitude.toFixed(4)}
+                  {t('platformMetrics.map.coordinates', {
+                    lat: apiary.latitude.toFixed(4),
+                    lng: apiary.longitude.toFixed(4),
+                  })}
                 </p>
               </div>
             </Popup>

@@ -35,6 +35,11 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
   timeStyle: 'short',
 });
 
+// Unit symbols for hub telemetry readings.
+const UNIT_DBM = 'dBm';
+const UNIT_MW = 'mW';
+const UNIT_MA = 'mA';
+
 const isNum = (v: unknown): v is number =>
   typeof v === 'number' && Number.isFinite(v);
 
@@ -213,7 +218,7 @@ export function HiveHubHubStatusCard({
             </SectionHeading>
             <div className="divide-y">
               <StatusRow label={t('hubStatus.row.signal')}>
-                <span>{fmt(rssi, 0, 'dBm')}</span>
+                <span>{fmt(rssi, 0, UNIT_DBM)}</span>
                 {quality && (
                   <Badge
                     variant="outline"
@@ -282,10 +287,10 @@ export function HiveHubHubStatusCard({
                 </SectionHeading>
                 <div className="divide-y">
                   <StatusRow label={t('hubStatus.row.solarPower')}>
-                    {fmt(m.solar_power_mw, 0, 'mW')}
+                    {fmt(m.solar_power_mw, 0, UNIT_MW)}
                   </StatusRow>
                   <StatusRow label={t('hubStatus.row.solarCurrent')}>
-                    {fmt(m.solar_current_ma, 0, 'mA')}
+                    {fmt(m.solar_current_ma, 0, UNIT_MA)}
                   </StatusRow>
                   <StatusRow label={t('hubStatus.row.solarBus')}>
                     {fmt(m.solar_bus_voltage_v, 2, 'V')}

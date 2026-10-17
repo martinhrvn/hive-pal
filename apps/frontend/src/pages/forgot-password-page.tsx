@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -41,7 +42,7 @@ const ForgotPasswordPage = () => {
       <div className="min-h-screen w-full flex flex-col justify-center">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <h1 className="text-center text-2xl font-semibold mb-2">
-            Beekeeping Manager
+            {t('appTitle')}
           </h1>
           <h2 className="text-center text-lg mb-8">
             {t('forgotPassword.emailSent')}
@@ -51,7 +52,10 @@ const ForgotPasswordPage = () => {
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <div className="text-center space-y-4">
-              <div className="text-green-600 text-4xl mb-4">✓</div>
+              <Check
+                className="mx-auto mb-4 h-10 w-10 text-green-600"
+                aria-hidden="true"
+              />
               <p className="text-sm text-gray-600">
                 {t('forgotPassword.checkEmail')}
               </p>
@@ -77,7 +81,7 @@ const ForgotPasswordPage = () => {
     <div className="min-h-screen w-full flex flex-col justify-center">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h1 className="text-center text-2xl font-semibold mb-2">
-          Beekeeping Manager
+          {t('appTitle')}
         </h1>
         <h2 className="text-center text-lg mb-8">
           {t('forgotPassword.title')}
@@ -110,7 +114,7 @@ const ForgotPasswordPage = () => {
             <div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading
-                  ? t('common.loading')
+                  ? t('common:status.loading')
                   : t('forgotPassword.sendReset')}
               </Button>
             </div>

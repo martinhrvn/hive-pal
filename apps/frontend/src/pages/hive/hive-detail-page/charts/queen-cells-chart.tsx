@@ -4,6 +4,7 @@ import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
 import { InspectionResponse } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface QueenCellsChartProps {
   hiveId: string | undefined;
@@ -18,14 +19,18 @@ export const QueenCellsChart: React.FC<QueenCellsChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation(['hive', 'inspection']);
   return (
     <BaseInspectionChart
       hiveId={hiveId}
       period={period}
-      title="Queen Cells"
-      description="Count of queen cells recorded per inspection"
+      title={t('inspection:observations.queenCells')}
+      description={t('hive:charts.queenCells.description')}
       config={{
-        queenCells: { label: 'Queen Cells', color: '#f43f5e' },
+        queenCells: {
+          label: t('inspection:observations.queenCells'),
+          color: '#f43f5e',
+        },
       }}
       dataTransformer={inspection => ({
         date: format(parseISO(inspection.date), 'MMM dd'),

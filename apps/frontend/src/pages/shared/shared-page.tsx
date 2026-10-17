@@ -4,9 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useSharedResource } from '@/api/hooks/useShares';
 import { ShareResourceType } from 'shared-schemas';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+
+// Unit symbol shown when a shared harvest hive has no unit recorded.
+const DEFAULT_HONEY_UNIT = 'kg';
 
 export function SharedPage() {
+  const { t, i18n } = useTranslation('share');
   const { token } = useParams<{ token: string }>();
   const { data, isLoading, error } = useSharedResource(token ?? '');
 
@@ -23,12 +27,14 @@ export function SharedPage() {
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <Card className="max-w-md w-full mx-4">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Share link not found</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {t('shared.notFound.title')}
+            </h2>
             <p className="text-muted-foreground mb-4">
-              This link may have expired or been revoked.
+              {t('shared.notFound.description')}
             </p>
             <Link to="/register">
-              <Button>Sign up for Hive Pal</Button>
+              <Button>{t('shared.notFound.signUp')}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -37,11 +43,17 @@ export function SharedPage() {
   }
 
   const isHarvest = data.resourceType === ShareResourceType.HARVEST;
-  const dateStr = format(new Date(data.date), 'PPP');
+  const dateStr = new Intl.DateTimeFormat(i18n.language, {
+    dateStyle: 'long',
+  }).format(new Date(data.date));
 
   const ogTitle = isHarvest
-    ? `Harvest: ${data.totalWeight ? `${data.totalWeight} ${data.totalWeightUnit}` : 'In progress'}`
-    : `Hive Inspection: ${data.hiveName}`;
+    ? t('shared.og.harvestTitle', {
+        amount: data.totalWeight
+          ? `${data.totalWeight} ${data.totalWeightUnit}`
+          : t('shared.harvest.inProgress'),
+      })
+    : t('shared.og.inspectionTitle', { hiveName: data.hiveName });
 
   const ogDescription = isHarvest
     ? `${data.apiaryName} - ${dateStr}`
@@ -53,7 +65,7 @@ export function SharedPage() {
 
   return (
     <>
-      <title>{`${ogTitle} - Hive Pal`}</title>
+      <title>{t('shared.pageTitle', { title: ogTitle })}</title>
       <meta property="og:title" content={ogTitle} />
       <meta property="og:description" content={ogDescription} />
       {imageUrl && <meta property="og:image" content={imageUrl} />}
@@ -66,13 +78,13 @@ export function SharedPage() {
             <Link to="/" className="flex items-center gap-2 text-xl font-bold">
               <img
                 src="/hive-pal-logo.png"
-                alt="Hive Pal"
+                alt={t('shared.brand')}
                 className="w-8 h-8"
               />
-              Hive Pal
+              {t('shared.brand')}
             </Link>
             <Link to="/register">
-              <Button size="sm">Sign up free</Button>
+              <Button size="sm">{t('shared.signUpFree')}</Button>
             </Link>
           </div>
         </header>
@@ -89,13 +101,13 @@ export function SharedPage() {
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="pt-6 text-center">
               <h3 className="text-lg font-semibold mb-2">
-                Start managing your own hives
+                {t('shared.cta.title')}
               </h3>
               <p className="text-muted-foreground mb-4">
-                Track inspections, harvests, and more with Hive Pal.
+                {t('shared.cta.description')}
               </p>
               <Link to="/register">
-                <Button>Sign up free</Button>
+                <Button>{t('shared.signUpFree')}</Button>
               </Link>
             </CardContent>
           </Card>
@@ -116,6 +128,7 @@ function HarvestView({
     Record<string, unknown>;
   dateStr: string;
 }) {
+  const { t } = useTranslation('share');
   const harvest = data as {
     resourceType: 'HARVEST';
     date: string;
@@ -136,30 +149,40 @@ function HarvestView({
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Harvest</CardTitle>
+            <CardTitle className="text-2xl">
+              {t('shared.harvest.title')}
+            </CardTitle>
             <Badge variant="outline">{harvest.status}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Date</p>
+              <p className="text-sm text-muted-foreground">
+                {t('shared.harvest.date')}
+              </p>
               <p className="font-medium">{dateStr}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Apiary</p>
+              <p className="text-sm text-muted-foreground">
+                {t('shared.harvest.apiary')}
+              </p>
               <p className="font-medium">{harvest.apiaryName}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Weight</p>
+              <p className="text-sm text-muted-foreground">
+                {t('shared.harvest.totalWeight')}
+              </p>
               <p className="text-xl font-bold">
                 {harvest.totalWeight
                   ? `${harvest.totalWeight} ${harvest.totalWeightUnit}`
-                  : 'In progress'}
+                  : t('shared.harvest.inProgress')}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Hives</p>
+              <p className="text-sm text-muted-foreground">
+                {t('shared.harvest.hives')}
+              </p>
               <p className="font-medium">{harvest.harvestHives.length}</p>
             </div>
           </div>
@@ -168,7 +191,7 @@ function HarvestView({
 
       <Card>
         <CardHeader>
-          <CardTitle>Hive Breakdown</CardTitle>
+          <CardTitle>{t('shared.harvest.breakdown')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -180,12 +203,12 @@ function HarvestView({
                 <div>
                   <p className="font-medium">{hh.hiveName}</p>
                   <p className="text-sm text-muted-foreground">
-                    {hh.framesTaken} frames
+                    {t('shared.harvest.frames', { count: hh.framesTaken })}
                   </p>
                 </div>
                 {hh.honeyAmount && (
                   <p className="font-medium">
-                    {hh.honeyAmount} {hh.honeyAmountUnit || 'kg'}
+                    {hh.honeyAmount} {hh.honeyAmountUnit || DEFAULT_HONEY_UNIT}
                   </p>
                 )}
               </div>
@@ -204,6 +227,7 @@ function InspectionView({
   data: Record<string, unknown>;
   dateStr: string;
 }) {
+  const { t } = useTranslation(['share', 'inspection']);
   const inspection = data as {
     resourceType: 'INSPECTION';
     date: string;
@@ -230,24 +254,34 @@ function InspectionView({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            Inspection: {inspection.hiveName}
+            {t('shared.inspection.title', { hiveName: inspection.hiveName })}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Date</p>
+              <p className="text-sm text-muted-foreground">
+                {t('shared.inspection.date')}
+              </p>
               <p className="font-medium">{dateStr}</p>
             </div>
             {inspection.temperature !== null && (
               <div>
-                <p className="text-sm text-muted-foreground">Temperature</p>
-                <p className="font-medium">{inspection.temperature}°C</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('shared.inspection.temperature')}
+                </p>
+                <p className="font-medium">
+                  {t('inspection:units.celsius', {
+                    value: inspection.temperature,
+                  })}
+                </p>
               </div>
             )}
             {inspection.weatherConditions && (
               <div>
-                <p className="text-sm text-muted-foreground">Weather</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('shared.inspection.weather')}
+                </p>
                 <p className="font-medium">{inspection.weatherConditions}</p>
               </div>
             )}
@@ -257,13 +291,22 @@ function InspectionView({
           {inspection.scores && (
             <div className="grid grid-cols-4 gap-3">
               {[
-                { label: 'Overall', value: inspection.scores.overallScore },
                 {
-                  label: 'Population',
+                  label: t('inspection:scores.overall'),
+                  value: inspection.scores.overallScore,
+                },
+                {
+                  label: t('inspection:scores.population'),
                   value: inspection.scores.populationScore,
                 },
-                { label: 'Stores', value: inspection.scores.storesScore },
-                { label: 'Queen', value: inspection.scores.queenScore },
+                {
+                  label: t('inspection:scores.stores'),
+                  value: inspection.scores.storesScore,
+                },
+                {
+                  label: t('inspection:scores.queen'),
+                  value: inspection.scores.queenScore,
+                },
               ]
                 .filter(s => s.value !== null)
                 .map(s => (
@@ -285,7 +328,7 @@ function InspectionView({
       {inspection.observations.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Observations</CardTitle>
+            <CardTitle>{t('shared.inspection.observations')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
@@ -297,8 +340,8 @@ function InspectionView({
                   <p className="font-medium">
                     {obs.booleanValue !== null && obs.booleanValue !== undefined
                       ? obs.booleanValue
-                        ? 'Yes'
-                        : 'No'
+                        ? t('shared.inspection.yes')
+                        : t('shared.inspection.no')
                       : obs.numericValue !== null &&
                           obs.numericValue !== undefined
                         ? obs.numericValue
@@ -314,7 +357,7 @@ function InspectionView({
       {inspection.notes.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Notes</CardTitle>
+            <CardTitle>{t('shared.inspection.notes')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">

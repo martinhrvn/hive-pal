@@ -34,5 +34,60 @@
   "suggestion": {
     "conflict": "Conflicts with existing value",
     "willFill": "Will fill this field"
+  },
+  "assistant": {
+    "chat": {
+      "startFailed": "Nepodarilo sa začať nový rozhovor",
+      "unavailable": "Asistent je momentálne nedostupný",
+      "deleteFailed": "Tento rozhovor sa nepodarilo vymazať",
+      "newConversation": "Nový rozhovor",
+      "deleteConversation": "Vymazať rozhovor",
+      "disclaimer": "Rady majú len odporúčací charakter. Prípravky na ošetrenie a ich dávkovanie podliehajú regionálnym predpisom — vždy sa riaďte etiketou prípravku a miestnymi pravidlami.",
+      "emptyHive": "Pýtajte sa na tento úľ — zdravie, kŕmenie, riziko rojenia, sezónne ďalšie kroky.",
+      "emptyApiary": "Pýtajte sa na túto včelnicu — zdravie, kŕmenie, riziko rojenia, sezónne ďalšie kroky.",
+      "thinking": "Premýšľam…",
+      "placeholder": "Opýtajte sa asistenta…"
+    },
+    "suggestions": {
+      "created": "Akcia bola vytvorená",
+      "createFailed": "Akciu sa nepodarilo vytvoriť",
+      "title": "Navrhované akcie",
+      "reminder": "Pripomienka",
+      "createdLabel": "Vytvorené",
+      "createAction": "Vytvoriť akciu"
+    },
+    "reminders": {
+      "honey_bound": "Medovo viazané",
+      "overcrowded": "Preplnené",
+      "needs_super": "Potrebuje nadstavbu",
+      "queen_issues": "Problémy s matkou",
+      "requires_treatment": "Vyžaduje ošetrenie",
+      "low_stores": "Nízke zásoby",
+      "prepare_for_winter": "Príprava na zimu"
+    },
+    "describe": {
+      "feed": "Nakŕmiť {{amount}} {{unit}} – {{feedType}}",
+      "feedWithConcentration": "Nakŕmiť {{amount}} {{unit}} – {{feedType}} ({{concentration}})",
+      "treat": "Ošetriť prípravkom {{product}}",
+      "treatWithQuantity": "Ošetriť prípravkom {{product}} ({{quantity}} {{unit}})",
+      "addFrames_one": "Pridať {{count}} rámik",
+      "addFrames_few": "Pridať {{count}} rámiky",
+      "addFrames_many": "Pridať {{count}} rámikov",
+      "addFrames_other": "Pridať {{count}} rámikov",
+      "removeFrames_one": "Odobrať {{count}} rámik",
+      "removeFrames_few": "Odobrať {{count}} rámiky",
+      "removeFrames_many": "Odobrať {{count}} rámikov",
+      "removeFrames_other": "Odobrať {{count}} rámikov",
+      "cleaned": "vyčistiť: {{component}}",
+      "replaced": "vymeniť: {{component}}",
+      "harvest": "Zber {{amount}} {{unit}}",
+      "note": "Poznámka: {{content}}"
+    },
+    "page": {
+      "title": "Asistent včelnice",
+      "description": "Klaďte porovnávacie otázky naprieč všetkými úľmi včelnice {{apiary}} — napr. ktoré úle treba nakŕmiť ako prvé alebo kde je tento týždeň najvyššie riziko rojenia.",
+      "descriptionNoApiary": "Klaďte porovnávacie otázky naprieč všetkými úľmi vašej včelnice — napr. ktoré úle treba nakŕmiť ako prvé alebo kde je tento týždeň najvyššie riziko rojenia.",
+      "selectApiary": "Vyberte včelnicu a začnite rozhovor s asistentom."
+    }
   }
 }

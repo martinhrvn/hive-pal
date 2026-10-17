@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth as useAuthContext } from '@/context/auth-context';
 import { useChangePassword, useUserProfile } from '@/api/hooks/useAuth';
 import {
@@ -16,6 +17,7 @@ import { Label } from '../../components/ui/label';
 import { Alert } from '../../components/ui/alert';
 
 const ChangePasswordPage: React.FC = () => {
+  const { t } = useTranslation('auth');
   const { logout } = useAuthContext();
   const { mutateAsync: changePassword, isPending: isChangingPassword } =
     useChangePassword();
@@ -32,17 +34,17 @@ const ChangePasswordPage: React.FC = () => {
 
     // Basic validation
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError('Please fill in all fields');
+      setError(t('changePassword.errors.fillAllFields'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('New passwords do not match');
+      setError(t('changePassword.errors.passwordMismatch'));
       return;
     }
 
     if (newPassword.length < 6) {
-      setError('New password must be at least 6 characters');
+      setError(t('changePassword.errors.passwordTooShort'));
       return;
     }
 
@@ -58,7 +60,7 @@ const ChangePasswordPage: React.FC = () => {
       navigate('/login');
     } catch (err: unknown) {
       console.error('Error changing password:', err);
-      setError('Failed to change password');
+      setError(t('changePassword.errors.failed'));
     }
   };
 
@@ -66,11 +68,11 @@ const ChangePasswordPage: React.FC = () => {
     <div className="w-full flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Change Password</CardTitle>
+          <CardTitle>{t('changePassword.title')}</CardTitle>
           <CardDescription>
             {user?.passwordChangeRequired
-              ? 'You need to change your password before continuing.'
-              : 'Update your password to keep your account secure.'}
+              ? t('changePassword.requiredDescription')
+              : t('changePassword.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -82,7 +84,9 @@ const ChangePasswordPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="current-password">Current Password</Label>
+              <Label htmlFor="current-password">
+                {t('changePassword.currentPassword')}
+              </Label>
               <Input
                 id="current-password"
                 type="password"
@@ -93,7 +97,9 @@ const ChangePasswordPage: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
+              <Label htmlFor="new-password">
+                {t('changePassword.newPassword')}
+              </Label>
               <Input
                 id="new-password"
                 type="password"
@@ -101,11 +107,15 @@ const ChangePasswordPage: React.FC = () => {
                 onChange={e => setNewPassword(e.target.value)}
                 required
               />
-              <p className="text-sm text-gray-500">Minimum 6 characters</p>
+              <p className="text-sm text-gray-500">
+                {t('changePassword.minLength')}
+              </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <Label htmlFor="confirm-password">
+                {t('changePassword.confirmPassword')}
+              </Label>
               <Input
                 id="confirm-password"
                 type="password"
@@ -120,13 +130,15 @@ const ChangePasswordPage: React.FC = () => {
               className="w-full"
               disabled={isChangingPassword}
             >
-              {isChangingPassword ? 'Changing Password...' : 'Change Password'}
+              {isChangingPassword
+                ? t('changePassword.submitting')
+                : t('changePassword.submit')}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <Button variant="link" onClick={logout}>
-            Logout
+            {t('changePassword.logout')}
           </Button>
         </CardFooter>
       </Card>

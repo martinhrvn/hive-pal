@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -59,7 +60,6 @@ import {
   ApiaryAudioResponse,
   TranscriptionStatus,
 } from 'shared-schemas';
-import { format } from 'date-fns';
 
 type FileType = 'all' | 'photos' | 'documents' | 'audio';
 type DeletingItem =
@@ -182,6 +182,7 @@ const isAudioBusy = (a: ApiaryAudioResponse) =>
 
 export function FilesPage() {
   const { t } = useTranslation('common');
+  const { formatDate } = useDateFormat();
   const { activeApiaryId, viewAllApiaries, apiaries } = useApiary();
   // In the all-apiaries view the lists span every apiary the user can access;
   // otherwise they are filtered to the selected apiary.
@@ -553,7 +554,7 @@ export function FilesPage() {
                         </TableCell>
                       )}
                       <TableCell className="text-sm">
-                        {format(new Date(row.date), 'MMM d, yyyy')}
+                        {formatDate(row.date)}
                       </TableCell>
                       {showStatusColumn && (
                         <TableCell className="hidden md:table-cell text-sm">

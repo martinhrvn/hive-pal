@@ -45,6 +45,13 @@ import { cn } from '@/lib/utils';
 
 const DASH = '—';
 const RELAY_POLL_MS = 10_000;
+// Firmware status rows: translation key suffix and the status field shown.
+const FIRMWARE_STATUS_ROWS = [
+  ['current', 'current_version'],
+  ['latest', 'latest_version'],
+  ['approved', 'approved_version'],
+  ['board', 'device_board'],
+] as const;
 
 const dateFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
@@ -101,6 +108,11 @@ const versionFromFilename = (name: string) => {
 };
 
 type UploadTarget = 'hivehub' | 'hiveinside' | 'beecounter';
+const UPLOAD_TARGETS: readonly UploadTarget[] = [
+  'hivehub',
+  'hiveinside',
+  'beecounter',
+];
 
 const targetFromFilename = (name: string): UploadTarget | '' => {
   const n = name.toLowerCase();
@@ -356,19 +368,14 @@ function HubStatusSection({
 
       {status && (
         <dl className="grid grid-cols-2 gap-2 text-sm">
-          {(
-            [
-              ['current', status.current_version],
-              ['latest', status.latest_version],
-              ['approved', status.approved_version],
-              ['board', status.device_board],
-            ] as const
-          ).map(([key, value]) => (
+          {FIRMWARE_STATUS_ROWS.map(([key, field]) => (
             <div key={key} className="rounded-md bg-muted/50 px-3 py-2">
               <dt className="text-xs text-muted-foreground">
                 {t(`firmware.board.${key}`)}
               </dt>
-              <dd className="font-medium tabular-nums">{value || DASH}</dd>
+              <dd className="font-medium tabular-nums">
+                {status[field] || DASH}
+              </dd>
             </div>
           ))}
         </dl>
@@ -826,7 +833,10 @@ function FirmwareUploadForm({
         />
         {file && (
           <p className="text-xs text-muted-foreground">
-            {file.name} ({(file.size / 1024).toFixed(0)} KB)
+            {t('common.fileInfo', {
+              name: file.name,
+              size: (file.size / 1024).toFixed(0),
+            })}
           </p>
         )}
         {detected && (
@@ -846,7 +856,7 @@ function FirmwareUploadForm({
               <SelectValue placeholder={t('firmware.selectType')} />
             </SelectTrigger>
             <SelectContent>
-              {(['hivehub', 'hiveinside', 'beecounter'] as const).map(value => (
+              {UPLOAD_TARGETS.map(value => (
                 <SelectItem key={value} value={value}>
                   {t(`firmware.uploadForm.targets.${value}`)}
                 </SelectItem>

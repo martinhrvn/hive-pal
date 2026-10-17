@@ -25,7 +25,7 @@ const FALLBACK_VISUAL: ActionVisual = {
   tone: 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
 };
 
-const FALLBACK_LABEL = { key: 'common:actionTypes.other', fallback: 'Other' };
+const FALLBACK_LABEL_KEY = 'actionTypes.other';
 
 // Icon + colour tone per action type (mirrors the inspection detail actions
 // card). Partial so action types added to the enum later fall back gracefully
@@ -65,32 +65,15 @@ const ACTION_TYPE_VISUAL: Partial<Record<ActionType, ActionVisual>> = {
   },
 };
 
-const ACTION_TYPE_I18N: Partial<
-  Record<ActionType, { key: string; fallback: string }>
-> = {
-  [ActionType.FEEDING]: {
-    key: 'common:actionTypes.feeding',
-    fallback: 'Feeding',
-  },
-  [ActionType.TREATMENT]: {
-    key: 'common:actionTypes.treatment',
-    fallback: 'Treatment',
-  },
-  [ActionType.FRAME]: { key: 'common:actionTypes.frame', fallback: 'Frames' },
-  [ActionType.HARVEST]: {
-    key: 'common:actionTypes.harvest',
-    fallback: 'Harvest',
-  },
-  [ActionType.BOX_CONFIGURATION]: {
-    key: 'common:actionTypes.boxConfiguration',
-    fallback: 'Box config',
-  },
-  [ActionType.MAINTENANCE]: {
-    key: 'common:actionTypes.maintenance',
-    fallback: 'Maintenance',
-  },
-  [ActionType.NOTE]: { key: 'common:actionTypes.note', fallback: 'Note' },
-  [ActionType.OTHER]: { key: 'common:actionTypes.other', fallback: 'Other' },
+const ACTION_TYPE_LABEL_KEY: Partial<Record<ActionType, string>> = {
+  [ActionType.FEEDING]: 'actionTypes.feeding',
+  [ActionType.TREATMENT]: 'actionTypes.treatment',
+  [ActionType.FRAME]: 'actionTypes.frame',
+  [ActionType.HARVEST]: 'actionTypes.harvest',
+  [ActionType.BOX_CONFIGURATION]: 'actionTypes.boxConfiguration',
+  [ActionType.MAINTENANCE]: 'actionTypes.maintenance',
+  [ActionType.NOTE]: 'actionTypes.note',
+  [ActionType.OTHER]: 'actionTypes.other',
 };
 
 // Weighings are captured as measurements (not actions), but are shown in the
@@ -129,7 +112,7 @@ export const ActionTypeBadges = ({
       {[...counts.entries()].map(([type, count]) => {
         const visual = ACTION_TYPE_VISUAL[type] ?? FALLBACK_VISUAL;
         const { Icon } = visual;
-        const label = ACTION_TYPE_I18N[type] ?? FALLBACK_LABEL;
+        const labelKey = ACTION_TYPE_LABEL_KEY[type] ?? FALLBACK_LABEL_KEY;
         return (
           <span
             key={type}
@@ -139,7 +122,7 @@ export const ActionTypeBadges = ({
             )}
           >
             <Icon className="h-3 w-3 shrink-0" />
-            {t(label.key, { defaultValue: label.fallback })}
+            {t(labelKey)}
             {count > 1 && <span className="tabular-nums">×{count}</span>}
           </span>
         );
@@ -152,7 +135,7 @@ export const ActionTypeBadges = ({
           )}
         >
           <Scale className="h-3 w-3 shrink-0" />
-          {t('actionTypes.weighing', { defaultValue: 'Weighing' })}
+          {t('actionTypes.weighing')}
           {weightCount > 1 && (
             <span className="tabular-nums">×{weightCount}</span>
           )}

@@ -22,6 +22,7 @@ import {
 import { ChartPeriod } from './index';
 import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface BroodPatternChartProps {
   hiveId: string | undefined;
@@ -29,12 +30,12 @@ interface BroodPatternChartProps {
 }
 
 const PATTERN_ROWS = [
-  { key: 'excellent', label: 'Excellent', y: 6, color: '#10b981' },
-  { key: 'solid', label: 'Solid', y: 5, color: '#22c55e' },
-  { key: 'patchy', label: 'Patchy', y: 4, color: '#eab308' },
-  { key: 'spotty', label: 'Spotty', y: 3, color: '#f97316' },
-  { key: 'scattered', label: 'Scattered', y: 2, color: '#ef4444' },
-  { key: 'poor', label: 'Poor', y: 1, color: '#991b1b' },
+  { key: 'excellent', y: 6, color: '#10b981' },
+  { key: 'solid', y: 5, color: '#22c55e' },
+  { key: 'patchy', y: 4, color: '#eab308' },
+  { key: 'spotty', y: 3, color: '#f97316' },
+  { key: 'scattered', y: 2, color: '#ef4444' },
+  { key: 'poor', y: 1, color: '#991b1b' },
 ] as const;
 
 type PatternKey = (typeof PATTERN_ROWS)[number]['key'];
@@ -47,6 +48,9 @@ export const BroodPatternChart: React.FC<BroodPatternChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation(['hive', 'inspection']);
+  const patternLabel = (key: PatternKey) =>
+    t(`inspection:observations.broodPatternOptions.${key}`);
   const chartData = useInspectionChartData(
     hiveId,
     period,
@@ -69,7 +73,7 @@ export const BroodPatternChart: React.FC<BroodPatternChartProps> = ({
             date: d.date as string,
             y: row.y,
             color: row.color,
-            label: row.label,
+            label: patternLabel(row.key),
           }
         : null;
     })
@@ -83,20 +87,27 @@ export const BroodPatternChart: React.FC<BroodPatternChartProps> = ({
   if (points.length === 0) return null;
 
   const yTicks = PATTERN_ROWS.map(r => r.y);
-  const yTickFormatter = (v: number) =>
-    PATTERN_ROWS.find(r => r.y === v)?.label ?? '';
+  const yTickFormatter = (v: number) => {
+    const row = PATTERN_ROWS.find(r => r.y === v);
+    return row ? patternLabel(row.key) : '';
+  };
 
   return (
     <Card className="lg:col-span-2">
       <CardHeader>
-        <CardTitle>Brood Pattern</CardTitle>
+        <CardTitle>{t('inspection:observations.broodPattern')}</CardTitle>
         <CardDescription>
-          Recorded brood pattern quality per inspection
+          {t('hive:charts.broodPattern.description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
-          config={{ pattern: { label: 'Brood Pattern', color: '#6366f1' } }}
+          config={{
+            pattern: {
+              label: t('inspection:observations.broodPattern'),
+              color: '#6366f1',
+            },
+          }}
         >
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" />

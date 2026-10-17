@@ -14,11 +14,14 @@ import {
   XCircle,
 } from 'lucide-react';
 import { BatchInspectionStatus, BatchHiveStatus } from 'shared-schemas';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 export const BatchDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation(['inspection', 'common']);
+  const { formatDateTime } = useDateFormat();
 
   const {
     data: batch,
@@ -40,12 +43,12 @@ export const BatchDetailPage = () => {
       <div className="max-w-6xl mx-auto p-4">
         <Alert variant="destructive">
           <AlertDescription>
-            Failed to load batch inspection details
+            {t('inspection:batch.detail.loadFailed')}
           </AlertDescription>
         </Alert>
         <Button className="mt-4" onClick={() => navigate('/batch-inspections')}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Batch Inspections
+          {t('inspection:batch.backToList')}
         </Button>
       </div>
     );
@@ -81,7 +84,7 @@ export const BatchDetailPage = () => {
     <div className="max-w-6xl mx-auto p-4 space-y-6">
       <Button variant="ghost" onClick={() => navigate('/batch-inspections')}>
         <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Batch Inspections
+        {t('inspection:batch.backToList')}
       </Button>
 
       <Card>
@@ -90,11 +93,15 @@ export const BatchDetailPage = () => {
             <div>
               <CardTitle className="text-2xl">{batch.name}</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
-                Created {format(new Date(batch.createdAt), 'PPp')}
+                {t('inspection:batch.createdAt', {
+                  date: formatDateTime(batch.createdAt),
+                })}
               </p>
             </div>
             <Badge variant={getStatusBadgeVariant(batch.status)}>
-              {batch.status.replace('_', ' ')}
+              {t(`inspection:batch.status.${batch.status}`, {
+                defaultValue: batch.status.replace('_', ' '),
+              })}
             </Badge>
           </div>
         </CardHeader>
@@ -106,34 +113,38 @@ export const BatchDetailPage = () => {
               </div>
               <div className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
                 <CheckCircle2 className="h-4 w-4" />
-                Completed
+                {t('inspection:batch.progress.completed')}
               </div>
             </div>
             <div className="text-center p-4 bg-muted rounded-lg">
               <div className="text-3xl font-bold">{batch.progress.pending}</div>
               <div className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
                 <Clock className="h-4 w-4" />
-                Remaining
+                {t('inspection:batch.progress.remaining')}
               </div>
             </div>
             {batch.progress.elapsedMinutes !== null && (
               <div className="text-center p-4 bg-muted rounded-lg">
                 <div className="text-3xl font-bold">
-                  {batch.progress.elapsedMinutes}m
+                  {t('inspection:batch.minutes', {
+                    minutes: batch.progress.elapsedMinutes,
+                  })}
                 </div>
                 <div className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
                   <Timer className="h-4 w-4" />
-                  Elapsed
+                  {t('inspection:batch.progress.elapsed')}
                 </div>
               </div>
             )}
             {batch.progress.averageMinutesPerHive !== null && (
               <div className="text-center p-4 bg-muted rounded-lg">
                 <div className="text-3xl font-bold">
-                  {Math.round(batch.progress.averageMinutesPerHive)}m
+                  {t('inspection:batch.minutes', {
+                    minutes: Math.round(batch.progress.averageMinutesPerHive),
+                  })}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
-                  Avg per Hive
+                  {t('inspection:batch.progress.avgPerHive')}
                 </div>
               </div>
             )}
@@ -141,13 +152,17 @@ export const BatchDetailPage = () => {
 
           {batch.startedAt && (
             <div className="text-sm text-muted-foreground">
-              Started {format(new Date(batch.startedAt), 'PPp')}
+              {t('inspection:batch.startedAt', {
+                date: formatDateTime(batch.startedAt),
+              })}
             </div>
           )}
 
           {batch.completedAt && (
             <div className="text-sm text-muted-foreground">
-              Completed {format(new Date(batch.completedAt), 'PPp')}
+              {t('inspection:batch.completedAt', {
+                date: formatDateTime(batch.completedAt),
+              })}
             </div>
           )}
         </CardContent>
@@ -155,7 +170,11 @@ export const BatchDetailPage = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Hives ({batch.hives.length})</CardTitle>
+          <CardTitle>
+            {t('inspection:batch.detail.hivesTitle', {
+              count: batch.hives.length,
+            })}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -169,16 +188,24 @@ export const BatchDetailPage = () => {
                   <div>
                     <p className="font-medium">{batchHive.hive.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      Order: {batchHive.order + 1}
-                      {batchHive.skippedCount > 0 &&
-                        ` • Skipped ${batchHive.skippedCount} time${batchHive.skippedCount > 1 ? 's' : ''}`}
+                      {t('inspection:batch.detail.order', {
+                        order: batchHive.order + 1,
+                      })}
+                      {batchHive.skippedCount > 0 && (
+                        <>
+                          {' • '}
+                          {t('inspection:batch.detail.skipped', {
+                            count: batchHive.skippedCount,
+                          })}
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {batchHive.completedAt && (
                     <span className="text-sm text-muted-foreground">
-                      {format(new Date(batchHive.completedAt), 'PPp')}
+                      {formatDateTime(batchHive.completedAt)}
                     </span>
                   )}
                   {batchHive.inspectionId && (
@@ -190,7 +217,7 @@ export const BatchDetailPage = () => {
                       }
                     >
                       <Eye className="h-4 w-4 mr-1" />
-                      View
+                      {t('inspection:actions.view')}
                     </Button>
                   )}
                 </div>

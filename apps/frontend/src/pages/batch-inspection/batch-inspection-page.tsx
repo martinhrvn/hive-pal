@@ -21,6 +21,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { InspectionForm } from '@/pages/inspection/components/inspection-form';
 import type { InspectionFormData } from '@/pages/inspection/components/inspection-form/schema';
 import {
@@ -35,6 +36,7 @@ import {
 export const BatchInspectionPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation(['inspection', 'common']);
   const [showSkipDialog, setShowSkipDialog] = React.useState(false);
 
   const {
@@ -68,12 +70,12 @@ export const BatchInspectionPage = () => {
         <Alert variant="destructive">
           <AlertDescription>
             {currentHiveError
-              ? 'No more hives to inspect in this batch'
-              : 'Failed to load batch inspection'}
+              ? t('inspection:batch.inspect.noMoreHives')
+              : t('inspection:batch.inspect.loadFailed')}
           </AlertDescription>
         </Alert>
         <Button className="mt-4" onClick={() => navigate('/batch-inspections')}>
-          Back to Batch Inspections
+          {t('inspection:batch.backToList')}
         </Button>
       </div>
     );
@@ -84,12 +86,14 @@ export const BatchInspectionPage = () => {
       <div className="max-w-6xl mx-auto p-4">
         <Card>
           <CardHeader>
-            <CardTitle>Batch Inspection Complete!</CardTitle>
+            <CardTitle>{t('inspection:batch.inspect.completeTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">All hives in this batch have been inspected.</p>
+            <p className="mb-4">
+              {t('inspection:batch.inspect.completeDescription')}
+            </p>
             <Button onClick={() => navigate('/batch-inspections')}>
-              Back to Batch Inspections
+              {t('inspection:batch.backToList')}
             </Button>
           </CardContent>
         </Card>
@@ -107,7 +111,7 @@ export const BatchInspectionPage = () => {
       },
       onError: error => {
         console.error('Failed to skip hive:', error);
-        toast.error('Failed to skip hive');
+        toast.error(t('inspection:batch.inspect.skipFailed'));
       },
     });
   };
@@ -130,14 +134,14 @@ export const BatchInspectionPage = () => {
         onSuccess: result => {
           if (!result.next) {
             // Batch complete
-            toast.success('Batch inspection completed!');
+            toast.success(t('inspection:batch.inspect.completed'));
             navigate(`/batch-inspections/${id}`);
           }
           // Otherwise, the query will refetch and show the next hive
         },
         onError: error => {
           console.error('Failed to create inspection:', error);
-          toast.error('Failed to save inspection');
+          toast.error(t('inspection:batch.inspect.saveFailed'));
         },
       },
     );
@@ -152,11 +156,17 @@ export const BatchInspectionPage = () => {
             <div>
               <CardTitle className="text-2xl">{batchInspection.name}</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
-                Hive {currentHive.position} of {progress.total}
+                {t('inspection:batch.inspect.hivePosition', {
+                  position: currentHive.position,
+                  total: progress.total,
+                })}
               </p>
             </div>
             <Badge variant="secondary" className="text-lg px-4 py-2">
-              {progress.completed}/{progress.total} Complete
+              {t('inspection:batch.inspect.completeBadge', {
+                completed: progress.completed,
+                total: progress.total,
+              })}
             </Badge>
           </div>
         </CardHeader>
@@ -170,34 +180,38 @@ export const BatchInspectionPage = () => {
               </div>
               <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                 <CheckCircle2 className="h-3 w-3" />
-                Completed
+                {t('inspection:batch.progress.completed')}
               </div>
             </div>
             <div>
               <div className="text-2xl font-bold">{progress.pending}</div>
               <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                 <Clock className="h-3 w-3" />
-                Remaining
+                {t('inspection:batch.progress.remaining')}
               </div>
             </div>
             {progress.elapsedMinutes !== null && (
               <div>
                 <div className="text-2xl font-bold">
-                  {progress.elapsedMinutes}m
+                  {t('inspection:batch.minutes', {
+                    minutes: progress.elapsedMinutes,
+                  })}
                 </div>
                 <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                   <Timer className="h-3 w-3" />
-                  Elapsed
+                  {t('inspection:batch.progress.elapsed')}
                 </div>
               </div>
             )}
             {progress.averageMinutesPerHive !== null && (
               <div>
                 <div className="text-2xl font-bold">
-                  {Math.round(progress.averageMinutesPerHive)}m
+                  {t('inspection:batch.minutes', {
+                    minutes: Math.round(progress.averageMinutesPerHive),
+                  })}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Avg per Hive
+                  {t('inspection:batch.progress.avgPerHive')}
                 </div>
               </div>
             )}
@@ -210,7 +224,7 @@ export const BatchInspectionPage = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Current Hive</CardTitle>
+              <CardTitle>{t('inspection:batch.inspect.currentHive')}</CardTitle>
               <p className="text-lg font-semibold mt-1">
                 {currentHive.batchInspectionHive.hive.name}
               </p>
@@ -221,7 +235,7 @@ export const BatchInspectionPage = () => {
               disabled={isSkipping || isSaving}
             >
               <SkipForward className="h-4 w-4 mr-2" />
-              Skip Hive
+              {t('inspection:batch.inspect.skipHive')}
             </Button>
           </div>
         </CardHeader>
@@ -230,7 +244,7 @@ export const BatchInspectionPage = () => {
       {/* Inspection Form */}
       <Card>
         <CardHeader>
-          <CardTitle>Inspection Form</CardTitle>
+          <CardTitle>{t('inspection:batch.inspect.inspectionForm')}</CardTitle>
         </CardHeader>
         <CardContent>
           <InspectionForm
@@ -240,11 +254,11 @@ export const BatchInspectionPage = () => {
             submitButtonText={
               currentHive.hasNext ? (
                 <>
-                  Save and Next
+                  {t('inspection:form.saveAndNext')}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </>
               ) : (
-                'Save and Finish'
+                t('inspection:batch.inspect.saveAndFinish')
               )
             }
             showCancelButton={false}
@@ -256,17 +270,18 @@ export const BatchInspectionPage = () => {
       <Dialog open={showSkipDialog} onOpenChange={setShowSkipDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Skip this hive?</DialogTitle>
+            <DialogTitle>{t('inspection:batch.inspect.skipTitle')}</DialogTitle>
             <DialogDescription>
-              This hive will be moved to the end of the queue. You can inspect
-              it later in this batch.
+              {t('inspection:batch.inspect.skipDescription')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSkipDialog(false)}>
-              Cancel
+              {t('common:actions.cancel')}
             </Button>
-            <Button onClick={handleSkipHive}>Skip Hive</Button>
+            <Button onClick={handleSkipHive}>
+              {t('inspection:batch.inspect.skipHive')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Check, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCreateAction } from '@/api/hooks';
@@ -15,45 +17,69 @@ interface Props {
   hiveId: string;
 }
 
-const REMINDER_LABELS: Record<string, string> = {
-  honey_bound: 'Honey bound',
-  overcrowded: 'Overcrowded',
-  needs_super: 'Needs super',
-  queen_issues: 'Queen issues',
-  requires_treatment: 'Requires treatment',
-  low_stores: 'Low stores',
-  prepare_for_winter: 'Prepare for winter',
-};
+const REMINDER_KEYS = new Set([
+  'honey_bound',
+  'overcrowded',
+  'needs_super',
+  'queen_issues',
+  'requires_treatment',
+  'low_stores',
+  'prepare_for_winter',
+]);
 
-function describeAction(suggestion: AssistantActionSuggestion): string {
+function describeAction(
+  suggestion: AssistantActionSuggestion,
+  t: TFunction<'ai'>,
+): string {
   const d = suggestion.details;
   switch (d.type) {
     case 'FEEDING':
-      return `Feed ${d.amount} ${d.unit} of ${d.feedType}${
-        d.concentration ? ` (${d.concentration})` : ''
-      }`;
+      return d.concentration
+        ? t('assistant.describe.feedWithConcentration', {
+            amount: d.amount,
+            unit: d.unit,
+            feedType: d.feedType,
+            concentration: d.concentration,
+          })
+        : t('assistant.describe.feed', {
+            amount: d.amount,
+            unit: d.unit,
+            feedType: d.feedType,
+          });
     case 'TREATMENT':
-      return `Treat with ${d.product}${
-        d.quantity ? ` (${d.quantity} ${d.unit})` : ''
-      }`;
+      return d.quantity
+        ? t('assistant.describe.treatWithQuantity', {
+            product: d.product,
+            quantity: d.quantity,
+            unit: d.unit,
+          })
+        : t('assistant.describe.treat', { product: d.product });
     case 'FRAME':
       return d.quantity >= 0
-        ? `Add ${d.quantity} frame${d.quantity === 1 ? '' : 's'}`
-        : `Remove ${Math.abs(d.quantity)} frame${d.quantity === -1 ? '' : 's'}`;
-    case 'MAINTENANCE':
-      return `${d.status.toLowerCase()} ${d.component
-        .replace('_', ' ')
-        .toLowerCase()}`;
+        ? t('assistant.describe.addFrames', { count: d.quantity })
+        : t('assistant.describe.removeFrames', {
+            count: Math.abs(d.quantity),
+          });
+    case 'MAINTENANCE': {
+      const component = d.component.replace('_', ' ').toLowerCase();
+      return d.status === 'CLEANED'
+        ? t('assistant.describe.cleaned', { component })
+        : t('assistant.describe.replaced', { component });
+    }
     case 'HARVEST':
-      return `Harvest ${d.amount} ${d.unit}`;
+      return t('assistant.describe.harvest', {
+        amount: d.amount,
+        unit: d.unit,
+      });
     case 'NOTE':
-      return `Note: ${d.content}`;
+      return t('assistant.describe.note', { content: d.content });
     default:
       return suggestion.type;
   }
 }
 
 export function AssistantSuggestionList({ suggestions, hiveId }: Props) {
+  const { t } = useTranslation('ai');
   const createAction = useCreateAction();
   const [created, setCreated] = useState<Record<number, boolean>>({});
 
@@ -69,26 +95,28 @@ export function AssistantSuggestionList({ suggestions, hiveId }: Props) {
         notes: suggestion.notes,
       });
       setCreated(prev => ({ ...prev, [index]: true }));
-      toast.success('Action created');
+      toast.success(t('assistant.suggestions.created'));
     } catch {
-      toast.error('Could not create the action');
+      toast.error(t('assistant.suggestions.createFailed'));
     }
   };
 
   return (
     <div className="mt-2 flex flex-col gap-2 border-t border-stone-200 dark:border-stone-700 pt-2">
       <span className="text-xs font-medium text-muted-foreground">
-        Suggested actions
+        {t('assistant.suggestions.title')}
       </span>
       {suggestions.map((suggestion: AssistantSuggestion, index) => {
         if (suggestion.kind === 'reminder') {
           return (
             <div key={index} className="flex items-center gap-2">
               <Badge variant="outline" className="text-xs">
-                Reminder
+                {t('assistant.suggestions.reminder')}
               </Badge>
               <span className="text-xs">
-                {REMINDER_LABELS[suggestion.reminder] ?? suggestion.reminder}
+                {REMINDER_KEYS.has(suggestion.reminder)
+                  ? t(`assistant.reminders.${suggestion.reminder}`)
+                  : suggestion.reminder}
                 {suggestion.reason ? ` — ${suggestion.reason}` : ''}
               </span>
             </div>
@@ -102,7 +130,7 @@ export function AssistantSuggestionList({ suggestions, hiveId }: Props) {
           >
             <div className="min-w-0">
               <div className="text-xs font-medium">
-                {describeAction(suggestion)}
+                {describeAction(suggestion, t)}
               </div>
               {suggestion.reason && (
                 <div className="text-xs text-muted-foreground">
@@ -119,11 +147,13 @@ export function AssistantSuggestionList({ suggestions, hiveId }: Props) {
             >
               {created[index] ? (
                 <>
-                  <Check className="mr-1 h-3 w-3" /> Created
+                  <Check className="mr-1 h-3 w-3" />{' '}
+                  {t('assistant.suggestions.createdLabel')}
                 </>
               ) : (
                 <>
-                  <Plus className="mr-1 h-3 w-3" /> Create action
+                  <Plus className="mr-1 h-3 w-3" />{' '}
+                  {t('assistant.suggestions.createAction')}
                 </>
               )}
             </Button>

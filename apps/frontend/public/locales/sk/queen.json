@@ -44,7 +44,8 @@
     "notes": "Poznámky",
     "cellCappedAt": "Matečník zaviečkovaný",
     "emergedAt": "Vyliahnutá",
-    "expectedEmergence": "Očakávané vyliahnutie"
+    "expectedEmergence": "Očakávané vyliahnutie",
+    "installedAt": "Inštalovaná dňa"
   },
   "colors": {
     "blue": "Modrá",
@@ -97,7 +98,8 @@
     "hiveLocked": "Do iného úľa ju presuniete cez Presunúť na stránke matky.",
     "notInHive": "Nie je v úli",
     "notSet": "Neuvedené",
-    "estimateHint": "Stačí odhad."
+    "estimateHint": "Stačí odhad.",
+    "pickColor": "Vyberte farbu"
   },
   "information": {
     "noActiveQueen": "Nenašla sa žiadna aktívna matka",
@@ -204,7 +206,8 @@
       "description": "Skúste iný stav alebo úľ.",
       "cta": "Zrušiť filtre"
     },
-    "searchPlaceholder": "Hľadať matky…"
+    "searchPlaceholder": "Hľadať matky…",
+    "noHiveHistory": "Tento úľ zatiaľ nemá históriu matiek."
   },
   "validation": {
     "hiveRequired": "Vyberte úľ",

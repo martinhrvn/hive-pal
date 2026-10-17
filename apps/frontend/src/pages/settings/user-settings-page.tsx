@@ -45,6 +45,13 @@ import { getAuthConfig } from '@/lib/auth-config';
 import { FeedTypesCard } from '@/components/feed-types-card';
 import { DeleteAccountDialog } from '@/components/common/delete-account-dialog';
 
+// Date format patterns are shown as-is; they are not translatable text.
+const DATE_FORMAT_OPTIONS: NonNullable<UserPreferences['dateFormat']>[] = [
+  'MM/DD/YYYY',
+  'DD/MM/YYYY',
+  'YYYY-MM-DD',
+];
+
 export const UserSettingsPage = () => {
   const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
@@ -198,9 +205,11 @@ export const UserSettingsPage = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                    <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                    <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
+                    {DATE_FORMAT_OPTIONS.map(option => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -243,7 +252,10 @@ export const UserSettingsPage = () => {
                 <Select
                   value={settings.timeFormat}
                   onValueChange={value =>
-                    setSettings({ ...settings, timeFormat: value as '12h' | '24h' })
+                    setSettings({
+                      ...settings,
+                      timeFormat: value as '12h' | '24h',
+                    })
                   }
                 >
                   <SelectTrigger id="timeFormat">
@@ -457,26 +469,25 @@ export const UserSettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-5 w-5" />
-              Data
+              {t('settings.data.title')}
             </CardTitle>
-            <CardDescription>
-              Export your account data for backup, or import from a previous
-              export.
-            </CardDescription>
+            <CardDescription>{t('settings.data.description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="font-medium">Export and import</p>
+                <p className="font-medium">
+                  {t('settings.data.transferTitle')}
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  Migrate between instances or keep your own backups.
+                  {t('settings.data.transferDescription')}
                 </p>
               </div>
               <Button
                 variant="outline"
                 onClick={() => navigate('/settings/data-transfer')}
               >
-                Open
+                {t('settings.data.open')}
               </Button>
             </div>
           </CardContent>

@@ -1,22 +1,36 @@
 import { Link, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Beaker, Bug, Waypoints, Microscope } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 
 const TOOL_LINKS = [
-  { to: '/tools/syrup-calculator', label: 'Syrup Calculator', icon: Beaker },
-  { to: '/tools/brood-timeline', label: 'Brood Timeline', icon: Bug },
-  { to: '/tools/swarm-management', label: 'Swarm Management', icon: Waypoints },
+  {
+    to: '/tools/syrup-calculator',
+    labelKey: 'navigation.syrupCalculator',
+    icon: Beaker,
+  },
+  {
+    to: '/tools/brood-timeline',
+    labelKey: 'navigation.broodTimeline',
+    icon: Bug,
+  },
+  {
+    to: '/tools/swarm-management',
+    labelKey: 'navigation.swarmManagement',
+    icon: Waypoints,
+  },
   {
     to: '/tools/liebefelder',
-    label: 'Liebefelder Schätzmethode',
+    labelKey: 'publicLayout.liebefelder',
     icon: Microscope,
   },
-];
+] as const;
 
 export const PublicLayout = () => {
   const localize = useLocalizedPath();
+  const { t } = useTranslation('common');
   return (
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-amber-50 to-green-50">
       <header className="bg-white/80 backdrop-blur-sm border-b">
@@ -26,24 +40,24 @@ export const PublicLayout = () => {
               <img
                 className="w-10"
                 src="/hive-pal-logo.png"
-                alt="Hive Pal logo"
+                alt={t('publicLayout.logoAlt')}
               />
               <h1 className="ml-2 text-xl font-semibold text-gray-900">
-                Hive Pal
+                {t('publicLayout.brand')}
               </h1>
               <span className="ml-3 hidden sm:inline-flex text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                Open Source
+                {t('publicLayout.openSource')}
               </span>
             </Link>
             <nav className="hidden md:flex items-center space-x-6">
-              {TOOL_LINKS.map(({ to, label, icon: Icon }) => (
+              {TOOL_LINKS.map(({ to, labelKey, icon: Icon }) => (
                 <Link
                   key={to}
                   to={localize(to)}
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-1 text-sm font-medium"
                 >
                   <Icon className="h-4 w-4" />
-                  {label}
+                  {t(labelKey)}
                 </Link>
               ))}
               <a
@@ -53,19 +67,19 @@ export const PublicLayout = () => {
                 className="text-gray-600 hover:text-gray-900 flex items-center gap-1 text-sm font-medium"
               >
                 <BookOpen className="h-4 w-4" />
-                Docs
+                {t('publicLayout.docs')}
               </a>
             </nav>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" asChild>
-                <Link to="/login">Sign In</Link>
+                <Link to="/login">{t('publicLayout.signIn')}</Link>
               </Button>
               <Button
                 asChild
                 size="sm"
                 className="bg-amber-500 hover:bg-amber-600"
               >
-                <Link to="/register">Start Free</Link>
+                <Link to="/register">{t('publicLayout.startFree')}</Link>
               </Button>
             </div>
           </div>
@@ -86,31 +100,37 @@ export const PublicLayout = () => {
                 <img
                   className="w-10"
                   src="/hive-pal-logo.png"
-                  alt="Hive Pal logo"
+                  alt={t('publicLayout.logoAlt')}
                 />
-                <span className="ml-2 text-lg font-semibold">Hive Pal</span>
+                <span className="ml-2 text-lg font-semibold">
+                  {t('publicLayout.brand')}
+                </span>
               </div>
               <p className="text-gray-400 text-sm leading-6">
-                Free and open-source beekeeping management platform.
+                {t('publicLayout.tagline')}
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold mb-3">Free Tools</h3>
+              <h3 className="text-sm font-semibold mb-3">
+                {t('publicLayout.freeTools')}
+              </h3>
               <ul className="space-y-2">
-                {TOOL_LINKS.map(({ to, label }) => (
+                {TOOL_LINKS.map(({ to, labelKey }) => (
                   <li key={to}>
                     <Link
                       to={localize(to)}
                       className="text-gray-400 hover:text-white text-sm"
                     >
-                      {label}
+                      {t(labelKey)}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold mb-3">Project</h3>
+              <h3 className="text-sm font-semibold mb-3">
+                {t('publicLayout.project')}
+              </h3>
               <ul className="space-y-2">
                 <li>
                   <a
@@ -119,7 +139,7 @@ export const PublicLayout = () => {
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white text-sm"
                   >
-                    Documentation
+                    {t('publicLayout.documentation')}
                   </a>
                 </li>
                 <li>
@@ -127,7 +147,7 @@ export const PublicLayout = () => {
                     to={localize('/releases')}
                     className="text-gray-400 hover:text-white text-sm"
                   >
-                    Release Notes
+                    {t('publicLayout.releaseNotes')}
                   </Link>
                 </li>
                 <li>
@@ -138,7 +158,7 @@ export const PublicLayout = () => {
                     className="text-gray-400 hover:text-white text-sm inline-flex items-center gap-1"
                   >
                     <GithubIcon className="h-4 w-4" />
-                    GitHub
+                    {t('publicLayout.github')}
                   </a>
                 </li>
                 <li>
@@ -146,7 +166,7 @@ export const PublicLayout = () => {
                     to={localize('/privacy-policy')}
                     className="text-gray-400 hover:text-white text-sm"
                   >
-                    Privacy Policy
+                    {t('publicLayout.privacyPolicy')}
                   </Link>
                 </li>
               </ul>
@@ -154,7 +174,7 @@ export const PublicLayout = () => {
           </div>
           <div className="mt-8 border-t border-white/10 pt-6">
             <p className="text-sm text-gray-400 text-center">
-              © {new Date().getFullYear()} Hive Pal. Released under MIT License.
+              {t('publicLayout.copyright', { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>

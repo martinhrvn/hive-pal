@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import type { TFunction } from 'i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -43,6 +44,7 @@ import {
 import { useWeatherDailyForecast } from '@/api/hooks/useWeather';
 import { WeatherCondition, InspectionStatus } from 'shared-schemas';
 import { cn } from '@/lib/utils';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -51,33 +53,37 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
 
-const scheduleSchema = z
-  .object({
-    hiveIds: z.array(z.string()).min(1, 'Please select at least one hive'),
-    date: z.date(),
-    isAllDay: z.boolean().default(true),
-    notes: z.string().optional(),
-    createAsBatch: z.boolean().optional(),
-    batchName: z.string().optional(),
-  })
-  .refine(
-    data => {
-      // If createAsBatch is true, batchName must be provided
-      if (
-        data.createAsBatch &&
-        (!data.batchName || data.batchName.trim() === '')
-      ) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: 'Batch name is required when creating a batch inspection',
-      path: ['batchName'],
-    },
-  );
+const createScheduleSchema = (t: TFunction) =>
+  z
+    .object({
+      hiveIds: z
+        .array(z.string())
+        .min(1, t('inspection:schedule.selectAtLeastOneHive')),
+      date: z.date(),
+      isAllDay: z.boolean().default(true),
+      notes: z.string().optional(),
+      createAsBatch: z.boolean().optional(),
+      batchName: z.string().optional(),
+    })
+    .refine(
+      data => {
+        // If createAsBatch is true, batchName must be provided
+        if (
+          data.createAsBatch &&
+          (!data.batchName || data.batchName.trim() === '')
+        ) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: t('inspection:schedule.batchNameRequired'),
+        path: ['batchName'],
+      },
+    );
 
-type ScheduleFormData = z.infer<typeof scheduleSchema>;
+type ScheduleSchema = ReturnType<typeof createScheduleSchema>;
+type ScheduleFormData = z.infer<ScheduleSchema>;
 
 const getWeatherIcon = (condition: WeatherCondition) => {
   const iconClass = 'h-5 w-5';
@@ -101,7 +107,13 @@ const getWeatherIcon = (condition: WeatherCondition) => {
 };
 
 export const ScheduleInspectionPage = () => {
-  const { t } = useTranslation('inspection');
+  const { t, i18n } = useTranslation('inspection');
+  const scheduleSchema = useMemo(() => createScheduleSchema(t), [t]);
+  const { formatDate } = useDateFormat();
+  const weekdayFormatter = useMemo(
+    () => new Intl.DateTimeFormat(i18n.language, { weekday: 'short' }),
+    [i18n.language],
+  );
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedHiveIds, setSelectedHiveIds] = useState<string[]>([]);
   const [selectedApiaryIds, setSelectedApiaryIds] = useState<string[]>([]);
@@ -118,11 +130,7 @@ export const ScheduleInspectionPage = () => {
       enabled: !!primaryApiaryId,
     });
 
-  const form = useForm<
-    z.input<typeof scheduleSchema>,
-    unknown,
-    ScheduleFormData
-  >({
+  const form = useForm<z.input<ScheduleSchema>, unknown, ScheduleFormData>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
       hiveIds: [],
@@ -467,14 +475,14 @@ export const ScheduleInspectionPage = () => {
                               <div className="font-semibold text-sm">
                                 {isToday
                                   ? t('inspection:schedule.today')
-                                  : format(day, 'EEE')}
+                                  : weekdayFormatter.format(day)}
                               </div>
                               {isSelected && (
                                 <CalendarPlus className="h-4 w-4 text-primary" />
                               )}
                             </div>
                             <div className="text-xs text-muted-foreground mb-3">
-                              {format(day, 'MMM d')}
+                              {formatDate(day)}
                             </div>
 
                             {forecast ? (
@@ -493,7 +501,10 @@ export const ScheduleInspectionPage = () => {
                                 <div className="text-xs text-muted-foreground">
                                   <div>💧 {forecast.humidity}%</div>
                                   <div>
-                                    💨 {Math.round(forecast.windSpeed)} km/h
+                                    💨{' '}
+                                    {t('inspection:units.kmh', {
+                                      value: Math.round(forecast.windSpeed),
+                                    })}
                                   </div>
                                 </div>
                               </>

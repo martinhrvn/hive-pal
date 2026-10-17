@@ -114,7 +114,10 @@ export function HiveHubSdImportCard({
             </p>
             {file && (
               <p className="text-xs text-muted-foreground">
-                {file.name} ({(file.size / 1024).toFixed(0)} KB)
+                {t('common.fileInfo', {
+                  name: file.name,
+                  size: (file.size / 1024).toFixed(0),
+                })}
               </p>
             )}
           </div>

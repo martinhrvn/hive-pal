@@ -25,16 +25,17 @@ import {
   HiveResponse,
   HiveStatus as HiveStatusValue,
 } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 type HiveStatusEnum = HiveResponse['status'];
 
-const ALL_STATUSES: { value: HiveStatusEnum; label: string }[] = [
-  { value: HiveStatusValue.ACTIVE, label: 'Active' },
-  { value: HiveStatusValue.INACTIVE, label: 'Inactive' },
-  { value: HiveStatusValue.DEAD, label: 'Dead' },
-  { value: HiveStatusValue.SOLD, label: 'Sold' },
-  { value: HiveStatusValue.UNKNOWN, label: 'Unknown' },
-  { value: HiveStatusValue.ARCHIVED, label: 'Archived' },
+const ALL_STATUSES: HiveStatusEnum[] = [
+  HiveStatusValue.ACTIVE,
+  HiveStatusValue.INACTIVE,
+  HiveStatusValue.DEAD,
+  HiveStatusValue.SOLD,
+  HiveStatusValue.UNKNOWN,
+  HiveStatusValue.ARCHIVED,
 ];
 
 // Format a Date as a value accepted by <input type="datetime-local"> in the
@@ -55,6 +56,9 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
   status,
   apiaryId,
 }) => {
+  const { t } = useTranslation(['hive', 'common']);
+  const statusLabel = (value: HiveStatusEnum) =>
+    t(`hive:status.${value.toLowerCase()}`);
   const [open, setOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<HiveStatusEnum | null>(
     null,
@@ -84,10 +88,14 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
       });
       // Refresh hive queries so the status badge reflects the recomputed status.
       await queryClient.invalidateQueries({ queryKey: ['hives'] });
-      toast.success(`Hive status updated to ${pendingStatus.toLowerCase()}`);
+      toast.success(
+        t('hive:statusChange.success', {
+          status: statusLabel(pendingStatus).toLowerCase(),
+        }),
+      );
       setPendingStatus(null);
     } catch {
-      toast.error('Failed to update hive status');
+      toast.error(t('hive:statusChange.error'));
     }
   };
 
@@ -97,7 +105,7 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
         <DropdownMenuTrigger asChild>
           <button
             className="flex items-center gap-1 rounded-md px-2 py-1 hover:bg-muted transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Change hive status"
+            aria-label={t('hive:statusChange.title')}
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -111,14 +119,14 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-36">
           <DropdownMenuSeparator className="sr-only" />
-          {ALL_STATUSES.map(({ value, label }) => (
+          {ALL_STATUSES.map(value => (
             <DropdownMenuItem
               key={value}
               onClick={() => handleSelect(value)}
               className={value === status ? 'font-semibold' : ''}
             >
               <HiveStatus status={value} />
-              <span className="ml-2">{label}</span>
+              <span className="ml-2">{statusLabel(value)}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -132,7 +140,7 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
       >
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Change hive status</DialogTitle>
+            <DialogTitle>{t('hive:statusChange.title')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {pendingStatus && (
@@ -147,7 +155,7 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
                 htmlFor="status-change-date"
                 className="text-sm font-medium"
               >
-                Change date
+                {t('hive:statusChange.date')}
               </label>
               <Input
                 id="status-change-date"
@@ -163,10 +171,10 @@ export const HiveStatusButton: React.FC<HiveStatusButtonProps> = ({
               onClick={() => setPendingStatus(null)}
               disabled={isPending}
             >
-              Cancel
+              {t('common:actions.cancel')}
             </Button>
             <Button onClick={handleConfirm} disabled={isPending}>
-              {isPending ? 'Saving...' : 'Save'}
+              {isPending ? t('hive:settings.saving') : t('common:actions.save')}
             </Button>
           </DialogFooter>
         </DialogContent>

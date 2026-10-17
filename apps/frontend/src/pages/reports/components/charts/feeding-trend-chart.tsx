@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/chart';
 import type { TrendData } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
+import { useTranslation } from 'react-i18next';
 
 interface FeedingTrendChartProps {
   data: TrendData['feedingTrends'] | undefined;
@@ -17,10 +18,12 @@ export const FeedingTrendChart: React.FC<FeedingTrendChartProps> = ({
   data,
   isLoading,
 }) => {
+  const { t } = useTranslation('common');
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        Loading...
+        {t('status.loading')}
       </div>
     );
   }
@@ -28,7 +31,7 @@ export const FeedingTrendChart: React.FC<FeedingTrendChartProps> = ({
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        No data available
+        {t('messages.noData')}
       </div>
     );
   }
@@ -41,8 +44,8 @@ export const FeedingTrendChart: React.FC<FeedingTrendChartProps> = ({
 
   const chartConfig = {
     sugar: {
-      label: 'Sugar (kg)',
-      color: 'hsl(var(--chart-1))',
+      label: t('reports.charts.sugarKg'),
+      color: 'var(--chart-1)',
     },
   } satisfies ChartConfig;
 

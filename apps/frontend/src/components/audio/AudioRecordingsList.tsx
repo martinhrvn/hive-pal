@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { AudioPlayer } from './AudioPlayer';
 import { AudioResponse } from 'shared-schemas';
 import { Mic } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AudioRecordingsListProps {
   recordings: AudioResponse[];
@@ -18,12 +19,13 @@ export function AudioRecordingsList({
   deletingId,
   className,
 }: AudioRecordingsListProps) {
+  const { t } = useTranslation('common');
   if (recordings.length === 0) {
     return (
       <div className={className}>
         <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
           <Mic className="size-8 mb-2 opacity-50" />
-          <p className="text-sm">No audio recordings</p>
+          <p className="text-sm">{t('audioRecorder.empty')}</p>
         </div>
       </div>
     );

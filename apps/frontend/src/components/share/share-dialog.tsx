@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,7 @@ export function ShareDialog({
   onOpenChange,
   shareLink,
 }: ShareDialogProps) {
+  const { t } = useTranslation('share');
   const [copied, setCopied] = useState(false);
   const revokeShareLink = useRevokeShareLink();
 
@@ -36,10 +38,10 @@ export function ShareDialog({
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      toast.success('Link copied to clipboard');
+      toast.success(t('dialog.toast.linkCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy link');
+      toast.error(t('dialog.toast.copyFailed'));
     }
   };
 
@@ -47,13 +49,13 @@ export function ShareDialog({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Check out my beekeeping results!',
+          title: t('dialog.nativeShareTitle'),
           url: shareUrl,
         });
       } catch (err) {
         // User cancelled share - ignore
         if ((err as Error).name !== 'AbortError') {
-          toast.error('Failed to share');
+          toast.error(t('dialog.toast.shareFailed'));
         }
       }
     } else {
@@ -70,7 +72,7 @@ export function ShareDialog({
   };
 
   const handleTwitterShare = () => {
-    const text = 'Check out my beekeeping results on Hive Pal!';
+    const text = t('dialog.tweetText');
     window.open(
       `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`,
       '_blank',
@@ -90,19 +92,19 @@ export function ShareDialog({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Image downloaded');
+      toast.success(t('dialog.toast.imageDownloaded'));
     } catch {
-      toast.error('Failed to download image');
+      toast.error(t('dialog.toast.downloadFailed'));
     }
   };
 
   const handleRevoke = async () => {
     try {
       await revokeShareLink.mutateAsync(shareLink.id);
-      toast.success('Share link revoked');
+      toast.success(t('dialog.toast.revoked'));
       onOpenChange(false);
     } catch {
-      toast.error('Failed to revoke share link');
+      toast.error(t('dialog.toast.revokeFailed'));
     }
   };
 
@@ -110,17 +112,15 @@ export function ShareDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Share</DialogTitle>
-          <DialogDescription>
-            Share your beekeeping results with others.
-          </DialogDescription>
+          <DialogTitle>{t('dialog.title')}</DialogTitle>
+          <DialogDescription>{t('dialog.description')}</DialogDescription>
         </DialogHeader>
 
         {/* Image preview */}
         <div className="rounded-lg overflow-hidden border">
           <img
             src={imageUrl}
-            alt="Share preview"
+            alt={t('dialog.previewAlt')}
             className="w-full h-auto"
             loading="lazy"
           />
@@ -142,21 +142,21 @@ export function ShareDialog({
         <div className="grid grid-cols-2 gap-2">
           <Button onClick={handleNativeShare} className="w-full">
             <Share2 className="mr-2 h-4 w-4" />
-            Share
+            {t('dialog.share')}
           </Button>
           <Button
             variant="outline"
             onClick={handleFacebookShare}
             className="w-full"
           >
-            Facebook
+            {t('dialog.facebook')}
           </Button>
           <Button
             variant="outline"
             onClick={handleTwitterShare}
             className="w-full"
           >
-            X / Twitter
+            {t('dialog.twitter')}
           </Button>
           <Button
             variant="outline"
@@ -164,12 +164,12 @@ export function ShareDialog({
             className="w-full"
           >
             <Download className="mr-2 h-4 w-4" />
-            Image
+            {t('dialog.image')}
           </Button>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          For Instagram, download the image and share it from your gallery.
+          {t('dialog.instagramHint')}
         </p>
 
         {/* Revoke */}
@@ -182,7 +182,7 @@ export function ShareDialog({
             disabled={revokeShareLink.isPending}
           >
             <Trash2 className="mr-1 h-3 w-3" />
-            Revoke link
+            {t('dialog.revoke')}
           </Button>
         </div>
       </DialogContent>

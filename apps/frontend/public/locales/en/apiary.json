@@ -8,7 +8,9 @@
     "searchPlaceholder": "Search apiaries...",
     "noApiaries": "No apiaries found",
     "noApiariesMatching": "No apiaries found matching \"{{searchTerm}}\"",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "sharedEdit": "Shared · Edit",
+    "sharedView": "Shared · View"
   },
   "create": {
     "title": "Create Apiary",
@@ -97,6 +99,56 @@
       "dataDriven": "Data Driven",
       "subjective": "Subjective",
       "description": "Data Driven uses frame counts and auto-scoring. Subjective uses qualitative 0–10 ratings."
+    }
+  },
+  "roles": {
+    "EDITOR": "Full access",
+    "VIEWER": "View only"
+  },
+  "join": {
+    "goToDashboard": "Go to Dashboard",
+    "notFound": {
+      "title": "Invite not found",
+      "description": "This invite link may have been revoked or is invalid."
+    },
+    "expired": {
+      "title": "Invite expired",
+      "description": "This invite link has expired. Ask the apiary owner for a new one."
+    },
+    "alreadyMember": {
+      "title": "Already a member",
+      "description": "You already have access to <strong>{{apiaryName}}</strong>."
+    },
+    "requested": {
+      "title": "Request sent!",
+      "description": "Your request to join <strong>{{apiaryName}}</strong> has been submitted. The owner will review it shortly."
+    },
+    "title": "Join {{apiaryName}}",
+    "invited": "You've been invited to join this apiary with <badge>{{role}}</badge> permissions.",
+    "signInPrompt": "Sign in or create an account to continue.",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "requesting": "Requesting...",
+    "requestToJoin": "Request to Join",
+    "joinFailed": "Failed to join. Please try again."
+  },
+  "sharing": {
+    "inviteLinks": {
+      "title": "Invite Links",
+      "createLink": "Create Link",
+      "dialogTitle": "Create Invite Link",
+      "permissionLevel": "Permission Level",
+      "viewerHint": "Can view all data but cannot make changes.",
+      "editorHint": "Can create, edit, and delete hives, inspections, etc.",
+      "empty": "No active invite links. Create one to share this apiary."
+    },
+    "members": {
+      "title": "Members",
+      "empty": "No members yet. Share an invite link to get started.",
+      "pending": "Pending Requests ({{total}})",
+      "active": "Active Members ({{total}})",
+      "approve": "Approve",
+      "reject": "Reject"
     }
   }
 }

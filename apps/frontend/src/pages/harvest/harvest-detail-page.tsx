@@ -16,7 +16,7 @@ import {
   Trash2,
   AlertTriangle,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import {
   useHarvest,
   useUpdateHarvest,
@@ -48,8 +48,14 @@ import { SharePromptDialog } from '@/components/share/share-prompt-dialog';
 import { isSharePromptDismissed } from '@/components/share/share-prompt-utils';
 import { ShareDialog } from '@/components/share/share-dialog';
 import { getStatusColor } from '@/utils/status-colors';
+import { useDateFormat } from '@/hooks/use-date-format';
+
+// Unit symbol shown when a stored weight has no unit; not translatable text.
+const DEFAULT_WEIGHT_UNIT = 'kg';
 
 export const HarvestDetailPage = () => {
+  const { t } = useTranslation(['harvest', 'common']);
+  const { formatDate } = useDateFormat();
   const { harvestId } = useParams<{ harvestId: string }>();
   const navigate = useNavigate();
   const [isEditingWeight, setIsEditingWeight] = useState(false);
@@ -80,11 +86,11 @@ export const HarvestDetailPage = () => {
   const { getWeightUnit, parseWeight } = useUnitFormat();
 
   if (isLoading) {
-    return <div className="p-6">Loading...</div>;
+    return <div className="p-6">{t('harvest:detail.loading')}</div>;
   }
 
   if (!harvest) {
-    return <div className="p-6">Harvest not found</div>;
+    return <div className="p-6">{t('harvest:detail.notFound')}</div>;
   }
 
   const totalFrames = harvest.harvestHives.reduce(
@@ -95,7 +101,7 @@ export const HarvestDetailPage = () => {
   const handleSetWeight = async () => {
     const weightValue = parseFloat(weight);
     if (isNaN(weightValue) || weightValue <= 0) {
-      toast.error('Please enter a valid weight');
+      toast.error(t('harvest:detail.toasts.invalidWeight'));
       return;
     }
 
@@ -107,11 +113,11 @@ export const HarvestDetailPage = () => {
           totalWeightUnit: getWeightUnit(),
         },
       });
-      toast.success('Weight set successfully');
+      toast.success(t('harvest:detail.toasts.weightSet'));
       setIsEditingWeight(false);
       setWeight('');
     } catch {
-      toast.error('Failed to set weight');
+      toast.error(t('harvest:detail.toasts.weightFailed'));
     }
   };
 
@@ -121,22 +127,22 @@ export const HarvestDetailPage = () => {
         harvestId: harvest.id,
         data: { notes },
       });
-      toast.success('Notes updated');
+      toast.success(t('harvest:detail.toasts.notesUpdated'));
       setIsEditingNotes(false);
     } catch {
-      toast.error('Failed to update notes');
+      toast.error(t('harvest:detail.toasts.notesFailed'));
     }
   };
 
   const handleFinalize = async () => {
     try {
       await finalizeHarvest.mutateAsync(harvest.id);
-      toast.success('Harvest finalized successfully');
+      toast.success(t('harvest:detail.toasts.finalized'));
       if (isCloudMode() && !isSharePromptDismissed()) {
         setShowSharePrompt(true);
       }
     } catch {
-      toast.error('Failed to finalize harvest');
+      toast.error(t('harvest:detail.toasts.finalizeFailed'));
     }
   };
 
@@ -149,26 +155,26 @@ export const HarvestDetailPage = () => {
       setShareLink(result);
       setShowShareDialog(true);
     } catch {
-      toast.error('Failed to create share link');
+      toast.error(t('harvest:detail.toasts.shareFailed'));
     }
   };
 
   const handleReopen = async () => {
     try {
       await reopenHarvest.mutateAsync(harvest.id);
-      toast.success('Harvest reopened for editing');
+      toast.success(t('harvest:detail.toasts.reopened'));
     } catch {
-      toast.error('Failed to reopen harvest');
+      toast.error(t('harvest:detail.toasts.reopenFailed'));
     }
   };
 
   const handleDelete = async () => {
     try {
       await deleteHarvest.mutateAsync(harvest.id);
-      toast.success('Harvest deleted');
+      toast.success(t('harvest:detail.toasts.deleted'));
       navigate('/harvests');
     } catch {
-      toast.error('Failed to delete harvest');
+      toast.error(t('harvest:detail.toasts.deleteFailed'));
     }
   };
 
@@ -199,7 +205,7 @@ export const HarvestDetailPage = () => {
     }));
 
     if (harvestHives.length === 0) {
-      toast.error('Select at least one hive');
+      toast.error(t('harvest:detail.toasts.selectAtLeastOne'));
       return;
     }
 
@@ -212,10 +218,10 @@ export const HarvestDetailPage = () => {
           ...(harvest.totalWeight && { totalWeight: harvest.totalWeight }),
         },
       });
-      toast.success('Hives updated and distribution recalculated');
+      toast.success(t('harvest:detail.toasts.hivesUpdated'));
       setIsEditingHives(false);
     } catch {
-      toast.error('Failed to update hives');
+      toast.error(t('harvest:detail.toasts.hivesFailed'));
     }
   };
 
@@ -231,9 +237,9 @@ export const HarvestDetailPage = () => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold">Harvest Details</h1>
+          <h1 className="text-2xl font-bold">{t('harvest:detail.title')}</h1>
           <Badge className={cn(getStatusColor(harvest.status), 'text-white')}>
-            {harvest.status}
+            {t(`harvest:status.${harvest.status}`)}
           </Badge>
         </div>
         <div className="flex items-center space-x-2">
@@ -244,13 +250,13 @@ export const HarvestDetailPage = () => {
               disabled={createShareLink.isPending}
             >
               <Share2 className="mr-2 h-4 w-4" />
-              Share
+              {t('harvest:detail.share')}
             </Button>
           )}
           {harvest.status === HarvestStatus.COMPLETED && (
             <Button variant="outline" onClick={handleReopen}>
               <RefreshCw className="mr-2 h-4 w-4" />
-              Reopen
+              {t('harvest:detail.reopen')}
             </Button>
           )}
           {harvest.status === HarvestStatus.IN_PROGRESS &&
@@ -260,7 +266,7 @@ export const HarvestDetailPage = () => {
                 data-umami-event="Harvest Finalize"
               >
                 <Check className="mr-2 h-4 w-4" />
-                Finalize
+                {t('harvest:detail.finalize')}
               </Button>
             )}
           <Dialog>
@@ -271,28 +277,27 @@ export const HarvestDetailPage = () => {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Delete Harvest?</DialogTitle>
+                <DialogTitle>{t('harvest:detail.delete.title')}</DialogTitle>
                 <DialogDescription>
-                  This action cannot be undone. This will permanently delete the
-                  harvest.
+                  {t('harvest:detail.delete.description')}
                 </DialogDescription>
               </DialogHeader>
               {harvest.status === HarvestStatus.COMPLETED && (
                 <Alert className="border-amber-200 bg-amber-50">
                   <AlertTriangle className="h-4 w-4 text-amber-600" />
                   <AlertDescription className="text-amber-800">
-                    This harvest has been finalized. Deleting it will also
-                    remove all associated harvest actions from the hive
-                    timelines.
+                    {t('harvest:detail.delete.finalizedWarning')}
                   </AlertDescription>
                 </Alert>
               )}
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <Button variant="outline">
+                    {t('common:actions.cancel')}
+                  </Button>
                 </DialogClose>
                 <Button variant="destructive" onClick={handleDelete}>
-                  Delete
+                  {t('common:actions.delete')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -303,32 +308,39 @@ export const HarvestDetailPage = () => {
       {/* Main Info Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Harvest Information</CardTitle>
+          <CardTitle>{t('harvest:detail.info')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-muted-foreground">Date</Label>
-              <p className="font-medium">
-                {format(new Date(harvest.date), 'PPP')}
-              </p>
+              <Label className="text-muted-foreground">
+                {t('harvest:detail.date')}
+              </Label>
+              <p className="font-medium">{formatDate(harvest.date)}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground">Total Hives</Label>
+              <Label className="text-muted-foreground">
+                {t('harvest:detail.totalHives')}
+              </Label>
               <p className="font-medium">{harvest.harvestHives.length}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground">Total Frames</Label>
+              <Label className="text-muted-foreground">
+                {t('harvest:detail.totalFrames')}
+              </Label>
               <p className="font-medium">{totalFrames}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground">Total Weight</Label>
+              <Label className="text-muted-foreground">
+                {t('harvest:detail.totalWeight')}
+              </Label>
               {harvest.status !== HarvestStatus.COMPLETED &&
               !isEditingWeight ? (
                 harvest.totalWeight ? (
                   <div className="flex items-center gap-2">
                     <p className="font-medium">
-                      {harvest.totalWeight} {harvest.totalWeightUnit || 'kg'}
+                      {harvest.totalWeight}{' '}
+                      {harvest.totalWeightUnit || DEFAULT_WEIGHT_UNIT}
                     </p>
                     <Button
                       variant="ghost"
@@ -348,7 +360,7 @@ export const HarvestDetailPage = () => {
                     onClick={() => setIsEditingWeight(true)}
                   >
                     <Droplets className="mr-2 h-4 w-4" />
-                    Set Weight
+                    {t('harvest:detail.setWeight')}
                   </Button>
                 )
               ) : isEditingWeight ? (
@@ -367,7 +379,7 @@ export const HarvestDetailPage = () => {
                     onClick={handleSetWeight}
                     data-umami-event="Harvest Weight Set"
                   >
-                    Save
+                    {t('common:actions.save')}
                   </Button>
                   <Button
                     size="sm"
@@ -377,14 +389,14 @@ export const HarvestDetailPage = () => {
                       setWeight('');
                     }}
                   >
-                    Cancel
+                    {t('common:actions.cancel')}
                   </Button>
                 </div>
               ) : (
                 <p className="font-medium">
                   {harvest.totalWeight
-                    ? `${harvest.totalWeight} ${harvest.totalWeightUnit || 'kg'}`
-                    : 'Not set'}
+                    ? `${harvest.totalWeight} ${harvest.totalWeightUnit || DEFAULT_WEIGHT_UNIT}`
+                    : t('harvest:detail.notSet')}
                 </p>
               )}
             </div>
@@ -393,7 +405,9 @@ export const HarvestDetailPage = () => {
           {/* Notes */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-muted-foreground">Notes</Label>
+              <Label className="text-muted-foreground">
+                {t('harvest:detail.notes')}
+              </Label>
               {harvest.status !== HarvestStatus.COMPLETED &&
                 !isEditingNotes && (
                   <Button
@@ -417,19 +431,21 @@ export const HarvestDetailPage = () => {
                 />
                 <div className="flex space-x-2">
                   <Button size="sm" onClick={handleUpdateNotes}>
-                    Save
+                    {t('common:actions.save')}
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setIsEditingNotes(false)}
                   >
-                    Cancel
+                    {t('common:actions.cancel')}
                   </Button>
                 </div>
               </div>
             ) : (
-              <p className="text-sm">{harvest.notes || 'No notes'}</p>
+              <p className="text-sm">
+                {harvest.notes || t('harvest:detail.noNotes')}
+              </p>
             )}
           </div>
         </CardContent>
@@ -438,7 +454,7 @@ export const HarvestDetailPage = () => {
       {/* Hives Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Hive Distribution</CardTitle>
+          <CardTitle>{t('harvest:detail.distribution')}</CardTitle>
           {harvest.status !== HarvestStatus.COMPLETED && !isEditingHives && (
             <Button
               variant="ghost"
@@ -453,7 +469,7 @@ export const HarvestDetailPage = () => {
               }}
             >
               <Edit className="h-4 w-4 mr-1" />
-              Edit
+              {t('common:actions.edit')}
             </Button>
           )}
         </CardHeader>
@@ -462,7 +478,7 @@ export const HarvestDetailPage = () => {
             <div className="space-y-3">
               {availableHives.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No hives available in this apiary.
+                  {t('harvest:detail.noHivesAvailable')}
                 </p>
               ) : (
                 availableHives.map(hive => {
@@ -500,7 +516,9 @@ export const HarvestDetailPage = () => {
                             className="w-20"
                           />
                           <span className="text-sm text-muted-foreground">
-                            frames
+                            {t('harvest:framesUnit', {
+                              count: editedHives.get(hive.id) ?? 1,
+                            })}
                           </span>
                         </div>
                       )}
@@ -509,9 +527,17 @@ export const HarvestDetailPage = () => {
                 })
               )}
               <p className="text-sm text-muted-foreground">
-                Selected: {editedHives.size} hive(s) •{' '}
-                {Array.from(editedHives.values()).reduce((a, b) => a + b, 0)}{' '}
-                total frames
+                {t('harvest:selectedSummary', {
+                  hives: t('harvest:selectedHives', {
+                    count: editedHives.size,
+                  }),
+                  frames: t('harvest:totalFrames', {
+                    count: Array.from(editedHives.values()).reduce(
+                      (a, b) => a + b,
+                      0,
+                    ),
+                  }),
+                })}
               </p>
               <div className="flex justify-end gap-2 pt-2">
                 <Button
@@ -519,14 +545,16 @@ export const HarvestDetailPage = () => {
                   size="sm"
                   onClick={() => setIsEditingHives(false)}
                 >
-                  Cancel
+                  {t('common:actions.cancel')}
                 </Button>
                 <Button
                   size="sm"
                   onClick={handleUpdateHives}
                   disabled={updateHarvest.isPending}
                 >
-                  {updateHarvest.isPending ? 'Saving...' : 'Save & Recalculate'}
+                  {updateHarvest.isPending
+                    ? t('harvest:detail.saving')
+                    : t('harvest:detail.saveAndRecalculate')}
                 </Button>
               </div>
             </div>
@@ -540,13 +568,14 @@ export const HarvestDetailPage = () => {
                   <div className="flex-1">
                     <p className="font-medium">{hh.hiveName}</p>
                     <p className="text-sm text-muted-foreground">
-                      {hh.framesTaken} frames
+                      {t('harvest:frameCount', { count: hh.framesTaken })}
                     </p>
                   </div>
                   {hh.honeyAmount && (
                     <div className="text-right">
                       <p className="font-medium">
-                        {hh.honeyAmount.toFixed(2)} {hh.honeyAmountUnit || 'kg'}
+                        {hh.honeyAmount.toFixed(2)}{' '}
+                        {hh.honeyAmountUnit || DEFAULT_WEIGHT_UNIT}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {hh.honeyPercentage?.toFixed(1)}%
@@ -564,10 +593,11 @@ export const HarvestDetailPage = () => {
       {harvest.status === HarvestStatus.DRAFT && (
         <Alert className="border-yellow-200 bg-yellow-50">
           <AlertTriangle className="h-5 w-5 text-yellow-600" />
-          <AlertTitle className="text-yellow-900">Draft Harvest</AlertTitle>
+          <AlertTitle className="text-yellow-900">
+            {t('harvest:detail.draftTitle')}
+          </AlertTitle>
           <AlertDescription className="text-yellow-700">
-            This harvest is in draft status. Set the total weight to proceed
-            with calculations.
+            {t('harvest:detail.draftDescription')}
           </AlertDescription>
         </Alert>
       )}
@@ -575,10 +605,11 @@ export const HarvestDetailPage = () => {
       {harvest.status === HarvestStatus.IN_PROGRESS && harvest.totalWeight && (
         <Alert className="border-blue-200 bg-blue-50">
           <AlertTriangle className="h-5 w-5 text-blue-600" />
-          <AlertTitle className="text-blue-900">Ready to Finalize</AlertTitle>
+          <AlertTitle className="text-blue-900">
+            {t('harvest:detail.readyTitle')}
+          </AlertTitle>
           <AlertDescription className="text-blue-700">
-            Weight has been set and distribution calculated. Click "Finalize" to
-            create harvest actions for each hive.
+            {t('harvest:detail.readyDescription')}
           </AlertDescription>
         </Alert>
       )}
@@ -588,7 +619,7 @@ export const HarvestDetailPage = () => {
         onOpenChange={setShowSharePrompt}
         resourceType={ShareResourceType.HARVEST}
         resourceId={harvest.id}
-        title="Harvest finalized!"
+        title={t('harvest:detail.sharePromptTitle')}
       />
 
       <ShareDialog

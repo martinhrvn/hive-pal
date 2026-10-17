@@ -74,16 +74,13 @@ const RegisterPage = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col justify-center relative overflow-hidden">
-      <title>Create Account - Hive Pal</title>
-      <meta
-        name="description"
-        content="Create a free Hive Pal account and start managing your beehives today. Track inspections, monitor hive health, and optimize your beekeeping."
-      />
+      <title>{t('register.meta.title')}</title>
+      <meta name="description" content={t('register.meta.description')} />
       <link rel="canonical" href="https://hivepal.app/register" />
-      <meta property="og:title" content="Create Account - Hive Pal" />
+      <meta property="og:title" content={t('register.meta.title')} />
       <meta
         property="og:description"
-        content="Create a free Hive Pal account and start managing your beehives today."
+        content={t('register.meta.ogDescription')}
       />
       <meta property="og:url" content="https://hivepal.app/register" />
       {/* Background Image with Overlay */}
@@ -96,7 +93,7 @@ const RegisterPage = () => {
           <div className="flex items-center justify-center mb-4">
             <div className="text-5xl">🐝</div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Hive Pal</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">{t('brand')}</h1>
           <h2 className="text-lg text-green-200">{t('register.title')}</h2>
         </div>
 

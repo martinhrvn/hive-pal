@@ -36,7 +36,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { Eye, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Feedback } from 'shared-schemas';
@@ -49,6 +50,8 @@ interface FeedbackResponse {
 }
 
 const FeedbackManagementPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
+  const { formatDate, formatDateTime } = useDateFormat();
   const isAdmin = useIsAdmin();
   const [filters, setFilters] = useState({
     type: '',
@@ -114,7 +117,7 @@ const FeedbackManagementPage: React.FC = () => {
     return (
       <Card>
         <CardContent className="p-6">
-          <p>Access denied. Admin privileges required.</p>
+          <p>{t('accessDenied')}</p>
         </CardContent>
       </Card>
     );
@@ -125,7 +128,7 @@ const FeedbackManagementPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            Feedback Management
+            {t('feedback.title')}
             <Button
               variant="outline"
               size="sm"
@@ -135,12 +138,10 @@ const FeedbackManagementPage: React.FC = () => {
               <RefreshCw
                 className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
               />
-              Refresh
+              {t('common:actions.refresh')}
             </Button>
           </CardTitle>
-          <CardDescription>
-            Manage user feedback and support requests
-          </CardDescription>
+          <CardDescription>{t('feedback.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4 mb-6">
@@ -155,13 +156,19 @@ const FeedbackManagementPage: React.FC = () => {
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by type" />
+                <SelectValue placeholder={t('feedback.filterByType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="BUG">Bug Report</SelectItem>
-                <SelectItem value="SUGGESTION">Suggestion</SelectItem>
-                <SelectItem value="OTHER">Other</SelectItem>
+                <SelectItem value="all">{t('feedback.allTypes')}</SelectItem>
+                <SelectItem value="BUG">
+                  {t('common:feedback.typeBug')}
+                </SelectItem>
+                <SelectItem value="SUGGESTION">
+                  {t('feedback.typeSuggestion')}
+                </SelectItem>
+                <SelectItem value="OTHER">
+                  {t('common:feedback.typeOther')}
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -176,13 +183,19 @@ const FeedbackManagementPage: React.FC = () => {
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder={t('feedback.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="NEW">New</SelectItem>
-                <SelectItem value="REVIEWED">Reviewed</SelectItem>
-                <SelectItem value="RESOLVED">Resolved</SelectItem>
+                <SelectItem value="all">{t('feedback.allStatuses')}</SelectItem>
+                <SelectItem value="NEW">
+                  {t('feedback.statuses.NEW')}
+                </SelectItem>
+                <SelectItem value="REVIEWED">
+                  {t('feedback.statuses.REVIEWED')}
+                </SelectItem>
+                <SelectItem value="RESOLVED">
+                  {t('feedback.statuses.RESOLVED')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -191,25 +204,25 @@ const FeedbackManagementPage: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>From</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('table.type')}</TableHead>
+                  <TableHead>{t('table.status')}</TableHead>
+                  <TableHead>{t('table.subject')}</TableHead>
+                  <TableHead>{t('table.from')}</TableHead>
+                  <TableHead>{t('table.date')}</TableHead>
+                  <TableHead>{t('common:actions.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      Loading feedback...
+                      {t('feedback.loading')}
                     </TableCell>
                   </TableRow>
                 ) : feedbackData?.feedbacks?.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      No feedback found
+                      {t('feedback.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -232,11 +245,11 @@ const FeedbackManagementPage: React.FC = () => {
                         {feedback.subject}
                       </TableCell>
                       <TableCell>
-                        {feedback.user?.name || feedback.email || 'Anonymous'}
+                        {feedback.user?.name ||
+                          feedback.email ||
+                          t('feedback.anonymous')}
                       </TableCell>
-                      <TableCell>
-                        {format(new Date(feedback.createdAt), 'MMM dd, yyyy')}
-                      </TableCell>
+                      <TableCell>{formatDate(feedback.createdAt)}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Dialog>
@@ -256,26 +269,28 @@ const FeedbackManagementPage: React.FC = () => {
                                   {feedback.subject}
                                 </DialogTitle>
                                 <DialogDescription>
-                                  From:{' '}
-                                  {feedback.user?.name ||
-                                    feedback.email ||
-                                    'Anonymous'}{' '}
-                                  •
-                                  {format(
-                                    new Date(feedback.createdAt),
-                                    'MMM dd, yyyy HH:mm',
-                                  )}
+                                  {t('feedback.fromLine', {
+                                    sender:
+                                      feedback.user?.name ||
+                                      feedback.email ||
+                                      t('feedback.anonymous'),
+                                    date: formatDateTime(feedback.createdAt),
+                                  })}
                                 </DialogDescription>
                               </DialogHeader>
                               <div className="space-y-4">
                                 <div>
-                                  <h4 className="font-medium mb-2">Message:</h4>
+                                  <h4 className="font-medium mb-2">
+                                    {t('feedback.messageLabel')}
+                                  </h4>
                                   <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                                     {feedback.message}
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm">Status:</span>
+                                  <span className="text-sm">
+                                    {t('feedback.statusLabel')}
+                                  </span>
                                   <Select
                                     value={feedback.status}
                                     onValueChange={value =>
@@ -286,12 +301,14 @@ const FeedbackManagementPage: React.FC = () => {
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="NEW">New</SelectItem>
+                                      <SelectItem value="NEW">
+                                        {t('feedback.statuses.NEW')}
+                                      </SelectItem>
                                       <SelectItem value="REVIEWED">
-                                        Reviewed
+                                        {t('feedback.statuses.REVIEWED')}
                                       </SelectItem>
                                       <SelectItem value="RESOLVED">
-                                        Resolved
+                                        {t('feedback.statuses.RESOLVED')}
                                       </SelectItem>
                                     </SelectContent>
                                   </Select>
@@ -311,9 +328,14 @@ const FeedbackManagementPage: React.FC = () => {
           {feedbackData && feedbackData.total > filters.limit && (
             <div className="flex justify-between items-center mt-4">
               <p className="text-sm text-muted-foreground">
-                Showing {filters.offset + 1} to{' '}
-                {Math.min(filters.offset + filters.limit, feedbackData.total)}{' '}
-                of {feedbackData.total} results
+                {t('feedback.showing', {
+                  from: filters.offset + 1,
+                  to: Math.min(
+                    filters.offset + filters.limit,
+                    feedbackData.total,
+                  ),
+                  total: feedbackData.total,
+                })}
               </p>
               <div className="flex gap-2">
                 <Button
@@ -327,7 +349,7 @@ const FeedbackManagementPage: React.FC = () => {
                   }
                   disabled={filters.offset === 0}
                 >
-                  Previous
+                  {t('common:actions.previous')}
                 </Button>
                 <Button
                   variant="outline"
@@ -342,7 +364,7 @@ const FeedbackManagementPage: React.FC = () => {
                     filters.offset + filters.limit >= feedbackData.total
                   }
                 >
-                  Next
+                  {t('common:actions.next')}
                 </Button>
               </div>
             </div>

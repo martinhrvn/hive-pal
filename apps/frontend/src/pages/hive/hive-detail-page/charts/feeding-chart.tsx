@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/card';
 import { ChartPeriod } from './index';
 import { useActionChartData } from './useChartData';
+import { useTranslation } from 'react-i18next';
 
 interface FeedingChartProps {
   hiveId: string | undefined;
@@ -63,6 +64,7 @@ export const FeedingChart: React.FC<FeedingChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation('hive');
   const feedingData = useActionChartData(
     hiveId,
     period,
@@ -107,14 +109,14 @@ export const FeedingChart: React.FC<FeedingChartProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Feeding History</CardTitle>
-        <CardDescription>Weekly feeding amounts in kg</CardDescription>
+        <CardTitle>{t('charts.feeding.title')}</CardTitle>
+        <CardDescription>{t('charts.feeding.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={{
             amount: {
-              label: 'Amount (kg)',
+              label: t('charts.feeding.amountKg'),
               color: '#f59e0b', // Amber - representing honey/syrup color
             },
           }}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,7 @@ export function SharePromptDialog({
   resourceId,
   title,
 }: SharePromptDialogProps) {
+  const { t } = useTranslation('share');
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [shareLink, setShareLink] = useState<ShareLinkResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -38,7 +40,7 @@ export function SharePromptDialog({
 
   if (!isCloudMode()) return null;
 
-  const resourceLabel =
+  const promptKey =
     resourceType === ShareResourceType.HARVEST ? 'harvest' : 'inspection';
 
   const handleShare = async () => {
@@ -67,13 +69,9 @@ export function SharePromptDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {title ||
-                `${resourceLabel.charAt(0).toUpperCase() + resourceLabel.slice(1)} saved!`}
-            </DialogTitle>
+            <DialogTitle>{title || t(`prompt.${promptKey}.title`)}</DialogTitle>
             <DialogDescription>
-              Share your {resourceLabel} results with friends and fellow
-              beekeepers?
+              {t(`prompt.${promptKey}.description`)}
             </DialogDescription>
           </DialogHeader>
 
@@ -88,19 +86,21 @@ export function SharePromptDialog({
                 htmlFor="dont-show-again"
                 className="text-sm text-muted-foreground cursor-pointer"
               >
-                Don't show this again
+                {t('prompt.dontShowAgain')}
               </Label>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="ghost" onClick={handleSkip}>
-                Skip
+                {t('prompt.skip')}
               </Button>
               <Button
                 onClick={handleShare}
                 disabled={createShareLink.isPending}
               >
                 <Share2 className="mr-2 h-4 w-4" />
-                {createShareLink.isPending ? 'Creating...' : 'Share'}
+                {createShareLink.isPending
+                  ? t('prompt.creating')
+                  : t('prompt.share')}
               </Button>
             </div>
           </div>

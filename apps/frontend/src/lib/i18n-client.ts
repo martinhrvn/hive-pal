@@ -24,6 +24,8 @@ export const NAMESPACES = [
   'todo',
   'hivescale',
   'ai',
+  'harvest',
+  'share',
 ] as const;
 
 /**

@@ -39,10 +39,9 @@ export function SwarmManagementOverviewPage() {
     '@graph': [
       {
         '@type': 'CollectionPage',
-        name: 'Honey Bee Swarm Management Methods',
+        name: t('swarmManagement.meta.collectionName'),
         url: 'https://hivepal.app/tools/swarm-management',
-        description:
-          'Reference guides for honey bee swarm-control methods, including the Demaree method, Pagden split, and artificial swarm technique, with prerequisites, step-by-step procedures, and follow-up inspection timing.',
+        description: t('swarmManagement.meta.collectionDescription'),
         isAccessibleForFree: true,
         publisher: {
           '@type': 'Organization',
@@ -52,24 +51,21 @@ export function SwarmManagementOverviewPage() {
         hasPart: [
           {
             '@type': 'WebPage',
-            name: 'Demaree Method',
+            name: t('swarmManagement.meta.parts.demaree.name'),
             url: 'https://hivepal.app/tools/swarm-management/demaree',
-            description:
-              'Reference workflow for the Demaree swarm-control method with an inspection planner.',
+            description: t('swarmManagement.meta.parts.demaree.description'),
           },
           {
             '@type': 'WebPage',
-            name: 'Pagden Split',
+            name: t('swarmManagement.meta.parts.pagden.name'),
             url: 'https://hivepal.app/tools/swarm-management/pagden',
-            description:
-              'Reference workflow for the Pagden split swarm-control method with an inspection planner.',
+            description: t('swarmManagement.meta.parts.pagden.description'),
           },
           {
             '@type': 'WebPage',
-            name: 'Artificial Swarm',
+            name: t('swarmManagement.meta.parts.artificial.name'),
             url: 'https://hivepal.app/tools/swarm-management/artificial',
-            description:
-              'Reference workflow for the artificial swarm swarm-control method with an inspection planner.',
+            description: t('swarmManagement.meta.parts.artificial.description'),
           },
         ],
       },
@@ -79,9 +75,9 @@ export function SwarmManagementOverviewPage() {
   return (
     <PageGrid>
       <ToolMeta
-        title="Honey Bee Swarm Management Methods — Hive Pal"
-        description="Free reference guides for honey bee swarm-control methods. Compare the Demaree, Pagden, and artificial swarm techniques and plan follow-up inspections."
-        ogDescription="Compare proven honey bee swarm-control methods and plan follow-up inspections."
+        title={t('swarmManagement.meta.title')}
+        description={t('swarmManagement.meta.description')}
+        ogDescription={t('swarmManagement.meta.ogDescription')}
         path="/tools/swarm-management"
         structuredData={structuredData}
       />

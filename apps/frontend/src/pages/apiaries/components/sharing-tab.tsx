@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +25,7 @@ import {
   useUpdateApiaryMember,
   useRemoveApiaryMember,
 } from '@/api/hooks';
+import { useDateFormat } from '@/hooks/use-date-format';
 import {
   Link2,
   Copy,
@@ -50,6 +52,8 @@ export function SharingTab({ apiaryId }: SharingTabProps) {
 }
 
 function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
+  const { t } = useTranslation('apiary');
+  const { formatDate } = useDateFormat();
   const { data: invites = [], isLoading } = useApiaryInvites(apiaryId);
   const createInvite = useCreateApiaryInvite();
   const revokeInvite = useRevokeApiaryInvite();
@@ -72,22 +76,24 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg">Invite Links</CardTitle>
+        <CardTitle className="text-lg">
+          {t('sharing.inviteLinks.title')}
+        </CardTitle>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm">
               <Link2 className="h-4 w-4 mr-2" />
-              Create Link
+              {t('sharing.inviteLinks.createLink')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Invite Link</DialogTitle>
+              <DialogTitle>{t('sharing.inviteLinks.dialogTitle')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Permission Level
+                  {t('sharing.inviteLinks.permissionLevel')}
                 </label>
                 <Select
                   value={role}
@@ -97,14 +103,14 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="VIEWER">View only</SelectItem>
-                    <SelectItem value="EDITOR">Full access</SelectItem>
+                    <SelectItem value="VIEWER">{t('roles.VIEWER')}</SelectItem>
+                    <SelectItem value="EDITOR">{t('roles.EDITOR')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mt-1">
                   {role === 'VIEWER'
-                    ? 'Can view all data but cannot make changes.'
-                    : 'Can create, edit, and delete hives, inspections, etc.'}
+                    ? t('sharing.inviteLinks.viewerHint')
+                    : t('sharing.inviteLinks.editorHint')}
                 </p>
               </div>
               <Button
@@ -115,7 +121,7 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
                 {createInvite.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : null}
-                Create Link
+                {t('sharing.inviteLinks.createLink')}
               </Button>
             </div>
           </DialogContent>
@@ -128,7 +134,7 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
           </div>
         ) : invites.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            No active invite links. Create one to share this apiary.
+            {t('sharing.inviteLinks.empty')}
           </p>
         ) : (
           <div className="space-y-3">
@@ -143,7 +149,7 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
                     <div className="flex items-center gap-2">
                       <RoleBadge role={invite.role} />
                       <span className="text-xs text-muted-foreground">
-                        {new Date(invite.createdAt).toLocaleDateString()}
+                        {formatDate(invite.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -185,6 +191,7 @@ function InviteLinksSection({ apiaryId }: { apiaryId: string }) {
 }
 
 function MembersSection({ apiaryId }: { apiaryId: string }) {
+  const { t } = useTranslation('apiary');
   const { data: members = [], isLoading } = useApiaryMembers(apiaryId);
   const updateMember = useUpdateApiaryMember();
   const removeMember = useRemoveApiaryMember();
@@ -195,7 +202,7 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Members</CardTitle>
+        <CardTitle className="text-lg">{t('sharing.members.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -204,14 +211,16 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
           </div>
         ) : members.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            No members yet. Share an invite link to get started.
+            {t('sharing.members.empty')}
           </p>
         ) : (
           <div className="space-y-4">
             {pendingMembers.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Pending Requests ({pendingMembers.length})
+                  {t('sharing.members.pending', {
+                    total: pendingMembers.length,
+                  })}
                 </h4>
                 <div className="space-y-2">
                   {pendingMembers.map(member => (
@@ -245,7 +254,7 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
                           disabled={updateMember.isPending}
                         >
                           <UserCheck className="h-4 w-4 mr-1" />
-                          Approve
+                          {t('sharing.members.approve')}
                         </Button>
                         <Button
                           size="sm"
@@ -261,7 +270,7 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
                           disabled={updateMember.isPending}
                         >
                           <UserX className="h-4 w-4 mr-1" />
-                          Reject
+                          {t('sharing.members.reject')}
                         </Button>
                       </div>
                     </div>
@@ -273,7 +282,7 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
             {activeMembers.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Active Members ({activeMembers.length})
+                  {t('sharing.members.active', { total: activeMembers.length })}
                 </h4>
                 <div className="space-y-2">
                   {activeMembers.map(member => (
@@ -306,9 +315,11 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="VIEWER">View only</SelectItem>
+                              <SelectItem value="VIEWER">
+                                {t('roles.VIEWER')}
+                              </SelectItem>
                               <SelectItem value="EDITOR">
-                                Full access
+                                {t('roles.EDITOR')}
                               </SelectItem>
                             </SelectContent>
                           </Select>
@@ -340,17 +351,18 @@ function MembersSection({ apiaryId }: { apiaryId: string }) {
 }
 
 function RoleBadge({ role }: { role: ApiaryRole }) {
+  const { t } = useTranslation('apiary');
   if (role === 'EDITOR') {
     return (
       <Badge variant="default" className="text-xs">
         <UserPlus className="h-3 w-3 mr-1" />
-        Full access
+        {t('roles.EDITOR')}
       </Badge>
     );
   }
   return (
     <Badge variant="secondary" className="text-xs">
-      View only
+      {t('roles.VIEWER')}
     </Badge>
   );
 }

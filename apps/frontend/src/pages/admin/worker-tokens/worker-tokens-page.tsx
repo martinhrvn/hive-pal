@@ -32,7 +32,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { Trash2, Plus, RefreshCw, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { WorkerToken } from 'shared-schemas';
@@ -44,6 +46,8 @@ const isWorkerOnline = (lastSeenAt: string | Date | null): boolean => {
 };
 
 const WorkerTokensPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
+  const { formatDate } = useDateFormat();
   const isAdmin = useIsAdmin();
   const { data: tokens = [], isLoading, refetch } = useWorkerTokens();
   const { data: status } = useWorkerStatus();
@@ -59,7 +63,7 @@ const WorkerTokensPage: React.FC = () => {
     return (
       <Card>
         <CardContent className="p-6">
-          <p>Access denied. Admin privileges required.</p>
+          <p>{t('accessDenied')}</p>
         </CardContent>
       </Card>
     );
@@ -82,7 +86,7 @@ const WorkerTokensPage: React.FC = () => {
     if (!createdToken) return;
     await navigator.clipboard.writeText(createdToken);
     setCopied(true);
-    toast.success('Token copied to clipboard');
+    toast.success(t('workerTokens.copied'));
   };
 
   return (
@@ -90,7 +94,7 @@ const WorkerTokensPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Worker Tokens</span>
+            <span>{t('workerTokens.title')}</span>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -101,18 +105,16 @@ const WorkerTokensPage: React.FC = () => {
                 <RefreshCw
                   className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
                 />
-                Refresh
+                {t('common:actions.refresh')}
               </Button>
               <Button size="sm" onClick={() => setCreateOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                New token
+                {t('workerTokens.newToken')}
               </Button>
             </div>
           </CardTitle>
           <CardDescription>
-            Long-lived API tokens for pull-based transcription/analysis workers.
-            Workers use these to claim and complete jobs from a remote machine
-            (e.g. local Whisper + Ollama).{' '}
+            {t('workerTokens.description')}{' '}
             {status && (
               <span className="block mt-1">
                 <span
@@ -121,16 +123,17 @@ const WorkerTokensPage: React.FC = () => {
                   }`}
                 />
                 {status.workersOnline > 0
-                  ? `${status.workersOnline} worker${
-                      status.workersOnline > 1 ? 's' : ''
-                    } online`
-                  : 'No workers online'}
+                  ? t('workerTokens.workersOnline', {
+                      count: status.workersOnline,
+                    })
+                  : t('workerTokens.noWorkersOnline')}
                 {status.lastSeen && (
                   <span className="text-muted-foreground">
                     {' '}
-                    · last seen{' '}
-                    {formatDistanceToNow(new Date(status.lastSeen), {
-                      addSuffix: true,
+                    {t('workerTokens.lastSeenAgo', {
+                      time: formatDistanceToNow(new Date(status.lastSeen), {
+                        addSuffix: true,
+                      }),
                     })}
                   </span>
                 )}
@@ -143,19 +146,19 @@ const WorkerTokensPage: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Prefix</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Last seen</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('table.name')}</TableHead>
+                  <TableHead>{t('table.prefix')}</TableHead>
+                  <TableHead>{t('table.created')}</TableHead>
+                  <TableHead>{t('table.lastSeen')}</TableHead>
+                  <TableHead>{t('table.status')}</TableHead>
+                  <TableHead>{t('common:actions.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      Loading...
+                      {t('common:status.loading')}
                     </TableCell>
                   </TableRow>
                 ) : tokens.length === 0 ? (
@@ -164,44 +167,53 @@ const WorkerTokensPage: React.FC = () => {
                       colSpan={6}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      No worker tokens yet. Create one to allow a remote worker
-                      to claim jobs.
+                      {t('workerTokens.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  tokens.map((t: WorkerToken) => {
-                    const revoked = Boolean(t.revokedAt);
-                    const online = !revoked && isWorkerOnline(t.lastSeenAt);
+                  tokens.map((token: WorkerToken) => {
+                    const revoked = Boolean(token.revokedAt);
+                    const online = !revoked && isWorkerOnline(token.lastSeenAt);
                     return (
-                      <TableRow key={t.id}>
-                        <TableCell className="font-medium">{t.name}</TableCell>
+                      <TableRow key={token.id}>
+                        <TableCell className="font-medium">
+                          {token.name}
+                        </TableCell>
                         <TableCell className="font-mono text-xs">
-                          {t.prefix}…
+                          {t('workerTokens.prefixValue', {
+                            prefix: token.prefix,
+                          })}
                         </TableCell>
+                        <TableCell>{formatDate(token.createdAt)}</TableCell>
                         <TableCell>
-                          {format(new Date(t.createdAt), 'MMM dd, yyyy')}
-                        </TableCell>
-                        <TableCell>
-                          {t.lastSeenAt ? (
-                            <span title={new Date(t.lastSeenAt).toISOString()}>
-                              {formatDistanceToNow(new Date(t.lastSeenAt), {
+                          {token.lastSeenAt ? (
+                            <span
+                              title={new Date(token.lastSeenAt).toISOString()}
+                            >
+                              {formatDistanceToNow(new Date(token.lastSeenAt), {
                                 addSuffix: true,
                               })}
                             </span>
                           ) : (
-                            <span className="text-muted-foreground">never</span>
+                            <span className="text-muted-foreground">
+                              {t('workerTokens.never')}
+                            </span>
                           )}
                         </TableCell>
                         <TableCell>
                           {revoked ? (
-                            <Badge variant="destructive">Revoked</Badge>
+                            <Badge variant="destructive">
+                              {t('workerTokens.revoked')}
+                            </Badge>
                           ) : online ? (
                             <Badge>
                               <span className="inline-block h-2 w-2 rounded-full bg-green-500 mr-1" />
-                              Online
+                              {t('workerTokens.online')}
                             </Badge>
                           ) : (
-                            <Badge variant="secondary">Idle</Badge>
+                            <Badge variant="secondary">
+                              {t('workerTokens.idle')}
+                            </Badge>
                           )}
                         </TableCell>
                         <TableCell>
@@ -210,9 +222,9 @@ const WorkerTokensPage: React.FC = () => {
                               variant="ghost"
                               size="sm"
                               className="text-destructive"
-                              onClick={() => revokeMutation.mutate(t.id)}
+                              onClick={() => revokeMutation.mutate(token.id)}
                               disabled={revokeMutation.isPending}
-                              title="Revoke"
+                              title={t('workerTokens.revoke')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -239,10 +251,9 @@ const WorkerTokensPage: React.FC = () => {
           {createdToken ? (
             <>
               <DialogHeader>
-                <DialogTitle>Token created</DialogTitle>
+                <DialogTitle>{t('workerTokens.createdTitle')}</DialogTitle>
                 <DialogDescription>
-                  Copy this token now. It will not be shown again — only its
-                  prefix will remain visible.
+                  {t('workerTokens.createdDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="flex items-center gap-2 p-3 rounded-md bg-muted font-mono text-sm break-all">
@@ -251,7 +262,7 @@ const WorkerTokensPage: React.FC = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleCopy}
-                  title="Copy"
+                  title={t('workerTokens.copy')}
                 >
                   {copied ? (
                     <Check className="h-4 w-4" />
@@ -261,20 +272,21 @@ const WorkerTokensPage: React.FC = () => {
                 </Button>
               </div>
               <DialogFooter>
-                <Button onClick={handleCloseCreated}>Done</Button>
+                <Button onClick={handleCloseCreated}>
+                  {t('workerTokens.done')}
+                </Button>
               </DialogFooter>
             </>
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle>New worker token</DialogTitle>
+                <DialogTitle>{t('workerTokens.newTitle')}</DialogTitle>
                 <DialogDescription>
-                  Give the token a name to identify which machine or worker is
-                  using it.
+                  {t('workerTokens.newDescription')}
                 </DialogDescription>
               </DialogHeader>
               <Input
-                placeholder="e.g. home-desktop"
+                placeholder={t('workerTokens.namePlaceholder')}
                 value={name}
                 onChange={e => setName(e.target.value)}
                 onKeyDown={e => {
@@ -288,13 +300,13 @@ const WorkerTokensPage: React.FC = () => {
                   onClick={() => setCreateOpen(false)}
                   disabled={createMutation.isPending}
                 >
-                  Cancel
+                  {t('common:actions.cancel')}
                 </Button>
                 <Button
                   onClick={handleCreate}
                   disabled={!name.trim() || createMutation.isPending}
                 >
-                  Create
+                  {t('common:actions.create')}
                 </Button>
               </DialogFooter>
             </>

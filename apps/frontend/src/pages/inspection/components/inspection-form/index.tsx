@@ -417,7 +417,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     const strength = data.observations?.strength;
     if (isSubjective && strength != null && strength > 10) {
       form.setError('observations.strength', {
-        message: 'Must be between 0 and 10 in subjective mode',
+        message: t('inspection:form.strengthSubjectiveRange'),
       });
       return false;
     }

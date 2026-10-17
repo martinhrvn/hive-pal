@@ -1,4 +1,5 @@
 import { Minus, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface TapScaleProps {
@@ -18,6 +19,7 @@ interface TapScaleProps {
 const ANCHORS = [0, 2, 5, 7, 10];
 
 export function TapScale({ value, onChange, label }: TapScaleProps) {
+  const { t } = useTranslation('inspection');
   const current = value == null ? 0 : value;
 
   const step = (delta: number) => {
@@ -31,7 +33,9 @@ export function TapScale({ value, onChange, label }: TapScaleProps) {
         <div className="flex items-baseline justify-between">
           <span className="text-sm font-medium text-foreground">{label}</span>
           <span className="font-overline text-muted-foreground">
-            {value == null ? '— / 10' : `${value} / 10`}
+            {value == null
+              ? t('units.unsetOutOfTen')
+              : t('units.valueOutOfTen', { value })}
           </span>
         </div>
       )}
@@ -40,7 +44,7 @@ export function TapScale({ value, onChange, label }: TapScaleProps) {
           type="button"
           onClick={() => step(-1)}
           disabled={current <= 0}
-          aria-label="Decrease"
+          aria-label={t('wizard.decrease')}
           className="font-display flex h-14 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:text-foreground active:scale-[0.94] disabled:pointer-events-none disabled:opacity-40"
         >
           <Minus className="h-5 w-5" />
@@ -70,7 +74,7 @@ export function TapScale({ value, onChange, label }: TapScaleProps) {
           type="button"
           onClick={() => step(1)}
           disabled={current >= 10}
-          aria-label="Increase"
+          aria-label={t('wizard.increase')}
           className="font-display flex h-14 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:text-foreground active:scale-[0.94] disabled:pointer-events-none disabled:opacity-40"
         >
           <Plus className="h-5 w-5" />

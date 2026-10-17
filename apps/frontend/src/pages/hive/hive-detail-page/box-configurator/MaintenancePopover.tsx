@@ -17,6 +17,7 @@ import {
   CreateStandaloneAction,
 } from 'shared-schemas';
 import { toast } from 'sonner';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 type MaintenanceComponent = 'BOX' | 'BOTTOM_BOARD' | 'COVER';
 type MaintenanceStatus = 'CLEANED' | 'REPLACED';
@@ -33,6 +34,7 @@ const useMaintenanceAction = (
   component: MaintenanceComponent,
 ) => {
   const { t } = useTranslation('inspection');
+  const { formatDate } = useDateFormat();
   const [date, setDate] = useState<Date>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
   const createAction = useCreateAction();
@@ -55,11 +57,17 @@ const useMaintenanceAction = (
     try {
       await createAction.mutateAsync(data);
       toast.success(
-        `${status === 'CLEANED' ? t('inspection:form.actions.maintenance_section.cleaned') : t('inspection:form.actions.maintenance_section.replaced')} — ${format(date, 'PP')}`,
+        t('inspection:form.actions.maintenance_section.savedToast', {
+          status:
+            status === 'CLEANED'
+              ? t('inspection:form.actions.maintenance_section.cleaned')
+              : t('inspection:form.actions.maintenance_section.replaced'),
+          date: formatDate(date),
+        }),
       );
       onSuccess?.();
     } catch {
-      toast.error('Failed to save maintenance action');
+      toast.error(t('inspection:form.actions.maintenance_section.saveError'));
     }
   };
 

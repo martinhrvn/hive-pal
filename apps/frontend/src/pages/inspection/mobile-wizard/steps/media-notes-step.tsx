@@ -83,7 +83,9 @@ export function MediaNotesStep({
       <section className="space-y-2">
         <div className="flex items-center gap-1.5">
           <Mic className="size-3.5 text-muted-foreground" />
-          <span className="font-overline text-muted-foreground">Audio</span>
+          <span className="font-overline text-muted-foreground">
+            {t('inspection:audioCard.title')}
+          </span>
         </div>
         <AudioRecorder onRecordingComplete={handleRecordingComplete} />
 
@@ -126,7 +128,7 @@ export function MediaNotesStep({
         <div className="flex items-center gap-1.5">
           <Camera className="size-3.5 text-muted-foreground" />
           <span className="font-overline text-muted-foreground">
-            Photos{' '}
+            {t('inspection:form.photos.title')}{' '}
             {pendingPhotos.length > 0 &&
               `· ${pendingPhotos.length}/${MAX_PHOTOS}`}
           </span>

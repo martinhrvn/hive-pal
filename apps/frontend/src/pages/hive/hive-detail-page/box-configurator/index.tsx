@@ -19,12 +19,14 @@ import { useFrameSizes, useActions } from '@/api/hooks';
 import { ActionType } from 'shared-schemas';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface BoxConfiguratorProps {
   hive: HiveDetailResponse | undefined;
 }
 
 export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
+  const { t } = useTranslation('hive');
   const [boxes, setBoxes] = useState<Box[]>(hive?.boxes || []);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -147,10 +149,10 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
         })),
         apiaryId: hive.apiaryId,
       });
-      toast.success('Box configuration saved successfully');
+      toast.success(t('boxConfigurator.saveSuccess'));
       setIsEditing(false);
     } catch {
-      toast.error('Failed to save box configuration');
+      toast.error(t('boxConfigurator.saveError'));
     }
   };
 
@@ -168,7 +170,9 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="text-lg">Box Configuration</CardTitle>
+              <CardTitle className="text-lg">
+                {t('boxConfigurator.title')}
+              </CardTitle>
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
@@ -178,8 +182,8 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
                       size="sm"
                       title={
                         allWinterized
-                          ? 'Remove winterization'
-                          : 'Winterize all boxes'
+                          ? t('boxConfigurator.removeWinterization')
+                          : t('boxConfigurator.winterizeAllBoxes')
                       }
                     >
                       <Snowflake
@@ -188,11 +192,13 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
                           anyWinterized && 'text-blue-500',
                         )}
                       />
-                      {allWinterized ? 'Unwinterize' : 'Winterize All'}
+                      {allWinterized
+                        ? t('boxConfigurator.unwinterize')
+                        : t('boxConfigurator.winterizeAll')}
                     </Button>
                     <Button onClick={handleCancel} variant="outline" size="sm">
                       <X className="h-4 w-4 mr-1" />
-                      Cancel
+                      {t('boxConfigurator.cancel')}
                     </Button>
                     <Button
                       onClick={handleSave}
@@ -200,7 +206,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
                       disabled={updateBoxesMutation.isPending}
                     >
                       <Save className="h-4 w-4 mr-1" />
-                      Save
+                      {t('boxConfigurator.save')}
                     </Button>
                   </>
                 ) : (
@@ -209,7 +215,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
                     size="sm"
                     variant="outline"
                   >
-                    Edit Configuration
+                    {t('boxConfigurator.editConfiguration')}
                   </Button>
                 )}
               </div>
@@ -218,8 +224,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
           <CardContent>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Visualize and configure your hive's box stack. Boxes are shown
-                from bottom to top.
+                {t('boxConfigurator.description')}
               </p>
 
               <BoxStack
@@ -242,7 +247,7 @@ export const BoxConfigurator = ({ hive }: BoxConfiguratorProps) => {
                     className="w-full max-w-xs"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Box
+                    {t('boxConfigurator.addBox')}
                   </Button>
                 </div>
               )}

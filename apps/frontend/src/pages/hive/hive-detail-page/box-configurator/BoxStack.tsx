@@ -28,7 +28,7 @@ export const BoxStack = ({
   hiveId,
   maintenanceActions = [],
 }: BoxStackProps) => {
-  const { t } = useTranslation('inspection');
+  const { t } = useTranslation(['inspection', 'hive']);
 
   // Sort boxes by position (bottom to top)
   const sortedBoxes = [...boxes].sort((a, b) => b.position - a.position);
@@ -85,8 +85,8 @@ export const BoxStack = ({
       <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg">
         <p className="text-muted-foreground">
           {isEditing
-            ? 'Click "Add Box" to start building your hive'
-            : 'No boxes configured yet'}
+            ? t('hive:boxConfigurator.clickToAdd')
+            : t('hive:boxConfigurator.noBoxes')}
         </p>
       </div>
     );

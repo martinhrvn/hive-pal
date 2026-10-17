@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useAdminMediaDownloadUrl } from '@/api/hooks';
 import { Download, ExternalLink, Loader2 } from 'lucide-react';
 import type { AdminMediaItem } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 import { formatBytes } from './format-bytes';
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function MediaPreviewDialog({ item, onClose }: Props) {
+  const { t } = useTranslation(['admin', 'common']);
   const { data, isLoading } = useAdminMediaDownloadUrl(item?.type, item?.id, {
     enabled: !!item,
   });
@@ -60,12 +62,12 @@ export function MediaPreviewDialog({ item, onClose }: Props) {
           )}
           {!isLoading && url && !isImage && !isAudio && !isPdf && (
             <div className="p-6 text-sm text-muted-foreground">
-              No inline preview for this file type.
+              {t('media.noInlinePreview')}
             </div>
           )}
           {!isLoading && !url && (
             <div className="p-6 text-sm text-destructive">
-              Could not load preview URL.
+              {t('media.previewFailed')}
             </div>
           )}
         </div>
@@ -77,7 +79,7 @@ export function MediaPreviewDialog({ item, onClose }: Props) {
             onClick={() => url && window.open(url, '_blank')}
           >
             <ExternalLink className="h-4 w-4 mr-2" />
-            Open in new tab
+            {t('media.openInNewTab')}
           </Button>
           <Button
             disabled={!url}
@@ -90,7 +92,7 @@ export function MediaPreviewDialog({ item, onClose }: Props) {
             }}
           >
             <Download className="h-4 w-4 mr-2" />
-            Download
+            {t('common:actions.download')}
           </Button>
         </div>
       </DialogContent>

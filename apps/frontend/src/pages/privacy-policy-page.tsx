@@ -5,14 +5,16 @@ import { ChevronLeft } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { PublicMeta } from '@/components/seo/public-meta';
 
+const CONTACT_EMAIL = 'info@hivepal.app';
+
 export const PrivacyPolicyPage = () => {
-  const { t } = useTranslation('privacy');
+  const { t, i18n } = useTranslation('privacy');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
       <PublicMeta
-        title="Privacy Policy - Hive Pal"
-        description="Read the Hive Pal privacy policy to understand how we collect, use, and protect your personal data."
+        title={t('meta.title')}
+        description={t('meta.description')}
         path="/privacy-policy"
       />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -98,10 +100,10 @@ export const PrivacyPolicyPage = () => {
               <p className="text-gray-600">
                 {t('contact.content')}{' '}
                 <a
-                  href="mailto:info@hivepal.app"
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className="text-blue-600 hover:underline"
                 >
-                  info@hivepal.app
+                  {CONTACT_EMAIL}
                 </a>
               </p>
             </section>
@@ -110,7 +112,7 @@ export const PrivacyPolicyPage = () => {
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500 text-center">
               {t('footer.company')} | {t('footer.lastUpdated')}:{' '}
-              {new Date().toLocaleDateString()}
+              {new Intl.DateTimeFormat(i18n.language).format(new Date())}
             </p>
           </div>
         </div>

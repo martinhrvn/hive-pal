@@ -63,12 +63,13 @@ import { cn } from '@/lib/utils';
 import { isAiActionField } from '@/pages/inspection/lib/inspection-ai-draft';
 import type { Box } from 'shared-schemas';
 
+// Labels come from `actionLabels` in ActionsSection (translated at render).
 const actionTypes = [
-  { id: 'FEEDING', label: 'Feeding', Icon: Droplet },
-  { id: 'TREATMENT', label: 'Treatment', Icon: Pill },
-  { id: 'FRAME', label: 'Frames', Icon: Grid },
-  { id: 'MAINTENANCE', label: 'Maintenance', Icon: Wrench },
-  { id: 'NOTE', label: 'Note', Icon: StickyNote },
+  { id: 'FEEDING', Icon: Droplet },
+  { id: 'TREATMENT', Icon: Pill },
+  { id: 'FRAME', Icon: Grid },
+  { id: 'MAINTENANCE', Icon: Wrench },
+  { id: 'NOTE', Icon: StickyNote },
 ];
 
 export type OtherActionType = {
@@ -128,7 +129,7 @@ const formatActionTypeLabel = (
     case 'STATUS_CHANGE':
       return t('inspection:form.actions.statusChange', 'Change Status');
     case 'BOX_CONFIGURATION':
-      return 'Box Configuration';
+      return t('hive:boxConfigurator.title');
     case 'OTHER':
       return t('inspection:form.actions.other', 'Other');
     default:
@@ -170,7 +171,6 @@ const AiActionSuggestionCard = ({
   onAccept?: (field: string) => void;
   onDismiss?: (field: string) => void;
 }) => {
-  const { t: tAi } = useTranslation('ai');
   const action = getActionRecord(suggestion.aiValue);
 
   if (!action) return null;
@@ -205,8 +205,8 @@ const AiActionSuggestionCard = ({
           }
         >
           {suggestion.hasConflict
-            ? tAi('suggestion.conflict')
-            : tAi('suggestion.willFill')}
+            ? t('ai:suggestion.conflict')
+            : t('ai:suggestion.willFill')}
         </span>
 
         <Button
@@ -215,7 +215,7 @@ const AiActionSuggestionCard = ({
           variant="secondary"
           onClick={() => onAccept?.(suggestion.field)}
         >
-          {tAi('preview.accept')}
+          {t('ai:preview.accept')}
         </Button>
         <Button
           type="button"
@@ -223,7 +223,7 @@ const AiActionSuggestionCard = ({
           variant="ghost"
           onClick={() => onDismiss?.(suggestion.field)}
         >
-          {tAi('preview.dismiss')}
+          {t('ai:preview.dismiss')}
         </Button>
       </div>
     </div>
@@ -255,18 +255,11 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
     MAINTENANCE: t('inspection:form.actions.maintenance'),
     NOTE: t('inspection:form.actions.note'),
     STATUS_CHANGE: t('inspection:form.actions.statusChange', 'Change Status'),
-    BOX_CONFIGURATION: 'Box Configuration',
+    BOX_CONFIGURATION: t('hive:boxConfigurator.title'),
   };
 
   const availableActionTypes = enableStatusChange
-    ? [
-        ...actionTypes,
-        {
-          id: 'STATUS_CHANGE',
-          label: 'Change Status',
-          Icon: ArrowLeftRight,
-        },
-      ]
+    ? [...actionTypes, { id: 'STATUS_CHANGE', Icon: ArrowLeftRight }]
     : actionTypes;
 
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -496,7 +489,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
           data-test={TEST_SELECTORS.ACTION_BUTTONS}
           className="flex flex-wrap gap-2"
         >
-          {availableActionTypes.map(({ id, label, Icon }) => {
+          {availableActionTypes.map(({ id, Icon }) => {
             if (visibleActionTypes.has(id)) return null;
 
             return (
@@ -510,7 +503,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
                 key={id}
               >
                 <Icon size={16} />
-                {actionLabels[id] || label}
+                {actionLabels[id] ?? id}
               </Button>
             );
           })}

@@ -48,7 +48,10 @@ export const StatisticCards = ({
         className={`${emphasized ? 'text-3xl' : 'text-2xl'} font-bold ${getScoreColor(value)}`}
       >
         {value?.toFixed(1) ?? '—'}
-        <span className="text-sm font-normal text-muted-foreground"> / 10</span>
+        <span className="text-sm font-normal text-muted-foreground">
+          {' '}
+          {t('hive:scores.outOfTen')}
+        </span>
       </div>
     </div>
   );
@@ -86,7 +89,7 @@ export const StatisticCards = ({
       <div className={`text-xl font-bold ${getScoreColor(value)}`}>
         {value?.toFixed(1) ?? '—'}
         <span className="text-sm font-normal text-muted-foreground ml-1">
-          / 10
+          {t('hive:scores.outOfTen')}
         </span>
       </div>
     </div>

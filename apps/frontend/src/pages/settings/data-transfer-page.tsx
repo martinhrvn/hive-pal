@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   Card,
   CardContent,
@@ -33,6 +34,7 @@ import {
   useStartExport,
   useStartImport,
 } from '@/api/hooks/useAccountTransfer';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 const statusVariant: Record<
   AccountTransferJob['status'],
@@ -45,6 +47,8 @@ const statusVariant: Record<
 };
 
 export const DataTransferPage = () => {
+  const { t } = useTranslation('common');
+  const { formatDateTime } = useDateFormat();
   const jobsQuery = useAccountTransferJobs();
   const startExport = useStartExport();
   const startImport = useStartImport();
@@ -69,12 +73,11 @@ export const DataTransferPage = () => {
   const handleStartExport = async () => {
     try {
       await startExport.mutateAsync();
-      toast.success('Export started', {
-        description:
-          'Your export is being prepared. This may take a few minutes.',
+      toast.success(t('settings.dataTransfer.toasts.exportStarted'), {
+        description: t('settings.dataTransfer.toasts.exportStartedDescription'),
       });
     } catch (err) {
-      toast.error('Failed to start export', {
+      toast.error(t('settings.dataTransfer.toasts.exportFailed'), {
         description: (err as Error).message,
       });
     }
@@ -92,12 +95,11 @@ export const DataTransferPage = () => {
     setConfirmImport(null);
     try {
       await startImport.mutateAsync(file);
-      toast.success('Import started', {
-        description:
-          'Your data is being imported. This may take a few minutes.',
+      toast.success(t('settings.dataTransfer.toasts.importStarted'), {
+        description: t('settings.dataTransfer.toasts.importStartedDescription'),
       });
     } catch (err) {
-      toast.error('Failed to start import', {
+      toast.error(t('settings.dataTransfer.toasts.importFailed'), {
         description: (err as Error).message,
       });
     }
@@ -108,7 +110,12 @@ export const DataTransferPage = () => {
       credentials: 'include',
     })
       .then(async res => {
-        if (!res.ok) throw new Error(`Download failed: ${res.statusText}`);
+        if (!res.ok)
+          throw new Error(
+            t('settings.dataTransfer.toasts.downloadFailedWithStatus', {
+              status: res.statusText,
+            }),
+          );
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -120,17 +127,19 @@ export const DataTransferPage = () => {
         URL.revokeObjectURL(url);
       })
       .catch(err => {
-        toast.error('Download failed', { description: (err as Error).message });
+        toast.error(t('settings.dataTransfer.toasts.downloadFailed'), {
+          description: (err as Error).message,
+        });
       });
   };
 
   const handleDelete = async (job: AccountTransferJob) => {
-    if (!confirm('Delete this job and its stored file?')) return;
+    if (!confirm(t('settings.dataTransfer.deleteConfirm'))) return;
     try {
       await deleteJob.mutateAsync(job.id);
-      toast.success('Job deleted');
+      toast.success(t('settings.dataTransfer.toasts.jobDeleted'));
     } catch (err) {
-      toast.error('Failed to delete job', {
+      toast.error(t('settings.dataTransfer.toasts.deleteFailed'), {
         description: (err as Error).message,
       });
     }
@@ -139,10 +148,11 @@ export const DataTransferPage = () => {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Data Transfer</h1>
+        <h1 className="text-3xl font-bold">
+          {t('settings.dataTransfer.title')}
+        </h1>
         <p className="text-muted-foreground">
-          Export your account data for backup, or import a previous export to
-          this account.
+          {t('settings.dataTransfer.description')}
         </p>
       </div>
 
@@ -151,11 +161,10 @@ export const DataTransferPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Download className="h-5 w-5" />
-              Export
+              {t('actions.export')}
             </CardTitle>
             <CardDescription>
-              Download a ZIP archive containing all apiaries you own and their
-              data, including photos, documents, and audio.
+              {t('settings.dataTransfer.exportDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -169,7 +178,9 @@ export const DataTransferPage = () => {
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              {hasActiveExport ? 'Export in progress…' : 'Start export'}
+              {hasActiveExport
+                ? t('settings.dataTransfer.exportInProgress')
+                : t('settings.dataTransfer.startExport')}
             </Button>
           </CardContent>
         </Card>
@@ -178,12 +189,10 @@ export const DataTransferPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Import
+              {t('actions.import')}
             </CardTitle>
             <CardDescription>
-              Restore data from a previously created export ZIP. Imports are
-              additive — every imported apiary becomes a new record under your
-              account.
+              {t('settings.dataTransfer.importDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -205,16 +214,18 @@ export const DataTransferPage = () => {
               ) : (
                 <Upload className="h-4 w-4" />
               )}
-              {hasActiveImport ? 'Import in progress…' : 'Choose ZIP file…'}
+              {hasActiveImport
+                ? t('settings.dataTransfer.importInProgress')
+                : t('settings.dataTransfer.chooseFile')}
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent jobs</CardTitle>
+            <CardTitle>{t('settings.dataTransfer.recentJobs')}</CardTitle>
             <CardDescription>
-              Exports remain downloadable for 7 days.
+              {t('settings.dataTransfer.recentJobsDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -223,16 +234,28 @@ export const DataTransferPage = () => {
                 <Loader2 className="h-6 w-6 animate-spin" />
               </div>
             ) : jobs.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No jobs yet.</p>
+              <p className="text-sm text-muted-foreground">
+                {t('settings.dataTransfer.noJobs')}
+              </p>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Progress</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>
+                      {t('settings.dataTransfer.columns.type')}
+                    </TableHead>
+                    <TableHead>
+                      {t('settings.dataTransfer.columns.status')}
+                    </TableHead>
+                    <TableHead>
+                      {t('settings.dataTransfer.columns.created')}
+                    </TableHead>
+                    <TableHead>
+                      {t('settings.dataTransfer.columns.progress')}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t('actions.actions')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -250,15 +273,16 @@ export const DataTransferPage = () => {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm">
-                          {new Date(job.createdAt).toLocaleString()}
+                          {formatDateTime(job.createdAt)}
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {job.status === 'RUNNING'
                             ? (job.progress ?? '…')
                             : job.status === 'FAILED'
-                              ? (job.errorMessage ?? 'Failed')
+                              ? (job.errorMessage ??
+                                t('settings.dataTransfer.failed'))
                               : isExpired
-                                ? 'Expired'
+                                ? t('settings.dataTransfer.expired')
                                 : ''}
                         </TableCell>
                         <TableCell className="text-right space-x-2">
@@ -270,7 +294,7 @@ export const DataTransferPage = () => {
                                 variant="outline"
                                 onClick={() => handleDownload(job)}
                               >
-                                Download
+                                {t('actions.download')}
                               </Button>
                             )}
                           {job.status === 'COMPLETED' &&
@@ -281,7 +305,7 @@ export const DataTransferPage = () => {
                                 variant="outline"
                                 onClick={() => setSelectedJob(job)}
                               >
-                                View summary
+                                {t('settings.dataTransfer.viewSummary')}
                               </Button>
                             )}
                           {job.status === 'FAILED' && (
@@ -290,7 +314,7 @@ export const DataTransferPage = () => {
                               variant="outline"
                               onClick={() => setSelectedJob(job)}
                             >
-                              View error
+                              {t('settings.dataTransfer.viewError')}
                             </Button>
                           )}
                           {job.status !== 'RUNNING' && (
@@ -299,7 +323,7 @@ export const DataTransferPage = () => {
                               variant="ghost"
                               onClick={() => handleDelete(job)}
                             >
-                              Delete
+                              {t('actions.delete')}
                             </Button>
                           )}
                         </TableCell>
@@ -321,19 +345,24 @@ export const DataTransferPage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-500" />
-              Import data into your account?
+              {t('settings.dataTransfer.confirmImportTitle')}
             </DialogTitle>
             <DialogDescription>
-              This will add all data from{' '}
-              <span className="font-medium">{confirmImport?.name}</span> to your
-              account. Imports are additive and cannot be automatically undone.
+              <Trans
+                t={t}
+                i18nKey="settings.dataTransfer.confirmImportDescription"
+                values={{ fileName: confirmImport?.name }}
+                components={{ bold: <span className="font-medium" /> }}
+              />
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmImport(null)}>
-              Cancel
+              {t('actions.cancel')}
             </Button>
-            <Button onClick={handleConfirmImport}>Start import</Button>
+            <Button onClick={handleConfirmImport}>
+              {t('settings.dataTransfer.startImport')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -346,8 +375,8 @@ export const DataTransferPage = () => {
           <DialogHeader>
             <DialogTitle>
               {selectedJob?.status === 'FAILED'
-                ? 'Job error'
-                : 'Import summary'}
+                ? t('settings.dataTransfer.jobError')
+                : t('settings.dataTransfer.importSummary')}
             </DialogTitle>
           </DialogHeader>
           {selectedJob?.status === 'FAILED' ? (
@@ -359,7 +388,7 @@ export const DataTransferPage = () => {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelectedJob(null)}>
-              Close
+              {t('actions.close')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -11,7 +11,26 @@
     "apiaries": "Apiaries",
     "hives": "Hives",
     "inspections": "Inspections",
-    "lastActivity": "Last Activity"
+    "lastActivity": "Last Activity",
+    "type": "Type",
+    "status": "Status",
+    "subject": "Subject",
+    "from": "From",
+    "date": "Date",
+    "widthMm": "Width (mm)",
+    "heightMm": "Height (mm)",
+    "depthMm": "Depth (mm)",
+    "dimensionsMm": "Dimensions (mm)",
+    "submitted": "Submitted",
+    "source": "Source",
+    "file": "File",
+    "owner": "Owner",
+    "apiary": "Apiary",
+    "size": "Size",
+    "uploaded": "Uploaded",
+    "prefix": "Prefix",
+    "created": "Created",
+    "lastSeen": "Last seen"
   },
   "actions": {
     "resetPassword": "Reset Password"
@@ -63,6 +82,173 @@
       "inspections": "Inspections",
       "lastInspection": "Last Inspection",
       "noApiaries": "No apiaries found for this user"
+    }
+  },
+  "accessDenied": "Access denied. Admin privileges required.",
+  "feedback": {
+    "title": "Feedback Management",
+    "description": "Manage user feedback and support requests",
+    "filterByType": "Filter by type",
+    "allTypes": "All Types",
+    "typeSuggestion": "Suggestion",
+    "filterByStatus": "Filter by status",
+    "allStatuses": "All Statuses",
+    "statuses": {
+      "NEW": "New",
+      "REVIEWED": "Reviewed",
+      "RESOLVED": "Resolved"
+    },
+    "loading": "Loading feedback...",
+    "empty": "No feedback found",
+    "anonymous": "Anonymous",
+    "fromLine": "From: {{sender}} • {{date}}",
+    "messageLabel": "Message:",
+    "statusLabel": "Status:",
+    "showing": "Showing {{from}} to {{to}} of {{total}} results",
+    "toasts": {
+      "statusUpdated": "Feedback status updated",
+      "statusUpdateFailed": "Failed to update feedback status"
+    }
+  },
+  "frameSizes": {
+    "pendingTitle": "Pending Frame Size Submissions",
+    "pendingDescription": "Review and approve community-submitted frame sizes",
+    "noPending": "No pending submissions",
+    "approve": "Approve",
+    "reject": "Reject",
+    "allTitle": "All Frame Sizes",
+    "allDescription": "Manage approved and rejected frame sizes",
+    "empty": "No frame sizes found",
+    "dimensions": "{{width}} x {{height}} x {{depth}}",
+    "builtIn": "Built-in",
+    "community": "Community",
+    "toasts": {
+      "approved": "Frame size approved",
+      "approveFailed": "Failed to approve frame size",
+      "rejected": "Frame size rejected",
+      "rejectFailed": "Failed to reject frame size",
+      "deleted": "Frame size deleted",
+      "deleteFailed": "Failed to delete frame size"
+    }
+  },
+  "media": {
+    "title": "Media",
+    "description": "Browse and preview all uploaded files across the platform",
+    "totalFiles": "Total files",
+    "spaceUsed": "Space used",
+    "byType": "By type",
+    "countAndSize": "{{files}} · {{size}}",
+    "files": "Files",
+    "listSummary": "{{total}} total · page {{page}} of {{pages}}",
+    "searchPlaceholder": "Search filename, caption...",
+    "types": {
+      "photo": "Photo",
+      "document": "Document",
+      "inspection-audio": "Inspection audio",
+      "quick-check-photo": "Quick check photo"
+    },
+    "filters": {
+      "all": "All types",
+      "photo": "Photos",
+      "document": "Documents",
+      "inspection-audio": "Inspection audio",
+      "quick-check-photo": "Quick check photos"
+    },
+    "empty": "No files found.",
+    "prev": "Prev",
+    "noInlinePreview": "No inline preview for this file type.",
+    "previewFailed": "Could not load preview URL.",
+    "openInNewTab": "Open in new tab"
+  },
+  "platformMetrics": {
+    "title": "Platform Metrics",
+    "description": "Monitor platform growth and usage statistics",
+    "totalUsers": "Total Users",
+    "active30d_one": "{{count}} active (30d)",
+    "active30d_other": "{{count}} active (30d)",
+    "totalApiaries": "Total Apiaries",
+    "totalHives": "Total Hives",
+    "totalInspections": "Total Inspections",
+    "trendsTitle": "Platform Metrics Trends",
+    "trendsDescription": "Track platform growth and user activity over time",
+    "dateRanges": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "6m": "Last 6 months",
+      "1y": "Last year",
+      "all": "All time"
+    },
+    "additionalTitle": "Additional Statistics",
+    "additionalDescription": "Other tracked metrics from the latest snapshot",
+    "actions": "Actions",
+    "queens": "Queens",
+    "harvests": "Harvests",
+    "equipmentItems": "Equipment Items",
+    "weatherTitle": "Weather Fetches",
+    "weatherDescription": "Open-Meteo API calls in the last 24 hours (as of the latest snapshot)",
+    "totalFetches": "Total fetches",
+    "errors": "Errors",
+    "activeUsersTitle": "Active Users",
+    "activeUsersDescription": "Users who created inspections or actions in the given period",
+    "allApiariesTitle": "All Apiaries",
+    "allApiariesDescription": "Map of all apiaries with coordinates",
+    "map": {
+      "loading": "Loading map...",
+      "failed": "Failed to load apiaries",
+      "empty": "No apiaries with coordinates found",
+      "hiveCount_one": "{{count}} hive",
+      "hiveCount_other": "{{count}} hives",
+      "coordinates": "{{lat}}, {{lng}}"
+    },
+    "chart": {
+      "noData": "No metrics data available yet. Data will appear after the first daily snapshot.",
+      "view": "View:",
+      "metrics": {
+        "entities": "Entity Counts",
+        "activity": "Active Users",
+        "weather": "Weather Fetches (24h)"
+      },
+      "series": {
+        "users": "Users",
+        "apiaries": "Apiaries",
+        "hives": "Hives",
+        "inspections": "Inspections",
+        "active7Days": "Active (7 days)",
+        "active30Days": "Active (30 days)",
+        "weatherFetches": "Weather Fetches",
+        "errors": "Errors"
+      }
+    }
+  },
+  "workerTokens": {
+    "title": "Worker Tokens",
+    "newToken": "New token",
+    "description": "Long-lived API tokens for pull-based transcription/analysis workers. Workers use these to claim and complete jobs from a remote machine (e.g. local Whisper + Ollama).",
+    "workersOnline_one": "{{count}} worker online",
+    "workersOnline_other": "{{count}} workers online",
+    "noWorkersOnline": "No workers online",
+    "lastSeenAgo": "· last seen {{time}}",
+    "empty": "No worker tokens yet. Create one to allow a remote worker to claim jobs.",
+    "prefixValue": "{{prefix}}…",
+    "never": "never",
+    "revoked": "Revoked",
+    "online": "Online",
+    "idle": "Idle",
+    "revoke": "Revoke",
+    "copied": "Token copied to clipboard",
+    "createdTitle": "Token created",
+    "createdDescription": "Copy this token now. It will not be shown again — only its prefix will remain visible.",
+    "copy": "Copy",
+    "done": "Done",
+    "newTitle": "New worker token",
+    "newDescription": "Give the token a name to identify which machine or worker is using it.",
+    "namePlaceholder": "e.g. home-desktop",
+    "toasts": {
+      "created": "Worker token created",
+      "createFailed": "Failed to create worker token",
+      "revoked": "Worker token revoked",
+      "revokeFailed": "Failed to revoke worker token"
     }
   }
 }

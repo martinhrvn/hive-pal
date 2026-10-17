@@ -17,14 +17,11 @@ import {
 } from '@/components/ui/select';
 import type { PlatformMetricsSnapshot } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
+import { useTranslation } from 'react-i18next';
 
 type MetricType = 'entities' | 'activity' | 'weather';
 
-const METRIC_OPTIONS: { value: MetricType; label: string }[] = [
-  { value: 'entities', label: 'Entity Counts' },
-  { value: 'activity', label: 'Active Users' },
-  { value: 'weather', label: 'Weather Fetches (24h)' },
-];
+const METRIC_OPTIONS: MetricType[] = ['entities', 'activity', 'weather'];
 
 interface PlatformMetricsTrendChartProps {
   data: PlatformMetricsSnapshot[] | undefined;
@@ -34,12 +31,13 @@ interface PlatformMetricsTrendChartProps {
 export const PlatformMetricsTrendChart: React.FC<
   PlatformMetricsTrendChartProps
 > = ({ data, isLoading }) => {
+  const { t } = useTranslation(['admin', 'common']);
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('entities');
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        Loading...
+        {t('common:status.loading')}
       </div>
     );
   }
@@ -47,8 +45,7 @@ export const PlatformMetricsTrendChart: React.FC<
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        No metrics data available yet. Data will appear after the first daily
-        snapshot.
+        {t('platformMetrics.chart.noData')}
       </div>
     );
   }
@@ -72,41 +69,41 @@ export const PlatformMetricsTrendChart: React.FC<
       case 'entities':
         return {
           totalUsers: {
-            label: 'Users',
+            label: t('platformMetrics.chart.series.users'),
             color: '#3b82f6', // Blue
           },
           totalApiaries: {
-            label: 'Apiaries',
+            label: t('platformMetrics.chart.series.apiaries'),
             color: '#10b981', // Green
           },
           totalHives: {
-            label: 'Hives',
+            label: t('platformMetrics.chart.series.hives'),
             color: '#f59e0b', // Amber
           },
           totalInspections: {
-            label: 'Inspections',
+            label: t('platformMetrics.chart.series.inspections'),
             color: '#a855f7', // Purple
           },
         };
       case 'activity':
         return {
           activeUsers7Days: {
-            label: 'Active (7 days)',
+            label: t('platformMetrics.chart.series.active7Days'),
             color: '#3b82f6', // Blue
           },
           activeUsers30Days: {
-            label: 'Active (30 days)',
+            label: t('platformMetrics.chart.series.active30Days'),
             color: '#10b981', // Green
           },
         };
       case 'weather':
         return {
           weatherFetches24h: {
-            label: 'Weather Fetches',
+            label: t('platformMetrics.chart.series.weatherFetches'),
             color: '#3b82f6', // Blue
           },
           weatherFetchErrors24h: {
-            label: 'Errors',
+            label: t('platformMetrics.chart.series.errors'),
             color: '#ef4444', // Red
           },
         };
@@ -120,7 +117,9 @@ export const PlatformMetricsTrendChart: React.FC<
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">View:</span>
+        <span className="text-sm font-medium">
+          {t('platformMetrics.chart.view')}
+        </span>
         <Select
           value={selectedMetric}
           onValueChange={v => setSelectedMetric(v as MetricType)}
@@ -130,8 +129,8 @@ export const PlatformMetricsTrendChart: React.FC<
           </SelectTrigger>
           <SelectContent>
             {METRIC_OPTIONS.map(option => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
+              <SelectItem key={option} value={option}>
+                {t(`platformMetrics.chart.metrics.${option}`)}
               </SelectItem>
             ))}
           </SelectContent>

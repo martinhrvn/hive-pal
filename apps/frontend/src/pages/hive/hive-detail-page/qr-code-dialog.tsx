@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PrinterIcon, QrCodeIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type QrTarget = 'detail' | 'mobile-wizard' | 'audio';
 
@@ -45,6 +46,7 @@ interface QRCodeDialogProps {
 }
 
 export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
+  const { t } = useTranslation('hive');
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const [target, setTarget] = useState<QrTarget>('detail');
 
@@ -103,7 +105,7 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>QR Code - ${hiveName}</title>
+          <title>${t('qr.printTitle', { name: hiveName })}</title>
           ${styles}
         </head>
         <body>
@@ -134,20 +136,17 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
       <DialogTrigger asChild>
         <Button variant="ghost" className="w-full justify-start" size="sm">
           <QrCodeIcon className="mr-2 h-4 w-4" />
-          QR Code
+          {t('actions.qr')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>QR Code for {hiveName}</DialogTitle>
-          <DialogDescription>
-            Scan this QR code to quickly open the selected destination for this
-            hive
-          </DialogDescription>
+          <DialogTitle>{t('qr.title', { name: hiveName })}</DialogTitle>
+          <DialogDescription>{t('qr.description')}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center space-y-4 py-4">
           <div className="w-full space-y-1.5">
-            <Label htmlFor="qr-target">QR Target</Label>
+            <Label htmlFor="qr-target">{t('qr.target')}</Label>
             <Select
               value={target}
               onValueChange={value => setTarget(value as QrTarget)}
@@ -156,11 +155,11 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="detail">Hive detail page</SelectItem>
+                <SelectItem value="detail">{t('qr.targets.detail')}</SelectItem>
                 <SelectItem value="mobile-wizard">
-                  Mobile inspection wizard
+                  {t('qr.targets.mobileWizard')}
                 </SelectItem>
-                <SelectItem value="audio">Quick audio inspection</SelectItem>
+                <SelectItem value="audio">{t('qr.targets.audio')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -180,7 +179,7 @@ export function QRCodeDialog({ hiveId, hiveName }: QRCodeDialogProps) {
           </div>
           <Button onClick={handlePrint} className="w-full" variant="default">
             <PrinterIcon className="mr-2 h-4 w-4" />
-            Print QR Code
+            {t('qr.print')}
           </Button>
         </div>
       </DialogContent>

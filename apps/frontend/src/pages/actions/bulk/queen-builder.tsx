@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
-import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   Form,
   FormControl,
@@ -26,16 +26,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { useDateFormat } from '@/hooks/use-date-format';
 import type { BulkQueenPayload, StagedItem } from './types';
 import type { BuilderHandle } from './action-builder';
 
-const colorOptions = [
-  { label: 'Blue', value: 'blue' },
-  { label: 'White', value: 'white' },
-  { label: 'Yellow', value: 'yellow' },
-  { label: 'Red', value: 'red' },
-  { label: 'Green', value: 'green' },
-];
+const colorOptions = ['blue', 'white', 'yellow', 'red', 'green'] as const;
 
 const statusOptions: BulkQueenPayload['status'][] = [
   'VIRGIN',
@@ -72,6 +67,8 @@ interface QueenBuilderProps {
 
 export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
   ({ defaultDate }, ref) => {
+    const { t } = useTranslation('queen');
+    const { formatDate } = useDateFormat();
     const form = useForm<QueenBuilderForm>({
       defaultValues: buildDefaults(defaultDate),
     });
@@ -113,7 +110,7 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
               name="year"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Year</FormLabel>
+                  <FormLabel>{t('fields.year')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -136,17 +133,17 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
               name="color"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Color</FormLabel>
+                  <FormLabel>{t('fields.color')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Pick color" />
+                        <SelectValue placeholder={t('form.pickColor')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {colorOptions.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
+                      {colorOptions.map(color => (
+                        <SelectItem key={color} value={color}>
+                          {t(`colors.${color}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -161,7 +158,7 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
               name="marking"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Marking</FormLabel>
+                  <FormLabel>{t('fields.marking')}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -175,7 +172,7 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
               name="source"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Source</FormLabel>
+                  <FormLabel>{t('fields.source')}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -189,7 +186,7 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{t('fields.status')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -214,7 +211,7 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
               name="installedAt"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Installed at</FormLabel>
+                  <FormLabel>{t('fields.installedAt')}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -226,9 +223,9 @@ export const QueenBuilder = forwardRef<BuilderHandle, QueenBuilderProps>(
                           )}
                         >
                           {field.value ? (
-                            format(field.value, 'PPP')
+                            formatDate(field.value)
                           ) : (
-                            <span>Pick a date</span>
+                            <span>{t('form.pickDate')}</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
