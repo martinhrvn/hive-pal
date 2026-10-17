@@ -1,4 +1,5 @@
 import { Minus, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface FrameCounterProps {
@@ -14,6 +15,7 @@ export function FrameCounter({
   max,
   label,
 }: FrameCounterProps) {
+  const { t } = useTranslation('inspection');
   const current = value ?? 0;
   const ceiling = max ?? 99;
   const dec = () => onChange(Math.max(0, current - 1));
@@ -28,7 +30,7 @@ export function FrameCounter({
           <span className="text-sm font-medium text-foreground">{label}</span>
           {max != null && (
             <span className="font-overline text-muted-foreground">
-              max {max}
+              {t('wizard.max', { max })}
             </span>
           )}
         </div>
@@ -42,7 +44,7 @@ export function FrameCounter({
             'flex size-12 items-center justify-center rounded-xl border border-border bg-background text-foreground transition-all active:scale-[0.94] disabled:opacity-30',
             !atFloor && 'hover:border-foreground/20',
           )}
-          aria-label="Decrease"
+          aria-label={t('wizard.decrease')}
         >
           <Minus className="size-5" />
         </button>
@@ -57,7 +59,7 @@ export function FrameCounter({
             'flex size-12 items-center justify-center rounded-xl border border-transparent bg-foreground text-background transition-all active:scale-[0.94] disabled:opacity-30',
             !atCeiling && 'hover:bg-foreground/90',
           )}
-          aria-label="Increase"
+          aria-label={t('wizard.increase')}
         >
           <Plus className="size-5" />
         </button>

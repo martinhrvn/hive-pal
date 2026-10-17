@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -17,6 +18,14 @@ interface WizardShellProps {
   hideBack?: boolean;
 }
 
+type StepState = 'done' | 'active' | 'todo';
+
+const getStepState = (index: number, stepIndex: number): StepState => {
+  if (index < stepIndex) return 'done';
+  if (index === stepIndex) return 'active';
+  return 'todo';
+};
+
 export function WizardShell({
   title,
   subtitle,
@@ -31,6 +40,7 @@ export function WizardShell({
   nextDisabled,
   hideBack,
 }: WizardShellProps) {
+  const { t } = useTranslation(['inspection', 'common']);
   return (
     <div className="relative flex h-dvh w-dvw flex-col overflow-hidden bg-background">
       {/* Ambient backdrop — a single warm wash so the screen doesn't feel
@@ -45,7 +55,7 @@ export function WizardShell({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="font-overline text-muted-foreground">
-              {subtitle ?? 'Inspection'}
+              {subtitle ?? t('inspection:wizard.inspection')}
             </div>
             <div className="font-display mt-0.5 truncate text-xl leading-tight">
               {title}
@@ -60,7 +70,7 @@ export function WizardShell({
               variant="ghost"
               size="icon"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={t('common:actions.close')}
               className="size-9 rounded-full text-muted-foreground"
             >
               <X className="size-4" />
@@ -72,14 +82,13 @@ export function WizardShell({
             and is tappable, so the dots' jump-to behavior is preserved. */}
         <div className="mt-3 flex gap-1.5">
           {Array.from({ length: stepCount }).map((_, i) => {
-            const state =
-              i < stepIndex ? 'done' : i === stepIndex ? 'active' : 'todo';
+            const state = getStepState(i, stepIndex);
             return (
               <button
                 key={i}
                 type="button"
                 onClick={() => onJumpTo(i)}
-                aria-label={`Go to step ${i + 1}`}
+                aria-label={t('inspection:wizard.goToStep', { step: i + 1 })}
                 className={cn(
                   'h-1 flex-1 rounded-full transition-colors duration-300',
                   state === 'active' &&
@@ -109,7 +118,7 @@ export function WizardShell({
               className="h-14 flex-1 rounded-2xl text-base"
             >
               <ArrowLeft className="mr-1.5 size-4" />
-              Back
+              {t('common:actions.back')}
             </Button>
           )}
           <Button
@@ -121,7 +130,7 @@ export function WizardShell({
               hideBack ? 'w-full' : 'flex-[2]',
             )}
           >
-            {nextLabel ?? 'Continue'}
+            {nextLabel ?? t('inspection:wizard.continue')}
             {!nextLabel && (
               <ArrowRight className="ml-1.5 size-4 transition-transform group-hover:translate-x-0.5" />
             )}

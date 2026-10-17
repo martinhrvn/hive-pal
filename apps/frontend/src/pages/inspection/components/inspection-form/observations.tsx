@@ -96,17 +96,26 @@ const AiValuePreview: React.FC<{
   aiValue: unknown;
   className?: string;
 }> = ({ isVisible, hasConflict, currentValue, aiValue, className }) => {
+  const { t } = useTranslation('ai');
   if (!isVisible) return null;
 
   return (
     <div className={cn('flex flex-wrap items-center gap-2', className)}>
       {hasConflict ? (
         <>
-          <PreviewValuePill label="Current" value={currentValue} />
-          <PreviewValuePill label="AI" value={aiValue} variant="ai" />
+          <PreviewValuePill label={t('preview.current')} value={currentValue} />
+          <PreviewValuePill
+            label={t('preview.ai')}
+            value={aiValue}
+            variant="ai"
+          />
         </>
       ) : (
-        <PreviewValuePill label="AI" value={aiValue} variant="ai" />
+        <PreviewValuePill
+          label={t('preview.ai')}
+          value={aiValue}
+          variant="ai"
+        />
       )}
     </div>
   );

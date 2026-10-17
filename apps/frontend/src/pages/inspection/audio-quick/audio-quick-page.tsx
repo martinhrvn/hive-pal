@@ -176,7 +176,7 @@ export function AudioQuickPage() {
           size="icon"
           onClick={handleClose}
           disabled={phase === 'uploading'}
-          aria-label="Close"
+          aria-label={t('common:actions.close')}
           className="size-9 rounded-full text-muted-foreground"
         >
           <X className="size-4" />

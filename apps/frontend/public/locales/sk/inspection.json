@@ -16,13 +16,16 @@
         "filterByHive": "Filtrovať podľa úľa",
         "allHives": "Všetky úle",
         "noInspections": "Nenašli sa žiadne prehliadky",
-        "unknownHive": "Neznámy úľ"
+        "unknownHive": "Neznámy úľ",
+        "broodNestStats": "Štatistiky plodiska",
+        "noFrameData": "Žiadne údaje o rámikoch"
     },
     "status": {
         "scheduled": "Naplánované",
         "completed": "Dokončené",
         "overdue": "Po termíne",
-        "cancelled": "Zrušené"
+        "cancelled": "Zrušené",
+        "unknown": "Neznámy"
     },
     "fields": {
         "dateTime": "Dátum a čas",
@@ -155,7 +158,8 @@
             "showFewerDays": "Zobraziť menej dní",
             "showMoreDays": "Zobraziť viac dní (+7)",
             "noForecast": "Predpoveď nie je k dispozícii",
-            "noWeatherData": "Žiadne údaje o počasí"
+            "noWeatherData": "Žiadne údaje o počasí",
+            "noApiaryWeather": "Tento úľ nemá priradenú včelnicu pre údaje o počasí."
         },
         "completingScheduled": {
             "title": "Dokončenie naplánovanej prehliadky z {{date}}",
@@ -179,7 +183,8 @@
         "back": "Späť",
         "share": "Zdieľať",
         "shareFailed": "Nepodarilo sa vytvoriť odkaz na zdieľanie",
-        "viewHive": "Zobraziť úľ"
+        "viewHive": "Zobraziť úľ",
+        "showApiaryLayout": "Zobraziť rozmiestnenie včelnice"
     },
     "statusCard": {
         "title": "Stav",
@@ -309,13 +314,15 @@
                 "notesPlaceholder": "Doplňujúce poznámky k údržbe...",
                 "savedToast": "{{status}} — {{date}}",
                 "saveError": "Nepodarilo sa uložiť údržbu"
-            }
+            },
+            "notesValue": "Poznámky: {{notes}}"
         },
         "audio": {
             "title": "Zvukové poznámky",
             "pendingUpload": "{{count}} čaká na nahratie",
             "uploadWarning": "Zvukové nahrávky budú nahrané po uložení prehliadky."
-        }
+        },
+        "strengthSubjectiveRange": "V subjektívnom režime musí byť hodnota od 0 do 10"
     },
     "detailSidebar": {
         "inspectionActions": "Akcie prehliadky",
@@ -388,7 +395,9 @@
         "scheduledSuccessPlural": "Úspešne naplánovaných {{count}} prehliadok",
         "scheduledFailed": "Nepodarilo sa naplánovať {{count}} prehliadku",
         "scheduledFailedPlural": "Nepodarilo sa naplánovať {{count}} prehliadok",
-        "noApiary": "Nie je možné určiť včelnicu pre vybrané úle"
+        "noApiary": "Nie je možné určiť včelnicu pre vybrané úle",
+        "selectAtLeastOneHive": "Vyberte aspoň jeden úľ",
+        "batchNameRequired": "Pri vytváraní hromadnej prehliadky je názov skupiny povinný"
     },
     "edit": {
         "completingFrom": "Dokončenie naplánovanej prehliadky z {{date}}",
@@ -400,5 +409,227 @@
         "dueToday": "Dnes na rade",
         "overdueCount": "{{count}} prehliadka po termíne",
         "dueTodayCount": "{{count}} prehliadka dnes na rade"
+    },
+    "units": {
+        "celsius": "{{value}} °C",
+        "kmh": "{{value}} km/h",
+        "outOfTen": "/ 10",
+        "valueOutOfTen": "{{value}} / 10",
+        "unsetOutOfTen": "— / 10"
+    },
+    "wizard": {
+        "inspection": "Prehliadka",
+        "continue": "Pokračovať",
+        "goToStep": "Prejsť na krok {{step}}",
+        "decrease": "Znížiť",
+        "increase": "Zvýšiť",
+        "max": "max. {{max}}"
+    },
+    "actionsCard": {
+        "actionLabels": {
+            "FEEDING": "Kŕmenie",
+            "TREATMENT": "Ošetrenie",
+            "FRAME": "Rámiky",
+            "BOX_CONFIGURATION": "Konfigurácia nadstavkov",
+            "MAINTENANCE": "Údržba",
+            "NOTE": "Poznámka",
+            "STATUS_CHANGE": "Zmena stavu",
+            "SPLIT": "Delenie včelstva",
+            "HARVEST": "Zber",
+            "OTHER": "Iné"
+        },
+        "frameQuantity_one": "{{value}} rámik",
+        "frameQuantity_few": "{{value}} rámiky",
+        "frameQuantity_many": "{{value}} rámika",
+        "frameQuantity_other": "{{value}} rámikov",
+        "boxesAdded_one": "+{{count}} nadstavok",
+        "boxesAdded_few": "+{{count}} nadstavky",
+        "boxesAdded_many": "+{{count}} nadstavka",
+        "boxesAdded_other": "+{{count}} nadstavkov",
+        "boxesRemoved_one": "-{{count}} nadstavok",
+        "boxesRemoved_few": "-{{count}} nadstavky",
+        "boxesRemoved_many": "-{{count}} nadstavka",
+        "boxesRemoved_other": "-{{count}} nadstavkov",
+        "framesAdded_one": "+{{count}} rámik",
+        "framesAdded_few": "+{{count}} rámiky",
+        "framesAdded_many": "+{{count}} rámika",
+        "framesAdded_other": "+{{count}} rámikov",
+        "framesRemoved_one": "-{{count}} rámik",
+        "framesRemoved_few": "-{{count}} rámiky",
+        "framesRemoved_many": "-{{count}} rámika",
+        "framesRemoved_other": "-{{count}} rámikov",
+        "result": "Výsledok",
+        "noChanges": "Žiadne zmeny",
+        "boxType": {
+            "BROOD_one": "plodisko",
+            "BROOD_few": "plodiská",
+            "BROOD_many": "plodiska",
+            "BROOD_other": "plodísk",
+            "HONEY_one": "medník",
+            "HONEY_few": "medníky",
+            "HONEY_many": "medníka",
+            "HONEY_other": "medníkov",
+            "FEEDER_one": "kŕmny nadstavok",
+            "FEEDER_few": "kŕmne nadstavky",
+            "FEEDER_many": "kŕmneho nadstavka",
+            "FEEDER_other": "kŕmnych nadstavkov"
+        },
+        "frameCount_one": "{{count}} rámik",
+        "frameCount_few": "{{count}} rámiky",
+        "frameCount_many": "{{count}} rámika",
+        "frameCount_other": "{{count}} rámikov",
+        "frameList": "{{frames}} rámikov",
+        "queenDisposition": {
+            "STAYED_WITH_SOURCE": "Matka zostala v pôvodnom úli",
+            "MOVED_TO_NEW": "Matka presunutá do nového úľa",
+            "NEW_IS_QUEENLESS": "Nový úľ je bezmatečný"
+        },
+        "splitFrames_one": "{{sign}}{{count}} rámik",
+        "splitFrames_few": "{{sign}}{{count}} rámiky",
+        "splitFrames_many": "{{sign}}{{count}} rámika",
+        "splitFrames_other": "{{sign}}{{count}} rámikov"
+    },
+    "boxConfigAction": {
+        "instruction": "Nastavte zostavu nadstavkov úľa. Zmeny sa zaznamenajú ako akcia tejto prehliadky a na úľ sa použijú po uložení prehliadky.",
+        "confirmChanges": "Potvrdiť zmeny",
+        "boxesAdded_one": "+{{count}} nadstavok pridaný",
+        "boxesAdded_few": "+{{count}} nadstavky pridané",
+        "boxesAdded_many": "+{{count}} nadstavka pridaného",
+        "boxesAdded_other": "+{{count}} nadstavkov pridaných",
+        "boxesRemoved_one": "−{{count}} nadstavok odobratý",
+        "boxesRemoved_few": "−{{count}} nadstavky odobraté",
+        "boxesRemoved_many": "−{{count}} nadstavka odobratého",
+        "boxesRemoved_other": "−{{count}} nadstavkov odobratých",
+        "framesAdded_one": "+{{count}} rámik pridaný",
+        "framesAdded_few": "+{{count}} rámiky pridané",
+        "framesAdded_many": "+{{count}} rámika pridaného",
+        "framesAdded_other": "+{{count}} rámikov pridaných",
+        "framesRemoved_one": "−{{count}} rámik odobratý",
+        "framesRemoved_few": "−{{count}} rámiky odobraté",
+        "framesRemoved_many": "−{{count}} rámika odobratého",
+        "framesRemoved_other": "−{{count}} rámikov odobratých",
+        "total": "Spolu: {{boxes}}, {{frames}}",
+        "boxCount_one": "{{count}} nadstavok",
+        "boxCount_few": "{{count}} nadstavky",
+        "boxCount_many": "{{count}} nadstavka",
+        "boxCount_other": "{{count}} nadstavkov",
+        "frameCount_one": "{{count}} rámik",
+        "frameCount_few": "{{count}} rámiky",
+        "frameCount_many": "{{count}} rámika",
+        "frameCount_other": "{{count}} rámikov"
+    },
+    "audioCard": {
+        "title": "Zvuk",
+        "recordings_one": "{{count}} nahrávka",
+        "recordings_few": "{{count}} nahrávky",
+        "recordings_many": "{{count}} nahrávky",
+        "recordings_other": "{{count}} nahrávok",
+        "aiOutput": "Výstup AI",
+        "hide": "Skryť",
+        "show": "Zobraziť",
+        "status": "Stav: {{status}}",
+        "noWorker": "Žiadny worker nie je online — úloha sa spracuje, keď sa worker pripojí.",
+        "analysisFailed": "Analýza AI zlyhala: {{error}}",
+        "unknownError": "Neznáma chyba",
+        "structuringFailed": "Štruktúrovanie pomocou AI zlyhalo, prepis je však k dispozícii.",
+        "transcript": "Prepis",
+        "editTranscript": "Upraviť prepis",
+        "copied": "Skopírované",
+        "copyFailed": "Kopírovanie zlyhalo",
+        "copyTranscript": "Kopírovať prepis",
+        "saveAndReanalyze": "Uložiť a znova analyzovať",
+        "noTranscript": "Nevrátil sa žiadny prepis.",
+        "structuredJson": "Štruktúrovaný JSON",
+        "copyJson": "Kopírovať JSON",
+        "debugRaw": "Ladenie / surová odpoveď AI",
+        "loadingResult": "Načítava sa výsledok AI...",
+        "loadingAudio": "Načítava sa zvuk...",
+        "preparingAudio": "Pripravuje sa zvuk...",
+        "prefill": "Predvyplniť prehliadku pomocou AI",
+        "runAnalysisFirst": "Najprv spustite analýzu.",
+        "transcriptEmpty": "Prepis nesmie byť prázdny.",
+        "saveTranscriptFailed": "Prepis sa nepodarilo uložiť. Skúste to znova.",
+        "startFailed": "Analýzu AI sa nepodarilo spustiť.",
+        "stage": {
+            "transcriptionFailed": "Prepis zlyhal",
+            "analysisFailed": "Analýza zlyhala",
+            "waitingToTranscribe": "Čaká na prepis",
+            "transcribing": "Prepisuje sa...",
+            "waitingToAnalyze": "Čaká na analýzu",
+            "analyzing": "Analyzuje sa...",
+            "completed": "Dokončené",
+            "transcribed": "Prepísané",
+            "idle": "Nečinné"
+        },
+        "analyze": {
+            "starting": "Spúšťa sa...",
+            "queued": "V poradí...",
+            "analyzing": "Analyzuje sa...",
+            "start": "Analyzovať pomocou AI"
+        }
+    },
+    "batch": {
+        "backToList": "Späť na hromadné prehliadky",
+        "startedAt": "Začaté {{date}}",
+        "createdAt": "Vytvorené {{date}}",
+        "completedAt": "Dokončené {{date}}",
+        "minutes": "{{minutes}} min",
+        "status": {
+            "DRAFT": "KONCEPT",
+            "IN_PROGRESS": "PREBIEHA",
+            "COMPLETED": "DOKONČENÉ",
+            "CANCELLED": "ZRUŠENÉ"
+        },
+        "progress": {
+            "completed": "Dokončené",
+            "remaining": "Zostáva",
+            "elapsed": "Uplynulo",
+            "avgPerHive": "Priemer na úľ"
+        },
+        "list": {
+            "title": "Hromadné prehliadky",
+            "subtitle": "Spravujte svoje hromadné prehliadky",
+            "newBatch": "Nová skupina",
+            "emptyTitle": "Zatiaľ žiadne hromadné prehliadky",
+            "emptyDescription": "Začnite vytvorením svojej prvej hromadnej prehliadky",
+            "loadFailed": "Nepodarilo sa načítať hromadné prehliadky",
+            "hiveCount_one": "{{count}} úľ",
+            "hiveCount_few": "{{count}} úle",
+            "hiveCount_many": "{{count}} úľa",
+            "hiveCount_other": "{{count}} úľov",
+            "startInspection": "Začať prehliadku",
+            "continueInspection": "Pokračovať v prehliadke",
+            "viewDetails": "Zobraziť podrobnosti",
+            "deleteTitle": "Vymazať skupinu?",
+            "deleteDescription": "Táto hromadná prehliadka bude natrvalo vymazaná. Túto akciu nie je možné vrátiť späť.",
+            "startFailed": "Nepodarilo sa spustiť hromadnú prehliadku",
+            "deleteFailed": "Nepodarilo sa vymazať hromadnú prehliadku"
+        },
+        "detail": {
+            "loadFailed": "Nepodarilo sa načítať podrobnosti hromadnej prehliadky",
+            "hivesTitle": "Úle ({{count}})",
+            "order": "Poradie: {{order}}",
+            "skipped_one": "Preskočený {{count}}-krát",
+            "skipped_few": "Preskočený {{count}}-krát",
+            "skipped_many": "Preskočený {{count}}-krát",
+            "skipped_other": "Preskočený {{count}}-krát"
+        },
+        "inspect": {
+            "noMoreHives": "V tejto skupine už nie sú žiadne úle na prehliadku",
+            "loadFailed": "Nepodarilo sa načítať hromadnú prehliadku",
+            "completeTitle": "Hromadná prehliadka je dokončená!",
+            "completeDescription": "Všetky úle v tejto skupine boli prehliadnuté.",
+            "skipFailed": "Úľ sa nepodarilo preskočiť",
+            "completed": "Hromadná prehliadka bola dokončená!",
+            "saveFailed": "Prehliadku sa nepodarilo uložiť",
+            "hivePosition": "Úľ {{position}} z {{total}}",
+            "completeBadge": "Dokončené {{completed}}/{{total}}",
+            "currentHive": "Aktuálny úľ",
+            "skipHive": "Preskočiť úľ",
+            "inspectionForm": "Formulár prehliadky",
+            "saveAndFinish": "Uložiť a dokončiť",
+            "skipTitle": "Preskočiť tento úľ?",
+            "skipDescription": "Tento úľ sa presunie na koniec poradia. Prehliadnuť ho môžete neskôr v rámci tejto skupiny."
+        }
     }
 }

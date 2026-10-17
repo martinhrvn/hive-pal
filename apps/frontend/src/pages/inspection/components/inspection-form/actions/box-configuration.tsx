@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layers, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -103,6 +104,7 @@ export const BoxConfigurationForm = ({
   onSave,
   onCancel,
 }: BoxConfigurationFormProps) => {
+  const { t } = useTranslation(['inspection', 'hive', 'common']);
   const [boxes, setBoxes] = useState<Box[]>(initialBoxes);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
   const { data: frameSizes = [] } = useFrameSizes();
@@ -188,8 +190,7 @@ export const BoxConfigurationForm = ({
     <div className="flex flex-col gap-4 h-full">
       {/* Instruction */}
       <p className="text-sm text-muted-foreground">
-        Configure the hive's box stack. Changes will be recorded as an action on
-        this inspection and applied to the hive when the inspection is saved.
+        {t('inspection:boxConfigAction.instruction')}
       </p>
 
       <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0 overflow-auto">
@@ -214,7 +215,7 @@ export const BoxConfigurationForm = ({
               type="button"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Box
+              {t('hive:boxConfigurator.addBox')}
             </Button>
           </div>
         </div>
@@ -242,10 +243,10 @@ export const BoxConfigurationForm = ({
           type="button"
           onClick={onCancel}
         >
-          Cancel
+          {t('common:actions.cancel')}
         </Button>
         <Button className="flex-1" type="button" onClick={handleConfirm}>
-          Confirm Changes
+          {t('inspection:boxConfigAction.confirmChanges')}
         </Button>
       </div>
     </div>
@@ -269,6 +270,7 @@ export const BoxConfigurationAction = ({
   onRemove,
   existingAction,
 }: BoxConfigurationActionProps) => {
+  const { t } = useTranslation('hive');
   const [open, setOpen] = useState(false);
 
   const handleSave = (action: BoxConfigurationActionData) => {
@@ -292,7 +294,7 @@ export const BoxConfigurationAction = ({
         onClick={() => setOpen(true)}
       >
         <Layers size={16} className="mr-1" />
-        Box Configuration
+        {t('boxConfigurator.title')}
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -303,7 +305,7 @@ export const BoxConfigurationAction = ({
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Layers className="h-5 w-5" />
-              Box Configuration
+              {t('boxConfigurator.title')}
             </SheetTitle>
           </SheetHeader>
 
@@ -332,41 +334,53 @@ export const BoxConfigurationView = ({
   action,
   onRemove,
 }: BoxConfigurationViewProps) => {
+  const { t } = useTranslation(['inspection', 'hive', 'common']);
   return (
     <div className="flex items-start justify-between py-3">
       <div className="flex items-center gap-3">
         <Layers className="h-5 w-5 text-muted-foreground shrink-0" />
         <div>
-          <div className="font-medium text-sm">Box Configuration</div>
+          <div className="font-medium text-sm">
+            {t('hive:boxConfigurator.title')}
+          </div>
           <div className="text-xs text-muted-foreground space-y-0.5">
             {action.boxesAdded > 0 && (
               <div>
-                +{action.boxesAdded} box{action.boxesAdded === 1 ? '' : 'es'}{' '}
-                added
+                {t('inspection:boxConfigAction.boxesAdded', {
+                  count: action.boxesAdded,
+                })}
               </div>
             )}
             {action.boxesRemoved > 0 && (
               <div>
-                −{action.boxesRemoved} box
-                {action.boxesRemoved === 1 ? '' : 'es'} removed
+                {t('inspection:boxConfigAction.boxesRemoved', {
+                  count: action.boxesRemoved,
+                })}
               </div>
             )}
             {action.framesAdded > 0 && (
               <div>
-                +{action.framesAdded} frame{action.framesAdded === 1 ? '' : 's'}{' '}
-                added
+                {t('inspection:boxConfigAction.framesAdded', {
+                  count: action.framesAdded,
+                })}
               </div>
             )}
             {action.framesRemoved > 0 && (
               <div>
-                −{action.framesRemoved} frame
-                {action.framesRemoved === 1 ? '' : 's'} removed
+                {t('inspection:boxConfigAction.framesRemoved', {
+                  count: action.framesRemoved,
+                })}
               </div>
             )}
             <div>
-              Total: {action.totalBoxes} box
-              {action.totalBoxes === 1 ? '' : 'es'}, {action.totalFrames} frame
-              {action.totalFrames === 1 ? '' : 's'}
+              {t('inspection:boxConfigAction.total', {
+                boxes: t('inspection:boxConfigAction.boxCount', {
+                  count: action.totalBoxes,
+                }),
+                frames: t('inspection:boxConfigAction.frameCount', {
+                  count: action.totalFrames,
+                }),
+              })}
             </div>
           </div>
         </div>
@@ -378,7 +392,7 @@ export const BoxConfigurationView = ({
         className="text-muted-foreground hover:text-destructive"
         onClick={onRemove}
       >
-        Remove
+        {t('common:actions.remove')}
       </Button>
     </div>
   );

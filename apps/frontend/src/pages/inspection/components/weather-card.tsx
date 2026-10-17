@@ -55,7 +55,7 @@ export const WeatherCard = ({
                 {t('inspection:weatherCard.temperature')}
               </div>
               <div className="text-2xl font-bold text-orange-600">
-                {temperature}°C
+                {t('inspection:units.celsius', { value: temperature })}
               </div>
             </div>
           )}

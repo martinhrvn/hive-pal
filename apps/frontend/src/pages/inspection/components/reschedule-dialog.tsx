@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, addDays, isSameDay, startOfDay } from 'date-fns';
 import {
@@ -25,6 +25,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { InspectionResponse } from 'shared-schemas';
 import { WeatherCondition } from 'shared-schemas';
 import { useHives } from '@/api/hooks';
@@ -67,7 +68,12 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
   hiveName,
   onReschedule,
 }) => {
-  const { t } = useTranslation(['inspection']);
+  const { t, i18n } = useTranslation(['inspection']);
+  const { formatDate } = useDateFormat();
+  const weekdayFormatter = useMemo(
+    () => new Intl.DateTimeFormat(i18n.language, { weekday: 'short' }),
+    [i18n.language],
+  );
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isAllDay, setIsAllDay] = useState(inspection.isAllDay ?? true);
   const [daysToShow, setDaysToShow] = useState(7);
@@ -136,7 +142,7 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
           {!hive?.apiaryId ? (
             <Alert>
               <AlertDescription>
-                This hive doesn't have an associated apiary for weather data.
+                {t('inspection:dialogs.reschedule.noApiaryWeather')}
               </AlertDescription>
             </Alert>
           ) : weatherLoading ? (
@@ -176,14 +182,16 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-semibold text-sm">
-                            {isTodayCard ? 'Today' : format(day, 'EEE')}
+                            {isTodayCard
+                              ? t('inspection:scheduled.today')
+                              : weekdayFormatter.format(day)}
                           </div>
                           {isSelected && (
                             <CalendarPlus className="h-4 w-4 text-primary" />
                           )}
                         </div>
                         <div className="text-xs text-muted-foreground mb-3">
-                          {format(day, 'MMM d')}
+                          {formatDate(day)}
                         </div>
 
                         {forecast ? (
@@ -202,7 +210,10 @@ export const RescheduleDialog: React.FC<RescheduleDialogProps> = ({
                             <div className="text-xs text-muted-foreground">
                               <div>💧 {forecast.humidity}%</div>
                               <div>
-                                💨 {Math.round(forecast.windSpeed)} km/h
+                                💨{' '}
+                                {t('inspection:units.kmh', {
+                                  value: Math.round(forecast.windSpeed),
+                                })}
                               </div>
                             </div>
                           </>

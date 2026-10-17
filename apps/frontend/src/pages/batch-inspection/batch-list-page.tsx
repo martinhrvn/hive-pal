@@ -21,8 +21,9 @@ import {
   Timer,
 } from 'lucide-react';
 import { BatchInspectionStatus } from 'shared-schemas';
-import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,8 @@ import {
 
 export const BatchListPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation(['inspection', 'common']);
+  const { formatDate, formatDateTime } = useDateFormat();
   const { data: batches, isLoading, error } = useBatchInspections();
   const { viewAllApiaries, apiaries } = useApiary();
   const { mutate: startBatch, isPending: isStarting } =
@@ -52,7 +55,7 @@ export const BatchListPage = () => {
       },
       onError: error => {
         console.error('Failed to start batch:', error);
-        toast.error('Failed to start batch inspection');
+        toast.error(t('inspection:batch.list.startFailed'));
       },
     });
   };
@@ -65,7 +68,7 @@ export const BatchListPage = () => {
       },
       onError: error => {
         console.error('Failed to delete batch:', error);
-        toast.error('Failed to delete batch inspection');
+        toast.error(t('inspection:batch.list.deleteFailed'));
         setDeleteDialogOpen(null);
       },
     });
@@ -85,7 +88,9 @@ export const BatchListPage = () => {
     return (
       <div className="max-w-6xl mx-auto p-4">
         <Alert variant="destructive">
-          <AlertDescription>Failed to load batch inspections</AlertDescription>
+          <AlertDescription>
+            {t('inspection:batch.list.loadFailed')}
+          </AlertDescription>
         </Alert>
       </div>
     );
@@ -107,21 +112,25 @@ export const BatchListPage = () => {
   };
 
   const getStatusLabel = (status: BatchInspectionStatus) => {
-    return status.replace('_', ' ');
+    return t(`inspection:batch.status.${status}`, {
+      defaultValue: status.replace('_', ' '),
+    });
   };
 
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Batch Inspections</h1>
+          <h1 className="text-3xl font-bold">
+            {t('inspection:batch.list.title')}
+          </h1>
           <p className="text-muted-foreground mt-1">
-            Manage your batch inspection workflows
+            {t('inspection:batch.list.subtitle')}
           </p>
         </div>
         <Button onClick={() => navigate('/inspections/schedule')}>
           <Plus className="h-4 w-4 mr-2" />
-          New Batch
+          {t('inspection:batch.list.newBatch')}
         </Button>
       </div>
 
@@ -131,14 +140,14 @@ export const BatchListPage = () => {
             <div className="text-center py-12">
               <Timer className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">
-                No batch inspections yet
+                {t('inspection:batch.list.emptyTitle')}
               </h3>
               <p className="text-muted-foreground mb-4">
-                Create your first batch inspection to get started
+                {t('inspection:batch.list.emptyDescription')}
               </p>
               <Button onClick={() => navigate('/inspections/schedule')}>
                 <Plus className="h-4 w-4 mr-2" />
-                Create Batch Inspection
+                {t('inspection:schedule.createBatchInspection')}
               </Button>
             </div>
           </CardContent>
@@ -157,10 +166,17 @@ export const BatchListPage = () => {
                       </p>
                     )}
                     <p className="text-sm text-muted-foreground mt-1">
-                      {batch.progress.total} hives •{' '}
+                      {t('inspection:batch.list.hiveCount', {
+                        count: batch.progress.total,
+                      })}
+                      {' • '}
                       {batch.startedAt
-                        ? `Started ${format(new Date(batch.startedAt), 'PPp')}`
-                        : `Created ${format(new Date(batch.createdAt), 'PP')}`}
+                        ? t('inspection:batch.startedAt', {
+                            date: formatDateTime(batch.startedAt),
+                          })
+                        : t('inspection:batch.createdAt', {
+                            date: formatDate(batch.createdAt),
+                          })}
                     </p>
                   </div>
                   <Badge variant={getStatusBadgeVariant(batch.status)}>
@@ -176,7 +192,7 @@ export const BatchListPage = () => {
                     </div>
                     <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <CheckCircle2 className="h-3 w-3" />
-                      Completed
+                      {t('inspection:batch.progress.completed')}
                     </div>
                   </div>
                   <div className="text-center p-3 bg-muted rounded-lg">
@@ -185,17 +201,19 @@ export const BatchListPage = () => {
                     </div>
                     <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <Clock className="h-3 w-3" />
-                      Remaining
+                      {t('inspection:batch.progress.remaining')}
                     </div>
                   </div>
                   {batch.progress.elapsedMinutes !== null && (
                     <div className="text-center p-3 bg-muted rounded-lg">
                       <div className="text-2xl font-bold">
-                        {batch.progress.elapsedMinutes}m
+                        {t('inspection:batch.minutes', {
+                          minutes: batch.progress.elapsedMinutes,
+                        })}
                       </div>
                       <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                         <Timer className="h-3 w-3" />
-                        Elapsed
+                        {t('inspection:batch.progress.elapsed')}
                       </div>
                     </div>
                   )}
@@ -210,7 +228,7 @@ export const BatchListPage = () => {
                         className="flex-1"
                       >
                         <PlayCircle className="h-4 w-4 mr-2" />
-                        Start Inspection
+                        {t('inspection:batch.list.startInspection')}
                       </Button>
                       <Dialog
                         open={deleteDialogOpen === batch.id}
@@ -229,10 +247,11 @@ export const BatchListPage = () => {
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Delete batch?</DialogTitle>
+                            <DialogTitle>
+                              {t('inspection:batch.list.deleteTitle')}
+                            </DialogTitle>
                             <DialogDescription>
-                              This will permanently delete this batch
-                              inspection. This action cannot be undone.
+                              {t('inspection:batch.list.deleteDescription')}
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter>
@@ -240,13 +259,13 @@ export const BatchListPage = () => {
                               variant="outline"
                               onClick={() => setDeleteDialogOpen(null)}
                             >
-                              Cancel
+                              {t('common:actions.cancel')}
                             </Button>
                             <Button
                               variant="destructive"
                               onClick={() => handleDeleteBatch(batch.id)}
                             >
-                              Delete
+                              {t('common:actions.delete')}
                             </Button>
                           </DialogFooter>
                         </DialogContent>
@@ -261,7 +280,7 @@ export const BatchListPage = () => {
                       className="flex-1"
                     >
                       <PlayCircle className="h-4 w-4 mr-2" />
-                      Continue Inspection
+                      {t('inspection:batch.list.continueInspection')}
                     </Button>
                   )}
                   {batch.status !== BatchInspectionStatus.DRAFT && (
@@ -271,7 +290,7 @@ export const BatchListPage = () => {
                       className="flex-1"
                     >
                       <Eye className="h-4 w-4 mr-2" />
-                      View Details
+                      {t('inspection:batch.list.viewDetails')}
                     </Button>
                   )}
                 </div>

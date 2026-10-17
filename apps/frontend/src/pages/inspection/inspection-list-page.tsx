@@ -99,7 +99,7 @@ export const InspectionListPage = () => {
   );
 
   const { data: hivesData, isLoading: isLoadingHives } = useHives();
-  const { formatTime } = useDateFormat();
+  const { formatDate, formatTime } = useDateFormat();
 
   // Declarative columns for the inspection tables. Kept stable per relevant
   // input so `useColumnVisibility` doesn't churn.
@@ -112,10 +112,11 @@ export const InspectionListPage = () => {
         activeTab,
         navigate,
         canEditApiary,
+        formatDate,
         formatTime,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- canEditApiary is recreated per render; it depends on hivesData/apiaries only
-    [t, hivesData, isSubjective, activeTab, navigate, formatTime],
+    [t, hivesData, isSubjective, activeTab, navigate, formatDate, formatTime],
   );
 
   // User-toggleable, persisted column visibility (shared across the tabs).
@@ -429,7 +430,9 @@ const renderStrengthCell = (
       </PopoverTrigger>
       <PopoverContent className="w-60">
         <div className="space-y-3">
-          <h4 className="font-medium text-sm">Brood Nest Stats</h4>
+          <h4 className="font-medium text-sm">
+            {t('inspection:list.broodNestStats')}
+          </h4>
 
           {framePcts ? (
             <div className="space-y-1.5">
@@ -441,7 +444,9 @@ const renderStrengthCell = (
                       className="h-2 w-2 rounded-full shrink-0"
                       style={{ backgroundColor: f.color }}
                     />
-                    <span className="text-sm flex-1">{f.label}</span>
+                    <span className="text-sm flex-1">
+                      {t(`inspection:observations.${f.obsKey}`)}
+                    </span>
                     <span className="text-sm font-medium tabular-nums">
                       {framePcts[i]}%
                     </span>
@@ -451,14 +456,16 @@ const renderStrengthCell = (
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">
-              No frame data recorded
+              {t('inspection:list.noFrameData')}
             </p>
           )}
 
           {obs?.queenCells != null && obs.queenCells > 0 && (
             <div className="flex items-center gap-2 pt-2 border-t">
               <CrownIcon className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-              <span className="text-sm flex-1">Queen Cells</span>
+              <span className="text-sm flex-1">
+                {t('inspection:observations.queenCells')}
+              </span>
               <span className="text-sm font-medium tabular-nums">
                 {obs.queenCells}
               </span>
@@ -500,6 +507,7 @@ const buildInspectionColumns = ({
   activeTab,
   navigate,
   canEditApiary,
+  formatDate,
   formatTime,
 }: {
   t: TFn;
@@ -509,6 +517,7 @@ const buildInspectionColumns = ({
   navigate: (path: string) => void;
   // Per-row edit permission, keyed by the inspection's hive's apiary.
   canEditApiary: (apiaryId?: string | null) => boolean;
+  formatDate: (date: Date | string) => string;
   formatTime: (date: Date | string) => string;
 }): DataTableColumn<InspectionResponse>[] => {
   const canEditInspection = (inspection: InspectionResponse) =>
@@ -516,7 +525,7 @@ const buildInspectionColumns = ({
   const strengthHeader =
     activeTab === InspectionTab.UPCOMING || isSubjective
       ? t('inspection:fields.status')
-      : 'Strength';
+      : t('inspection:observations.strength');
 
   return [
     {
@@ -564,11 +573,7 @@ const buildInspectionColumns = ({
       cell: inspection => (
         <div className="flex items-center gap-2">
           <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-          {new Date(inspection.date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          })}
+          {formatDate(new Date(inspection.date))}
           <br />
           <span className="text-xs text-muted-foreground">
             {formatTime(new Date(inspection.date))}

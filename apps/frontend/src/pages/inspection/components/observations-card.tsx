@@ -57,6 +57,7 @@ const ratingText = (v: number) => {
 type RatingRowProps = { label: string; value: number };
 
 const RatingRow = ({ label, value }: RatingRowProps) => {
+  const { t } = useTranslation('inspection');
   const pct = Math.max(0, Math.min(100, (value / 10) * 100));
   return (
     <div className="grid grid-cols-[minmax(7rem,12rem)_1fr_auto] items-center gap-3 py-2">
@@ -86,7 +87,7 @@ const RatingRow = ({ label, value }: RatingRowProps) => {
         {value}
         <span className="text-stone-400 dark:text-stone-500 font-normal text-sm">
           {' '}
-          / 10
+          {t('units.outOfTen')}
         </span>
       </span>
     </div>

@@ -41,7 +41,7 @@ const getStatusConfig = (status: InspectionStatus | undefined) => {
     case InspectionStatus.SCHEDULED:
       return {
         Icon: Clock,
-        label: 'Scheduled',
+        labelKey: 'inspection:status.scheduled',
         chipClass:
           'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900',
         dotClass: 'bg-blue-500',
@@ -49,7 +49,7 @@ const getStatusConfig = (status: InspectionStatus | undefined) => {
     case InspectionStatus.OVERDUE:
       return {
         Icon: AlertTriangle,
-        label: 'Overdue',
+        labelKey: 'inspection:status.overdue',
         chipClass:
           'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900',
         dotClass: 'bg-red-500',
@@ -57,7 +57,7 @@ const getStatusConfig = (status: InspectionStatus | undefined) => {
     case InspectionStatus.COMPLETED:
       return {
         Icon: CheckCircle,
-        label: 'Completed',
+        labelKey: 'inspection:status.completed',
         chipClass:
           'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900',
         dotClass: 'bg-emerald-500',
@@ -65,7 +65,7 @@ const getStatusConfig = (status: InspectionStatus | undefined) => {
     case InspectionStatus.CANCELLED:
       return {
         Icon: XCircle,
-        label: 'Cancelled',
+        labelKey: 'inspection:status.cancelled',
         chipClass:
           'bg-stone-100 text-stone-600 border-stone-200 dark:bg-stone-900/40 dark:text-stone-400 dark:border-stone-700',
         dotClass: 'bg-stone-400',
@@ -73,7 +73,7 @@ const getStatusConfig = (status: InspectionStatus | undefined) => {
     default:
       return {
         Icon: Clock,
-        label: 'Unknown',
+        labelKey: 'inspection:status.unknown',
         chipClass:
           'bg-stone-100 text-stone-600 border-stone-200 dark:bg-stone-900/40 dark:text-stone-400 dark:border-stone-700',
         dotClass: 'bg-stone-400',
@@ -161,7 +161,7 @@ export const InspectionHeader = ({
               className={cn('h-1.5 w-1.5 rounded-full', statusConfig.dotClass)}
               aria-hidden
             />
-            {statusConfig.label}
+            {t(statusConfig.labelKey)}
           </span>
           {trailing}
         </div>
@@ -182,8 +182,8 @@ export const InspectionHeader = ({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50"
-                    aria-label="Show apiary layout"
-                    title="Show apiary layout"
+                    aria-label={t('inspection:detail.showApiaryLayout')}
+                    title={t('inspection:detail.showApiaryLayout')}
                   >
                     <Map className="h-4 w-4" />
                   </Button>
@@ -221,7 +221,9 @@ export const InspectionHeader = ({
         {temperature != null && (
           <div className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300">
             <Thermometer className="h-3.5 w-3.5 text-orange-500" />
-            <span className="tabular-nums font-medium">{temperature}°C</span>
+            <span className="tabular-nums font-medium">
+              {t('inspection:units.celsius', { value: temperature })}
+            </span>
           </div>
         )}
         {weatherConditions && (
