@@ -191,55 +191,6 @@
       "count": 3
     }
   },
-  "src/pages/admin/feedback-management/feedback-management-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 38
-    }
-  },
-  "src/pages/admin/frame-sizes/frame-size-review-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 27
-    }
-  },
-  "src/pages/admin/media/media-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 23
-    }
-  },
-  "src/pages/admin/media/media-preview-dialog.tsx": {
-    "i18next/no-literal-string": {
-      "count": 4
-    }
-  },
-  "src/pages/admin/platform-metrics/components/all-apiaries-map.tsx": {
-    "i18next/no-literal-string": {
-      "count": 5
-    }
-  },
-  "src/pages/admin/platform-metrics/components/platform-metrics-trend-chart.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
-    },
-    "no-restricted-syntax": {
-      "count": 11
-    }
-  },
-  "src/pages/admin/platform-metrics/platform-metrics-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 26
-    },
-    "no-restricted-syntax": {
-      "count": 6
-    }
-  },
-  "src/pages/admin/worker-tokens/worker-tokens-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 31
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/pages/apiaries/apiary-list-page.tsx": {
     "i18next/no-literal-string": {
       "count": 2

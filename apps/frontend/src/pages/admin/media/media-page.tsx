@@ -30,7 +30,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import {
   Camera,
   FileText,
@@ -48,13 +49,6 @@ import { MediaPreviewDialog } from './media-preview-dialog';
 
 type TypeFilter = AdminMediaType | 'all';
 
-const TYPE_LABEL: Record<AdminMediaType, string> = {
-  photo: 'Photo',
-  document: 'Document',
-  'inspection-audio': 'Inspection audio',
-  'quick-check-photo': 'Quick check photo',
-};
-
 const TYPE_ICON: Record<
   AdminMediaType,
   React.ComponentType<{ className?: string }>
@@ -66,6 +60,8 @@ const TYPE_ICON: Record<
 };
 
 const MediaPage: React.FC = () => {
+  const { t } = useTranslation(['admin', 'common']);
+  const { formatDate } = useDateFormat();
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
 
@@ -101,16 +97,16 @@ const MediaPage: React.FC = () => {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Media</h1>
-        <p className="text-muted-foreground">
-          Browse and preview all uploaded files across the platform
-        </p>
+        <h1 className="text-2xl font-bold">{t('media.title')}</h1>
+        <p className="text-muted-foreground">{t('media.description')}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total files</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('media.totalFiles')}
+            </CardTitle>
             <Files className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -119,7 +115,9 @@ const MediaPage: React.FC = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Space used</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('media.spaceUsed')}
+            </CardTitle>
             <HardDrive className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -130,17 +128,22 @@ const MediaPage: React.FC = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">By type</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('media.byType')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-1 text-sm">
               {stats?.byType.map(s => (
                 <div key={s.type} className="flex justify-between">
                   <span className="text-muted-foreground">
-                    {TYPE_LABEL[s.type]}
+                    {t(`media.types.${s.type}`)}
                   </span>
                   <span className="font-medium">
-                    {s.count} · {formatBytes(s.totalSize)}
+                    {t('media.countAndSize', {
+                      files: s.count,
+                      size: formatBytes(s.totalSize),
+                    })}
                   </span>
                 </div>
               ))}
@@ -153,17 +156,21 @@ const MediaPage: React.FC = () => {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div>
-              <CardTitle>Files</CardTitle>
+              <CardTitle>{t('media.files')}</CardTitle>
               <CardDescription>
                 {list
-                  ? `${list.total} total · page ${page} of ${totalPages}`
+                  ? t('media.listSummary', {
+                      total: list.total,
+                      page,
+                      pages: totalPages,
+                    })
                   : ' '}
               </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <form onSubmit={handleSearchSubmit}>
                 <Input
-                  placeholder="Search filename, caption..."
+                  placeholder={t('media.searchPlaceholder')}
                   value={searchInput}
                   onChange={e => setSearchInput(e.target.value)}
                   className="w-full sm:w-64"
@@ -180,14 +187,18 @@ const MediaPage: React.FC = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All types</SelectItem>
-                  <SelectItem value="photo">Photos</SelectItem>
-                  <SelectItem value="document">Documents</SelectItem>
+                  <SelectItem value="all">{t('media.filters.all')}</SelectItem>
+                  <SelectItem value="photo">
+                    {t('media.filters.photo')}
+                  </SelectItem>
+                  <SelectItem value="document">
+                    {t('media.filters.document')}
+                  </SelectItem>
                   <SelectItem value="inspection-audio">
-                    Inspection audio
+                    {t('media.filters.inspection-audio')}
                   </SelectItem>
                   <SelectItem value="quick-check-photo">
-                    Quick check photos
+                    {t('media.filters.quick-check-photo')}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -198,12 +209,12 @@ const MediaPage: React.FC = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>File</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Apiary</TableHead>
-                <TableHead className="text-right">Size</TableHead>
-                <TableHead>Uploaded</TableHead>
+                <TableHead>{t('table.type')}</TableHead>
+                <TableHead>{t('table.file')}</TableHead>
+                <TableHead>{t('table.owner')}</TableHead>
+                <TableHead>{t('table.apiary')}</TableHead>
+                <TableHead className="text-right">{t('table.size')}</TableHead>
+                <TableHead>{t('table.uploaded')}</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -214,7 +225,7 @@ const MediaPage: React.FC = () => {
                     colSpan={7}
                     className="text-center text-muted-foreground py-8"
                   >
-                    Loading...
+                    {t('common:status.loading')}
                   </TableCell>
                 </TableRow>
               )}
@@ -224,7 +235,7 @@ const MediaPage: React.FC = () => {
                     colSpan={7}
                     className="text-center text-muted-foreground py-8"
                   >
-                    No files found.
+                    {t('media.empty')}
                   </TableCell>
                 </TableRow>
               )}
@@ -235,7 +246,7 @@ const MediaPage: React.FC = () => {
                     <TableCell>
                       <Badge variant="secondary" className="gap-1">
                         <Icon className="h-3 w-3" />
-                        {TYPE_LABEL[item.type]}
+                        {t(`media.types.${item.type}`)}
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-[280px]">
@@ -265,7 +276,7 @@ const MediaPage: React.FC = () => {
                       {formatBytes(item.fileSize)}
                     </TableCell>
                     <TableCell className="text-sm">
-                      {format(new Date(item.createdAt), 'yyyy-MM-dd')}
+                      {formatDate(item.createdAt)}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -290,7 +301,7 @@ const MediaPage: React.FC = () => {
               disabled={page <= 1}
               onClick={() => setPage(p => Math.max(1, p - 1))}
             >
-              <ChevronLeft className="h-4 w-4 mr-1" /> Prev
+              <ChevronLeft className="h-4 w-4 mr-1" /> {t('media.prev')}
             </Button>
             <Button
               variant="outline"
@@ -298,7 +309,8 @@ const MediaPage: React.FC = () => {
               disabled={page >= totalPages}
               onClick={() => setPage(p => p + 1)}
             >
-              Next <ChevronRight className="h-4 w-4 ml-1" />
+              {t('common:actions.next')}{' '}
+              <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
         </CardContent>
