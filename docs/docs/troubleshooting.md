@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+sidebar_label: Troubleshooting
 description: Solutions to common Hive-Pal issues including Docker problems, database errors, and login troubles.
 keywords: [hive-pal troubleshooting, beekeeping app issues, docker errors, database problems]
 ---

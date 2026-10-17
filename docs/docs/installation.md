@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+sidebar_label: Installation
 description: Install Hive-Pal on your own server with a single Docker container and PostgreSQL. Covers the compose file, required environment variables, and first login.
 keywords: [hive-pal installation, docker setup, self-hosted beekeeping, better auth, single container]
 ---
