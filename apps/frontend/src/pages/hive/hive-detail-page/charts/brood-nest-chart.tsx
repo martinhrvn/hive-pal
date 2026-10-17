@@ -9,6 +9,7 @@ import {
 import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
 import { InspectionResponse } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface BroodNestChartProps {
   hiveId: string | undefined;
@@ -30,17 +31,30 @@ export const BroodNestChart: React.FC<BroodNestChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation(['hive', 'inspection']);
   return (
     <BaseInspectionChart
       hiveId={hiveId}
       period={period}
-      title="Brood Nest Trend"
-      description="Frame counts over time"
+      title={t('hive:charts.broodNest.title')}
+      description={t('hive:charts.broodNest.description')}
       config={{
-        eggs: { label: 'Eggs', color: '#facc15' },
-        uncapped: { label: 'Uncapped Brood', color: '#fb923c' },
-        capped: { label: 'Capped Brood', color: '#b45309' },
-        drone: { label: 'Drone Brood', color: '#92400e' },
+        eggs: {
+          label: t('inspection:observations.eggsFrames'),
+          color: '#facc15',
+        },
+        uncapped: {
+          label: t('inspection:observations.uncappedBroodFrames'),
+          color: '#fb923c',
+        },
+        capped: {
+          label: t('inspection:observations.cappedBroodFrames'),
+          color: '#b45309',
+        },
+        drone: {
+          label: t('inspection:observations.droneBroodFrames'),
+          color: '#92400e',
+        },
       }}
       dataTransformer={inspection => ({
         date: format(parseISO(inspection.date), 'MMM dd'),

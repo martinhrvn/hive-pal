@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronUp, ChevronDown, X, Package, Snowflake } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getBoxHeight, getBoxTypeLabel } from '@/utils/box-display';
+import { useTranslation } from 'react-i18next';
 
 interface BoxItemProps {
   box: Box;
@@ -30,8 +31,12 @@ export const BoxItem = ({
   isEditing,
   frameSizeName,
 }: BoxItemProps) => {
+  const { t } = useTranslation('hive');
   const height = getBoxHeight(box.variant, 'detail', box.type);
   const defaultColor = '#CD853F'; // Default wood color
+  const boxTypeLabel = t(`layout.boxTypeLong.${box.type.toLowerCase()}`, {
+    defaultValue: getBoxTypeLabel(box.type, 'long'),
+  });
 
   const getBoxTypeBadgeClass = (type: string) => {
     const classes: Record<string, string> = {
@@ -69,7 +74,7 @@ export const BoxItem = ({
           variant="secondary"
           className={cn('font-semibold border', getBoxTypeBadgeClass(box.type))}
         >
-          {getBoxTypeLabel(box.type, 'long')}
+          {boxTypeLabel}
         </Badge>
       </div>
 

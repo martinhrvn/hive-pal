@@ -20,6 +20,7 @@ import { useFrameSizes } from '@/api/hooks';
 import { BoxStack } from './BoxStack';
 import { BoxConfigPanel } from './BoxConfigPanel';
 import { CompactBoxConfig } from './CompactBoxConfig';
+import { useTranslation } from 'react-i18next';
 
 export interface BoxBuilderRef {
   getBoxes: () => Box[];
@@ -37,6 +38,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
     const [boxes, setBoxes] = useState<Box[]>(initialBoxes);
     const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
     const { data: frameSizes = [] } = useFrameSizes();
+    const { t } = useTranslation('hive');
 
     // Get main box variant (position 0)
     const mainBox = useMemo(() => boxes.find(b => b.position === 0), [boxes]);
@@ -151,7 +153,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
       return (
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            Configure your hive's initial box setup. You can modify this later.
+            {t('boxConfigurator.initialSetupHint')}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -173,7 +175,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
                 type="button"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Box
+                {t('boxConfigurator.addBox')}
               </Button>
             </div>
 
@@ -181,7 +183,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
               {selectedBox ? (
                 <>
                   <div className="font-medium text-sm mb-3">
-                    Configure Selected Box
+                    {t('boxConfigurator.configureSelectedBox')}
                   </div>
                   <CompactBoxConfig
                     box={selectedBox}
@@ -193,7 +195,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
                 </>
               ) : (
                 <div className="text-sm text-muted-foreground text-center py-8">
-                  Click on a box to configure its properties
+                  {t('boxConfigurator.clickBoxToConfigure')}
                 </div>
               )}
             </div>
@@ -221,7 +223,7 @@ export const BoxBuilder = forwardRef<BoxBuilderRef, BoxBuilderProps>(
             type="button"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Box
+            {t('boxConfigurator.addBox')}
           </Button>
         </div>
 

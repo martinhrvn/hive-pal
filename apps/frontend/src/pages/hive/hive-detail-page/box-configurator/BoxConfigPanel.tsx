@@ -26,6 +26,32 @@ import { Button } from '@/components/ui/button';
 import { useSubmitFrameSize, useUserProfile } from '@/api/hooks';
 import { ActionResponse } from 'shared-schemas';
 import { MaintenanceInline } from './MaintenancePopover';
+import { useTranslation } from 'react-i18next';
+
+const DEFAULT_BOX_COLOR = '#CD853F';
+
+const COLOR_PRESETS = [
+  '#ef4444', // red-500
+  '#f97316', // orange-500
+  '#f59e0b', // amber-500
+  '#eab308', // yellow-500
+  '#84cc16', // lime-500
+  '#22c55e', // green-500
+  '#10b981', // emerald-500
+  '#14b8a6', // teal-500
+  '#06b6d4', // cyan-500
+  '#0ea5e9', // sky-500
+  '#3b82f6', // blue-500
+  '#6366f1', // indigo-500
+  '#8b5cf6', // violet-500
+  '#a855f7', // purple-500
+  '#d946ef', // fuchsia-500
+  '#ec4899', // pink-500
+  '#f43f5e', // rose-500
+  '#6b7280', // gray-500
+  '#a16207', // yellow-700
+  '#92400e', // amber-700
+];
 
 interface BoxConfigPanelProps {
   box: Box;
@@ -46,6 +72,7 @@ export const BoxConfigPanel = ({
   hiveId,
   lastBoxMaintenance,
 }: BoxConfigPanelProps) => {
+  const { t } = useTranslation(['hive', 'common']);
   const [showCustomFields, setShowCustomFields] = useState(false);
   const [newFrameSize, setNewFrameSize] = useState({
     name: '',
@@ -150,20 +177,28 @@ export const BoxConfigPanel = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Box Properties</CardTitle>
+        <CardTitle className="text-lg">
+          {t('hive:boxConfigurator.boxProperties')}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Box Type */}
         <div className="space-y-2">
-          <Label htmlFor="box-type">Purpose</Label>
+          <Label htmlFor="box-type">{t('hive:boxConfigurator.purpose')}</Label>
           <Select value={box.type} onValueChange={handleTypeChange}>
             <SelectTrigger id="box-type">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={BoxTypeEnum.BROOD}>Brood Box</SelectItem>
-              <SelectItem value={BoxTypeEnum.HONEY}>Honey Super</SelectItem>
-              <SelectItem value={BoxTypeEnum.FEEDER}>Feeder Box</SelectItem>
+              <SelectItem value={BoxTypeEnum.BROOD}>
+                {t('hive:boxConfigurator.boxTypes.brood')}
+              </SelectItem>
+              <SelectItem value={BoxTypeEnum.HONEY}>
+                {t('hive:boxConfigurator.boxTypes.honey')}
+              </SelectItem>
+              <SelectItem value={BoxTypeEnum.FEEDER}>
+                {t('hive:boxConfigurator.boxTypes.feeder')}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -171,7 +206,9 @@ export const BoxConfigPanel = ({
         {/* Frame Size */}
         {availableFrameSizes.length > 0 && (
           <div className="space-y-2">
-            <Label htmlFor="frame-size">Frame Size</Label>
+            <Label htmlFor="frame-size">
+              {t('hive:boxConfigurator.frameSize')}
+            </Label>
             <Select
               value={
                 showCustomFields ? '__custom__' : box.frameSizeId || '__none__'
@@ -179,59 +216,90 @@ export const BoxConfigPanel = ({
               onValueChange={handleFrameSizeChange}
             >
               <SelectTrigger id="frame-size">
-                <SelectValue placeholder="No frame size selected" />
+                <SelectValue
+                  placeholder={t('hive:boxConfigurator.noFrameSizeSelected')}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">No frame size</SelectItem>
+                <SelectItem value="__none__">
+                  {t('hive:boxConfigurator.noFrameSize')}
+                </SelectItem>
                 {builtInSizes.length > 0 && (
                   <SelectGroup>
-                    <SelectLabel>Built-in</SelectLabel>
+                    <SelectLabel>
+                      {t('hive:boxConfigurator.builtIn')}
+                    </SelectLabel>
                     {builtInSizes.map(fs => (
                       <SelectItem key={fs.id} value={fs.id}>
-                        {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
+                        {t('hive:boxConfigurator.frameSizeOption', {
+                          name: fs.name,
+                          width: fs.width,
+                          height: fs.height,
+                          depth: fs.depth,
+                        })}
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 )}
                 {communitySizes.length > 0 && (
                   <SelectGroup>
-                    <SelectLabel>Community</SelectLabel>
+                    <SelectLabel>
+                      {t('hive:boxConfigurator.community')}
+                    </SelectLabel>
                     {communitySizes.map(fs => (
                       <SelectItem key={fs.id} value={fs.id}>
-                        {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
+                        {t('hive:boxConfigurator.frameSizeOption', {
+                          name: fs.name,
+                          width: fs.width,
+                          height: fs.height,
+                          depth: fs.depth,
+                        })}
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 )}
                 {mySizes.length > 0 && (
                   <SelectGroup>
-                    <SelectLabel>My Sizes</SelectLabel>
+                    <SelectLabel>
+                      {t('hive:boxConfigurator.mySizes')}
+                    </SelectLabel>
                     {mySizes.map(fs => (
                       <SelectItem key={fs.id} value={fs.id}>
-                        {fs.name} ({fs.width} x {fs.height} x {fs.depth} mm)
+                        {t('hive:boxConfigurator.frameSizeOption', {
+                          name: fs.name,
+                          width: fs.width,
+                          height: fs.height,
+                          depth: fs.depth,
+                        })}
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 )}
-                <SelectItem value="__custom__">Custom...</SelectItem>
+                <SelectItem value="__custom__">
+                  {t('hive:boxConfigurator.customFrameSize')}
+                </SelectItem>
               </SelectContent>
             </Select>
             {showCustomFields && (
               <div className="space-y-3 rounded-md border p-3">
                 <div className="space-y-2">
-                  <Label htmlFor="fs-name">Name</Label>
+                  <Label htmlFor="fs-name">{t('hive:fields.name')}</Label>
                   <Input
                     id="fs-name"
                     value={newFrameSize.name}
                     onChange={e =>
                       setNewFrameSize({ ...newFrameSize, name: e.target.value })
                     }
-                    placeholder="e.g. Belgian Standard"
+                    placeholder={t(
+                      'hive:boxConfigurator.frameSizeNamePlaceholder',
+                    )}
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="fs-width">Width (mm)</Label>
+                    <Label htmlFor="fs-width">
+                      {t('hive:boxConfigurator.widthMm')}
+                    </Label>
                     <Input
                       id="fs-width"
                       type="number"
@@ -246,7 +314,9 @@ export const BoxConfigPanel = ({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="fs-height">Height (mm)</Label>
+                    <Label htmlFor="fs-height">
+                      {t('hive:boxConfigurator.heightMm')}
+                    </Label>
                     <Input
                       id="fs-height"
                       type="number"
@@ -261,7 +331,9 @@ export const BoxConfigPanel = ({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="fs-depth">Depth (mm)</Label>
+                    <Label htmlFor="fs-depth">
+                      {t('hive:boxConfigurator.depthMm')}
+                    </Label>
                     <Input
                       id="fs-depth"
                       type="number"
@@ -282,7 +354,7 @@ export const BoxConfigPanel = ({
                     size="sm"
                     onClick={() => setShowCustomFields(false)}
                   >
-                    Cancel
+                    {t('common:actions.cancel')}
                   </Button>
                   <Button
                     size="sm"
@@ -295,7 +367,9 @@ export const BoxConfigPanel = ({
                       !newFrameSize.depth
                     }
                   >
-                    {submitFrameSize.isPending ? 'Submitting...' : 'Submit'}
+                    {submitFrameSize.isPending
+                      ? t('hive:boxConfigurator.submitting')
+                      : t('hive:form.submit')}
                   </Button>
                 </div>
               </div>
@@ -306,7 +380,10 @@ export const BoxConfigPanel = ({
         {/* Frame Count */}
         <div className="space-y-2">
           <Label htmlFor="frame-count">
-            Frames: {box.frameCount} / {box.maxFrameCount || 10}
+            {t('hive:boxConfigurator.frameCountOf', {
+              count: box.frameCount,
+              max: box.maxFrameCount || 10,
+            })}
           </Label>
           <Slider
             id="frame-count"
@@ -320,7 +397,9 @@ export const BoxConfigPanel = ({
 
         {/* Max Frame Count */}
         <div className="space-y-2">
-          <Label htmlFor="max-frames">Maximum Frames</Label>
+          <Label htmlFor="max-frames">
+            {t('hive:boxConfigurator.maximumFrames')}
+          </Label>
           <Input
             id="max-frames"
             type="number"
@@ -333,20 +412,20 @@ export const BoxConfigPanel = ({
 
         {/* Color */}
         <div className="space-y-2">
-          <Label htmlFor="box-color">Color</Label>
+          <Label htmlFor="box-color">{t('hive:boxConfigurator.color')}</Label>
           <div className="flex gap-2">
             <Input
               id="box-color"
               type="color"
-              value={box.color || '#CD853F'}
+              value={box.color || DEFAULT_BOX_COLOR}
               onChange={e => handleColorChange(e.target.value)}
               className="h-10 w-20"
             />
             <Input
               type="text"
-              value={box.color || '#CD853F'}
+              value={box.color || DEFAULT_BOX_COLOR}
               onChange={e => handleColorChange(e.target.value)}
-              placeholder="#CD853F"
+              placeholder={DEFAULT_BOX_COLOR}
               className="flex-1"
             />
           </div>
@@ -363,7 +442,7 @@ export const BoxConfigPanel = ({
             htmlFor="queen-excluder"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Queen excluder above this box
+            {t('hive:boxConfigurator.queenExcluder')}
           </Label>
         </div>
 
@@ -372,42 +451,23 @@ export const BoxConfigPanel = ({
           <Checkbox
             id="winterized"
             checked={box.winterized ?? false}
-            onCheckedChange={checked => handleWinterizedChange(checked === true)}
+            onCheckedChange={checked =>
+              handleWinterizedChange(checked === true)
+            }
           />
           <Label
             htmlFor="winterized"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Winterized
+            {t('hive:boxConfigurator.winterized')}
           </Label>
         </div>
 
         {/* Color Presets */}
         <div className="space-y-2">
-          <Label>Color Presets</Label>
+          <Label>{t('hive:boxConfigurator.colorPresets')}</Label>
           <div className="grid grid-cols-5 gap-2">
-            {[
-              '#ef4444', // red-500
-              '#f97316', // orange-500
-              '#f59e0b', // amber-500
-              '#eab308', // yellow-500
-              '#84cc16', // lime-500
-              '#22c55e', // green-500
-              '#10b981', // emerald-500
-              '#14b8a6', // teal-500
-              '#06b6d4', // cyan-500
-              '#0ea5e9', // sky-500
-              '#3b82f6', // blue-500
-              '#6366f1', // indigo-500
-              '#8b5cf6', // violet-500
-              '#a855f7', // purple-500
-              '#d946ef', // fuchsia-500
-              '#ec4899', // pink-500
-              '#f43f5e', // rose-500
-              '#6b7280', // gray-500
-              '#a16207', // yellow-700
-              '#92400e', // amber-700
-            ].map(color => (
+            {COLOR_PRESETS.map(color => (
               <button
                 key={color}
                 type="button"
@@ -426,7 +486,7 @@ export const BoxConfigPanel = ({
         {/* Maintenance */}
         {hiveId && (
           <div className="space-y-2 border-t pt-4">
-            <Label>Maintenance</Label>
+            <Label>{t('hive:boxConfigurator.maintenance')}</Label>
             <MaintenanceInline
               hiveId={hiveId}
               component="BOX"

@@ -87,7 +87,34 @@
       "warre": "Warré",
       "topBar": "Top Bar",
       "custom": "Vlastný"
-    }
+    },
+    "frameSize": "Veľkosť rámika",
+    "noFrameSizeSelected": "Nie je vybraná veľkosť rámika",
+    "noFrameSize": "Bez veľkosti rámika",
+    "builtIn": "Vstavané",
+    "community": "Komunita",
+    "mySizes": "Moje veľkosti",
+    "customFrameSize": "Vlastná...",
+    "frameSizeNamePlaceholder": "napr. belgický štandard",
+    "widthMm": "Šírka (mm)",
+    "heightMm": "Výška (mm)",
+    "depthMm": "Hĺbka (mm)",
+    "submitting": "Odosiela sa...",
+    "frameCountOf": "Rámiky: {{count}} / {{max}}",
+    "winterized": "Zazimované",
+    "maintenance": "Údržba",
+    "frameSizeOption": "{{name}} ({{width}} x {{height}} x {{depth}} mm)",
+    "queenExcluderLabel": "Materská mriežka",
+    "initialSetupHint": "Nastavte počiatočnú zostavu nadstavkov úľa. Neskôr ju môžete upraviť.",
+    "configureSelectedBox": "Nastaviť vybraný nadstavok",
+    "clickBoxToConfigure": "Kliknite na nadstavok a nastavte jeho vlastnosti",
+    "queenExcluderAbove": "Materská mriežka nad nadstavkom",
+    "customColor": "Vlastná farba",
+    "frameSizeOptionCompact": "{{name}} ({{width}}x{{height}}x{{depth}})",
+    "removeWinterization": "Zrušiť zazimovanie",
+    "winterizeAllBoxes": "Zazimovať všetky nadstavky",
+    "unwinterize": "Odzimovať",
+    "winterizeAll": "Zazimovať všetky"
   },
   "card": {
     "showDetails": "Zobraziť podrobnosti",
@@ -107,7 +134,8 @@
     "populationShort": "Pop",
     "stores": "Zásoby",
     "queen": "Matka",
-    "queenScore": "Skóre matky"
+    "queenScore": "Skóre matky",
+    "outOfTen": "/ 10"
   },
   "status": {
     "active": "Aktívny",
@@ -211,6 +239,11 @@
       "brood": "P",
       "honey": "M",
       "feeder": "K"
+    },
+    "boxTypeLong": {
+      "brood": "Plodisko",
+      "honey": "Medník",
+      "feeder": "Kŕmidlo"
     }
   },
   "equipment": {
@@ -373,11 +406,175 @@
       "settings": "Nastavenia",
       "queens": "História matiek",
       "assistant": "Asistent"
-    }
+    },
+    "broodNestStats": "Štatistiky plodového hniezda"
   },
   "scoreWarnings": {
     "noBrood": "Nezistený plod",
     "swarmPreparation": "Zistená príprava na rojenie",
     "supersedure": "Zistená výmena matky"
+  },
+  "charts": {
+    "events": {
+      "title": "Udalosti",
+      "description": "Udalosti zaznamenané pri prehliadkach — bodka znamená, že udalosť bola pozorovaná",
+      "swarmCells": "Rojové matečníky",
+      "supersedureCells": "Matečníky tichej výmeny"
+    },
+    "broodNest": {
+      "title": "Vývoj plodového hniezda",
+      "description": "Počty rámikov v čase"
+    },
+    "queenCells": {
+      "description": "Počet matečníkov zaznamenaný pri prehliadkach"
+    },
+    "stores": {
+      "title": "Vývoj zásob",
+      "description": "Počty rámikov s peľom, nektárom a medom v čase"
+    },
+    "strength": {
+      "title": "Sila včelstva",
+      "description": "Počet obsadených uličiek v čase"
+    },
+    "broodPattern": {
+      "description": "Kvalita plodu zaznamenaná pri prehliadkach"
+    },
+    "feeding": {
+      "title": "História kŕmenia",
+      "description": "Týždenné množstvá krmiva v kg",
+      "amountKg": "Množstvo (kg)"
+    },
+    "frameComposition": {
+      "title": "Zloženie rámikov",
+      "description": "Počty rámikov podľa obsahu v čase",
+      "fields": "Polia"
+    },
+    "healthScore": {
+      "title": "Skóre zdravia úľa",
+      "description": "Aktuálne ukazovatele zdravia (stupnica 0 – 10)"
+    },
+    "periods": {
+      "select": "Vyberte obdobie",
+      "1month": "Posledný mesiac",
+      "3months": "Posledné 3 mesiace",
+      "6months": "Posledných 6 mesiacov",
+      "ytd": "Od začiatku roka",
+      "all": "Celé obdobie"
+    },
+    "noInspectionData": "Nie sú k dispozícii žiadne údaje z prehliadok",
+    "scoreTrends": {
+      "title": "Vývoj skóre prehliadok",
+      "description": "Skóre zdravia včelstva v posledných prehliadkach (stupnica 0 – 10)"
+    },
+    "scoreDetails": {
+      "title": "Podrobnosti skóre",
+      "description": "Jednotlivé zložky skóre v čase"
+    }
+  },
+  "split": {
+    "toastDone": "Delenie hotové — vytvorený úľ „{{name}}“"
+  },
+  "treatmentSummary": {
+    "loading": "Načítava sa…"
+  },
+  "feeding": {
+    "yearLabel": "Rok:",
+    "autumnLabel": "Jeseň:",
+    "yearTotal": "Spolu za {{year}}",
+    "yearTotalTooltip": "Celkové kŕmenie za aktuálny rok",
+    "syrupAmount": "{{amount}} sirupu",
+    "autumnFeeding": "Jesenné kŕmenie",
+    "sinceAugustThisYear": "Kŕmenie od augusta tohto roka",
+    "fromLastAugust": "Kŕmenie od minulého augusta",
+    "sugarCalculations": "Výpočet cukru: 1:1 = 660 g/l, 2:1 = 890 g/l, 3:2 = 750 g/l",
+    "targetProgress": "Plnenie cieľa",
+    "targetProgressTooltip": "Plnenie cieľa jesenného kŕmenia",
+    "targetSugarEquivalent": "Cieľ: {{amount}} v ekvivalente cukru",
+    "remaining": "Zostáva {{amount}}"
+  },
+  "statusChange": {
+    "title": "Zmeniť stav úľa",
+    "date": "Dátum zmeny",
+    "success": "Stav úľa bol zmenený na {{status}}",
+    "error": "Nepodarilo sa zmeniť stav úľa"
+  },
+  "timeline": {
+    "title": "Časová os aktivít",
+    "empty": "Pre tento úľ zatiaľ nie je zaznamenaná žiadna aktivita",
+    "warnings": {
+      "inspection": "Tento úkon je súčasťou prehliadky. Ak ho zmeníte tu, nebude sa zhodovať so záznamom prehliadky.",
+      "harvest": "Tento úkon je prepojený so zberom medu. Ak ho zmeníte tu, nebude sa zhodovať so záznamom zberu."
+    },
+    "splitDeleted": "Záznam o delení bol vymazaný z oboch časových osí",
+    "actionDeleted": "Úkon bol vymazaný",
+    "actionDeleteFailed": "Nepodarilo sa vymazať úkon",
+    "undoSplitUnresolved": "Nepodarilo sa určiť delenie, ktoré sa má zrušiť",
+    "splitUndone": "Delenie bolo zrušené — rámiky sú obnovené, dcérsky úľ bol vymazaný",
+    "undoSplitFailed": "Nepodarilo sa zrušiť delenie",
+    "undoSplitDialog": {
+      "title": "Zrušiť toto delenie?",
+      "description": "Delenie sa úplne vráti: dcérsky úľ sa vymaže, presunuté rámiky sa vrátia do materského úľa, presunutá matka sa vráti a vymaže sa aj pripomienka a oba záznamy na časovej osi.",
+      "conflict": "Dcérsky úľ už má vlastné prehliadky alebo úkony. Ak delenie napriek tomu zrušíte, tieto záznamy sa vymažú spolu s úľom.",
+      "undoing": "Ruší sa...",
+      "undoAnyway": "Napriek tomu zrušiť"
+    },
+    "deleteAction": {
+      "title": "Vymazať úkon?",
+      "splitDescription": "Záznam o delení sa vymaže z časových osí oboch úľov. Úle si ponechajú aktuálne rámiky aj matku — ak chcete delenie úplne vrátiť, použite „Zrušiť delenie“.",
+      "description": "Túto akciu nie je možné vrátiť. Úkon sa natrvalo vymaže."
+    }
+  },
+  "qr": {
+    "printTitle": "QR kód – {{name}}",
+    "title": "QR kód pre {{name}}",
+    "description": "Naskenujte tento QR kód a rýchlo otvorte vybraný cieľ pre tento úľ",
+    "target": "Cieľ QR kódu",
+    "targets": {
+      "detail": "Detail úľa",
+      "mobileWizard": "Mobilný sprievodca prehliadkou",
+      "audio": "Rýchla zvuková prehliadka"
+    },
+    "print": "Vytlačiť QR kód",
+    "bulk": {
+      "printTitle": "QR kódy – štítky úľov",
+      "title": "Hromadná tlač QR kódov",
+      "description": "Vyberte úle, pre ktoré chcete vytvoriť a vytlačiť štítky s QR kódom",
+      "size": "Veľkosť QR kódu",
+      "sizes": {
+        "small": "Malý (480 px)",
+        "medium": "Stredný (640 px)",
+        "large": "Veľký (960 px)"
+      },
+      "layout": "Rozloženie strany",
+      "layoutOption": "{{cols}}×{{rows}} ({{perPage}} na stranu)",
+      "physicalSize": "Fyzická veľkosť",
+      "physicalSizes": {
+        "small": "Malý (40 mm)",
+        "medium": "Stredný (60 mm)",
+        "large": "Veľký (80 mm)"
+      },
+      "includeLogo": "Pridať logo",
+      "printOnPaper": "Tlač na papier",
+      "print3d": "Súbor pre 3D tlač",
+      "selectedCount": "Vybrané úle: {{selected}} z {{total}}",
+      "selectAll": "Vybrať všetky",
+      "clearSelection": "Zrušiť výber",
+      "ready": "QR pripravený",
+      "preview": "Náhľad",
+      "logoAlt": "Logo",
+      "hint3d": "Každý QR kód bude mať {{size}} × {{size}} mm so základňou 1,2 mm a modulmi vyvýšenými o 0,8 mm. Súbor .3mf otvorte vo svojom sliceri (Bambu Studio, PrusaSlicer a pod.).",
+      "more_one": "+{{count}} ďalší",
+      "more_few": "+{{count}} ďalšie",
+      "more_many": "+{{count}} ďalších",
+      "more_other": "+{{count}} ďalších",
+      "printButton_one": "Vytlačiť {{count}} QR kód",
+      "printButton_few": "Vytlačiť {{count}} QR kódy",
+      "printButton_many": "Vytlačiť {{count}} QR kódu",
+      "printButton_other": "Vytlačiť {{count}} QR kódov",
+      "download3mf_one": "Stiahnuť .3MF — {{count}} úľ",
+      "download3mf_few": "Stiahnuť .3MF — {{count}} úle",
+      "download3mf_many": "Stiahnuť .3MF — {{count}} úľa",
+      "download3mf_other": "Stiahnuť .3MF — {{count}} úľov"
+    }
   }
 }

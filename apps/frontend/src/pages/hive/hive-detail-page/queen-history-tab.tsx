@@ -30,9 +30,7 @@ export const QueenHistoryTab: React.FC<QueenHistoryTabProps> = ({
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <Crown className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground mb-4">
-          No queen history for this hive.
-        </p>
+        <p className="text-muted-foreground mb-4">{t('list.noHiveHistory')}</p>
         <Button size="sm" asChild>
           <Link to={`/hives/${hiveId}/queens/create`}>
             <Plus className="mr-1 h-4 w-4" />

@@ -23,6 +23,7 @@ import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { useSubmitFrameSize, useUserProfile } from '@/api/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface CompactBoxConfigProps {
   box: Box;
@@ -39,6 +40,7 @@ export const CompactBoxConfig = ({
   isMainBox,
   frameSizes = [],
 }: CompactBoxConfigProps) => {
+  const { t } = useTranslation(['hive', 'common']);
   const [showCustomFields, setShowCustomFields] = useState(false);
   const [newFrameSize, setNewFrameSize] = useState({
     name: '',
@@ -94,16 +96,22 @@ export const CompactBoxConfig = ({
         {/* Box Purpose */}
         <div>
           <Label htmlFor="box-type" className="text-xs">
-            Purpose
+            {t('hive:boxConfigurator.purpose')}
           </Label>
           <Select value={box.type} onValueChange={handleTypeChange}>
             <SelectTrigger id="box-type" className="h-8 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={BoxTypeEnum.BROOD}>Brood Box</SelectItem>
-              <SelectItem value={BoxTypeEnum.HONEY}>Honey Super</SelectItem>
-              <SelectItem value={BoxTypeEnum.FEEDER}>Feeder Box</SelectItem>
+              <SelectItem value={BoxTypeEnum.BROOD}>
+                {t('hive:boxConfigurator.boxTypes.brood')}
+              </SelectItem>
+              <SelectItem value={BoxTypeEnum.HONEY}>
+                {t('hive:boxConfigurator.boxTypes.honey')}
+              </SelectItem>
+              <SelectItem value={BoxTypeEnum.FEEDER}>
+                {t('hive:boxConfigurator.boxTypes.feeder')}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -112,7 +120,7 @@ export const CompactBoxConfig = ({
         {availableFrameSizes.length > 0 && (
           <div>
             <Label htmlFor="frame-size" className="text-xs">
-              Frame Size
+              {t('hive:boxConfigurator.frameSize')}
             </Label>
             <Select
               value={
@@ -136,18 +144,29 @@ export const CompactBoxConfig = ({
               }}
             >
               <SelectTrigger id="frame-size" className="h-8 text-sm">
-                <SelectValue placeholder="No frame size" />
+                <SelectValue
+                  placeholder={t('hive:boxConfigurator.noFrameSize')}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">No frame size</SelectItem>
+                <SelectItem value="__none__">
+                  {t('hive:boxConfigurator.noFrameSize')}
+                </SelectItem>
                 {availableFrameSizes.filter(fs => fs.isBuiltIn).length > 0 && (
                   <SelectGroup>
-                    <SelectLabel>Built-in</SelectLabel>
+                    <SelectLabel>
+                      {t('hive:boxConfigurator.builtIn')}
+                    </SelectLabel>
                     {availableFrameSizes
                       .filter(fs => fs.isBuiltIn)
                       .map(fs => (
                         <SelectItem key={fs.id} value={fs.id}>
-                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                          {t('hive:boxConfigurator.frameSizeOptionCompact', {
+                            name: fs.name,
+                            width: fs.width,
+                            height: fs.height,
+                            depth: fs.depth,
+                          })}
                         </SelectItem>
                       ))}
                   </SelectGroup>
@@ -159,7 +178,9 @@ export const CompactBoxConfig = ({
                     fs.createdByUserId !== currentUserId,
                 ).length > 0 && (
                   <SelectGroup>
-                    <SelectLabel>Community</SelectLabel>
+                    <SelectLabel>
+                      {t('hive:boxConfigurator.community')}
+                    </SelectLabel>
                     {availableFrameSizes
                       .filter(
                         fs =>
@@ -169,7 +190,12 @@ export const CompactBoxConfig = ({
                       )
                       .map(fs => (
                         <SelectItem key={fs.id} value={fs.id}>
-                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                          {t('hive:boxConfigurator.frameSizeOptionCompact', {
+                            name: fs.name,
+                            width: fs.width,
+                            height: fs.height,
+                            depth: fs.depth,
+                          })}
                         </SelectItem>
                       ))}
                   </SelectGroup>
@@ -178,24 +204,33 @@ export const CompactBoxConfig = ({
                   fs => fs.createdByUserId === currentUserId,
                 ).length > 0 && (
                   <SelectGroup>
-                    <SelectLabel>My Sizes</SelectLabel>
+                    <SelectLabel>
+                      {t('hive:boxConfigurator.mySizes')}
+                    </SelectLabel>
                     {availableFrameSizes
                       .filter(fs => fs.createdByUserId === currentUserId)
                       .map(fs => (
                         <SelectItem key={fs.id} value={fs.id}>
-                          {fs.name} ({fs.width}x{fs.height}x{fs.depth})
+                          {t('hive:boxConfigurator.frameSizeOptionCompact', {
+                            name: fs.name,
+                            width: fs.width,
+                            height: fs.height,
+                            depth: fs.depth,
+                          })}
                         </SelectItem>
                       ))}
                   </SelectGroup>
                 )}
-                <SelectItem value="__custom__">Custom...</SelectItem>
+                <SelectItem value="__custom__">
+                  {t('hive:boxConfigurator.customFrameSize')}
+                </SelectItem>
               </SelectContent>
             </Select>
             {showCustomFields && (
               <div className="space-y-2 rounded-md border p-2 mt-2">
                 <div>
                   <Label htmlFor="fs-name" className="text-xs">
-                    Name
+                    {t('hive:fields.name')}
                   </Label>
                   <Input
                     id="fs-name"
@@ -204,13 +239,15 @@ export const CompactBoxConfig = ({
                     onChange={e =>
                       setNewFrameSize({ ...newFrameSize, name: e.target.value })
                     }
-                    placeholder="e.g. Belgian Standard"
+                    placeholder={t(
+                      'hive:boxConfigurator.frameSizeNamePlaceholder',
+                    )}
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <Label htmlFor="fs-width" className="text-xs">
-                      Width (mm)
+                      {t('hive:boxConfigurator.widthMm')}
                     </Label>
                     <Input
                       id="fs-width"
@@ -228,7 +265,7 @@ export const CompactBoxConfig = ({
                   </div>
                   <div>
                     <Label htmlFor="fs-height" className="text-xs">
-                      Height (mm)
+                      {t('hive:boxConfigurator.heightMm')}
                     </Label>
                     <Input
                       id="fs-height"
@@ -246,7 +283,7 @@ export const CompactBoxConfig = ({
                   </div>
                   <div>
                     <Label htmlFor="fs-depth" className="text-xs">
-                      Depth (mm)
+                      {t('hive:boxConfigurator.depthMm')}
                     </Label>
                     <Input
                       id="fs-depth"
@@ -270,7 +307,7 @@ export const CompactBoxConfig = ({
                     className="h-7 text-xs"
                     onClick={() => setShowCustomFields(false)}
                   >
-                    Cancel
+                    {t('common:actions.cancel')}
                   </Button>
                   <Button
                     size="sm"
@@ -301,7 +338,9 @@ export const CompactBoxConfig = ({
                       !newFrameSize.depth
                     }
                   >
-                    {submitFrameSize.isPending ? 'Submitting...' : 'Submit'}
+                    {submitFrameSize.isPending
+                      ? t('hive:boxConfigurator.submitting')
+                      : t('hive:form.submit')}
                   </Button>
                 </div>
               </div>
@@ -312,7 +351,10 @@ export const CompactBoxConfig = ({
         {/* Frame Count */}
         <div>
           <Label htmlFor="frame-count" className="text-xs">
-            Frames: {box.frameCount} / {box.maxFrameCount || 10}
+            {t('hive:boxConfigurator.frameCountOf', {
+              count: box.frameCount,
+              max: box.maxFrameCount || 10,
+            })}
           </Label>
           <Slider
             id="frame-count"
@@ -337,7 +379,7 @@ export const CompactBoxConfig = ({
             htmlFor="queen-excluder"
             className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Queen excluder above
+            {t('hive:boxConfigurator.queenExcluderAbove')}
           </Label>
         </div>
 
@@ -346,20 +388,22 @@ export const CompactBoxConfig = ({
           <Checkbox
             id="winterized"
             checked={box.winterized ?? false}
-            onCheckedChange={checked => handleWinterizedChange(checked === true)}
+            onCheckedChange={checked =>
+              handleWinterizedChange(checked === true)
+            }
             className="h-4 w-4"
           />
           <Label
             htmlFor="winterized"
             className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Winterized
+            {t('hive:boxConfigurator.winterized')}
           </Label>
         </div>
 
         {/* Color Selection */}
         <div>
-          <Label className="text-xs">Color</Label>
+          <Label className="text-xs">{t('hive:boxConfigurator.color')}</Label>
           <div className="flex gap-1 mt-1">
             {colorPresets.map(color => (
               <button
@@ -383,7 +427,7 @@ export const CompactBoxConfig = ({
               value={box.color || '#CD853F'}
               onChange={e => handleColorChange(e.target.value)}
               className="h-7 w-7 p-0 border-2"
-              title="Custom color"
+              title={t('hive:boxConfigurator.customColor')}
             />
           </div>
         </div>

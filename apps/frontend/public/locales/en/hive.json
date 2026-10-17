@@ -86,7 +86,34 @@
       "warre": "Warré",
       "topBar": "Top Bar",
       "custom": "Custom"
-    }
+    },
+    "frameSize": "Frame Size",
+    "noFrameSizeSelected": "No frame size selected",
+    "noFrameSize": "No frame size",
+    "builtIn": "Built-in",
+    "community": "Community",
+    "mySizes": "My Sizes",
+    "customFrameSize": "Custom...",
+    "frameSizeNamePlaceholder": "e.g. Belgian Standard",
+    "widthMm": "Width (mm)",
+    "heightMm": "Height (mm)",
+    "depthMm": "Depth (mm)",
+    "submitting": "Submitting...",
+    "frameCountOf": "Frames: {{count}} / {{max}}",
+    "winterized": "Winterized",
+    "maintenance": "Maintenance",
+    "frameSizeOption": "{{name}} ({{width}} x {{height}} x {{depth}} mm)",
+    "queenExcluderLabel": "Queen Excluder",
+    "initialSetupHint": "Configure your hive's initial box setup. You can modify this later.",
+    "configureSelectedBox": "Configure Selected Box",
+    "clickBoxToConfigure": "Click on a box to configure its properties",
+    "queenExcluderAbove": "Queen excluder above",
+    "customColor": "Custom color",
+    "frameSizeOptionCompact": "{{name}} ({{width}}x{{height}}x{{depth}})",
+    "removeWinterization": "Remove winterization",
+    "winterizeAllBoxes": "Winterize all boxes",
+    "unwinterize": "Unwinterize",
+    "winterizeAll": "Winterize All"
   },
   "card": {
     "showDetails": "Show details",
@@ -106,7 +133,8 @@
     "populationShort": "Pop",
     "stores": "Stores",
     "queen": "Queen",
-    "queenScore": "Queen Score"
+    "queenScore": "Queen Score",
+    "outOfTen": "/ 10"
   },
   "status": {
     "active": "Active",
@@ -182,14 +210,14 @@
     "back": "Back",
     "next": "Next",
     "splitting": "Splitting…",
-    "toastDonePrefix": "Split done — created",
     "undo": "Undo",
     "toastUndone": "Split undone",
     "toastUndoError": "Could not undo the split",
     "toastError": "Split failed. Please check the values and try again.",
     "provenanceFrom": "Split from",
     "provenanceFromTitle": "This hive was split from {{name}}",
-    "provenanceOffspring": "Offspring"
+    "provenanceOffspring": "Offspring",
+    "toastDone": "Split done — created „{{name}}“"
   },
   "manage": {
     "title": "Manage Hive",
@@ -263,6 +291,11 @@
       "brood": "B",
       "honey": "H",
       "feeder": "F"
+    },
+    "boxTypeLong": {
+      "brood": "Brood",
+      "honey": "Honey",
+      "feeder": "Feeder"
     }
   },
   "equipment": {
@@ -391,7 +424,8 @@
     "inWithdrawal": "In withdrawal until {{date}} ({{product}})",
     "safeToHarvest": "Withdrawal passed — safe to harvest",
     "empty": "No treatments with a known composition yet.",
-    "incompleteHint": "{{n}} treatment(s) could not be converted (missing density / incompatible units)"
+    "incompleteHint": "{{n}} treatment(s) could not be converted (missing density / incompatible units)",
+    "loading": "Loading…"
   },
   "actionDialog": {
     "addTrigger": "Add Action",
@@ -432,11 +466,163 @@
       "settings": "Settings",
       "queens": "Queen History",
       "assistant": "Assistant"
-    }
+    },
+    "broodNestStats": "Brood Nest Stats"
   },
   "scoreWarnings": {
     "noBrood": "No brood detected",
     "swarmPreparation": "Swarm preparation detected",
     "supersedure": "Queen supersedure detected"
+  },
+  "charts": {
+    "events": {
+      "title": "Events",
+      "description": "Boolean events recorded per inspection — dots indicate the event was observed",
+      "swarmCells": "Swarm Cells",
+      "supersedureCells": "Supersedure Cells"
+    },
+    "broodNest": {
+      "title": "Brood Nest Trend",
+      "description": "Frame counts over time"
+    },
+    "queenCells": {
+      "description": "Count of queen cells recorded per inspection"
+    },
+    "stores": {
+      "title": "Store Trend",
+      "description": "Pollen, nectar, and honey frame counts over time"
+    },
+    "strength": {
+      "title": "Colony Strength",
+      "description": "Occupied frame-space count recorded over time"
+    },
+    "broodPattern": {
+      "description": "Recorded brood pattern quality per inspection"
+    },
+    "feeding": {
+      "title": "Feeding History",
+      "description": "Weekly feeding amounts in kg",
+      "amountKg": "Amount (kg)"
+    },
+    "frameComposition": {
+      "title": "Frame Composition",
+      "description": "Raw frame counts by content over time",
+      "fields": "Fields"
+    },
+    "healthScore": {
+      "title": "Hive Health Score",
+      "description": "Current health metrics (0-10 scale)"
+    },
+    "periods": {
+      "select": "Select period",
+      "1month": "Last month",
+      "3months": "Last 3 months",
+      "6months": "Last 6 months",
+      "ytd": "Year to date",
+      "all": "All time"
+    },
+    "noInspectionData": "No inspection data available",
+    "scoreTrends": {
+      "title": "Inspection Score Trends",
+      "description": "Colony health scores over recent inspections (0-10 scale)"
+    },
+    "scoreDetails": {
+      "title": "Score Details",
+      "description": "Individual score components over time"
+    }
+  },
+  "feeding": {
+    "yearLabel": "Year:",
+    "autumnLabel": "Autumn:",
+    "yearTotal": "{{year}} Total",
+    "yearTotalTooltip": "Total feeding for the current year",
+    "syrupAmount": "{{amount}} syrup",
+    "autumnFeeding": "Autumn Feeding",
+    "sinceAugustThisYear": "Feeding since August this year",
+    "fromLastAugust": "Feeding from last August onwards",
+    "sugarCalculations": "Sugar calculations: 1:1 = 660g/L, 2:1 = 890g/L, 3:2 = 750g/L",
+    "targetProgress": "Target Progress",
+    "targetProgressTooltip": "Progress towards autumn feeding target",
+    "targetSugarEquivalent": "Target: {{amount}} sugar equivalent",
+    "remaining": "{{amount}} remaining"
+  },
+  "statusChange": {
+    "title": "Change hive status",
+    "date": "Change date",
+    "success": "Hive status updated to {{status}}",
+    "error": "Failed to update hive status"
+  },
+  "timeline": {
+    "title": "Activity Timeline",
+    "empty": "No activity recorded for this hive yet",
+    "warnings": {
+      "inspection": "This action is part of an inspection. Modifying it here will cause it to be out of sync with the inspection record.",
+      "harvest": "This action is linked to a harvest. Modifying it here will cause it to be out of sync with the harvest record."
+    },
+    "splitDeleted": "Split record deleted from both timelines",
+    "actionDeleted": "Action deleted",
+    "actionDeleteFailed": "Failed to delete action",
+    "undoSplitUnresolved": "Could not resolve the split to undo",
+    "splitUndone": "Split undone — frames restored, daughter hive removed",
+    "undoSplitFailed": "Failed to undo the split",
+    "undoSplitDialog": {
+      "title": "Undo this split?",
+      "description": "This fully reverts the split: the daughter hive is deleted, the moved frames are restored to the mother, a moved queen returns, and the follow-up reminder plus both timeline entries are removed.",
+      "conflict": "The daughter hive already has its own inspections or actions. Undoing anyway will delete those records along with the hive.",
+      "undoing": "Undoing...",
+      "undoAnyway": "Undo anyway"
+    },
+    "deleteAction": {
+      "title": "Delete Action?",
+      "splitDescription": "This removes the split record from both hives’ timelines. The hives themselves keep their current frames and queen — use \"Undo split\" instead to fully revert the split.",
+      "description": "This action cannot be undone. This will permanently delete this action."
+    }
+  },
+  "qr": {
+    "printTitle": "QR Code - {{name}}",
+    "title": "QR Code for {{name}}",
+    "description": "Scan this QR code to quickly open the selected destination for this hive",
+    "target": "QR Target",
+    "targets": {
+      "detail": "Hive detail page",
+      "mobileWizard": "Mobile inspection wizard",
+      "audio": "Quick audio inspection"
+    },
+    "print": "Print QR Code",
+    "bulk": {
+      "printTitle": "QR Codes - Hive Labels",
+      "title": "Bulk QR Code Printing",
+      "description": "Select hives to generate and print QR code labels",
+      "size": "QR Code Size",
+      "sizes": {
+        "small": "Small (480px)",
+        "medium": "Medium (640px)",
+        "large": "Large (960px)"
+      },
+      "layout": "Page Layout",
+      "layoutOption": "{{cols}}×{{rows}} ({{perPage}} per page)",
+      "physicalSize": "Physical Size",
+      "physicalSizes": {
+        "small": "Small (40mm)",
+        "medium": "Medium (60mm)",
+        "large": "Large (80mm)"
+      },
+      "includeLogo": "Include Logo",
+      "printOnPaper": "Print on paper",
+      "print3d": "3D Print file",
+      "selectedCount": "{{selected}} of {{total}} hives selected",
+      "selectAll": "Select All",
+      "clearSelection": "Clear Selection",
+      "ready": "QR Ready",
+      "preview": "Preview",
+      "logoAlt": "Logo",
+      "hint3d": "Each QR code will be {{size}}mm × {{size}}mm with a 1.2mm base and 0.8mm raised modules. Open the .3mf file in your slicer (Bambu Studio, PrusaSlicer, etc.).",
+      "more_one": "+{{count}} more",
+      "more_other": "+{{count}} more",
+      "printButton_one": "Print {{count}} QR Code",
+      "printButton_other": "Print {{count}} QR Codes",
+      "download3mf_one": "Download .3MF — {{count}} hive",
+      "download3mf_other": "Download .3MF — {{count}} hives"
+    }
   }
 }

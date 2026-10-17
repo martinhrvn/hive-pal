@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/tooltip';
 import { ActionType } from 'shared-schemas';
 import { useUnitFormat } from '@/hooks/use-unit-format';
+import { useTranslation } from 'react-i18next';
 
 interface FeedingSectionProps {
   hiveId: string;
@@ -23,6 +24,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
   hiveId,
   variant = 'card',
 }) => {
+  const { t } = useTranslation('hive');
   const { data: actions, isLoading } = useActions(
     hiveId ? { hiveId, type: ActionType.FEEDING } : undefined,
     {
@@ -34,7 +36,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
 
   if (!hiveId || isLoading) {
     return (
-      <Section title="Feeding">
+      <Section title={t('card.feeding')}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (
             <Card key={i} className="p-4">
@@ -72,13 +74,17 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
         <div className="sm:hidden flex items-center justify-between gap-2">
           <div className="flex items-center gap-4">
             <div>
-              <span className="text-xs text-muted-foreground">Year:</span>
+              <span className="text-xs text-muted-foreground">
+                {t('feeding.yearLabel')}
+              </span>
               <span className="text-sm font-semibold ml-1">
                 {formatWeight(totals.currentYearSugarKg).label}
               </span>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Autumn:</span>
+              <span className="text-xs text-muted-foreground">
+                {t('feeding.autumnLabel')}
+              </span>
               <span className="text-sm font-semibold ml-1">
                 {formatWeight(totals.autumnSugarKg).label}
               </span>
@@ -93,13 +99,17 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
         {/* Desktop compact view */}
         <div className="hidden sm:flex items-center gap-4">
           <div className="flex items-center gap-1">
-            <span className="text-xs text-muted-foreground">Year:</span>
+            <span className="text-xs text-muted-foreground">
+              {t('feeding.yearLabel')}
+            </span>
             <span className="text-sm font-semibold">
               {formatWeight(totals.currentYearSugarKg).label}
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-xs text-muted-foreground">Autumn:</span>
+            <span className="text-xs text-muted-foreground">
+              {t('feeding.autumnLabel')}
+            </span>
             <span className="text-sm font-semibold">
               {formatWeight(totals.autumnSugarKg).label}
             </span>
@@ -134,13 +144,17 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div>
-              <span className="text-xs text-muted-foreground">Year:</span>
+              <span className="text-xs text-muted-foreground">
+                {t('feeding.yearLabel')}
+              </span>
               <span className="text-sm font-semibold ml-1">
                 {formatWeight(totals.currentYearSugarKg).label}
               </span>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Autumn:</span>
+              <span className="text-xs text-muted-foreground">
+                {t('feeding.autumnLabel')}
+              </span>
               <span className="text-sm font-semibold ml-1">
                 {formatWeight(totals.autumnSugarKg).label}
               </span>
@@ -175,7 +189,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="text-sm text-muted-foreground">
-                {new Date().getFullYear()} Total
+                {t('feeding.yearTotal', { year: new Date().getFullYear() })}
               </div>
               <TooltipProvider>
                 <Tooltip>
@@ -183,7 +197,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Total feeding for the current year</p>
+                    <p>{t('feeding.yearTotalTooltip')}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -193,7 +207,9 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
             </div>
             {totals.currentYearSyrupLiters > 0 && (
               <div className="text-xs text-muted-foreground">
-                {formatVolume(totals.currentYearSyrupLiters).label} syrup
+                {t('feeding.syrupAmount', {
+                  amount: formatVolume(totals.currentYearSyrupLiters).label,
+                })}
               </div>
             )}
           </div>
@@ -202,7 +218,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="text-sm text-muted-foreground">
-                Autumn Feeding
+                {t('feeding.autumnFeeding')}
               </div>
               <TooltipProvider>
                 <Tooltip>
@@ -212,12 +228,11 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
                   <TooltipContent>
                     <p>
                       {isAfterAugust
-                        ? 'Feeding since August this year'
-                        : 'Feeding from last August onwards'}
+                        ? t('feeding.sinceAugustThisYear')
+                        : t('feeding.fromLastAugust')}
                     </p>
                     <p className="text-xs mt-1">
-                      Sugar calculations: 1:1 = 660g/L, 2:1 = 890g/L, 3:2 =
-                      750g/L
+                      {t('feeding.sugarCalculations')}
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -228,7 +243,9 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
             </div>
             {totals.autumnSyrupLiters > 0 && (
               <div className="text-xs text-muted-foreground">
-                {formatVolume(totals.autumnSyrupLiters).label} syrup
+                {t('feeding.syrupAmount', {
+                  amount: formatVolume(totals.autumnSyrupLiters).label,
+                })}
               </div>
             )}
           </div>
@@ -237,16 +254,20 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
         {/* Feeding Progress */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">Target Progress</div>
+            <div className="text-sm text-muted-foreground">
+              {t('feeding.targetProgress')}
+            </div>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
                   <Target className="h-4 w-4 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Progress towards autumn feeding target</p>
+                  <p>{t('feeding.targetProgressTooltip')}</p>
                   <p className="text-xs mt-1">
-                    Target: {formatWeight(targetAmount).label} sugar equivalent
+                    {t('feeding.targetSugarEquivalent', {
+                      amount: formatWeight(targetAmount).label,
+                    })}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -272,7 +293,9 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
           />
           {remainingAmount > 0 && (
             <div className="text-xs text-muted-foreground">
-              {formatWeight(remainingAmount).label} remaining
+              {t('feeding.remaining', {
+                amount: formatWeight(remainingAmount).label,
+              })}
             </div>
           )}
         </div>

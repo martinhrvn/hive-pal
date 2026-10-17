@@ -18,6 +18,7 @@ import { useFeatures, QUICK_CHECK_KEYS } from '@/api/hooks';
 import { apiClient } from '@/api/client';
 import { cn } from '@/lib/utils';
 import { CreateQuickCheck, QuickCheckResponse } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface QuickCheckDialogProps {
   hiveId?: string;
@@ -30,29 +31,31 @@ interface QuickCheckDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+// Labels come from the inspection form's observation keys, so a tag reads the
+// same in a quick check as in a full inspection.
 const ADDITIONAL_OBSERVATION_TAGS = [
-  { value: 'calm', label: 'Calm' },
-  { value: 'defensive', label: 'Defensive' },
-  { value: 'aggressive', label: 'Aggressive' },
-  { value: 'nervous', label: 'Nervous' },
-  { value: 'varroa_present', label: 'Varroa Present' },
-  { value: 'small_hive_beetle', label: 'Small Hive Beetle' },
-  { value: 'wax_moths', label: 'Wax Moths' },
-  { value: 'ants_present', label: 'Ants Present' },
-  { value: 'healthy', label: 'Healthy' },
-  { value: 'active', label: 'Active' },
-  { value: 'sluggish', label: 'Sluggish' },
-  { value: 'thriving', label: 'Thriving' },
+  'calm',
+  'defensive',
+  'aggressive',
+  'nervous',
+  'varroa_present',
+  'small_hive_beetle',
+  'wax_moths',
+  'ants_present',
+  'healthy',
+  'active',
+  'sluggish',
+  'thriving',
 ] as const;
 
 const REMINDER_OBSERVATION_TAGS = [
-  { value: 'honey_bound', label: 'Honey Bound' },
-  { value: 'overcrowded', label: 'Overcrowded' },
-  { value: 'needs_super', label: 'Needs Super' },
-  { value: 'queen_issues', label: 'Queen Issues' },
-  { value: 'requires_treatment', label: 'Requires Treatment' },
-  { value: 'low_stores', label: 'Low Stores' },
-  { value: 'prepare_for_winter', label: 'Prepare for Winter' },
+  'honey_bound',
+  'overcrowded',
+  'needs_super',
+  'queen_issues',
+  'requires_treatment',
+  'low_stores',
+  'prepare_for_winter',
 ] as const;
 
 export function QuickCheckDialog({
@@ -62,6 +65,7 @@ export function QuickCheckDialog({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
 }: QuickCheckDialogProps) {
+  const { t } = useTranslation(['common', 'inspection', 'hive']);
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -81,7 +85,7 @@ export function QuickCheckDialog({
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
-      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag],
+      prev.includes(tag) ? prev.filter(x => x !== tag) : [...prev, tag],
     );
   };
 
@@ -89,7 +93,7 @@ export function QuickCheckDialog({
     const files = Array.from(e.target.files || []);
     const remaining = 5 - selectedFiles.length;
     if (files.length > remaining) {
-      toast.error(`Maximum 5 photos allowed. You can add ${remaining} more.`);
+      toast.error(t('common:quickCheck.maxPhotos', { remaining }));
     }
     // Create stable preview URLs before resetting the input,
     // since mobile browsers may invalidate File blobs after input reset
@@ -125,8 +129,8 @@ export function QuickCheckDialog({
         apiaryId,
         hiveId,
         tags: selectedTags as Array<
-          | (typeof ADDITIONAL_OBSERVATION_TAGS)[number]['value']
-          | (typeof REMINDER_OBSERVATION_TAGS)[number]['value']
+          | (typeof ADDITIONAL_OBSERVATION_TAGS)[number]
+          | (typeof REMINDER_OBSERVATION_TAGS)[number]
         >,
         note: note.trim() || undefined,
         date: new Date().toISOString(),
@@ -148,7 +152,7 @@ export function QuickCheckDialog({
             formData,
           );
         } catch {
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('common:quickCheck.uploadFailed', { name: file.name }));
         }
       }
 
@@ -157,11 +161,11 @@ export function QuickCheckDialog({
         queryKey: QUICK_CHECK_KEYS.all,
       });
 
-      toast.success('Quick check saved');
+      toast.success(t('common:quickCheck.saved'));
       resetForm();
       setOpen(false);
     } catch {
-      toast.error('Failed to save quick check');
+      toast.error(t('common:quickCheck.saveFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -180,21 +184,21 @@ export function QuickCheckDialog({
           {triggerVariant === 'sidebar' ? (
             <Button variant="ghost" className="w-full justify-start" size="sm">
               <ClipboardCheck className="mr-2 h-4 w-4" />
-              Quick Check
+              {t('common:quickCheck.title')}
             </Button>
           ) : (
             <Button variant="outline" size="sm">
               <ClipboardCheck className="mr-2 h-4 w-4" />
-              Quick Check
+              {t('common:quickCheck.title')}
             </Button>
           )}
         </DialogTrigger>
       )}
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Quick Check</DialogTitle>
+          <DialogTitle>{t('common:quickCheck.title')}</DialogTitle>
           <DialogDescription>
-            Record a quick observation with tags and an optional note.
+            {t('common:quickCheck.dialogDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -202,23 +206,21 @@ export function QuickCheckDialog({
           {/* Observation Tags */}
           <div>
             <label className="text-sm font-medium mb-2 block">
-              Observations
+              {t('inspection:observations.title')}
             </label>
             <div className="flex flex-wrap gap-1.5">
               {ADDITIONAL_OBSERVATION_TAGS.map(tag => (
                 <Badge
-                  key={tag.value}
-                  variant={
-                    selectedTags.includes(tag.value) ? 'default' : 'outline'
-                  }
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? 'default' : 'outline'}
                   className={cn(
                     'cursor-pointer select-none',
-                    selectedTags.includes(tag.value) &&
+                    selectedTags.includes(tag) &&
                       'bg-blue-600 hover:bg-blue-700',
                   )}
-                  onClick={() => toggleTag(tag.value)}
+                  onClick={() => toggleTag(tag)}
                 >
-                  {tag.label}
+                  {t(`inspection:observations.additional.${tag}`)}
                 </Badge>
               ))}
             </div>
@@ -226,22 +228,22 @@ export function QuickCheckDialog({
 
           {/* Reminder Tags */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Reminders</label>
+            <label className="text-sm font-medium mb-2 block">
+              {t('inspection:observations.reminderObservations')}
+            </label>
             <div className="flex flex-wrap gap-1.5">
               {REMINDER_OBSERVATION_TAGS.map(tag => (
                 <Badge
-                  key={tag.value}
-                  variant={
-                    selectedTags.includes(tag.value) ? 'default' : 'outline'
-                  }
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? 'default' : 'outline'}
                   className={cn(
                     'cursor-pointer select-none',
-                    selectedTags.includes(tag.value) &&
+                    selectedTags.includes(tag) &&
                       'bg-amber-600 hover:bg-amber-700',
                   )}
-                  onClick={() => toggleTag(tag.value)}
+                  onClick={() => toggleTag(tag)}
                 >
-                  {tag.label}
+                  {t(`inspection:observations.reminder.${tag}`)}
                 </Badge>
               ))}
             </div>
@@ -250,15 +252,15 @@ export function QuickCheckDialog({
           {/* Note */}
           <div>
             <label className="text-sm font-medium mb-2 block">
-              Note{' '}
+              {t('common:quickCheck.note')}{' '}
               <span className="text-muted-foreground font-normal">
-                (optional)
+                {t('common:quickCheck.optional')}
               </span>
             </label>
             <Textarea
               value={note}
               onChange={e => setNote(e.target.value)}
-              placeholder="What did you observe?"
+              placeholder={t('common:quickCheck.notePlaceholder')}
               className="min-h-[80px] resize-none"
               maxLength={2000}
             />
@@ -271,9 +273,9 @@ export function QuickCheckDialog({
           {features?.storageEnabled && (
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Photos{' '}
+                {t('common:quickCheck.photos')}{' '}
                 <span className="text-muted-foreground font-normal">
-                  (optional, max 5)
+                  {t('common:quickCheck.photosOptional')}
                 </span>
               </label>
 
@@ -318,7 +320,7 @@ export function QuickCheckDialog({
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <ImagePlus className="mr-2 h-4 w-4" />
-                    Add Photos
+                    {t('common:quickCheck.addPhotos')}
                   </Button>
                 </>
               )}
@@ -337,10 +339,10 @@ export function QuickCheckDialog({
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {t('hive:settings.saving')}
               </>
             ) : (
-              'Save Quick Check'
+              t('common:quickCheck.save')
             )}
           </Button>
         </DialogFooter>

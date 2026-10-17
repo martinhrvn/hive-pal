@@ -16,6 +16,7 @@ import {
 import { BaseInspectionChart } from './base-inspection-chart';
 import { ChartPeriod } from './index';
 import { InspectionResponse } from 'shared-schemas';
+import { useTranslation } from 'react-i18next';
 
 interface BooleanEventsChartProps {
   hiveId: string | undefined;
@@ -24,11 +25,21 @@ interface BooleanEventsChartProps {
 
 // Y-axis categories — numeric position for each event type
 const EVENT_ROWS = [
-  { key: 'queenSeen', label: 'Queen Seen', y: 3, color: '#a855f7' },
-  { key: 'swarmCells', label: 'Swarm Cells', y: 2, color: '#f43f5e' },
+  {
+    key: 'queenSeen',
+    labelKey: 'inspection:fields.queenSeen',
+    y: 3,
+    color: '#a855f7',
+  },
+  {
+    key: 'swarmCells',
+    labelKey: 'hive:charts.events.swarmCells',
+    y: 2,
+    color: '#f43f5e',
+  },
   {
     key: 'supersedureCells',
-    label: 'Supersedure Cells',
+    labelKey: 'hive:charts.events.supersedureCells',
     y: 1,
     color: '#f97316',
   },
@@ -50,14 +61,18 @@ export const BooleanEventsChart: React.FC<BooleanEventsChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation(['hive', 'inspection']);
   return (
     <BaseInspectionChart
       hiveId={hiveId}
       period={period}
-      title="Events"
-      description="Boolean events recorded per inspection — dots indicate the event was observed"
+      title={t('hive:charts.events.title')}
+      description={t('hive:charts.events.description')}
       config={Object.fromEntries(
-        EVENT_ROWS.map(ev => [ev.key, { label: ev.label, color: ev.color }]),
+        EVENT_ROWS.map(ev => [
+          ev.key,
+          { label: t(ev.labelKey), color: ev.color },
+        ]),
       )}
       dataTransformer={inspection => ({
         date: format(parseISO(inspection.date), 'MMM dd'),
@@ -88,8 +103,10 @@ export const BooleanEventsChart: React.FC<BooleanEventsChartProps> = ({
         }
 
         const yTicks = EVENT_ROWS.map(ev => ev.y);
-        const yTickFormatter = (v: number) =>
-          EVENT_ROWS.find(ev => ev.y === v)?.label ?? '';
+        const yTickFormatter = (v: number) => {
+          const ev = EVENT_ROWS.find(row => row.y === v);
+          return ev ? t(ev.labelKey) : '';
+        };
 
         return (
           <ScatterChart>
@@ -112,7 +129,7 @@ export const BooleanEventsChart: React.FC<BooleanEventsChartProps> = ({
                 <ChartTooltipContent
                   formatter={(_, name) => {
                     const ev = EVENT_ROWS.find(e => e.key === name);
-                    return ev ? ev.label : name;
+                    return ev ? t(ev.labelKey) : name;
                   }}
                 />
               }

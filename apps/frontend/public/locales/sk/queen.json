@@ -204,7 +204,8 @@
       "description": "Skúste iný stav alebo úľ.",
       "cta": "Zrušiť filtre"
     },
-    "searchPlaceholder": "Hľadať matky…"
+    "searchPlaceholder": "Hľadať matky…",
+    "noHiveHistory": "Tento úľ zatiaľ nemá históriu matiek."
   },
   "validation": {
     "hiveRequired": "Vyberte úľ",

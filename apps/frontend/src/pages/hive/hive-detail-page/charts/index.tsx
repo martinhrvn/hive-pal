@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export type ChartPeriod = '1month' | '3months' | '6months' | 'ytd' | 'all';
 
@@ -33,6 +34,7 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
   inspectionType,
   hiveScore,
 }) => {
+  const { t } = useTranslation('hive');
   const [period, setPeriod] = useState<ChartPeriod>('6months');
   const isSubjective = (inspectionType ?? 'data_driven') === 'subjective';
 
@@ -47,14 +49,18 @@ export const HiveCharts: React.FC<HiveChartsProps> = ({
         >
           <SelectTrigger className="w-[180px]">
             <Calendar className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Select period" />
+            <SelectValue placeholder={t('charts.periods.select')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1month">Last month</SelectItem>
-            <SelectItem value="3months">Last 3 months</SelectItem>
-            <SelectItem value="6months">Last 6 months</SelectItem>
-            <SelectItem value="ytd">Year to date</SelectItem>
-            <SelectItem value="all">All time</SelectItem>
+            <SelectItem value="1month">{t('charts.periods.1month')}</SelectItem>
+            <SelectItem value="3months">
+              {t('charts.periods.3months')}
+            </SelectItem>
+            <SelectItem value="6months">
+              {t('charts.periods.6months')}
+            </SelectItem>
+            <SelectItem value="ytd">{t('charts.periods.ytd')}</SelectItem>
+            <SelectItem value="all">{t('charts.periods.all')}</SelectItem>
           </SelectContent>
         </Select>
       </div>

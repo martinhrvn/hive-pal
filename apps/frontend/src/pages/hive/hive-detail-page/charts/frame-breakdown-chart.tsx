@@ -27,6 +27,7 @@ import { ChartPeriod } from './index';
 import { useInspectionChartData } from './useChartData';
 import { InspectionResponse } from 'shared-schemas';
 import { FRAME_FIELDS, FrameFieldKey } from '@/constants/frame-fields';
+import { useTranslation } from 'react-i18next';
 
 interface FrameBreakdownChartProps {
   hiveId: string | undefined;
@@ -52,6 +53,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
   hiveId,
   period,
 }) => {
+  const { t } = useTranslation('hive');
   const [selected, setSelected] = useState<Set<FrameKey>>(
     new Set(FRAME_FIELDS.map(ft => ft.key)),
   );
@@ -97,9 +99,9 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <CardTitle>Frame Composition</CardTitle>
+            <CardTitle>{t('charts.frameComposition.title')}</CardTitle>
             <CardDescription>
-              Raw frame counts by content over time
+              {t('charts.frameComposition.description')}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -112,7 +114,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
                   className="h-8 gap-1.5 text-xs"
                 >
                   <SlidersHorizontal className="h-3.5 w-3.5" />
-                  Fields
+                  {t('charts.frameComposition.fields')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-2" align="end">

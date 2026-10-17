@@ -391,7 +391,9 @@
         "cleaned": "Cleaned",
         "replaced": "Replaced",
         "notesOptional": "Notes (optional)",
-        "notesPlaceholder": "Additional notes about the maintenance..."
+        "notesPlaceholder": "Additional notes about the maintenance...",
+        "savedToast": "{{status}} — {{date}}",
+        "saveError": "Failed to save maintenance action"
       },
       "statusChange": "Change Status",
       "statusChange_section": {

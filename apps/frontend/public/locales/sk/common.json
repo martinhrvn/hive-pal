@@ -66,7 +66,8 @@
         "scheduleInspection": "Naplánovať prehliadku",
         "newQueen": "Nová matka",
         "recentInspections": "Nedávne prehliadky",
-        "openMenu": "Otvoriť menu"
+        "openMenu": "Otvoriť menu",
+        "deleting": "Vymazáva sa..."
     },
     "status": {
         "loading": "Načítava sa...",
@@ -216,7 +217,19 @@
         "deleteTitle": "Vymazať rýchlu kontrolu?",
         "deleteDescription": "Túto akciu nie je možné vrátiť. Natrvalo sa vymaže táto rýchla kontrola a jej fotografie.",
         "deleted": "Rýchla kontrola bola vymazaná",
-        "deleteFailed": "Nepodarilo sa vymazať rýchlu kontrolu"
+        "deleteFailed": "Nepodarilo sa vymazať rýchlu kontrolu",
+        "dialogDescription": "Zaznamenajte rýchle pozorovanie pomocou štítkov a voliteľnej poznámky.",
+        "note": "Poznámka",
+        "optional": "(voliteľné)",
+        "notePlaceholder": "Čo ste spozorovali?",
+        "photos": "Fotografie",
+        "photosOptional": "(voliteľné, max. 5)",
+        "addPhotos": "Pridať fotografie",
+        "save": "Uložiť rýchlu kontrolu",
+        "saved": "Rýchla kontrola bola uložená",
+        "saveFailed": "Nepodarilo sa uložiť rýchlu kontrolu",
+        "uploadFailed": "Nepodarilo sa nahrať {{name}}",
+        "maxPhotos": "Povolených je najviac 5 fotografií. Môžete pridať ešte {{remaining}}."
     },
     "timeline": {
         "recentActivity": "Nedávna aktivita",

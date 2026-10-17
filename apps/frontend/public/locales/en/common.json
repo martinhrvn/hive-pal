@@ -100,7 +100,8 @@
     "scheduleInspection": "Schedule Inspection",
     "newQueen": "New Queen",
     "recentInspections": "Recent Inspections",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "deleting": "Deleting..."
   },
   "status": {
     "loading": "Loading...",
@@ -382,7 +383,19 @@
     "deleteTitle": "Delete Quick Check?",
     "deleteDescription": "This action cannot be undone. This will permanently delete this quick check and its photos.",
     "deleted": "Quick check deleted",
-    "deleteFailed": "Failed to delete quick check"
+    "deleteFailed": "Failed to delete quick check",
+    "dialogDescription": "Record a quick observation with tags and an optional note.",
+    "note": "Note",
+    "optional": "(optional)",
+    "notePlaceholder": "What did you observe?",
+    "photos": "Photos",
+    "photosOptional": "(optional, max 5)",
+    "addPhotos": "Add Photos",
+    "save": "Save Quick Check",
+    "saved": "Quick check saved",
+    "saveFailed": "Failed to save quick check",
+    "uploadFailed": "Failed to upload {{name}}",
+    "maxPhotos": "Maximum 5 photos allowed. You can add {{remaining}} more."
   },
   "timeline": {
     "recentActivity": "Recent Activity",

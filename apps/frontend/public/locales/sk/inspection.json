@@ -306,7 +306,9 @@
                 "cleaned": "Vyčistené",
                 "replaced": "Vymenené",
                 "notesOptional": "Poznámky (voliteľné)",
-                "notesPlaceholder": "Doplňujúce poznámky k údržbe..."
+                "notesPlaceholder": "Doplňujúce poznámky k údržbe...",
+                "savedToast": "{{status}} — {{date}}",
+                "saveError": "Nepodarilo sa uložiť údržbu"
             }
         },
         "audio": {

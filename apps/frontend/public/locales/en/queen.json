@@ -204,7 +204,8 @@
       "description": "Try a different status or hive.",
       "cta": "Clear filters"
     },
-    "searchPlaceholder": "Search queens…"
+    "searchPlaceholder": "Search queens…",
+    "noHiveHistory": "No queen history for this hive."
   },
   "validation": {
     "hiveRequired": "Select a hive",

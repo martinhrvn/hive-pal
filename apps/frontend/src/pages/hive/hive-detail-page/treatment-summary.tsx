@@ -72,7 +72,11 @@ export function TreatmentSummary({ hiveId }: Props) {
           </div>
         )}
 
-        {isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+        {isLoading && (
+          <p className="text-sm text-muted-foreground">
+            {t('treatmentSummary.loading')}
+          </p>
+        )}
 
         {!isLoading && totals.length === 0 && (
           <p className="text-sm text-muted-foreground">

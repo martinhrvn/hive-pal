@@ -28,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { generateQR3MF } from '@/lib/generate-qr-3mf';
+import { useTranslation } from 'react-i18next';
 
 // Lazy load QR code library
 const QRCode = lazy(() =>
@@ -52,6 +53,7 @@ const TARGET_PATH: Record<QrTarget, (hiveId: string) => string> = {
 };
 
 export function QRCodesPrintPage() {
+  const { t } = useTranslation('hive');
   const { data: hives, isLoading } = useHives();
   const [selectedHives, setSelectedHives] = useState<Set<string>>(new Set());
   const [qrSize, setQrSize] = useState<'small' | 'medium' | 'large'>('large');
@@ -200,7 +202,7 @@ export function QRCodesPrintPage() {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>QR Codes - Hive Labels</title>
+          <title>${t('qr.bulk.printTitle')}</title>
           ${styles}
           <script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
         </head>
@@ -307,18 +309,16 @@ export function QRCodesPrintPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <QrCodeIcon className="h-6 w-6" />
-            Bulk QR Code Printing
+            {t('qr.bulk.title')}
           </CardTitle>
-          <CardDescription>
-            Select hives to generate and print QR code labels
-          </CardDescription>
+          <CardDescription>{t('qr.bulk.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Print Settings */}
           <div className="flex flex-wrap gap-4 p-4 bg-muted/50 rounded-lg">
             {/* QR Target — always visible */}
             <div className="flex-1 min-w-[200px]">
-              <Label htmlFor="qr-target">QR Target</Label>
+              <Label htmlFor="qr-target">{t('qr.target')}</Label>
               <Select
                 value={target}
                 onValueChange={value => setTarget(value as QrTarget)}
@@ -327,11 +327,13 @@ export function QRCodesPrintPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="detail">Hive detail page</SelectItem>
-                  <SelectItem value="mobile-wizard">
-                    Mobile inspection wizard
+                  <SelectItem value="detail">
+                    {t('qr.targets.detail')}
                   </SelectItem>
-                  <SelectItem value="audio">Quick audio inspection</SelectItem>
+                  <SelectItem value="mobile-wizard">
+                    {t('qr.targets.mobileWizard')}
+                  </SelectItem>
+                  <SelectItem value="audio">{t('qr.targets.audio')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -339,7 +341,7 @@ export function QRCodesPrintPage() {
             {/* Paper-only: QR Code Size */}
             {outputMode === 'paper' && (
               <div className="flex-1 min-w-[200px]">
-                <Label htmlFor="qr-size">QR Code Size</Label>
+                <Label htmlFor="qr-size">{t('qr.bulk.size')}</Label>
                 <Select
                   value={qrSize}
                   onValueChange={value =>
@@ -350,9 +352,15 @@ export function QRCodesPrintPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="small">Small (480px)</SelectItem>
-                    <SelectItem value="medium">Medium (640px)</SelectItem>
-                    <SelectItem value="large">Large (960px)</SelectItem>
+                    <SelectItem value="small">
+                      {t('qr.bulk.sizes.small')}
+                    </SelectItem>
+                    <SelectItem value="medium">
+                      {t('qr.bulk.sizes.medium')}
+                    </SelectItem>
+                    <SelectItem value="large">
+                      {t('qr.bulk.sizes.large')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -361,7 +369,7 @@ export function QRCodesPrintPage() {
             {/* Paper-only: Page Layout */}
             {outputMode === 'paper' && (
               <div className="flex-1 min-w-[200px]">
-                <Label htmlFor="layout">Page Layout</Label>
+                <Label htmlFor="layout">{t('qr.bulk.layout')}</Label>
                 <Select
                   value={layout}
                   onValueChange={value =>
@@ -372,9 +380,27 @@ export function QRCodesPrintPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="2x3">2×3 (6 per page)</SelectItem>
-                    <SelectItem value="2x4">2×4 (8 per page)</SelectItem>
-                    <SelectItem value="3x3">3×3 (9 per page)</SelectItem>
+                    <SelectItem value="2x3">
+                      {t('qr.bulk.layoutOption', {
+                        cols: 2,
+                        rows: 3,
+                        perPage: 6,
+                      })}
+                    </SelectItem>
+                    <SelectItem value="2x4">
+                      {t('qr.bulk.layoutOption', {
+                        cols: 2,
+                        rows: 4,
+                        perPage: 8,
+                      })}
+                    </SelectItem>
+                    <SelectItem value="3x3">
+                      {t('qr.bulk.layoutOption', {
+                        cols: 3,
+                        rows: 3,
+                        perPage: 9,
+                      })}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -383,7 +409,9 @@ export function QRCodesPrintPage() {
             {/* 3D-only: Physical Size */}
             {outputMode === '3d' && (
               <div className="flex-1 min-w-[200px]">
-                <Label htmlFor="physical-size">Physical Size</Label>
+                <Label htmlFor="physical-size">
+                  {t('qr.bulk.physicalSize')}
+                </Label>
                 <Select
                   value={String(physicalSizeMm)}
                   onValueChange={v =>
@@ -394,9 +422,15 @@ export function QRCodesPrintPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="40">Small (40mm)</SelectItem>
-                    <SelectItem value="60">Medium (60mm)</SelectItem>
-                    <SelectItem value="80">Large (80mm)</SelectItem>
+                    <SelectItem value="40">
+                      {t('qr.bulk.physicalSizes.small')}
+                    </SelectItem>
+                    <SelectItem value="60">
+                      {t('qr.bulk.physicalSizes.medium')}
+                    </SelectItem>
+                    <SelectItem value="80">
+                      {t('qr.bulk.physicalSizes.large')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -415,7 +449,7 @@ export function QRCodesPrintPage() {
                   className="flex items-center gap-2 cursor-pointer"
                 >
                   <ImageIcon className="h-4 w-4" />
-                  Include Logo
+                  {t('qr.bulk.includeLogo')}
                 </Label>
               </div>
             )}
@@ -433,7 +467,7 @@ export function QRCodesPrintPage() {
                   onClick={() => setOutputMode('paper')}
                 >
                   <PrinterIcon className="h-4 w-4" />
-                  Print on paper
+                  {t('qr.bulk.printOnPaper')}
                 </button>
                 <button
                   className={cn(
@@ -445,7 +479,7 @@ export function QRCodesPrintPage() {
                   onClick={() => setOutputMode('3d')}
                 >
                   <BoxIcon className="h-4 w-4" />
-                  3D Print file
+                  {t('qr.bulk.print3d')}
                 </button>
               </div>
             </div>
@@ -454,14 +488,17 @@ export function QRCodesPrintPage() {
           {/* Selection Controls */}
           <div className="flex justify-between items-center">
             <div className="text-sm text-muted-foreground">
-              {selectedHives.size} of {hives?.length || 0} hives selected
+              {t('qr.bulk.selectedCount', {
+                selected: selectedHives.size,
+                total: hives?.length || 0,
+              })}
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={selectAll}>
-                Select All
+                {t('qr.bulk.selectAll')}
               </Button>
               <Button variant="outline" size="sm" onClick={clearSelection}>
-                Clear Selection
+                {t('qr.bulk.clearSelection')}
               </Button>
             </div>
           </div>
@@ -485,7 +522,9 @@ export function QRCodesPrintPage() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <QrCodeIcon className="h-4 w-4" />
-                    <span className="hidden sm:inline">QR Ready</span>
+                    <span className="hidden sm:inline">
+                      {t('qr.bulk.ready')}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -495,7 +534,9 @@ export function QRCodesPrintPage() {
           {/* Preview Section */}
           {selectedHives.size > 0 && (
             <div className="p-4 bg-muted/50 rounded-lg">
-              <div className="text-sm font-medium mb-2">Preview</div>
+              <div className="text-sm font-medium mb-2">
+                {t('qr.bulk.preview')}
+              </div>
               <div className="flex flex-wrap gap-4">
                 {Array.from(selectedHives)
                   .slice(0, 4)
@@ -523,7 +564,7 @@ export function QRCodesPrintPage() {
                               <div className="bg-white p-0.5 rounded shadow-sm">
                                 <img
                                   src={logoUrl}
-                                  alt="Logo"
+                                  alt={t('qr.bulk.logoAlt')}
                                   className="w-4 h-4"
                                   onError={e => {
                                     e.currentTarget.style.display = 'none';
@@ -542,16 +583,14 @@ export function QRCodesPrintPage() {
                 {selectedHives.size > 4 && (
                   <div className="flex items-center justify-center p-2">
                     <span className="text-sm text-muted-foreground">
-                      +{selectedHives.size - 4} more
+                      {t('qr.bulk.more', { count: selectedHives.size - 4 })}
                     </span>
                   </div>
                 )}
               </div>
               {outputMode === '3d' && (
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Each QR code will be {physicalSizeMm}mm × {physicalSizeMm}mm
-                  with a 1.2mm base and 0.8mm raised modules. Open the .3mf file
-                  in your slicer (Bambu Studio, PrusaSlicer, etc.).
+                  {t('qr.bulk.hint3d', { size: physicalSizeMm })}
                 </p>
               )}
             </div>
@@ -566,8 +605,7 @@ export function QRCodesPrintPage() {
               disabled={selectedHives.size === 0}
             >
               <PrinterIcon className="mr-2 h-5 w-5" />
-              Print {selectedHives.size} QR Code
-              {selectedHives.size !== 1 ? 's' : ''}
+              {t('qr.bulk.printButton', { count: selectedHives.size })}
             </Button>
           ) : (
             <Button
@@ -577,8 +615,7 @@ export function QRCodesPrintPage() {
               disabled={selectedHives.size === 0}
             >
               <DownloadIcon className="mr-2 h-5 w-5" />
-              Download .3MF — {selectedHives.size} hive
-              {selectedHives.size !== 1 ? 's' : ''}
+              {t('qr.bulk.download3mf', { count: selectedHives.size })}
             </Button>
           )}
         </CardContent>
