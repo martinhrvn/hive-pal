@@ -101,12 +101,15 @@ const EquipmentActionSidebar = ({
 }) => {
   const hint =
     targetHives === 0
-      ? `Not set — showing requirements for current ${currentHives} hives`
+      ? t('hive:equipment.hintNotSet', { count: currentHives })
       : targetHives > currentHives
-        ? `Planning for ${targetHives - currentHives} more than your current ${currentHives}`
+        ? t('hive:equipment.hintMore', {
+            more: targetHives - currentHives,
+            count: currentHives,
+          })
         : targetHives === currentHives
-          ? 'Same as current hive count'
-          : 'Below current — no equipment needed';
+          ? t('hive:equipment.hintSame')
+          : t('hive:equipment.hintBelow');
 
   return (
     <div className="space-y-6">
@@ -125,14 +128,18 @@ const EquipmentActionSidebar = ({
           </Button>
           <Separator />
           <div className="space-y-2">
-            <label className="text-sm font-medium">Target Hives</label>
+            <label className="text-sm font-medium">
+              {t('hive:equipment.targetHives')}
+            </label>
             <Input
               type="number"
               value={targetHives === 0 ? '' : targetHives}
               onChange={e => onTargetHivesChange(parseInt(e.target.value) || 0)}
               min="0"
               step="1"
-              placeholder={`${currentHives} (current)`}
+              placeholder={t('hive:equipment.targetHivesPlaceholder', {
+                count: currentHives,
+              })}
               className="w-full"
               disabled={isUpdating}
             />
@@ -228,7 +235,7 @@ export const EquipmentPlanningPage = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-600">Error loading equipment data</p>
+          <p className="text-red-600">{t('hive:equipment.errorLoading')}</p>
           <Button
             onClick={() => {
               plan.refetch();
@@ -236,7 +243,7 @@ export const EquipmentPlanningPage = () => {
             }}
             className="mt-2"
           >
-            Try Again
+            {t('hive:equipment.tryAgain')}
           </Button>
         </div>
       </div>
@@ -244,7 +251,7 @@ export const EquipmentPlanningPage = () => {
   }
 
   if (!plan.data) {
-    return <div>No data available</div>;
+    return <div>{t('common:messages.noData')}</div>;
   }
 
   const handleExtraChange = (itemId: string, value: number) => {
@@ -373,8 +380,7 @@ export const EquipmentPlanningPage = () => {
               {localTargetHives === 0 && (
                 <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2 mb-4">
                   <AlertCircle className="h-4 w-4 shrink-0" />
-                  Set a target hive count in the sidebar to see how much
-                  equipment you'll need.
+                  {t('hive:equipment.setTargetHint')}
                 </div>
               )}
               <div className="overflow-x-auto">

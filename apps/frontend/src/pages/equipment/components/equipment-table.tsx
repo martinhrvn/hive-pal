@@ -193,7 +193,7 @@ export const EquipmentRow = ({
                 setEditData(prev => ({ ...prev, name: e.target.value }))
               }
               className="text-sm font-medium"
-              placeholder="Equipment name"
+              placeholder={t('hive:equipment.table.namePlaceholder')}
             />
           ) : (
             <div className="font-medium text-sm">{displayName}</div>
@@ -208,8 +208,12 @@ export const EquipmentRow = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={EquipmentScope.PER_HIVE}>Per hive</SelectItem>
-              <SelectItem value={EquipmentScope.SHARED}>Shared</SelectItem>
+              <SelectItem value={EquipmentScope.PER_HIVE}>
+                {t('hive:equipment.table.scopePerHive')}
+              </SelectItem>
+              <SelectItem value={EquipmentScope.SHARED}>
+                {t('hive:equipment.table.scopeShared')}
+              </SelectItem>
             </SelectContent>
           </Select>
           {item.isCustom && (
@@ -219,7 +223,7 @@ export const EquipmentRow = ({
                 setEditData(prev => ({ ...prev, unit: e.target.value }))
               }
               className="text-xs"
-              placeholder="Unit"
+              placeholder={t('hive:equipment.table.unit')}
             />
           )}
         </div>
@@ -262,7 +266,7 @@ export const EquipmentRow = ({
             }
             className="w-20 text-center mx-auto block"
             min="0"
-            placeholder="Storage"
+            placeholder={t('hive:equipment.table.storagePlaceholder')}
           />
           {hasExtractionTracking && (
             <Input
@@ -276,7 +280,7 @@ export const EquipmentRow = ({
               }
               className="w-20 text-center mx-auto block text-amber-600"
               min="0"
-              placeholder="Extracting"
+              placeholder={t('hive:equipment.table.extractingPlaceholder')}
             />
           )}
           {hasDamageTracking && (
@@ -291,7 +295,7 @@ export const EquipmentRow = ({
               }
               className="w-20 text-center mx-auto block text-red-500"
               min="0"
-              placeholder="Damaged"
+              placeholder={t('hive:equipment.table.damagedPlaceholder')}
             />
           )}
         </div>
@@ -319,11 +323,17 @@ export const EquipmentRow = ({
                 <Info className="h-3 w-3 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Recommended: {round2(recommended)}</p>
+                <p>
+                  {t('hive:equipment.table.recommended', {
+                    value: round2(recommended),
+                  })}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {editIsShared
-                    ? 'Fixed target (shared equipment)'
-                    : `Based on ${round2(editData.perHive ?? perHive)} per hive`}
+                    ? t('hive:equipment.table.fixedTargetShared')
+                    : t('hive:equipment.table.basedOnPerHive', {
+                        value: round2(editData.perHive ?? perHive),
+                      })}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -333,30 +343,44 @@ export const EquipmentRow = ({
         {/* Status badge */}
         <div className="text-center pt-1">
           {needsToPurchase ? (
-            <Badge variant="destructive">Need {round2(toPurchase)}</Badge>
+            <Badge variant="destructive">
+              {t('hive:equipment.table.need', { value: round2(toPurchase) })}
+            </Badge>
           ) : hasSurplus ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Badge variant="secondary" className="cursor-help">
-                    +{round2(Math.abs(toPurchase))} surplus
+                    {t('hive:equipment.table.surplusBadge', {
+                      value: round2(Math.abs(toPurchase)),
+                    })}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Surplus: {round2(Math.abs(toPurchase))} extra</p>
+                  <p>
+                    {t('hive:equipment.table.surplusExtra', {
+                      value: round2(Math.abs(toPurchase)),
+                    })}
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    Total usable: {round2(total)} (on hives: {round2(inUse)},
-                    stored: {round2(extra)}
                     {inExtraction > 0
-                      ? `, extracting: ${round2(inExtraction)}`
-                      : ''}
-                    )
+                      ? t('hive:equipment.table.totalUsableWithExtracting', {
+                          total: round2(total),
+                          inUse: round2(inUse),
+                          stored: round2(extra),
+                          extracting: round2(inExtraction),
+                        })
+                      : t('hive:equipment.table.totalUsable', {
+                          total: round2(total),
+                          inUse: round2(inUse),
+                          stored: round2(extra),
+                        })}
                   </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           ) : (
-            <Badge variant="outline">Exact</Badge>
+            <Badge variant="outline">{t('hive:equipment.table.exact')}</Badge>
           )}
         </div>
 
@@ -402,12 +426,11 @@ export const EquipmentRow = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="text-xs text-muted-foreground italic cursor-default">
-                  shared
+                  {t('hive:equipment.table.sharedTag')}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                Target doesn't multiply by hive count — one fixed amount for the
-                whole apiary
+                {t('hive:equipment.table.sharedTooltip')}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -426,8 +449,10 @@ export const EquipmentRow = ({
             </TooltipTrigger>
             <TooltipContent>
               {isShared
-                ? 'Fixed target count (shared equipment)'
-                : `${round2(perHive)} per hive`}
+                ? t('hive:equipment.table.fixedTargetCountShared')
+                : t('hive:equipment.table.perHiveValue', {
+                    value: round2(perHive),
+                  })}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -437,14 +462,22 @@ export const EquipmentRow = ({
       <div className="text-center">
         {hasExtractionTracking || hasDamageTracking ? (
           <div className="flex flex-col items-center gap-0.5 text-xs">
-            <span>{round2(extra)} stored</span>
+            <span>
+              {t('hive:equipment.table.storedValue', { value: round2(extra) })}
+            </span>
             {hasExtractionTracking && inExtraction > 0 && (
               <span className="text-amber-600">
-                {round2(inExtraction)} extracting
+                {t('hive:equipment.table.extractingValue', {
+                  value: round2(inExtraction),
+                })}
               </span>
             )}
             {hasDamageTracking && damaged > 0 && (
-              <span className="text-red-500">{round2(damaged)} damaged</span>
+              <span className="text-red-500">
+                {t('hive:equipment.table.damagedValue', {
+                  value: round2(damaged),
+                })}
+              </span>
             )}
           </div>
         ) : (
@@ -463,11 +496,17 @@ export const EquipmentRow = ({
               <Info className="h-3 w-3 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Recommended: {round2(recommended)}</p>
+              <p>
+                {t('hive:equipment.table.recommended', {
+                  value: round2(recommended),
+                })}
+              </p>
               <p className="text-xs text-muted-foreground">
                 {isShared
-                  ? 'Fixed target'
-                  : `Based on ${round2(perHive)} per hive`}
+                  ? t('hive:equipment.table.fixedTarget')
+                  : t('hive:equipment.table.basedOnPerHive', {
+                      value: round2(perHive),
+                    })}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -487,30 +526,44 @@ export const EquipmentRow = ({
       {/* Status */}
       <div className="text-center">
         {needsToPurchase ? (
-          <Badge variant="destructive">Need {round2(toPurchase)}</Badge>
+          <Badge variant="destructive">
+            {t('hive:equipment.table.need', { value: round2(toPurchase) })}
+          </Badge>
         ) : hasSurplus ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Badge variant="secondary" className="cursor-help">
-                  +{round2(Math.abs(toPurchase))} surplus
+                  {t('hive:equipment.table.surplusBadge', {
+                    value: round2(Math.abs(toPurchase)),
+                  })}
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Surplus: {round2(Math.abs(toPurchase))} extra</p>
+                <p>
+                  {t('hive:equipment.table.surplusExtra', {
+                    value: round2(Math.abs(toPurchase)),
+                  })}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Total usable: {round2(total)} (on hives: {round2(inUse)},
-                  stored: {round2(extra)}
                   {inExtraction > 0
-                    ? `, extracting: ${round2(inExtraction)}`
-                    : ''}
-                  )
+                    ? t('hive:equipment.table.totalUsableWithExtracting', {
+                        total: round2(total),
+                        inUse: round2(inUse),
+                        stored: round2(extra),
+                        extracting: round2(inExtraction),
+                      })
+                    : t('hive:equipment.table.totalUsable', {
+                        total: round2(total),
+                        inUse: round2(inUse),
+                        stored: round2(extra),
+                      })}
                 </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         ) : (
-          <Badge variant="outline">Exact</Badge>
+          <Badge variant="outline">{t('hive:equipment.table.exact')}</Badge>
         )}
       </div>
 
@@ -682,63 +735,63 @@ export const EquipmentTable = ({
     }
   > = {
     [EquipmentCategory.BOXES]: {
-      label: 'Boxes',
+      label: t('hive:equipment.categories.BOXES'),
       icon: Box,
       border: 'border-l-blue-400',
       header: 'bg-blue-50/80 dark:bg-blue-950/30',
       iconColor: 'text-blue-600',
     },
     [EquipmentCategory.HIVE_PARTS]: {
-      label: 'Hive Parts',
+      label: t('hive:equipment.categories.HIVE_PARTS'),
       icon: Home,
       border: 'border-l-slate-400',
       header: 'bg-slate-50/80 dark:bg-slate-950/30',
       iconColor: 'text-slate-600',
     },
     [EquipmentCategory.FRAMES]: {
-      label: 'Frames',
+      label: t('hive:equipment.categories.FRAMES'),
       icon: LayoutGrid,
       border: 'border-l-amber-400',
       header: 'bg-amber-50/80 dark:bg-amber-950/30',
       iconColor: 'text-amber-600',
     },
     [EquipmentCategory.FEEDING]: {
-      label: 'Feeding',
+      label: t('hive:equipment.categories.FEEDING'),
       icon: Droplets,
       border: 'border-l-green-400',
       header: 'bg-green-50/80 dark:bg-green-950/30',
       iconColor: 'text-green-600',
     },
     [EquipmentCategory.CONSUMABLES]: {
-      label: 'Consumables',
+      label: t('hive:equipment.categories.CONSUMABLES'),
       icon: FlaskConical,
       border: 'border-l-purple-400',
       header: 'bg-purple-50/80 dark:bg-purple-950/30',
       iconColor: 'text-purple-600',
     },
     [EquipmentCategory.TOOLS]: {
-      label: 'Tools',
+      label: t('hive:equipment.categories.TOOLS'),
       icon: Wrench,
       border: 'border-l-orange-400',
       header: 'bg-orange-50/80 dark:bg-orange-950/30',
       iconColor: 'text-orange-600',
     },
     [EquipmentCategory.PROTECTIVE]: {
-      label: 'Protective',
+      label: t('hive:equipment.categories.PROTECTIVE'),
       icon: Shield,
       border: 'border-l-teal-400',
       header: 'bg-teal-50/80 dark:bg-teal-950/30',
       iconColor: 'text-teal-600',
     },
     [EquipmentCategory.EXTRACTION]: {
-      label: 'Extraction',
+      label: t('hive:equipment.categories.EXTRACTION'),
       icon: Container,
       border: 'border-l-yellow-400',
       header: 'bg-yellow-50/80 dark:bg-yellow-950/30',
       iconColor: 'text-yellow-600',
     },
     [EquipmentCategory.CUSTOM]: {
-      label: 'Custom',
+      label: t('hive:equipment.categories.CUSTOM'),
       icon: Star,
       border: 'border-l-gray-400',
       header: 'bg-gray-50/80 dark:bg-gray-950/30',
@@ -774,16 +827,20 @@ export const EquipmentTable = ({
                 onChange={e =>
                   setNewItemData(prev => ({ ...prev, name: e.target.value }))
                 }
-                placeholder="e.g., Custom Smoker"
+                placeholder={t('hive:equipment.table.namePlaceholderExample')}
                 className="text-sm"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium">In Use</label>
+              <label className="text-xs font-medium">
+                {t('hive:equipment.table.inUse')}
+              </label>
               <div className="text-sm text-center text-muted-foreground">0</div>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium">Per Hive</label>
+              <label className="text-xs font-medium">
+                {t('hive:equipment.table.perHive')}
+              </label>
               <Input
                 type="number"
                 value={newItemData.perHive}
@@ -800,7 +857,9 @@ export const EquipmentTable = ({
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium">In Storage</label>
+              <label className="text-xs font-medium">
+                {t('hive:equipment.table.inStorage')}
+              </label>
               <Input
                 type="number"
                 value={newItemData.extra}
@@ -815,18 +874,22 @@ export const EquipmentTable = ({
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium">Unit</label>
+              <label className="text-xs font-medium">
+                {t('hive:equipment.table.unit')}
+              </label>
               <Input
                 value={newItemData.unit}
                 onChange={e =>
                   setNewItemData(prev => ({ ...prev, unit: e.target.value }))
                 }
-                placeholder="pieces"
+                placeholder={t('hive:equipment.table.unitPlaceholder')}
                 className="text-center"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium">Category</label>
+              <label className="text-xs font-medium">
+                {t('hive:equipment.table.category')}
+              </label>
               <Select
                 value={newItemData.category}
                 onValueChange={value =>
@@ -846,7 +909,7 @@ export const EquipmentTable = ({
                       value={category}
                       className="text-xs"
                     >
-                      {category.toLowerCase().replace('_', ' ')}
+                      {CATEGORY_CONFIG[category].label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -901,32 +964,42 @@ export const EquipmentTable = ({
               <Icon className={`h-4 w-4 ${cfg.iconColor}`} />
               <span className="text-sm font-semibold">{cfg.label}</span>
               <span className="ml-auto text-xs text-muted-foreground">
-                {sorted.length} {sorted.length === 1 ? 'item' : 'items'}
+                {t('hive:equipment.table.itemCount', { count: sorted.length })}
               </span>
             </div>
 
             {/* Column sub-header */}
             <div className="grid grid-cols-7 gap-4 px-3 py-1.5 text-xs text-muted-foreground border-b border-border/30 bg-background/60">
-              <div>Item</div>
+              <div>{t('hive:equipment.table.item')}</div>
               <div className="text-center">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="cursor-default underline decoration-dotted">
-                        In Use
+                        {t('hive:equipment.table.inUse')}
                       </span>
                     </TooltipTrigger>
                     <TooltipContent>
-                      Currently mounted on your hives
+                      {t('hive:equipment.table.inUseTooltip')}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <div className="text-center">Per Hive / Target</div>
-              <div className="text-center">Inventory</div>
-              <div className="text-center">Needed</div>
-              <div className="text-center">Status</div>
-              <div className="text-center">Actions</div>
+              <div className="text-center">
+                {t('hive:equipment.table.perHiveTarget')}
+              </div>
+              <div className="text-center">
+                {t('hive:equipment.table.inventory')}
+              </div>
+              <div className="text-center">
+                {t('hive:equipment.table.needed')}
+              </div>
+              <div className="text-center">
+                {t('hive:equipment.table.status')}
+              </div>
+              <div className="text-center">
+                {t('hive:equipment.table.actions')}
+              </div>
             </div>
 
             {/* Rows */}

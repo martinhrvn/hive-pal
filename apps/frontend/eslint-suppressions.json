@@ -216,29 +216,6 @@
       "count": 9
     }
   },
-  "src/pages/equipment/components/equipment-table.tsx": {
-    "i18next/no-literal-string": {
-      "count": 50
-    },
-    "no-restricted-syntax": {
-      "count": 9
-    }
-  },
-  "src/pages/equipment/components/shopping-list.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
-    }
-  },
-  "src/pages/equipment/equipment-planning-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 5
-    }
-  },
-  "src/pages/equipment/equipment-settings-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 5
-    }
-  },
   "src/pages/error-page.tsx": {
     "i18next/no-literal-string": {
       "count": 5
