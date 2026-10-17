@@ -1,0 +1,888 @@
+{
+  "src/api/hooks/useFeedback.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/api/hooks/useFrameSizes.ts": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/api/hooks/useInspections.ts": {
+    "no-restricted-syntax": {
+      "count": 5
+    }
+  },
+  "src/api/hooks/useTreatmentProducts.ts": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/api/hooks/useWorkerTokens.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/components/TestSentry.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/components/add-photo-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/apiary-switcher.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/app-sidebar.tsx": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/components/assistant/assistant-chat.tsx": {
+    "i18next/no-literal-string": {
+      "count": 10
+    },
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/components/assistant/assistant-suggestion-list.tsx": {
+    "i18next/no-literal-string": {
+      "count": 4
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/components/audio/AudioRecorder.tsx": {
+    "i18next/no-literal-string": {
+      "count": 10
+    }
+  },
+  "src/components/audio/AudioRecordingsList.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/breadcrumbs.tsx": {
+    "no-restricted-syntax": {
+      "count": 10
+    }
+  },
+  "src/components/common/floating-action-button.tsx": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/components/common/photo-gallery.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/components/common/qr-scanner-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 4
+    }
+  },
+  "src/components/common/rating-slider.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/components/common/temperature-input-field.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/common/timeline-event-list.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/feature-photo-picker.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/layout/dashboard-layout.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/layout/public-footer.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/components/layout/public-layout.tsx": {
+    "i18next/no-literal-string": {
+      "count": 16
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/components/marketing/marketing-chrome.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/components/nav-admin.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/components/nav-hives.tsx": {
+    "i18next/no-literal-string": {
+      "count": 6
+    }
+  },
+  "src/components/nav-user.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/components/share/share-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 9
+    },
+    "no-restricted-syntax": {
+      "count": 8
+    }
+  },
+  "src/components/share/share-prompt-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 6
+    }
+  },
+  "src/components/upcoming-inspection-list-item.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/components/weather/weather-forecast.tsx": {
+    "i18next/no-literal-string": {
+      "count": 4
+    }
+  },
+  "src/constants/frame-fields.ts": {
+    "no-restricted-syntax": {
+      "count": 8
+    }
+  },
+  "src/pages/account/change-password-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 10
+    }
+  },
+  "src/pages/actions/bulk/queen-builder.tsx": {
+    "no-restricted-syntax": {
+      "count": 5
+    }
+  },
+  "src/pages/actions/bulk/staged-queue.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/admin/feedback-management/feedback-management-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 38
+    }
+  },
+  "src/pages/admin/frame-sizes/frame-size-review-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 27
+    }
+  },
+  "src/pages/admin/media/media-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 23
+    }
+  },
+  "src/pages/admin/media/media-preview-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 4
+    }
+  },
+  "src/pages/admin/platform-metrics/components/all-apiaries-map.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/pages/admin/platform-metrics/components/platform-metrics-trend-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 11
+    }
+  },
+  "src/pages/admin/platform-metrics/platform-metrics-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 26
+    },
+    "no-restricted-syntax": {
+      "count": 6
+    }
+  },
+  "src/pages/admin/worker-tokens/worker-tokens-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 31
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/apiaries/apiary-list-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/apiaries/components/hives-layout/hive-row.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/apiaries/components/sharing-tab.tsx": {
+    "i18next/no-literal-string": {
+      "count": 20
+    }
+  },
+  "src/pages/assistant/assistant-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/pages/batch-inspection/batch-detail-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 20
+    }
+  },
+  "src/pages/batch-inspection/batch-inspection-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 22
+    },
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/pages/batch-inspection/batch-list-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 20
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/pages/calendar/calendar-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 9
+    }
+  },
+  "src/pages/equipment/components/equipment-table.tsx": {
+    "i18next/no-literal-string": {
+      "count": 50
+    },
+    "no-restricted-syntax": {
+      "count": 9
+    }
+  },
+  "src/pages/equipment/components/shopping-list.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/equipment/equipment-planning-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/pages/equipment/equipment-settings-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/pages/error-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/pages/files/files-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/forgot-password-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/harvest/components/harvest-wizard.tsx": {
+    "i18next/no-literal-string": {
+      "count": 14
+    },
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/pages/harvest/harvest-detail-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 43
+    },
+    "no-restricted-syntax": {
+      "count": 15
+    }
+  },
+  "src/pages/harvest/harvest-list-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 23
+    }
+  },
+  "src/pages/hive/hive-detail-page/actions/edit-action-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/BoxBuilder.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/BoxConfigPanel.tsx": {
+    "i18next/no-literal-string": {
+      "count": 57
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/BoxItem.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/BoxStack.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/CompactBoxConfig.tsx": {
+    "i18next/no-literal-string": {
+      "count": 30
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/MaintenancePopover.tsx": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/QueenExcluder.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/box-configurator/index.tsx": {
+    "i18next/no-literal-string": {
+      "count": 10
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/boolean-events-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/brood-nest-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/brood-pattern-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 7
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/feeding-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/frame-breakdown-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/health-score-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/index.tsx": {
+    "i18next/no-literal-string": {
+      "count": 6
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/inspection-charts.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    },
+    "no-restricted-syntax": {
+      "count": 7
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/queen-cells-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/stores-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/pages/hive/hive-detail-page/charts/strength-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/feeding-section.tsx": {
+    "i18next/no-literal-string": {
+      "count": 20
+    }
+  },
+  "src/pages/hive/hive-detail-page/hive-header-stats.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/hive-status-button.tsx": {
+    "i18next/no-literal-string": {
+      "count": 6
+    },
+    "no-restricted-syntax": {
+      "count": 8
+    }
+  },
+  "src/pages/hive/hive-detail-page/hive-timeline.tsx": {
+    "i18next/no-literal-string": {
+      "count": 29
+    },
+    "no-restricted-syntax": {
+      "count": 12
+    }
+  },
+  "src/pages/hive/hive-detail-page/qr-code-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 8
+    }
+  },
+  "src/pages/hive/hive-detail-page/queen-history-tab.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/quick-check-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 14
+    },
+    "no-restricted-syntax": {
+      "count": 23
+    }
+  },
+  "src/pages/hive/hive-detail-page/split/split-wizard.tsx": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/hive-detail-page/statistic-cards.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/hive/hive-detail-page/treatment-summary.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hive/qr-codes-print-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 38
+    }
+  },
+  "src/pages/hivescale/hivehub-firmware-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 8
+    }
+  },
+  "src/pages/hivescale/hivehub-hub-status-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/hivescale/hivehub-sd-import-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hivescale/hivehub-traffic-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/hivescale/hivescale-modular-dashboard.tsx": {
+    "i18next/no-literal-string": {
+      "count": 13
+    }
+  },
+  "src/pages/hivescale/hivescale-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/inspection/audio-quick/audio-quick-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/inspection/components/action-type-badges.tsx": {
+    "no-restricted-syntax": {
+      "count": 9
+    }
+  },
+  "src/pages/inspection/components/actions-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 10
+    }
+  },
+  "src/pages/inspection/components/audio-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 27
+    }
+  },
+  "src/pages/inspection/components/inspection-form/actions.tsx": {
+    "i18next/no-literal-string": {
+      "count": 4
+    },
+    "no-restricted-syntax": {
+      "count": 6
+    }
+  },
+  "src/pages/inspection/components/inspection-form/actions/action-view-container.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/inspection/components/inspection-form/actions/box-configuration.tsx": {
+    "i18next/no-literal-string": {
+      "count": 25
+    }
+  },
+  "src/pages/inspection/components/inspection-form/actions/status-change.tsx": {
+    "no-restricted-syntax": {
+      "count": 6
+    }
+  },
+  "src/pages/inspection/components/inspection-form/index.tsx": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/inspection/components/inspection-form/observations.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/inspection/components/inspection-form/weather.tsx": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/pages/inspection/components/inspection-header.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 5
+    }
+  },
+  "src/pages/inspection/components/inspection-timeline.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/inspection/components/observations-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/inspection/components/reschedule-dialog.tsx": {
+    "i18next/no-literal-string": {
+      "count": 4
+    }
+  },
+  "src/pages/inspection/components/scheduled-inspection-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/inspection/components/weather-card.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/inspection/inspection-list-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 7
+    }
+  },
+  "src/pages/inspection/mobile-wizard/frame-counter.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/inspection/mobile-wizard/steps/media-notes-step.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/inspection/mobile-wizard/tap-scale.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/inspection/mobile-wizard/wizard-shell.tsx": {
+    "i18next/no-literal-string": {
+      "count": 7
+    }
+  },
+  "src/pages/inspection/schedule-inspection.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/join/join-apiary-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 24
+    }
+  },
+  "src/pages/login-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/not-found-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/onboarding/user-wizard-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/privacy-policy-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/register-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/releases/releases-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 22
+    }
+  },
+  "src/pages/reports/components/charts/feeding-totals-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/reports/components/charts/feeding-trend-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/reports/components/charts/health-trend-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/pages/reports/components/charts/hive-score-trend-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 4
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/pages/reports/components/charts/honey-production-chart.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/reports/components/reports-header.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/reports/components/reports-sidebar.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/pages/reports/components/tables/hive-comparison-table.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    }
+  },
+  "src/pages/reset-password-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/pages/settings/data-transfer-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 32
+    },
+    "no-restricted-syntax": {
+      "count": 9
+    }
+  },
+  "src/pages/settings/user-settings-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 7
+    }
+  },
+  "src/pages/shared/shared-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 31
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/pages/tools/artificial-swarm-method-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/tools/brood-timeline-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 10
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/tools/demaree-method-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/tools/liebefelder-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 9
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/pages/tools/pagden-method-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/tools/swarm-management-overview-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/pages/tools/syrup-calculator-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/pages/tools/varroa-management-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 5
+    }
+  },
+  "src/pages/treatment-products/treatment-products-page.tsx": {
+    "i18next/no-literal-string": {
+      "count": 3
+    }
+  },
+  "src/root.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  },
+  "src/route-modules/app/home.tsx": {
+    "i18next/no-literal-string": {
+      "count": 1
+    }
+  }
+}
