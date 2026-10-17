@@ -46,7 +46,7 @@ export function AddEquipmentForm({
   isCreating,
   onCreate,
   onClose,
-}: AddEquipmentFormProps) {
+}: Readonly<AddEquipmentFormProps>) {
   const { t } = useTranslation(['hive', 'common']);
   const id = useId();
   const [draft, setDraft] = useState(EMPTY_ITEM);

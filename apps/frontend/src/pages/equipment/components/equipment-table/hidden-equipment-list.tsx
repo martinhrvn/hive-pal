@@ -18,7 +18,7 @@ export function HiddenEquipmentList({
   items,
   updatingItems,
   onRestore,
-}: HiddenEquipmentListProps) {
+}: Readonly<HiddenEquipmentListProps>) {
   const { t } = useTranslation('hive');
   const [isOpen, setIsOpen] = useState(false);
 

@@ -51,7 +51,7 @@ export function EquipmentTable({
   isCreating,
   showAddForm,
   onShowAddFormChange,
-}: EquipmentTableProps) {
+}: Readonly<EquipmentTableProps>) {
   const { t } = useTranslation('hive');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [removing, setRemoving] = useState<EquipmentItemWithCalculations>();

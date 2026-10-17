@@ -27,7 +27,9 @@ interface EquipmentRowProps {
   onRemove: () => void;
 }
 
-function InventoryCell({ item }: { item: EquipmentItemWithCalculations }) {
+function InventoryCell({
+  item,
+}: Readonly<{ item: EquipmentItemWithCalculations }>) {
   const { t } = useTranslation('hive');
   const { extra = 0, inExtraction = 0, damaged = 0 } = item;
   const tracksExtraction = EXTRACTION_TRACKING_CATEGORIES.has(item.category);
@@ -66,7 +68,7 @@ export function EquipmentRow({
   onEdit,
   onResetNeeded,
   onRemove,
-}: EquipmentRowProps) {
+}: Readonly<EquipmentRowProps>) {
   const { t } = useTranslation(['hive', 'common']);
   const { inUse = 0, needed = 0, recommended = 0, perHive, unit } = item;
   const displayName = getDisplayName(item);

@@ -11,9 +11,9 @@ import { round2 } from './equipment-utils';
 /** Need / surplus / exact badge for one equipment row. */
 export function EquipmentStatusBadge({
   item,
-}: {
+}: Readonly<{
   item: EquipmentItemWithCalculations;
-}) {
+}>) {
   const { t } = useTranslation('hive');
   const {
     toPurchase = 0,

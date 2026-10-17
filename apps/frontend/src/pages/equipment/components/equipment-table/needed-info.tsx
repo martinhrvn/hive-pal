@@ -11,11 +11,11 @@ import { round2 } from './equipment-utils';
 export function NeededInfo({
   recommended,
   note,
-}: {
+}: Readonly<{
   recommended: number;
   /** Second line: where the recommendation comes from. */
   note: string;
-}) {
+}>) {
   const { t } = useTranslation('hive');
 
   return (

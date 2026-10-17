@@ -114,7 +114,9 @@ export function ReleasesPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-amber-600 hover:text-amber-700 underline"
-                  />
+                  >
+                    GitHub
+                  </a>
                 ),
               }}
             />

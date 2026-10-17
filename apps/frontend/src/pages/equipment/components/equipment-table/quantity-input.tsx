@@ -21,7 +21,7 @@ export function QuantityInput({
   id,
   placeholder,
   className,
-}: QuantityInputProps) {
+}: Readonly<QuantityInputProps>) {
   const { step, parse } = quantityInput(unit);
   return (
     <Input

@@ -25,7 +25,7 @@ export function EquipmentCategorySection({
   category,
   itemCount,
   children,
-}: EquipmentCategorySectionProps) {
+}: Readonly<EquipmentCategorySectionProps>) {
   const { t } = useTranslation('hive');
   const style = CATEGORY_STYLES[category];
   const Icon = style.icon;

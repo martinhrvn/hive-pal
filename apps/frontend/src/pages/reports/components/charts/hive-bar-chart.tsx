@@ -45,7 +45,7 @@ export function HiveBarChart<K extends string>({
   dataKey,
   seriesLabel,
   color,
-}: HiveBarChartProps<K>) {
+}: Readonly<HiveBarChartProps<K>>) {
   const { t } = useTranslation('common');
   const config = {
     [dataKey]: { label: seriesLabel, color },

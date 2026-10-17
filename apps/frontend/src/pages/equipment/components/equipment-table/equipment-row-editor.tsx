@@ -38,7 +38,7 @@ export function EquipmentRowEditor({
   isUpdating,
   onSave,
   onCancel,
-}: EquipmentRowEditorProps) {
+}: Readonly<EquipmentRowEditorProps>) {
   const { t } = useTranslation(['hive', 'common']);
   const [draft, setDraft] = useState(() => toEditData(item));
   const update = (patch: UpdateEquipmentItem) =>
